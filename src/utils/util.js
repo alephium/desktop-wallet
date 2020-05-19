@@ -1,15 +1,10 @@
 import ALF from "alf-client";
 
 export async function createClient() {
-  let address = process.env.REACT_APP_ALEPHIUM_HOST;
-  if (!address) { address = 'localhost'; }
-
-  let port = process.env.REACT_APP_ALEPHIUM_PORT;
-  if (!port) { port = 10973; }
-
+  let settings = settingsLoadOrDefault();
   const client = new ALF.NodeClient({
-    host: address,
-    port: port
+    host: settings.host,
+    port: settings.port
   });
 
   console.log('Connecting to: ' + client.host + ':' + client.port);
@@ -23,3 +18,34 @@ export async function createClient() {
   const clique = new ALF.CliqueClient(response.result);
   return clique;
 }
+
+export function settingsDefault() {
+  return {
+        host: 'localhost',
+        port: 10973
+  }
+}
+
+export function settingsLoad() {
+  const str = window.localStorage.getItem('settings');
+  if (typeof str !== 'undefined') {
+    return JSON.parse(str);
+  } else {
+    return null;
+  }
+}
+
+export function settingsLoadOrDefault() {
+  const settings = settingsLoad();
+  if (!settings) {
+    return settingsDefault();
+  } else {
+    return settings;
+  }
+}
+
+export function settingsSave(settings) {
+  const str = JSON.stringify(settings);
+  window.localStorage.setItem('settings', str);
+}
+

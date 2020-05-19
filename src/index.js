@@ -1,47 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom'
+import { DefaultRoute } from 'react-router'
+import { BrowserRouter as Router, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 import logo from './images/logo-h.svg';
 
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-
+import Navigator from './components/Navigator'
 import Settings from './components/Settings'
 import Wallet from './components/Wallet'
 
 class App extends React.Component {
-  state = {
-    value: false
-  };
-
-  handleChange = (event, value) => {
-    this.setState({ value })
-  };
-
   render() {
     return (
       <Router>
         <div>
           <img alt="alephium" src={logo} className="logo"/>
-          <AppBar position="static" color="default">
-            <Tabs
-              value={this.state.value}
-              onChange={this.handleChange}
-              indicatorColor="primary"
-              textColor="primary"
-            >
-              <Tab label="Wallet" component={Link} to="/wallet" />
-              <Tab label="Settings" component={Link} to="/settings" />
-            </Tabs>
-          </AppBar>
-
+          <Navigator/>
           <main>
-            <Route path="/settings" component={Settings} />
+            <Route exact path="/" component={Wallet}/>
             <Route path="/wallet" component={Wallet} />
+            <Route path="/settings" component={Settings} />
           </main>
         </div>
       </Router>

@@ -91,11 +91,10 @@ class Wallet extends Component {
       this.client = await createClient();
     } finally {
       if (!this.client) {
-        this.dialogError('Unable to initialize network client, please check the console for more details.');
+        this.dialogError('Unable to initialize the client, please check your network settings.');
       }
     }
   }
-
 
   async getBalance(e) {
     try {
