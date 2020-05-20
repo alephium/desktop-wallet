@@ -10,22 +10,40 @@ import logo from './images/logo-h.svg';
 import Navigator from './components/Navigator'
 import Settings from './components/Settings'
 import Wallet from './components/Wallet'
+import Wizard from './components/Wizard'
+
+import ALF from "alf-client";
+const storage = ALF.utils.Storage();
 
 class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      wallet: storage.load('default'),
+    };
+  }
+
+  async componentDidMount() {
+  }
+
   render() {
-    return (
-      <Router>
-        <div>
-          <img alt="alephium" src={logo} className="logo"/>
-          <Navigator/>
-          <main>
-            <Route exact path="/" component={Wallet}/>
-            <Route path="/wallet" component={Wallet} />
-            <Route path="/settings" component={Settings} />
-          </main>
-        </div>
-      </Router>
-    )
+    if (!this.state.wallet) {
+      return (<Wizard/>)
+    } else {
+      return (
+        <Router>
+          <div>
+            <img alt="alephium" src={logo} className="logo"/>
+            <Navigator/>
+            <main>
+              <Route exact path="/" component={Wallet}/>
+              <Route path="/wallet" component={Wallet} />
+              <Route path="/settings" component={Settings} />
+            </main>
+          </div>
+        </Router>
+      )
+    }
   }
 }
 

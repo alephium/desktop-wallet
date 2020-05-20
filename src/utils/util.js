@@ -48,4 +48,3 @@ export function settingsSave(settings) {
   const str = JSON.stringify(settings);
   window.localStorage.setItem('settings', str);
 }
-
