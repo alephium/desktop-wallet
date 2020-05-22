@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Link, useLocation, withRouter} from 'react-router-dom'
+import { Link, withRouter} from 'react-router-dom'
 
 class Navigator extends React.Component {
   static propTypes = {
@@ -21,16 +21,17 @@ class Navigator extends React.Component {
   };
 
   render() {
-    const { match, location, history } = this.props;
+    const { location } = this.props;
 
-    if (location.pathname == '/settings') {
-      this.state.value = 1;
+    let value = this.state.value;
+    if (location.pathname === '/settings') {
+      value = 1;
     }
 
     return (
       <AppBar position="static" color="default">
         <Tabs
-          value={this.state.value}
+          value={value}
           onChange={this.handleChange}
           indicatorColor="primary"
           textColor="primary"

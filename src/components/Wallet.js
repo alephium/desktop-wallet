@@ -7,24 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { createClient } from "../utils/util";
+import { createClient, useStyles } from "../utils/util";
 import ALF from "alf-client";
-
-const useStyles = theme => ({
-  root: {
-    padding: 24,
-  },
-  section: {
-    paddingBottom: 42,
-  },
-  form: {
-    width: 600,
-    margin: 'auto',
-  },
-  field: {
-    width: 600,
-  }
-});
 
 class Wallet extends Component {
   constructor() {
@@ -44,14 +28,14 @@ class Wallet extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, wallet } = this.props;
 
     return (
       <div className={classes.root}>
         <div className={classes.form}>
           <div className={classes.section}>
             <form noValidate autoComplete="off">
-              <TextField className={classes.field} id="address" label="Address" value={this.state.address} onChange={e => this.updateAddress(e) }/>
+              <TextField className={classes.field} id="address" label="Address" value={this.props.wallet.address} onChange={e => this.updateAddress(e) }/>
             </form>
           </div>
           <div className={classes.section}>

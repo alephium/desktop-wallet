@@ -48,3 +48,19 @@ export function settingsSave(settings) {
   const str = JSON.stringify(settings);
   window.localStorage.setItem('settings', str);
 }
+
+export const useStyles = theme => ({
+  root: {
+    padding: 24,
+  },
+  section: {
+    paddingBottom: 42,
+  },
+  form: {
+    width: 600,
+    margin: 'auto',
+  },
+  field: {
+    width: 600,
+  }
+});

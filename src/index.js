@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { DefaultRoute } from 'react-router'
 import { BrowserRouter as Router, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
@@ -21,14 +20,16 @@ class App extends React.Component {
     this.state = {
       wallet: storage.load('default'),
     };
+    this.setWallet = this.setWallet.bind(this); 
   }
 
-  async componentDidMount() {
+  setWallet(wallet) {
+    this.setState({wallet: wallet});
   }
 
   render() {
     if (!this.state.wallet) {
-      return (<Wizard/>)
+      return (<Wizard setWallet={this.setWallet}/>)
     } else {
       return (
         <Router>
@@ -36,9 +37,15 @@ class App extends React.Component {
             <img alt="alephium" src={logo} className="logo"/>
             <Navigator/>
             <main>
-              <Route exact path="/" component={Wallet}/>
-              <Route path="/wallet" component={Wallet} />
-              <Route path="/settings" component={Settings} />
+              <Route exact path="/">
+                <Wallet wallet={this.state.wallet}/>
+              </Route>
+              <Route path="/wallet">
+                <Wallet wallet={this.state.wallet}/>
+              </Route>
+              <Route path="/settings">
+                <Settings setWallet={this.setWallet}/>
+              </Route>
             </main>
           </div>
         </Router>
