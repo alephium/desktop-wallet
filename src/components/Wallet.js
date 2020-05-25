@@ -35,7 +35,7 @@ class Wallet extends Component {
         <div className={classes.form}>
           <div className={classes.section}>
             <form noValidate autoComplete="off">
-              <TextField className={classes.field} id="address" label="Address" value={this.props.wallet.address} onChange={e => this.updateAddress(e) }/>
+              <TextField disabled className={classes.field} id="address" label="Address" value={this.props.wallet.address} />
             </form>
           </div>
           <div className={classes.section}>
@@ -82,7 +82,7 @@ class Wallet extends Component {
 
   async getBalance(e) {
     try {
-      const response = await this.client.getBalance(this.state.address);
+      const response = await this.client.getBalance(this.props.wallet.address);
       this.setState({
         balance: response.result.balance
       });
@@ -105,12 +105,6 @@ class Wallet extends Component {
       dialogOpen: false
     });
   };
-
-  updateAddress(e) {
-    this.setState({
-      address: e.target.value
-    });
-  }
 }
 
 export default withStyles(useStyles)(Wallet);
