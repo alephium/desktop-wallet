@@ -8,7 +8,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import { createClient, useStyles } from "../utils/util";
-import ALF from "alf-client";
 
 class Wallet extends Component {
   constructor() {
@@ -35,7 +34,7 @@ class Wallet extends Component {
         <div className={classes.form}>
           <div className={classes.section}>
             <form noValidate autoComplete="off">
-              <TextField disabled className={classes.field} id="address" label="Address" value={this.props.wallet.address} />
+              <TextField disabled className={classes.field} id="address" label="Address" value={wallet.address} />
             </form>
           </div>
           <div className={classes.section}>
