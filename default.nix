@@ -4,7 +4,7 @@ with import <nixpkgs> {}; {
     shellHook = ''
     '';
     buildInputs = [
-      nodejs
+      nodejs electron
     ];
   };
 }

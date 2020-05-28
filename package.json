@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
+  "main": "public/electron.js",
   "dependencies": {
     "@material-ui/core": "^4.9.8",
     "@testing-library/jest-dom": "^4.2.4",
@@ -13,11 +14,17 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1"
   },
+  "devDependencies": {
+    "electron": "^7.1.7",
+    "electron-builder": "^22.7.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron .",
+    "electron-pack": "npm run-script build && npx electron-builder"
   },
   "browserslist": {
     "production": [
