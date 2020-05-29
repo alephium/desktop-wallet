@@ -2,6 +2,7 @@
   "name": "alephium-webextension",
   "version": "0.1.0",
   "private": true,
+  "author": "Cheng Wang <cheng@alephium.org>",
   "homepage": "./",
   "main": "public/electron.js",
   "dependencies": {
@@ -25,6 +26,23 @@
     "eject": "react-scripts eject",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron .",
     "electron-pack": "npm run-script build && npx electron-builder"
+  },
+  "build": {
+    "appId": "org.alephium.alephium-webextension",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "category": "Finance",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "browserslist": {
     "production": [
