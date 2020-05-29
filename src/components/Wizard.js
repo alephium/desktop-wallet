@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useStyles } from "../utils/util";
 import ALF from "alf-client";
+import logo from '../images/logo-h.svg';
 const storage = ALF.utils.Storage();
 
 class Step extends Component {
@@ -29,7 +30,7 @@ class Init extends Step {
   renderStep() {
      return(
        <div>
-         <h1>Welcome</h1>
+         <img alt="alephium" src={logo} className="logo"/>
          <p>
            <Button onClick={e => this.generate(e)} variant="contained">Create a new wallet</Button>
          </p>
