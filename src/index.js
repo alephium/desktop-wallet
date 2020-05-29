@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route} from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
@@ -46,6 +46,7 @@ class App extends React.Component {
               <Route path="/settings">
                 <Settings setWallet={this.setWallet}/>
               </Route>
+              <Redirect to='/' />
             </main>
           </div>
         </Router>
