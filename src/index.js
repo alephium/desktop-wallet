@@ -29,7 +29,12 @@ class App extends React.Component {
 
   render() {
     if (!this.state.wallet) {
-      return (<Wizard setWallet={this.setWallet}/>)
+      return (
+        <div>
+          <img alt="alephium" src={logo} className="logo"/>
+          <Wizard setWallet={this.setWallet}/>
+        </div>
+      )
     } else {
       return (
         <Router>
