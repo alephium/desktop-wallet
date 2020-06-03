@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Redirect, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-import logo from './images/logo-h.svg';
+import logo from './images/logo.png';
 
 import Navigator from './components/Navigator'
 import Settings from './components/Settings'

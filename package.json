@@ -42,6 +42,7 @@
         "deb"
       ]
     },
+    "productName": "Alephium",
     "directories": {
       "buildResources": "assets"
     }
