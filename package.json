@@ -26,7 +26,7 @@
     "eject": "react-scripts eject",
     "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron .",
     "electron-pack": "npm run-script build && npx electron-builder",
-    "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp -R public/background.js icons manifest.json build",
+    "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
     "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *"
   },
   "build": {
