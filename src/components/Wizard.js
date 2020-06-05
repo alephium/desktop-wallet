@@ -28,14 +28,14 @@ class Init extends Step {
 
   renderStep() {
      return(
-       <div>
+       <center>
          <p>
            <Button onClick={e => this.generate(e)} variant="contained">Create a new wallet</Button>
          </p>
          <p>
            <Button onClick={e => this.props.next()} variant="contained">Import a wallet</Button>
          </p>
-       </div>
+       </center>
     );
   }
 
