@@ -37,10 +37,12 @@
     ],
     "linux": {
       "category": "Finance",
+      "executableName": "alephium",
       "target": [
         "AppImage",
         "deb"
-      ]
+      ],
+      "icon": "icons/512x512.png"
     },
     "productName": "Alephium",
     "directories": {
