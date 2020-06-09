@@ -4,15 +4,43 @@ import { BrowserRouter as Router, Redirect, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { green, purple } from '@material-ui/core/colors/blue';
+
 import logo from './images/logo.png';
 
 import Navigator from './components/Navigator'
 import Settings from './components/Settings'
 import Wallet from './components/Wallet'
 import Wizard from './components/Wizard'
+import withTheme from './components/Theme'
 
 import ALF from "alf-client";
+
 const storage = ALF.utils.Storage();
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: green,
+    secondary: purple,
+  },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+  },
+});
 
 class App extends React.Component {
   constructor() {
@@ -60,7 +88,9 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+const AppWithTheme = withTheme(App)
+
+ReactDOM.render(<AppWithTheme/>, document.getElementById('root'));
 
 //
 // If you want your app to work offline and load faster, you can change
