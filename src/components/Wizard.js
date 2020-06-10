@@ -32,16 +32,16 @@ class Init extends Step {
 
   renderStep() {
      return(
-       <center>
-         <h1>Welcome!</h1>
-         <img alt="wallet" src={wallet} className="logo"/>
-         <p>
-           <Button onClick={e => this.generate(e)} variant="contained">Create a new wallet</Button>
-         </p>
-         <p>
-           <Button onClick={e => this.props.next()} variant="contained">Import a wallet</Button>
-         </p>
-       </center>
+       <div>
+         <div className="welcome">
+           <h1>Welcome!</h1>
+           <img alt="wallet" src={wallet} className="logo"/>
+         </div>
+         <div className="actions">
+          <p><Button onClick={e => this.generate(e)} variant="contained" className="buttonLarge">Create a new wallet</Button></p>
+          <p><Button onClick={e => this.props.next()} variant="contained" className="buttonLarge">Import a wallet</Button></p>
+         </div>
+       </div>
     );
   }
 
@@ -68,10 +68,10 @@ class Import extends Step {
         <form noValidate autoComplete="off">
           <TextField className={classes.field} id="wallet.key" label="Private key" value={this.state.privateKey} onChange={e => this.updatePrivateKey(e) }/>
         </form>
-        <p>
-          <Button onClick={e => this.import(e)} variant="contained">Import</Button>
-          <Button onClick={e => this.props.back()} variant="contained">Cancel</Button>
-        </p>
+        <div className="actions">
+          <p><Button onClick={e => this.import(e)} variant="contained" className="buttonLarge">Import</Button></p>
+          <p><Button onClick={e => this.props.back()} variant="contained" className="buttonLarge">Cancel</Button></p>
+        </div>
       </div>
     );
   }

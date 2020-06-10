@@ -18,20 +18,47 @@ code {
     monospace;
 }
 
+a {
+  color: #46AD8D;
+}
+
 .logo {
   padding: 10px;
 }
 
-.header {
-  height: 64px;
-  width: 100%;
-  border-bottom: 1px solid black;
-  border-color: #46AD8D;
+.actions {
+  text-align: center;
+}
+
+.buttonLarge {
+  width: 90%;
 }
 
 .buttonTop {
   transform: scale(1.5);
   position: absolute;
+}
+
+.buttonTopR {
   top: 16px;
   right: 16px;
+}
+
+.buttonTopL {
+  top: 16px;
+  left: 16px;
+}
+
+.drawer {
+  padding: 16px;
+}
+
+.header {
+  height: 64px;
+  width: 100%;
+  text-align: center;
+}
+
+.welcome {
+  text-align: center;
 }

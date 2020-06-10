@@ -40,9 +40,9 @@ class Wallet extends Component {
           <div className={classes.section}>
             <h2>Balance</h2>
             <TextField className={classes.field} id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
-            <br/>
-            <br/>
-            <Button variant="contained" onClick={e => this.getBalance(e)}>Get balance</Button>
+            <p>
+              <Button variant="contained" onClick={e => this.getBalance(e)}>Get balance</Button>
+            </p>
           </div>
 
           <Dialog

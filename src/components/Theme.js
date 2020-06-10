@@ -11,6 +11,16 @@ const theme = createMuiTheme({
       default: "#F5F5F5"
     },
   },
+  overrides: {
+    MuiButton: {
+      contained: {
+        backgroundColor: "#66CD9D",
+        "&:hover": {
+          backgroundColor: "#46AD8D",
+        }
+      },
+    },
+  },
 });
 
 export default function withTheme(WrappedComponent) {

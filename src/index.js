@@ -6,7 +6,17 @@ import * as serviceWorker from './serviceWorker';
 
 import { Link } from 'react-router-dom'
 
+import LanguageIcon from '@material-ui/icons/Language';
+import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
+
+import Drawer from '@material-ui/core/Drawer';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MailIcon from '@material-ui/icons/Mail';
 
 import logo from './images/logo.png';
 
@@ -33,11 +43,23 @@ class App extends React.Component {
     this.setState({wallet: wallet});
   }
 
+  toggleDrawer(open) {
+    return (event) => {
+      if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+        return;
+      }
+
+      this.setState({ drawer: open });
+    }
+  };
+
   render() {
     if (!this.state.wallet) {
       return (
         <div>
-          <img alt="alephium" src={logo} className="logo"/>
+          <div className="header">
+            <img alt="alephium" src={logo} className="logo"/>
+          </div>
           <Wizard setWallet={this.setWallet}/>
         </div>
       )
@@ -46,9 +68,12 @@ class App extends React.Component {
         <Router>
           <div>
             <div className="header">
+              <Link onClick={this.toggleDrawer(true)}>
+                <MenuIcon className="buttonTop buttonTopL"/>
+              </Link>
               <img alt="alephium" src={logo} className="logo"/>
               <Link to="/settings">
-                <SettingsIcon className="buttonTop"/>
+                <SettingsIcon className="buttonTop buttonTopR"/>
               </Link>
             </div>
             <Navigator/>
@@ -62,8 +87,27 @@ class App extends React.Component {
               <Route path="/settings">
                 <Settings setWallet={this.setWallet}/>
               </Route>
-              <Redirect to='/' />
+              <Redirect to="/" />
             </main>
+            <Drawer anchor="left" open={this.state.drawer} onClose={this.toggleDrawer(false)}>
+              <div className="drawer">
+                <h1>About</h1>
+                <List>
+                  <a href="mailto:info@alephium.org" target="_blank" rel="noopener noreferrer">
+                    <ListItem button key="Contact us">
+                      <ListItemIcon><MailIcon /></ListItemIcon>
+                      <ListItemText primary="Contact us" />
+                    </ListItem>
+                  </a>
+                  <a href="https://www.alephium.org" target="_blank" rel="noopener noreferrer">
+                    <ListItem button key="Visit our website">
+                      <ListItemIcon><LanguageIcon /></ListItemIcon>
+                      <ListItemText primary="Visit our website" />
+                    </ListItem>
+                  </a>
+                </List>
+              </div>
+            </Drawer>
           </div>
         </Router>
       )

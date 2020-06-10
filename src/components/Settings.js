@@ -28,11 +28,10 @@ class Settings extends Component {
               <TextField className={classes.field} id="network.host" label="Host" value={this.state.networkHost} onChange={e => this.updateNetworkHost(e) }/>
               <TextField className={classes.field} id="network.port" label="Port" value={this.state.networkPort} onChange={e => this.updateNetworkPort(e) }/>
             </form>
-            <Button variant="contained" onClick={e => this.save()}>Save changes</Button>
           </div>
-          <div className={classes.section}>
-            <h2>Wallet</h2>
-            <Button variant="contained" onClick={e => this.reset()}>Reset</Button>
+          <div className="actions">
+            <p><Button onClick={e => this.save()} variant="contained" className="buttonLarge">Save changes</Button></p>
+            <p><Button onClick={e => this.reset()} variant="contained" className="buttonLarge">Reset all</Button></p>
           </div>
         </div>
       </div>
