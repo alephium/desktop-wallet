@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Redirect, Route} from 'react-router-dom'
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { green, purple } from '@material-ui/core/colors/blue';
+import { Link } from 'react-router-dom'
+
+import SettingsIcon from '@material-ui/icons/Settings';
 
 import logo from './images/logo.png';
 
@@ -19,28 +19,6 @@ import withTheme from './components/Theme'
 import ALF from "alf-client";
 
 const storage = ALF.utils.Storage();
-
-const theme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    primary: green,
-    secondary: purple,
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-});
 
 class App extends React.Component {
   constructor() {
@@ -67,7 +45,12 @@ class App extends React.Component {
       return (
         <Router>
           <div>
-            <img alt="alephium" src={logo} className="logo"/>
+            <div className="header">
+              <img alt="alephium" src={logo} className="logo"/>
+              <Link to="/settings">
+                <SettingsIcon className="buttonTop"/>
+              </Link>
+            </div>
             <Navigator/>
             <main>
               <Route exact path="/">

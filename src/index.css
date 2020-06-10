@@ -5,8 +5,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 560px;
-  min-width: 690px;
+  position: relative;
+  margin: 0;
+  min-width: 640px;
+  min-height: 800px;
+  width: 640px;
+  height: 800px;
 }
 
 code {
@@ -16,4 +20,18 @@ code {
 
 .logo {
   padding: 10px;
+}
+
+.header {
+  height: 64px;
+  width: 100%;
+  border-bottom: 1px solid black;
+  border-color: #46AD8D;
+}
+
+.buttonTop {
+  transform: scale(1.5);
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }

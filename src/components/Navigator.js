@@ -24,7 +24,7 @@ class Navigator extends React.Component {
     const { location } = this.props;
 
     let value = this.state.value;
-    if (location.pathname === '/settings') {
+    if (location.pathname === '/transactions') {
       value = 1;
     }
 
@@ -37,7 +37,6 @@ class Navigator extends React.Component {
           textColor="primary"
         >
           <Tab label="Wallet" component={Link} to="/wallet" />
-          <Tab label="Settings" component={Link} to="/settings" />
         </Tabs>
       </AppBar>
     );

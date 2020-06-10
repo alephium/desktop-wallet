@@ -3,8 +3,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useStyles } from "../utils/util";
+
+import wallet from '../images/wallet.png';
+
 import ALF from "alf-client";
 const storage = ALF.utils.Storage();
+
 
 class Step extends Component {
   constructor(pos) {
@@ -29,6 +33,8 @@ class Init extends Step {
   renderStep() {
      return(
        <center>
+         <h1>Welcome!</h1>
+         <img alt="wallet" src={wallet} className="logo"/>
          <p>
            <Button onClick={e => this.generate(e)} variant="contained">Create a new wallet</Button>
          </p>

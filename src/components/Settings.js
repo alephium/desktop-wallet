@@ -23,16 +23,16 @@ class Settings extends Component {
       <div className={classes.root}>
         <div className={classes.form}>
           <div className={classes.section}>
-            <h2>Wallet</h2>
-            <Button variant="contained" onClick={e => this.reset()}>Reset</Button>
-          </div>
-          <div className={classes.section}>
             <h2>Network</h2>
             <form noValidate autoComplete="off">
               <TextField className={classes.field} id="network.host" label="Host" value={this.state.networkHost} onChange={e => this.updateNetworkHost(e) }/>
               <TextField className={classes.field} id="network.port" label="Port" value={this.state.networkPort} onChange={e => this.updateNetworkPort(e) }/>
             </form>
             <Button variant="contained" onClick={e => this.save()}>Save changes</Button>
+          </div>
+          <div className={classes.section}>
+            <h2>Wallet</h2>
+            <Button variant="contained" onClick={e => this.reset()}>Reset</Button>
           </div>
         </div>
       </div>
