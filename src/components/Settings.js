@@ -31,7 +31,7 @@ class Settings extends Component {
           </div>
           <div className="actions">
             <p><Button onClick={e => this.save()} variant="contained" className="buttonLarge">Save changes</Button></p>
-            <p><Button onClick={e => this.reset()} variant="contained" className="buttonLarge">Reset all</Button></p>
+            <p><Button onClick={e => this.reset()} variant="contained" className="buttonLarge">Delete Wallet</Button></p>
           </div>
         </div>
       </div>

@@ -14,9 +14,10 @@ const theme = createMuiTheme({
   overrides: {
     MuiButton: {
       contained: {
-        backgroundColor: "#66CD9D",
+        color: "white",
+        backgroundColor: "#46AD8D",
         "&:hover": {
-          backgroundColor: "#46AD8D",
+          backgroundColor: "#66CD9D",
         }
       },
     },
