@@ -22,12 +22,12 @@ a {
   color: #46AD8D;
 }
 
-.logo {
-  padding: 10px;
-}
-
 .actions {
   text-align: center;
+}
+
+.content {
+  padding: 16px;
 }
 
 .buttonLarge {
@@ -53,12 +53,29 @@ a {
   padding: 16px;
 }
 
+.field {
+  width: 99%;
+}
+
+.form {
+  margin: 'auto';
+}
+
 .header {
   height: 64px;
   width: 100%;
   text-align: center;
 }
 
+.logo {
+  padding: 10px;
+}
+
+.section {
+  paddingBottom: 42;
+}
+
 .welcome {
   text-align: center;
 }
+

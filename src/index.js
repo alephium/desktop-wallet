@@ -60,7 +60,9 @@ class App extends React.Component {
           <div className="header">
             <img alt="alephium" src={logo} className="logo"/>
           </div>
-          <Wizard setWallet={this.setWallet}/>
+          <div className="content">
+            <Wizard setWallet={this.setWallet}/>
+          </div>
         </div>
       )
     } else {
@@ -77,18 +79,20 @@ class App extends React.Component {
               </Link>
             </div>
             <Navigator/>
-            <main>
-              <Route exact path="/">
-                <Wallet wallet={this.state.wallet}/>
-              </Route>
-              <Route path="/wallet">
-                <Wallet wallet={this.state.wallet}/>
-              </Route>
-              <Route path="/settings">
-                <Settings setWallet={this.setWallet}/>
-              </Route>
-              <Redirect to="/" />
-            </main>
+            <div className="content">
+              <main>
+                <Route exact path="/">
+                  <Wallet wallet={this.state.wallet}/>
+                </Route>
+                <Route path="/wallet">
+                  <Wallet wallet={this.state.wallet}/>
+                </Route>
+                <Route path="/settings">
+                  <Settings setWallet={this.setWallet}/>
+                </Route>
+                <Redirect to="/" />
+              </main>
+            </div>
             <Drawer anchor="left" open={this.state.drawer} onClose={this.toggleDrawer(false)}>
               <div className="drawer">
                 <h1>About</h1>

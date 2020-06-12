@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { useStyles } from "../utils/util";
 
 import wallet from '../images/wallet.png';
 
@@ -61,12 +59,11 @@ class Import extends Step {
   }
 
   renderStep() {
-    const { classes } = this.props;
     return(
       <div>
         <h1>Import wallet</h1>
         <form noValidate autoComplete="off">
-          <TextField className={classes.field} id="wallet.key" label="Private key" value={this.state.privateKey} onChange={e => this.updatePrivateKey(e) }/>
+          <TextField className="field" id="wallet.key" label="Private key" value={this.state.privateKey} onChange={e => this.updatePrivateKey(e) }/>
         </form>
         <div className="actions">
           <p><Button onClick={e => this.import(e)} variant="contained" className="buttonLarge">Import</Button></p>
@@ -99,11 +96,10 @@ class Wizard extends Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div>
         <Init step={this.state.step} next={this.next} setWallet={this.props.setWallet}/>
-        <Import step={this.state.step} back={this.back} setWallet={this.props.setWallet} classes={classes}/>
+        <Import step={this.state.step} back={this.back} setWallet={this.props.setWallet}/>
       </div>
     )
   }
@@ -121,4 +117,4 @@ class Wizard extends Component {
   }
 }
 
-export default withStyles(useStyles)(Wizard);
+export default Wizard;

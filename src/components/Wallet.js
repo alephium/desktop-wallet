@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -7,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import { createClient, useStyles } from "../utils/util";
+import { createClient } from "../utils/util";
 
 class Wallet extends Component {
   constructor() {
@@ -27,19 +26,19 @@ class Wallet extends Component {
   }
 
   render() {
-    const { classes, wallet } = this.props;
+    const { wallet } = this.props;
 
     return (
-      <div className={classes.root}>
-        <div className={classes.form}>
-          <div className={classes.section}>
+      <div>
+        <div className="form">
+          <div className="section">
             <form noValidate autoComplete="off">
-              <TextField disabled className={classes.field} id="address" label="Address" value={wallet.address} />
+              <TextField disabled className="field" id="address" label="Address" value={wallet.address} />
             </form>
           </div>
-          <div className={classes.section}>
+          <div className="section">
             <h2>Balance</h2>
-            <TextField className={classes.field} id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
+            <TextField className="field" id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
             <p>
               <Button variant="contained" onClick={e => this.getBalance(e)}>Get balance</Button>
             </p>
@@ -106,4 +105,4 @@ class Wallet extends Component {
   };
 }
 
-export default withStyles(useStyles)(Wallet);
+export default Wallet;

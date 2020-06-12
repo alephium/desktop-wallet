@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { settingsDefault, settingsLoad, settingsSave, useStyles } from "../utils/util";
+import { settingsDefault, settingsLoad, settingsSave } from "../utils/util";
 import ALF from "alf-client";
 
 const storage = ALF.utils.Storage();
@@ -18,15 +17,14 @@ class Settings extends Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
-      <div className={classes.root}>
-        <div className={classes.form}>
-          <div className={classes.section}>
+      <div>
+        <div className="form">
+          <div className="section">
             <h2>Network</h2>
             <form noValidate autoComplete="off">
-              <TextField className={classes.field} id="network.host" label="Host" value={this.state.networkHost} onChange={e => this.updateNetworkHost(e) }/>
-              <TextField className={classes.field} id="network.port" label="Port" value={this.state.networkPort} onChange={e => this.updateNetworkPort(e) }/>
+              <TextField className="field" id="network.host" label="Host" value={this.state.networkHost} onChange={e => this.updateNetworkHost(e) }/>
+              <TextField className="field" id="network.port" label="Port" value={this.state.networkPort} onChange={e => this.updateNetworkPort(e) }/>
             </form>
           </div>
           <div className="actions">
@@ -75,4 +73,4 @@ class Settings extends Component {
   }
 }
 
-export default withStyles(useStyles)(Settings);
+export default Settings;
