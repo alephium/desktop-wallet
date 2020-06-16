@@ -37,6 +37,7 @@ class Navigator extends React.Component {
           textColor="primary"
         >
           <Tab label="Wallet" component={Link} to="/wallet" />
+          <Tab label="Transactions" component={Link} to="/transactions" />
         </Tabs>
       </AppBar>
     );

@@ -22,6 +22,7 @@ import logo from './images/logo.png';
 
 import Navigator from './components/Navigator'
 import Settings from './components/Settings'
+import Transactions from './components/Transactions'
 import Wallet from './components/Wallet'
 import Wizard from './components/Wizard'
 import withTheme from './components/Theme'
@@ -84,11 +85,14 @@ class App extends React.Component {
                 <Route exact path="/">
                   <Wallet wallet={this.state.wallet}/>
                 </Route>
-                <Route path="/wallet">
-                  <Wallet wallet={this.state.wallet}/>
-                </Route>
                 <Route path="/settings">
                   <Settings setWallet={this.setWallet}/>
+                </Route>
+                <Route path="/transactions">
+                  <Transactions wallet={this.state.wallet}/>
+                </Route>
+                <Route path="/wallet">
+                  <Wallet wallet={this.state.wallet}/>
                 </Route>
                 <Redirect to="/" />
               </main>
