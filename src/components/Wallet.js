@@ -39,9 +39,25 @@ class Wallet extends Component {
           <div className="section">
             <h2>Balance</h2>
             <TextField className="field" id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
+            <div className="actions">
+              <p>
+                <Button variant="contained" className="buttonLarge"  onClick={e => this.getBalance(e)}>Get balance</Button>
+              </p>
+            </div>
+          </div>
+          <div className="section">
+            <h2>Send</h2>
             <p>
-              <Button variant="contained" onClick={e => this.getBalance(e)}>Get balance</Button>
+              <TextField id="to" className="field" label="Recipient address" value={this.state.transferTo} onChange={e => this.updateTransferTo(e) }/>
             </p>
+            <p>
+              <TextField id="value" label="ALF" className="field" value={this.state.transferValue} onChange={e => this.updateTransferValue(e) }/>
+            </p>
+            <div className="actions">
+              <p>
+                <Button variant="contained" className="buttonLarge" onClick={e => this.transfer(e)}>Send</Button>
+              </p>
+            </div>
           </div>
 
           <Dialog
@@ -103,6 +119,35 @@ class Wallet extends Component {
       dialogOpen: false
     });
   };
+
+  async transfer(e) {
+    try {
+      const response = await this.client.transfer(this.props.wallet.address, 'pkh', this.props.wallet.privateKey,
+                                                  this.state.transferTo, 'pkh', this.state.transferValue);
+
+      this.setState({
+        dialogOpen: true,
+        dialogTitle: 'Transaction submitted',
+        dialogMessage: response.result.txId + '\n' +
+          'chain index: ' + response.result.fromGroup + ' ➡ ' + response.result.toGroup
+      });
+    } catch (e) {
+      this.dialogError(e.message);
+      throw e;
+    }
+  }
+
+  updateTransferTo(e) {
+    this.setState({
+      transferTo: e.target.value
+    });
+  }
+
+  updateTransferValue(e) {
+    this.setState({
+      transferValue: e.target.value
+    });
+  }
 }
 
 export default Wallet;
