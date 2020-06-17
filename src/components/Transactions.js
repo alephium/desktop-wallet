@@ -48,9 +48,9 @@ class Transactions extends Component {
         <Table className="table" aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Transaction #</TableCell>
-              <TableCell align="right">From</TableCell>
-              <TableCell align="right">To</TableCell>
+              <TableCell>Transaction</TableCell>
+              <TableCell align="left">From</TableCell>
+              <TableCell align="left">To</TableCell>
               <TableCell align="right">Value</TableCell>
             </TableRow>
           </TableHead>
@@ -58,17 +58,34 @@ class Transactions extends Component {
             {rows.map((row) => (
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
+                    {this.truncate(row.id)}
+                  </span>
                 </TableCell>
-                <TableCell align="right">{row.from}</TableCell>
-                <TableCell align="right">{row.to}</TableCell>
-                <TableCell align="right">{row.value}</TableCell>
+                <TableCell align="left">
+                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
+                    {this.truncate(row.from)}
+                  </span>
+                </TableCell>
+                <TableCell align="left">
+                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
+                    {this.truncate(row.to)}
+                  </span>
+                </TableCell>
+                <TableCell align="right">
+                  {row.value} א
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
     );
+  }
+
+  truncate(str) {
+    const len = str.length;
+    return len > 10 ? str.substring(0, 6) + "..." + str.substring(len - 6, len) : str;
   }
 
   async componentDidMount() {

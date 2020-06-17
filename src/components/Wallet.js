@@ -98,7 +98,7 @@ class Wallet extends Component {
     try {
       const response = await this.client.getBalance(this.props.wallet.address);
       this.setState({
-        balance: response.result.balance
+        balance: response.result.balance + ' א'
       });
     } catch (e) {
       this.dialogError(e.message);
