@@ -1,22 +1,13 @@
 import React, { Component } from "react";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import { createClient } from "../utils/util";
 
-function createData(id, from, to, value) {
-  return { id, from, to, value };
+function createData(id, sent, from, to, value, fee) {
+  return { id, sent, from, to, value, fee };
 }
 
 const addrA = '9f93bf7f1211f510e3d9c4fc7fb933f94830ba83190da62dbfc9baa8b0d36276'
@@ -25,12 +16,18 @@ const addrC = '0e55092af0746630c98d1b2e0d960617c33f8ea7b55739fd18cb7cd5342a28ca'
 const addrD = 'b1ce0aa6fdf3cf349d773243dab9fbbe09d30619f38b0c1e8977e28c4f0bc495'
 
 const rows = [
-  createData('b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c', addrA, addrB, 4.0),
-  createData('7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730', addrA, addrC, 4.3),
-  createData('bf07a7fbb825fc0aae7bf4a1177b2b31fcf8a3feeaf7092761e18c859ee52a9c', addrD, addrA, 6.0),
-  createData('791d6d09a0e80109d14727523574ad1d14b1ec79ac215ac5dd971eb1c28c1e1f', addrA, addrB, 4.3),
-  createData('526a025d51cba903cbd1327b014c80bbe0d587b1ca6dd05e1e729573eafd115e', addrC, addrA, 3.9),
+  createData('b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c', true, addrA, addrB, 4.0, 0.0001),
+  createData('7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730', true, addrA, addrC, 4.3, 0.00009),
+  createData('bf07a7fbb825fc0aae7bf4a1177b2b31fcf8a3feeaf7092761e18c859ee52a9c', false, addrD, addrA, 6.0, 0.0002),
+  createData('791d6d09a0e80109d14727523574ad1d14b1ec79ac215ac5dd971eb1c28c1e1f', true, addrA, addrB, 4.3, 0.0002),
+  createData('526a025d51cba903cbd1327b014c80bbe0d587b1ca6dd05e1e729573eafd115e', false, addrC, addrA, 3.9, 0.0002),
 ];
+
+
+function truncate(str) {
+  const len = str.length;
+  return len > 10 ? str.substring(0, 6) + "..." + str.substring(len - 6, len) : str;
+}
 
 class Transactions extends Component {
   constructor() {
@@ -43,49 +40,32 @@ class Transactions extends Component {
   render() {
     const { wallet } = this.props;
 
-    return (
-      <TableContainer component={Paper}>
-        <Table className="table" aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Transaction</TableCell>
-              <TableCell align="left">From</TableCell>
-              <TableCell align="left">To</TableCell>
-              <TableCell align="right">Value</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
-                    {this.truncate(row.id)}
-                  </span>
-                </TableCell>
-                <TableCell align="left">
-                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
-                    {this.truncate(row.from)}
-                  </span>
-                </TableCell>
-                <TableCell align="left">
-                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis'}}>             
-                    {this.truncate(row.to)}
-                  </span>
-                </TableCell>
-                <TableCell align="right">
-                  {row.value} א
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
 
-  truncate(str) {
-    const len = str.length;
-    return len > 10 ? str.substring(0, 6) + "..." + str.substring(len - 6, len) : str;
+    return (
+      <div>
+        {rows.map((row) => (
+          <div className="card">
+            <Card>
+              <CardContent className="cardContent">
+                  <div className="cardRight">
+                    {row.sent && <small><i> (fee: {row.fee}) </i></small>}
+                  </div>
+                  <div>
+                    {row.sent ? "Sent" : "Received"}: {row.value} א 
+                  </div>
+                  <div className="cardRight">
+                    <a href="https://www.alephium.org" target="_blank" rel="noopener noreferrer">{truncate(row.id)}</a>
+                  </div>
+                  <div>
+                    <AccountBalanceWalletIcon/>
+                    {row.sent ? <ArrowForwardIcon/> : <ArrowBackIcon/>}
+                  </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   async componentDidMount() {

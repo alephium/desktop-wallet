@@ -49,6 +49,20 @@ a {
   left: 16px;
 }
 
+.card {
+  padding: 16px;
+}
+
+.cardContent {
+  font-size: 28px;
+}
+
+.cardRight {
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+
 .drawer {
   padding: 16px;
 }
@@ -73,6 +87,10 @@ a {
 
 .section {
   padding-bottom: 16px;
+}
+
+.txTitle {
+  font-size: 24px;
 }
 
 .welcome {
