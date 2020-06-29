@@ -22,7 +22,10 @@ export async function createClient() {
 export function settingsDefault() {
   return {
         host: 'localhost',
-        port: 10973
+        port: 10973,
+        explorerHost: 'localhost',
+        explorerPort: 9090,
+        alephscanURL: 'http://localhost:3001',
   }
 }
 
