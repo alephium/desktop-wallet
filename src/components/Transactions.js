@@ -14,6 +14,45 @@ function truncate(str) {
   return len > 10 ? str.substring(0, 6) + "..." + str.substring(len - 6, len) : str;
 }
 
+function txReadSummary(tx, addressHash) {
+  let summary = {};
+
+  summary.hash = tx.hash;
+  summary.sent = txSent(addressHash, tx);
+  summary.value = txValue(addressHash, tx, summary.sent);
+
+  return summary;
+}
+
+function txSent(addressHash, tx) {
+  for (var i = 0; i < tx.outputs.length; i++) {
+    if (tx.outputs[i].address === addressHash) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function txValue(addressHash, tx, sent) {
+  let total = 0;
+
+  for (var i = 0; i < tx.outputs.length; i++) {
+    if (tx.outputs[i].address === addressHash) {
+      if (sent) {
+        total += tx.outputs[i].value; 
+      }
+    } else {
+      if (!sent) {
+        total += tx.outputs[i].value; 
+      }
+    }
+  }
+
+  return total;
+}
+
+
 class Transactions extends Component {
   constructor() {
     super();
@@ -33,14 +72,14 @@ class Transactions extends Component {
             <Card>
               <CardContent className="cardContent">
                   <div>
-                    {this.txSent(tx) ? "Sent" : "Received"}: {this.txValue(tx)} א 
+                    {tx.sent ? "Sent" : "Received"}: {tx.value} א 
                   </div>
                   <div className="cardRight">
                     <a href={this.state.alephscanURL + "/transactions/" + tx.hash}  target="_blank" rel="noopener noreferrer">{truncate(tx.hash)}</a>
                   </div>
                   <div>
                     <AccountBalanceWalletIcon/>
-                    {this.txSent(tx) ? <ArrowForwardIcon/> : <ArrowBackIcon/>}
+                    {tx.sent ? <ArrowForwardIcon/> : <ArrowBackIcon/>}
                   </div>
               </CardContent>
             </Card>
@@ -69,32 +108,8 @@ class Transactions extends Component {
     this.setState({ 
       addressHash: addressHash,
       alephscanURL: settings.alephscanURL,
-      transactions: transactions,
+      transactions: transactions.map(x => txReadSummary(x, addressHash)),
     });
-  }
-
-  txSent(tx) {
-    const addressHash = this.state.addressHash;
-
-    for (var i = 0; i < tx.outputs.length; i++) {
-      if (tx.outputs[i].address === addressHash) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  txValue(tx) {
-    let total = 0;
-
-    for (var i = 0; i < tx.outputs.length; i++) {
-      if (tx.outputs[i].address === this.state.addressHash) {
-        total += tx.outputs[i].value; 
-      }
-    }
-
-    return total;
   }
 
   dialogError(message) {
