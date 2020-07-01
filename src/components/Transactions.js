@@ -27,11 +27,11 @@ function txReadSummary(tx, addressHash) {
 function txSent(addressHash, tx) {
   for (var i = 0; i < tx.outputs.length; i++) {
     if (tx.outputs[i].address === addressHash) {
-      return true;
+      return false;
     }
   }
 
-  return false;
+  return true;
 }
 
 function txValue(addressHash, tx, sent) {
@@ -39,11 +39,11 @@ function txValue(addressHash, tx, sent) {
 
   for (var i = 0; i < tx.outputs.length; i++) {
     if (tx.outputs[i].address === addressHash) {
-      if (sent) {
+      if (!sent) {
         total += tx.outputs[i].value; 
       }
     } else {
-      if (!sent) {
+      if (sent) {
         total += tx.outputs[i].value; 
       }
     }

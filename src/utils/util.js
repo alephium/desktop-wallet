@@ -25,7 +25,7 @@ export function settingsDefault() {
         port: 10973,
         explorerHost: 'localhost',
         explorerPort: 9090,
-        alephscanURL: 'http://localhost:3001',
+        alephscanURL: 'http://localhost:3000',
   }
 }
 
