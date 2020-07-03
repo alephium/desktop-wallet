@@ -6,7 +6,6 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import { settingsLoadOrDefault } from "../utils/util";
 
-const keccak = require('keccakjs');
 const {Client} = require('bcurl');
 
 function truncate(str) {
@@ -62,9 +61,6 @@ class Transactions extends Component {
   }
 
   render() {
-    const { wallet } = this.props;
-
-
     return (
       <div>
         {this.state.transactions.map((tx) => (
@@ -100,15 +96,11 @@ class Transactions extends Component {
       port: settings.explorerPort
     });
 
-    var hash = new keccak(256);
-    hash.update(Buffer.from(wallet.address, 'hex'))
-    const addressHash = hash.digest('hex');
-    const transactions = await client.get('/addresses/' + addressHash + '/transactions');
+    const transactions = await client.get('/addresses/' + wallet.address + '/transactions');
 
     this.setState({ 
-      addressHash: addressHash,
       alephscanURL: settings.alephscanURL,
-      transactions: transactions.reverse().map(x => txReadSummary(x, addressHash)),
+      transactions: transactions.reverse().map(x => txReadSummary(x, wallet.address)),
     });
   }
 

@@ -47,16 +47,17 @@ class Wallet extends Component {
           </div>
           <div className="section">
             <h2>Send</h2>
-            <p>
+            <div>
               <TextField id="to" className="field" label="Recipient address" value={this.state.transferTo} onChange={e => this.updateTransferTo(e) }/>
-            </p>
-            <p>
+            </div>
+            <div>
               <TextField id="value" label="ALF" className="field" value={this.state.transferValue} onChange={e => this.updateTransferValue(e) }/>
-            </p>
+            </div>
             <div className="actions">
-              <p>
+              <br/>
+              <div>
                 <Button variant="contained" className="buttonLarge" onClick={e => this.transfer(e)}>Send</Button>
-              </p>
+              </div>
             </div>
           </div>
 
@@ -121,9 +122,12 @@ class Wallet extends Component {
   };
 
   async transfer(e) {
+    const wallet = this.props.wallet;
     try {
-      const response = await this.client.transfer(this.props.wallet.address, 'pkh', this.props.wallet.privateKey,
-                                                  this.state.transferTo, 'pkh', this.state.transferValue);
+      const responseCreate = await this.client.transactionCreate(wallet.address, wallet.publicKey,
+                                                  this.state.transferTo, this.state.transferValue);
+      const signature = this.client.transactionSign(responseCreate.result.hash, wallet.privateKey); 
+      const response = await this.client.transactionSend(wallet.address, responseCreate.result.unsignedTx, signature);
 
       this.setState({
         dialogOpen: true,
