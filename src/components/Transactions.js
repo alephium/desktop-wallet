@@ -13,37 +13,35 @@ function truncate(str) {
   return len > 10 ? str.substring(0, 6) + "..." + str.substring(len - 6, len) : str;
 }
 
-function txReadSummary(tx, addressHash) {
+function txReadSummary(tx, address) {
   let summary = {};
 
   summary.hash = tx.hash;
-  summary.sent = txSent(addressHash, tx);
-  summary.value = txValue(addressHash, tx, summary.sent);
+  summary.sent = txSent(address, tx);
+  summary.value = txValue(address, tx, summary.sent);
 
   return summary;
 }
 
-function txSent(addressHash, tx) {
-  for (var i = 0; i < tx.outputs.length; i++) {
-    if (tx.outputs[i].address === addressHash) {
-      return false;
-    }
+function txSent(address, tx) {
+  if (tx.inputs.length === 0) {
+    return false;
+  } else {
+    return (tx.inputs[0].address === address);
   }
-
-  return true;
 }
 
-function txValue(addressHash, tx, sent) {
+function txValue(address, tx, sent) {
   let total = 0;
 
   for (var i = 0; i < tx.outputs.length; i++) {
-    if (tx.outputs[i].address === addressHash) {
+    if (tx.outputs[i].address === address) {
       if (!sent) {
-        total += tx.outputs[i].value; 
+        total += tx.outputs[i].amount; 
       }
     } else {
       if (sent) {
-        total += tx.outputs[i].value; 
+        total += tx.outputs[i].amount; 
       }
     }
   }
