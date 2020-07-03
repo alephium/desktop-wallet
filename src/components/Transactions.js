@@ -98,7 +98,7 @@ class Transactions extends Component {
 
     this.setState({ 
       alephscanURL: settings.alephscanURL,
-      transactions: transactions.reverse().map(x => txReadSummary(x, wallet.address)),
+      transactions: transactions.map(x => txReadSummary(x, wallet.address)),
     });
   }
 
