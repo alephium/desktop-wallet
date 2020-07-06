@@ -1,0 +1,69 @@
+{
+  "name": "alephium-webextension",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Alephium <info@alephium.org>",
+  "homepage": "./",
+  "main": "public/electron.js",
+  "dependencies": {
+    "@material-ui/core": "^4.9.8",
+    "@material-ui/icons": "^4.9.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "alf-client": "../alephium-client/",
+    "bcurl": "~0.1.6",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1"
+  },
+  "devDependencies": {
+    "electron": "^7.1.7",
+    "electron-builder": "^22.7.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron .",
+    "electron-pack": "npm run-script build && npx electron-builder",
+    "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
+    "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *"
+  },
+  "build": {
+    "appId": "org.alephium.alephium-webextension",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "category": "Finance",
+      "executableName": "alephium",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "icons/512x512.png"
+    },
+    "productName": "Alephium",
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  }
+}

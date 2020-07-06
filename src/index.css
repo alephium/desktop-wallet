@@ -1,0 +1,99 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  margin: 0;
+  min-width: 640px;
+  min-height: 800px;
+  width: 640px;
+  height: 800px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  color: #46AD8D;
+}
+
+.actions {
+  text-align: center;
+}
+
+.content {
+  padding: 16px;
+}
+
+.buttonLarge {
+  width: 90%;
+}
+
+.buttonTop {
+  transform: scale(1.5);
+  position: absolute;
+}
+
+.buttonTopR {
+  top: 16px;
+  right: 16px;
+}
+
+.buttonTopL {
+  top: 16px;
+  left: 16px;
+}
+
+.card {
+  padding: 16px;
+}
+
+.cardContent {
+  font-size: 28px;
+}
+
+.cardRight {
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+
+.drawer {
+  padding: 16px;
+}
+
+.field {
+  width: 99%;
+}
+
+.form {
+  margin: 'auto';
+}
+
+.header {
+  height: 64px;
+  width: 100%;
+  text-align: center;
+}
+
+.logo {
+  padding: 10px;
+}
+
+.section {
+  padding-bottom: 16px;
+}
+
+.txTitle {
+  font-size: 24px;
+}
+
+.welcome {
+  text-align: center;
+}
+
