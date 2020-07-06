@@ -11,4 +11,4 @@
 ## Authors
 * Alephium - [email](info@alephium.org)
 
-Thanks Coinbar for its pioneering work on wallet design and implementation.
+The implementation is inspired by Coinbarn's wallet codebase.
