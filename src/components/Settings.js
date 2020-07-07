@@ -21,7 +21,7 @@ class Settings extends Component {
       <div>
         <div className="form">
           <div className="section">
-            <h2>Network</h2>
+            <h3>Network</h3>
             <form noValidate autoComplete="off">
               <TextField className="field" id="network.host" label="Host" value={this.state.networkHost} onChange={e => this.updateNetworkHost(e) }/>
               <TextField className="field" id="network.port" label="Port" value={this.state.networkPort} onChange={e => this.updateNetworkPort(e) }/>

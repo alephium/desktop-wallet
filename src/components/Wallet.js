@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { createClient } from "../utils/util";
 
 class Wallet extends Component {
@@ -32,12 +33,12 @@ class Wallet extends Component {
       <div>
         <div className="form">
           <div className="section">
-            <form noValidate autoComplete="off">
-              <TextField disabled className="field" id="address" label="Address" value={wallet.address} />
-            </form>
+            <h3>Address</h3>
+            <Typography variant="subtitle2">{wallet.address}</Typography>
           </div>
+          <br/>
           <div className="section">
-            <h2>Balance</h2>
+            <h3>Balance</h3>
             <TextField className="field" id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
             <div className="actions">
               <p>
@@ -45,14 +46,11 @@ class Wallet extends Component {
               </p>
             </div>
           </div>
+          <br/>
           <div className="section">
-            <h2>Send</h2>
-            <div>
-              <TextField id="to" className="field" label="Recipient address" value={this.state.transferTo} onChange={e => this.updateTransferTo(e) }/>
-            </div>
-            <div>
-              <TextField id="value" label="ALF" className="field" value={this.state.transferValue} onChange={e => this.updateTransferValue(e) }/>
-            </div>
+            <h3>Send</h3>
+            <TextField id="to" className="field" label="Recipient address" value={this.state.transferTo} onChange={e => this.updateTransferTo(e) }/>
+            <TextField id="value" label="ALF" className="field" value={this.state.transferValue} onChange={e => this.updateTransferValue(e) }/>
             <div className="actions">
               <br/>
               <div>
