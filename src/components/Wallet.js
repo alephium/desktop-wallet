@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { createClient } from "../utils/util";
+import { settingsLoadOrDefault } from "../utils/util";
 
 class Wallet extends Component {
   constructor() {
@@ -34,7 +35,7 @@ class Wallet extends Component {
         <div className="form">
           <div className="section">
             <h3>Address</h3>
-            <Typography variant="subtitle2">{wallet.address}</Typography>
+            <Typography variant="subtitle2"><a href={this.state.alephscanURL + "/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a></Typography>
           </div>
           <br/>
           <div className="section">
@@ -91,6 +92,12 @@ class Wallet extends Component {
         this.dialogError('Unable to initialize the client, please check your network settings.');
       }
     }
+
+    let settings = settingsLoadOrDefault();
+
+    this.setState({ 
+      alephscanURL: settings.alephscanURL
+    });
   }
 
   async getBalance(e) {
