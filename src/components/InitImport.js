@@ -20,9 +20,7 @@ class StepImport extends Step {
     return(
       <div>
         <h1>Import wallet</h1>
-        <form noValidate autoComplete="off">
-          <TextField className="field" id="wallet.key" label="Seed phrase" value={this.state.seedPhrase} onChange={e => this.update(e) }/>
-        </form>
+        <TextField className="field" id="wallet.key" label="Seed phrase" value={this.state.seedPhrase} onChange={e => this.update(e) }/>
         <div className="actions">
           <p><Button onClick={e => this.import(e)} variant="contained" className="buttonLarge">Import</Button></p>
           <p>
@@ -53,7 +51,7 @@ class InitImport extends Wizard {
   render() {
     return (
       <div>
-        <StepImport step={this.state.step} back={this.back} setWallet={this.props.setWallet}/>
+        <StepImport step={this.state.step} setWallet={this.props.setWallet}/>
       </div>
     )
   }
