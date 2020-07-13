@@ -1,11 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Link } from 'react-router-dom'
 
 import { Wizard, Step } from './Wizard'
-
-import wallet from '../images/wallet.png';
 
 import ALF from "alf-client";
 const storage = ALF.utils.Storage();

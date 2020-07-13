@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 
 import { Link } from 'react-router-dom'
 
 import wallet from '../images/wallet.png';
-
-import ALF from "alf-client";
 
 class Init extends Component {
   render() {
