@@ -10,9 +10,58 @@ import { Wizard, Step } from './Wizard'
 import ALF from "alf-client";
 const storage = ALF.utils.Storage();
 
-class StepGenerate extends Step {
+class StepUserCreate extends Step {
   constructor() {
     super(1);
+    this.state = {
+      username: '',
+      password: '',
+    };
+  }
+
+  renderStep() {
+    return (
+      <div>
+        <h1>Create account</h1>
+        <TextField className="field" label="Username"
+          value={this.state.username} onChange={e => this.updateUsername(e) }/>
+        <TextField className="field" label="Password" type="password"
+          value={this.state.password} onChange={e => this.updatePassword(e) }/>
+        <div className="actions">
+          <p>
+            <Button onClick={e => this.create()} variant="contained" className="buttonLarge">Continue</Button>
+          </p>
+          <p>
+            <Link to="/">
+              <Button variant="contained" className="buttonLarge">Cancel</Button>
+            </Link>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  create() {
+    this.props.setCredentials(this.state.username, this.state.password);
+    this.props.next()
+  }
+
+  updatePassword(e) {
+    this.setState({
+      password: e.target.value
+    });
+  }
+
+  updateUsername(e) {
+    this.setState({
+      username: e.target.value
+    });
+  }
+}
+
+class StepGenerate extends Step {
+  constructor() {
+    super(2);
   }
 
   renderStep() {
@@ -24,12 +73,10 @@ class StepGenerate extends Step {
         <IconButton onClick={e => this.copy(e)}><FileCopyIcon/></IconButton>
         <div className="actions">
           <p>
-            <Button onClick={e => this.props.next()} variant="contained" className="buttonLarge">Confirm</Button>
+            <Button onClick={e => this.props.next()} variant="contained" className="buttonLarge">Continue</Button>
           </p>
           <p>
-            <Link to="/">
-              <Button variant="contained" className="buttonLarge">Cancel</Button>
-            </Link>
+            <Button onClick={e => this.props.back()} variant="contained" className="buttonLarge">Back</Button>
           </p>
         </div>
       </div>
@@ -44,7 +91,7 @@ class StepGenerate extends Step {
 
 class StepConfirm extends Step {
   constructor() {
-    super(2);
+    super(3);
     this.state = {
       mnemonic: ""
     };
@@ -69,13 +116,13 @@ class StepConfirm extends Step {
 
   create(e) {
     if (this.isMnemonicValid()) {
-      storage.save('default', this.props.wallet);
+      storage.save(this.props.credentials.username, this.props.wallet.encrypt(this.props.credentials.password));
       this.props.setWallet(this.props.wallet);
     }
   }
 
   isMnemonicValid() {
-    return (this.props.wallet.mnemonic === this.state.mnemonic);
+    return (this.props.wallet.mnemonic === this.state.mnemonic); 
   }
 
   updateMnemonic(e) {
@@ -89,13 +136,24 @@ class InitCreate extends Wizard {
   constructor() {
     super();
     this.state.wallet = ALF.wallet.generate();
+    this.setCredentials = this.setCredentials.bind(this); 
+  }
+
+  setCredentials(username, password) {
+    this.setState({
+      credentials: {
+        username: username,
+        password: password,
+      },
+    });
   }
 
   render() {
     return (
       <div>
-        <StepGenerate step={this.state.step} next={this.next} wallet={this.state.wallet}/>
-        <StepConfirm step={this.state.step} back={this.back} wallet={this.state.wallet} setWallet={this.props.setWallet}/>
+        <StepUserCreate step={this.state.step} next={this.next} wallet={this.state.wallet} setCredentials={this.setCredentials}/>
+        <StepGenerate step={this.state.step} back={this.back} next={this.next} wallet={this.state.wallet}/>
+        <StepConfirm step={this.state.step} back={this.back} credentials={this.state.credentials} wallet={this.state.wallet} setWallet={this.props.setWallet}/>
       </div>
     )
   }
