@@ -37,7 +37,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      wallet: storage.load('default'),
+      wallet: undefined,
     };
     this.setWallet = this.setWallet.bind(this); 
   }

@@ -114,9 +114,10 @@ class StepConfirm extends Step {
     )
   }
 
-  create(e) {
+  async create(e) {
     if (this.isMnemonicValid()) {
-      storage.save(this.props.credentials.username, this.props.wallet.encrypt(this.props.credentials.password));
+      const walletEncrypted = await this.props.wallet.encrypt(this.props.credentials.password);
+      storage.save(this.props.credentials.username, walletEncrypted);
       this.props.setWallet(this.props.wallet);
     }
   }
@@ -160,3 +161,4 @@ class InitCreate extends Wizard {
 }
 
 export default InitCreate;
+
