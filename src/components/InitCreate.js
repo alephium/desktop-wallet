@@ -15,7 +15,9 @@ class StepUserCreate extends Step {
   constructor() {
     super(1);
     this.state = {
+      usernames: storage.list(),
       username: '',
+      usernameError: '',
       password: '',
       passwordError: '',
     };
@@ -27,6 +29,7 @@ class StepUserCreate extends Step {
         <h1>Create account</h1>
         <TextField className="field" label="Username"
           value={this.state.username} onChange={e => this.updateUsername(e) }/>
+        {this.state.usernameError !== null && <h4>{this.state.usernameError}</h4> }
         <TextField className="field" label="Password" type="password"
           value={this.state.password} onChange={e => this.updatePassword(e) }/>
         {this.state.passwordError !== null && <h4>{this.state.passwordError}</h4> }
@@ -76,8 +79,17 @@ class StepUserCreate extends Step {
   }
 
   updateUsername(e) {
+    const username = e.target.value;
+    var usernameError = null;
+
+    if (username.length < 3) {
+      usernameError = 'Username is too short';
+    } else if (this.state.usernames.includes(username)) {
+      usernameError = 'Username already taken';
+    }
     this.setState({
-      username: e.target.value
+      username: e.target.value,
+      usernameError: usernameError,
     });
   }
 }
