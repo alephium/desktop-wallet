@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import zxcvbn from 'zxcvbn';
 
 import { Wizard, Step } from './Wizard'
 
@@ -16,6 +17,7 @@ class StepUserCreate extends Step {
     this.state = {
       username: '',
       password: '',
+      passwordError: '',
     };
   }
 
@@ -27,9 +29,15 @@ class StepUserCreate extends Step {
           value={this.state.username} onChange={e => this.updateUsername(e) }/>
         <TextField className="field" label="Password" type="password"
           value={this.state.password} onChange={e => this.updatePassword(e) }/>
+        {this.state.passwordError !== null && <h4>{this.state.passwordError}</h4> }
         <div className="actions">
           <p>
-            <Button onClick={e => this.create()} variant="contained" className="buttonLarge">Continue</Button>
+            <Button 
+              onClick={e => this.create()} 
+              variant="contained" className="buttonLarge" 
+              disabled={!(this.state.passwordError == null)}>
+              Continue
+            </Button>
           </p>
           <p>
             <Link to="/">
@@ -47,8 +55,23 @@ class StepUserCreate extends Step {
   }
 
   updatePassword(e) {
+    const password = e.target.value;
+    var passwordError = null;
+
+    if (password.length == 0) {
+      passwordError = '';
+    } else {
+      const strength = zxcvbn(password);
+      if (strength.score < 1) {
+        passwordError = 'Password is too weak';
+      } else if (strength.score < 3) {
+        passwordError = 'Insecure password';
+      }
+    }
+
     this.setState({
-      password: e.target.value
+      password: password,
+      passwordError: passwordError,
     });
   }
 
