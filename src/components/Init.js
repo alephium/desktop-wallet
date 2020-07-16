@@ -28,22 +28,26 @@ class Init extends Component {
           <h1>Welcome!</h1>
           <img alt="wallet" src={wallet} className="logo"/>
         </div>
-        <div>
-          <Autocomplete
-            id="username"
-            options={this.state.usernames}
-            renderInput={(params) => <TextField {...params} label="User" variant="outlined" />}
-            onInputChange={e => this.updateUsername(e) }
-          />
-          <TextField className="field" label="Password" type="password"
-            value={this.state.password} 
-            onChange={e => this.updatePassword(e) }
-          />
-        </div>
-        <div className="actions">
-          <p><Button onClick={e => this.login(e)} variant="contained" className="buttonLarge">Login</Button></p>
-        </div>
-        <hr/>
+        {this.state.usernames.length > 0 &&
+          <div>
+            <div>
+              <Autocomplete
+                id="username"
+                options={this.state.usernames}
+                renderInput={(params) => <TextField {...params} label="User" variant="outlined" />}
+                onInputChange={e => this.updateUsername(e) }
+              />
+              <TextField className="field" label="Password" type="password"
+                value={this.state.password} 
+                onChange={e => this.updatePassword(e) }
+              />
+            </div>
+            <div className="actions">
+              <p><Button onClick={e => this.login(e)} variant="contained" className="buttonLarge">Login</Button></p>
+            </div>
+            <hr/>
+          </div>
+        }
         <div className="actions">
           <p>
             <Link to="/create">
@@ -72,7 +76,8 @@ class Init extends Component {
       alert('User not found.');
     } else {
       try {
-        const wallet = await ALF.wallet.open(this.state.password, walletEncrypted);
+        var wallet = await ALF.wallet.open(this.state.password, walletEncrypted);
+        wallet.username = this.state.username;
         this.props.setWallet(wallet);
       } catch (e) {
         alert('Invalid password.');

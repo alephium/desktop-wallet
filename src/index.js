@@ -101,7 +101,7 @@ class App extends React.Component {
                   <Wallet wallet={this.state.wallet}/>
                 </Route>
                 <Route path="/settings">
-                  <Settings setWallet={this.setWallet}/>
+                  <Settings wallet={this.state.wallet} setWallet={this.setWallet}/>
                 </Route>
                 <Route path="/transactions">
                   <Transactions wallet={this.state.wallet}/>
