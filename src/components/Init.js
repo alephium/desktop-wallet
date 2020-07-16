@@ -66,9 +66,19 @@ class Init extends Component {
     });
   }
 
-  login(e) {
+  async login(e) {
     const walletEncrypted = storage.load(this.state.username);
-    ALF.wallet.open(this.state.password, walletEncrypted);
+    if (walletEncrypted === null) {
+      alert('User not found.');
+    } else {
+      try {
+        const wallet = await ALF.wallet.open(this.state.password, walletEncrypted);
+        this.props.setWallet(wallet);
+      } catch (e) {
+        alert('Invalid password.');
+        throw e;
+      }
+    }
   }
 
   updatePassword(e) {
