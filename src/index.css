@@ -7,10 +7,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   margin: 0;
-  min-width: 640px;
-  min-height: 800px;
-  width: 640px;
-  height: 800px;
+  min-width: 360px;
+  min-height: 600px;
 }
 
 code {
@@ -31,7 +29,7 @@ a {
 }
 
 .buttonLarge {
-  width: 90%;
+  width: 60%;
 }
 
 .buttonTop {
@@ -54,7 +52,7 @@ a {
 }
 
 .cardContent {
-  font-size: 28px;
+  font-size: 4.8vw;
 }
 
 .cardRight {
@@ -76,17 +74,19 @@ a {
 }
 
 .header {
-  height: 64px;
+  height: 54px;
   width: 100%;
   text-align: center;
 }
 
 .logo {
-  padding: 10px;
+  padding: 16px;
+  width: 33%;
+  max-width: 140px;
 }
 
 .section {
-  padding-bottom: 16px;
+  padding-bottom: 6px;
 }
 
 .txTitle {

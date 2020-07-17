@@ -1,8 +1,11 @@
 import React from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-const theme = createMuiTheme({
+const theme = responsiveFontSizes(createMuiTheme({
+  typography: {
+    fontSize: 12,
+  },
   palette: {
     primary: {
       main: "#46AD8D",
@@ -22,7 +25,7 @@ const theme = createMuiTheme({
       },
     },
   },
-});
+}));
 
 export default function withTheme(WrappedComponent) {
   return class extends React.Component {
