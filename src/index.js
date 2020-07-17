@@ -31,8 +31,6 @@ import withTheme from './components/Theme'
 
 import ALF from "alf-client";
 
-const storage = ALF.utils.Storage();
-
 class App extends React.Component {
   constructor() {
     super();
