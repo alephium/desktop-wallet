@@ -4,15 +4,16 @@ import TextField from '@material-ui/core/TextField';
 import { Link } from 'react-router-dom'
 
 import { Wizard, Step, StepUserCreate } from './Wizard'
-
 import ALF from "alf-client";
 const storage = ALF.utils.Storage();
+
+const bip39 = require('bip39');
 
 class StepImport extends Step {
   constructor() {
     super(2);
     this.state = {
-      seedPhrase: null,
+      mnemonic: null,
     };
   }
 
@@ -20,9 +21,11 @@ class StepImport extends Step {
     return(
       <div>
         <h1>Import wallet</h1>
-        <TextField className="field" id="wallet.key" label="Seed phrase" value={this.state.seedPhrase} onChange={e => this.update(e) }/>
+        <TextField className="field" label="Secret phrase" value={this.state.mnemonic} onChange={e => this.update(e) }/>
         <div className="actions">
-          <p><Button onClick={e => this.import(e)} variant="contained" className="buttonLarge">Import</Button></p>
+          <p>
+            <Button onClick={e => this.import(e)} variant="contained" className="buttonLarge" disabled={!this.isMnemonicValid()}>Import</Button>
+          </p>
           <p>
             <Link to="/">
               <Button variant="contained" className="buttonLarge">Cancel</Button>
@@ -33,14 +36,18 @@ class StepImport extends Step {
     );
   }
 
+  isMnemonicValid() {
+    return bip39.validateMnemonic(this.state.mnemonic);
+  }
+
   update(e) {
     this.setState({
-      seedPhrase: e.target.value
+      mnemonic: e.target.value
     });
   }
 
   async import(e) {
-    const wallet = ALF.wallet.import(this.state.seedPhrase);
+    const wallet = ALF.wallet.import(this.state.mnemonic);
     const walletEncrypted = await wallet.encrypt(this.props.credentials.password);
     storage.save(this.props.credentials.username, walletEncrypted);
     this.props.setWallet(wallet);

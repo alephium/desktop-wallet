@@ -29,8 +29,6 @@ import InitCreate from './components/InitCreate'
 import InitImport from './components/InitImport'
 import withTheme from './components/Theme'
 
-import ALF from "alf-client";
-
 class App extends React.Component {
   constructor() {
     super();
