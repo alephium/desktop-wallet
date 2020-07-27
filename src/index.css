@@ -20,6 +20,10 @@ a {
   color: #46AD8D;
 }
 
+hr {
+  margin: 32px;
+}
+
 .actions {
   text-align: center;
 }

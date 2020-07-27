@@ -29,7 +29,9 @@ class Settings extends Component {
           </div>
           <div className="actions">
             <p><Button onClick={e => this.save()} variant="contained" className="buttonLarge">Save changes</Button></p>
-            <p><Button onClick={e => this.reset()} variant="contained" className="buttonLarge">Delete Wallet</Button></p>
+            <br/>
+            <p><Button onClick={e => this.logout()} variant="contained" className="buttonLarge">Logout</Button></p>
+            <p><Button onClick={e => this.delete()} variant="contained" className="buttonLarge">Delete Wallet</Button></p>
           </div>
         </div>
       </div>
@@ -58,8 +60,12 @@ class Settings extends Component {
     });
   }
 
-  reset() {
-    storage.save('default', null);
+  delete() {
+    storage.remove(this.props.wallet.username);
+    this.props.setWallet(null);
+  }
+
+  logout() {
     this.props.setWallet(null);
   }
 

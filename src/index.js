@@ -24,18 +24,16 @@ import Navigator from './components/Navigator'
 import Settings from './components/Settings'
 import Transactions from './components/Transactions'
 import Wallet from './components/Wallet'
-import Wizard from './components/Wizard'
+import Init from './components/Init'
+import InitCreate from './components/InitCreate'
+import InitImport from './components/InitImport'
 import withTheme from './components/Theme'
-
-import ALF from "alf-client";
-
-const storage = ALF.utils.Storage();
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      wallet: storage.load('default'),
+      wallet: undefined,
     };
     this.setWallet = this.setWallet.bind(this); 
   }
@@ -57,14 +55,27 @@ class App extends React.Component {
   render() {
     if (!this.state.wallet) {
       return (
-        <div>
-          <div className="header">
-            <img alt="alephium" src={logo} className="logo"/>
+        <Router>
+          <div>
+            <div className="header">
+              <img alt="alephium" src={logo} className="logo"/>
+            </div>
+            <div className="content">
+              <main>
+                <Route exact path="/">
+                  <Init setWallet={this.setWallet}/>
+                </Route>
+                <Route path="/import">
+                  <InitImport setWallet={this.setWallet}/>
+                </Route>
+                <Route path="/create">
+                  <InitCreate setWallet={this.setWallet}/>
+                </Route>
+                <Redirect to="/" />
+              </main>
+            </div>
           </div>
-          <div className="content">
-            <Wizard setWallet={this.setWallet}/>
-          </div>
-        </div>
+        </Router>
       )
     } else {
       return (
@@ -86,7 +97,7 @@ class App extends React.Component {
                   <Wallet wallet={this.state.wallet}/>
                 </Route>
                 <Route path="/settings">
-                  <Settings setWallet={this.setWallet}/>
+                  <Settings wallet={this.state.wallet} setWallet={this.setWallet}/>
                 </Route>
                 <Route path="/transactions">
                   <Transactions wallet={this.state.wallet}/>

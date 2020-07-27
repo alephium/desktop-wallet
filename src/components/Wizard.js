@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom'
 import TextField from '@material-ui/core/TextField';
-
-import wallet from '../images/wallet.png';
+import zxcvbn from 'zxcvbn';
 
 import ALF from "alf-client";
 const storage = ALF.utils.Storage();
-
 
 class Step extends Component {
   constructor(pos) {
@@ -23,68 +22,90 @@ class Step extends Component {
 
 }
 
-class Init extends Step {
+class StepUserCreate extends Step {
   constructor() {
     super(1);
-  }
-
-  renderStep() {
-     return(
-       <div>
-         <div className="welcome">
-           <h1>Welcome!</h1>
-           <img alt="wallet" src={wallet} className="logo"/>
-         </div>
-         <div className="actions">
-          <p><Button onClick={e => this.generate(e)} variant="contained" className="buttonLarge">Create a new wallet</Button></p>
-          <p><Button onClick={e => this.props.next()} variant="contained" className="buttonLarge">Import a wallet</Button></p>
-         </div>
-       </div>
-    );
-  }
-
-  generate(e) {
-    const wallet = ALF.wallet.generate();
-    storage.save('default', wallet);
-    this.props.setWallet(wallet);
-  }
-}
-
-class Import extends Step {
-  constructor() {
-    super(2);
     this.state = {
-      privateKey: null,
+      usernames: storage.list(),
+      username: '',
+      usernameError: '',
+      password: '',
+      passwordError: '',
     };
   }
 
   renderStep() {
-    return(
+    return (
       <div>
-        <h1>Import wallet</h1>
-        <form noValidate autoComplete="off">
-          <TextField className="field" id="wallet.key" label="Private key" value={this.state.privateKey} onChange={e => this.updatePrivateKey(e) }/>
-        </form>
+        <h1>Create account</h1>
+        <TextField className="field" label="Username"
+          value={this.state.username} onChange={e => this.updateUsername(e) }/>
+        {this.state.usernameError !== null && <h4>{this.state.usernameError}</h4> }
+        <TextField className="field" label="Password" type="password"
+          value={this.state.password} onChange={e => this.updatePassword(e) }/>
+        {this.state.passwordError !== null && <h4>{this.state.passwordError}</h4> }
         <div className="actions">
-          <p><Button onClick={e => this.import(e)} variant="contained" className="buttonLarge">Import</Button></p>
-          <p><Button onClick={e => this.props.back()} variant="contained" className="buttonLarge">Cancel</Button></p>
+          <p>
+            <Button 
+              onClick={e => this.create()} 
+              variant="contained" className="buttonLarge" 
+              disabled={!(this.state.passwordError == null)}>
+              Continue
+            </Button>
+          </p>
+          <p>
+            <Link to="/">
+              <Button variant="contained" className="buttonLarge">Cancel</Button>
+            </Link>
+          </p>
         </div>
       </div>
-    );
+    )
   }
 
-  updatePrivateKey(e) {
+  create() {
+    this.props.setCredentials(this.state.username, this.state.password);
+    this.props.next()
+  }
+
+  updatePassword(e) {
+    const password = e.target.value;
+    var passwordError = null;
+
+    if (password.length === 0) {
+      passwordError = '';
+    } else {
+      const strength = zxcvbn(password);
+      if (strength.score < 1) {
+        passwordError = 'Password is too weak';
+      } else if (strength.score < 3) {
+        passwordError = 'Insecure password';
+      }
+    }
+
     this.setState({
-      privateKey: e.target.value
+      password: password,
+      passwordError: passwordError,
     });
   }
 
-  import(e) {
-    const wallet = ALF.wallet.import(this.state.privateKey);
-    storage.save('default', wallet);
-    this.props.setWallet(wallet);
+  updateUsername(e) {
+    const username = e.target.value;
+    var usernameError = null;
+
+    if (username.length < 3) {
+      usernameError = 'Username is too short';
+    } else if (this.state.usernames.includes(username)) {
+      usernameError = 'Username already taken';
+    }
+    this.setState({
+      username: e.target.value,
+      usernameError: usernameError,
+    });
   }
 }
+
+
 class Wizard extends Component {
   constructor() {
     super();
@@ -93,15 +114,16 @@ class Wizard extends Component {
     };
     this.next = this.next.bind(this); 
     this.back = this.back.bind(this); 
+    this.setCredentials = this.setCredentials.bind(this); 
   }
 
-  render() {
-    return (
-      <div>
-        <Init step={this.state.step} next={this.next} setWallet={this.props.setWallet}/>
-        <Import step={this.state.step} back={this.back} setWallet={this.props.setWallet}/>
-      </div>
-    )
+  setCredentials(username, password) {
+    this.setState({
+      credentials: {
+        username: username,
+        password: password,
+      },
+    });
   }
 
   next() {
@@ -117,4 +139,8 @@ class Wizard extends Component {
   }
 }
 
-export default Wizard;
+export {
+  Step,
+  StepUserCreate,
+  Wizard
+}
