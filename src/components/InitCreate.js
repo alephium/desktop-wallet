@@ -54,7 +54,7 @@ class StepConfirm extends Step {
         <TextField className="field" label="Secret phrase" value={this.state.mnemonic} onChange={e => this.updateMnemonic(e) }/>
         <div className="actions">
           <p>
-            <Button onClick={e => this.create(e)} variant="contained" className="buttonLarge" disabled={!this.isMnemonicValid()}>Create</Button>
+            <Button onClick={e => this.create()} variant="contained" className="buttonLarge" disabled={!this.isMnemonicValid()}>Create</Button>
           </p>
           <p>
             <Button onClick={e => this.props.back()} variant="contained" className="buttonLarge">Back</Button>
@@ -64,7 +64,7 @@ class StepConfirm extends Step {
     )
   }
 
-  async create(e) {
+  async create() {
     if (this.isMnemonicValid()) {
       const walletEncrypted = await this.props.wallet.encrypt(this.props.credentials.password);
       storage.save(this.props.credentials.username, walletEncrypted);
