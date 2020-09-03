@@ -21,7 +21,7 @@ class StepImport extends Step {
     return(
       <div>
         <h1>Import wallet</h1>
-        <TextField className="field" label="Secret phrase" value={this.state.mnemonic} onChange={e => this.update(e) }/>
+        <TextField className="field" label="Secret phrase" multiline="true" value={this.state.mnemonic} onChange={e => this.update(e) }/>
         <div className="actions">
           <p>
             <Button onClick={e => this.import(e)} variant="contained" className="buttonLarge" disabled={!this.isMnemonicValid()}>Import</Button>

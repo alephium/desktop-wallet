@@ -19,7 +19,7 @@ class StepGenerate extends Step {
       <div>
         <h1>Create wallet</h1>
         <TextField className="field" label="Address" variant="filled" value={this.props.wallet.address} />
-        <TextField className="field" label="Secret phrase" variant="filled" value={this.props.wallet.mnemonic} />
+        <TextField className="field" label="Secret phrase" variant="filled" multiline="true" value={this.props.wallet.mnemonic} />
         <IconButton onClick={e => this.copy(e)}><FileCopyIcon/></IconButton>
         <div className="actions">
           <p>
