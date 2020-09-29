@@ -73,7 +73,7 @@ class StepConfirm extends Step {
   }
 
   isMnemonicValid() {
-    return (this.props.wallet.mnemonic === this.state.mnemonic); 
+    return (this.props.wallet.mnemonic === this.state.mnemonic);
   }
 
   updateMnemonic(e) {
@@ -84,9 +84,9 @@ class StepConfirm extends Step {
 }
 
 class InitCreate extends Wizard {
-  constructor() {
+  constructor(props) {
     super();
-    this.state.wallet = ALF.wallet.generate();
+    this.state.wallet = ALF.wallet.generate(props.networkType);
   }
 
   render() {

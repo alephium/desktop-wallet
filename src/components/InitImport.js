@@ -10,10 +10,11 @@ const storage = ALF.utils.Storage();
 const bip39 = require('bip39');
 
 class StepImport extends Step {
-  constructor() {
+  constructor(props) {
     super(2);
     this.state = {
       mnemonic: null,
+      networkType: props.networkType,
     };
   }
 
@@ -47,7 +48,7 @@ class StepImport extends Step {
   }
 
   async import(e) {
-    const wallet = ALF.wallet.import(this.state.mnemonic);
+    const wallet = ALF.wallet.import(this.state.mnemonic, this.state.networkType);
     const walletEncrypted = await wallet.encrypt(this.props.credentials.password);
     storage.save(this.props.credentials.username, walletEncrypted);
     this.props.setWallet(wallet);
@@ -60,7 +61,7 @@ class InitImport extends Wizard {
     return (
       <div>
         <StepUserCreate step={this.state.step} next={this.next} setCredentials={this.setCredentials}/>
-        <StepImport step={this.state.step} credentials={this.state.credentials} setWallet={this.props.setWallet}/>
+        <StepImport step={this.state.step} credentials={this.state.credentials} setWallet={this.props.setWallet} networkType={this.props.networkType}/>
       </div>
     )
   }
