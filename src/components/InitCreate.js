@@ -19,7 +19,7 @@ class StepGenerate extends Step {
       <div>
         <h1>Create wallet</h1>
         <TextField className="field" label="Address" variant="filled" value={this.props.wallet.address} />
-        <TextField className="field" label="Secret phrase" variant="filled" multiline="true" value={this.props.wallet.mnemonic} />
+        <TextField className="field" label="Secret phrase" variant="filled" multiline="true" value={this.props.mnemonic} />
         <IconButton onClick={e => this.copy(e)}><FileCopyIcon/></IconButton>
         <div className="actions">
           <p>
@@ -34,7 +34,7 @@ class StepGenerate extends Step {
   }
 
   copy(e) {
-    navigator.clipboard.writeText(this.props.wallet.mnemonic);
+    navigator.clipboard.writeText(this.props.mnemonic);
   }
 
 }
@@ -73,7 +73,7 @@ class StepConfirm extends Step {
   }
 
   isMnemonicValid() {
-    return (this.props.wallet.mnemonic === this.state.mnemonic);
+    return (this.props.mnemonic === this.state.mnemonic);
   }
 
   updateMnemonic(e) {
@@ -86,15 +86,17 @@ class StepConfirm extends Step {
 class InitCreate extends Wizard {
   constructor(props) {
     super();
-    this.state.wallet = ALF.wallet.generate(props.networkType);
+    const result = ALF.wallet.generate(props.networkType);
+    this.state.wallet = result.wallet;
+    this.state.mnemonic = result.mnemonic;
   }
 
   render() {
     return (
       <div>
         <StepUserCreate step={this.state.step} next={this.next} setCredentials={this.setCredentials}/>
-        <StepGenerate step={this.state.step} back={this.back} next={this.next} wallet={this.state.wallet}/>
-        <StepConfirm step={this.state.step} back={this.back} credentials={this.state.credentials} wallet={this.state.wallet} setWallet={this.props.setWallet}/>
+        <StepGenerate step={this.state.step} back={this.back} next={this.next} wallet={this.state.wallet} mnemonic={this.state.mnemonic}/>
+        <StepConfirm step={this.state.step} back={this.back} credentials={this.state.credentials} wallet={this.state.wallet} setWallet={this.props.setWallet} mnemonic={this.state.mnemonic}/>
       </div>
     )
   }
