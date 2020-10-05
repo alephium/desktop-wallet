@@ -12,12 +12,13 @@ import ALF from "alf-client";
 const storage = ALF.utils.Storage();
 
 class Init extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       usernames: [],
       username: '',
       password: '',
+      networkType: props.networkType
     };
   }
 
@@ -38,7 +39,7 @@ class Init extends Component {
                 onInputChange={e => this.updateUsername(e) }
               />
               <TextField className="field" label="Password" type="password"
-                value={this.state.password} 
+                value={this.state.password}
                 onChange={e => this.updatePassword(e) }
               />
             </div>
@@ -65,7 +66,7 @@ class Init extends Component {
   }
 
   async componentDidMount() {
-    this.setState({ 
+    this.setState({
       usernames: storage.list()
     });
   }
@@ -76,7 +77,7 @@ class Init extends Component {
       alert('User not found.');
     } else {
       try {
-        var wallet = await ALF.wallet.open(this.state.password, walletEncrypted);
+        var wallet = await ALF.wallet.open(this.state.password, walletEncrypted, this.state.networkType);
         wallet.username = this.state.username;
         this.props.setWallet(wallet);
       } catch (e) {
