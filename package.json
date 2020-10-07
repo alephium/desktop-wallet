@@ -11,7 +11,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
-    "alf-client": "../alephium-client/",
+    "alf-client": "../alephium-js/",
     "bcurl": "~0.1.6",
     "bip39": "^3.0.2",
     "react": "^16.13.1",

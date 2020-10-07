@@ -50,7 +50,7 @@ class App extends React.Component {
     super();
     this.state = {
       wallet: undefined,
-      networkType: "M"
+      networkType: "T"
     };
     this.setWallet = this.setWallet.bind(this);
   }
