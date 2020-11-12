@@ -31,14 +31,14 @@ export async function createClient() {
     return;
   }
 
-  const clique = new ALF.CliqueClient(response.result);
+  const clique = new ALF.CliqueClient(response);
   return clique;
 }
 
 export function settingsDefault() {
   return {
         host: 'localhost',
-        port: 10973,
+        port: 12973,
         explorerHost: 'localhost',
         explorerPort: 9090,
         alephscanURL: 'http://localhost:3000',

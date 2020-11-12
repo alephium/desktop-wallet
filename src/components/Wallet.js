@@ -111,7 +111,7 @@ class Wallet extends Component {
 
     let settings = settingsLoadOrDefault();
 
-    this.setState({ 
+    this.setState({
       alephscanURL: settings.alephscanURL
     });
   }
@@ -120,7 +120,7 @@ class Wallet extends Component {
     try {
       const response = await this.client.getBalance(this.props.wallet.address);
       this.setState({
-        balance: response.result.balance + ' א'
+        balance: response.balance + ' א'
       });
     } catch (e) {
       this.dialogError(e.message);
@@ -147,14 +147,14 @@ class Wallet extends Component {
     try {
       const responseCreate = await this.client.transactionCreate(wallet.address, wallet.publicKey,
                                                   this.state.transferTo, this.state.transferValue);
-      const signature = this.client.transactionSign(responseCreate.result.hash, wallet.privateKey); 
-      const response = await this.client.transactionSend(wallet.address, responseCreate.result.unsignedTx, signature);
+      const signature = this.client.transactionSign(responseCreate.hash, wallet.privateKey);
+      const response = await this.client.transactionSend(wallet.address, responseCreate.unsignedTx, signature);
 
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Transaction submitted',
-        dialogMessage: response.result.txId + '\n' +
-          'chain index: ' + response.result.fromGroup + ' ➡ ' + response.result.toGroup
+        dialogMessage: response.txId + '\n' +
+          'chain index: ' + response.fromGroup + ' ➡ ' + response.toGroup
       });
     } catch (e) {
       this.dialogError(e.message);
