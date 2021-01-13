@@ -23,7 +23,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { createClient } from "../utils/util";
+import { abbreviateAmount, createClient } from "../utils/util";
 import { settingsLoadOrDefault } from "../utils/util";
 
 class Wallet extends Component {
@@ -120,7 +120,7 @@ class Wallet extends Component {
     try {
       const response = await this.client.getBalance(this.props.wallet.address);
       this.setState({
-        balance: response.balance + ' א'
+        balance: abbreviateAmount(response.balance) + ' א'
       });
     } catch (e) {
       this.dialogError(e.message);
