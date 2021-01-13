@@ -147,7 +147,7 @@ class Wallet extends Component {
     try {
       const responseCreate = await this.client.transactionCreate(wallet.address, wallet.publicKey,
                                                   this.state.transferTo, this.state.transferValue);
-      const signature = this.client.transactionSign(responseCreate.hash, wallet.privateKey);
+      const signature = this.client.transactionSign(responseCreate.txId, wallet.privateKey);
       const response = await this.client.transactionSend(wallet.address, responseCreate.unsignedTx, signature);
 
       this.setState({
