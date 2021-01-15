@@ -17,7 +17,7 @@
 import React, { Component } from "react";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { settingsDefault, settingsLoad, settingsSave } from "../utils/util";
+import { settingsDefault, settingsLoadOrDefault, settingsSave } from "../utils/util";
 import ALF from "alf-client";
 
 const storage = ALF.utils.Storage();
@@ -55,7 +55,7 @@ class Settings extends Component {
   }
 
   async componentDidMount() {
-    const settings = settingsLoad();
+    const settings = settingsLoadOrDefault();
     if (settings !== null) {
       this.setState({
         networkHost: settings.host,
@@ -86,11 +86,9 @@ class Settings extends Component {
   }
 
   save() {
-    const settings = {
-      host: this.state.networkHost,
-      port: this.state.networkPort
-    };
-
+    const settings = settingsLoadOrDefault();
+    settings.host = this.state.networkHost;
+    settings.port = this.state.networkPort;
     settingsSave(settings);
   }
 }

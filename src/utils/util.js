@@ -16,6 +16,27 @@
 
 import ALF from "alf-client";
 
+var MONEY_SYMBOL = ["", "K", "M", "B", "T"];
+
+export const abbreviateAmount = (num: number) => {
+  if (num < 0) return '0.00'
+
+  // what tier? (determines SI symbol)
+  let tier = Math.log10(Number(num)) / 3 | 0
+
+  // if zero, we don't need a suffix
+  if(tier <= 0) return num.toFixed(2).toString()
+  if(tier >= MONEY_SYMBOL.length) tier = MONEY_SYMBOL.length - 1
+
+  // get suffix and determine scale
+  const suffix = MONEY_SYMBOL[tier]
+  const scale = Math.pow(10, tier * 3)
+
+  // scale the bigNum
+  let scaled = num / scale
+  return scaled.toFixed(2) + suffix
+}
+
 export async function createClient() {
   let settings = settingsLoadOrDefault();
   const client = new ALF.NodeClient({
