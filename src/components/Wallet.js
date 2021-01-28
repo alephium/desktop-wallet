@@ -31,6 +31,7 @@ class Wallet extends Component {
     super();
     this.state = {
       address: '',
+      addressGroup: '?',
       dialogOpen: false,
       dialogTitle: '',
       dialogMessage: '',
@@ -38,6 +39,7 @@ class Wallet extends Component {
       balance: 'unknown',
       transferTo: '',
       transferValue: '',
+      networkGroups: '?',
       newPublicKey: '',
       newPrivateKey: '',
     };
@@ -51,7 +53,12 @@ class Wallet extends Component {
         <div className="form">
           <div className="section">
             <h3>Address</h3>
-            <Typography variant="subtitle2"><a href={this.state.alephscanURL + "/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a></Typography>
+            <Typography variant="subtitle2">
+              <a href={this.state.alephscanURL + "/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a>
+            </Typography>
+            <Typography variant="body2">
+              group: {this.state.addressGroup} / {this.state.networkGroups}
+            </Typography>
           </div>
           <br/>
           <div className="section">
@@ -106,6 +113,12 @@ class Wallet extends Component {
     } finally {
       if (!this.client) {
         this.dialogError('Unable to initialize the client, please check your network settings.');
+      } else {
+        const group = await this.client.getGroupIndex(this.props.wallet.address);
+        this.setState({
+          addressGroup: group,
+          networkGroups: this.client.clique.groups
+        })
       }
     }
 
