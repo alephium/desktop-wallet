@@ -54,7 +54,7 @@ class Wallet extends Component {
           <div className="section">
             <h3>Address</h3>
             <Typography variant="subtitle2">
-              <a href={this.state.alephscanURL + "/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a>
+              <a href={this.state.alephscanURL + "/#/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a>
             </Typography>
             <Typography variant="body2">
               group: {this.state.addressGroup} / {this.state.networkGroups}
