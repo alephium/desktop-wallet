@@ -85,7 +85,7 @@ class Transactions extends Component {
                     {tx.sent ? "Sent" : "Received"}: {tx.value} א 
                   </div>
                   <div className="cardRight">
-                    <a href={this.state.alephscanURL + "/transactions/" + tx.hash}  target="_blank" rel="noopener noreferrer">{truncate(tx.hash)}</a>
+                    <a href={this.state.alephscanURL + "/#=transactions/" + tx.hash}  target="_blank" rel="noopener noreferrer">{truncate(tx.hash)}</a>
                   </div>
                   <div>
                     <AccountBalanceWalletIcon/>
