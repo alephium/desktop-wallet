@@ -18,7 +18,7 @@ import ALF from "alf-client";
 
 var MONEY_SYMBOL = ["", "K", "M", "B", "T"];
 
-export const abbreviateAmount = (num: number) => {
+export const abbreviateAmount = (num) => {
   if (num < 0) return '0.00'
 
   // what tier? (determines SI symbol)
