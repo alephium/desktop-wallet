@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import {ReactComponent as TreesSVG} from '../images/trees.svg'
 import {ReactComponent as MountainSVG} from '../images/mountain.svg'
 import { motion } from 'framer-motion'
+import { Input } from '../components/Inputs'
+import { Button } from '../components/Buttons'
 
 const Home = () => {
   return (
@@ -38,6 +40,9 @@ const Home = () => {
         <MountainImage />
       </Header>
       <Content>
+        <Input placeholder="Username" />
+        <Input placeholder="Password" />
+				<Button>Login</Button>
         <TreesImage />
       </Content>
     </Container>
@@ -72,6 +77,15 @@ const H1 = styled.h1`
 
 const Content = styled.div`
   flex: 1.2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0 8vw;
+
+	input {
+		width: 100%;
+	}
 `
 
 const Moon = styled(motion.div)`

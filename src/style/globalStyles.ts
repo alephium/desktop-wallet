@@ -17,7 +17,10 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   h3 {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
+	input, button {
+		outline: none;
+	}
 `
