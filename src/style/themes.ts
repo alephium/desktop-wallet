@@ -5,11 +5,12 @@ export const lightTheme: DefaultTheme = {
   bg: {
     primary: "#ffffff",
     secondary: "rgba(61, 64, 74, 0.05)",
-    contrast: "#3D404A"
+    contrast: "#262d40"
   },
   font: {
-    primary: "#3D404A",
+    primary: "#262d40",
     secondary: "#797979",
+    contrast: "#ffffff"
   },
   border: {
     primary: "#E8E8E8"
