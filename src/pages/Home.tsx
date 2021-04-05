@@ -7,7 +7,11 @@ import { motion } from 'framer-motion'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 
-const Home = () => {
+interface HomeProps {
+	hasWallet: boolean
+}
+
+const Home = ({ hasWallet }: HomeProps) => {
   return (
     <Container>
       <Header>

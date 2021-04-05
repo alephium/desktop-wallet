@@ -83,7 +83,7 @@ class App extends React.Component {
           <Container>
             <Router>
               <Route exact path="/">
-                <Home />
+                <Home hasWallet={this.state.wallet}/>
                 {/*<Init networkType={this.state.networkType} setWallet={this.setWallet}/>*/}
               </Route>
               <Route path="/import">
