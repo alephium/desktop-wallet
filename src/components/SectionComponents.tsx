@@ -1,4 +1,4 @@
-import { motion, Variants } from 'framer-motion'
+import { motion, MotionStyle, Variants } from 'framer-motion'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
@@ -27,6 +27,7 @@ const contentVariants: Variants = {
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
     transition: {
+      when: 'beforeChildren',
       delay: apparitionDelay,
       staggerChildren: 0.1,
       delayChildren: 0.1
@@ -36,11 +37,12 @@ const contentVariants: Variants = {
 
 interface ContentProps {
   apparitionDelay?: number
+  style?: MotionStyle
 }
 
-export const Content: React.FC<ContentProps> = ({ children, apparitionDelay }) => {
+export const Content: React.FC<ContentProps> = ({ children, apparitionDelay, style }) => {
   return (
-    <StyledContent variants={contentVariants} initial="hidden" animate="shown" custom={apparitionDelay}>
+    <StyledContent variants={contentVariants} initial="hidden" animate="shown" custom={apparitionDelay} style={style}>
       {children}
     </StyledContent>
   )

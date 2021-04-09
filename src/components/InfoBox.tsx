@@ -18,7 +18,7 @@ export const InfoBox = ({ Icon, text, iconColor }: InfoBoxProps) => {
   return (
     <StyledBox variants={variants}>
       <IconContainer>
-        <Icon color={iconColor} />
+        <Icon color={iconColor} strokeWidth={1.5} />
       </IconContainer>
       <TextContainer>{text}</TextContainer>
     </StyledBox>
@@ -29,14 +29,22 @@ export const InfoBox = ({ Icon, text, iconColor }: InfoBoxProps) => {
 
 const IconContainer = styled.div`
   flex: 1;
+  display: flex;
+
+  svg {
+    height: 50%;
+    width: 50%;
+    margin: auto;
+  }
 `
 
 const TextContainer = styled.p`
   flex: 2;
+  font-weight: 600;
 `
 
 const StyledBox = styled(motion.div)`
-  padding: 20px;
+  padding: 10px 20px 10px 0;
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
   border-radius: 7px;

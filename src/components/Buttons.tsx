@@ -1,18 +1,28 @@
+import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import React from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
 }
 
+const variants: Variants = {
+  hidden: { y: 10, opacity: 0 },
+  shown: { y: 0, opacity: 1 }
+}
+
 export const Button = ({ children, ...props }: ButtonProps) => {
-  return <StyledButton {...props}>{children}</StyledButton>
+  return (
+    <StyledButton {...props} variants={variants}>
+      {children}
+    </StyledButton>
+  )
 }
 
 // === Styling
 
-const StyledButton = styled.button<ButtonProps>`
+const StyledButton = styled(motion.button)<ButtonProps>`
   height: 50px;
   width: 80%;
   border-radius: 7px;
