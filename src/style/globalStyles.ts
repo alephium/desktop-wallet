@@ -15,6 +15,10 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.bg.primary};
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
   h1 {
     font-size: 2.5rem;
     margin-bottom: 2vh;

@@ -2,22 +2,23 @@ import React from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLInputElement> {
-  children: string
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  secondary?: boolean
 }
 
-export const Button = ({ children }: ButtonProps) => {
-  return <StyledButton>{children}</StyledButton>
+export const Button = ({ children, ...props }: ButtonProps) => {
+  return <StyledButton {...props}>{children}</StyledButton>
 }
 
 // === Styling
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<ButtonProps>`
   height: 50px;
-  border-radius: 100px;
+  width: 80%;
+  border-radius: 7px;
   border: none;
-  background-color: ${({ theme }) => theme.global.accent};
-  color: ${({ theme }) => theme.font.contrast};
+  background-color: ${({ theme, secondary }) => (secondary ? theme.bg.tertiary : theme.global.accent)};
+  color: ${({ theme, secondary }) => (secondary ? theme.font.secondary : theme.font.contrast)};
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 15px;
@@ -30,11 +31,17 @@ const StyledButton = styled.button`
   margin: 15px 0;
 
   &:hover {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+    background-color: ${({ theme, secondary }) =>
+      secondary
+        ? tinycolor(theme.bg.tertiary).darken(20).toString()
+        : tinycolor(theme.global.accent).darken(10).toString()};
   }
 
   &:active {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
+    background-color: ${({ theme, secondary }) =>
+      secondary
+        ? tinycolor(theme.bg.tertiary).darken(40).toString()
+        : tinycolor(theme.global.accent).darken(20).toString()};
   }
 
   &:focus-visible {

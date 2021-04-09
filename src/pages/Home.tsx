@@ -7,77 +7,79 @@ import { motion } from 'framer-motion'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { SectionContainer, ContentContainer } from '../components/Containers'
+import { SectionContainer, ContentContainer, SectionTitle, Content } from '../components/SectionComponents'
 import { useHistory } from 'react-router'
 
 interface HomeProps {
   hasWallet: boolean
 }
 
-const Home = ({ hasWallet }: HomeProps) => {
-  return (
-    <SectionContainer>
-      <Header>
-        <ContentContainer>
-          <HeaderText>
-            {!hasWallet ? <H1>Hi there!</H1> : <H1>Welcome back!</H1>}
-            <h3>Welcome to the Alephium Wallet!</h3>
-            <p>Use the smart money of the future while keeping your mind at ease.</p>
-          </HeaderText>
-          <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '10vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
-          <CloudGroup
-            coordinates={[
-              ['10px', '0px'],
-              ['0px', '15px'],
-              ['15px', '30px']
-            ]}
-            lengths={['30px', '20px', '25px']}
-            style={{ bottom: '2vh' }}
-            distance="10px"
-            side="left"
-          />
-          <CloudGroup
-            coordinates={[
-              ['10px', '0px'],
-              ['20px', '15px'],
-              ['55px', '30px']
-            ]}
-            lengths={['30px', '40px', '25px']}
-            style={{ top: '3vh' }}
-            distance="20px"
-            side="right"
-          />
-          <MountainImage />
-        </ContentContainer>
-      </Header>
-      <Content>
-        <ContentContainer>
-          {hasWallet ? <Login /> : <InitialActions />}
-          <TreesImage />
-        </ContentContainer>
-      </Content>
-    </SectionContainer>
-  )
-}
+const Home = ({ hasWallet }: HomeProps) => (
+  <SectionContainer>
+    <Header>
+      <ContentContainer>
+        <HeaderText>
+          <SectionTitle color="contrast">{hasWallet ? 'Welcome back!' : 'Hi there!'}</SectionTitle>
+          <h3>Welcome to the Alephium Wallet!</h3>
+          <p>Use the smart money of the future while keeping your mind at ease.</p>
+        </HeaderText>
+        <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '10vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
+        <CloudGroup
+          coordinates={[
+            ['10px', '0px'],
+            ['0px', '15px'],
+            ['15px', '30px']
+          ]}
+          lengths={['30px', '20px', '25px']}
+          style={{ bottom: '2vh' }}
+          distance="10px"
+          side="left"
+        />
+        <CloudGroup
+          coordinates={[
+            ['10px', '0px'],
+            ['20px', '15px'],
+            ['55px', '30px']
+          ]}
+          lengths={['30px', '40px', '25px']}
+          style={{ top: '3vh' }}
+          distance="20px"
+          side="right"
+        />
+        <MountainImage />
+      </ContentContainer>
+    </Header>
+    <InteractionArea>
+      <ContentContainer>
+        {hasWallet ? <Login /> : <InitialActions />}
+        <TreesImage />
+      </ContentContainer>
+    </InteractionArea>
+  </SectionContainer>
+)
 
 // === Components
 
 const Login = () => (
-  <LoginArea>
+  <Content>
     <Input placeholder="Username" />
     <Input placeholder="Password" />
     <Button>Login</Button>
-  </LoginArea>
+  </Content>
 )
 
 const InitialActions = () => {
   const history = useHistory()
 
+  const handleClick = () => {
+    history.push('/create')
+  }
+
   return (
-    <Actions>
-      <Button onClick={() => history.push('/create')}>New wallet</Button>
+    <Content>
+      <Button onClick={handleClick}>New wallet</Button>
       <Button>Import wallet</Button>
-    </Actions>
+    </Content>
   )
 }
 
@@ -90,45 +92,18 @@ const Header = styled.header`
   overflow: hidden;
 `
 
-const Content = styled.div`
+const InteractionArea = styled.div`
   flex: 0.8;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `
 
 const HeaderText = styled.div`
   margin-top: 7vh;
-  padding: 0 8vw;
   max-width: 700px;
   color: ${({ theme }) => theme.font.contrast};
-`
-
-const H1 = styled.h1`
-  color: ${({ theme }) => theme.font.contrast};
-`
-
-const LoginArea = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  height: 100%;
-
-  input {
-    width: 100%;
-  }
-`
-
-const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  height: 100%;
-
-  button {
-    width: 60%;
-  }
 `
 
 const Moon = styled(motion.div)`
@@ -180,7 +155,7 @@ const CloudGroup = ({
   const clouds = []
 
   for (let i = 0; i < coordinates.length; i++) {
-    clouds.push(<Cloud style={{ left: coordinates[i][0], top: coordinates[i][1], width: lengths[i] }} />)
+    clouds.push(<Cloud key={i} style={{ left: coordinates[i][0], top: coordinates[i][1], width: lengths[i] }} />)
   }
 
   return (

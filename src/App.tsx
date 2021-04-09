@@ -7,6 +7,7 @@ import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 import CreateWallet from './pages/CreateWallet'
 import { Wallet } from 'alf-client/lib/wallet'
+import { AnimateSharedLayout } from 'framer-motion'
 
 const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
@@ -16,14 +17,16 @@ const App = () => {
     <ThemeProvider theme={lightTheme}>
       <GlobalStyle />
       <AppContainer>
-        <Router>
-          <Route exact path="/">
-            <Home hasWallet={hasWallet} />
-          </Route>
-          <Route exact path="/create">
-            <CreateWallet setWallet={setWallet} />
-          </Route>
-        </Router>
+        <AnimateSharedLayout>
+          <Router>
+            <Route exact path="/">
+              <Home hasWallet={hasWallet} />
+            </Route>
+            <Route exact path="/create">
+              <CreateWallet setWallet={setWallet} />
+            </Route>
+          </Router>
+        </AnimateSharedLayout>
       </AppContainer>
     </ThemeProvider>
   )
