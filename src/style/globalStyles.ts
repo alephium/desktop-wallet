@@ -1,13 +1,16 @@
 import { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyle = createGlobalStyle`
+  html {
+    font-size: 15px;
+  }
+
   body {
+    font-size: inherit;
     margin: 0;
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    font-size: 15px;
     color: ${( { theme } ) => theme.font.primary };
     background-color: ${({theme}) => theme.bg.primary};
   }

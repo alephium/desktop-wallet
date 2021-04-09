@@ -20,6 +20,8 @@ const StyledButton = styled.button`
 	border: none;
 	background-color: ${({theme}) => theme.global.accent};
 	color: ${({theme}) => theme.font.contrast};
+  font-weight: 600;
+  font-size: 1.1rem;
 	padding: 0 15px;
 	min-width: 100px;
 	text-align: center;
@@ -33,7 +35,11 @@ const StyledButton = styled.button`
 		background-color: ${({theme}) => tinycolor(theme.global.accent).darken(10).toString()};
 	}
 
-	&:active, &:focus {
+	&:active{
 		background-color: ${({theme}) => tinycolor(theme.global.accent).darken(20).toString()};
+	}
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px ${({theme}) => tinycolor(theme.global.accent).darken(20).toString() };
 	}
 `

@@ -92,7 +92,7 @@ class App extends React.Component {
               <Route path="/create">
                 <InitCreate networkType={this.state.networkType} setWallet={this.setWallet}/>
               </Route>
-              <Redirect to="/" />
+
             </Router>
           </Container>
         </ThemeProvider>

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { Container, ContentContainer } from '../components/Containers'
+import { SectionContainer, ContentContainer } from '../components/Containers'
 
 interface HomeProps {
 	hasWallet: boolean
@@ -15,11 +15,11 @@ interface HomeProps {
 
 const Home = ({ hasWallet }: HomeProps) => {
   return (
-    <Container>
+    <SectionContainer>
       <Header>
         <ContentContainer>
           <HeaderText>
-            <H1>Hi there!</H1>
+            {!hasWallet ? <H1>Hi there!</H1> : <H1>Welcome back!</H1>}
             <h3>Welcome to the Alephium Wallet!</h3>
             <p>
               Use the smart money of the future while keeping your mind at ease.
@@ -49,17 +49,32 @@ const Home = ({ hasWallet }: HomeProps) => {
       </Header>
       <Content>
         <ContentContainer>
-          <LoginArea>
-            <Input placeholder="Username" />
-            <Input placeholder="Password" />
-            <Button>Login</Button>
-            <TreesImage />
-          </LoginArea>
+          {hasWallet ? <Login /> : <InitialActions /> }
+          <TreesImage />
         </ContentContainer>
       </Content>
-    </Container>
+    </SectionContainer>
   )
 }
+
+// === Components
+
+const Login = () => (
+  <LoginArea>
+    <Input placeholder="Username" />
+    <Input placeholder="Password" />
+    <Button>Login</Button>
+  </LoginArea>
+)
+
+const InitialActions = () => (
+  <Actions>
+    <Button>New wallet</Button>
+    <Button>Import wallet</Button>
+  </Actions>
+)
+
+
 
 // === Styling
 
@@ -71,7 +86,7 @@ const Header = styled.header`
 `
 
 const Content = styled.div`
-  flex: 1;
+  flex: 0.8;
   position: relative;
   overflow: hidden;
 `
@@ -88,17 +103,27 @@ const H1 = styled.h1`
 `
 
 const LoginArea = styled.div`
-  flex: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
-	padding: 0 8vw;
   height: 100%;
 
 	input {
 		width: 100%;
 	}
+`
+
+const Actions = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+  height: 100%;
+
+  button {
+    width: 60%;
+  }
 `
 
 const Moon = styled(motion.div)`
