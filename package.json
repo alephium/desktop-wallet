@@ -34,7 +34,10 @@
     "@types/styled-components": "^5.1.9",
     "@types/tinycolor2": "^1.4.2",
     "electron": "^7.3.3",
-    "electron-builder": "^22.10.5"
+    "electron-builder": "^22.10.5",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.2.0",
+    "prettier": "^2.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
