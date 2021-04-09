@@ -1,26 +1,27 @@
-import React, { useState } from "react"
-import styled, { ThemeProvider } from "styled-components"
-import { BrowserRouter as Router, Route} from 'react-router-dom'
+import React, { useState } from 'react'
+import styled, { ThemeProvider } from 'styled-components'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import Home from "./pages/Home"
-import { GlobalStyle } from "./style/globalStyles"
-import { lightTheme } from "./style/themes"
-import CreateWallet from "./pages/CreateWallet"
+import Home from './pages/Home'
+import { GlobalStyle } from './style/globalStyles'
+import { lightTheme } from './style/themes'
+import CreateWallet from './pages/CreateWallet'
+import { Wallet } from 'alf-client/lib/wallet'
 
 const App = () => {
-  const [wallet, setWallet] = useState()
+  const [wallet, setWallet] = useState<Wallet>()
   const hasWallet = wallet !== undefined
 
   return (
-    <ThemeProvider theme={lightTheme} >
+    <ThemeProvider theme={lightTheme}>
       <GlobalStyle />
       <AppContainer>
         <Router>
           <Route exact path="/">
-            <Home hasWallet={hasWallet}/>
+            <Home hasWallet={hasWallet} />
           </Route>
           <Route exact path="/create">
-            <CreateWallet setWallet={setWallet}/>
+            <CreateWallet setWallet={setWallet} />
           </Route>
         </Router>
       </AppContainer>
@@ -29,7 +30,6 @@ const App = () => {
 }
 
 // === Styling === //
-
 
 const AppContainer = styled.main`
   position: absolute;

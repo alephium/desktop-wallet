@@ -11,8 +11,8 @@ export const GlobalStyle = createGlobalStyle`
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: ${( { theme } ) => theme.font.primary };
-    background-color: ${({theme}) => theme.bg.primary};
+    color: ${({ theme }) => theme.font.primary};
+    background-color: ${({ theme }) => theme.bg.primary};
   }
 
   h1 {

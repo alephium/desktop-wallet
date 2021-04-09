@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components'
 
 export const SectionContainer = styled.section`
   flex: 1;
@@ -11,5 +11,8 @@ export const ContentContainer = styled.div`
   max-width: 700px;
   margin: 0 auto;
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 `
