@@ -63,7 +63,7 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
 
     if (username.length < 3) {
       usernameError = 'Username is too short'
-    } else if (state.usernames?.includes(username)) {
+    } else if (usernames?.includes(username)) {
       usernameError = 'Username already taken'
     }
 
@@ -79,20 +79,25 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
       <ContentContainer>
         <SectionTitle color="primary">New Account</SectionTitle>
         <Content>
-          <Input placeholder="Username" onChange={onUpdateUsername} error={usernameError} />
+          <Input
+            placeholder="Username"
+            onChange={onUpdateUsername}
+            error={usernameError}
+            isValid={username.length > 0 && usernameError.length === 0}
+          />
           <Input
             placeholder="Password"
             type="password"
             onChange={onUpdatePassword}
             error={passwordError}
-            valid={!passwordError && password && password.length > 0 ? 'Secure password!' : ''}
+            isValid={!passwordError && password.length > 0}
           />
           <Input
             placeholder="Retype password"
             type="password"
             onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
             error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
-            valid={password && password === passwordCheck ? 'All good!' : ''}
+            isValid={password.length > 0 && password === passwordCheck}
             disabled={!password || passwordError.length > 0}
           />
           <InfoBox

@@ -2,11 +2,12 @@ import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent, forwardRef } from 'react'
+import { FiCheck } from 'react-icons/fi'
 
 interface InputProps extends HTMLMotionProps<'input'> {
   error?: string
-  valid?: string
+  isValid?: boolean
   disabled?: boolean
 }
 
@@ -16,13 +17,13 @@ const variants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Input = ({ placeholder, error, valid, disabled, onChange, ...props }: InputProps) => {
+export const Input = ({ placeholder, error, isValid, disabled, onChange, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimateds] = useState(false)
   const [value, setValue] = useState('')
 
   const className = classNames({
     error,
-    valid
+    isValid
   })
 
   const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -45,7 +46,12 @@ export const Input = ({ placeholder, error, valid, disabled, onChange, ...props 
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimateds(true)}
       />
-      {!disabled && (error || valid) && <Message animate={{ y: 10, opacity: 1 }}>{error || valid}</Message>}
+      {!disabled && isValid && (
+        <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+          <FiCheck strokeWidth={3} />
+        </ValidIconContainer>
+      )}
+      {!disabled && error && <ErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</ErrorMessage>}
     </InputContainer>
   )
 }
@@ -65,14 +71,28 @@ const Label = styled(motion.label)`
   left: 15px;
   font-weight: 600;
   opacity: 0;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
-const Message = styled(motion.label)<InputProps>`
+const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
   bottom: -10px;
   right: 10px;
   font-weight: 600;
   opacity: 0;
+  font-size: 0.8rem;
+  color: ${({ theme }) => theme.global.alert};
+`
+
+const ValidIconContainer = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  color: ${({ theme }) => theme.global.valid};
 `
 
 const StyledInput = styled(motion.input)<InputProps>`
@@ -96,19 +116,6 @@ const StyledInput = styled(motion.input)<InputProps>`
   &.error {
     border: 3px solid ${({ theme }) => theme.global.alert};
     background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
-
-    & + ${Message} {
-      color: ${({ theme }) => theme.global.alert};
-    }
-  }
-
-  &.valid {
-    border: 3px solid ${({ theme }) => theme.global.valid};
-    background-color: ${({ theme }) => tinycolor(theme.global.valid).setAlpha(0.1).toString()};
-
-    & + ${Message} {
-      color: ${({ theme }) => theme.global.valid};
-    }
   }
 
   &:disabled {
