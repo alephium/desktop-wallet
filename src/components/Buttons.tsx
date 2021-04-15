@@ -1,21 +1,31 @@
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
-  deactivated?: boolean
+  disabled?: boolean
 }
 
 const variants: Variants = {
   hidden: { y: 10, opacity: 0 },
-  shown: { y: 0, opacity: 1 }
+  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
+  disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Button = ({ children, ...props }: ButtonProps) => {
+export const Button = ({ children, disabled, ...props }: ButtonProps) => {
+  const [canBeAnimated, setCanBeAnimateds] = useState(false)
+
   return (
-    <StyledButton {...props} variants={variants}>
+    <StyledButton
+      {...props}
+      variants={variants}
+      custom={disabled}
+      disabled={disabled}
+      animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+      onAnimationComplete={() => setCanBeAnimateds(true)}
+    >
       {children}
     </StyledButton>
   )
@@ -55,8 +65,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
         : tinycolor(theme.global.accent).darken(20).toString()};
   }
 
-  opacity: ${({ deactivated }) => (deactivated ? 0.5 : 1)} !important;
-  pointer-events: ${({ deactivated }) => (deactivated ? 'none' : 'auto')};
+  pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
     box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};

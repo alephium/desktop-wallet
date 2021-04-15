@@ -12,7 +12,7 @@ export const ContentContainer = styled.div`
   height: 100%;
   max-width: 700px;
   margin: 0 auto;
-  padding: 0 8vw;
+  padding: 0 30px;
   position: absolute;
   top: 0;
   right: 0;

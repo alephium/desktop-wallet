@@ -1,27 +1,41 @@
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
+import classNames from 'classnames'
+import { useState } from 'react'
 
 interface InputProps extends HTMLMotionProps<'input'> {
   error?: string
   valid?: string
+  disabled?: boolean
 }
 
 const variants: Variants = {
   hidden: { y: 10, opacity: 0 },
-  shown: { y: 0, opacity: 1 }
+  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
+  disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Input = ({ placeholder, error, valid, ...props }: InputProps) => {
+export const Input = ({ placeholder, error, valid, disabled, ...props }: InputProps) => {
+  const [canBeAnimated, setCanBeAnimateds] = useState(false)
+  const className = classNames({
+    error,
+    valid
+  })
+  console.log(canBeAnimated)
   return (
     <InputContainer>
       <StyledInput
         {...props}
         placeholder={placeholder}
         variants={variants}
-        className={error ? 'error' : valid ? 'valid' : ''}
+        className={className}
+        disabled={disabled}
+        custom={disabled}
+        animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+        onAnimationComplete={() => setCanBeAnimateds(true)}
       />
-      {(error || valid) && <Label>{error || valid}</Label>}
+      {!disabled && (error || valid) && <Label>{error || valid}</Label>}
     </InputContainer>
   )
 }
@@ -77,5 +91,10 @@ const StyledInput = styled(motion.input)<InputProps>`
     & + ${Label} {
       color: ${({ theme }) => theme.global.valid};
     }
+  }
+
+  &:disabled {
+    background-color: ${({ theme }) => theme.bg.secondary};
+    border: 3px solid ${({ theme }) => theme.border.primary};
   }
 `

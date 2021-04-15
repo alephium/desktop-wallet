@@ -17,6 +17,7 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
   const theme = useTheme()
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [passwordCheck, setPasswordCheck] = useState('')
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value
@@ -47,9 +48,16 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
             placeholder="Password"
             type="password"
             onChange={onUpdatePassword}
-            required
             error={passwordError}
             valid={!passwordError && password.length > 0 ? 'Secure password!' : ''}
+          />
+          <Input
+            placeholder="Retype password"
+            type="password"
+            onChange={(e) => setPasswordCheck(e.target.value)}
+            error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
+            valid={password && password === passwordCheck ? 'All good!' : ''}
+            disabled={!password || passwordError.length > 0}
           />
           <InfoBox
             Icon={FiAlertTriangle}
@@ -60,7 +68,7 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
         </Content>
         <Content apparitionDelay={0.2} style={{ flex: 1 }}>
           <Button secondary>Cancel</Button>
-          <Button deactivated={!password || passwordError.length > 0}>Continue</Button>
+          <Button disabled={!password || passwordError.length > 0 || password !== passwordCheck}>Continue</Button>
         </Content>
       </ContentContainer>
     </SectionContainer>
