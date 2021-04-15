@@ -13,12 +13,27 @@ interface CreateWalletProps {
   setWallet: Dispatch<SetStateAction<Wallet | undefined>>
 }
 
+interface WalletState {
+  username: string
+  usernames: string[]
+  usernameError: string
+  password: string
+  passwordError: string
+  passwordCheck: string
+}
+
 const CreateWallet = ({ setWallet }: CreateWalletProps) => {
   const theme = useTheme()
-  const [userName, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
-  const [passwordCheck, setPasswordCheck] = useState('')
+  const [state, setState] = useState<WalletState>({
+    username: '',
+    usernames: [],
+    usernameError: '',
+    password: '',
+    passwordError: '',
+    passwordCheck: ''
+  })
+
+  const { username, usernames, usernameError, password, passwordError, passwordCheck } = state
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value
@@ -35,8 +50,28 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
       }
     }
 
-    setPassword(password)
-    setPasswordError(passwordError)
+    setState({
+      ...state,
+      password,
+      passwordError
+    })
+  }
+
+  const onUpdateUsername = (e: ChangeEvent<HTMLInputElement>) => {
+    const username = e.target.value
+    let usernameError = ''
+
+    if (username.length < 3) {
+      usernameError = 'Username is too short'
+    } else if (state.usernames?.includes(username)) {
+      usernameError = 'Username already taken'
+    }
+
+    setState({
+      ...state,
+      username,
+      usernameError
+    })
   }
 
   return (
@@ -44,18 +79,18 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
       <ContentContainer>
         <SectionTitle color="primary">New Account</SectionTitle>
         <Content>
-          <Input placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
+          <Input placeholder="Username" onChange={onUpdateUsername} error={usernameError} />
           <Input
             placeholder="Password"
             type="password"
             onChange={onUpdatePassword}
             error={passwordError}
-            valid={!passwordError && password.length > 0 ? 'Secure password!' : ''}
+            valid={!passwordError && password && password.length > 0 ? 'Secure password!' : ''}
           />
           <Input
             placeholder="Retype password"
             type="password"
-            onChange={(e) => setPasswordCheck(e.target.value)}
+            onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
             error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
             valid={password && password === passwordCheck ? 'All good!' : ''}
             disabled={!password || passwordError.length > 0}
@@ -70,7 +105,13 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
         <Content apparitionDelay={0.2} style={{ flex: 1 }}>
           <Button secondary>Cancel</Button>
           <Button
-            disabled={!password || passwordError.length > 0 || password !== passwordCheck || userName.length === 0}
+            disabled={
+              !password ||
+              passwordError.length > 0 ||
+              password !== passwordCheck ||
+              username.length === 0 ||
+              usernameError.length > 0
+            }
           >
             Continue
           </Button>
