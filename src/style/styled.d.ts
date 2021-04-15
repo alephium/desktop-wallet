@@ -23,6 +23,7 @@ declare module 'styled-components' {
     global: {
       accent: string
       alert: string
+      valid: string
     }
   }
 }

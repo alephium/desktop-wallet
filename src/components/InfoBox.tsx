@@ -51,5 +51,5 @@ const StyledBox = styled(motion.div)`
   display: flex;
   border-radius: 7px;
   width: 100%;
-  margin: 20px 0;
+  margin: 30px 0 20px 0;
 `

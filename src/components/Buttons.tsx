@@ -5,6 +5,7 @@ import tinycolor from 'tinycolor2'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
+  deactivated?: boolean
 }
 
 const variants: Variants = {
@@ -53,6 +54,9 @@ const StyledButton = styled(motion.button)<ButtonProps>`
         ? tinycolor(theme.bg.tertiary).darken(40).toString()
         : tinycolor(theme.global.accent).darken(20).toString()};
   }
+
+  opacity: ${({ deactivated }) => (deactivated ? 0.5 : 1)} !important;
+  pointer-events: ${({ deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
     box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
