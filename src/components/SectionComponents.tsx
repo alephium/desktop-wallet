@@ -29,7 +29,7 @@ const contentVariants: Variants = {
     transition: {
       when: 'beforeChildren',
       delay: apparitionDelay,
-      staggerChildren: 0.1,
+      staggerChildren: 0.05,
       delayChildren: 0.1
     }
   })
@@ -58,6 +58,10 @@ export const StyledContent = styled(motion.div)`
 interface SectionTitleProps {
   color: 'primary' | 'contrast'
 }
+
+// ===========
+// == Title ==
+// ===========
 
 export const SectionTitle: FC<SectionTitleProps> = ({ color, children }) => {
   return (

@@ -14,6 +14,8 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
+    'react/react-in-jsx-scope': 'off',
     quotes: [1, 'single'],
     'jsx-quotes': [2, 'prefer-double'],
     '@typescript-eslint/member-delimiter-style': [

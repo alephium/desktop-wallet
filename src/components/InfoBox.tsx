@@ -30,6 +30,7 @@ export const InfoBox = ({ Icon, text, iconColor }: InfoBoxProps) => {
 const IconContainer = styled.div`
   flex: 1;
   display: flex;
+  max-width: 100px;
 
   svg {
     height: 50%;
@@ -41,6 +42,7 @@ const IconContainer = styled.div`
 const TextContainer = styled.p`
   flex: 2;
   font-weight: 600;
+  vertical-align: center;
 `
 
 const StyledBox = styled(motion.div)`
