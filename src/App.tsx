@@ -41,6 +41,7 @@ const AppContainer = styled.main`
   left: 0;
   bottom: 0;
   display: flex;
+  overflow-y: auto;
 `
 
 export default App

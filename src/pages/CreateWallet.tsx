@@ -15,6 +15,7 @@ interface CreateWalletProps {
 
 const CreateWallet = ({ setWallet }: CreateWalletProps) => {
   const theme = useTheme()
+  const [userName, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState('')
@@ -43,7 +44,7 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
       <ContentContainer>
         <SectionTitle color="primary">New Account</SectionTitle>
         <Content>
-          <Input placeholder="Username" required />
+          <Input placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
           <Input
             placeholder="Password"
             type="password"
@@ -68,7 +69,11 @@ const CreateWallet = ({ setWallet }: CreateWalletProps) => {
         </Content>
         <Content apparitionDelay={0.2} style={{ flex: 1 }}>
           <Button secondary>Cancel</Button>
-          <Button disabled={!password || passwordError.length > 0 || password !== passwordCheck}>Continue</Button>
+          <Button
+            disabled={!password || passwordError.length > 0 || password !== passwordCheck || userName.length === 0}
+          >
+            Continue
+          </Button>
         </Content>
       </ContentContainer>
     </SectionContainer>

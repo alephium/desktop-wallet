@@ -2,7 +2,7 @@ import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState } from 'react'
+import { useState, ChangeEvent } from 'react'
 
 interface InputProps extends HTMLMotionProps<'input'> {
   error?: string
@@ -16,17 +16,27 @@ const variants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Input = ({ placeholder, error, valid, disabled, ...props }: InputProps) => {
+export const Input = ({ placeholder, error, valid, disabled, onChange, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimateds] = useState(false)
+  const [value, setValue] = useState('')
+
   const className = classNames({
     error,
     valid
   })
-  console.log(canBeAnimated)
+
+  const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    onChange && onChange(e)
+    setValue(e.target.value)
+  }
+
   return (
     <InputContainer>
+      {value && <Label animate={{ y: -20, opacity: 1, scale: 0.8 }}>{placeholder}</Label>}
       <StyledInput
         {...props}
+        value={value}
+        onChange={handleValueChange}
         placeholder={placeholder}
         variants={variants}
         className={className}
@@ -35,7 +45,7 @@ export const Input = ({ placeholder, error, valid, disabled, ...props }: InputPr
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimateds(true)}
       />
-      {!disabled && (error || valid) && <Label>{error || valid}</Label>}
+      {!disabled && (error || valid) && <Message animate={{ y: 10, opacity: 1 }}>{error || valid}</Message>}
     </InputContainer>
   )
 }
@@ -46,15 +56,23 @@ const InputContainer = styled.div`
   position: relative;
   height: 50px;
   width: 100%;
-  margin: 15px 0;
+  margin: 17px 0;
 `
 
-const Label = styled.label<InputProps>`
+const Label = styled(motion.label)`
   position: absolute;
-  bottom: 0;
-  left: 10px;
+  top: 0;
+  left: 15px;
   font-weight: 600;
-  transform: translateY(110%);
+  opacity: 0;
+`
+
+const Message = styled(motion.label)<InputProps>`
+  position: absolute;
+  bottom: -10px;
+  right: 10px;
+  font-weight: 600;
+  opacity: 0;
 `
 
 const StyledInput = styled(motion.input)<InputProps>`
@@ -79,7 +97,7 @@ const StyledInput = styled(motion.input)<InputProps>`
     border: 3px solid ${({ theme }) => theme.global.alert};
     background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
 
-    & + ${Label} {
+    & + ${Message} {
       color: ${({ theme }) => theme.global.alert};
     }
   }
@@ -88,7 +106,7 @@ const StyledInput = styled(motion.input)<InputProps>`
     border: 3px solid ${({ theme }) => theme.global.valid};
     background-color: ${({ theme }) => tinycolor(theme.global.valid).setAlpha(0.1).toString()};
 
-    & + ${Label} {
+    & + ${Message} {
       color: ${({ theme }) => theme.global.valid};
     }
   }
