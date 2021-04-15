@@ -2,7 +2,7 @@ import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState, ChangeEvent, forwardRef } from 'react'
+import { useState, ChangeEvent } from 'react'
 import { FiCheck } from 'react-icons/fi'
 
 interface InputProps extends HTMLMotionProps<'input'> {

@@ -14,21 +14,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { Component } from "react";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { abbreviateAmount, createClient } from "../utils/util";
-import { settingsLoadOrDefault } from "../utils/util";
+import React, { Component } from 'react'
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import { abbreviateAmount, createClient } from '../utils/util'
+import { settingsLoadOrDefault } from '../utils/util'
 
 class Wallet extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       address: '',
       addressGroup: '?',
@@ -41,12 +41,12 @@ class Wallet extends Component {
       transferValue: '',
       networkGroups: '?',
       newPublicKey: '',
-      newPrivateKey: '',
-    };
+      newPrivateKey: ''
+    }
   }
 
   render() {
-    const { wallet } = this.props;
+    const { wallet } = this.props
 
     return (
       <div>
@@ -54,31 +54,53 @@ class Wallet extends Component {
           <div className="section">
             <h3>Address</h3>
             <Typography variant="subtitle2">
-              <a href={this.state.alephscanURL + "/#/addresses/" + wallet.address} target="_blank" rel="noopener noreferrer">{wallet.address}</a>
+              <a
+                href={this.state.alephscanURL + '/#/addresses/' + wallet.address}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {wallet.address}
+              </a>
             </Typography>
             <Typography variant="body2">
               group: {this.state.addressGroup} / {this.state.networkGroups}
             </Typography>
           </div>
-          <br/>
+          <br />
           <div className="section">
             <h3>Balance</h3>
             <TextField className="field" id="filled-basic" label="ALF" variant="filled" value={this.state.balance} />
             <div className="actions">
               <p>
-                <Button variant="contained" className="buttonLarge"  onClick={e => this.getBalance(e)}>Get balance</Button>
+                <Button variant="contained" className="buttonLarge" onClick={(e) => this.getBalance(e)}>
+                  Get balance
+                </Button>
               </p>
             </div>
           </div>
-          <br/>
+          <br />
           <div className="section">
             <h3>Send</h3>
-            <TextField id="to" className="field" label="Recipient address" value={this.state.transferTo} onChange={e => this.updateTransferTo(e) }/>
-            <TextField id="value" label="ALF" className="field" value={this.state.transferValue} onChange={e => this.updateTransferValue(e) }/>
+            <TextField
+              id="to"
+              className="field"
+              label="Recipient address"
+              value={this.state.transferTo}
+              onChange={(e) => this.updateTransferTo(e)}
+            />
+            <TextField
+              id="value"
+              label="ALF"
+              className="field"
+              value={this.state.transferValue}
+              onChange={(e) => this.updateTransferValue(e)}
+            />
             <div className="actions">
-              <br/>
+              <br />
               <div>
-                <Button variant="contained" className="buttonLarge" onClick={e => this.transfer(e)}>Send</Button>
+                <Button variant="contained" className="buttonLarge" onClick={(e) => this.transfer(e)}>
+                  Send
+                </Button>
               </div>
             </div>
           </div>
@@ -91,30 +113,27 @@ class Wallet extends Component {
           >
             <DialogTitle id="alert-dialog-title">{this.state.dialogTitle}</DialogTitle>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {this.state.dialogMessage}
-              </DialogContentText>
+              <DialogContentText id="alert-dialog-description">{this.state.dialogMessage}</DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={e => this.dialogClose()} color="primary">
+              <Button onClick={(e) => this.dialogClose()} color="primary">
                 Okay
               </Button>
             </DialogActions>
           </Dialog>
-
         </div>
       </div>
-    );
+    )
   }
 
   async componentDidMount() {
     try {
-      this.client = await createClient();
+      this.client = await createClient()
     } finally {
       if (!this.client) {
-        this.dialogError('Unable to initialize the client, please check your network settings.');
+        this.dialogError('Unable to initialize the client, please check your network settings.')
       } else {
-        const group = await this.client.getGroupIndex(this.props.wallet.address);
+        const group = await this.client.getGroupIndex(this.props.wallet.address)
         this.setState({
           addressGroup: group,
           networkGroups: this.client.clique.groups
@@ -122,22 +141,22 @@ class Wallet extends Component {
       }
     }
 
-    let settings = settingsLoadOrDefault();
+    let settings = settingsLoadOrDefault()
 
     this.setState({
       alephscanURL: settings.alephscanURL
-    });
+    })
   }
 
   async getBalance(e) {
     try {
-      const response = await this.client.getBalance(this.props.wallet.address);
+      const response = await this.client.getBalance(this.props.wallet.address)
       this.setState({
         balance: abbreviateAmount(response.balance) + ' א'
-      });
+      })
     } catch (e) {
-      this.dialogError(e.message);
-      throw e;
+      this.dialogError(e.message)
+      throw e
     }
   }
 
@@ -146,46 +165,49 @@ class Wallet extends Component {
       dialogOpen: true,
       dialogTitle: 'Error',
       dialogMessage: message
-    });
+    })
   }
 
   dialogClose() {
     this.setState({
       dialogOpen: false
-    });
-  };
+    })
+  }
 
   async transfer(e) {
-    const wallet = this.props.wallet;
+    const wallet = this.props.wallet
     try {
-      const responseCreate = await this.client.transactionCreate(wallet.address, wallet.publicKey,
-                                                  this.state.transferTo, this.state.transferValue);
-      const signature = this.client.transactionSign(responseCreate.txId, wallet.privateKey);
-      const response = await this.client.transactionSend(wallet.address, responseCreate.unsignedTx, signature);
+      const responseCreate = await this.client.transactionCreate(
+        wallet.address,
+        wallet.publicKey,
+        this.state.transferTo,
+        this.state.transferValue
+      )
+      const signature = this.client.transactionSign(responseCreate.txId, wallet.privateKey)
+      const response = await this.client.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
 
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Transaction submitted',
-        dialogMessage: response.txId + '\n' +
-          'chain index: ' + response.fromGroup + ' ➡ ' + response.toGroup
-      });
+        dialogMessage: response.txId + '\n' + 'chain index: ' + response.fromGroup + ' ➡ ' + response.toGroup
+      })
     } catch (e) {
-      this.dialogError(e.message);
-      throw e;
+      this.dialogError(e.message)
+      throw e
     }
   }
 
   updateTransferTo(e) {
     this.setState({
       transferTo: e.target.value
-    });
+    })
   }
 
   updateTransferValue(e) {
     this.setState({
       transferValue: e.target.value
-    });
+    })
   }
 }
 
-export default Wallet;
+export default Wallet

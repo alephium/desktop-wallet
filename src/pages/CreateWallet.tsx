@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, ChangeEvent, useState } from 'react'
 import { Content, ContentContainer, SectionContainer, SectionTitle } from '../components/SectionComponents'
-import { Wallet } from 'alf-client/lib/wallet'
-import { Storage } from 'alf-client/lib/utils'
+import { Wallet, Storage } from 'alf-client'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import { InfoBox } from '../components/InfoBox'

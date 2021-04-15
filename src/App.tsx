@@ -6,7 +6,7 @@ import Home from './pages/Home'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 import CreateWallet from './pages/CreateWallet'
-import { Wallet } from 'alf-client/lib/wallet'
+import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
 
 const App = () => {
