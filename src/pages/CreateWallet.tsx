@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, ChangeEvent, useState } from 'react'
 import { Content, ContentContainer, SectionContainer, SectionTitle } from '../components/SectionComponents'
 import { Wallet } from 'alf-client/lib/wallet'
+import { Storage } from 'alf-client/lib/utils'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import { InfoBox } from '../components/InfoBox'
@@ -24,9 +25,11 @@ interface WalletState {
 
 const CreateWallet = ({ setWallet }: CreateWalletProps) => {
   const theme = useTheme()
+  const storage = Storage()
+
   const [state, setState] = useState<WalletState>({
     username: '',
-    usernames: [],
+    usernames: storage.list(),
     usernameError: '',
     password: '',
     passwordError: '',
