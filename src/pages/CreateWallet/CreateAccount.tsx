@@ -1,17 +1,17 @@
-import { ChangeEvent, useState, useEffect, useContext } from 'react'
-import { SectionContent } from '../../components/PageComponents'
+import React, { ChangeEvent, useState, useEffect, useContext } from 'react'
+import { PageContainer, SectionContent, FooterActions, PageTitle } from '../../components/PageComponents'
 import { Storage } from 'alf-client'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
 import { FiAlertTriangle } from 'react-icons/fi'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
 import { CreateWalletContext } from '.'
+import { Button } from '../../components/Buttons'
 
 const CreateAccount = () => {
-  const { updateContext, activateNextButton } = useContext(CreateWalletContext)
-  const theme = useTheme()
+  const { updateContext, onButtonNext, onButtonBack } = useContext(CreateWalletContext)
   const storage = Storage()
 
   const [state, setState] = useState({
@@ -55,46 +55,50 @@ const CreateAccount = () => {
   }
 
   // Is next button activated?
-  useEffect(() => {
-    activateNextButton(
-      password.length > 0 &&
-        passwordError.length === 0 &&
-        password === passwordCheck &&
-        username.length > 0 &&
-        usernameError.length === 0
-    )
-  }, [activateNextButton, password, passwordCheck, passwordError.length, username.length, usernameError.length])
+  const isNextButtonActive = () =>
+    password.length > 0 &&
+    passwordError.length === 0 &&
+    password === passwordCheck &&
+    username.length > 0 &&
+    usernameError.length === 0
 
   return (
-    <SectionContent>
-      <Input
-        placeholder="Username"
-        onChange={onUpdateUsername}
-        error={usernameError}
-        isValid={username.length > 0 && usernameError.length === 0}
-      />
-      <Input
-        placeholder="Password"
-        type="password"
-        onChange={onUpdatePassword}
-        error={passwordError}
-        isValid={!passwordError && password.length > 0}
-      />
-      <Input
-        placeholder="Retype password"
-        type="password"
-        onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
-        error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
-        isValid={password.length > 0 && password === passwordCheck}
-        disabled={!password || passwordError.length > 0}
-      />
-      <InfoBox
-        Icon={FiAlertTriangle}
-        text={'Make sure to keep your password secured as it cannot by restored!'}
-        iconColor={theme.global.alert}
-      />
-      <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
-    </SectionContent>
+    <PageContainer>
+      <PageTitle color="primary">New Account</PageTitle>
+      <SectionContent>
+        <Input
+          placeholder="Username"
+          onChange={onUpdateUsername}
+          error={usernameError}
+          isValid={username.length > 0 && usernameError.length === 0}
+        />
+        <Input
+          placeholder="Password"
+          type="password"
+          onChange={onUpdatePassword}
+          error={passwordError}
+          isValid={!passwordError && password.length > 0}
+        />
+        <Input
+          placeholder="Retype password"
+          type="password"
+          onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
+          error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
+          isValid={password.length > 0 && password === passwordCheck}
+          disabled={!password || passwordError.length > 0}
+        />
+        <InfoBox Icon={FiAlertTriangle} text={'Make sure to keep your password secured as it cannot by restored!'} />
+        <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
+      </SectionContent>
+      <FooterActions apparitionDelay={0.3}>
+        <Button secondary onClick={onButtonBack}>
+          Cancel
+        </Button>
+        <Button disabled={!isNextButtonActive()} onClick={onButtonNext}>
+          Continue
+        </Button>
+      </FooterActions>
+    </PageContainer>
   )
 }
 

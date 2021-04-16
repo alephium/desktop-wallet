@@ -43,9 +43,10 @@ const contentVariants: Variants = {
 interface ContentProps {
   apparitionDelay?: number
   style?: MotionStyle
+  className?: string
 }
 
-export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, style }) => {
+export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, style, className }) => {
   return (
     <StyledContent
       variants={contentVariants}
@@ -54,6 +55,7 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
       exit="out"
       custom={apparitionDelay}
       style={style}
+      className={className}
     >
       {children}
     </StyledContent>
@@ -65,11 +67,17 @@ export const StyledContent = styled(motion.div)`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  flex: 1;
 `
 
 interface SectionTitleProps {
   color: 'primary' | 'contrast'
 }
+
+export const FooterActions = styled(SectionContent)`
+  flex: 0;
+  margin-bottom: 5vh;
+`
 
 // ===========
 // == Title ==

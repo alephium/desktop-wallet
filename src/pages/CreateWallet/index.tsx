@@ -1,17 +1,10 @@
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { ContentContainer, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import React, { useContext, useEffect, useState } from 'react'
+import { ContentContainer, PageContainer } from '../../components/PageComponents'
 import { generate, Wallet } from 'alf-client'
 import { useHistory, useParams } from 'react-router'
 import CreateAccount from './CreateAccount'
-import { Button } from '../../components/Buttons'
 import WalletWords from './WalletWords'
-import { AnimatePresence } from 'framer-motion'
 import { GlobalContext } from '../../App'
-
-interface Step {
-  pageTitle: JSX.Element
-  pageContent: JSX.Element
-}
 
 interface RouteParams {
   step: string | undefined
@@ -23,7 +16,8 @@ interface Context {
   username: string
   usernames: string[]
   updateContext: (s: Partial<Context>) => void
-  activateNextButton: Dispatch<SetStateAction<boolean>>
+  onButtonNext: () => void
+  onButtonBack: () => void
 }
 
 const initialContext: Context = {
@@ -31,7 +25,8 @@ const initialContext: Context = {
   username: '',
   usernames: [],
   updateContext: () => null,
-  activateNextButton: () => null
+  onButtonNext: () => null,
+  onButtonBack: () => null
 }
 
 export const CreateWalletContext = React.createContext<Context>(initialContext)
@@ -44,14 +39,22 @@ const CreateWallet = () => {
   const { networkType } = useContext(GlobalContext)
   const history = useHistory()
   const { step } = useParams<RouteParams>()
-  const [nextButtonActivated, setNextButtonActivated] = useState(false)
 
-  initialContext.activateNextButton = setNextButtonActivated
   initialContext.updateContext = (c: Partial<Context>) => {
     setContext({
       ...context,
       ...c
     })
+  }
+  initialContext.onButtonNext = () => {
+    history.push(`/create/${stepNumber + 1}`)
+  }
+  initialContext.onButtonBack = () => {
+    if (stepNumber === 0) {
+      history.push('/')
+    } else {
+      history.push(`/create/${stepNumber - 1}`)
+    }
   }
 
   const [context, setContext] = useState<Context>(initialContext)
@@ -68,32 +71,11 @@ const CreateWallet = () => {
   // Steps management
   const stepNumber = step ? parseInt(step) : 0
 
-  const createWalletSteps: Step[] = [
-    {
-      pageTitle: <PageTitle color="primary">New Account</PageTitle>,
-      pageContent: <CreateAccount />
-    },
-    {
-      pageTitle: <PageTitle color="primary">Your Wallet</PageTitle>,
-      pageContent: <WalletWords />
-    }
-  ]
+  const createWalletSteps: JSX.Element[] = [<CreateAccount key="create-account" />, <WalletWords key="wallet-words" />]
 
   // Redirect if step not set properly
   if (stepNumber > createWalletSteps.length) {
     history.replace(`/create/${createWalletSteps.length - 1}`)
-  }
-
-  const handleButtonNext = () => {
-    history.push(`/create/${stepNumber + 1}`)
-  }
-
-  const handleButtonPrevious = () => {
-    if (stepNumber === 0) {
-      history.push('/')
-    } else {
-      history.push(`/create/${stepNumber - 1}`)
-    }
   }
 
   const isStepNumberCorrect = () => {
@@ -103,18 +85,7 @@ const CreateWallet = () => {
   return (
     <CreateWalletContext.Provider value={context}>
       <PageContainer>
-        <ContentContainer>
-          {isStepNumberCorrect() && createWalletSteps[stepNumber].pageTitle}
-          <AnimatePresence>{isStepNumberCorrect() && createWalletSteps[stepNumber].pageContent}</AnimatePresence>
-          <SectionContent apparitionDelay={0.2} style={{ flex: 1 }}>
-            <Button secondary onClick={handleButtonPrevious}>
-              Cancel
-            </Button>
-            <Button disabled={!nextButtonActivated} onClick={handleButtonNext}>
-              Continue
-            </Button>
-          </SectionContent>
-        </ContentContainer>
+        <ContentContainer>{isStepNumberCorrect() && createWalletSteps[stepNumber]}</ContentContainer>
       </PageContainer>
     </CreateWalletContext.Provider>
   )
