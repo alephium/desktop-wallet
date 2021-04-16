@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { ContentContainer, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
-import { generate } from 'alf-client'
+import { generate, Wallet } from 'alf-client'
 import { useHistory, useParams } from 'react-router'
 import CreateAccount from './CreateAccount'
 import { Button } from '../../components/Buttons'
@@ -18,6 +18,7 @@ interface RouteParams {
 }
 
 interface Context {
+  plainWallet?: Wallet
   mnemonic: string
   username: string
   usernames: string[]
@@ -40,7 +41,7 @@ export const CreateWalletContext = React.createContext<Context>(initialContext)
 // ============== //
 
 const CreateWallet = () => {
-  const { networkType, setWallet } = useContext(GlobalContext)
+  const { networkType } = useContext(GlobalContext)
   const history = useHistory()
   const { step } = useParams<RouteParams>()
   const [nextButtonActivated, setNextButtonActivated] = useState(false)
@@ -58,11 +59,11 @@ const CreateWallet = () => {
   // Init wallet
   useEffect(() => {
     const result = generate(networkType)
-    setWallet(result.wallet)
     initialContext.updateContext({
+      plainWallet: result.wallet,
       mnemonic: result.mnemonic
     })
-  }, [networkType, setWallet])
+  }, [networkType])
 
   // Steps management
   const stepNumber = step ? parseInt(step) : 0
