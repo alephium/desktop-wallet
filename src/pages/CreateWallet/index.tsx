@@ -15,7 +15,8 @@ interface Context {
   mnemonic: string
   username: string
   usernames: string[]
-  updateContext: (s: Partial<Context>) => void
+  password: string
+  setContext: React.Dispatch<React.SetStateAction<Context>>
   onButtonNext: () => void
   onButtonBack: () => void
 }
@@ -24,7 +25,8 @@ const initialContext: Context = {
   mnemonic: '',
   username: '',
   usernames: [],
-  updateContext: () => null,
+  password: '',
+  setContext: () => null,
   onButtonNext: () => null,
   onButtonBack: () => null
 }
@@ -40,16 +42,11 @@ const CreateWallet = () => {
   const history = useHistory()
   const { step } = useParams<RouteParams>()
 
-  initialContext.updateContext = (c: Partial<Context>) => {
-    setContext({
-      ...context,
-      ...c
-    })
-  }
-  initialContext.onButtonNext = () => {
+  const onButtonNext = () => {
     history.push(`/create/${stepNumber + 1}`)
   }
-  initialContext.onButtonBack = () => {
+  const onButtonBack = () => {
+    console.log(stepNumber)
     if (stepNumber === 0) {
       history.push('/')
     } else {
@@ -62,10 +59,11 @@ const CreateWallet = () => {
   // Init wallet
   useEffect(() => {
     const result = generate(networkType)
-    initialContext.updateContext({
+    setContext((prevContext) => ({
+      ...prevContext,
       plainWallet: result.wallet,
       mnemonic: result.mnemonic
-    })
+    }))
   }, [networkType])
 
   // Steps management
@@ -83,7 +81,7 @@ const CreateWallet = () => {
   }
 
   return (
-    <CreateWalletContext.Provider value={context}>
+    <CreateWalletContext.Provider value={{ ...context, setContext, onButtonNext, onButtonBack }}>
       <PageContainer>
         <ContentContainer>{isStepNumberCorrect() && createWalletSteps[stepNumber]}</ContentContainer>
       </PageContainer>

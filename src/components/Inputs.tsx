@@ -17,9 +17,17 @@ const variants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Input = ({ placeholder, error, isValid, disabled, onChange, ...props }: InputProps) => {
+export const Input = ({
+  placeholder,
+  error,
+  isValid,
+  disabled,
+  onChange,
+  value: initialValue,
+  ...props
+}: InputProps) => {
   const [canBeAnimated, setCanBeAnimateds] = useState(false)
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(initialValue)
 
   const className = classNames({
     error,

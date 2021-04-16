@@ -11,16 +11,18 @@ import { CreateWalletContext } from '.'
 import { Button } from '../../components/Buttons'
 
 const CreateAccount = () => {
-  const { updateContext, onButtonNext, onButtonBack } = useContext(CreateWalletContext)
+  const { setContext, onButtonNext, onButtonBack, username: existingUsername, password: existingPassword } = useContext(
+    CreateWalletContext
+  )
   const storage = Storage()
 
   const [state, setState] = useState({
-    username: '',
+    username: existingUsername,
     usernames: storage.list(),
     usernameError: '',
-    password: '',
+    password: existingPassword,
     passwordError: '',
-    passwordCheck: ''
+    passwordCheck: existingPassword
   })
   const { username, usernames, usernameError, password, passwordError, passwordCheck } = state
 
@@ -62,17 +64,24 @@ const CreateAccount = () => {
     username.length > 0 &&
     usernameError.length === 0
 
+  const handleNextButtonClick = () => {
+    setContext((prevContext) => ({ ...prevContext, username, password }))
+    onButtonNext()
+  }
+
   return (
     <PageContainer>
       <PageTitle color="primary">New Account</PageTitle>
       <SectionContent>
         <Input
+          value={username}
           placeholder="Username"
           onChange={onUpdateUsername}
           error={usernameError}
           isValid={username.length > 0 && usernameError.length === 0}
         />
         <Input
+          value={password}
           placeholder="Password"
           type="password"
           onChange={onUpdatePassword}
@@ -80,6 +89,7 @@ const CreateAccount = () => {
           isValid={!passwordError && password.length > 0}
         />
         <Input
+          value={passwordCheck}
           placeholder="Retype password"
           type="password"
           onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
@@ -94,7 +104,7 @@ const CreateAccount = () => {
         <Button secondary onClick={onButtonBack}>
           Cancel
         </Button>
-        <Button disabled={!isNextButtonActive()} onClick={onButtonNext}>
+        <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick}>
           Continue
         </Button>
       </FooterActions>
