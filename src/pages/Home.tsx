@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { Input } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { SectionContainer, ContentContainer, SectionTitle, Content } from '../components/SectionComponents'
+import { PageContainer, ContentContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 
 interface HomeProps {
@@ -15,11 +15,11 @@ interface HomeProps {
 }
 
 const Home = ({ hasWallet }: HomeProps) => (
-  <SectionContainer>
+  <PageContainer>
     <Header>
       <ContentContainer>
         <HeaderText>
-          <SectionTitle color="contrast">{hasWallet ? 'Welcome back!' : 'Hi there!'}</SectionTitle>
+          <PageTitle color="contrast">{hasWallet ? 'Welcome back!' : 'Hi there!'}</PageTitle>
           <h3>Welcome to the Alephium Wallet!</h3>
           <p>Use the smart money of the future while keeping your mind at ease.</p>
         </HeaderText>
@@ -55,17 +55,17 @@ const Home = ({ hasWallet }: HomeProps) => (
         <TreesImage />
       </ContentContainer>
     </InteractionArea>
-  </SectionContainer>
+  </PageContainer>
 )
 
 // === Components
 
 const Login = () => (
-  <Content>
+  <SectionContent>
     <Input placeholder="Username" />
     <Input placeholder="Password" />
     <Button>Login</Button>
-  </Content>
+  </SectionContent>
 )
 
 const InitialActions = () => {
@@ -76,10 +76,10 @@ const InitialActions = () => {
   }
 
   return (
-    <Content style={{ marginTop: '8vh' }}>
+    <SectionContent style={{ marginTop: '8vh' }}>
       <Button onClick={handleClick}>New wallet</Button>
       <Button>Import wallet</Button>
-    </Content>
+    </SectionContent>
   )
 }
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 
 import Home from './pages/Home'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
-import CreateWallet from './pages/CreateWallet'
+import CreateWallet from './pages/CreateWallet/index'
 import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
 
@@ -22,8 +22,9 @@ const App = () => {
             <Route exact path="/">
               <Home hasWallet={hasWallet} />
             </Route>
-            <Route exact path="/create">
+            <Route exact path="/create/:step?">
               <CreateWallet setWallet={setWallet} />
+              <Redirect exact from="/create/" to="/create/0" />
             </Route>
           </Router>
         </AnimateSharedLayout>

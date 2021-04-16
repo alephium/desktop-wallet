@@ -2,7 +2,7 @@ import { motion, MotionStyle, Variants } from 'framer-motion'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
-export const SectionContainer = styled.section`
+export const PageContainer = styled.section`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -23,16 +23,21 @@ export const ContentContainer = styled.div`
 `
 
 const contentVariants: Variants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0, x: 20 },
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
+    x: 0,
     transition: {
       when: 'beforeChildren',
       delay: apparitionDelay,
       staggerChildren: 0.05,
       delayChildren: 0.1
     }
-  })
+  }),
+  out: {
+    opacity: 0,
+    x: -20
+  }
 }
 
 interface ContentProps {
@@ -40,9 +45,16 @@ interface ContentProps {
   style?: MotionStyle
 }
 
-export const Content: React.FC<ContentProps> = ({ children, apparitionDelay, style }) => {
+export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, style }) => {
   return (
-    <StyledContent variants={contentVariants} initial="hidden" animate="shown" custom={apparitionDelay} style={style}>
+    <StyledContent
+      variants={contentVariants}
+      initial="hidden"
+      animate="shown"
+      exit="out"
+      custom={apparitionDelay}
+      style={style}
+    >
       {children}
     </StyledContent>
   )
@@ -63,7 +75,7 @@ interface SectionTitleProps {
 // == Title ==
 // ===========
 
-export const SectionTitle: FC<SectionTitleProps> = ({ color, children }) => {
+export const PageTitle: FC<SectionTitleProps> = ({ color, children }) => {
   return (
     <H1 color={color} layoutId="sectionTitle">
       {children}
