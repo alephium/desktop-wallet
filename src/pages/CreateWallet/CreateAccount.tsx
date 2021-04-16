@@ -1,35 +1,20 @@
-import { Dispatch, SetStateAction, ChangeEvent, useState, useEffect } from 'react'
-import { SectionContent, ContentContainer, PageTitle } from '../../components/PageComponents'
-import { Wallet, Storage } from 'alf-client'
+import { ChangeEvent, useState, useEffect, useContext } from 'react'
+import { SectionContent } from '../../components/PageComponents'
+import { Storage } from 'alf-client'
 import { Input } from '../../components/Inputs'
-import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { FiAlertTriangle } from 'react-icons/fi'
 import styled, { useTheme } from 'styled-components'
 import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
-import { useHistory } from 'react-router'
-import { StepProps } from '.'
+import { CreateWalletContext } from '.'
 
-interface CreateAccountProps extends StepProps {
-  setWallet: Dispatch<SetStateAction<Wallet | undefined>>
-}
-
-interface State {
-  username: string
-  usernames: string[]
-  usernameError: string
-  password: string
-  passwordError: string
-  passwordCheck: string
-}
-
-const CreateAccount = ({ setWallet, activateNextButton }: CreateAccountProps) => {
-  const history = useHistory()
+const CreateAccount = () => {
+  const { updateContext, activateNextButton } = useContext(CreateWalletContext)
   const theme = useTheme()
   const storage = Storage()
 
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState({
     username: '',
     usernames: storage.list(),
     usernameError: '',
@@ -37,7 +22,6 @@ const CreateAccount = ({ setWallet, activateNextButton }: CreateAccountProps) =>
     passwordError: '',
     passwordCheck: ''
   })
-
   const { username, usernames, usernameError, password, passwordError, passwordCheck } = state
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -54,12 +38,7 @@ const CreateAccount = ({ setWallet, activateNextButton }: CreateAccountProps) =>
         passwordError = 'Insecure password'
       }
     }
-
-    setState({
-      ...state,
-      password,
-      passwordError
-    })
+    setState({ ...state, password, passwordError })
   }
 
   const onUpdateUsername = (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,11 +51,7 @@ const CreateAccount = ({ setWallet, activateNextButton }: CreateAccountProps) =>
       usernameError = 'Username already taken'
     }
 
-    setState({
-      ...state,
-      username,
-      usernameError
-    })
+    setState({ ...state, username, usernameError })
   }
 
   // Is next button activated?

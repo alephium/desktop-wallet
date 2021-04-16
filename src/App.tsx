@@ -9,27 +9,43 @@ import CreateWallet from './pages/CreateWallet/index'
 import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
 
+interface Context {
+  wallet?: Wallet
+  setWallet: (w: Wallet) => void
+  networkType: 'T' | 'M' | 'D'
+}
+
+const initialContext: Context = {
+  wallet: undefined,
+  setWallet: () => null,
+  networkType: 'T'
+}
+
+export const GlobalContext = React.createContext<Context>(initialContext)
+
 const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
   const hasWallet = wallet !== undefined
 
   return (
-    <ThemeProvider theme={lightTheme}>
-      <GlobalStyle />
-      <AppContainer>
-        <AnimateSharedLayout>
-          <Router>
-            <Route exact path="/">
-              <Home hasWallet={hasWallet} />
-            </Route>
-            <Route exact path="/create/:step?">
-              <CreateWallet setWallet={setWallet} />
-              <Redirect exact from="/create/" to="/create/0" />
-            </Route>
-          </Router>
-        </AnimateSharedLayout>
-      </AppContainer>
-    </ThemeProvider>
+    <GlobalContext.Provider value={{ wallet, setWallet, networkType: 'T' }}>
+      <ThemeProvider theme={lightTheme}>
+        <GlobalStyle />
+        <AppContainer>
+          <AnimateSharedLayout>
+            <Router>
+              <Route exact path="/">
+                <Home hasWallet={hasWallet} />
+              </Route>
+              <Route exact path="/create/:step?">
+                <CreateWallet />
+                <Redirect exact from="/create/" to="/create/0" />
+              </Route>
+            </Router>
+          </AnimateSharedLayout>
+        </AppContainer>
+      </ThemeProvider>
+    </GlobalContext.Provider>
   )
 }
 

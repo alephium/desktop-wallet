@@ -1,10 +1,9 @@
-import { useEffect } from 'react'
-import { StepProps } from '.'
+import { useContext, useEffect } from 'react'
+import { CreateWalletContext } from '.'
 import { SectionContent } from '../../components/PageComponents'
 
-type WalletWordsProps = StepProps
-
-const WalletWords = ({ activateNextButton }: WalletWordsProps) => {
+const WalletWords = () => {
+  const { activateNextButton } = useContext(CreateWalletContext)
   useEffect(() => {
     activateNextButton(true)
   }, [activateNextButton])
