@@ -210,6 +210,10 @@ const SelectedWord = styled(motion.div)`
   &:not(:last-child) {
     margin-right: 10px;
   }
+
+  &:hover {
+    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.8).toString()};
+  }
 `
 
 const DragCursor = styled(motion.div)`
@@ -254,6 +258,10 @@ const RemainingWord = styled(SelectedWord)`
   background-color: ${({ theme }) => theme.global.accent};
   background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.2).toString()};
   color: ${({ theme }) => theme.global.accent};
+
+  &:hover {
+    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.3).toString()};
+  }
 `
 
 export default CheckWords

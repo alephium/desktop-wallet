@@ -106,6 +106,7 @@ const BackArrow = styled(FiArrowLeft)`
   height: 47px;
   width: 20px;
   margin-right: 20px;
+  cursor: pointer;
 `
 
 const H1 = styled(motion.h1)<{ color: string }>`
