@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { CreateWalletContext } from '.'
 import { Button } from '../../components/Buttons'
@@ -7,14 +7,25 @@ import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
 import { motion } from 'framer-motion'
 
+const getShuffledArr = (arr: string[]) => {
+  const newArr = arr.slice()
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const rand = Math.floor(Math.random() * (i + 1))
+    ;[newArr[i], newArr[rand]] = [newArr[rand], newArr[i]]
+  }
+  return newArr
+}
+
 const CheckWords = () => {
   const { mnemonic, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
-  const wordList = mnemonic.split(' ')
+  const splitMnemonic = mnemonic.split(' ')
+
+  const wordList = useRef(getShuffledArr(splitMnemonic))
 
   const [selectedWords, setSelectedWords] = useState<string[]>([])
 
   const renderRemainingWords = () => {
-    return wordList
+    return wordList.current
       .filter((w) => !selectedWords?.includes(w))
       .map((w) => (
         <RemainingWord onClick={() => setSelectedWords([...selectedWords, w])} key={w} layoutId={w}>
@@ -31,6 +42,21 @@ const CheckWords = () => {
     ))
   }
 
+  const areWordsValid = () => {
+    console.log('YYO')
+    return selectedWords.toString() == splitMnemonic.toString()
+  }
+
+  const createEncryptedWallet = async () => {
+    /*
+    if (this.isMnemonicValid()) {
+      const walletEncrypted = await this.props.wallet.encrypt(this.props.credentials.password)
+      storage.save(this.props.credentials.username, walletEncrypted)
+      this.props.setWallet(this.props.wallet)
+    }
+    */
+  }
+
   return (
     <PageContainer>
       <PageTitle color="primary" onBackButtonPress={onButtonBack}>
@@ -41,12 +67,14 @@ const CheckWords = () => {
         <SelectedWordList>{renderSelectedWords()}</SelectedWordList>
         <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
       </SectionContent>
-      {selectedWords && selectedWords.length === wordList.length && (
+      {selectedWords.length === wordList.current.length && (
         <FooterActions apparitionDelay={0.3}>
           <Button secondary onClick={onButtonBack}>
             Cancel
           </Button>
-          <Button onClick={onButtonNext}>Continue</Button>
+          <Button onClick={onButtonNext} disabled={!areWordsValid()}>
+            Continue
+          </Button>
         </FooterActions>
       )}
     </PageContainer>

@@ -48,7 +48,6 @@ const CreateWallet = () => {
     history.push(`/create/${stepNumber + 1}`)
   }
   const onButtonBack = () => {
-    console.log(stepNumber)
     if (stepNumber === 0) {
       history.push('/')
     } else {
