@@ -5,7 +5,8 @@ import { Button } from '../../components/Buttons'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
-import { motion } from 'framer-motion'
+import { motion, PanInfo } from 'framer-motion'
+import { throttle } from 'lodash'
 
 const getShuffledArr = (arr: string[]) => {
   const newArr = arr.slice()
@@ -23,6 +24,95 @@ const CheckWords = () => {
   const wordList = useRef(getShuffledArr(splitMnemonic))
 
   const [selectedWords, setSelectedWords] = useState<string[]>([])
+  const selectedElements = useRef<{ [word: string]: Element | null }>(
+    splitMnemonic.reduce((p, c) => ({ ...p, [c]: null }), {})
+  )
+
+  // === Drag interaction ===
+  const [isDragging, setIsDragging] = useState(false)
+  const [closestWord, setClosestWord] = useState('')
+
+  // === Actions ===
+  // ===============
+  const handleSelectedWordRemove = (w: string) => {
+    if (isDragging) {
+      setIsDragging(false)
+      return
+    }
+    setSelectedWords(selectedWords.filter((word) => w !== word))
+
+    // Remove from element list
+    selectedElements.current[w] = null
+  }
+
+  const handleSelectedWordDrag = throttle(
+    (
+      event: MouseEvent | TouchEvent | PointerEvent,
+      info: PanInfo,
+      word: string,
+      currentSelectedElements: typeof selectedElements.current
+    ) => {
+      //if (Math.abs(info.offset.x) < 5 || Math.abs(info.offset.y) < 2) return
+
+      const { [word]: _currentElement, ...otherElements } = currentSelectedElements
+      const closestElement = Object.values(otherElements).reduce(
+        (p, c, i) => {
+          // Distance
+          let returnedObject
+
+          if (c) {
+            const rect = c.getBoundingClientRect()
+            const distance = Math.hypot(rect.x - info.point.x, rect.y - info.point.y)
+
+            if (p.distance === 0) {
+              returnedObject = {
+                word: Object.keys(otherElements)[i],
+                element: c,
+                distance: distance
+              }
+            } else if (distance < p.distance) {
+              returnedObject = {
+                word: Object.keys(otherElements)[i],
+                element: c,
+                distance: distance
+              }
+            } else {
+              returnedObject = p
+            }
+          } else {
+            returnedObject = p
+          }
+
+          return returnedObject
+        },
+        {
+          word: '',
+          element: null as Element | null,
+          distance: 0
+        }
+      )
+
+      setClosestWord(closestElement.word)
+    },
+    300
+  )
+
+  const handleSelectedWordDragEnd = (word: string, newNeighbourWord: string) => {
+    // Find neighbour index
+    if (closestWord) {
+      const currentIndex = selectedWords.findIndex((w) => w === word)
+      let newIndex = selectedWords.findIndex((w) => w === newNeighbourWord)
+      if (currentIndex < newIndex) {
+        newIndex -= 1
+      }
+
+      const filteredWords = selectedWords.filter((w) => w !== word)
+      setSelectedWords([...filteredWords.slice(0, newIndex), word, ...filteredWords.slice(newIndex)])
+      setClosestWord('')
+    }
+  }
+
+  // === Renders
 
   const renderRemainingWords = () => {
     return wordList.current
@@ -36,14 +126,25 @@ const CheckWords = () => {
 
   const renderSelectedWords = () => {
     return selectedWords?.map((w) => (
-      <SelectedWord onClick={() => setSelectedWords(selectedWords.filter((word) => w !== word))} key={w} layoutId={w}>
+      <SelectedWord
+        onPointerUp={() => handleSelectedWordRemove(w)}
+        key={w}
+        layoutId={w}
+        drag
+        ref={(element) => {
+          if (selectedElements.current && element) selectedElements.current[w] = element
+        }}
+        onDragStart={() => setIsDragging(true)}
+        onDrag={(e, info) => handleSelectedWordDrag(e, info, w, selectedElements.current)}
+        onDragEnd={() => handleSelectedWordDragEnd(w, closestWord)}
+      >
+        {isDragging && closestWord === w && <DragCursor layoutId="cursor" />}
         {w}
       </SelectedWord>
     ))
   }
 
   const areWordsValid = () => {
-    console.log('YYO')
     return selectedWords.toString() == splitMnemonic.toString()
   }
 
@@ -64,11 +165,15 @@ const CheckWords = () => {
       </PageTitle>
       <SectionContent>
         <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
-        <SelectedWordList>{renderSelectedWords()}</SelectedWordList>
+        <SelectedWordList
+          className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
+        >
+          {renderSelectedWords()}
+        </SelectedWordList>
         <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
       </SectionContent>
       {selectedWords.length === wordList.current.length && (
-        <FooterActions apparitionDelay={0.3}>
+        <FooterActions>
           <Button secondary onClick={onButtonBack}>
             Cancel
           </Button>
@@ -80,22 +185,6 @@ const CheckWords = () => {
     </PageContainer>
   )
 }
-
-const SelectedWordList = styled.div`
-  width: 100%;
-  padding: 20px;
-  min-height: 30vh;
-  border-radius: 14px;
-  border: 3px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  margin-bottom: 20px;
-
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  align-content: flex-start;
-`
 
 const RemainingWordList = styled.div`
   display: flex;
@@ -115,9 +204,49 @@ const SelectedWord = styled(motion.div)`
   font-weight: 600;
   text-align: center;
   margin-bottom: 10px;
+  position: relative;
+  cursor: pointer;
 
   &:not(:last-child) {
     margin-right: 10px;
+  }
+`
+
+const DragCursor = styled(motion.div)`
+  position: absolute;
+  left: -7px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: ${({ theme }) => theme.global.alert};
+  z-index: 100;
+`
+
+const SelectedWordList = styled.div`
+  width: 100%;
+  padding: 20px;
+  min-height: 30vh;
+  border-radius: 14px;
+  border: 3px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.secondary};
+  margin-bottom: 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-content: flex-start;
+
+  &.valid {
+    ${SelectedWord} {
+      background-color: ${({ theme }) => theme.global.valid};
+    }
+  }
+
+  &.error {
+    ${SelectedWord} {
+      background-color: ${({ theme }) => theme.global.alert};
+    }
   }
 `
 
