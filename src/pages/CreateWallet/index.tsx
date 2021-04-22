@@ -6,6 +6,7 @@ import CreateAccount from './CreateAccount'
 import WalletWords from './WalletWords'
 import { GlobalContext } from '../../App'
 import CheckWordsIntro from './CheckWordsIntro'
+import CheckWords from './CheckWords'
 
 interface RouteParams {
   step: string | undefined
@@ -73,7 +74,8 @@ const CreateWallet = () => {
   const createWalletSteps: JSX.Element[] = [
     <CreateAccount key="create-account" />,
     <WalletWords key="wallet-words" />,
-    <CheckWordsIntro key="check-words-intro" />
+    <CheckWordsIntro key="check-words-intro" />,
+    <CheckWords key="check-words" />
   ]
 
   // Redirect if step not set properly

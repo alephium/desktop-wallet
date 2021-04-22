@@ -7,9 +7,9 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-const Paragraph: FC<HTMLMotionProps<'p'>> = ({ children, className }) => {
+const Paragraph: FC<HTMLMotionProps<'p'>> = ({ children, className, style }) => {
   return (
-    <StyledParagraph variants={variants} className={className}>
+    <StyledParagraph variants={variants} className={className} style={style}>
       {children}
     </StyledParagraph>
   )
