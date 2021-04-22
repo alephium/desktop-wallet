@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import styled from 'styled-components'
 import { CreateWalletContext } from '.'
 import { InfoBox } from '../../components/InfoBox'
@@ -19,7 +19,7 @@ const WalletWords = () => {
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
         <Button secondary onClick={onButtonBack}>
-          Cancel
+          Back
         </Button>
         <Button onClick={onButtonNext}>Continue</Button>
       </FooterActions>

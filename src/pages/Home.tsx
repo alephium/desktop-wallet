@@ -76,7 +76,7 @@ const InitialActions = () => {
   }
 
   return (
-    <SectionContent style={{ marginTop: '8vh' }}>
+    <SectionContent style={{ marginTop: '2vh' }}>
       <Button onClick={handleClick}>New wallet</Button>
       <Button>Import wallet</Button>
     </SectionContent>

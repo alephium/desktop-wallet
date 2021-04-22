@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router'
 import CreateAccount from './CreateAccount'
 import WalletWords from './WalletWords'
 import { GlobalContext } from '../../App'
+import CheckWordsIntro from './CheckWordsIntro'
 
 interface RouteParams {
   step: string | undefined
@@ -69,7 +70,11 @@ const CreateWallet = () => {
   // Steps management
   const stepNumber = step ? parseInt(step) : 0
 
-  const createWalletSteps: JSX.Element[] = [<CreateAccount key="create-account" />, <WalletWords key="wallet-words" />]
+  const createWalletSteps: JSX.Element[] = [
+    <CreateAccount key="create-account" />,
+    <WalletWords key="wallet-words" />,
+    <CheckWordsIntro key="check-words-intro" />
+  ]
 
   // Redirect if step not set properly
   if (stepNumber > createWalletSteps.length) {

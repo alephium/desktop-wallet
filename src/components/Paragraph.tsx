@@ -17,6 +17,7 @@ const Paragraph: FC<HTMLMotionProps<'p'>> = ({ children, className }) => {
 
 const StyledParagraph = styled(motion.p)`
   white-space: pre-wrap;
+  font-weight: 500;
 `
 
 export default Paragraph

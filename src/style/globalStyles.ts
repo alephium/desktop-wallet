@@ -21,7 +21,8 @@ export const GlobalStyle = createGlobalStyle`
 
   h1 {
     font-size: 2.5rem;
-    margin-bottom: 2vh;
+    margin-bottom: 40px;
+    margin-top: 30px;
   }
 
   h3 {
