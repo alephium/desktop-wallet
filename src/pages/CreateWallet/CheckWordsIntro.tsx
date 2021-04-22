@@ -13,7 +13,9 @@ const CheckWordsIntro = () => {
 
   return (
     <PageContainer>
-      <PageTitle color="primary">Security Check</PageTitle>
+      <PageTitle color="primary" onBackButtonPress={onButtonBack}>
+        Security Check
+      </PageTitle>
       <SectionContent>
         <LockContainer>
           <Lock
@@ -38,9 +40,6 @@ const CheckWordsIntro = () => {
         <SecondParagraph>Select the words in the right order. Ready?</SecondParagraph>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
-        <Button secondary onClick={onButtonBack}>
-          Back
-        </Button>
         <Button onClick={onButtonNext}>Ready!</Button>
       </FooterActions>
     </PageContainer>

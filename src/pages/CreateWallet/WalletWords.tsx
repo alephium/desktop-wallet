@@ -11,16 +11,15 @@ const WalletWords = () => {
 
   return (
     <PageContainer>
-      <PageTitle color="primary">Your Wallet</PageTitle>
+      <PageTitle color="primary" onBackButtonPress={onButtonBack}>
+        Your Wallet
+      </PageTitle>
       <SectionContent>
         <Label>Secret words</Label>
         <PhraseBox>{mnemonic}</PhraseBox>
         <InfoBox text={'Carefully note the 24 words. They are the keys to your wallet.'} Icon={FiEdit3} />
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
-        <Button secondary onClick={onButtonBack}>
-          Back
-        </Button>
         <Button onClick={onButtonNext}>Continue</Button>
       </FooterActions>
     </PageContainer>

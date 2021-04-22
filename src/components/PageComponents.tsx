@@ -1,6 +1,7 @@
 import { motion, MotionStyle, Variants } from 'framer-motion'
 import React, { FC } from 'react'
 import styled from 'styled-components'
+import { FiArrowLeft } from 'react-icons/fi'
 
 export const PageContainer = styled.section`
   flex: 1;
@@ -72,6 +73,7 @@ export const StyledContent = styled(motion.div)`
 
 interface SectionTitleProps {
   color: 'primary' | 'contrast'
+  onBackButtonPress?: () => void
 }
 
 export const FooterActions = styled(SectionContent)`
@@ -83,14 +85,31 @@ export const FooterActions = styled(SectionContent)`
 // == Title ==
 // ===========
 
-export const PageTitle: FC<SectionTitleProps> = ({ color, children }) => {
+export const PageTitle: FC<SectionTitleProps> = ({ color, children, onBackButtonPress }) => {
   return (
-    <H1 color={color} layoutId="sectionTitle">
-      {children}
-    </H1>
+    <TitleContainer>
+      {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
+      <H1 color={color} layoutId="sectionTitle">
+        {children}
+      </H1>
+    </TitleContainer>
   )
 }
 
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-top: 30px;
+`
+
+const BackArrow = styled(FiArrowLeft)`
+  height: 47px;
+  width: 20px;
+  margin-right: 20px;
+`
+
 const H1 = styled(motion.h1)<{ color: string }>`
+  flex: 1;
+  margin-top: 0;
   color: ${({ theme, color }) => (color === 'primary' ? theme.font.primary : theme.font.contrast)};
 `

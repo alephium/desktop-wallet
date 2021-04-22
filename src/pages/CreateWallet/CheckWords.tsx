@@ -33,7 +33,9 @@ const CheckWords = () => {
 
   return (
     <PageContainer>
-      <PageTitle color="primary">Security Check</PageTitle>
+      <PageTitle color="primary" onBackButtonPress={onButtonBack}>
+        Security Check
+      </PageTitle>
       <SectionContent>
         <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
         <SelectedWordList>{renderSelectedWords()}</SelectedWordList>
