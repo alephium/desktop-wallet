@@ -4,7 +4,7 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: 'rgba(61, 64, 74, 0.035)',
+    secondary: 'rgba(61, 64, 74, 0.05)',
     tertiary: 'rgba(61, 64, 74, 0.2)',
     contrast: '#1b202f'
   },
