@@ -2,7 +2,7 @@ import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motio
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent, useRef, useEffect } from 'react'
 import { FiCheck, FiChevronDown } from 'react-icons/fi'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -75,17 +75,27 @@ interface SelectOption {
 interface SelectProps extends HTMLMotionProps<'select'> {
   initialValue?: SelectOption
   options: SelectOption[]
+  onValueChange: (value: SelectOption | undefined) => void
 }
 
-export const Select = ({ options, placeholder, disabled, initialValue, className }: SelectProps) => {
+export const Select = ({ options, placeholder, disabled, initialValue, className, onValueChange }: SelectProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(initialValue)
   const [showPopup, setShowPopup] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // If only one value, select it
   if (!value && options.length === 1) {
     setValue(options[0])
   }
+
+  useEffect(() => {
+    // Set value in input
+    if (inputRef.current && value) {
+      inputRef.current.value = value.label
+      onValueChange(value)
+    }
+  }, [value])
 
   return (
     <>
@@ -102,7 +112,7 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
         <Chevron>
           <FiChevronDown />
         </Chevron>
-        <StyledInput type="button" value={value?.label} className={className} disabled={disabled} />
+        <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} />
       </InputContainer>
       <AnimatePresence>
         {showPopup && (
@@ -124,9 +134,10 @@ const SelectOptionsPopup = ({
   setValue,
   handleBackgroundClick
 }: {
+  options: SelectOption[]
   setValue: React.Dispatch<React.SetStateAction<{ value: string; label: string } | undefined>>
   handleBackgroundClick: () => void
-} & SelectProps) => {
+}) => {
   const handleOptionSelect = (value: SelectOption) => {
     setValue(value)
     handleBackgroundClick()

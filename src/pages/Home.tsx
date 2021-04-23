@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
@@ -10,13 +10,17 @@ import tinycolor from 'tinycolor2'
 import { PageContainer, ContentContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
+import { walletOpen, Storage } from 'alf-client'
+import { NetworkTypeString } from '../types'
+import { GlobalContext } from '../App'
 
 interface HomeProps {
   hasWallet: boolean
   usernames: string[]
+  networkType: NetworkTypeString
 }
 
-const Home = ({ hasWallet, usernames }: HomeProps) => {
+const Home = ({ hasWallet, usernames, networkType }: HomeProps) => {
   const [showActions, setShowActions] = useState(false)
 
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
@@ -61,7 +65,7 @@ const Home = ({ hasWallet, usernames }: HomeProps) => {
           {showActions ? (
             renderActions()
           ) : hasWallet ? (
-            <Login setShowActions={setShowActions} usernames={usernames} />
+            <Login setShowActions={setShowActions} usernames={usernames} networkType={networkType} />
           ) : (
             renderActions()
           )}
@@ -76,18 +80,60 @@ const Home = ({ hasWallet, usernames }: HomeProps) => {
 
 const Login = ({
   usernames,
+  networkType,
   setShowActions
 }: {
   usernames: string[]
+  networkType: NetworkTypeString
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
-}) => (
-  <SectionContent>
-    <Select placeholder="Username" options={usernames.map((u) => ({ label: u, value: u }))} />
-    <Input placeholder="Password" type="password" />
-    <Button>Login</Button>
-    <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
-  </SectionContent>
-)
+}) => {
+  const [credentials, setCredentials] = useState({ username: '', password: '' })
+  const { setWallet } = useContext(GlobalContext)
+
+  const login = async () => {
+    const walletEncrypted = Storage().load(credentials.username)
+    if (walletEncrypted === null) {
+      alert('User not found.')
+    } else {
+      try {
+        const wallet = await walletOpen(credentials.password, walletEncrypted, networkType)
+        setWallet(wallet)
+      } catch (e) {
+        alert('Invalid password.')
+        throw e
+      }
+    }
+  }
+
+  const handleCredentialsChange = (type: 'username' | 'password', value: string) => {
+    setCredentials((prev) => ({ ...prev, [type]: value }))
+  }
+
+  const handleLogin = () => {
+    login()
+    // TODO: Redirect!
+  }
+
+  console.log(credentials)
+
+  return (
+    <SectionContent>
+      <Select
+        placeholder="Username"
+        options={usernames.map((u) => ({ label: u, value: u }))}
+        onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+      />
+      <Input
+        placeholder="Password"
+        type="password"
+        onChange={(e) => handleCredentialsChange('password', e.target.value)}
+        value={credentials.password}
+      />
+      <Button onClick={handleLogin}>Login</Button>
+      <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+    </SectionContent>
+  )
+}
 
 const InitialActions = ({
   hasWallet,

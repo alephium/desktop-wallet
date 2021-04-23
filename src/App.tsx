@@ -9,12 +9,13 @@ import CreateWallet from './pages/CreateWallet/index'
 import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
 import { Storage } from 'alf-client'
+import { NetworkTypeString } from './types'
 
 interface Context {
   usernames: string[]
   wallet?: Wallet
   setWallet: (w: Wallet) => void
-  networkType: 'T' | 'M' | 'D'
+  networkType: NetworkTypeString
 }
 
 const initialContext: Context = {
@@ -31,6 +32,7 @@ const App = () => {
 
   const usernames = Storage().list()
   const hasWallet = usernames.length > 0
+  const networkType: NetworkTypeString = 'T'
 
   return (
     <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T' }}>
@@ -40,7 +42,7 @@ const App = () => {
           <AnimateSharedLayout>
             <Router>
               <Route exact path="/">
-                <Home hasWallet={hasWallet} usernames={usernames} />
+                <Home hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
               </Route>
               <Route exact path="/create/:step?">
                 <CreateWallet />

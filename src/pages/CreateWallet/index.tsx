@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ContentContainer, PageContainer } from '../../components/PageComponents'
-import { generate, Wallet } from 'alf-client'
+import { walletGenerate, Wallet } from 'alf-client'
 import { useHistory, useParams } from 'react-router'
 import CreateAccount from './CreateAccount'
 import WalletWords from './WalletWords'
@@ -57,7 +57,7 @@ const CreateWallet = () => {
 
   // Init wallet
   useEffect(() => {
-    const result = generate(networkType)
+    const result = walletGenerate(networkType)
     setContext((prevContext) => ({
       ...prevContext,
       plainWallet: result.wallet,
