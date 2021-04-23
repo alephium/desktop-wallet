@@ -1,9 +1,9 @@
-import { HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motion'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
 import { useState, ChangeEvent } from 'react'
-import { FiCheck } from 'react-icons/fi'
+import { FiCheck, FiChevronDown } from 'react-icons/fi'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
@@ -67,34 +67,92 @@ export const Input = ({
 
 // === SELECT === //
 
-interface SelectProps extends HTMLMotionProps<'input'> {
-  options: {
-    value: string
-    label: string
-  }[]
+interface SelectOption {
+  value: string
+  label: string
 }
 
-export const Select = ({ placeholder, disabled, onChange, value: initialValue, className }: SelectProps) => {
+interface SelectProps extends HTMLMotionProps<'select'> {
+  initialValue?: SelectOption
+  options: SelectOption[]
+}
+
+export const Select = ({ options, placeholder, disabled, initialValue, className }: SelectProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(initialValue)
+  const [showPopup, setShowPopup] = useState(false)
 
-  const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    onChange && onChange(e)
-    setValue(e.target.value)
+  // If only one value, select it
+  if (!value && options.length === 1) {
+    setValue(options[0])
   }
 
   return (
-    <InputContainer
-      variants={variants}
-      animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
-      onAnimationComplete={() => setCanBeAnimated(true)}
-      custom={disabled}
+    <>
+      <InputContainer
+        variants={variants}
+        animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+        onAnimationComplete={() => setCanBeAnimated(true)}
+        custom={disabled}
+        onClick={() => setShowPopup(true)}
+      >
+        <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+          {placeholder}
+        </Label>
+        <Chevron>
+          <FiChevronDown />
+        </Chevron>
+        <StyledInput type="button" value={value?.label} className={className} disabled={disabled} />
+      </InputContainer>
+      <AnimatePresence>
+        {showPopup && (
+          <SelectOptionsPopup
+            options={options}
+            setValue={setValue}
+            handleBackgroundClick={() => {
+              setShowPopup(false)
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+const SelectOptionsPopup = ({
+  options,
+  setValue,
+  handleBackgroundClick
+}: {
+  setValue: React.Dispatch<React.SetStateAction<{ value: string; label: string } | undefined>>
+  handleBackgroundClick: () => void
+} & SelectProps) => {
+  const handleOptionSelect = (value: SelectOption) => {
+    setValue(value)
+    handleBackgroundClick()
+  }
+
+  return (
+    <PopupContainer
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      onClick={() => {
+        handleBackgroundClick()
+      }}
     >
-      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
-        {placeholder}
-      </Label>
-      <StyledInput type="button" value={value} onChange={handleValueChange} className={className} disabled={disabled} />
-    </InputContainer>
+      <Popup
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+      >
+        {options.map((o) => (
+          <OptionItem key={o.value} onClick={() => handleOptionSelect(o)}>
+            {o.label}
+          </OptionItem>
+        ))}
+      </Popup>
+    </PopupContainer>
   )
 }
 
@@ -146,6 +204,7 @@ const StyledInput = styled.input<InputProps>`
   padding: 0 15px;
   font-weight: 600;
   font-size: 1em;
+  text-align: left;
 
   transition: 0.2s ease-out;
 
@@ -162,5 +221,43 @@ const StyledInput = styled.input<InputProps>`
   &:disabled {
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 3px solid ${({ theme }) => theme.border.primary};
+  }
+`
+
+const Chevron = styled.div`
+  position: absolute;
+  font-size: 1.3rem;
+  top: 16px;
+  right: 18px;
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const PopupContainer = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+`
+
+const Popup = styled.div`
+  background-color: ${({ theme }) => theme.bg.primary};
+  border-radius: 14px;
+  margin: auto;
+  width: 30vw;
+  min-width: 300px;
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: auto;
+`
+
+const OptionItem = styled.div`
+  padding: 15px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   }
 `
