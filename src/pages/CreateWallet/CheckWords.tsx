@@ -7,6 +7,8 @@ import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
+import { Storage } from 'alf-client'
+import { GlobalContext } from '../../App'
 
 const getShuffledArr = (arr: string[]) => {
   const newArr = arr.slice()
@@ -18,7 +20,8 @@ const getShuffledArr = (arr: string[]) => {
 }
 
 const CheckWords = () => {
-  const { mnemonic, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+  const { mnemonic, plainWallet, password, username, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+  const { setWallet } = useContext(GlobalContext)
   const splitMnemonic = mnemonic.split(' ')
 
   const wordList = useRef(getShuffledArr(splitMnemonic))
@@ -149,13 +152,20 @@ const CheckWords = () => {
   }
 
   const createEncryptedWallet = async () => {
-    /*
-    if (this.isMnemonicValid()) {
-      const walletEncrypted = await this.props.wallet.encrypt(this.props.credentials.password)
-      storage.save(this.props.credentials.username, walletEncrypted)
-      this.props.setWallet(this.props.wallet)
+    if (areWordsValid() && plainWallet) {
+      const walletEncrypted = await plainWallet.encrypt(password)
+      Storage().save(username, walletEncrypted)
+      setWallet(plainWallet)
+      return true
     }
-    */
+  }
+
+  const handleButtonNext = () => {
+    const success = createEncryptedWallet()
+    if (success) onButtonNext()
+    else {
+      console.error('Something went wrong when creating encrypted wallet!')
+    }
   }
 
   return (
@@ -177,7 +187,7 @@ const CheckWords = () => {
           <Button secondary onClick={onButtonBack}>
             Cancel
           </Button>
-          <Button onClick={onButtonNext} disabled={!areWordsValid()}>
+          <Button onClick={handleButtonNext} disabled={!areWordsValid()}>
             Continue
           </Button>
         </FooterActions>
@@ -222,7 +232,7 @@ const DragCursor = styled(motion.div)`
   top: 0;
   bottom: 0;
   width: 4px;
-  background-color: ${({ theme }) => theme.global.alert};
+  background-color: ${({ theme }) => theme.global.accent};
   z-index: 100;
 `
 
