@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
 import { motion } from 'framer-motion'
-import { Input } from '../components/Inputs'
+import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { PageContainer, ContentContainer, PageTitle, SectionContent } from '../components/PageComponents'
@@ -13,9 +13,10 @@ import Paragraph from '../components/Paragraph'
 
 interface HomeProps {
   hasWallet: boolean
+  usernames: string[]
 }
 
-const Home = ({ hasWallet }: HomeProps) => {
+const Home = ({ hasWallet, usernames }: HomeProps) => {
   const [showActions, setShowActions] = useState(false)
 
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
@@ -57,7 +58,13 @@ const Home = ({ hasWallet }: HomeProps) => {
       </Header>
       <InteractionArea>
         <ContentContainer>
-          {showActions ? renderActions() : hasWallet ? <Login setShowActions={setShowActions} /> : renderActions()}
+          {showActions ? (
+            renderActions()
+          ) : hasWallet ? (
+            <Login setShowActions={setShowActions} usernames={usernames} />
+          ) : (
+            renderActions()
+          )}
           <TreesImage />
         </ContentContainer>
       </InteractionArea>
@@ -67,10 +74,16 @@ const Home = ({ hasWallet }: HomeProps) => {
 
 // === Components
 
-const Login = ({ setShowActions }: { setShowActions: React.Dispatch<React.SetStateAction<boolean>> }) => (
+const Login = ({
+  usernames,
+  setShowActions
+}: {
+  usernames: string[]
+  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
+}) => (
   <SectionContent>
-    <Input placeholder="Username" />
-    <Input placeholder="Password" />
+    <Select placeholder="Username" options={usernames.map((u) => ({ label: u, value: u }))} />
+    <Input placeholder="Password" type="password" />
     <Button>Login</Button>
     <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
   </SectionContent>

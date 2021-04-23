@@ -40,7 +40,7 @@ const App = () => {
           <AnimateSharedLayout>
             <Router>
               <Route exact path="/">
-                <Home hasWallet={hasWallet} />
+                <Home hasWallet={hasWallet} usernames={usernames} />
               </Route>
               <Route exact path="/create/:step?">
                 <CreateWallet />

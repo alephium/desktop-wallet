@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { useState, ChangeEvent } from 'react'
 import { FiCheck } from 'react-icons/fi'
 
-interface InputProps extends HTMLMotionProps<'input'> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
   isValid?: boolean
   disabled?: boolean
@@ -17,6 +17,11 @@ const variants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
+const placeHolderVariants: Variants = {
+  up: { y: -35, scale: 0.8 },
+  down: { y: 0, scale: 1 }
+}
+
 export const Input = ({
   placeholder,
   error,
@@ -26,7 +31,7 @@ export const Input = ({
   value: initialValue,
   ...props
 }: InputProps) => {
-  const [canBeAnimated, setCanBeAnimateds] = useState(false)
+  const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(initialValue)
 
   const className = classNames({
@@ -40,20 +45,16 @@ export const Input = ({
   }
 
   return (
-    <InputContainer>
-      {value && <Label animate={{ y: -20, opacity: 1, scale: 0.8 }}>{placeholder}</Label>}
-      <StyledInput
-        {...props}
-        value={value}
-        onChange={handleValueChange}
-        placeholder={placeholder}
-        variants={variants}
-        className={className}
-        disabled={disabled}
-        custom={disabled}
-        animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
-        onAnimationComplete={() => setCanBeAnimateds(true)}
-      />
+    <InputContainer
+      variants={variants}
+      animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+      onAnimationComplete={() => setCanBeAnimated(true)}
+      custom={disabled}
+    >
+      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+        {placeholder}
+      </Label>
+      <StyledInput {...props} value={value} onChange={handleValueChange} className={className} disabled={disabled} />
       {!disabled && isValid && (
         <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <FiCheck strokeWidth={3} />
@@ -64,9 +65,42 @@ export const Input = ({
   )
 }
 
+// === SELECT === //
+
+interface SelectProps extends HTMLMotionProps<'input'> {
+  options: {
+    value: string
+    label: string
+  }[]
+}
+
+export const Select = ({ placeholder, disabled, onChange, value: initialValue, className }: SelectProps) => {
+  const [canBeAnimated, setCanBeAnimated] = useState(false)
+  const [value, setValue] = useState(initialValue)
+
+  const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    onChange && onChange(e)
+    setValue(e.target.value)
+  }
+
+  return (
+    <InputContainer
+      variants={variants}
+      animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+      onAnimationComplete={() => setCanBeAnimated(true)}
+      custom={disabled}
+    >
+      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+        {placeholder}
+      </Label>
+      <StyledInput type="button" value={value} onChange={handleValueChange} className={className} disabled={disabled} />
+    </InputContainer>
+  )
+}
+
 // === Styling
 
-const InputContainer = styled.div`
+const InputContainer = styled(motion.div)`
   position: relative;
   height: 50px;
   width: 100%;
@@ -75,10 +109,9 @@ const InputContainer = styled.div`
 
 const Label = styled(motion.label)`
   position: absolute;
-  top: 0;
-  left: 15px;
+  top: 15px;
+  left: 18px;
   font-weight: 600;
-  opacity: 0;
   color: ${({ theme }) => theme.font.secondary};
 `
 
@@ -103,7 +136,7 @@ const ValidIconContainer = styled(motion.div)`
   color: ${({ theme }) => theme.global.valid};
 `
 
-const StyledInput = styled(motion.input)<InputProps>`
+const StyledInput = styled.input<InputProps>`
   background-image: none;
   height: 50px;
   width: 100%;
