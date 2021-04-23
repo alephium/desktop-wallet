@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
@@ -9,66 +9,80 @@ import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { PageContainer, ContentContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
+import Paragraph from '../components/Paragraph'
 
 interface HomeProps {
   hasWallet: boolean
 }
 
-const Home = ({ hasWallet }: HomeProps) => (
-  <PageContainer>
-    <Header>
-      <ContentContainer>
-        <HeaderText>
-          <PageTitle color="contrast">{hasWallet ? 'Welcome back!' : 'Hi there!'}</PageTitle>
-          <h3>Welcome to the Alephium Wallet!</h3>
-          <p>Use the smart money of the future while keeping your mind at ease.</p>
-        </HeaderText>
-        <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '10vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
-        <CloudGroup
-          coordinates={[
-            ['10px', '0px'],
-            ['0px', '15px'],
-            ['15px', '30px']
-          ]}
-          lengths={['30px', '20px', '25px']}
-          style={{ bottom: '2vh' }}
-          distance="10px"
-          side="left"
-        />
-        <CloudGroup
-          coordinates={[
-            ['10px', '0px'],
-            ['20px', '15px'],
-            ['55px', '30px']
-          ]}
-          lengths={['30px', '40px', '25px']}
-          style={{ top: '3vh' }}
-          distance="20px"
-          side="right"
-        />
-        <MountainImage />
-      </ContentContainer>
-    </Header>
-    <InteractionArea>
-      <ContentContainer>
-        {hasWallet ? <Login /> : <InitialActions />}
-        <TreesImage />
-      </ContentContainer>
-    </InteractionArea>
-  </PageContainer>
-)
+const Home = ({ hasWallet }: HomeProps) => {
+  const [showActions, setShowActions] = useState(false)
+
+  const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
+
+  return (
+    <PageContainer>
+      <Header>
+        <ContentContainer>
+          <HeaderText>
+            <PageTitle color="contrast">Hi there!</PageTitle>
+            <h3>Welcome to the Alephium Wallet!</h3>
+            <p>Use the smart money of the future while keeping your mind at ease.</p>
+          </HeaderText>
+          <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '10vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
+          <CloudGroup
+            coordinates={[
+              ['10px', '0px'],
+              ['0px', '15px'],
+              ['15px', '30px']
+            ]}
+            lengths={['30px', '20px', '25px']}
+            style={{ bottom: '2vh' }}
+            distance="10px"
+            side="left"
+          />
+          <CloudGroup
+            coordinates={[
+              ['10px', '0px'],
+              ['20px', '15px'],
+              ['55px', '30px']
+            ]}
+            lengths={['30px', '40px', '25px']}
+            style={{ top: '3vh' }}
+            distance="20px"
+            side="right"
+          />
+          <MountainImage />
+        </ContentContainer>
+      </Header>
+      <InteractionArea>
+        <ContentContainer>
+          {showActions ? renderActions() : hasWallet ? <Login setShowActions={setShowActions} /> : renderActions()}
+          <TreesImage />
+        </ContentContainer>
+      </InteractionArea>
+    </PageContainer>
+  )
+}
 
 // === Components
 
-const Login = () => (
+const Login = ({ setShowActions }: { setShowActions: React.Dispatch<React.SetStateAction<boolean>> }) => (
   <SectionContent>
     <Input placeholder="Username" />
     <Input placeholder="Password" />
     <Button>Login</Button>
+    <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
   </SectionContent>
 )
 
-const InitialActions = () => {
+const InitialActions = ({
+  hasWallet,
+  setShowActions
+}: {
+  hasWallet: boolean
+  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
   const history = useHistory()
 
   const handleClick = () => {
@@ -79,6 +93,7 @@ const InitialActions = () => {
     <SectionContent style={{ marginTop: '2vh' }}>
       <Button onClick={handleClick}>New wallet</Button>
       <Button>Import wallet</Button>
+      {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
     </SectionContent>
   )
 }
@@ -95,13 +110,12 @@ const Header = styled.header`
 const InteractionArea = styled.div`
   flex: 0.8;
   position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 `
 
 const HeaderText = styled.div`
-  margin-top: 7vh;
+  margin-top: 2vh;
   max-width: 700px;
   color: ${({ theme }) => theme.font.contrast};
 `
@@ -180,6 +194,12 @@ const Cloud = styled.div`
   position: absolute;
   background-color: ${({ theme }) => tinycolor(theme.bg.primary).setAlpha(0.9).toString()};
   height: 3px;
+`
+
+const SwitchLink = styled(Paragraph)`
+  color: ${({ theme }) => theme.global.accent};
+  background-color: ${({ theme }) => theme.bg.primary};
+  padding: 5px;
 `
 
 export default Home

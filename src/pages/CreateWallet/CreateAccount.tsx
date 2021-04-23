@@ -1,6 +1,5 @@
-import React, { ChangeEvent, useState, useEffect, useContext } from 'react'
+import React, { ChangeEvent, useState, useContext } from 'react'
 import { PageContainer, SectionContent, FooterActions, PageTitle } from '../../components/PageComponents'
-import { Storage } from 'alf-client'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
 import { FiAlertTriangle } from 'react-icons/fi'
@@ -9,22 +8,22 @@ import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
 import { CreateWalletContext } from '.'
 import { Button } from '../../components/Buttons'
+import { GlobalContext } from '../../App'
 
 const CreateAccount = () => {
   const { setContext, onButtonNext, onButtonBack, username: existingUsername, password: existingPassword } = useContext(
     CreateWalletContext
   )
-  const storage = Storage()
 
   const [state, setState] = useState({
     username: existingUsername,
-    usernames: storage.list(),
     usernameError: '',
     password: existingPassword,
     passwordError: '',
     passwordCheck: existingPassword
   })
-  const { username, usernames, usernameError, password, passwordError, passwordCheck } = state
+  const { username, usernameError, password, passwordError, passwordCheck } = state
+  const { usernames } = useContext(GlobalContext)
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value

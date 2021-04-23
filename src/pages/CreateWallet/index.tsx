@@ -16,7 +16,6 @@ interface Context {
   plainWallet?: Wallet
   mnemonic: string
   username: string
-  usernames: string[]
   password: string
   setContext: React.Dispatch<React.SetStateAction<Context>>
   onButtonNext: () => void
@@ -26,7 +25,6 @@ interface Context {
 const initialContext: Context = {
   mnemonic: '',
   username: '',
-  usernames: [],
   password: '',
   setContext: () => null,
   onButtonNext: () => null,

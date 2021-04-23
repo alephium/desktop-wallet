@@ -99,7 +99,8 @@ export const PageTitle: FC<SectionTitleProps> = ({ color, children, onBackButton
 const TitleContainer = styled.div`
   display: flex;
   align-items: flex-start;
-  margin-top: 30px;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
 `
 
 const BackArrow = styled(FiArrowLeft)`
@@ -111,6 +112,6 @@ const BackArrow = styled(FiArrowLeft)`
 
 const H1 = styled(motion.h1)<{ color: string }>`
   flex: 1;
-  margin-top: 0;
+  margin: 0;
   color: ${({ theme, color }) => (color === 'primary' ? theme.font.primary : theme.font.contrast)};
 `

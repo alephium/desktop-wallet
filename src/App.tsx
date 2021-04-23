@@ -8,14 +8,17 @@ import { lightTheme } from './style/themes'
 import CreateWallet from './pages/CreateWallet/index'
 import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
+import { Storage } from 'alf-client'
 
 interface Context {
+  usernames: string[]
   wallet?: Wallet
   setWallet: (w: Wallet) => void
   networkType: 'T' | 'M' | 'D'
 }
 
 const initialContext: Context = {
+  usernames: [],
   wallet: undefined,
   setWallet: () => null,
   networkType: 'T'
@@ -25,10 +28,12 @@ export const GlobalContext = React.createContext<Context>(initialContext)
 
 const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
-  const hasWallet = wallet !== undefined
+
+  const usernames = Storage().list()
+  const hasWallet = usernames.length > 0
 
   return (
-    <GlobalContext.Provider value={{ wallet, setWallet, networkType: 'T' }}>
+    <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T' }}>
       <ThemeProvider theme={lightTheme}>
         <GlobalStyle />
         <AppContainer>
