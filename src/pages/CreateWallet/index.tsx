@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ContentContainer, PageContainer } from '../../components/PageComponents'
 import { walletGenerate, Wallet } from 'alf-client'
 import { useHistory, useParams } from 'react-router'
-import CreateAccount from './CreateAccount'
-import WalletWords from './WalletWords'
+import CreateAccountPage from './CreateAccountPage'
+import WalletWordsPage from './WalletWordsPage'
 import { GlobalContext } from '../../App'
-import CheckWordsIntro from './CheckWordsIntro'
-import CheckWords from './CheckWords'
+import CheckWordsIntroPage from './CheckWordsIntroPage'
+import CheckWordsPage from './CheckWordsPage'
 
 interface RouteParams {
   step: string | undefined
@@ -69,10 +69,10 @@ const CreateWallet = () => {
   const stepNumber = step ? parseInt(step) : 0
 
   const createWalletSteps: JSX.Element[] = [
-    <CreateAccount key="create-account" />,
-    <WalletWords key="wallet-words" />,
-    <CheckWordsIntro key="check-words-intro" />,
-    <CheckWords key="check-words" />
+    <CreateAccountPage key="create-account" />,
+    <WalletWordsPage key="wallet-words" />,
+    <CheckWordsIntroPage key="check-words-intro" />,
+    <CheckWordsPage key="check-words" />
   ]
 
   // Redirect if step not set properly

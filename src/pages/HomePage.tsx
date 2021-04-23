@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
@@ -20,7 +20,7 @@ interface HomeProps {
   networkType: NetworkTypeString
 }
 
-const Home = ({ hasWallet, usernames, networkType }: HomeProps) => {
+const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
   const [showActions, setShowActions] = useState(false)
 
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
@@ -89,6 +89,7 @@ const Login = ({
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const { setWallet } = useContext(GlobalContext)
+  const history = useHistory()
 
   const login = async () => {
     const walletEncrypted = Storage().load(credentials.username)
@@ -111,10 +112,9 @@ const Login = ({
 
   const handleLogin = () => {
     login()
+    history.push('/wallet')
     // TODO: Redirect!
   }
-
-  console.log(credentials)
 
   return (
     <SectionContent>
@@ -259,6 +259,11 @@ const SwitchLink = styled(Paragraph)`
   color: ${({ theme }) => theme.global.accent};
   background-color: ${({ theme }) => theme.bg.primary};
   padding: 5px;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+  }
 `
 
-export default Home
+export default HomePage

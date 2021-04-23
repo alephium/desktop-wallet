@@ -45,7 +45,7 @@ import Settings from './components/Settings'
 import Transactions from './components/Transactions'
 import Wallet from './components/Wallet'
 import Init from './components/Init'
-import Home from './pages/Home'
+import HomePage from './pages/HomePage'
 import InitCreate from './components/InitCreate'
 import InitImport from './components/InitImport'
 import withTheme from './components/Theme'
@@ -83,7 +83,7 @@ class App extends React.Component {
           <Container>
             <Router>
               <Route exact path="/">
-                <Home hasWallet={this.state.wallet} />
+                <HomePage hasWallet={this.state.wallet} />
                 {/*<Init networkType={this.state.networkType} setWallet={this.setWallet}/>*/}
               </Route>
               <Route path="/import">

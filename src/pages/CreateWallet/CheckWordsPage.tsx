@@ -9,6 +9,7 @@ import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { Storage } from 'alf-client'
 import { GlobalContext } from '../../App'
+import { useHistory } from 'react-router'
 
 const getShuffledArr = (arr: string[]) => {
   const newArr = arr.slice()
@@ -19,8 +20,9 @@ const getShuffledArr = (arr: string[]) => {
   return newArr
 }
 
-const CheckWords = () => {
-  const { mnemonic, plainWallet, password, username, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+const CheckWordsPage = () => {
+  const history = useHistory()
+  const { mnemonic, plainWallet, password, username, onButtonBack } = useContext(CreateWalletContext)
   const { setWallet } = useContext(GlobalContext)
   const splitMnemonic = mnemonic.split(' ')
 
@@ -162,7 +164,7 @@ const CheckWords = () => {
 
   const handleButtonNext = () => {
     const success = createEncryptedWallet()
-    if (success) onButtonNext()
+    if (success) history.push('/wallet')
     else {
       console.error('Something went wrong when creating encrypted wallet!')
     }
@@ -274,4 +276,4 @@ const RemainingWord = styled(SelectedWord)`
   }
 `
 
-export default CheckWords
+export default CheckWordsPage

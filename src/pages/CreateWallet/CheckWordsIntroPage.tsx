@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { motion } from 'framer-motion'
 import Paragraph from '../../components/Paragraph'
 
-const CheckWordsIntro = () => {
+const CheckWordsIntroPage = () => {
   const { onButtonBack, onButtonNext } = useContext(CreateWalletContext)
 
   return (
@@ -84,4 +84,4 @@ const SecondParagraph = styled(Paragraph)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export default CheckWordsIntro
+export default CheckWordsIntroPage

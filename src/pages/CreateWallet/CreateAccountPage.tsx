@@ -10,7 +10,7 @@ import { CreateWalletContext } from '.'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
 
-const CreateAccount = () => {
+const CreateAccountPage = () => {
   const { setContext, onButtonNext, onButtonBack, username: existingUsername, password: existingPassword } = useContext(
     CreateWalletContext
   )
@@ -116,4 +116,4 @@ const WarningNote = styled(Paragraph)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export default CreateAccount
+export default CreateAccountPage

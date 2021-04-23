@@ -267,8 +267,13 @@ const Popup = styled.div`
 
 const OptionItem = styled.div`
   padding: 15px;
+  cursor: pointer;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.secondary};
   }
 `

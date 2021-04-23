@@ -2,14 +2,15 @@ import React, { useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
 
-import Home from './pages/Home'
+import HomePage from './pages/HomePage'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
-import CreateWallet from './pages/CreateWallet/index'
+import CreateWalletPages from './pages/CreateWallet/index'
 import { Wallet } from 'alf-client'
 import { AnimateSharedLayout } from 'framer-motion'
 import { Storage } from 'alf-client'
 import { NetworkTypeString } from './types'
+import WalletPage from './pages/WalletPage'
 
 interface Context {
   usernames: string[]
@@ -42,11 +43,14 @@ const App = () => {
           <AnimateSharedLayout>
             <Router>
               <Route exact path="/">
-                <Home hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
+                <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
               </Route>
               <Route exact path="/create/:step?">
-                <CreateWallet />
+                <CreateWalletPages />
                 <Redirect exact from="/create/" to="/create/0" />
+              </Route>
+              <Route path="/wallet">
+                <WalletPage />
               </Route>
             </Router>
           </AnimateSharedLayout>

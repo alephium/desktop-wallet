@@ -6,7 +6,7 @@ import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../c
 import { FiEdit3 } from 'react-icons/fi'
 import { Button } from '../../components/Buttons'
 
-const WalletWords = () => {
+const WalletWordsPage = () => {
   const { mnemonic, plainWallet, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
   console.log(plainWallet)
   return (
@@ -67,4 +67,4 @@ const PhraseBox = styled(Box)`
   color: ${({ theme }) => theme.font.contrast};
 `
 
-export default WalletWords
+export default WalletWordsPage
