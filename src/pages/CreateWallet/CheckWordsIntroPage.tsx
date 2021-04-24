@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { CreateWalletContext } from '.'
+import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'

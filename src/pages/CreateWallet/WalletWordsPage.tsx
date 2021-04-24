@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import styled from 'styled-components'
-import { CreateWalletContext } from '.'
+import { CreateWalletContext } from './CreateWalletRootPage'
 import { InfoBox } from '../../components/InfoBox'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { FiEdit3 } from 'react-icons/fi'

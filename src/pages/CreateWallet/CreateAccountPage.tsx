@@ -6,7 +6,7 @@ import { FiAlertTriangle } from 'react-icons/fi'
 import styled from 'styled-components'
 import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
-import { CreateWalletContext } from '.'
+import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
 

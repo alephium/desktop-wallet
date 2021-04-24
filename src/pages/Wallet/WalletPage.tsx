@@ -1,15 +1,19 @@
 import { useContext, useEffect } from 'react'
 import styled from 'styled-components'
-import { PageContainer, SectionContent } from '../components/PageComponents'
-import { CliqueClient } from 'alf-client'
-import { GlobalContext } from '../App'
+import { PageContainer, SectionContent } from '../../components/PageComponents'
+import { GlobalContext } from '../../App'
+import { useHistory } from 'react-router-dom'
 
 const Wallet = () => {
   const { wallet } = useContext(GlobalContext)
+  const history = useHistory()
+
   useEffect(() => {
-    // Get wallet amount
-    const response = await CliqueClient.getBalance(wallet?.address)
-  })
+    console.log(wallet)
+    if (!wallet) {
+      history.push('/')
+    }
+  }, [history, wallet])
 
   return (
     <PageContainer>

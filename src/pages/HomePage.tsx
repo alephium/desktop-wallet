@@ -88,20 +88,22 @@ const Login = ({
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const { setWallet } = useContext(GlobalContext)
+  const { setWallet, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
 
-  const login = async () => {
+  const login = async (callback: () => void) => {
     const walletEncrypted = Storage().load(credentials.username)
     if (walletEncrypted === null) {
-      alert('User not found.')
+      setSnackbarMessage({ text: 'Unknown username', type: 'info' })
     } else {
       try {
         const wallet = await walletOpen(credentials.password, walletEncrypted, networkType)
-        setWallet(wallet)
+        if (wallet) {
+          setWallet(wallet)
+          callback()
+        }
       } catch (e) {
-        alert('Invalid password.')
-        throw e
+        setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
       }
     }
   }
@@ -111,9 +113,7 @@ const Login = ({
   }
 
   const handleLogin = () => {
-    login()
-    history.push('/wallet')
-    // TODO: Redirect!
+    login(() => history.push('/wallet'))
   }
 
   return (

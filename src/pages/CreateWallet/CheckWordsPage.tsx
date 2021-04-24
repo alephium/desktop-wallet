@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { CreateWalletContext } from '.'
+import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import tinycolor from 'tinycolor2'
