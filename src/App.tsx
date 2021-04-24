@@ -7,10 +7,10 @@ import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 import CreateWalletPages from './pages/CreateWallet/CreateWalletRootPage'
 import { Wallet } from 'alf-client'
-import { AnimatePresence, AnimateSharedLayout, m, motion } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import { Storage } from 'alf-client'
 import { NetworkTypeString } from './types'
-import WalletPage from './pages/Wallet/WalletPage'
+import WalletPage from './pages/Wallet/WalletRootPage'
 
 interface Context {
   usernames: string[]

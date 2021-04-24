@@ -3,13 +3,7 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { FiArrowLeft } from 'react-icons/fi'
 
-export const PageContainer = styled.section`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`
-
-export const ContentContainer = styled.div`
+export const MainContainer = styled.div`
   height: 100%;
   max-width: 700px;
   margin: 0 auto;
@@ -19,6 +13,12 @@ export const ContentContainer = styled.div`
   right: 0;
   bottom: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+`
+
+export const PageContainer = styled.section`
+  flex: 1;
   display: flex;
   flex-direction: column;
 `

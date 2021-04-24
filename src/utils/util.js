@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import ALF from "alf-client";
+import { CliqueClient, NodeClient } from 'alf-client'
 
-var MONEY_SYMBOL = ["", "K", "M", "B", "T"];
+var MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 
 export const abbreviateAmount = (num) => {
   if (num < 0) return '0.00'
 
   // what tier? (determines SI symbol)
-  let tier = Math.log10(Number(num)) / 3 | 0
+  let tier = (Math.log10(Number(num)) / 3) | 0
 
   // if zero, we don't need a suffix
-  if(tier <= 0) return num.toFixed(2).toString()
-  if(tier >= MONEY_SYMBOL.length) tier = MONEY_SYMBOL.length - 1
+  if (tier <= 0) return num.toFixed(2).toString()
+  if (tier >= MONEY_SYMBOL.length) tier = MONEY_SYMBOL.length - 1
 
   // get suffix and determine scale
   const suffix = MONEY_SYMBOL[tier]
@@ -38,53 +38,53 @@ export const abbreviateAmount = (num) => {
 }
 
 export async function createClient() {
-  let settings = settingsLoadOrDefault();
-  const client = new ALF.NodeClient({
+  let settings = settingsLoadOrDefault()
+  const client = new NodeClient({
     host: settings.host,
     port: settings.port
-  });
+  })
 
-  console.log('Connecting to: ' + client.host + ':' + client.port);
+  console.log('Connecting to: ' + client.host + ':' + client.port)
 
-  const response = await client.selfClique();
+  const response = await client.selfClique()
   if (!response) {
-    console.log('Self clique not found.');
-    return;
+    console.log('Self clique not found.')
+    return
   }
 
-  const clique = new ALF.CliqueClient(response);
-  return clique;
+  const clique = new CliqueClient(response)
+  return clique
 }
 
 export function settingsDefault() {
   return {
-        host: 'localhost',
-        port: 12973,
-        explorerHost: 'localhost',
-        explorerPort: 9090,
-        alephscanURL: 'http://localhost:3000',
+    host: 'localhost',
+    port: 12973,
+    explorerHost: 'localhost',
+    explorerPort: 9090,
+    alephscanURL: 'http://localhost:3000'
   }
 }
 
 export function settingsLoad() {
-  const str = window.localStorage.getItem('settings');
+  const str = window.localStorage.getItem('settings')
   if (typeof str !== 'undefined') {
-    return JSON.parse(str);
+    return JSON.parse(str)
   } else {
-    return null;
+    return null
   }
 }
 
 export function settingsLoadOrDefault() {
-  const settings = settingsLoad();
+  const settings = settingsLoad()
   if (!settings) {
-    return settingsDefault();
+    return settingsDefault()
   } else {
-    return settings;
+    return settings
   }
 }
 
 export function settingsSave(settings) {
-  const str = JSON.stringify(settings);
-  window.localStorage.setItem('settings', str);
+  const str = JSON.stringify(settings)
+  window.localStorage.setItem('settings', str)
 }

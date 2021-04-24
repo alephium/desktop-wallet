@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { PageContainer, ContentContainer, PageTitle, SectionContent } from '../components/PageComponents'
+import { PageContainer, MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
 import { walletOpen, Storage } from 'alf-client'
@@ -28,7 +28,7 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
   return (
     <PageContainer>
       <Header>
-        <ContentContainer>
+        <MainContainer>
           <HeaderText>
             <PageTitle color="contrast">Hi there!</PageTitle>
             <h3>Welcome to the Alephium Wallet!</h3>
@@ -58,10 +58,10 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
             side="right"
           />
           <MountainImage />
-        </ContentContainer>
+        </MainContainer>
       </Header>
       <InteractionArea>
-        <ContentContainer>
+        <MainContainer>
           {showActions ? (
             renderActions()
           ) : hasWallet ? (
@@ -70,7 +70,7 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
             renderActions()
           )}
           <TreesImage />
-        </ContentContainer>
+        </MainContainer>
       </InteractionArea>
     </PageContainer>
   )
