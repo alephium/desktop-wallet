@@ -5,42 +5,42 @@ import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { createClient } from '../../utils/util'
 import { CliqueClient } from 'alf-client'
+import { Balance } from 'alf-client/dist/types/Api'
 
 const Wallet = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
-  const [walletAmount, setWalletAmount] = useState<number | undefined>(undefined)
+  const [balance, setBalance] = useState<Balance | undefined>(undefined)
 
   const client = useRef<CliqueClient>()
 
+  // Redirect if not wallet is set
   useEffect(() => {
-    // Redirect if not wallet is set
     if (!wallet) {
       history.push('/')
     }
   }, [history, wallet])
 
+  // Set client and make initial calls
   useEffect(() => {
-    // Set client
     const getClient = async () => {
       try {
         client.current = await createClient()
+      } catch (e) {
+        setSnackbarMessage({
+          text: 'Unable to initialize the client, please check your network settings.',
+          type: 'alert'
+        })
       } finally {
         if (wallet && client.current) {
           const group = await client.current.getGroupIndex(wallet.address)
-          console.log(group)
-        } else {
-          setSnackbarMessage({
-            text: 'Unable to initialize the client, please check your network settings.',
-            type: 'alert'
-          })
-          /*
+          console.log('Group: ' + group)
+          const balance = await client.current.getBalance(wallet.address)
 
-          setState({
-            addressGroup: group,
-            networkGroups: client.clique.groups
-          })
-          */
+          if (balance) {
+            console.log(balance)
+            setBalance(balance)
+          }
         }
       }
     }
@@ -48,14 +48,14 @@ const Wallet = () => {
     getClient()
 
     //const settings = settingsLoadOrDefault()
-  })
+  }, [setSnackbarMessage, wallet])
 
   return (
     <MainContainer>
       <PageContainer>
         <SectionContent>
           <WalletAmountBox>
-            <WalletAmount>{1}ℵ</WalletAmount>
+            <WalletAmount>{balance?.balance}ℵ</WalletAmount>
           </WalletAmountBox>
         </SectionContent>
         <TransactionContent>

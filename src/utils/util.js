@@ -40,11 +40,10 @@ export const abbreviateAmount = (num) => {
 export async function createClient() {
   let settings = settingsLoadOrDefault()
   const client = new NodeClient({
-    host: settings.host,
-    port: settings.port
+    baseUrl: `http://${settings.host}:${settings.port}`
   })
 
-  console.log('Connecting to: ' + client.host + ':' + client.port)
+  console.log('Connecting to: ' + client.baseUrl)
 
   const response = await client.selfClique()
   if (!response) {
