@@ -12,7 +12,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "alf-client": "../alephium-js",
-    "bcurl": "^0.1.9",
     "bip39": "^3.0.3",
     "framer-motion": "^4.1.2",
     "react": "^17.0.2",

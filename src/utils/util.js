@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { CliqueClient, NodeClient } from 'alf-client'
+import { CliqueClient } from 'alf-client'
 
 var MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 
@@ -39,20 +39,16 @@ export const abbreviateAmount = (num) => {
 
 export async function createClient() {
   let settings = settingsLoadOrDefault()
-  const client = new NodeClient({
+  const client = new CliqueClient({
     baseUrl: `http://${settings.host}:${settings.port}`
   })
 
   console.log('Connecting to: ' + client.baseUrl)
 
-  const response = await client.selfClique()
-  if (!response) {
-    console.log('Self clique not found.')
-    return
-  }
+  // Init client
+  await client.init()
 
-  const clique = new CliqueClient(response)
-  return clique
+  return client
 }
 
 export function settingsDefault() {

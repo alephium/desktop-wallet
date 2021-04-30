@@ -5,12 +5,13 @@ import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { createClient } from '../../utils/util'
 import { CliqueClient } from 'alf-client'
-import { Balance } from 'alf-client/dist/types/Api'
+import { Balance } from 'alf-client/dist/api/Api'
 
 const Wallet = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
   const [balance, setBalance] = useState<Balance | undefined>(undefined)
+  //const [lastTransactions, setLastTransactions] = useState<Transaction[]>()
 
   const client = useRef<CliqueClient>()
 
@@ -27,18 +28,16 @@ const Wallet = () => {
       try {
         client.current = await createClient()
       } catch (e) {
+        console.log(e)
         setSnackbarMessage({
           text: 'Unable to initialize the client, please check your network settings.',
           type: 'alert'
         })
       } finally {
         if (wallet && client.current) {
-          const group = await client.current.getGroupIndex(wallet.address)
-          console.log('Group: ' + group)
           const balance = await client.current.getBalance(wallet.address)
 
           if (balance) {
-            console.log(balance)
             setBalance(balance)
           }
         }
@@ -53,26 +52,39 @@ const Wallet = () => {
   return (
     <MainContainer>
       <PageContainer>
-        <SectionContent>
+        <WalletAmountBoxContainer>
           <WalletAmountBox>
             <WalletAmount>{balance?.balance}ℵ</WalletAmount>
           </WalletAmountBox>
-        </SectionContent>
+        </WalletAmountBoxContainer>
         <TransactionContent>
           <h2>Last transactions</h2>
-          <LastTransactionList></LastTransactionList>
+          <LastTransactionList>{}</LastTransactionList>
         </TransactionContent>
       </PageContainer>
     </MainContainer>
   )
 }
 
+const WalletAmountBoxContainer = styled(SectionContent)`
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  flex: 0;
+`
+
 const WalletAmountBox = styled.div`
   background-color: ${({ theme }) => theme.global.accent};
   width: 100%;
+  height: 30vh;
   border-radius: 14px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: flex-start;
 `
 
 const WalletAmount = styled.div`
