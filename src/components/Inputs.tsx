@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
 import { useState, ChangeEvent, useRef, useEffect } from 'react'
-import { FiCheck, FiChevronDown } from 'react-icons/fi'
+import { Check, ChevronDown } from 'lucide-react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
@@ -57,7 +57,7 @@ export const Input = ({
       <StyledInput {...props} value={value} onChange={handleValueChange} className={className} disabled={disabled} />
       {!disabled && isValid && (
         <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-          <FiCheck strokeWidth={3} />
+          <Check strokeWidth={3} />
         </ValidIconContainer>
       )}
       {!disabled && error && <ErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</ErrorMessage>}
@@ -110,7 +110,7 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
           {placeholder}
         </Label>
         <Chevron>
-          <FiChevronDown />
+          <ChevronDown />
         </Chevron>
         <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} />
       </InputContainer>

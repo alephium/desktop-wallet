@@ -4,16 +4,18 @@ import { MainContainer, PageContainer, SectionContent } from '../../components/P
 import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { createClient } from '../../utils/util'
-import { CliqueClient } from 'alf-client'
-import { Balance } from 'alf-client/dist/api/Api'
+import { Balance } from 'alf-client/dist/api/api-alephium'
+import { AsyncReturnType } from 'type-fest'
+import { Transaction } from 'alf-client/dist/api/api-explorer'
+import { Send, QrCode } from 'lucide-react'
 
 const Wallet = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
   const [balance, setBalance] = useState<Balance | undefined>(undefined)
-  //const [lastTransactions, setLastTransactions] = useState<Transaction[]>()
+  const [lastTransactions, setLastTransactions] = useState<Transaction[] | undefined>()
 
-  const client = useRef<CliqueClient>()
+  const client = useRef<AsyncReturnType<typeof createClient>>()
 
   // Redirect if not wallet is set
   useEffect(() => {
@@ -26,6 +28,8 @@ const Wallet = () => {
   useEffect(() => {
     const getClient = async () => {
       try {
+        // Get clients
+
         client.current = await createClient()
       } catch (e) {
         console.log(e)
@@ -35,18 +39,23 @@ const Wallet = () => {
         })
       } finally {
         if (wallet && client.current) {
-          const balance = await client.current.getBalance(wallet.address)
+          const balance = await client.current.clique.getBalance(wallet.address)
 
           if (balance) {
             setBalance(balance)
+          }
+
+          // Transactions
+          const transactions = await client.current.explorer.getTransactions(wallet.address)
+
+          if (transactions) {
+            setLastTransactions(transactions)
           }
         }
       }
     }
 
     getClient()
-
-    //const settings = settingsLoadOrDefault()
   }, [setSnackbarMessage, wallet])
 
   return (
@@ -55,14 +64,33 @@ const Wallet = () => {
         <WalletAmountBoxContainer>
           <WalletAmountBox>
             <WalletAmount>{balance?.balance}ℵ</WalletAmount>
+            <WalletActions>
+              <WalletActionButton icon={<QrCode />} />
+            </WalletActions>
           </WalletAmountBox>
         </WalletAmountBoxContainer>
         <TransactionContent>
           <h2>Last transactions</h2>
-          <LastTransactionList>{}</LastTransactionList>
+          <LastTransactionList>
+            {lastTransactions && lastTransactions.length > 0 ? (
+              lastTransactions?.map((t) => {
+                return <TransactionItem key={t.hash} />
+              })
+            ) : (
+              <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
+            )}
+          </LastTransactionList>
         </TransactionContent>
       </PageContainer>
     </MainContainer>
+  )
+}
+
+const WalletActionButton = ({ icon }: { icon: JSX.Element }) => {
+  return (
+    <WalletActionButtonContainer>
+      <ActionButton>{icon}</ActionButton>
+    </WalletActionButtonContainer>
   )
 }
 
@@ -94,6 +122,16 @@ const WalletAmount = styled.div`
   font-weight: 700;
 `
 
+const WalletActions = styled.div`
+  display: flex;
+`
+const WalletActionButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const ActionButton = styled.button``
+
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
@@ -102,6 +140,14 @@ const TransactionContent = styled(SectionContent)`
 const LastTransactionList = styled.div`
   display: flex;
   flex-direction: column;
+`
+
+const TransactionItem = styled.div`
+  height: 80px;
+`
+
+const NoTransactionMessage = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 export default Wallet

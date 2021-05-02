@@ -1,10 +1,9 @@
-import React from 'react'
 import styled, { useTheme } from 'styled-components'
-import { IconType } from 'react-icons'
+import { LucideProps } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'
 
 interface InfoBoxProps {
-  Icon: IconType
+  Icon: (props: LucideProps) => JSX.Element
   text: string
   iconColor?: string
 }

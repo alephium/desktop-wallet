@@ -1,4 +1,4 @@
-// Copyright 2018 The Alephium Authors
+// Copyright 2021 The Alephium Authors
 // This file is part of the alephium project.
 //
 // The library is free software: you can redistribute it and/or modify
@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { CliqueClient } from 'alf-client'
+import { CliqueClient, ExplorerClient } from 'alf-client'
 
-var MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
+const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 
-export const abbreviateAmount = (num) => {
+export const abbreviateAmount = (num: number) => {
   if (num < 0) return '0.00'
 
   // what tier? (determines SI symbol)
@@ -33,25 +33,38 @@ export const abbreviateAmount = (num) => {
   const scale = Math.pow(10, tier * 3)
 
   // scale the bigNum
-  let scaled = num / scale
+  const scaled = num / scale
   return scaled.toFixed(2) + suffix
 }
 
 export async function createClient() {
-  let settings = settingsLoadOrDefault()
-  const client = new CliqueClient({
+  const settings = settingsLoadOrDefault()
+  const cliqueClient = new CliqueClient({
     baseUrl: `http://${settings.host}:${settings.port}`
   })
 
-  console.log('Connecting to: ' + client.baseUrl)
+  const explorerClient = new ExplorerClient({
+    baseUrl: `http://${settings.explorerHost}:${settings.explorerPort}`
+  })
 
-  // Init client
-  await client.init()
+  console.log('Connecting to: ' + cliqueClient.baseUrl)
+  console.log('Explorer backend: ' + explorerClient.baseUrl)
 
-  return client
+  // Init clients
+  await cliqueClient.init()
+
+  return { clique: cliqueClient, explorer: explorerClient }
 }
 
-export function settingsDefault() {
+interface Settings {
+  host: string
+  port: number
+  explorerHost: string
+  explorerPort: number
+  alephscanURL: string
+}
+
+export function settingsDefault(): Settings {
   return {
     host: 'localhost',
     port: 12973,
@@ -63,7 +76,7 @@ export function settingsDefault() {
 
 export function settingsLoad() {
   const str = window.localStorage.getItem('settings')
-  if (typeof str !== 'undefined') {
+  if (str) {
     return JSON.parse(str)
   } else {
     return null
@@ -79,7 +92,7 @@ export function settingsLoadOrDefault() {
   }
 }
 
-export function settingsSave(settings) {
+export function settingsSave(settings: Settings) {
   const str = JSON.stringify(settings)
   window.localStorage.setItem('settings', str)
 }

@@ -1,7 +1,7 @@
 import { motion, MotionStyle, Variants } from 'framer-motion'
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import { FiArrowLeft } from 'react-icons/fi'
+import { ArrowLeft } from 'lucide-react'
 
 export const MainContainer = styled.div`
   height: 100%;
@@ -103,7 +103,7 @@ const TitleContainer = styled.div`
   margin-bottom: 5vh;
 `
 
-const BackArrow = styled(FiArrowLeft)`
+const BackArrow = styled(ArrowLeft)`
   height: 47px;
   width: 20px;
   margin-right: 20px;

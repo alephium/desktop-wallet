@@ -31,5 +31,7 @@ export const GlobalStyle = createGlobalStyle`
 
 	input, button {
 		outline: none;
+    border: none;
+    background: transparent;
 	}
 `

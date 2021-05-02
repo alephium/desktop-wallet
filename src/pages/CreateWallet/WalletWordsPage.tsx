@@ -3,12 +3,11 @@ import styled from 'styled-components'
 import { CreateWalletContext } from './CreateWalletRootPage'
 import { InfoBox } from '../../components/InfoBox'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
-import { FiEdit3 } from 'react-icons/fi'
+import { Edit3 } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
-  console.log(plainWallet)
   return (
     <PageContainer>
       <PageTitle color="primary" onBackButtonPress={onButtonBack}>
@@ -21,7 +20,7 @@ const WalletWordsPage = () => {
       <WordsContent>
         <Label>Secret words</Label>
         <PhraseBox>{mnemonic}</PhraseBox>
-        <InfoBox text={'Carefully note the 24 words. They are the keys to your wallet.'} Icon={FiEdit3} />
+        <InfoBox text={'Carefully note the 24 words. They are the keys to your wallet.'} Icon={Edit3} />
       </WordsContent>
       <FooterActions apparitionDelay={0.3}>
         <Button onClick={onButtonNext}>Continue</Button>

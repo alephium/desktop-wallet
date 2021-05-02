@@ -1,8 +1,8 @@
-import React, { ChangeEvent, useState, useContext } from 'react'
+import { ChangeEvent, useState, useContext } from 'react'
 import { PageContainer, SectionContent, FooterActions, PageTitle } from '../../components/PageComponents'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
-import { FiAlertTriangle } from 'react-icons/fi'
+import { AlertTriangle } from 'lucide-react'
 import styled from 'styled-components'
 import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
@@ -96,7 +96,7 @@ const CreateAccountPage = () => {
           isValid={password.length > 0 && password === passwordCheck}
           disabled={!password || passwordError.length > 0}
         />
-        <InfoBox Icon={FiAlertTriangle} text={'Make sure to keep your password secured as it cannot by restored!'} />
+        <InfoBox Icon={AlertTriangle} text={'Make sure to keep your password secured as it cannot by restored!'} />
         <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
