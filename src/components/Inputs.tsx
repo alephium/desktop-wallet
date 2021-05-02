@@ -2,7 +2,7 @@ import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motio
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState, ChangeEvent, useRef, useEffect } from 'react'
+import { useState, ChangeEvent, useRef } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -89,13 +89,15 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
     setValue(options[0])
   }
 
-  useEffect(() => {
+  const setInputValue = (option: SelectOption) => {
+    onValueChange && onValueChange(option)
+    setValue(option)
+
     // Set value in input
-    if (inputRef.current && value) {
-      inputRef.current.value = value.label
-      onValueChange(value)
+    if (inputRef.current && option) {
+      inputRef.current.value = option.label
     }
-  }, [value])
+  }
 
   return (
     <>
@@ -118,7 +120,7 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
         {showPopup && (
           <SelectOptionsPopup
             options={options}
-            setValue={setValue}
+            setValue={setInputValue}
             handleBackgroundClick={() => {
               setShowPopup(false)
             }}
@@ -135,7 +137,7 @@ const SelectOptionsPopup = ({
   handleBackgroundClick
 }: {
   options: SelectOption[]
-  setValue: React.Dispatch<React.SetStateAction<{ value: string; label: string } | undefined>>
+  setValue: (value: SelectOption) => void | undefined
   handleBackgroundClick: () => void
 }) => {
   const handleOptionSelect = (value: SelectOption) => {
@@ -277,4 +279,13 @@ const OptionItem = styled.div`
   &:hover {
     background-color: ${({ theme }) => theme.bg.secondary};
   }
+`
+
+export const Form = styled.form`
+  display: flex;
+  flex: 1;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `

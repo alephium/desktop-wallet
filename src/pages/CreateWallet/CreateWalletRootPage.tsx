@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { MainContainer, PageContainer } from '../../components/PageComponents'
+import { MainContainer } from '../../components/PageComponents'
 import { walletGenerate, Wallet } from 'alf-client'
 import { useHistory, useParams } from 'react-router'
 import CreateAccountPage from './CreateAccountPage'

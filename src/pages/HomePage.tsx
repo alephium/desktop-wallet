@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
 import { motion } from 'framer-motion'
-import { Input, Select } from '../components/Inputs'
+import { Form, Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { PageContainer, MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
@@ -108,9 +108,9 @@ const Login = ({
     }
   }
 
-  const handleCredentialsChange = (type: 'username' | 'password', value: string) => {
+  const handleCredentialsChange = useCallback((type: 'username' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
-  }
+  }, [])
 
   const handleLogin = () => {
     login(() => history.push('/wallet'))
@@ -118,19 +118,24 @@ const Login = ({
 
   return (
     <SectionContent>
-      <Select
-        placeholder="Username"
-        options={usernames.map((u) => ({ label: u, value: u }))}
-        onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
-      />
-      <Input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => handleCredentialsChange('password', e.target.value)}
-        value={credentials.password}
-      />
-      <Button onClick={handleLogin}>Login</Button>
-      <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+      <Form>
+        <Select
+          placeholder="Username"
+          options={usernames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+        />
+        <Input
+          placeholder="Password"
+          type="password"
+          autoComplete="off"
+          onChange={(e) => handleCredentialsChange('password', e.target.value)}
+          value={credentials.password}
+        />
+        <Button onClick={handleLogin} type="submit">
+          Login
+        </Button>
+        <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+      </Form>
     </SectionContent>
   )
 }

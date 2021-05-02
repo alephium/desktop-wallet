@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { MainContainer, Modal } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
-import { Route, BrowserRouter as Router, useHistory, Switch, useLocation } from 'react-router-dom'
+import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
 import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import { AnimatePresence } from 'framer-motion'
