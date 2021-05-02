@@ -1,13 +1,15 @@
 import React, { useContext, useEffect } from 'react'
-import { MainContainer } from '../../components/PageComponents'
+import { MainContainer, Modal } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
-import { Route, BrowserRouter as Router, useHistory } from 'react-router-dom'
+import { Route, BrowserRouter as Router, useHistory, Switch, useLocation } from 'react-router-dom'
 import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
+import { AnimatePresence } from 'framer-motion'
 
 const Wallet = () => {
   const { wallet } = useContext(GlobalContext)
   const history = useHistory()
+  const location = useLocation()
 
   // Redirect if not wallet is set
   useEffect(() => {
@@ -18,14 +20,18 @@ const Wallet = () => {
 
   return (
     <MainContainer>
-      <Router>
-        <Route path="/wallet">
-          <WalletHomePage />
-        </Route>
-        <Route path="/wallet/send">
-          <SendPage />
-        </Route>
-      </Router>
+      <Route path="/wallet">
+        <WalletHomePage />
+      </Route>
+      <AnimatePresence exitBeforeEnter initial={false}>
+        <Switch location={location} key={location.pathname}>
+          <Route path="/wallet/send" key="send">
+            <Modal>
+              <SendPage />
+            </Modal>
+          </Route>
+        </Switch>
+      </AnimatePresence>
     </MainContainer>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom'
 
 import HomePage from './pages/HomePage'
 import { GlobalStyle } from './style/globalStyles'
@@ -83,22 +83,24 @@ const App = () => {
     <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage }}>
       <ThemeProvider theme={lightTheme}>
         <GlobalStyle />
-        <AppContainer>
-          <AnimateSharedLayout>
-            <Router>
-              <Route exact path="/">
-                <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
-              </Route>
-              <Route exact path="/create/:step?">
-                <CreateWalletPages />
-                <Redirect exact from="/create/" to="/create/0" />
-              </Route>
-              <Route path="/wallet">
-                <WalletPages />
-              </Route>
-            </Router>
-          </AnimateSharedLayout>
-        </AppContainer>
+        <Router>
+          <AppContainer>
+            <AnimateSharedLayout>
+              <Switch>
+                <Route exact path="/">
+                  <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
+                </Route>
+                <Route exact path="/create/:step?">
+                  <CreateWalletPages />
+                  <Redirect exact from="/create/" to="/create/0" />
+                </Route>
+                <Route path="/wallet">
+                  <WalletPages />
+                </Route>
+              </Switch>
+            </AnimateSharedLayout>
+          </AppContainer>
+        </Router>
         <SnackbarManager message={snackbarMessage} />
       </ThemeProvider>
     </GlobalContext.Provider>

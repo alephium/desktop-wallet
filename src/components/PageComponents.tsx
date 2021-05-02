@@ -53,7 +53,6 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
       variants={contentVariants}
       initial="hidden"
       animate="shown"
-      exit="out"
       custom={apparitionDelay}
       style={style}
       className={className}
@@ -114,4 +113,34 @@ const H1 = styled(motion.h1)<{ color: string }>`
   flex: 1;
   margin: 0;
   color: ${({ theme, color }) => (color === 'primary' ? theme.font.primary : theme.font.contrast)};
+`
+
+// ===========
+// == Modal ==
+// ===========
+
+export const Modal: React.FC = ({ children }) => {
+  return (
+    <ModalContainer
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      {children}
+    </ModalContainer>
+  )
+}
+
+const ModalContainer = styled(motion.div)`
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  right: 20px;
+  left: 20px;
+  padding: 0 20px;
+  box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
+  border: 2px solid ${({ theme }) => theme.border.primary};
+  border-radius: 14px;
+  background-color: ${({ theme }) => theme.bg.primary};
 `

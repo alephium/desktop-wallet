@@ -182,6 +182,7 @@ const Label = styled(motion.label)`
   left: 18px;
   font-weight: 600;
   color: ${({ theme }) => theme.font.secondary};
+  pointer-events: none;
 `
 
 const ErrorMessage = styled(motion.label)<InputProps>`
