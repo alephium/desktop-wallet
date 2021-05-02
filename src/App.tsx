@@ -10,21 +10,27 @@ import { Wallet } from 'alf-client'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import { Storage } from 'alf-client'
 import { NetworkTypeString } from './types'
-import WalletPage from './pages/Wallet/WalletRootPage'
+import WalletPages from './pages/Wallet/WalletRootPage'
+import { AsyncReturnType } from 'type-fest'
+import { createClient } from './utils/util'
 
 interface Context {
   usernames: string[]
   wallet?: Wallet
   setWallet: (w: Wallet) => void
   networkType: NetworkTypeString
+  client: Client | undefined
   setSnackbarMessage: (message: SnackbarMessage) => void
 }
+
+type Client = AsyncReturnType<typeof createClient>
 
 const initialContext: Context = {
   usernames: [],
   wallet: undefined,
   setWallet: () => null,
   networkType: 'T',
+  client: undefined,
   setSnackbarMessage: () => null
 }
 
@@ -39,6 +45,28 @@ const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
 
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
+  const [client, setClient] = useState<Client>()
+
+  // Create client
+  useEffect(() => {
+    const getClient = async () => {
+      try {
+        // Get clients
+        const clientResp = await createClient()
+        setClient(clientResp)
+
+        console.log('Clients initialized.')
+      } catch (e) {
+        console.log(e)
+        setSnackbarMessage({
+          text: 'Unable to initialize the client, please check your network settings.',
+          type: 'alert'
+        })
+      }
+    }
+
+    getClient()
+  }, [setSnackbarMessage, wallet])
 
   // Remove snackbar popup
   useEffect(() => {
@@ -52,7 +80,7 @@ const App = () => {
   const networkType: NetworkTypeString = 'T'
 
   return (
-    <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T', setSnackbarMessage }}>
+    <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage }}>
       <ThemeProvider theme={lightTheme}>
         <GlobalStyle />
         <AppContainer>
@@ -66,7 +94,7 @@ const App = () => {
                 <Redirect exact from="/create/" to="/create/0" />
               </Route>
               <Route path="/wallet">
-                <WalletPage />
+                <WalletPages />
               </Route>
             </Router>
           </AnimateSharedLayout>

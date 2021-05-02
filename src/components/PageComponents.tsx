@@ -72,7 +72,7 @@ export const StyledContent = styled(motion.div)`
 `
 
 interface SectionTitleProps {
-  color: 'primary' | 'contrast'
+  color?: 'primary' | 'contrast'
   onBackButtonPress?: () => void
 }
 
@@ -85,7 +85,7 @@ export const FooterActions = styled(SectionContent)`
 // == Title ==
 // ===========
 
-export const PageTitle: FC<SectionTitleProps> = ({ color, children, onBackButtonPress }) => {
+export const PageTitle: FC<SectionTitleProps> = ({ color = 'primary', children, onBackButtonPress }) => {
   return (
     <TitleContainer>
       {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
