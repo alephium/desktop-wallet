@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { MainContainer, PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
-import { useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { createClient } from '../../utils/util'
 import { Balance } from 'alf-client/dist/api/api-alephium'
 import { AsyncReturnType } from 'type-fest'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
-import { Send, QrCode } from 'lucide-react'
+import { Send, QrCode, LucideProps } from 'lucide-react'
 
 const Wallet = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
@@ -63,9 +63,12 @@ const Wallet = () => {
       <PageContainer>
         <WalletAmountBoxContainer>
           <WalletAmountBox>
-            <WalletAmount>{balance?.balance}ℵ</WalletAmount>
+            <WalletAmountContainer>
+              <WalletAmount>{balance?.balance}ℵ</WalletAmount>
+            </WalletAmountContainer>
             <WalletActions>
-              <WalletActionButton icon={<QrCode />} />
+              <WalletActionButton Icon={QrCode} label="Show address" link="" />
+              <WalletActionButton Icon={Send} label="Send" link="" />
             </WalletActions>
           </WalletAmountBox>
         </WalletAmountBoxContainer>
@@ -86,10 +89,22 @@ const Wallet = () => {
   )
 }
 
-const WalletActionButton = ({ icon }: { icon: JSX.Element }) => {
+const WalletActionButton = ({
+  Icon,
+  label,
+  link
+}: {
+  Icon: (props: LucideProps) => JSX.Element
+  label: string
+  link: string
+}) => {
+  const theme = useTheme()
   return (
-    <WalletActionButtonContainer>
-      <ActionButton>{icon}</ActionButton>
+    <WalletActionButtonContainer to={link}>
+      <ActionButton>
+        <Icon color={theme.global.accent} />
+      </ActionButton>
+      <ActionLabel>{label}</ActionLabel>
     </WalletActionButtonContainer>
   )
 }
@@ -108,14 +123,20 @@ const WalletAmountBox = styled.div`
   height: 30vh;
   border-radius: 14px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-  padding: 25px;
+  padding: 0 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-self: flex-start;
 `
 
+const WalletAmountContainer = styled.div`
+  display: flex;
+  flex: 1.5;
+`
+
 const WalletAmount = styled.div`
+  margin: auto;
   font-size: 3rem;
   color: ${({ theme }) => theme.font.contrast};
   text-align: center;
@@ -124,13 +145,33 @@ const WalletAmount = styled.div`
 
 const WalletActions = styled.div`
   display: flex;
-`
-const WalletActionButtonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
+  justify-content: space-around;
+  flex: 1;
 `
 
-const ActionButton = styled.button``
+const WalletActionButtonContainer = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+`
+
+const ActionButton = styled.button`
+  height: 40px;
+  width: 40px;
+  border-radius: 40px;
+  background-color: ${({ theme }) => theme.bg.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+`
+
+const ActionLabel = styled.label`
+  color: ${({ theme }) => theme.font.contrast};
+  font-weight: 600;
+  text-align: center;
+`
 
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start;
