@@ -112,7 +112,8 @@ const Login = ({
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
-  const handleLogin = () => {
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
     login(() => history.push('/wallet'))
   }
 

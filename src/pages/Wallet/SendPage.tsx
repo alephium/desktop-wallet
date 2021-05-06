@@ -15,10 +15,30 @@ const SendPage = () => {
   //console.log(wallet)
 
   const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState<number>()
+  const [amount, setAmount] = useState<string>()
+  const [addressError, setAddressError] = useState<string>()
 
   const onBackButtonpress = () => {
     history.push('/wallet')
+  }
+
+  const handleAddressChange = (value: string) => {
+    // Check if format is correct
+    const match = value.match(/^[MTD][1-9A-Za-z][^OIl]{44}/)
+
+    setAddress(value)
+
+    if (match && match[0]) {
+      setAddress(match[0])
+      setAddressError('')
+    } else {
+      setAddressError('Address format is incorrect')
+    }
+  }
+
+  const handleAmountChange = (value: string) => {
+    const valueToReturn = Number(value) // Remove 0 in front if needed
+    setAmount(valueToReturn.toString())
   }
 
   const handleSend = () => {
@@ -34,16 +54,17 @@ const SendPage = () => {
         </SendLogo>
       </LogoContent>
       <SectionContent>
-        <Input placeholder="Recipient's address" value={address} onChange={(e) => setAddress(e.target.value)} />
         <Input
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-          type="number"
+          placeholder="Recipient's address"
+          value={address}
+          onChange={(e) => handleAddressChange(e.target.value)}
+          error={addressError}
+          isValid={address.length > 0 && !addressError}
         />
+        <Input placeholder="Amount" value={amount} onChange={(e) => handleAmountChange(e.target.value)} type="number" />
       </SectionContent>
       <SectionContent>
-        <Button onClick={handleSend}>Send</Button>
+        <Button onClick={handleSend}>Check and send</Button>
       </SectionContent>
     </PageContainer>
   )

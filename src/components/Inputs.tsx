@@ -22,27 +22,13 @@ const placeHolderVariants: Variants = {
   down: { y: 0, scale: 1 }
 }
 
-export const Input = ({
-  placeholder,
-  error,
-  isValid,
-  disabled,
-  onChange,
-  value: initialValue,
-  ...props
-}: InputProps) => {
+export const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
-  const [value, setValue] = useState(initialValue)
 
   const className = classNames({
     error,
     isValid
   })
-
-  const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    onChange && onChange(e)
-    setValue(e.target.value)
-  }
 
   return (
     <InputContainer
@@ -54,7 +40,14 @@ export const Input = ({
       <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
         {placeholder}
       </Label>
-      <StyledInput {...props} value={value} onChange={handleValueChange} className={className} disabled={disabled} />
+      <StyledInput
+        {...props}
+        value={value}
+        onChange={onChange}
+        className={className}
+        disabled={disabled}
+        isValid={isValid}
+      />
       {!disabled && isValid && (
         <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <Check strokeWidth={3} />
@@ -215,7 +208,7 @@ const StyledInput = styled.input<InputProps>`
   border-radius: 100px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 3px solid ${({ theme }) => theme.border.primary};
-  padding: 0 15px;
+  padding: ${({ isValid }) => (isValid ? '0 45px 0 15px' : '0 15px')};
   font-weight: 600;
   font-size: 1em;
   text-align: left;
