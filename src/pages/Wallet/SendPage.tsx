@@ -21,7 +21,11 @@ const SendPage = () => {
   const [isChecking, setIsChecking] = useState(false)
 
   const onBackButtonpress = () => {
-    history.push('/wallet')
+    if (!isChecking) {
+      history.push('/wallet')
+    } else {
+      setIsChecking(false)
+    }
   }
 
   const handleAddressChange = (value: string) => {
@@ -47,11 +51,14 @@ const SendPage = () => {
 
   const handleSend = () => {
     //console.log('send')
+    if (!isChecking) {
+      setIsChecking(true)
+    }
   }
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonpress}>Send</PageTitle>
+      <PageTitle onBackButtonPress={onBackButtonpress}>{isChecking ? 'Info Check' : 'Send'}</PageTitle>
       <LogoContent>
         <SendLogo>
           <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />
@@ -78,7 +85,7 @@ const SendPage = () => {
       )}
       <SectionContent>
         <Button onClick={handleSend} disabled={!isSendButtonActive()}>
-          Check
+          {isChecking ? 'Send' : 'Check'}
         </Button>
       </SectionContent>
     </PageContainer>
@@ -88,7 +95,8 @@ const SendPage = () => {
 const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
   return (
     <SectionContent>
-      <InfoBox text={address} />
+      <InfoBox text={address} label="Recipient's address" />
+      <InfoBox text={`${amount} ℵ`} label="Amount" />
     </SectionContent>
   )
 }

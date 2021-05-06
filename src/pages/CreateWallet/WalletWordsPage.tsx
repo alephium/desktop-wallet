@@ -31,7 +31,7 @@ const WalletWordsPage = () => {
         Your Wallet
       </PageTitle>
       <PublicAddressContent>
-        <InfoBox text={plainWallet?.address || ''} label={'Your Wallet'} ellipsis onClick={handleAddressClick} />
+        <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} />
       </PublicAddressContent>
       <WordsContent>
         <Label>Secret words</Label>

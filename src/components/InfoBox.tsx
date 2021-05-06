@@ -29,7 +29,11 @@ export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onC
             <Icon color={iconColor || theme.global.alert} strokeWidth={1.5} />
           </IconContainer>
         )}
-        <TextContainer style={ellipsis ? { overflow: 'hidden', textOverflow: 'ellipsis' } : {}}>{text}</TextContainer>
+        <TextContainer
+          style={ellipsis ? { overflow: 'hidden', textOverflow: 'ellipsis' } : { overflowWrap: 'anywhere' }}
+        >
+          {text}
+        </TextContainer>
       </StyledBox>
     </BoxContainer>
   )
@@ -57,7 +61,6 @@ const TextContainer = styled.p`
   padding: 0 20px;
   flex: 2;
   font-weight: 600;
-  vertical-align: center;
 `
 
 const StyledBox = styled(motion.div)`
