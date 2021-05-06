@@ -5,17 +5,33 @@ import { InfoBox } from '../../components/InfoBox'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { Edit3 } from 'lucide-react'
 import { Button } from '../../components/Buttons'
+import { GlobalContext } from '../../App'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+  const { setSnackbarMessage } = useContext(GlobalContext)
+
+  const handleAddressClick = () => {
+    const address = plainWallet?.address
+    if (address) {
+      navigator.clipboard
+        .writeText(address)
+        .catch((e) => {
+          throw e
+        })
+        .then(() => {
+          setSnackbarMessage({ text: 'Address copied to clipboard!', type: 'info' })
+        })
+    }
+  }
+
   return (
     <PageContainer>
       <PageTitle color="primary" onBackButtonPress={onButtonBack}>
         Your Wallet
       </PageTitle>
       <PublicAddressContent>
-        <Label>Public address</Label>
-        <AdressBox>{plainWallet?.address}</AdressBox>
+        <InfoBox text={plainWallet?.address || ''} label={'Your Wallet'} ellipsis onClick={handleAddressClick} />
       </PublicAddressContent>
       <WordsContent>
         <Label>Secret words</Label>
@@ -47,23 +63,14 @@ const WordsContent = styled(SectionContent)`
   justify-content: flex-start;
 `
 
-const Box = styled.div`
+const PhraseBox = styled.div`
   width: 100%;
   padding: 20px;
-  color: ${({ theme }) => theme.font.primary};
-  font-weight: 600;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: 14px;
-`
-
-const AdressBox = styled(Box)`
-  text-overflow: ellipsis;
-  overflow: hidden;
-`
-
-const PhraseBox = styled(Box)`
-  background-color: ${({ theme }) => theme.global.alert};
   color: ${({ theme }) => theme.font.contrast};
+  font-weight: 600;
+  background-color: ${({ theme }) => theme.global.alert};
+  border-radius: 14px;
+  margin-bottom: 20px;
 `
 
 export default WalletWordsPage

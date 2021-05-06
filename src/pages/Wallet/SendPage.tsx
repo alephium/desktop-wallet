@@ -4,6 +4,7 @@ import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
+import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 
@@ -15,8 +16,9 @@ const SendPage = () => {
   //console.log(wallet)
 
   const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState<string>()
-  const [addressError, setAddressError] = useState<string>()
+  const [amount, setAmount] = useState<string>('')
+  const [addressError, setAddressError] = useState<string>('')
+  const [isChecking, setIsChecking] = useState(false)
 
   const onBackButtonpress = () => {
     history.push('/wallet')
@@ -41,6 +43,8 @@ const SendPage = () => {
     setAmount(valueToReturn.toString())
   }
 
+  const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
+
   const handleSend = () => {
     //console.log('send')
   }
@@ -53,20 +57,39 @@ const SendPage = () => {
           <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />
         </SendLogo>
       </LogoContent>
+      {!isChecking ? (
+        <SectionContent>
+          <Input
+            placeholder="Recipient's address"
+            value={address}
+            onChange={(e) => handleAddressChange(e.target.value)}
+            error={addressError}
+            isValid={address.length > 0 && !addressError}
+          />
+          <Input
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => handleAmountChange(e.target.value)}
+            type="number"
+          />
+        </SectionContent>
+      ) : (
+        <CheckTransactionContent address={address} amount={amount} />
+      )}
       <SectionContent>
-        <Input
-          placeholder="Recipient's address"
-          value={address}
-          onChange={(e) => handleAddressChange(e.target.value)}
-          error={addressError}
-          isValid={address.length > 0 && !addressError}
-        />
-        <Input placeholder="Amount" value={amount} onChange={(e) => handleAmountChange(e.target.value)} type="number" />
-      </SectionContent>
-      <SectionContent>
-        <Button onClick={handleSend}>Check and send</Button>
+        <Button onClick={handleSend} disabled={!isSendButtonActive()}>
+          Check
+        </Button>
       </SectionContent>
     </PageContainer>
+  )
+}
+
+const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
+  return (
+    <SectionContent>
+      <InfoBox text={address} />
+    </SectionContent>
   )
 }
 

@@ -3,9 +3,13 @@ import { LucideProps } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'
 
 interface InfoBoxProps {
-  Icon: (props: LucideProps) => JSX.Element
   text: string
+  Icon?: (props: LucideProps) => JSX.Element
+  label?: string
   iconColor?: string
+  className?: string
+  ellipsis?: boolean
+  onClick?: () => void
 }
 
 const variants: Variants = {
@@ -13,20 +17,29 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-export const InfoBox = ({ Icon, text, iconColor }: InfoBoxProps) => {
+export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onClick }: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
-    <StyledBox variants={variants}>
-      <IconContainer>
-        <Icon color={iconColor || theme.global.alert} strokeWidth={1.5} />
-      </IconContainer>
-      <TextContainer>{text}</TextContainer>
-    </StyledBox>
+    <BoxContainer className={className} onClick={onClick}>
+      {label && <Label variants={variants}>{label}</Label>}
+      <StyledBox variants={variants}>
+        {Icon && (
+          <IconContainer>
+            <Icon color={iconColor || theme.global.alert} strokeWidth={1.5} />
+          </IconContainer>
+        )}
+        <TextContainer style={ellipsis ? { overflow: 'hidden', textOverflow: 'ellipsis' } : {}}>{text}</TextContainer>
+      </StyledBox>
+    </BoxContainer>
   )
 }
 
 // === Styling === //
+const BoxContainer = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`
 
 const IconContainer = styled.div`
   flex: 1;
@@ -41,6 +54,7 @@ const IconContainer = styled.div`
 `
 
 const TextContainer = styled.p`
+  padding: 0 20px;
   flex: 2;
   font-weight: 600;
   vertical-align: center;
@@ -51,6 +65,13 @@ const StyledBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
   border-radius: 14px;
+`
+
+const Label = styled(motion.label)`
+  display: block;
   width: 100%;
-  margin: 30px 0 20px 0;
+  margin-left: 15px;
+  margin-bottom: 7px;
+  color: ${({ theme }) => theme.font.secondary};
+  font-weight: 600;
 `
