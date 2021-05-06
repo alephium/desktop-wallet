@@ -68,6 +68,10 @@ export const StyledContent = styled(motion.div)`
   justify-content: center;
   flex-direction: column;
   flex: 1;
+
+  &:not(:last-child) {
+    margin-bottom: 25px;
+  }
 `
 
 interface SectionTitleProps {
@@ -99,7 +103,7 @@ const TitleContainer = styled.div`
   display: flex;
   align-items: flex-start;
   margin-top: 5vh;
-  margin-bottom: 5vh;
+  margin-bottom: 3vh;
 `
 
 const BackArrow = styled(ArrowLeft)`
@@ -122,25 +126,42 @@ const H1 = styled(motion.h1)<{ color: string }>`
 export const Modal: React.FC = ({ children }) => {
   return (
     <ModalContainer
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      {children}
+      <StyledModal
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+      >
+        {children}
+      </StyledModal>
     </ModalContainer>
   )
 }
 
 const ModalContainer = styled(motion.div)`
   position: absolute;
-  top: 20px;
-  bottom: 20px;
-  right: 20px;
-  left: 20px;
-  padding: 0 20px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.15);
+`
+
+const StyledModal = styled(motion.div)`
+  margin: auto 20px;
+  padding: 30px 20px;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid ${({ theme }) => theme.border.primary};
   border-radius: 14px;
   background-color: ${({ theme }) => theme.bg.primary};
+
+  ${TitleContainer} {
+    margin-top: 0;
+  }
 `
