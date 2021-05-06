@@ -173,7 +173,7 @@ const CheckWordsPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle color="primary" onBackButtonPress={onButtonBack}>
+      <PageTitle color="primary" onBackButtonPress={onButtonBack} smaller>
         Security Check
       </PageTitle>
       <SectionContent>

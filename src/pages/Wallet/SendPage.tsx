@@ -45,14 +45,19 @@ const SendPage = () => {
   }
 
   const handleAmountChange = (value: string) => {
-    const valueToReturn = Number(value) // Remove 0 in front if needed
-    setAmount(valueToReturn.toString())
+    const valueToReturn = Number(value).toString() // Remove 0 in front if needed
+
+    // Allow int (long) only
+    const regex = /^[0-9]+$/
+
+    if (regex.test(valueToReturn)) {
+      setAmount(valueToReturn)
+    }
   }
 
   const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
 
   const handleSend = async () => {
-    //setSnackbarMessage({ text: 'yo', type: 'alert' })
     if (!isChecking) {
       setIsChecking(true)
     } else if (wallet && client) {
@@ -70,9 +75,11 @@ const SendPage = () => {
 
         const signature = client.clique.transactionSign(responseCreate.txId, wallet.privateKey)
 
-        const response = await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
+        await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'info' })
+
+        history.push('/wallet')
       } catch (e) {
         setSnackbarMessage({ text: e.error.detail, type: 'alert' })
       }
@@ -82,7 +89,9 @@ const SendPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonpress}>{isChecking ? 'Info Check' : 'Send'}</PageTitle>
+      <PageTitle onBackButtonPress={onBackButtonpress} smaller>
+        {isChecking ? 'Info Check' : 'Send'}
+      </PageTitle>
       <LogoContent>
         <SendLogo>
           {isSending ? (

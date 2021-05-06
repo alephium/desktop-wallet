@@ -77,6 +77,7 @@ export const StyledContent = styled(motion.div)`
 interface SectionTitleProps {
   color?: 'primary' | 'contrast'
   onBackButtonPress?: () => void
+  smaller?: boolean
 }
 
 export const FooterActions = styled(SectionContent)`
@@ -88,11 +89,11 @@ export const FooterActions = styled(SectionContent)`
 // == Title ==
 // ===========
 
-export const PageTitle: FC<SectionTitleProps> = ({ color = 'primary', children, onBackButtonPress }) => {
+export const PageTitle: FC<SectionTitleProps> = ({ color = 'primary', children, onBackButtonPress, smaller }) => {
   return (
     <TitleContainer>
       {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
-      <H1 color={color} layoutId="sectionTitle">
+      <H1 color={color} layoutId="sectionTitle" smaller={smaller}>
         {children}
       </H1>
     </TitleContainer>
@@ -101,7 +102,7 @@ export const PageTitle: FC<SectionTitleProps> = ({ color = 'primary', children, 
 
 const TitleContainer = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   margin-top: 5vh;
   margin-bottom: 3vh;
 `
@@ -113,10 +114,11 @@ const BackArrow = styled(ArrowLeft)`
   cursor: pointer;
 `
 
-const H1 = styled(motion.h1)<{ color: string }>`
+const H1 = styled(motion.h1)<{ color: string; smaller?: boolean }>`
   flex: 1;
   margin: 0;
   color: ${({ theme, color }) => (color === 'primary' ? theme.font.primary : theme.font.contrast)};
+  font-size: ${({ smaller }) => (smaller ? '2.0rem' : 'auto')};
 `
 
 // ===========

@@ -41,7 +41,9 @@ const AddressPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonpress}>Your address</PageTitle>
+      <PageTitle onBackButtonPress={onBackButtonpress} smaller>
+        Your address
+      </PageTitle>
       <SectionContent>{address && <QRCode value={address} />}</SectionContent>
       <SectionContent>
         <Paragraph>{truncate(address || '')}</Paragraph>
