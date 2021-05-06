@@ -5,6 +5,7 @@ import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
 import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import { AnimatePresence } from 'framer-motion'
+import AddressPage from './AddressPage'
 
 const Wallet = () => {
   const { wallet } = useContext(GlobalContext)
@@ -28,6 +29,11 @@ const Wallet = () => {
           <Route path="/wallet/send" key="send">
             <Modal>
               <SendPage />
+            </Modal>
+          </Route>
+          <Route path="/wallet/address" key="address">
+            <Modal>
+              <AddressPage />
             </Modal>
           </Route>
         </Switch>

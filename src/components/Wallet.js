@@ -24,7 +24,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { abbreviateAmount, createClient } from '../utils/util'
-import { settingsLoadOrDefault } from '../utils/util'
+import { loadSettingsOrDefault } from '../utils/util'
 
 class Wallet extends Component {
   constructor() {
@@ -141,7 +141,7 @@ class Wallet extends Component {
       }
     }
 
-    let settings = settingsLoadOrDefault()
+    let settings = loadSettingsOrDefault()
 
     this.setState({
       alephscanURL: settings.alephscanURL

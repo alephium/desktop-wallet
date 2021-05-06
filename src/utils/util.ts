@@ -16,6 +16,78 @@
 
 import { CliqueClient, ExplorerClient } from 'alf-client'
 
+// =================== //
+// === API CLIENTS === //
+// =================== //
+
+export async function createClient() {
+  const settings = loadSettingsOrDefault()
+  const cliqueClient = new CliqueClient({
+    baseUrl: `http://${settings.host}:${settings.port}`
+  })
+
+  const explorerClient = new ExplorerClient({
+    baseUrl: `http://${settings.explorerApiHost}:${settings.explorerApiPort}`
+  })
+
+  console.log('Connecting to: ' + cliqueClient.baseUrl)
+  console.log('Explorer backend: ' + explorerClient.baseUrl)
+
+  // Init clients
+  await cliqueClient.init()
+
+  return { clique: cliqueClient, explorer: explorerClient }
+}
+
+// ================ //
+// === SETTINGS === //
+// ================ //
+
+interface Settings {
+  host: string
+  port: number
+  explorerApiHost: string
+  explorerApiPort: number
+  explorerUrl: string
+}
+
+export function settingsDefault(): Settings {
+  return {
+    host: 'localhost',
+    port: 12973,
+    explorerApiHost: 'localhost',
+    explorerApiPort: 9090,
+    explorerUrl: 'http://testnet.alephium.org'
+  }
+}
+
+export function loadSettings(): Settings | null {
+  const str = window.localStorage.getItem('settings')
+  if (str) {
+    return JSON.parse(str)
+  } else {
+    return null
+  }
+}
+
+export function loadSettingsOrDefault() {
+  const settings = loadSettings()
+  if (!settings) {
+    return settingsDefault()
+  } else {
+    return settings
+  }
+}
+
+export function saveSettings(settings: Settings) {
+  const str = JSON.stringify(settings)
+  window.localStorage.setItem('settings', str)
+}
+
+// ==================== //
+// === STRING MANIP === //
+// ==================== //
+
 const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 
 export const abbreviateAmount = (num: number) => {
@@ -37,62 +109,7 @@ export const abbreviateAmount = (num: number) => {
   return scaled.toFixed(2) + suffix
 }
 
-export async function createClient() {
-  const settings = settingsLoadOrDefault()
-  const cliqueClient = new CliqueClient({
-    baseUrl: `http://${settings.host}:${settings.port}`
-  })
-
-  const explorerClient = new ExplorerClient({
-    baseUrl: `http://${settings.explorerHost}:${settings.explorerPort}`
-  })
-
-  console.log('Connecting to: ' + cliqueClient.baseUrl)
-  console.log('Explorer backend: ' + explorerClient.baseUrl)
-
-  // Init clients
-  await cliqueClient.init()
-
-  return { clique: cliqueClient, explorer: explorerClient }
-}
-
-interface Settings {
-  host: string
-  port: number
-  explorerHost: string
-  explorerPort: number
-  alephscanURL: string
-}
-
-export function settingsDefault(): Settings {
-  return {
-    host: 'localhost',
-    port: 12973,
-    explorerHost: 'localhost',
-    explorerPort: 9090,
-    alephscanURL: 'http://localhost:3000'
-  }
-}
-
-export function settingsLoad() {
-  const str = window.localStorage.getItem('settings')
-  if (str) {
-    return JSON.parse(str)
-  } else {
-    return null
-  }
-}
-
-export function settingsLoadOrDefault() {
-  const settings = settingsLoad()
-  if (!settings) {
-    return settingsDefault()
-  } else {
-    return settings
-  }
-}
-
-export function settingsSave(settings: Settings) {
-  const str = JSON.stringify(settings)
-  window.localStorage.setItem('settings', str)
+export const truncate = (str: string) => {
+  const len = str.length
+  return len > 10 ? str.substring(0, 6) + '...' + str.substring(len - 6, len) : str
 }

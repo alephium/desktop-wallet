@@ -155,6 +155,7 @@ const ModalContainer = styled(motion.div)`
 
 const StyledModal = styled(motion.div)`
   margin: auto 20px;
+  width: 100%;
   padding: 30px 20px;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid ${({ theme }) => theme.border.primary};

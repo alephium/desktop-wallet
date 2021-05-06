@@ -38,8 +38,8 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   width: 80%;
   border-radius: 7px;
   border: none;
-  background-color: ${({ theme, secondary }) => (secondary ? theme.bg.tertiary : theme.global.accent)};
-  color: ${({ theme, secondary }) => (secondary ? theme.font.secondary : theme.font.contrast)};
+  background-color: ${({ theme, secondary }) => (secondary ? theme.bg.secondary : theme.global.accent)};
+  color: ${({ theme, secondary }) => (secondary ? theme.global.accent : theme.font.contrast)};
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 15px;

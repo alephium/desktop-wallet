@@ -51,7 +51,7 @@ const WalletHomePage = () => {
             <WalletAmount>{balance?.balance}ℵ</WalletAmount>
           </WalletAmountContainer>
           <WalletActions>
-            <WalletActionButton Icon={QrCode} label="Show address" link="" />
+            <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
             <WalletActionButton Icon={Send} label="Send" link="/wallet/send" />
           </WalletActions>
         </WalletAmountBox>

@@ -15,7 +15,7 @@ const SendPage = () => {
   //console.log(wallet)
 
   const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<number>()
 
   const onBackButtonpress = () => {
     history.push('/wallet')
@@ -38,7 +38,7 @@ const SendPage = () => {
         <Input
           placeholder="Amount"
           value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value))}
+          onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
           type="number"
         />
       </SectionContent>
