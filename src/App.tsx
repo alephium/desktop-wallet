@@ -36,7 +36,7 @@ const initialContext: Context = {
 
 interface SnackbarMessage {
   text: string
-  type: 'info' | 'alert'
+  type: 'info' | 'alert' | 'success'
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
@@ -139,6 +139,7 @@ const SnackbarPopup = styled(motion.div)`
   padding: 20px 15px;
   color: ${({ theme }) => theme.font.contrast};
   border-radius: 14px;
+  z-index: 1000;
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};
@@ -146,6 +147,10 @@ const SnackbarPopup = styled(motion.div)`
 
   &.info {
     background-color: ${({ theme }) => theme.font.primary};
+  }
+
+  &.success {
+    background-color: ${({ theme }) => theme.global.valid};
   }
 `
 

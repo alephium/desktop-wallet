@@ -1,17 +1,18 @@
-import { Send } from 'lucide-react'
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 import { GlobalContext } from '../../App'
+import { Send, CheckCircle, Loader } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import { motion } from 'framer-motion'
 
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
-  const { wallet } = useContext(GlobalContext)
+  const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
 
   //console.log(wallet)
 
@@ -19,6 +20,7 @@ const SendPage = () => {
   const [amount, setAmount] = useState<string>('')
   const [addressError, setAddressError] = useState<string>('')
   const [isChecking, setIsChecking] = useState(false)
+  const [isSending, setIsSending] = useState(false)
 
   const onBackButtonpress = () => {
     if (!isChecking) {
@@ -49,10 +51,32 @@ const SendPage = () => {
 
   const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
 
-  const handleSend = () => {
-    //console.log('send')
+  const handleSend = async () => {
+    //setSnackbarMessage({ text: 'yo', type: 'alert' })
     if (!isChecking) {
       setIsChecking(true)
+    } else if (wallet && client) {
+      // Send it!
+      setIsSending(true)
+
+      try {
+        const responseCreate = await client.clique.transactionCreate(
+          wallet.address,
+          wallet.publicKey,
+          address,
+          amount,
+          undefined
+        )
+
+        const signature = client.clique.transactionSign(responseCreate.txId, wallet.privateKey)
+
+        const response = await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
+
+        setSnackbarMessage({ text: 'Transaction sent!', type: 'info' })
+      } catch (e) {
+        setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+      }
+      setIsSending(false)
     }
   }
 
@@ -61,7 +85,11 @@ const SendPage = () => {
       <PageTitle onBackButtonPress={onBackButtonpress}>{isChecking ? 'Info Check' : 'Send'}</PageTitle>
       <LogoContent>
         <SendLogo>
-          <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />
+          {isSending ? (
+            <RotatingLoader size={'30%'} animate={{ rotate: 180 }} transition={{ repeat: Infinity, duration: 2 }} />
+          ) : (
+            <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />
+          )}
         </SendLogo>
       </LogoContent>
       {!isChecking ? (
@@ -100,6 +128,8 @@ const CheckTransactionContent = ({ address, amount }: { address: string; amount:
     </SectionContent>
   )
 }
+
+const RotatingLoader = motion(Loader)
 
 const LogoContent = styled(SectionContent)`
   flex: 0;
