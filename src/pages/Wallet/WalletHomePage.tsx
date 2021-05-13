@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
@@ -6,9 +6,22 @@ import { Link } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, LucideProps } from 'lucide-react'
 import tinycolor from 'tinycolor2'
-import { abbreviateAmount, calAmountDelta } from '../../utils/util'
+import { abbreviateAmount, calAmountDelta, loadSettingsOrDefault, openInNewWindow, truncate } from '../../utils/util'
 import mountains from '../../images/mountain.svg'
 import AmountBadge from '../../components/Badge'
+import _ from 'lodash'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
+
+const renderIOAccountList = (currentAddress: string, io: { address?: string }[]) => {
+  return _(io.filter((o) => o.address !== currentAddress))
+    .map((v) => v.address)
+    .uniq()
+    .value()
+    .map((v) => <Address key={v}>{truncate(v || '')}</Address>)
+}
 
 const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
@@ -28,7 +41,6 @@ const WalletHomePage = () => {
 
           // Transactions
           if (addressDetails.transactions) {
-            console.log(addressDetails.transactions)
             setLastTransactions(addressDetails.transactions)
           }
         }
@@ -103,9 +115,23 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
   const amountDelta = calAmountDelta(t, currentAddress)
   const isOut = amountDelta < 0
 
+  const IOAddressesList = isOut ? t.outputs : t.inputs
+
+  const { explorerUrl } = loadSettingsOrDefault()
+
   return (
-    <TransactionItemContainer>
-      <AmountBadge type={isOut ? 'minus' : 'plus'} prefix={isOut ? '- ' : '+ '} content={amountDelta} amount />
+    <TransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.hash}`)}>
+      <TxDetails>
+        <DirectionLabel>{isOut ? 'TO' : 'FROM'}</DirectionLabel>
+        <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
+        <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
+      </TxDetails>
+      <AmountBadge
+        type={isOut ? 'minus' : 'plus'}
+        prefix={isOut ? '- ' : '+ '}
+        content={Math.abs(amountDelta)}
+        amount
+      />
     </TransactionItemContainer>
   )
 }
@@ -220,10 +246,48 @@ const TransactionContent = styled(SectionContent)`
 const LastTransactionList = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `
 
 const TransactionItemContainer = styled.div`
   height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: all 0.1s ease-out;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.secondary};
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+`
+
+const TxDetails = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`
+
+const DirectionLabel = styled.span`
+  font-size: 0.8rem;
+  font-weight: 600;
+`
+
+const IOAddresses = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const Address = styled.span`
+  color: ${({ theme }) => theme.global.accent};
+`
+
+const TxTimestamp = styled.span`
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const NoTransactionMessage = styled.div`

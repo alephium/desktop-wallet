@@ -146,18 +146,20 @@ export const Modal: React.FC = ({ children }) => {
 }
 
 const ModalContainer = styled(motion.div)`
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
   display: flex;
   background-color: rgba(0, 0, 0, 0.15);
+  padding: 20px;
 `
 
 const StyledModal = styled(motion.div)`
-  margin: auto 20px;
+  margin: auto;
   width: 100%;
+  max-width: 600px;
   padding: 30px 20px;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid ${({ theme }) => theme.border.primary};

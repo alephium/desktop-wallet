@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router'
 import Paragraph from '../../components/Paragraph'
-import { loadSettingsOrDefault, truncate } from '../../utils/util'
+import { loadSettingsOrDefault, openInNewWindow, truncate } from '../../utils/util'
 import { Button } from '../../components/Buttons'
 
 const AddressPage = () => {
@@ -21,8 +21,7 @@ const AddressPage = () => {
   const handleShowInExplorer = () => {
     const { explorerUrl } = loadSettingsOrDefault()
     if (explorerUrl) {
-      const newWindow = window.open(`${explorerUrl}/#/addresses/${address}`, '_blank', 'noopener,noreferrer')
-      if (newWindow) newWindow.opener = null
+      openInNewWindow(`${explorerUrl}/#/addresses/${address}`)
     }
   }
 

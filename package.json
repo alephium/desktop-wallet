@@ -32,6 +32,7 @@
     "@types/tinycolor2": "^1.4.2",
     "@types/zxcvbn": "^4.4.1",
     "classnames": "^2.3.1",
+    "dayjs": "^1.10.4",
     "electron": "^7.3.3",
     "electron-builder": "^22.10.5",
     "eslint-config-prettier": "^6.15.0",

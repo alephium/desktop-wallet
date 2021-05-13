@@ -90,7 +90,7 @@ export function saveSettings(settings: Settings) {
 // ==================== //
 
 const MONEY_SYMBOL_BIG = ['', 'K', 'M', 'B', 'T']
-const MONEY_SYMBOL_SMALL = ['', 'm', 'μ', 'n', 'p']
+const MONEY_SYMBOL_SMALL = ['', 'm', 'μ', 'n', 'p', 'q']
 
 export const abbreviateAmount = (num: number) => {
   if (num < 0) return '0.00'
@@ -129,8 +129,20 @@ export function calAmountDelta(t: Transaction, id: string) {
     const outputAmount = t.outputs.reduce<number>((acc, output) => {
       return output.address === id ? acc + output.amount : acc
     }, 0)
+
     return outputAmount - inputAmount
   } else {
     throw 'Missing transaction details'
+  }
+}
+
+// ================= //
+// ===== LINKS ===== //
+// ================= //
+
+export const openInNewWindow = (url: string) => {
+  if (url) {
+    const newWindow = window.open(`${url}`, '_blank', 'noopener,noreferrer')
+    if (newWindow) newWindow.opener = null
   }
 }
