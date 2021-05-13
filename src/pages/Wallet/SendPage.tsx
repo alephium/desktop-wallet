@@ -9,6 +9,7 @@ import { Input } from '../../components/Inputs'
 import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { motion } from 'framer-motion'
 import { WalletContext } from './WalletRootPage'
+import Spinner from '../../components/Spinner'
 
 const SendPage = () => {
   const history = useHistory()
@@ -100,11 +101,7 @@ const SendPage = () => {
       </PageTitle>
       <LogoContent>
         <SendLogo>
-          {isSending ? (
-            <RotatingLoader size={'30%'} animate={{ rotate: 180 }} transition={{ repeat: Infinity, duration: 2 }} />
-          ) : (
-            <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />
-          )}
+          {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />}
         </SendLogo>
       </LogoContent>
       {!isChecking ? (

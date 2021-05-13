@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     color: ${({ theme }) => theme.font.primary};
     background-color: ${({ theme }) => theme.bg.primary};
+    overflow: hidden;
   }
 
   * {

@@ -14,6 +14,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { SimpleTx, WalletContext } from './WalletRootPage'
 import { useInterval } from '../../utils/hooks'
+import Spinner from '../../components/Spinner'
 
 dayjs.extend(relativeTime)
 
@@ -29,10 +30,12 @@ const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
   const [balance, setBalance] = useState<number | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Fetching data
   const fetchData = useCallback(() => {
     const getTransactionsAndBalance = async () => {
+      setIsLoading(true)
       try {
         if (wallet && client) {
           const addressDetails = await client.explorer.getAddressDetails(wallet.address)
@@ -45,8 +48,10 @@ const WalletHomePage = () => {
           if (addressDetails.transactions) {
             setLoadedTxList(addressDetails.transactions)
           }
+          setIsLoading(false)
         }
       } catch (e) {
+        setIsLoading(false)
         console.log(e)
         setSnackbarMessage({
           text: 'Something went wrong when fetching transactions and balance.',
@@ -84,7 +89,10 @@ const WalletHomePage = () => {
         <Decors />
       </WalletAmountBoxContainer>
       <TransactionContent>
-        <h2>Last transactions</h2>
+        <LastTransactionListHeader>
+          <LastTransactionListTitle>Last transactions</LastTransactionListTitle>
+          {(isLoading || pendingTxList.length > 0) && <Spinner />}
+        </LastTransactionListHeader>
         <LastTransactionList>
           {pendingTxList.map((t) => {
             return <PendingTransactionItem key={t.txId} transaction={t} />
@@ -272,6 +280,15 @@ const Decors = styled.div`
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
+`
+
+const LastTransactionListHeader = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const LastTransactionListTitle = styled.h2`
+  margin-right: 25px;
 `
 
 const LastTransactionList = styled.div`
