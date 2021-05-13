@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, LucideProps } from 'lucide-react'
 import tinycolor from 'tinycolor2'
-import { abbreviateAmount } from '../../utils/util'
+import { abbreviateAmount, calAmountDelta } from '../../utils/util'
 import mountains from '../../images/mountain.svg'
+import AmountBadge from '../../components/Badge'
 
 const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
@@ -27,6 +28,7 @@ const WalletHomePage = () => {
 
           // Transactions
           if (addressDetails.transactions) {
+            console.log(addressDetails.transactions)
             setLastTransactions(addressDetails.transactions)
           }
         }
@@ -41,6 +43,8 @@ const WalletHomePage = () => {
 
     getTransactionsAndBalance()
   }, [setSnackbarMessage, wallet, client, balance])
+
+  if (!wallet) return null
 
   return (
     <PageContainer>
@@ -62,7 +66,7 @@ const WalletHomePage = () => {
         <LastTransactionList>
           {lastTransactions && lastTransactions.length > 0 ? (
             lastTransactions?.map((t) => {
-              return <TransactionItem key={t.hash} />
+              return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
             })
           ) : (
             <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
@@ -92,6 +96,17 @@ const WalletActionButton = ({
         <ActionLabel>{label}</ActionLabel>
       </ActionContent>
     </WalletActionButtonContainer>
+  )
+}
+
+const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Transaction; currentAddress: string }) => {
+  const amountDelta = calAmountDelta(t, currentAddress)
+  const isOut = amountDelta < 0
+
+  return (
+    <TransactionItemContainer>
+      <AmountBadge type={isOut ? 'minus' : 'plus'} prefix={isOut ? '- ' : '+ '} content={amountDelta} amount />
+    </TransactionItemContainer>
   )
 }
 
@@ -192,6 +207,7 @@ const Decors = styled.div`
   background-repeat: no-repeat;
   background-position: bottom;
   opacity: 0.15;
+  pointer-events: none;
 `
 
 // === TRANSACTION === //
@@ -206,7 +222,7 @@ const LastTransactionList = styled.div`
   flex-direction: column;
 `
 
-const TransactionItem = styled.div`
+const TransactionItemContainer = styled.div`
   height: 80px;
 `
 
