@@ -54,6 +54,11 @@ const Wallet = () => {
     }
   }, [history, wallet])
 
+  // Manage state of pending tx (clean if in loaded list)
+  useEffect(() => {
+    setPendingTxList((prev) => prev.filter((t) => !loadedTxList.find((tx) => tx.hash === t.txId)))
+  }, [loadedTxList])
+
   return (
     <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, pendingTxList, loadedTxList }}>
       <MainContainer>

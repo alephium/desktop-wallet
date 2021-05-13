@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
@@ -13,6 +13,7 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { SimpleTx, WalletContext } from './WalletRootPage'
+import { useInterval } from '../../utils/hooks'
 
 dayjs.extend(relativeTime)
 
@@ -27,11 +28,10 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
   const [balance, setBalance] = useState<number | undefined>(undefined)
-  const [lastTransactions, setLastTransactions] = useState<Transaction[] | undefined>()
-  const { pendingTxList } = useContext(WalletContext)
+  const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
 
-  // Set client and make initial calls
-  useEffect(() => {
+  // Fetching data
+  const fetchData = useCallback(() => {
     const getTransactionsAndBalance = async () => {
       try {
         if (wallet && client) {
@@ -43,7 +43,7 @@ const WalletHomePage = () => {
 
           // Transactions
           if (addressDetails.transactions) {
-            setLastTransactions(addressDetails.transactions)
+            setLoadedTxList(addressDetails.transactions)
           }
         }
       } catch (e) {
@@ -56,7 +56,15 @@ const WalletHomePage = () => {
     }
 
     getTransactionsAndBalance()
-  }, [setSnackbarMessage, wallet, client, balance])
+  }, [client, setLoadedTxList, setSnackbarMessage, wallet])
+
+  // Make initial calls
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  // Polling (when pending tx)
+  useInterval(fetchData, 2000, pendingTxList.length === 0)
 
   if (!wallet) return null
 
@@ -81,8 +89,8 @@ const WalletHomePage = () => {
           {pendingTxList.map((t) => {
             return <PendingTransactionItem key={t.txId} transaction={t} />
           })}
-          {lastTransactions && lastTransactions.length > 0 ? (
-            lastTransactions?.map((t) => {
+          {loadedTxList && loadedTxList.length > 0 ? (
+            loadedTxList?.map((t) => {
               return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
             })
           ) : (
@@ -149,7 +157,9 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
     <PendingTransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.txId}`)}>
       <TxDetails>
         <DirectionLabel>TO</DirectionLabel>
-        <IOAddresses>{t.toAddress}</IOAddresses>
+        <IOAddresses>
+          <Address key={t.toAddress}>{truncate(t.toAddress || '')}</Address>
+        </IOAddresses>
         <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
       </TxDetails>
       <AmountBadge type="minus" prefix="-" content={t.amount} amount />

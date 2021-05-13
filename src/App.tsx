@@ -129,6 +129,7 @@ const AppContainer = styled.main`
   bottom: 0;
   display: flex;
   overflow-y: auto;
+  overflow-x: hidden;
 `
 
 const SnackbarPopup = styled(motion.div)`
