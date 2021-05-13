@@ -23,11 +23,11 @@ import { CliqueClient, ExplorerClient } from 'alf-client'
 export async function createClient() {
   const settings = loadSettingsOrDefault()
   const cliqueClient = new CliqueClient({
-    baseUrl: `http://${settings.host}:${settings.port}`
+    baseUrl: `http://${settings.host}${settings.port ? ':' : ''}${settings.port}`
   })
 
   const explorerClient = new ExplorerClient({
-    baseUrl: `http://${settings.explorerApiHost}:${settings.explorerApiPort}`
+    baseUrl: `${settings.explorerApiHost}${settings.explorerApiPort ? ':' : ''}${settings.explorerApiPort || ''}`
   })
 
   console.log('Connecting to: ' + cliqueClient.baseUrl)
@@ -47,7 +47,7 @@ interface Settings {
   host: string
   port: number
   explorerApiHost: string
-  explorerApiPort: number
+  explorerApiPort: number | null
   explorerUrl: string
 }
 
@@ -55,8 +55,8 @@ export function settingsDefault(): Settings {
   return {
     host: 'localhost',
     port: 12973,
-    explorerApiHost: 'localhost',
-    explorerApiPort: 9090,
+    explorerApiHost: 'https://testnet-backend.alephium.org',
+    explorerApiPort: null,
     explorerUrl: 'http://testnet.alephium.org'
   }
 }

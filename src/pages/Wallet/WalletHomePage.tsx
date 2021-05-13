@@ -3,14 +3,15 @@ import styled, { useTheme } from 'styled-components'
 import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Link } from 'react-router-dom'
-import { Balance } from 'alf-client/dist/api/api-alephium'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, LucideProps } from 'lucide-react'
 import tinycolor from 'tinycolor2'
+import { abbreviateAmount } from '../../utils/util'
+import mountains from '../../images/mountain.svg'
 
 const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
-  const [balance, setBalance] = useState<Balance | undefined>(undefined)
+  const [balance, setBalance] = useState<number | undefined>(undefined)
   const [lastTransactions, setLastTransactions] = useState<Transaction[] | undefined>()
 
   // Set client and make initial calls
@@ -18,17 +19,15 @@ const WalletHomePage = () => {
     const getTransactionsAndBalance = async () => {
       try {
         if (wallet && client) {
-          const balance = await client.clique.getBalance(wallet.address)
+          const addressDetails = await client.explorer.getAddressDetails(wallet.address)
 
-          if (balance) {
-            setBalance(balance)
+          if (addressDetails.balance) {
+            setBalance(addressDetails.balance)
           }
 
           // Transactions
-          const transactions = await client.explorer.getTransactions(wallet.address)
-
-          if (transactions) {
-            setLastTransactions(transactions)
+          if (addressDetails.transactions) {
+            setLastTransactions(addressDetails.transactions)
           }
         }
       } catch (e) {
@@ -41,20 +40,22 @@ const WalletHomePage = () => {
     }
 
     getTransactionsAndBalance()
-  }, [setSnackbarMessage, wallet, client])
+  }, [setSnackbarMessage, wallet, client, balance])
 
   return (
     <PageContainer>
       <WalletAmountBoxContainer>
         <WalletAmountBox>
           <WalletAmountContainer>
-            <WalletAmount>{balance?.balance}ℵ</WalletAmount>
+            <WalletAmount>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
+            <WalletFullAmount>{balance}ℵ</WalletFullAmount>
           </WalletAmountContainer>
           <WalletActions>
             <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
             <WalletActionButton Icon={Send} label="Send" link="/wallet/send" />
           </WalletActions>
         </WalletAmountBox>
+        <Decors />
       </WalletAmountBoxContainer>
       <TransactionContent>
         <h2>Last transactions</h2>
@@ -100,6 +101,7 @@ const WalletAmountBoxContainer = styled(SectionContent)`
   margin-top: 25px;
   margin-bottom: 25px;
   flex: 0;
+  position: relative;
 `
 
 const WalletAmountBox = styled.div`
@@ -117,15 +119,25 @@ const WalletAmountBox = styled.div`
 
 const WalletAmountContainer = styled.div`
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex: 1.5;
 `
 
 const WalletAmount = styled.div`
-  margin: auto;
+  margin: 0 auto;
   font-size: 3rem;
   color: ${({ theme }) => theme.font.contrast};
   text-align: center;
   font-weight: 700;
+`
+
+const WalletFullAmount = styled.div`
+  margin: 0 auto;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.font.contrast};
+  text-align: center;
+  font-weight: 500;
 `
 
 const WalletActions = styled.div`
@@ -169,6 +181,20 @@ const ActionContent = styled(Link)`
     }
   }
 `
+const Decors = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url(${mountains});
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  opacity: 0.15;
+`
+
+// === TRANSACTION === //
 
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start;
