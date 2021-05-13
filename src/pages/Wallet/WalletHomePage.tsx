@@ -12,6 +12,7 @@ import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { SimpleTx, WalletContext } from './WalletRootPage'
 
 dayjs.extend(relativeTime)
 
@@ -27,6 +28,7 @@ const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
   const [balance, setBalance] = useState<number | undefined>(undefined)
   const [lastTransactions, setLastTransactions] = useState<Transaction[] | undefined>()
+  const { pendingTxList } = useContext(WalletContext)
 
   // Set client and make initial calls
   useEffect(() => {
@@ -76,6 +78,9 @@ const WalletHomePage = () => {
       <TransactionContent>
         <h2>Last transactions</h2>
         <LastTransactionList>
+          {pendingTxList.map((t) => {
+            return <PendingTransactionItem key={t.txId} transaction={t} />
+          })}
           {lastTransactions && lastTransactions.length > 0 ? (
             lastTransactions?.map((t) => {
               return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
@@ -133,6 +138,22 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
         amount
       />
     </TransactionItemContainer>
+  )
+}
+
+// Transaction that has been sent and waiting to be fetched
+const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) => {
+  const { explorerUrl } = loadSettingsOrDefault()
+
+  return (
+    <PendingTransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.txId}`)}>
+      <TxDetails>
+        <DirectionLabel>TO</DirectionLabel>
+        <IOAddresses>{t.toAddress}</IOAddresses>
+        <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
+      </TxDetails>
+      <AmountBadge type="minus" prefix="-" content={t.amount} amount />
+    </PendingTransactionItemContainer>
   )
 }
 
@@ -288,6 +309,29 @@ const Address = styled.span`
 
 const TxTimestamp = styled.span`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const PendingTransactionItemContainer = styled(TransactionItemContainer)`
+  opacity: 0.5;
+
+  background: linear-gradient(90deg, #ffffff, rgb(230, 230, 230));
+  background-size: 400% 400%;
+  animation: gradient 2s ease infinite;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    25% {
+      background-position: 100% 50%;
+    }
+    75% {
+      background-position: 25% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 `
 
 const NoTransactionMessage = styled.div`

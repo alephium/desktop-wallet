@@ -2,17 +2,19 @@ import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 import { GlobalContext } from '../../App'
-import { Send, CheckCircle, Loader } from 'lucide-react'
+import { Send, Loader } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { motion } from 'framer-motion'
+import { WalletContext } from './WalletRootPage'
 
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
   const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { addPendingTx } = useContext(WalletContext)
 
   //console.log(wallet)
 
@@ -45,9 +47,8 @@ const SendPage = () => {
   }
 
   const handleAmountChange = (value: string) => {
-    const valueToReturn = Number(value).toString() // Remove 0 in front if needed
-
-    setAmount(valueToReturn)
+    // const valueToReturn = Number(value).toString() // Remove 0 in front if needed
+    setAmount(value)
   }
 
   const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
@@ -73,7 +74,14 @@ const SendPage = () => {
 
         const signature = client.clique.transactionSign(responseCreate.txId, wallet.privateKey)
 
-        await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
+        const TXResponse = await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
+
+        addPendingTx({
+          txId: TXResponse.txId,
+          toAddress: address,
+          timestamp: new Date().getTime(),
+          amount: amount
+        })
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'info' })
 
@@ -131,7 +139,7 @@ const CheckTransactionContent = ({ address, amount }: { address: string; amount:
   return (
     <SectionContent>
       <InfoBox text={address} label="Recipient's address" />
-      <InfoBox text={`${amount} ℵ`} label="Amount" />
+      <InfoBox text={`${Number(amount)} ℵ`} label="Amount" />
     </SectionContent>
   )
 }

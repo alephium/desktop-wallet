@@ -99,7 +99,7 @@ export const abbreviateAmount = (num: number) => {
   let tier = (Math.round(Math.log10(Number(num))) / 3) | 0
 
   if (tier < 0 && Math.abs(tier) >= MONEY_SYMBOL_SMALL.length) tier = -MONEY_SYMBOL_SMALL.length + 1
-  else if (tier == 0) return num.toFixed(2).toString()
+  else if (tier == 0) return num.toFixed(3).toString()
   else if (tier >= MONEY_SYMBOL_BIG.length) tier = MONEY_SYMBOL_BIG.length - 1
 
   // get suffix and determine scale
@@ -109,7 +109,7 @@ export const abbreviateAmount = (num: number) => {
 
   // scale the bigNum
   const scaled = num / scale
-  return scaled.toFixed(2) + suffix
+  return scaled.toFixed(3) + suffix
 }
 
 export const truncate = (str: string) => {

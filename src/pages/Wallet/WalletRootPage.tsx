@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { MainContainer, Modal } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
@@ -6,11 +6,46 @@ import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import { AnimatePresence } from 'framer-motion'
 import AddressPage from './AddressPage'
+import { Transaction } from 'alf-client/dist/api/api-explorer'
+
+export interface SimpleTx {
+  txId: string
+  toAddress: string
+  amount: string
+  timestamp: number
+}
+
+interface WalletContext {
+  pendingTxList: SimpleTx[]
+  addPendingTx: (tx: SimpleTx) => void
+  loadedTxList: Transaction[]
+  setLoadedTxList: (list: Transaction[]) => void
+}
+
+const initialContext: WalletContext = {
+  pendingTxList: [],
+  addPendingTx: () => null,
+  loadedTxList: [],
+  setLoadedTxList: () => null
+}
+
+export const WalletContext = React.createContext<WalletContext>(initialContext)
 
 const Wallet = () => {
   const { wallet } = useContext(GlobalContext)
   const history = useHistory()
   const location = useLocation()
+
+  const [loadedTxList, setLoadedTxList] = useState<Transaction[]>([])
+  const [pendingTxList, setPendingTxList] = useState<SimpleTx[]>([])
+
+  const addPendingTx = (tx: SimpleTx) => {
+    setPendingTxList((prev) => {
+      if (prev && tx) {
+        return [...prev, tx]
+      } else return prev
+    })
+  }
 
   // Redirect if not wallet is set
   useEffect(() => {
@@ -20,25 +55,27 @@ const Wallet = () => {
   }, [history, wallet])
 
   return (
-    <MainContainer>
-      <Route path="/wallet">
-        <WalletHomePage />
-      </Route>
-      <AnimatePresence exitBeforeEnter initial={false}>
-        <Switch location={location} key={location.pathname}>
-          <Route path="/wallet/send" key="send">
-            <Modal>
-              <SendPage />
-            </Modal>
-          </Route>
-          <Route path="/wallet/address" key="address">
-            <Modal>
-              <AddressPage />
-            </Modal>
-          </Route>
-        </Switch>
-      </AnimatePresence>
-    </MainContainer>
+    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, pendingTxList, loadedTxList }}>
+      <MainContainer>
+        <Route path="/wallet">
+          <WalletHomePage />
+        </Route>
+        <AnimatePresence exitBeforeEnter initial={false}>
+          <Switch location={location} key={location.pathname}>
+            <Route path="/wallet/send" key="send">
+              <Modal>
+                <SendPage />
+              </Modal>
+            </Route>
+            <Route path="/wallet/address" key="address">
+              <Modal>
+                <AddressPage />
+              </Modal>
+            </Route>
+          </Switch>
+        </AnimatePresence>
+      </MainContainer>
+    </WalletContext.Provider>
   )
 }
 
