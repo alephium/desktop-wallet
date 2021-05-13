@@ -47,12 +47,7 @@ const SendPage = () => {
   const handleAmountChange = (value: string) => {
     const valueToReturn = Number(value).toString() // Remove 0 in front if needed
 
-    // Allow int (long) only
-    const regex = /^[0-9]+$/
-
-    if (regex.test(valueToReturn)) {
-      setAmount(valueToReturn)
-    }
+    setAmount(valueToReturn)
   }
 
   const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
@@ -64,12 +59,15 @@ const SendPage = () => {
       // Send it!
       setIsSending(true)
 
+      // Transform amount in qALF (1e-18)
+      const fullAmount = Number(amount) * 1e18
+
       try {
         const responseCreate = await client.clique.transactionCreate(
           wallet.address,
           wallet.publicKey,
           address,
-          amount,
+          fullAmount.toString(),
           undefined
         )
 
