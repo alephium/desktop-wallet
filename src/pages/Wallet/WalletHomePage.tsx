@@ -93,12 +93,12 @@ const WalletHomePage = () => {
   return (
     <PageContainer>
       <WalletAmountBoxContainer>
-        <RefreshButton transparent squared onClick={fetchData}>
-          <RefreshCw />
+        <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
+          {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <WalletAmountBox>
           <WalletAmountContainer>
-            <WalletAmount layoutId="wallet-amount">{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
+            <WalletAmount>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
             <WalletFullAmount>{balance}ℵ</WalletFullAmount>
           </WalletAmountContainer>
           <WalletActions>
@@ -111,14 +111,12 @@ const WalletHomePage = () => {
       <AnimatePresence>
         {isHeaderCompact && (
           <CompactWalletAmountBoxContainer>
-            <RefreshButton transparent squared onClick={fetchData}>
-              <RefreshCw />
+            <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
+              {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
             </RefreshButton>
             <CompactWalletAmountBox>
               <WalletAmountContainer>
-                <WalletAmount layoutId="wallet-amount" style={{ scale: 0.8 }}>
-                  {balance && abbreviateAmount(balance)}ℵ
-                </WalletAmount>
+                <WalletAmount style={{ scale: 0.7 }}>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
               </WalletAmountContainer>
             </CompactWalletAmountBox>
           </CompactWalletAmountBoxContainer>
@@ -242,6 +240,7 @@ const CompactWalletAmountBoxContainer = styled(SectionContent)`
   top: 0;
   right: 0;
   left: 0;
+  z-index: 1000;
 `
 
 const CompactWalletAmountBox = styled(motion.div)`
