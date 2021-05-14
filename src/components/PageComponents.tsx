@@ -24,10 +24,9 @@ export const PageContainer = styled.section`
 `
 
 const contentVariants: Variants = {
-  hidden: { opacity: 0, x: 20 },
+  hidden: { opacity: 0 },
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
-    x: 0,
     transition: {
       when: 'beforeChildren',
       delay: apparitionDelay,
@@ -36,8 +35,7 @@ const contentVariants: Variants = {
     }
   }),
   out: {
-    opacity: 0,
-    x: -20
+    opacity: 0
   }
 }
 
@@ -53,6 +51,7 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
       variants={contentVariants}
       initial="hidden"
       animate="shown"
+      exit="hidden"
       custom={apparitionDelay}
       style={style}
       className={className}
@@ -125,7 +124,10 @@ const H1 = styled(motion.h1)<{ color: string; smaller?: boolean }>`
 // == Modal ==
 // ===========
 
-export const Modal: React.FC = ({ children }) => {
+export const Modal: React.FC<{ onClose?: React.MouseEventHandler<HTMLDivElement> | undefined }> = ({
+  children,
+  onClose
+}) => {
   return (
     <ModalContainer
       initial={{ opacity: 0 }}
@@ -141,6 +143,11 @@ export const Modal: React.FC = ({ children }) => {
       >
         {children}
       </StyledModal>
+      <ModalBackdrop
+        onClick={(e) => {
+          onClose && onClose(e)
+        }}
+      />
     </ModalContainer>
   )
 }
@@ -152,8 +159,16 @@ const ModalContainer = styled(motion.div)`
   right: 0;
   left: 0;
   display: flex;
-  background-color: rgba(0, 0, 0, 0.15);
   padding: 20px;
+`
+
+const ModalBackdrop = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
 `
 
 const StyledModal = styled(motion.div)`
@@ -165,6 +180,7 @@ const StyledModal = styled(motion.div)`
   border: 2px solid ${({ theme }) => theme.border.primary};
   border-radius: 14px;
   background-color: ${({ theme }) => theme.bg.primary};
+  z-index: 1;
 
   ${TitleContainer} {
     margin-top: 0;

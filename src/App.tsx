@@ -12,7 +12,7 @@ import { Storage } from 'alf-client'
 import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
-import { createClient } from './utils/util'
+import { createClient } from './utils/clients'
 
 interface Context {
   usernames: string[]
@@ -85,7 +85,7 @@ const App = () => {
         <GlobalStyle />
         <Router>
           <AppContainer>
-            <AnimateSharedLayout>
+            <AnimateSharedLayout type="crossfade">
               <Switch>
                 <Route exact path="/">
                   <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
@@ -128,8 +128,6 @@ const AppContainer = styled.main`
   left: 0;
   bottom: 0;
   display: flex;
-  overflow-y: auto;
-  overflow-x: hidden;
 `
 
 const SnackbarPopup = styled(motion.div)`

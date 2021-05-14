@@ -4,7 +4,8 @@ import { useContext } from 'react'
 import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router'
 import Paragraph from '../../components/Paragraph'
-import { loadSettingsOrDefault, openInNewWindow, truncate } from '../../utils/util'
+import { openInNewWindow, truncate } from '../../utils/util'
+import { loadSettingsOrDefault } from '../../utils/clients'
 import { Button } from '../../components/Buttons'
 
 const AddressPage = () => {

@@ -68,12 +68,12 @@ const Wallet = () => {
         <AnimatePresence exitBeforeEnter initial={false}>
           <Switch location={location} key={location.pathname}>
             <Route path="/wallet/send" key="send">
-              <Modal>
+              <Modal onClose={() => history.push('/wallet')}>
                 <SendPage />
               </Modal>
             </Route>
             <Route path="/wallet/address" key="address">
-              <Modal>
+              <Modal onClose={() => history.push('/wallet')}>
                 <AddressPage />
               </Modal>
             </Route>

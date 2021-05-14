@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, LucideProps } from 'lucide-react'
 import tinycolor from 'tinycolor2'
-import { abbreviateAmount, calAmountDelta, loadSettingsOrDefault, openInNewWindow, truncate } from '../../utils/util'
+import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/util'
+import { loadSettingsOrDefault } from '../../utils/clients'
 import mountains from '../../images/mountain.svg'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
@@ -15,6 +16,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { SimpleTx, WalletContext } from './WalletRootPage'
 import { useInterval } from '../../utils/hooks'
 import Spinner from '../../components/Spinner'
+import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 
 dayjs.extend(relativeTime)
 
@@ -31,6 +33,20 @@ const WalletHomePage = () => {
   const [balance, setBalance] = useState<number | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [isLoading, setIsLoading] = useState(false)
+  const [isHeaderCompact, setIsHeaderCompact] = useState(false)
+
+  // Animation related to scroll
+  const { scrollY } = useViewportScroll()
+
+  useEffect(() => {
+    return scrollY.onChange((y) => {
+      if (y >= 300 && !isHeaderCompact) {
+        setIsHeaderCompact(true)
+      } else if (y < 300 && isHeaderCompact) {
+        setIsHeaderCompact(false)
+      }
+    })
+  }, [isHeaderCompact, scrollY])
 
   // Fetching data
   const fetchData = useCallback(() => {
@@ -78,7 +94,7 @@ const WalletHomePage = () => {
       <WalletAmountBoxContainer>
         <WalletAmountBox>
           <WalletAmountContainer>
-            <WalletAmount>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
+            <WalletAmount layoutId="wallet-amount">{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
             <WalletFullAmount>{balance}ℵ</WalletFullAmount>
           </WalletAmountContainer>
           <WalletActions>
@@ -88,6 +104,19 @@ const WalletHomePage = () => {
         </WalletAmountBox>
         <Decors />
       </WalletAmountBoxContainer>
+      <AnimatePresence>
+        {isHeaderCompact && (
+          <CompactWalletAmountBoxContainer>
+            <CompactWalletAmountBox>
+              <WalletAmountContainer>
+                <WalletAmount layoutId="wallet-amount" style={{ scale: 0.8 }}>
+                  {balance && abbreviateAmount(balance)}ℵ
+                </WalletAmount>
+              </WalletAmountContainer>
+            </CompactWalletAmountBox>
+          </CompactWalletAmountBoxContainer>
+        )}
+      </AnimatePresence>
       <TransactionContent>
         <LastTransactionListHeader>
           <LastTransactionListTitle>Last transactions</LastTransactionListTitle>
@@ -184,10 +213,9 @@ const WalletAmountBoxContainer = styled(SectionContent)`
   position: relative;
 `
 
-const WalletAmountBox = styled.div`
+const WalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.global.accent};
   width: 100%;
-  height: 30vh;
   border-radius: 14px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   padding: 0 25px;
@@ -195,6 +223,27 @@ const WalletAmountBox = styled.div`
   flex-direction: column;
   justify-content: center;
   align-self: flex-start;
+  height: 300px;
+`
+
+const CompactWalletAmountBoxContainer = styled(SectionContent)`
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-bottom: 25px;
+  flex: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+`
+
+const CompactWalletAmountBox = styled(motion.div)`
+  background-color: ${({ theme }) => theme.font.primary};
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  padding: 0 25px;
+  display: flex;
 `
 
 const WalletAmountContainer = styled.div`
@@ -204,8 +253,7 @@ const WalletAmountContainer = styled.div`
   flex: 1.5;
 `
 
-const WalletAmount = styled.div`
-  margin: 0 auto;
+const WalletAmount = styled(motion.div)`
   font-size: 3rem;
   color: ${({ theme }) => theme.font.contrast};
   text-align: center;
