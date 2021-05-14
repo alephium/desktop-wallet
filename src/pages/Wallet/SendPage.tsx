@@ -84,7 +84,7 @@ const SendPage = () => {
           amount: amount
         })
 
-        setSnackbarMessage({ text: 'Transaction sent!', type: 'info' })
+        setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
 
         history.push('/wallet')
       } catch (e) {
@@ -140,8 +140,6 @@ const CheckTransactionContent = ({ address, amount }: { address: string; amount:
     </SectionContent>
   )
 }
-
-const RotatingLoader = motion(Loader)
 
 const LogoContent = styled(SectionContent)`
   flex: 0;

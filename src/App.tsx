@@ -109,13 +109,15 @@ const App = () => {
 
 const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
   return (
-    <AnimatePresence>
-      {message && (
-        <SnackbarPopup initial={{ y: 80 }} animate={{ y: 0 }} exit={{ y: 80 }} className={message?.type}>
-          {message?.text}
-        </SnackbarPopup>
-      )}
-    </AnimatePresence>
+    <SnackbarManagerContainer>
+      <AnimatePresence>
+        {message && (
+          <SnackbarPopup initial={{ y: 80 }} animate={{ y: 0 }} exit={{ y: 80 }} className={message?.type}>
+            {message?.text}
+          </SnackbarPopup>
+        )}
+      </AnimatePresence>
+    </SnackbarManagerContainer>
   )
 }
 
@@ -130,15 +132,25 @@ const AppContainer = styled.main`
   display: flex;
 `
 
+const SnackbarManagerContainer = styled.div`
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+`
+
 const SnackbarPopup = styled(motion.div)`
-  position: absolute;
   bottom: 10px;
-  right: 10px;
-  left: 10px;
+  margin: 10px auto;
+  text-align: center;
+  min-width: 200px;
+  width: 50vw;
   padding: 20px 15px;
   color: ${({ theme }) => theme.font.contrast};
   border-radius: 14px;
   z-index: 1000;
+  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};
