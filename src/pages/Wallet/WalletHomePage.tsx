@@ -4,7 +4,7 @@ import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Link } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
-import { Send, QrCode, LucideProps } from 'lucide-react'
+import { Send, QrCode, RefreshCw, LucideProps } from 'lucide-react'
 import tinycolor from 'tinycolor2'
 import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/util'
 import { loadSettingsOrDefault } from '../../utils/clients'
@@ -17,6 +17,7 @@ import { SimpleTx, WalletContext } from './WalletRootPage'
 import { useInterval } from '../../utils/hooks'
 import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
+import { Button } from '../../components/Buttons'
 
 dayjs.extend(relativeTime)
 
@@ -92,6 +93,9 @@ const WalletHomePage = () => {
   return (
     <PageContainer>
       <WalletAmountBoxContainer>
+        <RefreshButton transparent squared onClick={fetchData}>
+          <RefreshCw />
+        </RefreshButton>
         <WalletAmountBox>
           <WalletAmountContainer>
             <WalletAmount layoutId="wallet-amount">{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
@@ -107,6 +111,9 @@ const WalletHomePage = () => {
       <AnimatePresence>
         {isHeaderCompact && (
           <CompactWalletAmountBoxContainer>
+            <RefreshButton transparent squared onClick={fetchData}>
+              <RefreshCw />
+            </RefreshButton>
             <CompactWalletAmountBox>
               <WalletAmountContainer>
                 <WalletAmount layoutId="wallet-amount" style={{ scale: 0.8 }}>
@@ -276,6 +283,13 @@ const WalletActions = styled.div`
 
 const WalletActionButtonContainer = styled.div`
   width: 50%;
+`
+
+const RefreshButton = styled(Button)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 5px !important;
 `
 
 const ActionButton = styled.button`

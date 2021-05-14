@@ -6,6 +6,8 @@ import tinycolor from 'tinycolor2'
 interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
   disabled?: boolean
+  transparent?: boolean
+  squared?: boolean
 }
 
 const variants: Variants = {
@@ -34,16 +36,20 @@ export const Button = ({ children, disabled, ...props }: ButtonProps) => {
 // === Styling
 
 const StyledButton = styled(motion.button)<ButtonProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 50px;
-  width: 80%;
+  width: ${({ squared }) => (squared ? '50px' : '80%')};
   border-radius: 7px;
   border: none;
-  background-color: ${({ theme, secondary }) => (secondary ? theme.bg.secondary : theme.global.accent)};
+  background-color: ${({ theme, secondary, transparent }) =>
+    transparent ? 'transparent' : secondary ? theme.bg.secondary : theme.global.accent};
   color: ${({ theme, secondary }) => (secondary ? theme.global.accent : theme.font.contrast)};
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 15px;
-  min-width: 100px;
+  min-width: ${({ squared }) => (squared ? '50px' : '100px')};
   text-align: center;
   cursor: pointer;
 
