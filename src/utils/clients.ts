@@ -20,14 +20,16 @@ import { CliqueClient, ExplorerClient } from 'alf-client'
 // === API CLIENTS === //
 // =================== //
 
-export async function createClient() {
-  const settings = loadSettingsOrDefault()
+export async function createClient(settings?: Settings) {
+  const loadedSettings = settings || loadSettingsOrDefault()
   const cliqueClient = new CliqueClient({
-    baseUrl: `http://${settings.host}${settings.port ? ':' : ''}${settings.port}`
+    baseUrl: `http://${loadedSettings.host}${loadedSettings.port ? ':' : ''}${loadedSettings.port}`
   })
 
   const explorerClient = new ExplorerClient({
-    baseUrl: `${settings.explorerApiHost}${settings.explorerApiPort ? ':' : ''}${settings.explorerApiPort || ''}`
+    baseUrl: `${loadedSettings.explorerApiHost}${loadedSettings.explorerApiPort ? ':' : ''}${
+      loadedSettings.explorerApiPort || ''
+    }`
   })
 
   console.log('Connecting to: ' + cliqueClient.baseUrl)

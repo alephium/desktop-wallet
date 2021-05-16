@@ -9,7 +9,7 @@ import { Storage } from 'alf-client'
 import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
-import { createClient } from './utils/clients'
+import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
 import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
 
@@ -19,6 +19,8 @@ interface Context {
   setWallet: (w: Wallet) => void
   networkType: NetworkTypeString
   client: Client | undefined
+  settings: Settings
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>
   setSnackbarMessage: (message: SnackbarMessage) => void
 }
 
@@ -30,6 +32,8 @@ const initialContext: Context = {
   setWallet: () => null,
   networkType: 'T',
   client: undefined,
+  settings: loadSettingsOrDefault(),
+  setSettings: () => null,
   setSnackbarMessage: () => null
 }
 
@@ -45,6 +49,7 @@ const App = () => {
 
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
+  const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
   const history = useHistory()
 
   // Create client
@@ -52,10 +57,15 @@ const App = () => {
     const getClient = async () => {
       try {
         // Get clients
-        const clientResp = await createClient()
+        const clientResp = await createClient(settings)
         setClient(clientResp)
 
         console.log('Clients initialized.')
+
+        setSnackbarMessage({
+          text: `Connected to Alephium's Node "${settings.host}"!`,
+          type: 'info'
+        })
       } catch (e) {
         console.log(e)
         setSnackbarMessage({
@@ -63,10 +73,13 @@ const App = () => {
           type: 'alert'
         })
       }
+
+      // Save settings
+      saveSettings(settings)
     }
 
     getClient()
-  }, [setSnackbarMessage, wallet])
+  }, [setSnackbarMessage, settings])
 
   // Remove snackbar popup
   useEffect(() => {
@@ -80,7 +93,9 @@ const App = () => {
   const networkType: NetworkTypeString = 'T'
 
   return (
-    <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage }}>
+    <GlobalContext.Provider
+      value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage, settings, setSettings }}
+    >
       <AppContainer>
         <AnimateSharedLayout type="crossfade">
           <Switch>

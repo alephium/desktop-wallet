@@ -4,11 +4,12 @@ import { Button } from '../components/Buttons'
 import { Input } from '../components/Inputs'
 import { ModalContext } from '../components/Modal'
 import { PageContainer, SectionContent } from '../components/PageComponents'
-import { loadSettingsOrDefault, saveSettings, Settings } from '../utils/clients'
+import { Settings } from '../utils/clients'
 
 const SettingsPage = () => {
-  const currentSettings = loadSettingsOrDefault()
-  const [settings, setSettings] = useState<Settings>({
+  const { settings: currentSettings, setSettings } = useContext(GlobalContext)
+
+  const [tempSettings, setTempSettings] = useState<Settings>({
     host: currentSettings.host,
     port: currentSettings.port,
     explorerApiHost: currentSettings.explorerApiHost,
@@ -16,42 +17,44 @@ const SettingsPage = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
-  const { setSnackbarMessage } = useContext(GlobalContext)
   const { onClose } = useContext(ModalContext)
 
   const editSettings = (v: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, ...v }))
+    setTempSettings((prev) => ({ ...prev, ...v }))
   }
 
   const handleSave = () => {
-    saveSettings(settings)
-    setSnackbarMessage({ text: 'Settings updated', type: 'success' })
+    setSettings(tempSettings)
   }
 
   return (
     <PageContainer>
       <SectionContent>
-        <Input placeholder="Node host" value={settings.host} onChange={(e) => editSettings({ host: e.target.value })} />
+        <Input
+          placeholder="Node host"
+          value={tempSettings.host}
+          onChange={(e) => editSettings({ host: e.target.value })}
+        />
         <Input
           placeholder="Node port"
           type="number"
-          value={settings.port}
+          value={tempSettings.port}
           onChange={(e) => editSettings({ port: parseInt(e.target.value) })}
         />
         <Input
           placeholder="Explorer API host"
-          value={settings.explorerApiHost}
+          value={tempSettings.explorerApiHost}
           onChange={(e) => editSettings({ explorerApiHost: e.target.value })}
         />
         <Input
           placeholder="Explorer API port"
           type="number"
-          value={settings.explorerApiPort || ''}
+          value={tempSettings.explorerApiPort || ''}
           onChange={(e) => editSettings({ explorerApiPort: parseInt(e.target.value) })}
         />
         <Input
           placeholder="Explorer URL"
-          value={settings.explorerUrl}
+          value={tempSettings.explorerUrl}
           onChange={(e) => editSettings({ explorerUrl: e.target.value })}
         />
       </SectionContent>
