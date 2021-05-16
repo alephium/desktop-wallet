@@ -2,9 +2,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
-import { Send, QrCode, RefreshCw, LucideProps } from 'lucide-react'
+import { Send, QrCode, RefreshCw, LucideProps, Settings as SettingsIcon } from 'lucide-react'
 import tinycolor from 'tinycolor2'
 import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/util'
 import { loadSettingsOrDefault } from '../../utils/clients'
@@ -30,6 +30,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 }
 
 const WalletHomePage = () => {
+  const history = useHistory()
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
   const [balance, setBalance] = useState<number | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
@@ -96,6 +97,9 @@ const WalletHomePage = () => {
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
+        <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
+          <SettingsIcon />
+        </SettingsButton>
         <WalletAmountBox>
           <WalletAmountContainer>
             <WalletAmount>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
@@ -288,6 +292,13 @@ const RefreshButton = styled(Button)`
   position: absolute;
   top: 0;
   left: 0;
+  margin: 5px !important;
+`
+
+const SettingsButton = styled(Button)`
+  position: absolute;
+  top: 0;
+  right: 0;
   margin: 5px !important;
 `
 

@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
 import { Input } from '../components/Inputs'
+import { ModalContext } from '../components/Modal'
 import { PageContainer, SectionContent } from '../components/PageComponents'
 import { loadSettingsOrDefault, saveSettings, Settings } from '../utils/clients'
 
@@ -14,16 +16,16 @@ const SettingsPage = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
-  const editSettings = (v: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, v }))
-  }
+  const { setSnackbarMessage } = useContext(GlobalContext)
+  const { onClose } = useContext(ModalContext)
 
-  const onBackButtonPress = () => {
-    return null
+  const editSettings = (v: Partial<Settings>) => {
+    setSettings((prev) => ({ ...prev, ...v }))
   }
 
   const handleSave = () => {
     saveSettings(settings)
+    setSnackbarMessage({ text: 'Settings updated', type: 'success' })
   }
 
   return (
@@ -55,7 +57,7 @@ const SettingsPage = () => {
       </SectionContent>
 
       <SectionContent>
-        <Button secondary onClick={onBackButtonPress}>
+        <Button secondary onClick={onClose}>
           Close
         </Button>
         <Button onClick={handleSave}>Save</Button>
