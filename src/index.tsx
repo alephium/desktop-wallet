@@ -16,13 +16,22 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { ThemeProvider } from 'styled-components'
 import App from './App'
+import { GlobalStyle } from './style/globalStyles'
+import { lightTheme } from './style/themes'
 
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <ThemeProvider theme={lightTheme}>
+        <GlobalStyle />
+        <App />
+      </ThemeProvider>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 )

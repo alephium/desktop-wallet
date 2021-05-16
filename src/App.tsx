@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import styled, { ThemeProvider } from 'styled-components'
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom'
-
+import styled from 'styled-components'
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
-import { GlobalStyle } from './style/globalStyles'
-import { lightTheme } from './style/themes'
 import CreateWalletPages from './pages/CreateWallet/CreateWalletRootPage'
 import { Wallet } from 'alf-client'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
@@ -13,6 +10,8 @@ import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
 import { createClient } from './utils/clients'
+import Settings from './pages/SettingsPage'
+import { Modal } from './components/Modal'
 
 interface Context {
   usernames: string[]
@@ -46,6 +45,7 @@ const App = () => {
 
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
+  const history = useHistory()
 
   // Create client
   useEffect(() => {
@@ -81,28 +81,28 @@ const App = () => {
 
   return (
     <GlobalContext.Provider value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage }}>
-      <ThemeProvider theme={lightTheme}>
-        <GlobalStyle />
-        <Router>
-          <AppContainer>
-            <AnimateSharedLayout type="crossfade">
-              <Switch>
-                <Route exact path="/">
-                  <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
-                </Route>
-                <Route exact path="/create/:step?">
-                  <CreateWalletPages />
-                  <Redirect exact from="/create/" to="/create/0" />
-                </Route>
-                <Route path="/wallet">
-                  <WalletPages />
-                </Route>
-              </Switch>
-            </AnimateSharedLayout>
-          </AppContainer>
-        </Router>
-        <SnackbarManager message={snackbarMessage} />
-      </ThemeProvider>
+      <AppContainer>
+        <AnimateSharedLayout type="crossfade">
+          <Switch>
+            <Route exact path="/create/:step?">
+              <CreateWalletPages />
+              <Redirect exact from="/create/" to="/create/0" />
+            </Route>
+            <Route path="/wallet">
+              <WalletPages />
+            </Route>
+            <Route path="/">
+              <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
+            </Route>
+          </Switch>
+          <Route path="/settings">
+            <Modal onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+              <Settings />
+            </Modal>
+          </Route>
+        </AnimateSharedLayout>
+      </AppContainer>
+      <SnackbarManager message={snackbarMessage} />
     </GlobalContext.Provider>
   )
 }

@@ -15,7 +15,7 @@ const AddressPage = () => {
 
   const history = useHistory()
 
-  const onBackButtonpress = () => {
+  const onBackButtonPress = () => {
     history.push('/wallet')
   }
 
@@ -41,7 +41,7 @@ const AddressPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonpress} smaller>
+      <PageTitle onBackButtonPress={onBackButtonPress} smaller>
         Your address
       </PageTitle>
       <SectionContent>{address && <QRCode value={address} />}</SectionContent>

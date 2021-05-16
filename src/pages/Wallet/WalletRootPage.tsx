@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { MainContainer, Modal } from '../../components/PageComponents'
+import { MainContainer } from '../../components/PageComponents'
+import Modal from '../../components/Modal'
 import { GlobalContext } from '../../App'
 import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
 import WalletHomePage from './WalletHomePage'

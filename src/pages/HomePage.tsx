@@ -13,6 +13,7 @@ import Paragraph from '../components/Paragraph'
 import { walletOpen, Storage } from 'alf-client'
 import { NetworkTypeString } from '../types'
 import { GlobalContext } from '../App'
+import { Settings as SettingsIcon } from 'lucide-react'
 
 interface HomeProps {
   hasWallet: boolean
@@ -21,6 +22,7 @@ interface HomeProps {
 }
 
 const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
+  const history = useHistory()
   const [showActions, setShowActions] = useState(false)
 
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
@@ -29,6 +31,9 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
     <PageContainer>
       <Header>
         <MainContainer>
+          <SettingsButton transparent squared onClick={() => history.push('settings')}>
+            <SettingsIcon />
+          </SettingsButton>
           <HeaderText>
             <PageTitle color="contrast">Hi there!</PageTitle>
             <h3>Welcome to the Alephium Wallet!</h3>
@@ -48,14 +53,13 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
           />
           <CloudGroup
             coordinates={[
-              ['10px', '0px'],
-              ['20px', '15px'],
-              ['55px', '30px']
+              ['40px', '15px'],
+              ['20px', '30px']
             ]}
-            lengths={['30px', '40px', '25px']}
-            style={{ top: '3vh' }}
-            distance="20px"
-            side="right"
+            lengths={['25px', '32px']}
+            style={{ bottom: '10vh' }}
+            distance="40%"
+            side="left"
           />
           <MountainImage />
         </MainContainer>
@@ -270,6 +274,13 @@ const SwitchLink = styled(Paragraph)`
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
   }
+`
+
+const SettingsButton = styled(Button)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 5px;
 `
 
 export default HomePage

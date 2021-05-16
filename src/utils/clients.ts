@@ -43,7 +43,7 @@ export async function createClient() {
 // === SETTINGS === //
 // ================ //
 
-interface Settings {
+export interface Settings {
   host: string
   port: number
   explorerApiHost: string
