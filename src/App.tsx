@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
-import CreateWalletPages from './pages/CreateWallet/CreateWalletRootPage'
+import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
+import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import { Wallet } from 'alf-client'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import { Storage } from 'alf-client'
@@ -103,6 +104,10 @@ const App = () => {
               <CreateWalletPages />
               <Redirect exact from="/create/" to="/create/0" />
             </Route>
+            <Route exact path="/import/:step?">
+              <ImportWalletPages />
+              <Redirect exact from="/import/" to="/import/0" />
+            </Route>
             <Route path="/wallet">
               <WalletPages />
             </Route>
@@ -159,7 +164,7 @@ const SnackbarPopup = styled(motion.div)`
   bottom: 10px;
   margin: 10px auto;
   text-align: center;
-  min-width: 200px;
+  min-width: 300px;
   width: 50vw;
   padding: 20px 15px;
   color: ${({ theme }) => theme.font.contrast};

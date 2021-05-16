@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import styled from 'styled-components'
-import { CreateWalletContext } from './CreateWalletRootPage'
+import { WalletManagementContext } from './WalletManagementContext'
 import { InfoBox } from '../../components/InfoBox'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { Edit3 } from 'lucide-react'
@@ -9,7 +9,7 @@ import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet } = useContext(CreateWalletContext)
+  const { mnemonic, plainWallet } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
   const { setSnackbarMessage } = useContext(GlobalContext)
 

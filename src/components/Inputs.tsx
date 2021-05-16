@@ -236,7 +236,7 @@ const StyledInput = styled.input<InputProps>`
 const Chevron = styled.div`
   position: absolute;
   font-size: 1.3rem;
-  top: 16px;
+  top: 14px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `

@@ -154,14 +154,10 @@ const InitialActions = ({
 }) => {
   const history = useHistory()
 
-  const handleClick = () => {
-    history.push('/create')
-  }
-
   return (
     <SectionContent style={{ marginTop: '2vh' }}>
-      <Button onClick={handleClick}>New wallet</Button>
-      <Button>Import wallet</Button>
+      <Button onClick={() => history.push('/create')}>New wallet</Button>
+      <Button onClick={() => history.push('/import')}>Import wallet</Button>
       {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
     </SectionContent>
   )

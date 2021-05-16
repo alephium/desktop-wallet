@@ -6,13 +6,13 @@ import { AlertTriangle } from 'lucide-react'
 import styled from 'styled-components'
 import Paragraph from '../../components/Paragraph'
 import zxcvbn from 'zxcvbn'
-import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
+import { WalletManagementContext } from './WalletManagementContext'
 
 const CreateAccountPage = () => {
-  const { setContext, username: existingUsername, password: existingPassword } = useContext(CreateWalletContext)
+  const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
   const [state, setState] = useState({

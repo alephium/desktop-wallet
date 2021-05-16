@@ -1,43 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { MainContainer } from '../../components/PageComponents'
-import { walletGenerate, Wallet } from 'alf-client'
-import { useHistory, useParams } from 'react-router'
+import { useContext, useEffect, useState } from 'react'
+import { walletGenerate } from 'alf-client'
 import CreateAccountPage from './CreateAccountPage'
 import WalletWordsPage from './WalletWordsPage'
 import { GlobalContext } from '../../App'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
 import MultiStepsController from '../MultiStepsController'
-
-interface RouteParams {
-  step: string | undefined
-}
-
-interface Context {
-  plainWallet?: Wallet
-  mnemonic: string
-  username: string
-  password: string
-  setContext: React.Dispatch<React.SetStateAction<Context>>
-}
-
-const initialContext: Context = {
-  mnemonic: '',
-  username: '',
-  password: '',
-  setContext: () => null
-}
-
-export const CreateWalletContext = React.createContext<Context>(initialContext)
-
-// ============== //
-/* MAIN COMPONENT */
-// ============== //
+import {
+  initialWalletManagementContext,
+  WalletManagementContext,
+  WalletManagementContextType
+} from './WalletManagementContext'
 
 const CreateWallet = () => {
   const { networkType } = useContext(GlobalContext)
-
-  const [context, setContext] = useState<Context>(initialContext)
+  const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
 
   // Init wallet
   useEffect(() => {
@@ -57,9 +34,9 @@ const CreateWallet = () => {
   ]
 
   return (
-    <CreateWalletContext.Provider value={{ ...context, setContext }}>
+    <WalletManagementContext.Provider value={{ ...context, setContext }}>
       <MultiStepsController stepElements={createWalletSteps} baseUrl="create" />
-    </CreateWalletContext.Provider>
+    </WalletManagementContext.Provider>
   )
 }
 

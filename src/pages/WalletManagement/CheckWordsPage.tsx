@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { CreateWalletContext } from './CreateWalletRootPage'
+import { WalletManagementContext } from './WalletManagementContext'
 import { Button } from '../../components/Buttons'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import tinycolor from 'tinycolor2'
@@ -23,7 +23,7 @@ const getShuffledArr = (arr: string[]) => {
 
 const CheckWordsPage = () => {
   const history = useHistory()
-  const { mnemonic, plainWallet, password, username } = useContext(CreateWalletContext)
+  const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
   const { onButtonBack } = useContext(StepsContext)
 
   const { setWallet } = useContext(GlobalContext)
