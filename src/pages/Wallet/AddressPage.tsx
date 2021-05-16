@@ -1,8 +1,7 @@
-import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import { PageContainer, SectionContent } from '../../components/PageComponents'
 import QRCode from 'qrcode.react'
 import { useContext } from 'react'
 import { GlobalContext } from '../../App'
-import { useHistory } from 'react-router'
 import Paragraph from '../../components/Paragraph'
 import { openInNewWindow, truncate } from '../../utils/util'
 import { loadSettingsOrDefault } from '../../utils/clients'
@@ -12,12 +11,6 @@ const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
 
   const address = wallet?.address
-
-  const history = useHistory()
-
-  const onBackButtonPress = () => {
-    history.push('/wallet')
-  }
 
   const handleShowInExplorer = () => {
     const { explorerUrl } = loadSettingsOrDefault()
@@ -41,9 +34,6 @@ const AddressPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonPress} smaller>
-        Your address
-      </PageTitle>
       <SectionContent>{address && <QRCode value={address} />}</SectionContent>
       <SectionContent>
         <Paragraph>{truncate(address || '')}</Paragraph>

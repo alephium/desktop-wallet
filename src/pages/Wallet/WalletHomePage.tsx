@@ -228,7 +228,7 @@ const WalletAmountBox = styled(motion.div)`
   flex-direction: column;
   justify-content: center;
   align-self: flex-start;
-  height: 300px;
+  height: 250px;
 `
 
 const CompactWalletAmountBoxContainer = styled(SectionContent)`

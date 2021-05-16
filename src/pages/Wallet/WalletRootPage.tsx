@@ -8,6 +8,7 @@ import SendPage from './SendPage'
 import { AnimatePresence } from 'framer-motion'
 import AddressPage from './AddressPage'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
+import SettingsPage from '../../pages/SettingsPage'
 
 export interface SimpleTx {
   txId: string
@@ -69,13 +70,18 @@ const Wallet = () => {
         <AnimatePresence exitBeforeEnter initial={false}>
           <Switch location={location} key={location.pathname}>
             <Route path="/wallet/send" key="send">
-              <Modal onClose={() => history.push('/wallet')}>
+              <Modal title="Send" onClose={() => history.push('/wallet')}>
                 <SendPage />
               </Modal>
             </Route>
             <Route path="/wallet/address" key="address">
-              <Modal onClose={() => history.push('/wallet')}>
+              <Modal title="Your address" onClose={() => history.push('/wallet')}>
                 <AddressPage />
+              </Modal>
+            </Route>
+            <Route path="/wallet/settings">
+              <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+                <SettingsPage />
               </Modal>
             </Route>
           </Switch>

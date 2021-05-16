@@ -1,32 +1,50 @@
 import { motion } from 'framer-motion'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { TitleContainer } from './PageComponents'
+import { PageTitle, StyledContent, TitleContainer } from './PageComponents'
 
-export const Modal: React.FC<{ onClose?: React.MouseEventHandler<HTMLDivElement> | undefined }> = ({
-  children,
-  onClose
-}) => {
+interface ModalContext {
+  setModalTitle: (newTitle: string) => void
+  onClose: () => void
+  overrideOnClose: (newFn: () => void) => void
+}
+
+export const ModalContext = React.createContext<ModalContext>({
+  setModalTitle: () => null,
+  onClose: () => null,
+  overrideOnClose: () => null
+})
+
+export const Modal: React.FC<{ title: string; onClose: () => void }> = ({ children, title, onClose }) => {
+  const [currentTitle, setCurrentTitle] = useState(title)
+  const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
+
   return (
-    <ModalContainer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-    >
-      <StyledModal
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
+    <ModalContext.Provider value={{ setModalTitle: setCurrentTitle, onClose, overrideOnClose: setCurrentOnClose }}>
+      <ModalContainer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
-        {children}
-      </StyledModal>
-      <ModalBackdrop
-        onClick={(e) => {
-          onClose && onClose(e)
-        }}
-      />
-    </ModalContainer>
+        <StyledModal
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          <PageTitle onBackButtonPress={currentOnClose} smaller useLayoutId={false}>
+            {currentTitle}
+          </PageTitle>
+          <ModalContent>{children}</ModalContent>
+        </StyledModal>
+        <ModalBackdrop
+          onClick={() => {
+            onClose && onClose()
+          }}
+        />
+      </ModalContainer>
+    </ModalContext.Provider>
   )
 }
 
@@ -50,11 +68,12 @@ const ModalBackdrop = styled.div`
 `
 
 const StyledModal = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
   margin: auto;
   width: 100%;
   max-width: 600px;
   max-height: 95vh;
-  padding: 30px 20px;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid ${({ theme }) => theme.border.primary};
   border-radius: 14px;
@@ -62,7 +81,17 @@ const StyledModal = styled(motion.div)`
   z-index: 1;
 
   ${TitleContainer} {
-    margin-top: 0;
+    margin: 15px 20px 5px 20px;
+  }
+`
+
+const ModalContent = styled.div`
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 30px 20px 0 20px;
+
+  ${StyledContent}:last-child {
+    margin-bottom: 30px;
   }
 `
 

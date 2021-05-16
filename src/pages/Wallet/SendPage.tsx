@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 import { GlobalContext } from '../../App'
-import { Send, Loader } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
-import { PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
-import { motion } from 'framer-motion'
+import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
+import { ModalContext } from '../../components/Modal'
 
 const SendPage = () => {
   const history = useHistory()
@@ -17,7 +17,7 @@ const SendPage = () => {
   const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
   const { addPendingTx } = useContext(WalletContext)
 
-  //console.log(wallet)
+  const { setModalTitle, onClose, overrideOnClose } = useContext(ModalContext)
 
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState<string>('')
@@ -25,13 +25,19 @@ const SendPage = () => {
   const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
 
-  const onBackButtonpress = () => {
+  const onBackButtonpress = useCallback(() => {
     if (!isChecking) {
-      history.push('/wallet')
+      onClose()
     } else {
       setIsChecking(false)
+      setModalTitle('Send')
     }
-  }
+  }, [isChecking, onClose, setModalTitle])
+
+  useEffect(() => {
+    // Change behaviour of closing modal
+    overrideOnClose(() => onBackButtonpress)
+  }, [onBackButtonpress, overrideOnClose])
 
   const handleAddressChange = (value: string) => {
     // Check if format is correct
@@ -57,6 +63,7 @@ const SendPage = () => {
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
+      setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!
       setIsSending(true)
@@ -96,9 +103,6 @@ const SendPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonpress} smaller>
-        {isChecking ? 'Info Check' : 'Send'}
-      </PageTitle>
       <LogoContent>
         <SendLogo>
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />}

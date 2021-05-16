@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../components/Buttons'
 import { Input } from '../components/Inputs'
-import { PageContainer, PageTitle, SectionContent } from '../components/PageComponents'
+import { PageContainer, SectionContent } from '../components/PageComponents'
 import { loadSettingsOrDefault, saveSettings, Settings } from '../utils/clients'
 
 const SettingsPage = () => {
@@ -28,10 +28,6 @@ const SettingsPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle onBackButtonPress={onBackButtonPress} smaller useLayoutId={false}>
-        Settings
-      </PageTitle>
-
       <SectionContent>
         <Input placeholder="Node host" value={settings.host} onChange={(e) => editSettings({ host: e.target.value })} />
         <Input

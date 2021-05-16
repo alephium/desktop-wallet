@@ -10,7 +10,7 @@ import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
 import { createClient } from './utils/clients'
-import Settings from './pages/SettingsPage'
+import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
 
 interface Context {
@@ -96,8 +96,8 @@ const App = () => {
             </Route>
           </Switch>
           <Route path="/settings">
-            <Modal onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-              <Settings />
+            <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+              <SettingsPage />
             </Modal>
           </Route>
         </AnimateSharedLayout>
