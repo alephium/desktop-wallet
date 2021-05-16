@@ -273,7 +273,7 @@ const SwitchLink = styled(Paragraph)`
 `
 
 const SettingsButton = styled(Button)`
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   margin: 5px;

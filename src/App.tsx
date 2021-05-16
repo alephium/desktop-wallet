@@ -41,6 +41,7 @@ const initialContext: Context = {
 interface SnackbarMessage {
   text: string
   type: 'info' | 'alert' | 'success'
+  duration?: number
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
@@ -65,7 +66,8 @@ const App = () => {
 
         setSnackbarMessage({
           text: `Connected to Alephium's Node "${settings.host}"!`,
-          type: 'info'
+          type: 'info',
+          duration: 2000
         })
       } catch (e) {
         console.log(e)
@@ -85,7 +87,7 @@ const App = () => {
   // Remove snackbar popup
   useEffect(() => {
     if (snackbarMessage) {
-      setTimeout(() => setSnackbarMessage(undefined), 3000)
+      setTimeout(() => setSnackbarMessage(undefined), snackbarMessage.duration || 3000)
     }
   }, [snackbarMessage])
 
@@ -132,7 +134,12 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
     <SnackbarManagerContainer>
       <AnimatePresence>
         {message && (
-          <SnackbarPopup initial={{ y: 80 }} animate={{ y: 0 }} exit={{ y: 80 }} className={message?.type}>
+          <SnackbarPopup
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={message?.type}
+          >
             {message?.text}
           </SnackbarPopup>
         )}

@@ -2,7 +2,7 @@ import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motio
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
-import { useState, ChangeEvent, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -77,22 +77,25 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
   const [showPopup, setShowPopup] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const setInputValue = (option: SelectOption) => {
-    onValueChange && onValueChange(option)
-    setValue(option)
+  const setInputValue = useCallback(
+    (option: SelectOption) => {
+      onValueChange && onValueChange(option)
+      setValue(option)
 
-    // Set value in input
-    if (inputRef.current && option) {
-      inputRef.current.value = option.label
-    }
-  }
+      // Set value in input
+      if (inputRef.current && option) {
+        inputRef.current.value = option.label
+      }
+    },
+    [onValueChange]
+  )
 
   useEffect(() => {
     // If only one value, select it
     if (!value && options.length === 1) {
       setInputValue(options[0])
     }
-  }, [])
+  }, [options, setInputValue, value])
 
   return (
     <>
