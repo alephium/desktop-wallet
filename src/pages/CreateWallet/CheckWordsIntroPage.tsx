@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
@@ -7,9 +6,10 @@ import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
 import styled from 'styled-components'
 import { motion } from 'framer-motion'
 import Paragraph from '../../components/Paragraph'
+import { StepsContext } from '../MultiStepsController'
 
 const CheckWordsIntroPage = () => {
-  const { onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+  const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
   return (
     <PageContainer>

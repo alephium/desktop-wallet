@@ -9,11 +9,11 @@ import zxcvbn from 'zxcvbn'
 import { CreateWalletContext } from './CreateWalletRootPage'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
+import { StepsContext } from '../MultiStepsController'
 
 const CreateAccountPage = () => {
-  const { setContext, onButtonNext, onButtonBack, username: existingUsername, password: existingPassword } = useContext(
-    CreateWalletContext
-  )
+  const { setContext, username: existingUsername, password: existingPassword } = useContext(CreateWalletContext)
+  const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
   const [state, setState] = useState({
     username: existingUsername,
@@ -96,7 +96,7 @@ const CreateAccountPage = () => {
           isValid={password.length > 0 && password === passwordCheck}
           disabled={!password || passwordError.length > 0}
         />
-        <InfoBox Icon={AlertTriangle} text={'Make sure to keep your password secured as it cannot by restored!'} />
+        <InfoBox Icon={AlertTriangle} text={'Make sure to keep your password secured as it cannot be restored!'} />
         <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>

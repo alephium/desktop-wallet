@@ -10,6 +10,7 @@ import { throttle } from 'lodash'
 import { Storage } from 'alf-client'
 import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router'
+import { StepsContext } from '../MultiStepsController'
 
 const getShuffledArr = (arr: string[]) => {
   const newArr = arr.slice()
@@ -22,7 +23,9 @@ const getShuffledArr = (arr: string[]) => {
 
 const CheckWordsPage = () => {
   const history = useHistory()
-  const { mnemonic, plainWallet, password, username, onButtonBack } = useContext(CreateWalletContext)
+  const { mnemonic, plainWallet, password, username } = useContext(CreateWalletContext)
+  const { onButtonBack } = useContext(StepsContext)
+
   const { setWallet } = useContext(GlobalContext)
   const splitMnemonic = mnemonic.split(' ')
 

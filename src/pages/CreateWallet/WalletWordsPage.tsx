@@ -6,9 +6,11 @@ import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../c
 import { Edit3 } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
+import { StepsContext } from '../MultiStepsController'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet, onButtonBack, onButtonNext } = useContext(CreateWalletContext)
+  const { mnemonic, plainWallet } = useContext(CreateWalletContext)
+  const { onButtonBack, onButtonNext } = useContext(StepsContext)
   const { setSnackbarMessage } = useContext(GlobalContext)
 
   const handleAddressClick = () => {
