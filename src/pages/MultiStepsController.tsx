@@ -26,9 +26,11 @@ const MultiStepsController = ({ stepElements, baseUrl }: { stepElements: JSX.Ele
   const { step } = useParams<RouteParams>()
 
   const onButtonNext = () => {
+    window.scrollTo(0, 0)
     history.push(`/${baseUrl}/${stepNumber + 1}`)
   }
   const onButtonBack = () => {
+    window.scrollTo(0, 0)
     if (stepNumber === 0) {
       history.push('/')
     } else {

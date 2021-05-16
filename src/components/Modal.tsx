@@ -56,6 +56,7 @@ const ModalContainer = styled(motion.div)`
   left: 0;
   display: flex;
   padding: 20px;
+  z-index: 1000;
 `
 
 const ModalBackdrop = styled.div`

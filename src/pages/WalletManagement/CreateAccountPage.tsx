@@ -114,6 +114,7 @@ const CreateAccountPage = () => {
 const WarningNote = styled(Paragraph)`
   text-align: center;
   color: ${({ theme }) => theme.font.secondary};
+  margin-bottom: 0;
 `
 
 export default CreateAccountPage

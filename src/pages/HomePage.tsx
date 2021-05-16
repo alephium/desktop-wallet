@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { ReactComponent as TreesSVG } from '../images/trees.svg'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
@@ -24,6 +24,7 @@ interface HomeProps {
 const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
   const history = useHistory()
   const [showActions, setShowActions] = useState(false)
+  const theme = useTheme()
 
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
 
@@ -35,7 +36,9 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
             <SettingsIcon />
           </SettingsButton>
           <HeaderText>
-            <PageTitle color="contrast">Hi there!</PageTitle>
+            <PageTitle color={theme.font.contrast} backgroundColor={theme.font.primary}>
+              Hi there!
+            </PageTitle>
             <h3>Welcome to the Alephium Wallet!</h3>
             <p>Use the smart money of the future while keeping your mind at ease.</p>
           </HeaderText>
@@ -277,6 +280,7 @@ const SettingsButton = styled(Button)`
   top: 0;
   right: 0;
   margin: 5px;
+  z-index: 10;
 `
 
 export default HomePage

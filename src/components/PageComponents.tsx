@@ -1,4 +1,4 @@
-import { motion, MotionStyle, Variants } from 'framer-motion'
+import { motion, MotionStyle, useTransform, useViewportScroll, Variants } from 'framer-motion'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
@@ -74,9 +74,10 @@ export const StyledContent = styled(motion.div)`
 `
 
 interface SectionTitleProps {
-  color?: 'primary' | 'contrast'
+  color?: string
   onBackButtonPress?: () => void
   smaller?: boolean
+  backgroundColor?: string
   useLayoutId?: boolean
 }
 
@@ -90,16 +91,26 @@ export const FooterActions = styled(SectionContent)`
 // ===========
 
 export const PageTitle: FC<SectionTitleProps> = ({
-  color = 'primary',
+  color,
   children,
   onBackButtonPress,
   smaller,
+  backgroundColor,
   useLayoutId = true
 }) => {
+  const { scrollY } = useViewportScroll()
+
+  const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
+
   return (
-    <TitleContainer>
+    <TitleContainer style={{ backgroundColor: backgroundColor || 'white' }}>
       {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
-      <H1 color={color} layoutId={useLayoutId ? 'sectionTitle' : ''} smaller={smaller}>
+      <H1
+        color={color}
+        layoutId={useLayoutId ? 'sectionTitle' : ''}
+        smaller={smaller}
+        style={{ scale: titleScale, originX: 0 }}
+      >
         {children}
       </H1>
     </TitleContainer>
@@ -109,8 +120,11 @@ export const PageTitle: FC<SectionTitleProps> = ({
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 5vh;
-  margin-bottom: 3vh;
+  margin-top: 3vh;
+  margin-bottom: 4vh;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 `
 
 const BackArrow = styled(ArrowLeft)`
@@ -120,9 +134,9 @@ const BackArrow = styled(ArrowLeft)`
   cursor: pointer;
 `
 
-const H1 = styled(motion.h1)<{ color: string; smaller?: boolean }>`
+const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
   flex: 1;
   margin: 0;
-  color: ${({ theme, color }) => (color === 'primary' ? theme.font.primary : theme.font.contrast)};
+  color: ${({ theme, color }) => (color ? color : theme.font.primary)};
   font-size: ${({ smaller }) => (smaller ? '2.0rem' : 'auto')};
 `
