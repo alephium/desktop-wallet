@@ -102,8 +102,8 @@ const WalletHomePage = () => {
         </SettingsButton>
         <WalletAmountBox>
           <WalletAmountContainer>
-            <WalletAmount>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
-            <WalletFullAmount>{balance}ℵ</WalletFullAmount>
+            <WalletAmount>{balance ? abbreviateAmount(balance) : 0}ℵ</WalletAmount>
+            <WalletFullAmount>{balance || 0}ℵ</WalletFullAmount>
           </WalletAmountContainer>
           <WalletActions>
             <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />

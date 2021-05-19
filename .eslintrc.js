@@ -18,7 +18,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
-    quotes: [1, 'single'],
+    quotes: [1, 'single', { avoidEscape: true }],
     'jsx-quotes': [2, 'prefer-double'],
     '@typescript-eslint/member-delimiter-style': [
       'error',

@@ -9,7 +9,6 @@ import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { Storage } from 'alf-client'
 import { GlobalContext } from '../../App'
-import { useHistory } from 'react-router'
 import { StepsContext } from '../MultiStepsController'
 
 const getShuffledArr = (arr: string[]) => {
@@ -22,9 +21,8 @@ const getShuffledArr = (arr: string[]) => {
 }
 
 const CheckWordsPage = () => {
-  const history = useHistory()
   const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
-  const { onButtonBack } = useContext(StepsContext)
+  const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
   const { setWallet } = useContext(GlobalContext)
   const splitMnemonic = mnemonic.split(' ')
@@ -168,7 +166,7 @@ const CheckWordsPage = () => {
 
   const handleButtonNext = () => {
     const success = createEncryptedWallet()
-    if (success) history.push('/wallet')
+    if (success) onButtonNext()
     else {
       console.error('Something went wrong when creating encrypted wallet!')
     }

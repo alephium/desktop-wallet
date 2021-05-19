@@ -11,6 +11,7 @@ import {
   WalletManagementContext,
   WalletManagementContextType
 } from './WalletManagementContext'
+import WalletWelcomePage from './WalletWelcomePage'
 
 const CreateWallet = () => {
   const { networkType } = useContext(GlobalContext)
@@ -30,7 +31,8 @@ const CreateWallet = () => {
     <CreateAccountPage key="create-account" />,
     <WalletWordsPage key="wallet-words" />,
     <CheckWordsIntroPage key="check-words-intro" />,
-    <CheckWordsPage key="check-words" />
+    <CheckWordsPage key="check-words" />,
+    <WalletWelcomePage key="welcome" />
   ]
 
   return (
