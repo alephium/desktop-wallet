@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
@@ -13,6 +13,7 @@ import { AsyncReturnType } from 'type-fest'
 import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
 import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
+import Spinner from './components/Spinner'
 
 interface Context {
   usernames: string[]
@@ -52,12 +53,15 @@ const App = () => {
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
   const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
+  const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
+  const theme = useTheme()
 
   // Create client
   useEffect(() => {
     const getClient = async () => {
       try {
+        setClientIsLoading(true)
         // Get clients
         const clientResp = await createClient(settings)
         setClient(clientResp)
@@ -69,12 +73,14 @@ const App = () => {
           type: 'info',
           duration: 2000
         })
+        setClientIsLoading(false)
       } catch (e) {
         console.log(e)
         setSnackbarMessage({
           text: 'Unable to initialize the client, please check your network settings.',
           type: 'alert'
         })
+        setClientIsLoading(false)
       }
 
       // Save settings
@@ -124,6 +130,7 @@ const App = () => {
           </Route>
         </AnimateSharedLayout>
       </AppContainer>
+      <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />
     </GlobalContext.Provider>
   )
@@ -165,6 +172,7 @@ const SnackbarManagerContainer = styled.div`
   right: 0;
   left: 0;
   display: flex;
+  z-index: 10001;
 `
 
 const SnackbarPopup = styled(motion.div)`
@@ -190,6 +198,14 @@ const SnackbarPopup = styled(motion.div)`
   &.success {
     background-color: ${({ theme }) => theme.global.valid};
   }
+`
+
+const ClientLoading = styled.div`
+  position: absolute;
+  top: 15px;
+  left: 25px;
+  transform: translateX(-50%);
+  color: white;
 `
 
 export default App

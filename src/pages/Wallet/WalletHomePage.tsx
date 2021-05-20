@@ -143,6 +143,9 @@ const WalletHomePage = () => {
             <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
           )}
         </LastTransactionList>
+        {loadedTxList && loadedTxList.length > 0 && (
+          <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
+        )}
       </TransactionContent>
     </PageContainer>
   )
@@ -381,9 +384,7 @@ const TransactionItemContainer = styled.div`
     background-color: ${({ theme }) => theme.bg.secondary};
   }
 
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const TxDetails = styled.div`
@@ -435,6 +436,13 @@ const PendingTransactionItemContainer = styled(TransactionItemContainer)`
 
 const NoTransactionMessage = styled.div`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const NoMoreTransactionMessage = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+  text-align: center;
+  width: 100%;
+  margin-top: 15px;
 `
 
 export default WalletHomePage

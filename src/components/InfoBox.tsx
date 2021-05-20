@@ -43,6 +43,7 @@ export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onC
 const BoxContainer = styled.div`
   width: 100%;
   margin-bottom: 20px;
+  margin-top: 10px;
 `
 
 const IconContainer = styled.div`
