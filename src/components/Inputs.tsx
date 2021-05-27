@@ -1,11 +1,18 @@
 import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motion'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
+import Tags from '@yaireo/tagify/dist/react.tagify'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  error?: string
+  isValid?: boolean
+  disabled?: boolean
+}
+
+interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
   error?: string
   isValid?: boolean
   disabled?: boolean
@@ -55,6 +62,66 @@ export const Input = ({ placeholder, error, isValid, disabled, onChange, value, 
       )}
       {!disabled && error && <ErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</ErrorMessage>}
     </InputContainer>
+  )
+}
+
+// === TEXT AREA === //
+
+export const TextArea = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: TextAreaProps) => {
+  const [canBeAnimated, setCanBeAnimated] = useState(false)
+
+  const className = classNames({
+    error,
+    isValid
+  })
+
+  return (
+    <TextAreaContainer
+      variants={variants}
+      animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
+      onAnimationComplete={() => setCanBeAnimated(true)}
+      custom={disabled}
+    >
+      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+        {placeholder}
+      </Label>
+      <StyledTextArea
+        {...props}
+        value={value}
+        onChange={onChange}
+        className={className}
+        disabled={disabled}
+        isValid={isValid}
+      />
+
+      {!disabled && isValid && (
+        <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+          <Check strokeWidth={3} />
+        </ValidIconContainer>
+      )}
+      {!disabled && error && <ErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</ErrorMessage>}
+    </TextAreaContainer>
+  )
+}
+
+// === TEXTAREA TAGS === //
+export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
+  return (
+    <TextAreaTagsContainer className={props.className}>
+      <StyledTags
+        {...props}
+        settings={{
+          enforceWhitelist: true,
+          trim: true,
+          editTags: { clicks: 1, keepInvalid: false },
+          dropdown: {
+            enabled: 1, // show suggestion after 1 typed character
+            fuzzySearch: false, // match only suggestions that starts with the typed characters
+            position: 'text'
+          }
+        }}
+      />
+    </TextAreaTagsContainer>
   )
 }
 
@@ -176,9 +243,21 @@ const InputContainer = styled(motion.div)`
   margin: 17px 0;
 `
 
+const TextAreaContainer = styled(motion.div)`
+  position: relative;
+  width: 100%;
+  margin: 17px 0;
+`
+
+const TextAreaTagsContainer = styled(motion.div)`
+  width: 100%;
+  margin: 17px 0;
+  border-radius: 7px;
+`
+
 const Label = styled(motion.label)`
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 18px;
   font-weight: 600;
   color: ${({ theme }) => theme.font.secondary};
@@ -206,34 +285,57 @@ const ValidIconContainer = styled(motion.div)`
   color: ${({ theme }) => theme.global.valid};
 `
 
-const StyledInput = styled.input<InputProps>`
-  background-image: none;
-  height: 50px;
-  width: 100%;
-  border-radius: 100px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 3px solid ${({ theme }) => theme.border.primary};
-  padding: ${({ isValid }) => (isValid ? '0 45px 0 15px' : '0 15px')};
-  font-weight: 600;
-  font-size: 1em;
-  text-align: left;
-
-  transition: 0.2s ease-out;
-
-  &:focus {
-    background-color: ${({ theme }) => theme.bg.primary};
-    border: 3px solid ${({ theme }) => theme.global.accent};
-  }
-
-  &.error {
-    border: 3px solid ${({ theme }) => theme.global.alert};
-    background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
-  }
-
-  &:disabled {
+const defaultStyle = (isValid?: boolean) => {
+  return css`
+    background-image: none;
+    height: 50px;
+    width: 100%;
+    border-radius: 100px;
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 3px solid ${({ theme }) => theme.border.primary};
-  }
+    padding: ${isValid ? '0 45px 0 15px' : '0 15px'};
+    font-weight: 600;
+    font-size: 1em;
+    text-align: left;
+    font-family: inherit;
+
+    transition: 0.2s ease-out;
+
+    &:focus {
+      background-color: ${({ theme }) => theme.bg.primary};
+      border: 3px solid ${({ theme }) => theme.global.accent};
+    }
+
+    &.error {
+      border: 3px solid ${({ theme }) => theme.global.alert};
+      background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
+    }
+
+    &:disabled {
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border: 3px solid ${({ theme }) => theme.border.primary};
+    }
+  `
+}
+
+const StyledInput = styled.input<InputProps>`
+  ${({ isValid }) => defaultStyle(isValid)}
+`
+
+const StyledTextArea = styled.textarea<TextAreaProps>`
+  ${({ isValid }) => defaultStyle(isValid)}
+  resize: none;
+  outline: none;
+  padding-top: 13px;
+  min-height: 300px;
+  border-radius: 7px;
+`
+
+const StyledTags = styled(Tags)`
+  ${defaultStyle(true)}
+  padding-top: 13px;
+  min-height: 300px;
+  border-radius: 7px;
 `
 
 const Chevron = styled.div`

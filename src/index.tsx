@@ -22,6 +22,8 @@ import App from './App'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 
+import '@yaireo/tagify/dist/tagify.css' // Tagify CSS
+
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
