@@ -23,7 +23,7 @@ import { CliqueClient, ExplorerClient } from 'alf-client'
 export async function createClient(settings?: Settings) {
   const loadedSettings = settings || loadSettingsOrDefault()
   const cliqueClient = new CliqueClient({
-    baseUrl: `http://${loadedSettings.host}${loadedSettings.port ? ':' : ''}${loadedSettings.port}`
+    baseUrl: `${loadedSettings.host}${loadedSettings.port ? ':' : ''}${loadedSettings.port}`
   })
 
   const explorerClient = new ExplorerClient({
@@ -55,7 +55,7 @@ export interface Settings {
 
 export function settingsDefault(): Settings {
   return {
-    host: 'localhost',
+    host: 'http://localhost',
     port: 12973,
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerApiPort: null,
