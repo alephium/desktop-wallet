@@ -20,4 +20,13 @@ const StyledParagraph = styled(motion.p)`
   font-weight: 500;
 `
 
+export const CenteredMainParagraph = styled(Paragraph)`
+  text-align: center;
+`
+
+export const CenteredSecondaryParagraph = styled(Paragraph)`
+  text-align: center;
+  color: ${({ theme }) => theme.font.secondary};
+`
+
 export default Paragraph

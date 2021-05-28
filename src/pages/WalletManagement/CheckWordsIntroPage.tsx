@@ -5,7 +5,7 @@ import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
 import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
 import styled from 'styled-components'
 import { motion } from 'framer-motion'
-import Paragraph from '../../components/Paragraph'
+import { CenteredMainParagraph, CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { StepsContext } from '../MultiStepsController'
 
 const CheckWordsIntroPage = () => {
@@ -36,8 +36,8 @@ const CheckWordsIntroPage = () => {
             </LockBodyContainer>
           </Lock>
         </LockContainer>
-        <FirstParagraph>Alright! Time to check if you got your words right!</FirstParagraph>
-        <SecondParagraph>Select the words in the right order. Ready?</SecondParagraph>
+        <CenteredMainParagraph>Alright! Time to check if you got your words right!</CenteredMainParagraph>
+        <CenteredSecondaryParagraph>Select the words in the right order. Ready?</CenteredSecondaryParagraph>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
         <Button onClick={onButtonNext}>Ready!</Button>
@@ -73,15 +73,6 @@ const LockHandle = styled(LockHandleSVG)`
 
 const LockBody = styled(LockBodySVG)`
   width: 100%;
-`
-
-const FirstParagraph = styled(Paragraph)`
-  text-align: center;
-`
-
-const SecondParagraph = styled(Paragraph)`
-  text-align: center;
-  color: ${({ theme }) => theme.font.secondary};
 `
 
 export default CheckWordsIntroPage

@@ -164,8 +164,8 @@ const CheckWordsPage = () => {
     }
   }
 
-  const handleButtonNext = () => {
-    const success = createEncryptedWallet()
+  const handleButtonNext = async () => {
+    const success = await createEncryptedWallet()
     if (success) onButtonNext()
     else {
       console.error('Something went wrong when creating encrypted wallet!')

@@ -11,7 +11,7 @@ import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
-const CreateAccountPage = () => {
+const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
@@ -70,7 +70,7 @@ const CreateAccountPage = () => {
 
   return (
     <PageContainer>
-      <PageTitle color="primary">New Account</PageTitle>
+      <PageTitle color="primary">{isRestoring ? 'Restore Account' : 'New Account'}</PageTitle>
       <SectionContent>
         <Input
           value={username}
@@ -96,7 +96,14 @@ const CreateAccountPage = () => {
           isValid={password.length > 0 && password === passwordCheck}
           disabled={!password || passwordError.length > 0}
         />
-        <InfoBox Icon={AlertTriangle} text={'Make sure to keep your password secured as it cannot be restored!'} />
+        <InfoBox
+          Icon={AlertTriangle}
+          text={
+            isRestoring
+              ? 'Make sure to use the same password as the one used for creating the wallet, otherwise the restore will fail.'
+              : 'Make sure to keep your password secured as it cannot be restored!'
+          }
+        />
         <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>

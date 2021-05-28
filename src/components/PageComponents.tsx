@@ -84,6 +84,7 @@ interface SectionTitleProps {
 export const FooterActions = styled(SectionContent)`
   flex: 0;
   margin-bottom: 5vh;
+  width: 100%;
 `
 
 // ===========

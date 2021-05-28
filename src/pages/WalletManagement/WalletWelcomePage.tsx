@@ -16,7 +16,7 @@ const WalletWelcomePage = () => {
 
   useTimeout(() => {
     setConfettiRunning(false)
-  }, 5000)
+  }, 3000)
 
   return (
     <PageContainer>

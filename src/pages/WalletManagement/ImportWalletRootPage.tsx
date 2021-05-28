@@ -13,7 +13,7 @@ const ImportWalletRootPage = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
 
   const importWalletSteps: JSX.Element[] = [
-    <CreateAccountPage key="create-account" />,
+    <CreateAccountPage key="create-account" isRestoring />,
     <ImportWordsPage key="import-words" />,
     <WalletWelcomePage key="welcome" />
   ]
