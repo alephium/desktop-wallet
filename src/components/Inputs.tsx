@@ -112,15 +112,20 @@ export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
         {...props}
         settings={{
           enforceWhitelist: true,
-          trim: true,
-          editTags: { clicks: 1, keepInvalid: false },
+          delimiters: ' ',
+          maxTags: 24,
           dropdown: {
             enabled: 1, // show suggestion after 1 typed character
             fuzzySearch: false, // match only suggestions that starts with the typed characters
-            position: 'text'
-          }
+            position: 'all',
+            classname: 'tags-dropdown',
+            maxItems: 5,
+            highlightFirst: true
+          },
+          addTagOnBlur: false
         }}
       />
+      <div className="tags-dropdown" />
     </TextAreaTagsContainer>
   )
 }
@@ -331,10 +336,12 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
   border-radius: 7px;
 `
 
+// NOTE: Tags dropdown is styled in GlobalStyles
+
 const StyledTags = styled(Tags)`
   ${defaultStyle(true)}
-  padding-top: 13px;
-  min-height: 300px;
+  height: auto;
+  padding: 8px;
   border-radius: 7px;
 `
 
