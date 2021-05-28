@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
@@ -55,7 +55,6 @@ const App = () => {
   const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
-  const theme = useTheme()
 
   // Create client
   useEffect(() => {

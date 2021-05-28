@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import { settingsDefault, loadSettingsOrDefault, saveSettings } from '../utils/util'
+import { settingsDefault, loadSettingsOrDefault, saveSettings } from '../utils/misc'
 import ALF from 'alf-client'
 
 const storage = ALF.utils.Storage()

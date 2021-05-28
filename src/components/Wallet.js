@@ -23,8 +23,8 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
-import { abbreviateAmount, createClient } from '../utils/util'
-import { loadSettingsOrDefault } from '../utils/util'
+import { abbreviateAmount, createClient } from '../utils/misc'
+import { loadSettingsOrDefault } from '../utils/misc'
 
 class Wallet extends Component {
   constructor() {

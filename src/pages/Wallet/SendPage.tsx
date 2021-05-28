@@ -76,7 +76,7 @@ const SendPage = () => {
           wallet.address,
           wallet.publicKey,
           address,
-          fullAmount.toString(),
+          `"${fullAmount}"`, // Make sure the backend understands that we're sending a string (for scientific notation)
           undefined
         )
 
@@ -140,7 +140,7 @@ const CheckTransactionContent = ({ address, amount }: { address: string; amount:
   return (
     <SectionContent>
       <InfoBox text={address} label="Recipient's address" />
-      <InfoBox text={`${Number(amount)} ℵ`} label="Amount" />
+      <InfoBox text={`${amount} ℵ`} label="Amount" />
     </SectionContent>
   )
 }

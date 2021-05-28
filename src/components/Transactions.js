@@ -20,7 +20,7 @@ import CardContent from '@material-ui/core/CardContent'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
-import { loadSettingsOrDefault } from '../utils/util'
+import { loadSettingsOrDefault } from '../utils/misc'
 
 const { Client } = require('bcurl')
 

@@ -3,7 +3,7 @@ import QRCode from 'qrcode.react'
 import { useContext } from 'react'
 import { GlobalContext } from '../../App'
 import Paragraph from '../../components/Paragraph'
-import { openInNewWindow, truncate } from '../../utils/util'
+import { openInNewWindow, truncate } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import { Button } from '../../components/Buttons'
 
