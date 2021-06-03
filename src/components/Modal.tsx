@@ -75,6 +75,7 @@ const StyledModal = styled(motion.div)`
   width: 100%;
   max-width: 600px;
   max-height: 95vh;
+  min-height: 600px;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid ${({ theme }) => theme.border.primary};
   border-radius: 14px;

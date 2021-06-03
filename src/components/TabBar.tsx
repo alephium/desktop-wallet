@@ -1,9 +1,12 @@
 import styled from 'styled-components'
+import { motion } from 'framer-motion'
 
 export interface TabItem {
   value: string
   label: string
 }
+
+//const indicatorMargin =
 
 const TabBar = ({
   tabItems,
@@ -16,34 +19,62 @@ const TabBar = ({
 }) => {
   return (
     <TabBarContainer>
-      {tabItems.map((i) => {
-        return (
-          <Tab key={i.value} onClick={() => onTabChange(i)} isActive={activeTab.value === i.value}>
-            {i.label}
-          </Tab>
-        )
-      })}
+      <TabBarContent>
+        <TabSelector
+          animate={{ x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%` }}
+          style={{ width: `${100 / tabItems.length}%` }}
+        />
+        {tabItems.map((i) => {
+          const isActive = activeTab.value === i.value
+          return (
+            <TabContainer key={i.value}>
+              <Tab onClick={() => onTabChange(i)} isActive={isActive}>
+                {i.label}
+              </Tab>
+            </TabContainer>
+          )
+        })}
+      </TabBarContent>
     </TabBarContainer>
   )
 }
 
 const TabBarContainer = styled.div`
   width: 100%;
-  display: flex;
   border-radius: 14px;
   padding: 8px;
   margin: 15px 0 20px 0;
   background-color: ${({ theme }) => theme.bg.secondary};
+  overflow: hidden;
+`
+
+const TabBarContent = styled.div`
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+`
+
+const TabContainer = styled.div`
+  position: relative;
+  flex: 1;
 `
 
 const Tab = styled.div<{ isActive: boolean }>`
-  flex: 1;
   text-align: center;
   padding: 8px;
-  border-radius: 7px;
-
-  background-color: ${({ theme, isActive }) => (isActive ? theme.global.accent : 'transparent')};
   color: ${({ theme, isActive }) => (isActive ? theme.font.contrast : theme.font.secondary)};
+  z-index: 1;
+`
+
+const TabSelector = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 10px;
+  flex: 1;
+  background-color: ${({ theme }) => theme.global.accent};
+  z-index: -1;
 `
 
 export default TabBar

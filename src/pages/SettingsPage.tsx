@@ -20,18 +20,28 @@ const SettingsPage = () => {
     <PageContainer>
       <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
       {currentTab.value === 'account' ? (
-        <AccountSettings />
+        <AccountSettings onClose={onClose} />
       ) : currentTab.value === 'client' ? (
         <ClientSettings onClose={onClose} />
       ) : (
-        <AccountSettings />
+        <AccountSettings onClose={onClose} />
       )}
     </PageContainer>
   )
 }
 
-const AccountSettings = () => {
-  return <div></div>
+const AccountSettings = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div>
+      <SectionContent>
+        <Button secondary onClick={onClose}>
+          Close
+        </Button>
+        <Button secondary>Show the secret phrase</Button>
+        <Button secondary>Disconnect</Button>
+      </SectionContent>
+    </div>
+  )
 }
 
 const ClientSettings = ({ onClose }: { onClose: () => void }) => {
