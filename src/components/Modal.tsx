@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { Button } from './Buttons'
 import { PageTitle, StyledContent, TitleContainer } from './PageComponents'
+import { X } from 'lucide-react'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void
@@ -33,9 +35,20 @@ export const Modal: React.FC<{ title: string; onClose: () => void }> = ({ childr
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          <PageTitle onBackButtonPress={currentOnClose} smaller useLayoutId={false}>
-            {currentTitle}
-          </PageTitle>
+          <ModalHeader>
+            <PageTitle smaller useLayoutId={false}>
+              {currentTitle}
+            </PageTitle>
+            <CloseButton
+              squared
+              transparent
+              onClick={() => {
+                onClose && onClose()
+              }}
+            >
+              <X />
+            </CloseButton>
+          </ModalHeader>
           <ModalContent>{children}</ModalContent>
         </StyledModal>
         <ModalBackdrop
@@ -83,8 +96,18 @@ const StyledModal = styled(motion.div)`
   z-index: 1;
 
   ${TitleContainer} {
-    margin: 15px 20px 5px 20px;
+    flex: 1;
+    margin: 15px 20px 15px 20px;
   }
+`
+
+const ModalHeader = styled.header`
+  display: flex;
+`
+
+const CloseButton = styled(Button)`
+  color: ${({ theme }) => theme.font.primary};
+  margin-right: 10px;
 `
 
 const ModalContent = styled.div`

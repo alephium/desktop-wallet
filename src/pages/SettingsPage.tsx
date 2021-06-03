@@ -20,23 +20,20 @@ const SettingsPage = () => {
     <PageContainer>
       <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
       {currentTab.value === 'account' ? (
-        <AccountSettings onClose={onClose} />
+        <AccountSettings />
       ) : currentTab.value === 'client' ? (
-        <ClientSettings onClose={onClose} />
+        <ClientSettings />
       ) : (
-        <AccountSettings onClose={onClose} />
+        <AccountSettings />
       )}
     </PageContainer>
   )
 }
 
-const AccountSettings = ({ onClose }: { onClose: () => void }) => {
+const AccountSettings = () => {
   return (
     <div>
       <SectionContent>
-        <Button secondary onClick={onClose}>
-          Close
-        </Button>
         <Button secondary>Show the secret phrase</Button>
         <Button secondary>Disconnect</Button>
       </SectionContent>
@@ -44,7 +41,7 @@ const AccountSettings = ({ onClose }: { onClose: () => void }) => {
   )
 }
 
-const ClientSettings = ({ onClose }: { onClose: () => void }) => {
+const ClientSettings = () => {
   const { settings: currentSettings, setSettings } = useContext(GlobalContext)
 
   const [tempSettings, setTempSettings] = useState<Settings>({
@@ -96,9 +93,6 @@ const ClientSettings = ({ onClose }: { onClose: () => void }) => {
       </SectionContent>
 
       <SectionContent>
-        <Button secondary onClick={onClose}>
-          Close
-        </Button>
         <Button onClick={handleSave}>Save</Button>
       </SectionContent>
     </div>

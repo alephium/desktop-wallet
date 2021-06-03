@@ -18,34 +18,45 @@ const TabBar = ({
   activeTab: TabItem
 }) => {
   return (
-    <TabBarContainer>
-      <TabBarContent>
-        <TabSelector
-          animate={{ x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%` }}
-          style={{ width: `${100 / tabItems.length}%` }}
-        />
-        {tabItems.map((i) => {
-          const isActive = activeTab.value === i.value
-          return (
-            <TabContainer key={i.value}>
-              <Tab onClick={() => onTabChange(i)} isActive={isActive}>
-                {i.label}
-              </Tab>
-            </TabContainer>
-          )
-        })}
-      </TabBarContent>
-    </TabBarContainer>
+    <Wrapper>
+      <TabBarContainer>
+        <TabBarContent>
+          <TabSelector
+            animate={{
+              x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%`
+            }}
+            style={{ width: `${100 / tabItems.length}%` }}
+          />
+          {tabItems.map((i) => {
+            const isActive = activeTab.value === i.value
+            return (
+              <TabContainer key={i.value}>
+                <Tab onClick={() => onTabChange(i)} isActive={isActive}>
+                  {i.label}
+                </Tab>
+              </TabContainer>
+            )
+          })}
+        </TabBarContent>
+      </TabBarContainer>
+    </Wrapper>
   )
 }
 
+const Wrapper = styled.div`
+  margin: 10px 0 25px 0;
+  padding-bottom: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: ${({ theme }) => theme.bg.primary};
+`
+
 const TabBarContainer = styled.div`
   width: 100%;
-  border-radius: 14px;
   padding: 8px;
-  margin: 15px 0 20px 0;
+  border-radius: 14px;
   background-color: ${({ theme }) => theme.bg.secondary};
-  overflow: hidden;
 `
 
 const TabBarContent = styled.div`
