@@ -20,7 +20,7 @@ interface Context {
   currentUsername: string
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
-  setWallet: (w: Wallet) => void
+  setWallet: (w: Wallet | undefined) => void
   networkType: NetworkTypeString
   client: Client | undefined
   settings: Settings

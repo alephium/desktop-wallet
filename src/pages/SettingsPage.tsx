@@ -35,7 +35,7 @@ const SettingsPage = () => {
 }
 
 const AccountSettings = () => {
-  const { currentUsername, networkType, setSnackbarMessage } = useContext(GlobalContext)
+  const { currentUsername, networkType, setSnackbarMessage, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decriptedWallet, setDecriptedWallet] = useState<Wallet>()
@@ -58,6 +58,10 @@ const AccountSettings = () => {
     } catch (e) {
       setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
     }
+  }
+
+  const handleLogout = () => {
+    setWallet(undefined)
   }
 
   return (
@@ -84,10 +88,10 @@ const AccountSettings = () => {
         )}
 
         <InfoBox text={`Current account: ${currentUsername}`} Icon={User} />
-        <Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
-          Export the private key
-        </Button>
-        <Button secondary alert>
+        {/*<Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
+          Show your secret phrase
+            </Button>*/}
+        <Button secondary alert onClick={handleLogout}>
           Disconnect
         </Button>
       </SectionContent>
