@@ -17,6 +17,8 @@ import Spinner from './components/Spinner'
 
 interface Context {
   usernames: string[]
+  currentUsername: string
+  setCurrentUsername: (username: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet) => void
   networkType: NetworkTypeString
@@ -30,6 +32,8 @@ type Client = AsyncReturnType<typeof createClient>
 
 const initialContext: Context = {
   usernames: [],
+  currentUsername: '',
+  setCurrentUsername: () => null,
   wallet: undefined,
   setWallet: () => null,
   networkType: 'T',
@@ -49,7 +53,7 @@ export const GlobalContext = React.createContext<Context>(initialContext)
 
 const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
-
+  const [currentUsername, setCurrentUsername] = useState('')
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
   const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
@@ -102,7 +106,18 @@ const App = () => {
 
   return (
     <GlobalContext.Provider
-      value={{ usernames, wallet, setWallet, networkType: 'T', client, setSnackbarMessage, settings, setSettings }}
+      value={{
+        usernames,
+        currentUsername,
+        setCurrentUsername,
+        wallet,
+        setWallet,
+        networkType: 'T',
+        client,
+        setSnackbarMessage,
+        settings,
+        setSettings
+      }}
     >
       <AppContainer>
         <AnimateSharedLayout type="crossfade">

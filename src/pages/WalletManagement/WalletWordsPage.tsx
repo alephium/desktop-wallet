@@ -38,7 +38,11 @@ const WalletWordsPage = () => {
       <WordsContent>
         <Label>Secret words</Label>
         <PhraseBox>{mnemonic}</PhraseBox>
-        <InfoBox text={'Carefully note the 24 words. They are the keys to your wallet.'} Icon={Edit3} />
+        <InfoBox
+          text={'Carefully note the 24 words. They are the keys to your wallet.'}
+          Icon={Edit3}
+          iconColor="alert"
+        />
       </WordsContent>
       <FooterActions apparitionDelay={0.3}>
         <Button onClick={onButtonNext}>Continue</Button>

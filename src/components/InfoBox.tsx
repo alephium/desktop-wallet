@@ -6,7 +6,7 @@ interface InfoBoxProps {
   text: string
   Icon?: (props: LucideProps) => JSX.Element
   label?: string
-  iconColor?: string
+  iconColor?: 'accent' | 'alert'
   className?: string
   ellipsis?: boolean
   onClick?: () => void
@@ -26,7 +26,7 @@ export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onC
       <StyledBox variants={variants}>
         {Icon && (
           <IconContainer>
-            <Icon color={iconColor || theme.global.alert} strokeWidth={1.5} />
+            <Icon color={iconColor ? theme.global[iconColor] : theme.global.accent} strokeWidth={1.5} />
           </IconContainer>
         )}
         <TextContainer

@@ -98,6 +98,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         />
         <InfoBox
           Icon={AlertTriangle}
+          iconColor="alert"
           text={
             isRestoring
               ? 'Make sure to use the same password as the one used for creating the wallet, otherwise the restore will fail.'

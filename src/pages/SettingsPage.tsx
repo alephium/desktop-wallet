@@ -1,11 +1,15 @@
-import React, { useContext, useState } from 'react'
+import React, { ChangeEvent, useContext, useState } from 'react'
 import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
+import { InfoBox } from '../components/InfoBox'
 import { Input } from '../components/Inputs'
-import { ModalContext } from '../components/Modal'
 import { PageContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
+import { User } from 'lucide-react'
+import Modal from '../components/Modal'
+import { CenteredSecondaryParagraph } from '../components/Paragraph'
+import { walletOpen, Storage, Wallet } from 'alf-client'
 
 const tabs = [
   { value: 'account', label: 'Account' },
@@ -13,29 +17,79 @@ const tabs = [
 ]
 
 const SettingsPage = () => {
-  const { onClose } = useContext(ModalContext)
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const { wallet } = useContext(GlobalContext)
 
   return (
     <PageContainer>
-      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
-      {currentTab.value === 'account' ? (
+      {wallet && <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>}
+      {wallet && currentTab.value === 'account' ? (
         <AccountSettings />
       ) : currentTab.value === 'client' ? (
         <ClientSettings />
       ) : (
-        <AccountSettings />
+        <ClientSettings />
       )}
     </PageContainer>
   )
 }
 
 const AccountSettings = () => {
+  const { currentUsername, networkType, setSnackbarMessage } = useContext(GlobalContext)
+  const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
+  const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
+  const [decriptedWallet, setDecriptedWallet] = useState<Wallet>()
+  const [typedPassword, setTypedPassword] = useState('')
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTypedPassword(e.target.value)
+  }
+
+  const handlePasswordVerification = async () => {
+    const walletEncrypted = Storage().load(currentUsername)
+
+    try {
+      const decryptedWallet = await walletOpen(typedPassword, walletEncrypted, networkType)
+
+      if (decryptedWallet) {
+        setDecriptedWallet(decryptedWallet)
+        setIsDisplayingPhrase(true)
+      }
+    } catch (e) {
+      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+    }
+  }
+
   return (
     <div>
       <SectionContent>
-        <Button secondary>Show the secret phrase</Button>
-        <Button secondary>Disconnect</Button>
+        {isDisplayingSecretModal && (
+          <Modal title="Secret phrase" onClose={() => setIsDisplayingSecretModal(false)}>
+            {!isDisplayingPhrase ? (
+              <div>
+                <SectionContent>
+                  <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
+                  <CenteredSecondaryParagraph>
+                    Type your password above to show your 24 words phrase.
+                  </CenteredSecondaryParagraph>
+                </SectionContent>
+                <SectionContent>
+                  <Button onClick={handlePasswordVerification}>Show</Button>
+                </SectionContent>
+              </div>
+            ) : (
+              <SectionContent>{'Soon.'}</SectionContent>
+            )}
+          </Modal>
+        )}
+
+        <InfoBox text={`Current account: ${currentUsername}`} Icon={User} />
+        <Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
+          Export the private key
+        </Button>
+        <Button secondary alert>
+          Disconnect
+        </Button>
       </SectionContent>
     </div>
   )

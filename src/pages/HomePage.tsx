@@ -95,7 +95,7 @@ const Login = ({
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const { setWallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { setWallet, setCurrentUsername, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
 
   const login = async (callback: () => void) => {
@@ -107,6 +107,7 @@ const Login = ({
         const wallet = await walletOpen(credentials.password, walletEncrypted, networkType)
         if (wallet) {
           setWallet(wallet)
+          setCurrentUsername(credentials.username)
           callback()
         }
       } catch (e) {
