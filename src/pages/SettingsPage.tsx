@@ -1,12 +1,40 @@
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
 import { Input } from '../components/Inputs'
 import { ModalContext } from '../components/Modal'
 import { PageContainer, SectionContent } from '../components/PageComponents'
+import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
 
+const tabs = [
+  { value: 'account', label: 'Account' },
+  { value: 'client', label: 'Client' }
+]
+
 const SettingsPage = () => {
+  const { onClose } = useContext(ModalContext)
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+
+  return (
+    <PageContainer>
+      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
+      {currentTab.value === 'account' ? (
+        <AccountSettings />
+      ) : currentTab.value === 'client' ? (
+        <ClientSettings onClose={onClose} />
+      ) : (
+        <AccountSettings />
+      )}
+    </PageContainer>
+  )
+}
+
+const AccountSettings = () => {
+  return <div></div>
+}
+
+const ClientSettings = ({ onClose }: { onClose: () => void }) => {
   const { settings: currentSettings, setSettings } = useContext(GlobalContext)
 
   const [tempSettings, setTempSettings] = useState<Settings>({
@@ -17,8 +45,6 @@ const SettingsPage = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
-  const { onClose } = useContext(ModalContext)
-
   const editSettings = (v: Partial<Settings>) => {
     setTempSettings((prev) => ({ ...prev, ...v }))
   }
@@ -28,7 +54,7 @@ const SettingsPage = () => {
   }
 
   return (
-    <PageContainer>
+    <div>
       <SectionContent>
         <Input
           placeholder="Node host"
@@ -65,8 +91,7 @@ const SettingsPage = () => {
         </Button>
         <Button onClick={handleSave}>Save</Button>
       </SectionContent>
-    </PageContainer>
+    </div>
   )
 }
-
 export default SettingsPage

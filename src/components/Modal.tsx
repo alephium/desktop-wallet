@@ -89,7 +89,7 @@ const StyledModal = styled(motion.div)`
 const ModalContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 30px 20px 0 20px;
+  padding: 0 20px 0 20px;
 
   ${StyledContent}:last-child {
     margin-bottom: 30px;

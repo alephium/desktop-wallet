@@ -34,7 +34,7 @@ const AddressPage = () => {
 
   return (
     <PageContainer>
-      <SectionContent>{address && <QRCode value={address} />}</SectionContent>
+      <SectionContent>{address && <QRCode value={address} style={{ marginTop: 25 }} />}</SectionContent>
       <SectionContent>
         <Paragraph>{truncate(address || '')}</Paragraph>
       </SectionContent>
