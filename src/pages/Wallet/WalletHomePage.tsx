@@ -132,9 +132,12 @@ const WalletHomePage = () => {
           {(isLoading || pendingTxList.length > 0) && <Spinner />}
         </LastTransactionListHeader>
         <LastTransactionList>
-          {pendingTxList.map((t) => {
-            return <PendingTransactionItem key={t.txId} transaction={t} />
-          })}
+          {pendingTxList
+            .slice(0)
+            .reverse()
+            .map((t) => {
+              return <PendingTransactionItem key={t.txId} transaction={t} />
+            })}
           {loadedTxList && loadedTxList.length > 0 ? (
             loadedTxList?.map((t) => {
               return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />

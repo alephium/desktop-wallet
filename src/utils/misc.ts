@@ -20,9 +20,7 @@ import { Transaction } from 'alf-client/dist/api/api-explorer'
 // === STRING MANIP === //
 // ==================== //
 
-const removeTrailingZeros = (numString: string) => {
-  const numberArray = numString.split('')
-
+const getNumberOfTrailingZeros = (numberArray: string[]) => {
   let numberOfZeros = 0
 
   for (let i = numberArray.length - 1; i >= 0; i--) {
@@ -32,6 +30,14 @@ const removeTrailingZeros = (numString: string) => {
       break
     }
   }
+
+  return numberOfZeros
+}
+
+const removeTrailingZeros = (numString: string) => {
+  const numberArray = numString.split('')
+
+  const numberOfZeros = getNumberOfTrailingZeros(numberArray)
 
   const numberArrayWithoutTrailingZeros = [...numberArray.slice(0, numberArray.length - numberOfZeros)]
 
@@ -46,7 +52,7 @@ const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 const QUINTILLION = 1000000000000000000
 
 export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimals?: number) => {
-  const maxDecimals = 8
+  const maxDecimals = 6
 
   if (baseNum < 0n) return '0.00'
 
@@ -57,8 +63,9 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   let tier = (Math.log10(alephNum) / 3) | 0
 
   const numberArray = baseNum.toString().split('')
-  const numberOfNonZero =
-    numberArray.length - numberArray.reduceRight<number>((a, v) => Number(a) + (Number(v) === 0 ? 1 : 0), 0)
+
+  const numberOfZeros = getNumberOfTrailingZeros(numberArray)
+  const numberOfNonZero = numberArray.length - numberOfZeros
 
   const numberOfDigitsToDisplay = nbOfDecimals
     ? nbOfDecimals
