@@ -32,7 +32,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 const WalletHomePage = () => {
   const history = useHistory()
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
-  const [balance, setBalance] = useState<number | undefined>(undefined)
+  const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
@@ -59,7 +59,7 @@ const WalletHomePage = () => {
           const addressDetails = await client.explorer.getAddressDetails(wallet.address)
 
           if (addressDetails.balance) {
-            setBalance(addressDetails.balance)
+            setBalance(BigInt(addressDetails.balance))
           }
 
           // Transactions
@@ -103,7 +103,7 @@ const WalletHomePage = () => {
         <WalletAmountBox>
           <WalletAmountContainer>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0}ℵ</WalletAmount>
-            <WalletFullAmount>{balance || 0}ℵ</WalletFullAmount>
+            <WalletFullAmount>{balance ? abbreviateAmount(balance, true) : 0}ℵ</WalletFullAmount>
           </WalletAmountContainer>
           <WalletActions>
             <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
@@ -191,7 +191,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
       <AmountBadge
         type={isOut ? 'minus' : 'plus'}
         prefix={isOut ? '- ' : '+ '}
-        content={Math.abs(amountDelta)}
+        content={amountDelta < 0 ? (amountDelta * -1n).toString() : amountDelta.toString()}
         amount
       />
     </TransactionItemContainer>

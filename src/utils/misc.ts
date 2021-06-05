@@ -20,27 +20,77 @@ import { Transaction } from 'alf-client/dist/api/api-explorer'
 // === STRING MANIP === //
 // ==================== //
 
-const MONEY_SYMBOL_BIG = ['', 'K', 'M', 'B', 'T']
-const MONEY_SYMBOL_SMALL = ['', 'm', 'μ', 'n', 'p', 'q']
+const removeTrailingZeros = (numString: string) => {
+  const numberArray = numString.split('')
 
-export const abbreviateAmount = (num: number) => {
-  if (num < 0) return '0.00'
+  let numberOfZeros = 0
+
+  for (let i = numberArray.length - 1; i >= 0; i--) {
+    if (numberArray[i] === '0') {
+      numberOfZeros++
+    } else {
+      break
+    }
+  }
+
+  const numberArrayWithoutTrailingZeros = [...numberArray.slice(0, numberArray.length - numberOfZeros)]
+
+  if (numberArrayWithoutTrailingZeros[numberArrayWithoutTrailingZeros.length - 1] === '.')
+    numberArrayWithoutTrailingZeros.push('0')
+
+  return numberArrayWithoutTrailingZeros.join().replaceAll(',', '')
+}
+
+const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
+
+const QUINTILLION = 1000000000000000000
+
+export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimals?: number) => {
+  const maxDecimals = 8
+
+  if (baseNum < 0n) return '0.00'
+
+  // For abbreviation, we don't need full precision and can work with number
+  const alephNum = Number(baseNum) / QUINTILLION
 
   // what tier? (determines SI symbol)
-  let tier = (Math.round(Math.log10(Number(num))) / 3) | 0
+  let tier = (Math.log10(alephNum) / 3) | 0
 
-  if (tier < 0 && Math.abs(tier) >= MONEY_SYMBOL_SMALL.length) tier = -MONEY_SYMBOL_SMALL.length + 1
-  else if (tier == 0) return num.toFixed(3).toString()
-  else if (tier >= MONEY_SYMBOL_BIG.length) tier = MONEY_SYMBOL_BIG.length - 1
+  const numberArray = baseNum.toString().split('')
+  const numberOfNonZero =
+    numberArray.length - numberArray.reduceRight<number>((a, v) => Number(a) + (Number(v) === 0 ? 1 : 0), 0)
+
+  const numberOfDigitsToDisplay = nbOfDecimals
+    ? nbOfDecimals
+    : numberOfNonZero < maxDecimals
+    ? numberOfNonZero
+    : maxDecimals
+
+  if (tier < 0) {
+    return removeTrailingZeros(alephNum.toFixed(8))
+  } else if (tier === 0) {
+    // Small number, low precision is ok
+    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString())
+  } else if (tier >= MONEY_SYMBOL.length) {
+    tier = MONEY_SYMBOL.length - 1
+  }
 
   // get suffix and determine scale
-  const suffix = tier >= 0 ? MONEY_SYMBOL_BIG[tier] : MONEY_SYMBOL_SMALL[Math.abs(tier)]
-
+  const suffix = MONEY_SYMBOL[tier]
   const scale = Math.pow(10, tier * 3)
 
   // scale the bigNum
-  const scaled = num / scale
-  return scaled.toFixed(3) + suffix
+  // Here we need to be careful of precision issues
+  const scaled = alephNum / scale
+
+  if (showFullPrecision) {
+    // Work with string to avoid rounding issues
+    const nonDigitLength = Math.round(scaled).toString().length
+    const numberArrayWithDecimals = [...numberArray.slice(0, nonDigitLength), '.', ...numberArray.slice(nonDigitLength)]
+    return removeTrailingZeros(numberArrayWithDecimals.join().replaceAll(',', '')) + suffix
+  }
+
+  return scaled.toFixed(numberOfDigitsToDisplay) + suffix
 }
 
 export const truncate = (str: string) => {
@@ -54,12 +104,12 @@ export const truncate = (str: string) => {
 
 export function calAmountDelta(t: Transaction, id: string) {
   if (t.inputs && t.outputs) {
-    const inputAmount = t.inputs.reduce<number>((acc, input) => {
-      return input.amount && input.address === id ? acc + input.amount : acc
-    }, 0)
-    const outputAmount = t.outputs.reduce<number>((acc, output) => {
-      return output.address === id ? acc + output.amount : acc
-    }, 0)
+    const inputAmount = t.inputs.reduce<bigint>((acc, input) => {
+      return input.amount && input.address === id ? acc + BigInt(input.amount) : acc
+    }, 0n)
+    const outputAmount = t.outputs.reduce<bigint>((acc, output) => {
+      return output.address === id ? acc + BigInt(output.amount) : acc
+    }, 0n)
 
     return outputAmount - inputAmount
   } else {

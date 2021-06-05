@@ -31,7 +31,7 @@ let Badge = ({ content, className, amount, prefix }: BadgeProps) => {
   return (
     <div className={className}>
       {prefix && <span>{prefix}</span>}
-      {amount && content ? <Amount value={parseFloat(content.toString())} /> : content}
+      {amount && content ? <Amount value={BigInt(content)} /> : content}
     </div>
   )
 }

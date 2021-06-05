@@ -69,14 +69,16 @@ const SendPage = () => {
       setIsSending(true)
 
       // Transform amount in qALF (1e-18)
-      const fullAmount = Number(amount) * 1e18
+      const fullAmount = BigInt(Number(amount) * 1e18)
+
+      console.log(fullAmount.toString())
 
       try {
         const responseCreate = await client.clique.transactionCreate(
           wallet.address,
           wallet.publicKey,
           address,
-          `"${fullAmount}"`, // Make sure the backend understands that we're sending a string (for scientific notation)
+          fullAmount.toString(),
           undefined
         )
 
@@ -88,7 +90,7 @@ const SendPage = () => {
           txId: TXResponse.txId,
           toAddress: address,
           timestamp: new Date().getTime(),
-          amount: amount
+          amount: fullAmount.toString()
         })
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })

@@ -16,13 +16,13 @@
 import { abbreviateAmount } from '../utils/misc'
 
 interface AmountProps {
-  value: number | undefined
+  value: bigint | undefined
   className?: string
 }
 
 const Amount = ({ value, className }: AmountProps) => {
   if (value !== undefined) {
-    return <span className={className}>{abbreviateAmount(value).toString()}א</span>
+    return <span className={className}>{abbreviateAmount(value)}א</span>
   } else {
     return <span className={className}>- א</span>
   }
