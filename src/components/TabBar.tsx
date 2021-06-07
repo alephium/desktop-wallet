@@ -76,6 +76,7 @@ const Tab = styled.div<{ isActive: boolean }>`
   padding: 8px;
   color: ${({ theme, isActive }) => (isActive ? theme.font.contrast : theme.font.secondary)};
   z-index: 1;
+  cursor: pointer;
 `
 
 const TabSelector = styled(motion.div)`

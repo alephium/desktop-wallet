@@ -41,7 +41,7 @@ const SendPage = () => {
 
   const handleAddressChange = (value: string) => {
     // Check if format is correct
-    const match = value.match(/^[MTD][1-9A-Za-z][^OIl]{44}/)
+    const match = value.match(/^[MTD][1-9A-HJ-NP-Za-km-z]{44,45}/)
 
     setAddress(value)
 
@@ -70,8 +70,6 @@ const SendPage = () => {
 
       // Transform amount in qALF (1e-18)
       const fullAmount = BigInt(Number(amount) * 1e18)
-
-      console.log(fullAmount.toString())
 
       try {
         const responseCreate = await client.clique.transactionCreate(
