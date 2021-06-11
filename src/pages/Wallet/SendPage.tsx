@@ -10,6 +10,7 @@ import { PageContainer, SectionContent } from '../../components/PageComponents'
 import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
+import { checkAddressValidity } from '../../utils/misc'
 
 const SendPage = () => {
   const history = useHistory()
@@ -41,12 +42,12 @@ const SendPage = () => {
 
   const handleAddressChange = (value: string) => {
     // Check if format is correct
-    const match = value.match(/^[MTD][1-9A-HJ-NP-Za-km-z]{44,45}/)
 
     setAddress(value)
+    const validValue = checkAddressValidity(value)
 
-    if (match && match[0]) {
-      setAddress(match[0])
+    if (validValue) {
+      setAddress(validValue)
       setAddressError('')
     } else {
       setAddressError('Address format is incorrect')

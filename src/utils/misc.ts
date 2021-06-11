@@ -144,3 +144,15 @@ export const numberToPlainString = (num: number) => {
     return e < 0 ? b + '0.' + Array(1 - e - c.length).join('0') + c + d : b + c + d + Array(e - d.length + 1).join('0')
   })
 }
+
+// ===================== //
+// ===== ADDRESSES ===== //
+// ===================== //
+
+export const checkAddressValidity = (address: string) => {
+  const match = address.match(/^[MTD][1-9A-HJ-NP-Za-km-z]{44,45}/)
+
+  if (match === null) return false
+
+  return match[0] === address && address
+}
