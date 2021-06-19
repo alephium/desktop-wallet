@@ -6,10 +6,11 @@ import { bip39Words } from '../../utils/bip39'
 import { Button } from '../../components/Buttons'
 import { StepsContext } from '../MultiStepsController'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
-import { walletImport } from 'alf-client'
+import { walletImport, getStorage } from 'alf-client'
 import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
-import { Storage } from 'alf-client'
+
+const Storage = getStorage()
 
 const ImportWordsPage = () => {
   const { networkType, setWallet } = useContext(GlobalContext)
@@ -54,7 +55,7 @@ const ImportWordsPage = () => {
     setWallet(wallet)
 
     const encryptedWallet = wallet.encrypt(password)
-    Storage().save(username, encryptedWallet)
+    Storage.save(username, encryptedWallet)
 
     onButtonNext()
   }

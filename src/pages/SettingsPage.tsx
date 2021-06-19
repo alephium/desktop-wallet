@@ -9,7 +9,9 @@ import { Settings } from '../utils/clients'
 import { User } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
-import { walletOpen, Storage, Wallet } from 'alf-client'
+import { walletOpen, getStorage, Wallet } from 'alf-client'
+
+const Storage = getStorage()
 
 const tabs = [
   { value: 'account', label: 'Account' },
@@ -46,7 +48,7 @@ const AccountSettings = () => {
   }
 
   const handlePasswordVerification = async () => {
-    const walletEncrypted = Storage().load(currentUsername)
+    const walletEncrypted = Storage.load(currentUsername)
 
     try {
       const decryptedWallet = await walletOpen(typedPassword, walletEncrypted, networkType)

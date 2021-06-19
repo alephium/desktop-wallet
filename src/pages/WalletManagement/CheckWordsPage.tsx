@@ -7,9 +7,11 @@ import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
-import { Storage } from 'alf-client'
+import { getStorage } from 'alf-client'
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
+
+const Storage = getStorage()
 
 const getShuffledArr = (arr: string[]) => {
   const newArr = arr.slice()
@@ -158,7 +160,7 @@ const CheckWordsPage = () => {
   const createEncryptedWallet = async () => {
     if (areWordsValid() && plainWallet) {
       const walletEncrypted = await plainWallet.encrypt(password)
-      Storage().save(username, walletEncrypted)
+      Storage.save(username, walletEncrypted)
       setWallet(plainWallet)
       return true
     }

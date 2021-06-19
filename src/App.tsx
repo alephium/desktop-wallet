@@ -6,7 +6,7 @@ import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import { Wallet } from 'alf-client'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
-import { Storage } from 'alf-client'
+import { getStorage } from 'alf-client'
 import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
@@ -50,6 +50,8 @@ interface SnackbarMessage {
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
+
+const Storage = getStorage()
 
 const App = () => {
   const [wallet, setWallet] = useState<Wallet>()
@@ -100,7 +102,7 @@ const App = () => {
     }
   }, [snackbarMessage])
 
-  const usernames = Storage().list()
+  const usernames = Storage.list()
   const hasWallet = usernames.length > 0
   const networkType: NetworkTypeString = 'T'
 

@@ -10,7 +10,7 @@ import tinycolor from 'tinycolor2'
 import { PageContainer, MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
-import { walletOpen, Storage } from 'alf-client'
+import { walletOpen, getStorage } from 'alf-client'
 import { NetworkTypeString } from '../types'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
@@ -20,6 +20,8 @@ interface HomeProps {
   usernames: string[]
   networkType: NetworkTypeString
 }
+
+const Storage = getStorage()
 
 const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
   const history = useHistory()
@@ -99,7 +101,7 @@ const Login = ({
   const history = useHistory()
 
   const login = async (callback: () => void) => {
-    const walletEncrypted = Storage().load(credentials.username)
+    const walletEncrypted = Storage.load(credentials.username)
     if (walletEncrypted === null) {
       setSnackbarMessage({ text: 'Unknown username', type: 'info' })
     } else {
@@ -111,6 +113,7 @@ const Login = ({
           callback()
         }
       } catch (e) {
+        console.error(e)
         setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
       }
     }
