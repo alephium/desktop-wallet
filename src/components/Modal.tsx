@@ -22,7 +22,9 @@ export const Modal: React.FC<{ title: string; onClose: () => void }> = ({ childr
   const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
 
   return (
-    <ModalContext.Provider value={{ setModalTitle: setCurrentTitle, onClose, overrideOnClose: setCurrentOnClose }}>
+    <ModalContext.Provider
+      value={{ setModalTitle: setCurrentTitle, onClose: currentOnClose, overrideOnClose: setCurrentOnClose }}
+    >
       <ModalContainer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

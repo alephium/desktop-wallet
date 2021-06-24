@@ -22,6 +22,11 @@ const getShuffledArr = (arr: string[]) => {
   return newArr
 }
 
+interface WordKey {
+  word: string
+  key: string // Used to build layout and ensure anims are working when duplicates exist
+}
+
 const CheckWordsPage = () => {
   const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
@@ -29,41 +34,43 @@ const CheckWordsPage = () => {
   const { setWallet } = useContext(GlobalContext)
   const splitMnemonic = mnemonic.split(' ')
 
-  const wordList = useRef(getShuffledArr(splitMnemonic))
+  const wordList = useRef<WordKey[]>(
+    getShuffledArr(splitMnemonic).map((wordString, i) => ({ word: wordString, key: `${wordString}-${i}` }))
+  )
 
-  const [selectedWords, setSelectedWords] = useState<string[]>([])
-  const selectedElements = useRef<{ [word: string]: Element | null }>(
+  const [selectedWords, setSelectedWords] = useState<WordKey[]>([])
+  const selectedElements = useRef<{ [wordKey: string]: Element | null }>(
     splitMnemonic.reduce((p, c) => ({ ...p, [c]: null }), {})
   )
 
   // === Drag interaction ===
   const [isDragging, setIsDragging] = useState(false)
-  const [closestWord, setClosestWord] = useState('')
+  const [closestWordKey, setClosestWordKey] = useState<string>('')
 
   // === Actions ===
   // ===============
-  const handleSelectedWordRemove = (w: string) => {
+  const handleSelectedWordRemove = (w: WordKey) => {
     if (isDragging) {
       setIsDragging(false)
       return
     }
-    setSelectedWords(selectedWords.filter((word) => w !== word))
+    setSelectedWords(selectedWords.filter((word) => w.key !== word.key))
 
     // Remove from element list
-    selectedElements.current[w] = null
+    selectedElements.current[w.key] = null
   }
 
   const handleSelectedWordDrag = throttle(
     (
       event: MouseEvent | TouchEvent | PointerEvent,
       info: PanInfo,
-      word: string,
+      word: WordKey,
       currentSelectedElements: typeof selectedElements.current
     ) => {
       //if (Math.abs(info.offset.x) < 5 || Math.abs(info.offset.y) < 2) return
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [word]: _currentElement, ...otherElements } = currentSelectedElements
+      const { [word.key]: _currentElement, ...otherElements } = currentSelectedElements
       const closestElement = Object.values(otherElements).reduce(
         (p, c, i) => {
           // Distance
@@ -75,13 +82,13 @@ const CheckWordsPage = () => {
 
             if (p.distance === 0) {
               returnedObject = {
-                word: Object.keys(otherElements)[i],
+                wordKey: Object.keys(otherElements)[i],
                 element: c,
                 distance: distance
               }
             } else if (distance < p.distance) {
               returnedObject = {
-                word: Object.keys(otherElements)[i],
+                wordKey: Object.keys(otherElements)[i],
                 element: c,
                 distance: distance
               }
@@ -95,29 +102,29 @@ const CheckWordsPage = () => {
           return returnedObject
         },
         {
-          word: '',
+          wordKey: '',
           element: null as Element | null,
           distance: 0
         }
       )
 
-      setClosestWord(closestElement.word)
+      setClosestWordKey(closestElement.wordKey)
     },
     300
   )
 
-  const handleSelectedWordDragEnd = (word: string, newNeighbourWord: string) => {
+  const handleSelectedWordDragEnd = (word: WordKey, newNeighbourWordKey: string) => {
     // Find neighbour index
-    if (closestWord) {
-      const currentIndex = selectedWords.findIndex((w) => w === word)
-      let newIndex = selectedWords.findIndex((w) => w === newNeighbourWord)
+    if (closestWordKey) {
+      const currentIndex = selectedWords.findIndex((w) => w.key === word.key)
+      let newIndex = selectedWords.findIndex((w) => w.key === newNeighbourWordKey)
       if (currentIndex < newIndex) {
         newIndex -= 1
       }
 
-      const filteredWords = selectedWords.filter((w) => w !== word)
+      const filteredWords = selectedWords.filter((w) => w.key !== word.key)
       setSelectedWords([...filteredWords.slice(0, newIndex), word, ...filteredWords.slice(newIndex)])
-      setClosestWord('')
+      setClosestWordKey('')
     }
   }
 
@@ -127,8 +134,8 @@ const CheckWordsPage = () => {
     return wordList.current
       .filter((w) => !selectedWords?.includes(w))
       .map((w) => (
-        <RemainingWord onClick={() => setSelectedWords([...selectedWords, w])} key={w} layoutId={w}>
-          {w}
+        <RemainingWord onClick={() => setSelectedWords([...selectedWords, w])} key={w.key} layoutId={w.key}>
+          {w.word}
         </RemainingWord>
       ))
   }
@@ -137,24 +144,24 @@ const CheckWordsPage = () => {
     return selectedWords?.map((w) => (
       <SelectedWord
         onPointerUp={() => handleSelectedWordRemove(w)}
-        key={w}
-        layoutId={w}
+        key={w.key}
+        layoutId={w.key}
         drag
         ref={(element) => {
-          if (selectedElements.current && element) selectedElements.current[w] = element
+          if (selectedElements.current && element) selectedElements.current[w.key] = element
         }}
         onDragStart={() => setIsDragging(true)}
         onDrag={(e, info) => handleSelectedWordDrag(e, info, w, selectedElements.current)}
-        onDragEnd={() => handleSelectedWordDragEnd(w, closestWord)}
+        onDragEnd={() => handleSelectedWordDragEnd(w, closestWordKey)}
       >
-        {isDragging && closestWord === w && <DragCursor layoutId="cursor" />}
-        {w}
+        {isDragging && closestWordKey === w.key && <DragCursor layoutId="cursor" />}
+        {w.word}
       </SelectedWord>
     ))
   }
 
   const areWordsValid = () => {
-    return selectedWords.toString() == splitMnemonic.toString()
+    return selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
   }
 
   const createEncryptedWallet = async () => {

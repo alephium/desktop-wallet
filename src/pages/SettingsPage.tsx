@@ -40,7 +40,7 @@ const AccountSettings = () => {
   const { currentUsername, networkType, setSnackbarMessage, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
-  const [decriptedWallet, setDecriptedWallet] = useState<Wallet>()
+  const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
   const [typedPassword, setTypedPassword] = useState('')
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -51,10 +51,10 @@ const AccountSettings = () => {
     const walletEncrypted = Storage.load(currentUsername)
 
     try {
-      const decryptedWallet = await walletOpen(typedPassword, walletEncrypted, networkType)
+      const plainWallet = await walletOpen(typedPassword, walletEncrypted, networkType)
 
-      if (decryptedWallet) {
-        setDecriptedWallet(decryptedWallet)
+      if (plainWallet) {
+        setDecryptedWallet(decryptedWallet)
         setIsDisplayingPhrase(true)
       }
     } catch (e) {
@@ -84,15 +84,17 @@ const AccountSettings = () => {
                 </SectionContent>
               </div>
             ) : (
-              <SectionContent>{'Soon.'}</SectionContent>
+              <SectionContent>
+                {decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}
+              </SectionContent>
             )}
           </Modal>
         )}
 
         <InfoBox text={`Current account: ${currentUsername}`} Icon={User} />
-        {/*<Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
+        <Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
           Show your secret phrase
-            </Button>*/}
+        </Button>
         <Button secondary alert onClick={handleLogout}>
           Disconnect
         </Button>

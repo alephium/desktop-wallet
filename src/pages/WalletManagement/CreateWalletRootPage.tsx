@@ -22,7 +22,7 @@ const CreateWallet = () => {
     const result = walletGenerate(networkType)
     setContext((prevContext) => ({
       ...prevContext,
-      plainWallet: result.wallet,
+      plainWallet: result,
       mnemonic: result.mnemonic
     }))
   }, [networkType])
