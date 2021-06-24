@@ -12,6 +12,7 @@ import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
+  const { setCurrentUsername } = useContext(GlobalContext)
   const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
@@ -65,6 +66,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
 
   const handleNextButtonClick = () => {
     setContext((prevContext) => ({ ...prevContext, username, password }))
+    setCurrentUsername(username)
     onButtonNext()
   }
 

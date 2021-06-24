@@ -52,6 +52,7 @@ const ImportWordsPage = () => {
       .replaceAll(',', ' ')
 
     const wallet = walletImport(formatedPhrase, networkType)
+
     setWallet(wallet)
 
     const encryptedWallet = wallet.encrypt(password)

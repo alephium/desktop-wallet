@@ -6,10 +6,11 @@ import { Input } from '../components/Inputs'
 import { PageContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
-import { User } from 'lucide-react'
+import { Edit3, User } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alf-client'
+import styled from 'styled-components'
 
 const Storage = getStorage()
 
@@ -54,7 +55,7 @@ const AccountSettings = () => {
       const plainWallet = await walletOpen(typedPassword, walletEncrypted, networkType)
 
       if (plainWallet) {
-        setDecryptedWallet(decryptedWallet)
+        setDecryptedWallet(plainWallet)
         setIsDisplayingPhrase(true)
       }
     } catch (e) {
@@ -70,7 +71,7 @@ const AccountSettings = () => {
     <div>
       <SectionContent>
         {isDisplayingSecretModal && (
-          <Modal title="Secret phrase" onClose={() => setIsDisplayingSecretModal(false)}>
+          <Modal title="Secret phrase" onClose={() => setIsDisplayingSecretModal(false)} focusMode>
             {!isDisplayingPhrase ? (
               <div>
                 <SectionContent>
@@ -85,7 +86,12 @@ const AccountSettings = () => {
               </div>
             ) : (
               <SectionContent>
-                {decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}
+                <InfoBox
+                  text={'Carefully note the 24 words. They are the keys to your wallet.'}
+                  Icon={Edit3}
+                  iconColor="alert"
+                />
+                <PhraseBox>{decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
               </SectionContent>
             )}
           </Modal>
@@ -160,4 +166,15 @@ const ClientSettings = () => {
     </div>
   )
 }
+
+const PhraseBox = styled.div`
+  width: 100%;
+  padding: 20px;
+  color: ${({ theme }) => theme.font.contrast};
+  font-weight: 600;
+  background-color: ${({ theme }) => theme.global.alert};
+  border-radius: 14px;
+  margin-bottom: 20px;
+`
+
 export default SettingsPage

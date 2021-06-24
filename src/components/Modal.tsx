@@ -17,7 +17,12 @@ export const ModalContext = React.createContext<ModalContext>({
   overrideOnClose: () => null
 })
 
-export const Modal: React.FC<{ title: string; onClose: () => void }> = ({ children, title, onClose }) => {
+export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
+  children,
+  title,
+  onClose,
+  focusMode
+}) => {
   const [currentTitle, setCurrentTitle] = useState(title)
   const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
 
@@ -54,6 +59,7 @@ export const Modal: React.FC<{ title: string; onClose: () => void }> = ({ childr
           <ModalContent>{children}</ModalContent>
         </StyledModal>
         <ModalBackdrop
+          style={{ backgroundColor: focusMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.15)' }}
           onClick={() => {
             onClose && onClose()
           }}
@@ -80,7 +86,6 @@ const ModalBackdrop = styled.div`
   right: 0;
   left: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.15);
 `
 
 const StyledModal = styled(motion.div)`
