@@ -13,7 +13,7 @@ import { WalletManagementContext } from './WalletManagementContext'
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
-  const { networkType, setWallet } = useContext(GlobalContext)
+  const { networkType, setWallet, setSnackbarMessage } = useContext(GlobalContext)
   const { password, username } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
@@ -51,14 +51,18 @@ const ImportWordsPage = () => {
       .toString()
       .replaceAll(',', ' ')
 
-    const wallet = walletImport(formatedPhrase, networkType)
+    try {
+      const wallet = walletImport(formatedPhrase, networkType)
 
-    setWallet(wallet)
+      setWallet(wallet)
 
-    const encryptedWallet = wallet.encrypt(password)
-    Storage.save(username, encryptedWallet)
+      const encryptedWallet = wallet.encrypt(password)
+      Storage.save(username, encryptedWallet)
 
-    onButtonNext()
+      onButtonNext()
+    } catch (err) {
+      setSnackbarMessage({ text: err.toString(), type: 'alert' })
+    }
   }
 
   return (

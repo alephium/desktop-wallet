@@ -1,6 +1,6 @@
 {
-  "name": "alephium-webextension",
-  "version": "0.2.1",
+  "name": "alephium-wallet",
+  "version": "1.0.0",
   "private": true,
   "author": "Alephium <info@alephium.org>",
   "homepage": "./",

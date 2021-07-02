@@ -114,6 +114,7 @@ export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
           enforceWhitelist: true,
           delimiters: ' ',
           maxTags: 24,
+          duplicates: true,
           dropdown: {
             enabled: 1, // show suggestion after 1 typed character
             fuzzySearch: false, // match only suggestions that starts with the typed characters
