@@ -2,7 +2,9 @@ import { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyle = createGlobalStyle`
   html {
-    font-size: 15px;
+    font-size: 13px;
+    height: 600px;
+    width: 400px;
   }
 
   body {
@@ -13,6 +15,13 @@ export const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     color: ${({ theme }) => theme.font.primary};
     background-color: ${({ theme }) => theme.bg.primary};
+    overflow-y:auto;
+    height: 100%;
+    width: 100%;
+  }
+
+  #root {
+    height: 100%;
   }
 
   * {
@@ -20,7 +29,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     margin-bottom: 40px;
     margin-top: 30px;
   }

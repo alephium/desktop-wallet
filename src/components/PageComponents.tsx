@@ -5,14 +5,10 @@ import { ArrowLeft } from 'lucide-react'
 
 export const MainContainer = styled.div`
   height: 100%;
+  width: 100%;
   max-width: 700px;
   margin: 0 auto;
   padding: 0 30px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   display: flex;
   flex-direction: column;
 `
@@ -67,10 +63,6 @@ export const StyledContent = styled(motion.div)`
   justify-content: center;
   flex-direction: column;
   flex: 1;
-
-  &:not(:last-child) {
-    margin-bottom: 25px;
-  }
 `
 
 interface SectionTitleProps {
@@ -121,8 +113,8 @@ export const PageTitle: FC<SectionTitleProps> = ({
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 3vh;
-  margin-bottom: 4vh;
+  margin-top: 10px;
+  margin-bottom: 15px;
   position: sticky;
   top: 0;
   z-index: 1;

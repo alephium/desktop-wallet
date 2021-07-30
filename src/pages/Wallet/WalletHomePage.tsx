@@ -356,8 +356,8 @@ const Decors = styled.div`
 // === TRANSACTION === //
 
 const TransactionContent = styled(SectionContent)`
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
 `
 
 const LastTransactionListHeader = styled.div`

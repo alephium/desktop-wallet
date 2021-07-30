@@ -44,7 +44,7 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
             <h3>Welcome to the Alephium Wallet!</h3>
             <p>Use the smart money of the future while keeping your mind at ease.</p>
           </HeaderText>
-          <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '10vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
+          <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '7vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
           <CloudGroup
             coordinates={[
               ['10px', '0px'],
@@ -194,7 +194,7 @@ const HeaderText = styled.div`
 
 const Moon = styled(motion.div)`
   position: absolute;
-  right: 6vw;
+  right: 3vw;
   height: 15vw;
   width: 15vw;
   max-height: 80px;

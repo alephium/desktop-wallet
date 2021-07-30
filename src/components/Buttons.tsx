@@ -40,8 +40,8 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50px;
-  width: ${({ squared }) => (squared ? '50px' : '80%')};
+  height: 46px;
+  width: ${({ squared }) => (squared ? '46px' : '80%')};
   border-radius: 7px;
   border: none;
   background-color: ${({ theme, secondary, transparent }) =>
@@ -51,13 +51,13 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 15px;
-  min-width: ${({ squared }) => (squared ? '50px' : '100px')};
+  min-width: ${({ squared }) => (squared ? '46px' : '100px')};
   text-align: center;
   cursor: pointer;
 
   transition: 0.2s ease-out;
 
-  margin: 15px 0;
+  margin: 12px 0;
 
   &:hover {
     background-color: ${({ theme, secondary }) =>

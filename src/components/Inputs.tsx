@@ -244,20 +244,20 @@ const SelectOptionsPopup = ({
 
 const InputContainer = styled(motion.div)`
   position: relative;
-  height: 50px;
+  height: 46px;
   width: 100%;
-  margin: 17px 0;
+  margin: 15px 0;
 `
 
 const TextAreaContainer = styled(motion.div)`
   position: relative;
   width: 100%;
-  margin: 17px 0;
+  margin: 15px 0;
 `
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
-  margin: 17px 0;
+  margin: 15px 0;
   border-radius: 7px;
 `
 
@@ -294,7 +294,7 @@ const ValidIconContainer = styled(motion.div)`
 const defaultStyle = (isValid?: boolean) => {
   return css`
     background-image: none;
-    height: 50px;
+    height: 46px;
     width: 100%;
     border-radius: 100px;
     background-color: ${({ theme }) => theme.bg.secondary};
