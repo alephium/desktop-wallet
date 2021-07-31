@@ -1,10 +1,20 @@
 import { createGlobalStyle } from 'styled-components'
+import { isElectron } from '../utils/misc'
+
+// Extension: define window size
+const limitedSize = `
+  height: 600px;
+  width: 400px;
+`
+
+const freeSize = `
+  height: 100%;
+`
 
 export const GlobalStyle = createGlobalStyle`
   html {
     font-size: 13px;
-    height: 600px;
-    width: 400px;
+    ${!isElectron() ? limitedSize : freeSize}
   }
 
   body {

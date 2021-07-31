@@ -16,6 +16,15 @@
 
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 
+// ===================== //
+// ==== RUNNING ENV ==== //
+// ===================== //
+
+export const isElectron = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return userAgent.indexOf(' electron/') > -1
+}
+
 // ==================== //
 // === STRING MANIP === //
 // ==================== //
