@@ -200,7 +200,7 @@ const Moon = styled(motion.div)`
   max-height: 80px;
   max-width: 80px;
   border-radius: 200px;
-  background-color: ${({ theme }) => theme.global.accent};
+  background-color: ${({ theme }) => theme.global.secondary};
 `
 
 const MountainImage = styled(MountainSVG)`
