@@ -34,7 +34,7 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
     <PageContainer>
       <Header>
         <MainContainer>
-          <SettingsButton transparent squared onClick={() => history.push('settings')}>
+          <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
           </SettingsButton>
           <HeaderText>

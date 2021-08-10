@@ -135,16 +135,16 @@ const App = () => {
             <Route path="/wallet">
               <WalletPages />
             </Route>
-            <Route path="/">
+            <Route path="">
               <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
             </Route>
           </Switch>
-          <Route path="/settings">
-            <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-              <SettingsPage />
-            </Modal>
-          </Route>
         </AnimateSharedLayout>
+        <Route path="/settings">
+          <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+            <SettingsPage />
+          </Modal>
+        </Route>
       </AppContainer>
       <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />
