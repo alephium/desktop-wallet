@@ -49,7 +49,7 @@ const ImportWordsPage = () => {
     const formatedPhrase = phrase
       .map((w) => w.value)
       .toString()
-      .replaceAll(',', ' ')
+      .replace(/,/g, ' ')
 
     try {
       const wallet = walletImport(formatedPhrase, networkType)

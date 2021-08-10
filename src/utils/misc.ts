@@ -53,7 +53,7 @@ const removeTrailingZeros = (numString: string) => {
   if (numberArrayWithoutTrailingZeros[numberArrayWithoutTrailingZeros.length - 1] === '.')
     numberArrayWithoutTrailingZeros.push('0')
 
-  return numberArrayWithoutTrailingZeros.join().replaceAll(',', '')
+  return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
 
 const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']

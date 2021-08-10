@@ -342,7 +342,8 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
 const StyledTags = styled(Tags)`
   ${defaultStyle(true)}
   height: auto;
-  padding: 8px;
+  padding: 5px;
+  line-height: 20px;
   border-radius: 7px;
 `
 
