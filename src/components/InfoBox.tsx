@@ -62,6 +62,7 @@ const TextContainer = styled.p`
   padding: 0 20px;
   flex: 2;
   font-weight: 600;
+  word-break: break-all;
 `
 
 const StyledBox = styled(motion.div)`
