@@ -38,7 +38,7 @@ const SettingsPage = () => {
 }
 
 const AccountSettings = () => {
-  const { currentUsername, networkType, setSnackbarMessage, setWallet } = useContext(GlobalContext)
+  const { currentUsername, networkId, setSnackbarMessage, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
@@ -52,7 +52,7 @@ const AccountSettings = () => {
     const walletEncrypted = Storage.load(currentUsername)
 
     try {
-      const plainWallet = await walletOpen(typedPassword, walletEncrypted, networkType)
+      const plainWallet = await walletOpen(typedPassword, walletEncrypted, networkId)
 
       if (plainWallet) {
         setDecryptedWallet(plainWallet)

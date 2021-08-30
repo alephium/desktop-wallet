@@ -14,18 +14,18 @@ import {
 import WalletWelcomePage from './WalletWelcomePage'
 
 const CreateWallet = () => {
-  const { networkType } = useContext(GlobalContext)
+  const { networkId } = useContext(GlobalContext)
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
 
   // Init wallet
   useEffect(() => {
-    const result = walletGenerate(networkType)
+    const result = walletGenerate(networkId)
     setContext((prevContext) => ({
       ...prevContext,
       plainWallet: result,
       mnemonic: result.mnemonic
     }))
-  }, [networkType])
+  }, [networkId])
 
   const createWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" />,

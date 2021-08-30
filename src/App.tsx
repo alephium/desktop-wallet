@@ -4,10 +4,8 @@ import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
-import { Wallet } from 'alf-client'
+import { NetworkId, Wallet, getStorage } from 'alf-client'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
-import { getStorage } from 'alf-client'
-import { NetworkTypeString } from './types'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
 import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
@@ -21,7 +19,7 @@ interface Context {
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
-  networkType: NetworkTypeString
+  networkId: NetworkId
   client: Client | undefined
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
@@ -36,7 +34,7 @@ const initialContext: Context = {
   setCurrentUsername: () => null,
   wallet: undefined,
   setWallet: () => null,
-  networkType: 'T',
+  networkId: 1,
   client: undefined,
   settings: loadSettingsOrDefault(),
   setSettings: () => null,
@@ -104,7 +102,7 @@ const App = () => {
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
-  const networkType: NetworkTypeString = 'T'
+  const networkId: NetworkId = 1
 
   return (
     <GlobalContext.Provider
@@ -114,7 +112,7 @@ const App = () => {
         setCurrentUsername,
         wallet,
         setWallet,
-        networkType: 'T',
+        networkId,
         client,
         setSnackbarMessage,
         settings,
@@ -136,7 +134,7 @@ const App = () => {
               <WalletPages />
             </Route>
             <Route path="">
-              <HomePage hasWallet={hasWallet} usernames={usernames} networkType={networkType} />
+              <HomePage hasWallet={hasWallet} usernames={usernames} networkId={networkId} />
             </Route>
           </Switch>
         </AnimateSharedLayout>

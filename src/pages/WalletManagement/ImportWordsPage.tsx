@@ -13,7 +13,7 @@ import { WalletManagementContext } from './WalletManagementContext'
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
-  const { networkType, setWallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { networkId, setWallet, setSnackbarMessage } = useContext(GlobalContext)
   const { password, username } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
@@ -52,7 +52,7 @@ const ImportWordsPage = () => {
       .replace(/,/g, ' ')
 
     try {
-      const wallet = walletImport(formatedPhrase, networkType)
+      const wallet = walletImport(formatedPhrase, networkId)
 
       setWallet(wallet)
 

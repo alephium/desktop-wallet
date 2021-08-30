@@ -10,20 +10,19 @@ import tinycolor from 'tinycolor2'
 import { PageContainer, MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
-import { walletOpen, getStorage } from 'alf-client'
-import { NetworkTypeString } from '../types'
+import { walletOpen, getStorage, NetworkId } from 'alf-client'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
 
 interface HomeProps {
   hasWallet: boolean
   usernames: string[]
-  networkType: NetworkTypeString
+  networkId: NetworkId
 }
 
 const Storage = getStorage()
 
-const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
+const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   const history = useHistory()
   const [showActions, setShowActions] = useState(false)
   const theme = useTheme()
@@ -74,7 +73,7 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
           {showActions ? (
             renderActions()
           ) : hasWallet ? (
-            <Login setShowActions={setShowActions} usernames={usernames} networkType={networkType} />
+            <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
           ) : (
             renderActions()
           )}
@@ -89,11 +88,11 @@ const HomePage = ({ hasWallet, usernames, networkType }: HomeProps) => {
 
 const Login = ({
   usernames,
-  networkType,
+  networkId,
   setShowActions
 }: {
   usernames: string[]
-  networkType: NetworkTypeString
+  networkId: NetworkId
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
@@ -106,7 +105,7 @@ const Login = ({
       setSnackbarMessage({ text: 'Unknown username', type: 'info' })
     } else {
       try {
-        const wallet = await walletOpen(credentials.password, walletEncrypted, networkType)
+        const wallet = await walletOpen(credentials.password, walletEncrypted, networkId)
         if (wallet) {
           setWallet(wallet)
           setCurrentUsername(credentials.username)
