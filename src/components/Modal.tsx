@@ -26,6 +26,10 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
   const [currentTitle, setCurrentTitle] = useState(title)
   const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
 
+  const handleClose = () => {
+    currentOnClose()
+  }
+
   return (
     <ModalContext.Provider
       value={{ setModalTitle: setCurrentTitle, onClose: currentOnClose, overrideOnClose: setCurrentOnClose }}
@@ -46,13 +50,7 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
             <PageTitle smaller useLayoutId={false}>
               {currentTitle}
             </PageTitle>
-            <CloseButton
-              squared
-              transparent
-              onClick={() => {
-                onClose && onClose()
-              }}
-            >
+            <CloseButton squared transparent onClick={handleClose}>
               <X />
             </CloseButton>
           </ModalHeader>
@@ -60,9 +58,7 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
         </StyledModal>
         <ModalBackdrop
           style={{ backgroundColor: focusMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.15)' }}
-          onClick={() => {
-            onClose && onClose()
-          }}
+          onClick={handleClose}
         />
       </ModalContainer>
     </ModalContext.Provider>

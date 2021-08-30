@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 import { GlobalContext } from '../../App'
@@ -26,19 +26,15 @@ const SendPage = () => {
   const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
 
-  const onBackButtonpress = useCallback(() => {
+  const onCloseButtonPress = (isChecking: boolean) => {
     if (!isChecking) {
       onClose()
     } else {
       setIsChecking(false)
+      overrideOnClose(() => () => onCloseButtonPress(false))
       setModalTitle('Send')
     }
-  }, [isChecking, onClose, setModalTitle])
-
-  useEffect(() => {
-    // Change behaviour of closing modal
-    overrideOnClose(() => onBackButtonpress)
-  }, [onBackButtonpress, overrideOnClose])
+  }
 
   const handleAddressChange = (value: string) => {
     // Check if format is correct
@@ -64,6 +60,7 @@ const SendPage = () => {
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
+      overrideOnClose(() => () => onCloseButtonPress(true))
       setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!
@@ -96,7 +93,7 @@ const SendPage = () => {
 
         history.push('/wallet')
       } catch (e) {
-        setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+        setSnackbarMessage({ text: e.toString(), type: 'alert' })
       }
       setIsSending(false)
     }

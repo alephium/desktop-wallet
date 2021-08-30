@@ -159,7 +159,7 @@ export const numberToPlainString = (num: number) => {
 // ===================== //
 
 export const checkAddressValidity = (address: string) => {
-  const match = address.match(/^[MTD][1-9A-HJ-NP-Za-km-z]{44,45}/)
+  const match = address.match(/^[1-9A-HJ-NP-Za-km-z]{44,45}/)
 
   if (match === null) return false
 
