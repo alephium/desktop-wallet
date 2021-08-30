@@ -57,14 +57,15 @@ const WalletHomePage = () => {
       try {
         if (wallet && client) {
           const addressDetails = await client.explorer.getAddressDetails(wallet.address)
+          const addressTransactions = await client.explorer.getAddressTransactions(wallet.address)
 
           if (addressDetails.balance) {
             setBalance(BigInt(addressDetails.balance))
           }
 
           // Transactions
-          if (addressDetails.transactions) {
-            setLoadedTxList(addressDetails.transactions)
+          if (addressTransactions) {
+            setLoadedTxList(addressTransactions)
           }
           setIsLoading(false)
         }
