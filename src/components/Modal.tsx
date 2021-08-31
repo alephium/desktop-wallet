@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from './Buttons'
 import { PageTitle, StyledContent, TitleContainer } from './PageComponents'
@@ -29,6 +29,14 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
   const handleClose = () => {
     currentOnClose()
   }
+
+  useEffect(() => {
+    // Prevent body scroll on mount
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
 
   return (
     <ModalContext.Provider

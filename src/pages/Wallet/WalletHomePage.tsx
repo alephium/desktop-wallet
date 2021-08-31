@@ -22,11 +22,15 @@ import { Button } from '../../components/Buttons'
 dayjs.extend(relativeTime)
 
 const renderIOAccountList = (currentAddress: string, io: { address?: string }[]) => {
-  return _(io.filter((o) => o.address !== currentAddress))
-    .map((v) => v.address)
-    .uniq()
-    .value()
-    .map((v) => <Address key={v}>{truncate(v || '')}</Address>)
+  if (io.length > 0) {
+    return _(io.filter((o) => o.address !== currentAddress))
+      .map((v) => v.address)
+      .uniq()
+      .value()
+      .map((v) => <Address key={v}>{truncate(v || '')}</Address>)
+  } else {
+    return <MiningRewardString>Mining Rewards</MiningRewardString>
+  }
 }
 
 const WalletHomePage = () => {
@@ -233,7 +237,6 @@ const WalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.global.accent};
   width: 100%;
   border-radius: 14px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   padding: 0 25px;
   display: flex;
   flex-direction: column;
@@ -258,7 +261,6 @@ const CompactWalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.font.primary};
   width: 100%;
   height: 60px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   padding: 0 25px;
   display: flex;
 `
@@ -359,6 +361,7 @@ const Decors = styled.div`
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start !important;
   justify-content: flex-start !important;
+  margin-bottom: 15px;
 `
 
 const LastTransactionListHeader = styled.div`
@@ -377,10 +380,9 @@ const LastTransactionList = styled.div`
 `
 
 const TransactionItemContainer = styled.div`
-  height: 80px;
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 10px 5px;
   cursor: pointer;
   transition: all 0.1s ease-out;
 
@@ -405,14 +407,26 @@ const DirectionLabel = styled.span`
 const IOAddresses = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 5px;
 `
 
 const Address = styled.span`
   color: ${({ theme }) => theme.global.accent};
 `
 
+const MiningRewardString = styled.span`
+  align-self: flex-start;
+  color: ${({ theme }) => theme.font.secondary};
+  background-color: ${({ theme }) => theme.bg.secondary};
+  padding: 3px 6px;
+  margin: 3px 0;
+  border-radius: 4px;
+  font-style: italic;
+`
+
 const TxTimestamp = styled.span`
   color: ${({ theme }) => theme.font.secondary};
+  font-size: 0.9rem;
 `
 
 const PendingTransactionItemContainer = styled(TransactionItemContainer)`
