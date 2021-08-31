@@ -40,6 +40,7 @@ const SettingsPage = () => {
 const AccountSettings = () => {
   const { currentUsername, networkId, setSnackbarMessage, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
+  const [isDisplayingRemoveModal, setIsDisplayingRemoveModal] = useState(false)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
   const [typedPassword, setTypedPassword] = useState('')
@@ -48,7 +49,7 @@ const AccountSettings = () => {
     setTypedPassword(e.target.value)
   }
 
-  const handlePasswordVerification = async () => {
+  const handlePasswordVerification = async (callback: () => void) => {
     const walletEncrypted = Storage.load(currentUsername)
 
     try {
@@ -56,15 +57,30 @@ const AccountSettings = () => {
 
       if (plainWallet) {
         setDecryptedWallet(plainWallet)
-        setIsDisplayingPhrase(true)
+        callback()
       }
     } catch (e) {
       setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
     }
   }
 
+  const openSecretPhraseModal = () => {
+    setTypedPassword('')
+    setIsDisplayingSecretModal(true)
+  }
+
+  const openRemoveAccountModal = () => {
+    setTypedPassword('')
+    setIsDisplayingRemoveModal(true)
+  }
+
   const handleLogout = () => {
     setWallet(undefined)
+  }
+
+  const handleRemoveAccount = () => {
+    Storage.remove(currentUsername)
+    handleLogout()
   }
 
   return (
@@ -81,7 +97,7 @@ const AccountSettings = () => {
                   </CenteredSecondaryParagraph>
                 </SectionContent>
                 <SectionContent>
-                  <Button onClick={handlePasswordVerification}>Show</Button>
+                  <Button onClick={() => handlePasswordVerification(() => setIsDisplayingPhrase(true))}>Show</Button>
                 </SectionContent>
               </div>
             ) : (
@@ -97,14 +113,34 @@ const AccountSettings = () => {
           </Modal>
         )}
 
+        {isDisplayingRemoveModal && (
+          <Modal title="Remove account" onClose={() => setIsDisplayingRemoveModal(false)} focusMode>
+            <SectionContent>
+              <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
+              <CenteredSecondaryParagraph>
+                Type your password to confirm the account deletion.
+              </CenteredSecondaryParagraph>
+            </SectionContent>
+            <SectionContent>
+              <Button alert onClick={() => handlePasswordVerification(() => handleRemoveAccount())}>
+                DELETE
+              </Button>
+            </SectionContent>
+          </Modal>
+        )}
+
         <InfoBox text={`Current account: ${currentUsername}`} Icon={User} />
-        <Button secondary alert onClick={() => setIsDisplayingSecretModal(true)}>
+        <Divider />
+        <Button secondary alert onClick={openSecretPhraseModal}>
           Show your secret phrase
         </Button>
-        <Button secondary alert onClick={handleLogout}>
+        <Button secondary onClick={handleLogout}>
           Disconnect
         </Button>
         <Divider />
+        <Button alert onClick={openRemoveAccountModal}>
+          Remove account
+        </Button>
       </SectionContent>
     </div>
   )
@@ -179,9 +215,10 @@ const PhraseBox = styled.div`
 `
 
 const Divider = styled.div`
-  background-color: ${({ theme }) => theme.border};
-  padding: 10px 5px;
+  background-color: ${({ theme }) => theme.border.primary};
+  margin: 10px 5px;
   height: 1px;
+  width: 100%;
 `
 
 export default SettingsPage

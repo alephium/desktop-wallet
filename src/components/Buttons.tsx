@@ -44,10 +44,22 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   width: ${({ squared }) => (squared ? '46px' : '80%')};
   border-radius: ${({ squared }) => (squared ? '100%' : '7px')};
   border: none;
-  background-color: ${({ theme, secondary, transparent }) =>
-    transparent ? 'transparent' : secondary ? theme.bg.secondary : theme.global.accent};
+  background-color: ${({ theme, secondary, transparent, alert }) =>
+    alert && !secondary
+      ? theme.global.alert
+      : transparent
+      ? 'transparent'
+      : secondary
+      ? theme.bg.secondary
+      : theme.global.accent};
   color: ${({ theme, secondary, alert }) =>
-    alert ? theme.global.alert : secondary ? theme.global.accent : theme.font.contrast};
+    alert && secondary
+      ? theme.global.alert
+      : alert
+      ? theme.font.contrast
+      : secondary
+      ? theme.global.accent
+      : theme.font.contrast};
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 13px;
