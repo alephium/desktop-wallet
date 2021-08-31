@@ -9,6 +9,7 @@ import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { walletImport, getStorage } from 'alf-client'
 import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
+import { isHTTPError } from '../../utils/api'
 
 const Storage = getStorage()
 
@@ -60,8 +61,10 @@ const ImportWordsPage = () => {
       Storage.save(username, encryptedWallet)
 
       onButtonNext()
-    } catch (err) {
-      setSnackbarMessage({ text: 'Something went wrong during the wallet import.', type: 'alert' })
+    } catch (e) {
+      if (isHTTPError(e)) {
+        setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+      }
     }
   }
 

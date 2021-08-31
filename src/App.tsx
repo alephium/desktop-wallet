@@ -78,7 +78,6 @@ const App = () => {
         })
         setClientIsLoading(false)
       } catch (e) {
-        console.log(e)
         setSnackbarMessage({
           text: 'Unable to initialize the client, please check your network settings.',
           type: 'alert'

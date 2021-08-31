@@ -18,6 +18,7 @@ import { useInterval } from '../../utils/hooks'
 import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
+import { isHTTPError } from '../../utils/api'
 
 dayjs.extend(relativeTime)
 
@@ -75,11 +76,9 @@ const WalletHomePage = () => {
         }
       } catch (e) {
         setIsLoading(false)
-        console.log(e)
-        setSnackbarMessage({
-          text: 'Something went wrong when fetching transactions and balance.',
-          type: 'alert'
-        })
+        if (isHTTPError(e)) {
+          setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+        }
       }
     }
 

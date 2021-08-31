@@ -11,6 +11,7 @@ import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
 import { checkAddressValidity } from '../../utils/misc'
+import { isHTTPError } from '../../utils/api'
 
 const SendPage = () => {
   const history = useHistory()
@@ -69,40 +70,35 @@ const SendPage = () => {
       // Transform amount in qALF (1e-18)
       const fullAmount = BigInt(Number(amount) * 1e18)
 
-      const txCreateResp = await client.clique.transactionCreate(
-        wallet.address,
-        wallet.publicKey,
-        address,
-        fullAmount.toString(),
-        undefined
-      )
+      try {
+        const txCreateResp = await client.clique.transactionCreate(
+          wallet.address,
+          wallet.publicKey,
+          address,
+          fullAmount.toString(),
+          undefined
+        )
 
-      if (txCreateResp.error) {
-        setSnackbarMessage({ text: txCreateResp.error.detail, type: 'alert' })
-        return
+        const { txId, unsignedTx } = txCreateResp.data
+
+        const signature = client.clique.transactionSign(txId, wallet.privateKey)
+
+        const txSendResp = await client.clique.transactionSend(wallet.address, unsignedTx, signature)
+
+        addPendingTx({
+          txId: txSendResp.data.txId,
+          toAddress: address,
+          timestamp: new Date().getTime(),
+          amount: fullAmount.toString()
+        })
+
+        setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
+        history.push('/wallet')
+      } catch (e) {
+        if (isHTTPError(e)) {
+          setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+        }
       }
-
-      const { txId, unsignedTx } = txCreateResp.data
-
-      const signature = client.clique.transactionSign(txId, wallet.privateKey)
-
-      const txSendResp = await client.clique.transactionSend(wallet.address, unsignedTx, signature)
-
-      if (txSendResp.error) {
-        setSnackbarMessage({ text: txSendResp.error.detail, type: 'alert' })
-        return
-      }
-
-      addPendingTx({
-        txId: txSendResp.data.txId,
-        toAddress: address,
-        timestamp: new Date().getTime(),
-        amount: fullAmount.toString()
-      })
-
-      setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
-
-      history.push('/wallet')
 
       setIsSending(false)
     }

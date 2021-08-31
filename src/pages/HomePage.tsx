@@ -112,7 +112,6 @@ const Login = ({
           callback()
         }
       } catch (e) {
-        console.error(e)
         setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
       }
     }
