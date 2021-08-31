@@ -59,12 +59,14 @@ const WalletHomePage = () => {
 
   // Fetching data
   const fetchData = useCallback(() => {
+    setLastLoadedPage(1) // Reload only most recent page
+
     const getTransactionsAndBalance = async () => {
       setIsLoading(true)
       try {
         if (wallet && client) {
           const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
-          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, lastLoadedPage)
+          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, 1)
 
           if (addressDetailsResp.data) {
             setBalance(BigInt(addressDetailsResp.data.balance))
@@ -72,14 +74,7 @@ const WalletHomePage = () => {
           } else return
 
           // Transactions
-          if (loadedTxList.length === 0) {
-            setLoadedTxList(addressTransactionsResp.data)
-          } else if (
-            loadedTxList[loadedTxList.length - 1].hash !==
-            addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
-          ) {
-            setLoadedTxList([...loadedTxList, ...addressTransactionsResp.data])
-          }
+          setLoadedTxList(addressTransactionsResp.data)
           setIsLoading(false)
         }
       } catch (e) {
@@ -91,12 +86,38 @@ const WalletHomePage = () => {
     }
 
     getTransactionsAndBalance()
-  }, [client, lastLoadedPage, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet])
+  }, [client, setLoadedTxList, setSnackbarMessage, wallet])
+
+  const fetchMore = useCallback(
+    (pageToLoad: number) => {
+      setLastLoadedPage(pageToLoad)
+
+      const fetchNewPage = async () => {
+        try {
+          if (wallet && client) {
+            const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, pageToLoad)
+
+            if (
+              loadedTxList[loadedTxList.length - 1].hash !==
+              addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
+            ) {
+              setLoadedTxList([...loadedTxList, ...addressTransactionsResp.data])
+            }
+          }
+        } catch (e) {
+          console.log(e)
+        }
+      }
+
+      fetchNewPage()
+    },
+    [client, loadedTxList, setLoadedTxList, wallet]
+  )
 
   // Make initial calls
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [])
 
   // Polling (when pending tx)
   useInterval(fetchData, 2000, pendingTxList.length === 0)
@@ -161,7 +182,7 @@ const WalletHomePage = () => {
         {loadedTxList && loadedTxList.length === totalNumberOfTx ? (
           <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
         ) : (
-          <LoadMoreMessage onClick={() => setLastLoadedPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
+          <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
         )}
       </TransactionContent>
     </PageContainer>
@@ -203,7 +224,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
       <TxDetails>
         <DirectionLabel>{isOut ? 'TO' : 'FROM'}</DirectionLabel>
         <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
-        <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY hh:mm:ss')}</TxTimestamp>
+        <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
       <AmountBadge
         type={isOut ? 'minus' : 'plus'}

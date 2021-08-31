@@ -2,3 +2,4 @@ build
 dist
 node_modules
 alephium-webextension.zip
+.DS_Store
