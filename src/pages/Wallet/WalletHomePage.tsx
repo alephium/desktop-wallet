@@ -39,8 +39,10 @@ const WalletHomePage = () => {
   const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
+  const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
+  const [lastLoadedPage, setLastLoadedPage] = useState(1)
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()
@@ -62,15 +64,21 @@ const WalletHomePage = () => {
       try {
         if (wallet && client) {
           const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
-          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address)
+          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, lastLoadedPage)
 
           if (addressDetailsResp.data) {
             setBalance(BigInt(addressDetailsResp.data.balance))
-          }
+            setTotalNumberOfTx(addressDetailsResp.data.txNumber)
+          } else return
 
           // Transactions
-          if (addressTransactionsResp.data) {
+          if (loadedTxList.length === 0) {
             setLoadedTxList(addressTransactionsResp.data)
+          } else if (
+            loadedTxList[loadedTxList.length - 1].hash !==
+            addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
+          ) {
+            setLoadedTxList([...loadedTxList, ...addressTransactionsResp.data])
           }
           setIsLoading(false)
         }
@@ -83,7 +91,7 @@ const WalletHomePage = () => {
     }
 
     getTransactionsAndBalance()
-  }, [client, setLoadedTxList, setSnackbarMessage, wallet])
+  }, [client, lastLoadedPage, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet])
 
   // Make initial calls
   useEffect(() => {
@@ -132,7 +140,7 @@ const WalletHomePage = () => {
       </AnimatePresence>
       <TransactionContent>
         <LastTransactionListHeader>
-          <LastTransactionListTitle>Last transactions</LastTransactionListTitle>
+          <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
           {(isLoading || pendingTxList.length > 0) && <Spinner />}
         </LastTransactionListHeader>
         <LastTransactionList>
@@ -150,8 +158,10 @@ const WalletHomePage = () => {
             <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
           )}
         </LastTransactionList>
-        {loadedTxList && loadedTxList.length > 0 && (
+        {loadedTxList && loadedTxList.length === totalNumberOfTx ? (
           <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
+        ) : (
+          <LoadMoreMessage onClick={() => setLastLoadedPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
         )}
       </TransactionContent>
     </PageContainer>
@@ -193,7 +203,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
       <TxDetails>
         <DirectionLabel>{isOut ? 'TO' : 'FROM'}</DirectionLabel>
         <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
-        <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
+        <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY hh:mm:ss')}</TxTimestamp>
       </TxDetails>
       <AmountBadge
         type={isOut ? 'minus' : 'plus'}
@@ -222,6 +232,10 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
     </PendingTransactionItemContainer>
   )
 }
+
+// =================
+// ==== STYLING ====
+// =================
 
 const WalletAmountBoxContainer = styled(SectionContent)`
   align-items: flex-start;
@@ -461,6 +475,13 @@ const PendingTransactionItemContainer = styled(TransactionItemContainer)`
 
 const NoTransactionMessage = styled.div`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const LoadMoreMessage = styled.div`
+  color: ${({ theme }) => theme.global.accent};
+  cursor: pointer;
+  align-self: center;
+  margin-top: 15px;
 `
 
 const NoMoreTransactionMessage = styled.div`
