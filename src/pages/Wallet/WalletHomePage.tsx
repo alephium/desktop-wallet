@@ -56,16 +56,16 @@ const WalletHomePage = () => {
       setIsLoading(true)
       try {
         if (wallet && client) {
-          const addressDetails = await client.explorer.getAddressDetails(wallet.address)
-          const addressTransactions = await client.explorer.getAddressTransactions(wallet.address)
+          const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
+          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address)
 
-          if (addressDetails.balance) {
-            setBalance(BigInt(addressDetails.balance))
+          if (addressDetailsResp.data) {
+            setBalance(BigInt(addressDetailsResp.data.balance))
           }
 
           // Transactions
-          if (addressTransactions) {
-            setLoadedTxList(addressTransactions)
+          if (addressTransactionsResp.data) {
+            setLoadedTxList(addressTransactionsResp.data)
           }
           setIsLoading(false)
         }

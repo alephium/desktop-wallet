@@ -61,7 +61,7 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (err) {
-      setSnackbarMessage({ text: err.toString(), type: 'alert' })
+      setSnackbarMessage({ text: 'Something went wrong during the wallet import.', type: 'alert' })
     }
   }
 

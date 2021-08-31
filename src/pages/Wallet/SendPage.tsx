@@ -69,32 +69,41 @@ const SendPage = () => {
       // Transform amount in qALF (1e-18)
       const fullAmount = BigInt(Number(amount) * 1e18)
 
-      try {
-        const responseCreate = await client.clique.transactionCreate(
-          wallet.address,
-          wallet.publicKey,
-          address,
-          fullAmount.toString(),
-          undefined
-        )
+      const txCreateResp = await client.clique.transactionCreate(
+        wallet.address,
+        wallet.publicKey,
+        address,
+        fullAmount.toString(),
+        undefined
+      )
 
-        const signature = client.clique.transactionSign(responseCreate.txId, wallet.privateKey)
-
-        const TXResponse = await client.clique.transactionSend(wallet.address, responseCreate.unsignedTx, signature)
-
-        addPendingTx({
-          txId: TXResponse.txId,
-          toAddress: address,
-          timestamp: new Date().getTime(),
-          amount: fullAmount.toString()
-        })
-
-        setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
-
-        history.push('/wallet')
-      } catch (e) {
-        setSnackbarMessage({ text: e.toString(), type: 'alert' })
+      if (txCreateResp.error) {
+        setSnackbarMessage({ text: txCreateResp.error.detail, type: 'alert' })
+        return
       }
+
+      const { txId, unsignedTx } = txCreateResp.data
+
+      const signature = client.clique.transactionSign(txId, wallet.privateKey)
+
+      const txSendResp = await client.clique.transactionSend(wallet.address, unsignedTx, signature)
+
+      if (txSendResp.error) {
+        setSnackbarMessage({ text: txSendResp.error.detail, type: 'alert' })
+        return
+      }
+
+      addPendingTx({
+        txId: txSendResp.data.txId,
+        toAddress: address,
+        timestamp: new Date().getTime(),
+        amount: fullAmount.toString()
+      })
+
+      setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
+
+      history.push('/wallet')
+
       setIsSending(false)
     }
   }
