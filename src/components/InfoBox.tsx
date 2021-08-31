@@ -70,6 +70,7 @@ const StyledBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
   border-radius: 14px;
+  align-items: center;
 `
 
 const Label = styled(motion.label)`

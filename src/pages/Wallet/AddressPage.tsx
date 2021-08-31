@@ -15,7 +15,8 @@ const AddressPage = () => {
   const handleShowInExplorer = () => {
     const { explorerUrl } = loadSettingsOrDefault()
     if (explorerUrl) {
-      openInNewWindow(`${explorerUrl}/#/addresses/${address}`)
+      const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
+      openInNewWindow(cleanURL)
     }
   }
 

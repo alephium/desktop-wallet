@@ -235,7 +235,7 @@ const WalletAmountBoxContainer = styled(SectionContent)`
 const WalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.global.accent};
   width: 100%;
-  border-radius: 14px;
+  border-radius: 26px;
   padding: 0 25px;
   display: flex;
   flex-direction: column;
@@ -247,7 +247,7 @@ const WalletAmountBox = styled(motion.div)`
 const CompactWalletAmountBoxContainer = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
-  margin-bottom: 25px;
+  margin: 5px;
   flex: 0;
   position: fixed;
   top: 0;
@@ -256,19 +256,26 @@ const CompactWalletAmountBoxContainer = styled(SectionContent)`
   z-index: 1000;
 `
 
+const WalletAmountContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1.5;
+  margin-top: 25px;
+`
+
 const CompactWalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.font.primary};
   width: 100%;
   height: 60px;
   padding: 0 25px;
   display: flex;
-`
+  border-radius: 14px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
 
-const WalletAmountContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex: 1.5;
+  ${WalletAmountContainer} {
+    margin: 0;
+  }
 `
 
 const WalletAmount = styled(motion.div)`
@@ -300,14 +307,15 @@ const RefreshButton = styled(Button)`
   position: absolute;
   top: 0;
   left: 0;
-  margin: 5px !important;
+  bottom: 0;
+  margin: 7px !important;
 `
 
 const SettingsButton = styled(Button)`
   position: absolute;
   top: 0;
   right: 0;
-  margin: 5px !important;
+  margin: 7px !important;
 `
 
 const ActionButton = styled.button`

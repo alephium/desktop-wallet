@@ -104,6 +104,7 @@ const AccountSettings = () => {
         <Button secondary alert onClick={handleLogout}>
           Disconnect
         </Button>
+        <Divider />
       </SectionContent>
     </div>
   )
@@ -175,6 +176,12 @@ const PhraseBox = styled.div`
   background-color: ${({ theme }) => theme.global.alert};
   border-radius: 14px;
   margin-bottom: 20px;
+`
+
+const Divider = styled.div`
+  background-color: ${({ theme }) => theme.border};
+  padding: 10px 5px;
+  height: 1px;
 `
 
 export default SettingsPage
