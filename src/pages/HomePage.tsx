@@ -13,6 +13,7 @@ import Paragraph from '../components/Paragraph'
 import { walletOpen, getStorage, NetworkId } from 'alf-client'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
+import alephiumLogo from '../images/alephium_logo.svg'
 
 interface HomeProps {
   hasWallet: boolean
@@ -36,12 +37,13 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
           </SettingsButton>
+          <AlephiumLogo />
           <HeaderText>
             <PageTitle color={theme.font.contrast} backgroundColor={theme.font.primary}>
-              Hi there!
+              Alephium
             </PageTitle>
-            <h3>Welcome to the Alephium Wallet!</h3>
-            <p>Use the smart money of the future while keeping your mind at ease.</p>
+            <PageSubtitle>Official Wallet</PageSubtitle>
+            <p>The easiest way to get started with Alephium.</p>
           </HeaderText>
           <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '7vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
           <CloudGroup
@@ -52,7 +54,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             ]}
             lengths={['30px', '20px', '25px']}
             style={{ bottom: '2vh' }}
-            distance="10px"
+            distance="30%"
             side="left"
           />
           <CloudGroup
@@ -62,7 +64,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             ]}
             lengths={['25px', '32px']}
             style={{ bottom: '10vh' }}
-            distance="40%"
+            distance="50%"
             side="left"
           />
           <MountainImage />
@@ -178,7 +180,7 @@ const Header = styled.header`
 `
 
 const InteractionArea = styled.div`
-  flex: 0.8;
+  flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -188,6 +190,10 @@ const HeaderText = styled.div`
   margin-top: 2vh;
   max-width: 700px;
   color: ${({ theme }) => theme.font.contrast};
+`
+
+const PageSubtitle = styled.h3`
+  margin-top: 5px;
 `
 
 const Moon = styled(motion.div)`
@@ -203,17 +209,17 @@ const Moon = styled(motion.div)`
 
 const MountainImage = styled(MountainSVG)`
   position: absolute;
-  width: 100%;
-  height: 40%;
+  width: 70%;
+  height: 25%;
   bottom: -2px;
 `
 
 const TreesImage = styled(TreesSVG)`
   position: absolute;
   bottom: 3vh;
-  left: 5vw;
+  left: 10vw;
   width: 50vw;
-  height: 100px;
+  height: 50px;
   max-width: 300px;
   z-index: -1;
 
@@ -275,6 +281,14 @@ const SwitchLink = styled(Paragraph)`
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
   }
+`
+
+const AlephiumLogo = styled.div`
+  background-image: url(${alephiumLogo});
+  background-repeat: no-repeat;
+  height: 8vh;
+  width: 5vw;
+  margin-top: 20px;
 `
 
 const SettingsButton = styled(Button)`

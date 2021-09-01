@@ -17,7 +17,7 @@ export const lightTheme: DefaultTheme = {
     primary: '#E8E8E8'
   },
   global: {
-    accent: '#489CFF',
+    accent: '#3C90F1',
     secondary: '#FFC73B',
     alert: '#FF8372',
     valid: '#4ACF34'

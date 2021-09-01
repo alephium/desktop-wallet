@@ -390,6 +390,7 @@ const Decors = styled.div`
   right: 0;
   bottom: 0;
   left: 0;
+  margin: 0 auto;
   background-image: url(${mountains});
   background-size: contain;
   background-repeat: no-repeat;
