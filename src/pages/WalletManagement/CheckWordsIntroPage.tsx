@@ -23,12 +23,7 @@ const CheckWordsIntroPage = () => {
             animate={{ rotate: [0, 10, -5, 0], y: [0, 10, -5, 0] }}
             transition={{ delay: 1.1, duration: 0.3 }}
           >
-            <LockHandleContainer
-              initial={{ y: 10 }}
-              animate={{ y: 50 }}
-              transition={{ delay: 1 }}
-              style={{ zIndex: -1 }}
-            >
+            <LockHandleContainer initial={{ y: 10 }} animate={{ y: 50 }} transition={{ delay: 1 }}>
               <LockHandle />
             </LockHandleContainer>
             <LockBodyContainer>
@@ -68,11 +63,13 @@ const Lock = styled(motion.div)`
 const LockHandleContainer = styled(motion.div)`
   width: 70%;
   flex: 1;
+  z-index: 0;
 `
 
 const LockBodyContainer = styled(motion.div)`
   width: 100%;
   flex: 1;
+  z-index: 1;
 `
 
 const LockHandle = styled(LockHandleSVG)`

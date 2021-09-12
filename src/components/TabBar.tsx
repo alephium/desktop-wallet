@@ -56,7 +56,7 @@ const Wrapper = styled.div`
 const TabBarContainer = styled.div`
   width: 100%;
   padding: 8px;
-  border-radius: 14px;
+  border-radius: 7px;
   background-color: ${({ theme }) => theme.bg.secondary};
 `
 
@@ -84,7 +84,7 @@ const TabSelector = styled(motion.div)`
   position: absolute;
   top: 0;
   bottom: 0;
-  border-radius: 10px;
+  border-radius: 7px;
   flex: 1;
   background-color: ${({ theme }) => theme.global.accent};
   z-index: -1;

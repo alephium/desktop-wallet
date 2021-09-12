@@ -33,6 +33,7 @@ export const GlobalStyle = createGlobalStyle`
 
   #root {
     height: 100%;
+    display: flex;
   }
 
   * {

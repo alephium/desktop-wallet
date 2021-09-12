@@ -306,9 +306,10 @@ const CompactWalletAmountBoxContainer = styled(SectionContent)`
   right: 0;
   left: 0;
   z-index: 1000;
+  display: none;
 
-  @media ${deviceBreakPoints.desktop} {
-    display: none;
+  @media ${deviceBreakPoints.mobile} {
+    display: block;
   }
 `
 
@@ -419,6 +420,7 @@ const TransactionContent = styled(SectionContent)`
   justify-content: flex-start !important;
   flex: 1;
   overflow: auto;
+  background-color: ${({ theme }) => theme.bg.primary};
 
   @media ${deviceBreakPoints.mobile} {
     overflow: initial;

@@ -33,7 +33,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   return (
     <HomeContainer>
       <Header>
-        <MainPanelContainer>
+        <MainPanelContainer transparentBg>
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
           </SettingsButton>
@@ -79,11 +79,20 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
       <InteractionArea>
         <MainPanelContainer verticalAlign="center">
           {showActions ? (
-            renderActions()
+            <>
+              <PageTitle useLayoutId={false}>Actions</PageTitle>
+              {renderActions()}
+            </>
           ) : hasWallet ? (
-            <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
+            <>
+              <PageTitle useLayoutId={false}>Welcome back!</PageTitle>
+              <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
+            </>
           ) : (
-            renderActions()
+            <>
+              <PageTitle useLayoutId={false}>Welcome!</PageTitle>
+              {renderActions()}
+            </>
           )}
         </MainPanelContainer>
       </InteractionArea>
@@ -134,7 +143,7 @@ const Login = ({
   }
 
   return (
-    <SectionContent>
+    <SectionContent inList>
       <Form>
         <Select
           placeholder="Account name"
@@ -167,11 +176,16 @@ const InitialActions = ({
   const history = useHistory()
 
   return (
-    <SectionContent style={{ marginTop: '2vh' }}>
-      <Button onClick={() => history.push('/create')}>New wallet</Button>
-      <Button onClick={() => history.push('/import')}>Import wallet</Button>
-      {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
-    </SectionContent>
+    <>
+      <SectionContent inList>
+        <Paragraph>Please choose wether you want to create or new wallet, or import an existing one.</Paragraph>
+      </SectionContent>
+      <SectionContent inList>
+        <Button onClick={() => history.push('/create')}>New wallet</Button>
+        <Button onClick={() => history.push('/import')}>Import wallet</Button>
+        {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
+      </SectionContent>
+    </>
   )
 }
 
@@ -195,6 +209,8 @@ const Header = styled.header`
 
   @media ${deviceBreakPoints.mobile} {
     flex: 0.8;
+    display: flex;
+    align-items: center;
   }
 `
 
@@ -209,6 +225,8 @@ const InteractionArea = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 25px;
 `
 
 const HeaderText = styled.div`

@@ -100,7 +100,7 @@ const StyledModal = styled(motion.div)`
   max-width: 600px;
   max-height: 95vh;
   box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
-  border-radius: 14px;
+  border-radius: 7px;
   background-color: ${({ theme }) => theme.bg.primary};
   z-index: 1;
 

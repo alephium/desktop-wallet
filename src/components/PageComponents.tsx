@@ -2,16 +2,23 @@ import { motion, MotionStyle, useTransform, useViewportScroll, Variants } from '
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
+import { deviceBreakPoints } from '../style/globalStyles'
 
-export const MainPanelContainer = styled.main<{ verticalAlign?: 'center' | 'flex-start' }>`
-  height: 100%;
+export const MainPanelContainer = styled.main<{ verticalAlign?: 'center' | 'flex-start'; transparentBg?: boolean }>`
   width: 100%;
   margin: 0 auto;
   max-width: 600px;
-  padding: 0 20px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
+  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
+  border-radius: 7px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+
+  @media ${deviceBreakPoints.mobile} {
+    box-shadow: none;
+  }
 `
 
 export const PageContainer = styled.div`
@@ -19,6 +26,7 @@ export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-self: center;
 `
 
 const contentVariants: Variants = {
@@ -117,7 +125,6 @@ export const PageTitle: FC<SectionTitleProps> = ({
 export const TitleContainer = styled(motion.div)`
   display: flex;
   align-items: center;
-  margin-top: 10px;
   margin-bottom: 15px;
   position: sticky;
   top: 0;

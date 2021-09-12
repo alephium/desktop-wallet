@@ -12,6 +12,7 @@ import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './u
 import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
+import { deviceBreakPoints } from './style/globalStyles'
 
 interface Context {
   usernames: string[]
@@ -171,9 +172,16 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
 // === Styling === //
 
 const AppContainer = styled.div`
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.bg.secondary};
+
+  @media ${deviceBreakPoints.mobile} {
+    background-color: ${({ theme }) => theme.bg.primary};
+    justify-content: initial;
+  }
 `
 
 const SnackbarManagerContainer = styled.div`
