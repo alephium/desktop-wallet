@@ -61,7 +61,7 @@ const IconContainer = styled.div`
 const TextContainer = styled.p`
   padding: 0 20px;
   flex: 2;
-  font-weight: 600;
+  font-weight: 500;
   word-break: break-all;
 `
 
@@ -79,5 +79,5 @@ const Label = styled(motion.label)`
   margin-left: 15px;
   margin-bottom: 7px;
   color: ${({ theme }) => theme.font.secondary};
-  font-weight: 600;
+  font-weight: 500;
 `

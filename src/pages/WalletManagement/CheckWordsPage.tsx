@@ -224,7 +224,7 @@ const SelectedWord = styled(motion.div)`
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
   color: ${({ theme }) => theme.font.contrast};
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 10px;
   position: relative;

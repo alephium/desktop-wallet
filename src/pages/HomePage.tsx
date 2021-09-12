@@ -1,19 +1,19 @@
 import React, { useCallback, useContext, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
-import { ReactComponent as TreesSVG } from '../images/trees.svg'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
 import { motion } from 'framer-motion'
 import { Form, Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { PageContainer, MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
+import { MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
 import { walletOpen, getStorage, NetworkId } from 'alf-client'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
 import alephiumLogo from '../images/alephium_logo.svg'
+import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean
@@ -31,7 +31,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
 
   return (
-    <PageContainer>
+    <HomeContainer>
       <Header>
         <MainContainer>
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
@@ -45,33 +45,39 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             <PageSubtitle>Official Wallet</PageSubtitle>
             <p>The easiest way to get started with Alephium.</p>
           </HeaderText>
-          <Moon initial={{ bottom: '-2vh' }} animate={{ bottom: '7vh' }} transition={{ delay: 0.2, duration: 1.2 }} />
-          <CloudGroup
-            coordinates={[
-              ['10px', '0px'],
-              ['0px', '15px'],
-              ['15px', '30px']
-            ]}
-            lengths={['30px', '20px', '25px']}
-            style={{ bottom: '2vh' }}
-            distance="30%"
-            side="left"
-          />
-          <CloudGroup
-            coordinates={[
-              ['40px', '15px'],
-              ['20px', '30px']
-            ]}
-            lengths={['25px', '32px']}
-            style={{ bottom: '10vh' }}
-            distance="50%"
-            side="left"
-          />
-          <MountainImage />
+          <IllustrationsContainer>
+            <Moon
+              initial={{ bottom: '-10vh' }}
+              animate={{ bottom: '7vh' }}
+              transition={{ delay: 0.2, duration: 1.2 }}
+            />
+            <CloudGroup
+              coordinates={[
+                ['10px', '0px'],
+                ['0px', '15px'],
+                ['15px', '30px']
+              ]}
+              lengths={['30px', '20px', '25px']}
+              style={{ bottom: '2vh' }}
+              distance="30%"
+              side="left"
+            />
+            <CloudGroup
+              coordinates={[
+                ['40px', '15px'],
+                ['20px', '30px']
+              ]}
+              lengths={['25px', '32px']}
+              style={{ bottom: '10vh' }}
+              distance="50%"
+              side="left"
+            />
+            <MountainImage />
+          </IllustrationsContainer>
         </MainContainer>
       </Header>
       <InteractionArea>
-        <MainContainer>
+        <MainContainer verticalAlign="center">
           {showActions ? (
             renderActions()
           ) : hasWallet ? (
@@ -79,10 +85,9 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
           ) : (
             renderActions()
           )}
-          <TreesImage />
         </MainContainer>
       </InteractionArea>
-    </PageContainer>
+    </HomeContainer>
   )
 }
 
@@ -172,15 +177,35 @@ const InitialActions = ({
 
 // === Styling
 
+const HomeContainer = styled.main`
+  display: flex;
+  flex: 1;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex-direction: column;
+  }
+`
+
 const Header = styled.header`
   flex: 1;
   background-color: ${({ theme }) => theme.bg.contrast};
   position: relative;
   overflow: hidden;
+  padding: 3vw;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex: 0.8;
+  }
+`
+
+const IllustrationsContainer = styled.div`
+  @media ${deviceBreakPoints.mobile} {
+    display: none;
+  }
 `
 
 const InteractionArea = styled.div`
-  flex: 1;
+  flex: 1.5;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -190,6 +215,10 @@ const HeaderText = styled.div`
   margin-top: 2vh;
   max-width: 700px;
   color: ${({ theme }) => theme.font.contrast};
+
+  @media ${deviceBreakPoints.mobile} {
+    display: none;
+  }
 `
 
 const PageSubtitle = styled.h3`
@@ -198,11 +227,11 @@ const PageSubtitle = styled.h3`
 
 const Moon = styled(motion.div)`
   position: absolute;
-  right: 3vw;
-  height: 15vw;
-  width: 15vw;
-  max-height: 80px;
-  max-width: 80px;
+  right: 25%;
+  height: 10vw;
+  width: 10vw;
+  max-height: 60px;
+  max-width: 60px;
   border-radius: 200px;
   background-color: ${({ theme }) => theme.global.secondary};
 `
@@ -212,21 +241,7 @@ const MountainImage = styled(MountainSVG)`
   width: 70%;
   height: 25%;
   bottom: -2px;
-`
-
-const TreesImage = styled(TreesSVG)`
-  position: absolute;
-  bottom: 3vh;
-  left: 10vw;
-  width: 50vw;
-  height: 50px;
-  max-width: 300px;
-  z-index: -1;
-
-  path {
-    stroke: ${({ theme }) => theme.font.primary};
-    stroke-width: 3px;
-  }
+  opacity: 0.3;
 `
 
 const CloudGroup = ({
@@ -268,7 +283,7 @@ const StyledCloudGroup = styled(motion.div)`
 
 const Cloud = styled.div`
   position: absolute;
-  background-color: ${({ theme }) => tinycolor(theme.bg.primary).setAlpha(0.9).toString()};
+  background-color: ${({ theme }) => tinycolor(theme.bg.primary).setAlpha(0.3).toString()};
   height: 3px;
 `
 
@@ -286,13 +301,23 @@ const SwitchLink = styled(Paragraph)`
 const AlephiumLogo = styled.div`
   background-image: url(${alephiumLogo});
   background-repeat: no-repeat;
-  height: 8vh;
-  width: 5vw;
+  background-position: center;
+  height: 10vh;
+  width: 10vw;
   margin-top: 20px;
+  max-width: 60px;
+  min-width: 30px;
+
+  @media ${deviceBreakPoints.mobile} {
+    margin: auto;
+    max-width: 80px;
+    width: 15vw;
+    height: 15vh;
+  }
 `
 
 const SettingsButton = styled(Button)`
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   margin: 5px;

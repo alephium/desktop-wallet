@@ -56,7 +56,7 @@ const Label = styled.label`
   padding-left: 15px;
   padding-bottom: 5px;
   color: ${({ theme }) => theme.font.secondary};
-  font-weight: 600;
+  font-weight: 500;
 `
 
 const PublicAddressContent = styled(SectionContent)`
@@ -73,7 +73,7 @@ const PhraseBox = styled.div`
   width: 100%;
   padding: 20px;
   color: ${({ theme }) => theme.font.contrast};
-  font-weight: 600;
+  font-weight: 500;
   background-color: ${({ theme }) => theme.global.alert};
   border-radius: 14px;
   margin-bottom: 20px;

@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
 
-export const MainContainer = styled.div`
+export const MainContainer = styled.div<{ verticalAlign?: 'center' | 'flex-start' }>`
   height: 100%;
   width: 100%;
   max-width: 700px;
@@ -11,12 +11,14 @@ export const MainContainer = styled.div`
   padding: 0 20px;
   display: flex;
   flex-direction: column;
+  justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
 `
 
 export const PageContainer = styled.section`
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 `
 
 const contentVariants: Variants = {
@@ -60,9 +62,8 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
 export const StyledContent = styled(motion.div)`
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-direction: column;
-  flex: 1;
+  margin: 25px 0;
 `
 
 interface SectionTitleProps {
@@ -132,4 +133,5 @@ const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
   margin: 0;
   color: ${({ theme, color }) => (color ? color : theme.font.primary)};
   font-size: ${({ smaller }) => (smaller ? '2.0rem' : 'auto')};
+  font-weight: 600;
 `

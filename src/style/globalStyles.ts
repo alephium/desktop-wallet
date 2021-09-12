@@ -28,6 +28,7 @@ export const GlobalStyle = createGlobalStyle`
     overflow-y:auto;
     height: 100%;
     width: 100%;
+    font-weight: 400;
   }
 
   #root {
@@ -99,3 +100,17 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
 `
+
+// Breakpoints
+
+export const deviceSizes = {
+  mobile: 800,
+  tablet: 1000,
+  desktop: 1600
+}
+
+export const deviceBreakPoints = {
+  mobile: `(max-width: ${deviceSizes.mobile}px)`,
+  tablet: `(max-width: ${deviceSizes.tablet}px)`,
+  desktop: `(max-width: ${deviceSizes.desktop}px)`
+}

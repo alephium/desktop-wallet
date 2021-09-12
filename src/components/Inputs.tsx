@@ -265,7 +265,7 @@ const Label = styled(motion.label)`
   position: absolute;
   top: 16px;
   left: 18px;
-  font-weight: 600;
+  font-weight: 500;
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
 `
@@ -274,7 +274,7 @@ const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
   bottom: -7px;
   right: 10px;
-  font-weight: 600;
+  font-weight: 500;
   opacity: 0;
   font-size: 0.8rem;
   color: ${({ theme }) => theme.global.alert};
@@ -285,7 +285,7 @@ const ValidIconContainer = styled(motion.div)`
   top: 0;
   bottom: 0;
   right: 20px;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.global.valid};
@@ -298,9 +298,9 @@ const defaultStyle = (isValid?: boolean) => {
     width: 100%;
     border-radius: 100px;
     background-color: ${({ theme }) => theme.bg.secondary};
-    border: 3px solid ${({ theme }) => theme.border.primary};
+    border: 1px solid ${({ theme }) => theme.border.primary};
     padding: ${isValid ? '0 45px 0 15px' : '0 15px'};
-    font-weight: 600;
+    font-weight: 500;
     font-size: 1em;
     text-align: left;
     font-family: inherit;
@@ -309,17 +309,17 @@ const defaultStyle = (isValid?: boolean) => {
 
     &:focus {
       background-color: ${({ theme }) => theme.bg.primary};
-      border: 3px solid ${({ theme }) => theme.global.accent};
+      border: 1px solid ${({ theme }) => theme.global.accent};
     }
 
     &.error {
-      border: 3px solid ${({ theme }) => theme.global.alert};
+      border: 1px solid ${({ theme }) => theme.global.alert};
       background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
     }
 
     &:disabled {
       background-color: ${({ theme }) => theme.bg.secondary};
-      border: 3px solid ${({ theme }) => theme.border.primary};
+      border: 1px solid ${({ theme }) => theme.border.primary};
     }
   `
 }
