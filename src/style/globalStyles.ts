@@ -46,8 +46,13 @@ export const GlobalStyle = createGlobalStyle`
     margin-top: 30px;
   }
 
+  h2 {
+    font-weight: 600;
+  }
+
   h3 {
-    font-size: 1.2rem;
+    font-weight: 600;
+    font-size: 1rem;
   }
 
 	input, button {

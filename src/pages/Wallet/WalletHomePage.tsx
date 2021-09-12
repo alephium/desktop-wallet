@@ -1,11 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { SectionContent } from '../../components/PageComponents'
+import { SectionContent, MainPanelContainer } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Link, useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
-import { Send, QrCode, RefreshCw, LucideProps, Settings as SettingsIcon } from 'lucide-react'
-import tinycolor from 'tinycolor2'
+import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
 import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import AmountBadge from '../../components/Badge'
@@ -135,12 +134,14 @@ const WalletHomePage = () => {
         </SettingsButton>
         <WalletAmountBox>
           <WalletAmountContainer>
-            <WalletAmount>{balance ? abbreviateAmount(balance) : 0}ℵ</WalletAmount>
+            <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
           </WalletAmountContainer>
           <WalletActions>
+            <ActionsTitle>Quick actions</ActionsTitle>
             <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
-            <WalletActionButton Icon={Send} label="Send" link="/wallet/send" />
+            <WalletActionButton Icon={Send} label="Send token" link="/wallet/send" />
+            <WalletActionButton Icon={Lock} label="Lock wallet" link="/wallet/send" />
           </WalletActions>
         </WalletAmountBox>
       </WalletAmountBoxContainer>
@@ -159,30 +160,32 @@ const WalletHomePage = () => {
         )}
       </AnimatePresence>
       <TransactionContent>
-        <LastTransactionListHeader>
-          <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-          {(isLoading || pendingTxList.length > 0) && <Spinner />}
-        </LastTransactionListHeader>
-        <LastTransactionList>
-          {pendingTxList
-            .slice(0)
-            .reverse()
-            .map((t) => {
-              return <PendingTransactionItem key={t.txId} transaction={t} />
-            })}
-          {loadedTxList && loadedTxList.length > 0 ? (
-            loadedTxList?.map((t) => {
-              return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
-            })
+        <MainPanelContainer>
+          <LastTransactionListHeader>
+            <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
+            {(isLoading || pendingTxList.length > 0) && <Spinner />}
+          </LastTransactionListHeader>
+          <LastTransactionList>
+            {pendingTxList
+              .slice(0)
+              .reverse()
+              .map((t) => {
+                return <PendingTransactionItem key={t.txId} transaction={t} />
+              })}
+            {loadedTxList && loadedTxList.length > 0 ? (
+              loadedTxList?.map((t) => {
+                return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
+              })
+            ) : (
+              <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
+            )}
+          </LastTransactionList>
+          {loadedTxList && loadedTxList.length === totalNumberOfTx ? (
+            <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
           ) : (
-            <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
+            <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
           )}
-        </LastTransactionList>
-        {loadedTxList && loadedTxList.length === totalNumberOfTx ? (
-          <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
-        ) : (
-          <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
-        )}
+        </MainPanelContainer>
       </TransactionContent>
     </WalletContainer>
   )
@@ -201,9 +204,9 @@ const WalletActionButton = ({
   return (
     <WalletActionButtonContainer>
       <ActionContent to={link}>
-        <ActionButton>
-          <Icon color={theme.global.accent} />
-        </ActionButton>
+        <ActionIcon>
+          <Icon color={theme.font.primary} size={18} />
+        </ActionIcon>
         <ActionLabel>{label}</ActionLabel>
       </ActionContent>
     </WalletActionButtonContainer>
@@ -272,17 +275,19 @@ const WalletAmountBoxContainer = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
   flex: 1;
-  max-width: 600px;
+  max-width: 400px;
   position: relative;
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
 
   @media ${deviceBreakPoints.mobile} {
     flex: 0;
     max-width: inherit;
+    border: none;
   }
 `
 
 const WalletAmountBox = styled(motion.div)`
-  background-color: ${({ theme }) => theme.bg.contrast};
+  background-color: ${({ theme }) => theme.bg.primary};
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -292,7 +297,6 @@ const WalletAmountBox = styled(motion.div)`
   @media ${deviceBreakPoints.mobile} {
     flex: 0;
     min-height: 300px;
-    justify-content: center;
   }
 `
 
@@ -317,13 +321,15 @@ const WalletAmountContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex: 0.3;
-  min-height: 200px;
+  min-height: 150px;
   margin-top: 25px;
+  margin: 25px;
+  border-radius: 7px;
+  background-color: ${({ theme }) => theme.bg.accent};
+  border: 1px solid ${({ theme }) => theme.bg.accent};
 
   @media ${deviceBreakPoints.mobile} {
     flex: 1.5;
-    min-height: auto;
   }
 `
 
@@ -338,12 +344,13 @@ const CompactWalletAmountBox = styled(motion.div)`
 
   ${WalletAmountContainer} {
     margin: 0;
+    background: transparent;
   }
 `
 
 const WalletAmount = styled(motion.div)`
-  font-size: 3rem;
-  color: ${({ theme }) => theme.font.contrastPrimary};
+  font-size: 2.5rem;
+  color: ${({ theme }) => theme.global.accent};
   text-align: center;
   font-weight: 600;
 `
@@ -351,19 +358,56 @@ const WalletAmount = styled(motion.div)`
 const WalletAmountSubtitle = styled.div`
   margin: 0 auto;
   font-size: 1rem;
-  color: ${({ theme }) => theme.font.contrastPrimary};
+  color: ${({ theme }) => theme.global.accent};
   text-align: center;
   font-weight: 500;
 `
 
 const WalletActions = styled.div`
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
   flex: 1;
+  padding: 0 25px;
+  border-top: 1px solid ${({ theme }) => theme.border.secondary};
+`
+
+const ActionsTitle = styled.h3`
+  width: 100%;
+`
+
+const ActionIcon = styled.div`
+  display: flex;
+  margin-right: 15px;
+  opacity: 0.5;
+  transition: all 0.1s ease-out;
+`
+
+const ActionLabel = styled.label`
+  color: ${({ theme }) => theme.font.secondary};
+  text-align: center;
+  transition: all 0.1s ease-out;
 `
 
 const WalletActionButtonContainer = styled.div`
-  width: 50%;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 50px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  }
+
+  &:hover {
+    cursor: pointer;
+    ${ActionLabel} {
+      color: ${({ theme }) => theme.global.accent};
+    }
+
+    ${ActionIcon} {
+      opacity: 1;
+    }
+  }
 `
 
 const RefreshButton = styled(Button)`
@@ -381,49 +425,28 @@ const SettingsButton = styled(Button)`
   margin: 7px !important;
 `
 
-const ActionButton = styled.button`
-  height: 40px;
-  width: 40px;
-  border-radius: 40px;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-`
-
-const ActionLabel = styled.label`
-  color: ${({ theme }) => theme.font.contrastPrimary};
-  font-weight: 600;
-  text-align: center;
-`
-
 const ActionContent = styled(Link)`
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
+
   * {
     cursor: pointer;
-  }
-
-  &:hover {
-    ${ActionButton} {
-      background-color: ${({ theme }) => tinycolor(theme.bg.primary).setAlpha(0.8).toString()};
-    }
   }
 `
 
 // === TRANSACTION === //
 
-const TransactionContent = styled(SectionContent)`
-  align-items: flex-start !important;
-  justify-content: flex-start !important;
+const TransactionContent = styled.div`
   flex: 1;
   overflow: auto;
-  background-color: ${({ theme }) => theme.bg.primary};
+  flex-direction: column;
+  justify-content: center;
+  padding: 25px;
 
   @media ${deviceBreakPoints.mobile} {
     overflow: initial;
+    padding: 0;
   }
 `
 
@@ -434,6 +457,7 @@ const LastTransactionListHeader = styled.div`
 
 const LastTransactionListTitle = styled.h2`
   margin-left: 15px;
+  margin-top: 0;
 `
 
 const LastTransactionList = styled.div`

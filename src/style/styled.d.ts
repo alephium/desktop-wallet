@@ -11,6 +11,7 @@ declare module 'styled-components' {
       secondary: string
       tertiary: string
       contrast: string
+      accent: string
     }
     font: {
       primary: string

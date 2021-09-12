@@ -1,4 +1,5 @@
 import { DefaultTheme } from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 export const lightTheme: DefaultTheme = {
   name: 'light',
@@ -6,7 +7,8 @@ export const lightTheme: DefaultTheme = {
     primary: '#ffffff',
     secondary: 'rgba(61, 64, 74, 0.05)',
     tertiary: 'rgba(61, 64, 74, 0.2)',
-    contrast: '#111c3e'
+    contrast: '#111c3e',
+    accent: tinycolor('#1f7fed').setAlpha(0.05).toString()
   },
   font: {
     primary: '#1b202f',
@@ -19,7 +21,7 @@ export const lightTheme: DefaultTheme = {
     secondary: '#f5f5f5'
   },
   global: {
-    accent: '#3C90F1',
+    accent: '#1f7fed',
     secondary: '#FFC73B',
     alert: '#ed4a34',
     valid: '#4ebf08'

@@ -14,7 +14,7 @@ export const MainPanelContainer = styled.main<{ verticalAlign?: 'center' | 'flex
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: 7px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
