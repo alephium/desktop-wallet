@@ -33,9 +33,9 @@ const WalletWordsPage = () => {
         Your Wallet
       </PageTitle>
       <PublicAddressContent>
-        <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} />
+        <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
       </PublicAddressContent>
-      <WordsContent>
+      <WordsContent inList>
         <Label>Secret words</Label>
         <PhraseBox>{mnemonic}</PhraseBox>
         <InfoBox
@@ -45,7 +45,7 @@ const WalletWordsPage = () => {
         />
       </WordsContent>
       <FooterActions apparitionDelay={0.3}>
-        <Button onClick={onButtonNext}>Continue</Button>
+        <Button onClick={onButtonNext}>{"I've copied the words, continue"}</Button>
       </FooterActions>
     </PageContainer>
   )
@@ -62,7 +62,6 @@ const Label = styled.label`
 const PublicAddressContent = styled(SectionContent)`
   flex: 0;
   justify-content: flex-start;
-  margin-bottom: 5vh;
 `
 
 const WordsContent = styled(SectionContent)`
@@ -72,7 +71,7 @@ const WordsContent = styled(SectionContent)`
 const PhraseBox = styled.div`
   width: 100%;
   padding: 20px;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: 500;
   background-color: ${({ theme }) => theme.global.alert};
   border-radius: 14px;

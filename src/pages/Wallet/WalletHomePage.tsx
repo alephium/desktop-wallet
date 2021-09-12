@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { PageContainer, SectionContent } from '../../components/PageComponents'
+import { SectionContent } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Link, useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
@@ -8,7 +8,6 @@ import { Send, QrCode, RefreshCw, LucideProps, Settings as SettingsIcon } from '
 import tinycolor from 'tinycolor2'
 import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
-import mountains from '../../images/mountain.svg'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
 import dayjs from 'dayjs'
@@ -19,6 +18,7 @@ import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
 import { isHTTPError } from '../../utils/api'
+import { deviceBreakPoints } from '../../style/globalStyles'
 
 dayjs.extend(relativeTime)
 
@@ -117,7 +117,7 @@ const WalletHomePage = () => {
   // Make initial calls
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   // Polling (when pending tx)
   useInterval(fetchData, 2000, pendingTxList.length === 0)
@@ -125,7 +125,7 @@ const WalletHomePage = () => {
   if (!wallet) return null
 
   return (
-    <PageContainer>
+    <WalletContainer>
       <WalletAmountBoxContainer>
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
@@ -136,14 +136,13 @@ const WalletHomePage = () => {
         <WalletAmountBox>
           <WalletAmountContainer>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0}ℵ</WalletAmount>
-            <WalletFullAmount>{balance ? abbreviateAmount(balance, true) : 0}ℵ</WalletFullAmount>
+            <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
           </WalletAmountContainer>
           <WalletActions>
             <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
             <WalletActionButton Icon={Send} label="Send" link="/wallet/send" />
           </WalletActions>
         </WalletAmountBox>
-        <Decors />
       </WalletAmountBoxContainer>
       <AnimatePresence>
         {isHeaderCompact && (
@@ -185,7 +184,7 @@ const WalletHomePage = () => {
           <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
         )}
       </TransactionContent>
-    </PageContainer>
+    </WalletContainer>
   )
 }
 
@@ -258,45 +257,73 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
 // ==== STYLING ====
 // =================
 
+const WalletContainer = styled.div`
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex-direction: column;
+    overflow: initial;
+  }
+`
+
 const WalletAmountBoxContainer = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  flex: 0;
+  flex: 1;
+  max-width: 600px;
   position: relative;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex: 0;
+    max-width: inherit;
+  }
 `
 
 const WalletAmountBox = styled(motion.div)`
-  background-color: ${({ theme }) => theme.global.accent};
+  background-color: ${({ theme }) => theme.bg.contrast};
   width: 100%;
-  border-radius: 26px;
-  padding: 0 25px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-self: flex-start;
-  height: 250px;
+  flex: 1;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex: 0;
+    min-height: 300px;
+    justify-content: center;
+  }
 `
 
 const CompactWalletAmountBoxContainer = styled(SectionContent)`
   align-items: flex-start;
   justify-content: flex-start;
-  margin: 5px;
+  margin: 5px !important;
   flex: 0;
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 1000;
+
+  @media ${deviceBreakPoints.desktop} {
+    display: none;
+  }
 `
 
 const WalletAmountContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex: 1.5;
+  flex: 0.3;
+  min-height: 200px;
   margin-top: 25px;
+
+  @media ${deviceBreakPoints.mobile} {
+    flex: 1.5;
+    min-height: auto;
+  }
 `
 
 const CompactWalletAmountBox = styled(motion.div)`
@@ -315,15 +342,15 @@ const CompactWalletAmountBox = styled(motion.div)`
 
 const WalletAmount = styled(motion.div)`
   font-size: 3rem;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
 `
 
-const WalletFullAmount = styled.div`
+const WalletAmountSubtitle = styled.div`
   margin: 0 auto;
   font-size: 1rem;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
   font-weight: 500;
 `
@@ -357,7 +384,7 @@ const ActionButton = styled.button`
   height: 40px;
   width: 40px;
   border-radius: 40px;
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -365,7 +392,7 @@ const ActionButton = styled.button`
 `
 
 const ActionLabel = styled.label`
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: 600;
   text-align: center;
 `
@@ -384,27 +411,18 @@ const ActionContent = styled(Link)`
     }
   }
 `
-const Decors = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: 0 auto;
-  background-image: url(${mountains});
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: bottom;
-  opacity: 0.15;
-  pointer-events: none;
-`
 
 // === TRANSACTION === //
 
 const TransactionContent = styled(SectionContent)`
   align-items: flex-start !important;
   justify-content: flex-start !important;
-  margin-bottom: 15px;
+  flex: 1;
+  overflow: auto;
+
+  @media ${deviceBreakPoints.mobile} {
+    overflow: initial;
+  }
 `
 
 const LastTransactionListHeader = styled.div`
@@ -413,7 +431,7 @@ const LastTransactionListHeader = styled.div`
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin-right: 25px;
+  margin-left: 15px;
 `
 
 const LastTransactionList = styled.div`
@@ -425,7 +443,7 @@ const LastTransactionList = styled.div`
 const TransactionItemContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px 5px;
+  padding: 15px;
   cursor: pointer;
   transition: all 0.1s ease-out;
 
@@ -504,6 +522,7 @@ const LoadMoreMessage = styled.div`
   cursor: pointer;
   align-self: center;
   margin-top: 15px;
+  margin-bottom: 15px;
 `
 
 const NoMoreTransactionMessage = styled.div`

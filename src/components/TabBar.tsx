@@ -74,7 +74,7 @@ const TabContainer = styled.div`
 const Tab = styled.div<{ isActive: boolean }>`
   text-align: center;
   padding: 8px;
-  color: ${({ theme, isActive }) => (isActive ? theme.font.contrast : theme.font.secondary)};
+  color: ${({ theme, isActive }) => (isActive ? theme.font.contrastPrimary : theme.font.secondary)};
   z-index: 1;
   cursor: pointer;
 `

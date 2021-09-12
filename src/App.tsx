@@ -170,7 +170,7 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
 
 // === Styling === //
 
-const AppContainer = styled.main`
+const AppContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -192,7 +192,7 @@ const SnackbarPopup = styled(motion.div)`
   min-width: 300px;
   width: 50vw;
   padding: 20px 15px;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   border-radius: 14px;
   z-index: 1000;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);

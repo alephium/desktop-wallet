@@ -223,7 +223,7 @@ const SelectedWord = styled(motion.div)`
   padding: 6px 10px;
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: 500;
   text-align: center;
   margin-bottom: 10px;
@@ -254,7 +254,7 @@ const SelectedWordList = styled.div`
   padding: 20px;
   min-height: 30vh;
   border-radius: 14px;
-  border: 3px solid ${({ theme }) => theme.border.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
   margin-bottom: 20px;
 

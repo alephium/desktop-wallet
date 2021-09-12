@@ -1,4 +1,4 @@
-import styled, { useTheme } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 import { LucideProps } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'
 
@@ -9,6 +9,7 @@ interface InfoBoxProps {
   iconColor?: 'accent' | 'alert'
   className?: string
   ellipsis?: boolean
+  wordBreak?: boolean
   onClick?: () => void
 }
 
@@ -17,7 +18,7 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onClick }: InfoBoxProps) => {
+export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, wordBreak, onClick }: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
@@ -29,9 +30,7 @@ export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, onC
             <Icon color={iconColor ? theme.global[iconColor] : theme.global.accent} strokeWidth={1.5} />
           </IconContainer>
         )}
-        <TextContainer
-          style={ellipsis ? { overflow: 'hidden', textOverflow: 'ellipsis' } : { overflowWrap: 'anywhere' }}
-        >
+        <TextContainer wordBreak={wordBreak} ellipsis={ellipsis}>
           {text}
         </TextContainer>
       </StyledBox>
@@ -58,11 +57,22 @@ const IconContainer = styled.div`
   }
 `
 
-const TextContainer = styled.p`
+const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
   padding: 0 20px;
   flex: 2;
   font-weight: 500;
-  word-break: break-all;
+  word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
+
+  ${({ ellipsis }) => {
+    return ellipsis
+      ? css`
+          overflow: 'hidden';
+          textoverflow: 'ellipsis';
+        `
+      : css`
+          overflowwrap: 'anywhere';
+        `
+  }}
 `
 
 const StyledBox = styled(motion.div)`

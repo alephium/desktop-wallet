@@ -3,18 +3,18 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
 
-export const MainContainer = styled.div<{ verticalAlign?: 'center' | 'flex-start' }>`
+export const MainPanelContainer = styled.main<{ verticalAlign?: 'center' | 'flex-start' }>`
   height: 100%;
   width: 100%;
-  max-width: 700px;
   margin: 0 auto;
+  max-width: 600px;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
 `
 
-export const PageContainer = styled.section`
+export const PageContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -41,9 +41,10 @@ interface ContentProps {
   apparitionDelay?: number
   style?: MotionStyle
   className?: string
+  inList?: boolean
 }
 
-export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, style, className }) => {
+export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, inList, style, className }) => {
   return (
     <StyledContent
       variants={contentVariants}
@@ -53,17 +54,19 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
       custom={apparitionDelay}
       style={style}
       className={className}
+      inList={inList}
     >
       {children}
     </StyledContent>
   )
 }
 
-export const StyledContent = styled(motion.div)`
+export const StyledContent = styled(motion.div)<{ inList?: boolean }>`
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin: 25px 0;
+
+  margin-top: ${({ inList }) => (inList ? '25px' : '0')};
 `
 
 interface SectionTitleProps {
@@ -77,6 +80,7 @@ interface SectionTitleProps {
 export const FooterActions = styled(SectionContent)`
   flex: 0;
   margin-bottom: 5vh;
+  margin-top: 25px;
   width: 100%;
 `
 

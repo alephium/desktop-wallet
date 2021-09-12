@@ -28,7 +28,7 @@ export const GlobalStyle = createGlobalStyle`
     overflow-y:auto;
     height: 100%;
     width: 100%;
-    font-weight: 400;
+    font-weight: 500;
   }
 
   #root {
@@ -85,7 +85,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     .tagify__dropdown__item  {
-      color: ${({ theme }) => theme.font.contrast};
+      color: ${({ theme }) => theme.font.contrastPrimary};
       margin: 0;
       border-radius: 0;
       padding: 10px;
@@ -112,5 +112,5 @@ export const deviceSizes = {
 export const deviceBreakPoints = {
   mobile: `(max-width: ${deviceSizes.mobile}px)`,
   tablet: `(max-width: ${deviceSizes.tablet}px)`,
-  desktop: `(max-width: ${deviceSizes.desktop}px)`
+  desktop: `(min-width: ${deviceSizes.desktop}px)`
 }

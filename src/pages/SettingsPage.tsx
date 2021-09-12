@@ -211,7 +211,7 @@ const ClientSettings = () => {
 const PhraseBox = styled.div`
   width: 100%;
   padding: 20px;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: 600;
   background-color: ${({ theme }) => theme.global.alert};
   border-radius: 14px;

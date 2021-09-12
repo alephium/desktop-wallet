@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { Form, Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { MainContainer, PageTitle, SectionContent } from '../components/PageComponents'
+import { MainPanelContainer, PageTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
 import { walletOpen, getStorage, NetworkId } from 'alf-client'
@@ -33,13 +33,13 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   return (
     <HomeContainer>
       <Header>
-        <MainContainer>
+        <MainPanelContainer>
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
           </SettingsButton>
           <AlephiumLogo />
           <HeaderText>
-            <PageTitle color={theme.font.contrast} backgroundColor={theme.font.primary}>
+            <PageTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
               Alephium
             </PageTitle>
             <PageSubtitle>Official Wallet</PageSubtitle>
@@ -74,10 +74,10 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             />
             <MountainImage />
           </IllustrationsContainer>
-        </MainContainer>
+        </MainPanelContainer>
       </Header>
       <InteractionArea>
-        <MainContainer verticalAlign="center">
+        <MainPanelContainer verticalAlign="center">
           {showActions ? (
             renderActions()
           ) : hasWallet ? (
@@ -85,7 +85,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
           ) : (
             renderActions()
           )}
-        </MainContainer>
+        </MainPanelContainer>
       </InteractionArea>
     </HomeContainer>
   )
@@ -214,7 +214,7 @@ const InteractionArea = styled.div`
 const HeaderText = styled.div`
   margin-top: 2vh;
   max-width: 700px;
-  color: ${({ theme }) => theme.font.contrast};
+  color: ${({ theme }) => theme.font.contrastSecondary};
 
   @media ${deviceBreakPoints.mobile} {
     display: none;

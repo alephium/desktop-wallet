@@ -296,7 +296,7 @@ const defaultStyle = (isValid?: boolean) => {
     background-image: none;
     height: 46px;
     width: 100%;
-    border-radius: 100px;
+    border-radius: 7px;
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
     padding: ${isValid ? '0 45px 0 15px' : '0 15px'};

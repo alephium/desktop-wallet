@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { MainContainer } from '../../components/PageComponents'
 import Modal from '../../components/Modal'
 import { GlobalContext } from '../../App'
 import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
@@ -63,30 +62,28 @@ const Wallet = () => {
 
   return (
     <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, pendingTxList, loadedTxList }}>
-      <MainContainer>
-        <Route path="/wallet">
-          <WalletHomePage />
-        </Route>
-        <AnimatePresence exitBeforeEnter initial={false}>
-          <Switch location={location} key={location.pathname}>
-            <Route path="/wallet/send" key="send">
-              <Modal title="Send" onClose={() => history.push('/wallet')}>
-                <SendPage />
-              </Modal>
-            </Route>
-            <Route path="/wallet/address" key="address">
-              <Modal title="Your address" onClose={() => history.push('/wallet')}>
-                <AddressPage />
-              </Modal>
-            </Route>
-            <Route path="/wallet/settings">
-              <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-                <SettingsPage />
-              </Modal>
-            </Route>
-          </Switch>
-        </AnimatePresence>
-      </MainContainer>
+      <Route path="/wallet">
+        <WalletHomePage />
+      </Route>
+      <AnimatePresence exitBeforeEnter initial={false}>
+        <Switch location={location} key={location.pathname}>
+          <Route path="/wallet/send" key="send">
+            <Modal title="Send" onClose={() => history.push('/wallet')}>
+              <SendPage />
+            </Modal>
+          </Route>
+          <Route path="/wallet/address" key="address">
+            <Modal title="Your address" onClose={() => history.push('/wallet')}>
+              <AddressPage />
+            </Modal>
+          </Route>
+          <Route path="/wallet/settings">
+            <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+              <SettingsPage />
+            </Modal>
+          </Route>
+        </Switch>
+      </AnimatePresence>
     </WalletContext.Provider>
   )
 }

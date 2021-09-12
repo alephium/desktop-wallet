@@ -73,7 +73,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   return (
     <PageContainer>
       <PageTitle color="primary">{isRestoring ? 'Restore Account' : 'New Account'}</PageTitle>
-      <SectionContent>
+      <SectionContent inList>
         <Input
           value={username}
           placeholder="Account Name"

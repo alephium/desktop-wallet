@@ -42,6 +42,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   justify-content: center;
   height: 46px;
   width: ${({ squared }) => (squared ? '46px' : '80%')};
+  max-width: 300px;
   border-radius: ${({ squared }) => (squared ? '100%' : '7px')};
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
@@ -56,10 +57,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
     alert && secondary
       ? theme.global.alert
       : alert
-      ? theme.font.contrast
+      ? theme.font.contrastPrimary
       : secondary
       ? theme.global.accent
-      : theme.font.contrast};
+      : theme.font.contrastPrimary};
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0 13px;

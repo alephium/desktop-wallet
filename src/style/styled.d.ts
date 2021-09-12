@@ -15,7 +15,8 @@ declare module 'styled-components' {
     font: {
       primary: string
       secondary: string
-      contrast: string
+      contrastPrimary: string
+      contrastSecondary: string
     }
     border: {
       primary: string
