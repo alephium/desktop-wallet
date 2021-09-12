@@ -118,7 +118,11 @@ const AccountSettings = () => {
             <SectionContent>
               <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
               <CenteredSecondaryParagraph>
-                Type your password to confirm the account deletion.
+                Type your password to confirm the account removal from your device. <br />
+                <b>
+                  Make sure that you have your 24 words secured somewhere safe, to allow you to recover it in the
+                  future!
+                </b>
               </CenteredSecondaryParagraph>
             </SectionContent>
             <SectionContent>
@@ -129,7 +133,7 @@ const AccountSettings = () => {
           </Modal>
         )}
 
-        <InfoBox text={`Current account: ${currentUsername}`} Icon={User} />
+        <InfoBox text={currentUsername} Icon={User} />
         <Divider />
         <Button secondary alert onClick={openSecretPhraseModal}>
           Show your secret phrase

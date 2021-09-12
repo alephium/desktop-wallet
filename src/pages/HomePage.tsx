@@ -104,7 +104,7 @@ const Login = ({
   const login = async (callback: () => void) => {
     const walletEncrypted = Storage.load(credentials.username)
     if (walletEncrypted === null) {
-      setSnackbarMessage({ text: 'Unknown username', type: 'info' })
+      setSnackbarMessage({ text: 'Unknown account name', type: 'info' })
     } else {
       try {
         const wallet = await walletOpen(credentials.password, walletEncrypted, networkId)
@@ -132,7 +132,7 @@ const Login = ({
     <SectionContent>
       <Form>
         <Select
-          placeholder="Username"
+          placeholder="Account name"
           options={usernames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
         />

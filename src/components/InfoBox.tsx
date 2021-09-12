@@ -52,8 +52,8 @@ const IconContainer = styled.div`
   max-width: 100px;
 
   svg {
-    height: 50%;
-    width: 50%;
+    height: 30%;
+    width: 30%;
     margin: auto;
   }
 `

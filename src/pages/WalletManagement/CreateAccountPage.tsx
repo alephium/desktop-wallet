@@ -76,7 +76,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
       <SectionContent>
         <Input
           value={username}
-          placeholder="Username"
+          placeholder="Account Name"
           onChange={onUpdateUsername}
           error={usernameError}
           isValid={username.length > 0 && usernameError.length === 0}
@@ -101,11 +101,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         <InfoBox
           Icon={AlertTriangle}
           iconColor="alert"
-          text={
-            isRestoring
-              ? 'Make sure to use the same password as the one used for creating the wallet, otherwise the restore will fail.'
-              : 'Make sure to keep your password secured as it cannot be restored!'
-          }
+          text={'Make sure to keep your password secured as it cannot be changed in the future.'}
         />
         <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
       </SectionContent>
