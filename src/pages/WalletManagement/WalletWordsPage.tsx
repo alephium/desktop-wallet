@@ -41,7 +41,7 @@ const WalletWordsPage = () => {
         <InfoBox
           text={'Carefully note the 24 words. They are the keys to your wallet.'}
           Icon={Edit3}
-          iconColor="alert"
+          importance="alert"
         />
       </WordsContent>
       <FooterActions apparitionDelay={0.3}>
@@ -74,7 +74,7 @@ const PhraseBox = styled.div`
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: 500;
   background-color: ${({ theme }) => theme.global.alert};
-  border-radius: 14px;
+  border-radius: 7px;
   margin-bottom: 20px;
 `
 

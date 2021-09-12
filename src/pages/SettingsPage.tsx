@@ -105,7 +105,7 @@ const AccountSettings = () => {
                 <InfoBox
                   text={'Carefully note the 24 words. They are the keys to your wallet.'}
                   Icon={Edit3}
-                  iconColor="alert"
+                  importance="alert"
                 />
                 <PhraseBox>{decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
               </SectionContent>
@@ -219,7 +219,7 @@ const PhraseBox = styled.div`
 `
 
 const Divider = styled.div`
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.border.secondary};
   margin: 10px 5px;
   height: 1px;
   width: 100%;

@@ -15,12 +15,13 @@ export const lightTheme: DefaultTheme = {
     contrastSecondary: 'rgba(255, 255, 255, 0.85)'
   },
   border: {
-    primary: '#E8E8E8'
+    primary: '#ebebeb',
+    secondary: '#f5f5f5'
   },
   global: {
     accent: '#3C90F1',
     secondary: '#FFC73B',
     alert: '#ed4a34',
-    valid: '#4ACF34'
+    valid: '#4ebf08'
   }
 }

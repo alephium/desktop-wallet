@@ -26,10 +26,11 @@ const contentVariants: Variants = {
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
     transition: {
+      duration: 0,
       when: 'beforeChildren',
       delay: apparitionDelay,
       staggerChildren: 0.05,
-      delayChildren: 0.1
+      delayChildren: 0.05
     }
   }),
   out: {
@@ -101,21 +102,19 @@ export const PageTitle: FC<SectionTitleProps> = ({
   const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
 
   return (
-    <TitleContainer style={{ backgroundColor: backgroundColor || 'white' }}>
+    <TitleContainer
+      style={{ backgroundColor: backgroundColor || 'white' }}
+      layoutId={useLayoutId ? 'sectionTitle' : ''}
+    >
       {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
-      <H1
-        color={color}
-        layoutId={useLayoutId ? 'sectionTitle' : ''}
-        smaller={smaller}
-        style={{ scale: titleScale, originX: 0 }}
-      >
+      <H1 color={color} smaller={smaller} style={{ scale: titleScale, originX: 0 }}>
         {children}
       </H1>
     </TitleContainer>
   )
 }
 
-export const TitleContainer = styled.div`
+export const TitleContainer = styled(motion.div)`
   display: flex;
   align-items: center;
   margin-top: 10px;

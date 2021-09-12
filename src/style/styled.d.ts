@@ -20,6 +20,7 @@ declare module 'styled-components' {
     }
     border: {
       primary: string
+      secondary: string
     }
     global: {
       accent: string

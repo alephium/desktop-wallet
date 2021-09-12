@@ -42,8 +42,8 @@ const getBadgeColor = (badgeType: BadgeType, theme: DefaultTheme) => {
 
   switch (badgeType) {
     case 'plus':
-      backgroundColor = 'rgba(93, 203, 126, 0.12)'
-      color = 'rgba(93, 203, 126, 1)'
+      backgroundColor = 'rgba(48, 167, 84, 0.12)'
+      color = '#37c461'
       break
     case 'minus':
       backgroundColor = 'rgba(243, 113, 93, 0.1)'

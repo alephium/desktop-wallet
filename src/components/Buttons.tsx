@@ -61,7 +61,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       : secondary
       ? theme.global.accent
       : theme.font.contrastPrimary};
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1.1rem;
   padding: 0 13px;
   min-width: ${({ squared }) => (squared ? '46px' : '100px')};

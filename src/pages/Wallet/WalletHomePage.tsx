@@ -451,7 +451,7 @@ const TransactionItemContainer = styled.div`
     background-color: ${({ theme }) => theme.bg.secondary};
   }
 
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 const TxDetails = styled.div`

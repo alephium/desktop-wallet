@@ -47,7 +47,15 @@ const CheckWordsIntroPage = () => {
 }
 
 const LockContainer = styled.div`
-  margin-bottom: 50px;
+  width: 100%;
+  margin-bottom: 25px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 60px;
 `
 
 const Lock = styled(motion.div)`

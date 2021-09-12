@@ -6,7 +6,7 @@ interface InfoBoxProps {
   text: string
   Icon?: (props: LucideProps) => JSX.Element
   label?: string
-  iconColor?: 'accent' | 'alert'
+  importance?: 'accent' | 'alert'
   className?: string
   ellipsis?: boolean
   wordBreak?: boolean
@@ -18,16 +18,16 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-export const InfoBox = ({ Icon, text, label, iconColor, className, ellipsis, wordBreak, onClick }: InfoBoxProps) => {
+export const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wordBreak, onClick }: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
     <BoxContainer className={className} onClick={onClick}>
       {label && <Label variants={variants}>{label}</Label>}
-      <StyledBox variants={variants}>
+      <StyledBox variants={variants} importance={importance}>
         {Icon && (
           <IconContainer>
-            <Icon color={iconColor ? theme.global[iconColor] : theme.global.accent} strokeWidth={1.5} />
+            <Icon color={importance ? theme.global[importance] : theme.global.accent} strokeWidth={1.5} />
           </IconContainer>
         )}
         <TextContainer wordBreak={wordBreak} ellipsis={ellipsis}>
@@ -75,11 +75,13 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
   }}
 `
 
-const StyledBox = styled(motion.div)`
+const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
   padding: 10px 20px 10px 0;
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.primary};
+  border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.secondary)};
   display: flex;
-  border-radius: 14px;
+  border-radius: 7px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.05);
   align-items: center;
 `
 

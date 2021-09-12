@@ -25,6 +25,7 @@ const TabBar = ({
             animate={{
               x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%`
             }}
+            transition={{ duration: 0.2 }}
             style={{ width: `${100 / tabItems.length}%` }}
           />
           {tabItems.map((i) => {

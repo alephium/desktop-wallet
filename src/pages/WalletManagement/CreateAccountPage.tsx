@@ -100,7 +100,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         />
         <InfoBox
           Icon={AlertTriangle}
-          iconColor="alert"
+          importance="alert"
           text={'Make sure to keep your password secured as it cannot be changed in the future.'}
         />
         <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
