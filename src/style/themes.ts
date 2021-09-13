@@ -7,6 +7,7 @@ export const lightTheme: DefaultTheme = {
     primary: '#ffffff',
     secondary: 'rgba(61, 64, 74, 0.05)',
     tertiary: 'rgba(61, 64, 74, 0.2)',
+    hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#09122d',
     accent: tinycolor('#1f7fed').setAlpha(0.08).toString()
   },

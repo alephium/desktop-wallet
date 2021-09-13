@@ -109,11 +109,6 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   return scaled.toFixed(numberOfDigitsToDisplay) + suffix
 }
 
-export const truncate = (str: string) => {
-  const len = str.length
-  return len > 10 ? str.substring(0, 6) + '...' + str.substring(len - 6, len) : str
-}
-
 // ==================== //
 // ===== BALANCES ===== //
 // ==================== //
@@ -140,7 +135,10 @@ export function calAmountDelta(t: Transaction, id: string) {
 export const openInNewWindow = (url: string) => {
   if (url) {
     const newWindow = window.open(`${url}`, '_blank', 'noopener,noreferrer')
-    if (newWindow) newWindow.opener = null
+    if (newWindow) {
+      newWindow.opener = null
+      newWindow.focus()
+    }
   }
 }
 

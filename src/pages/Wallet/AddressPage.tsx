@@ -3,9 +3,10 @@ import QRCode from 'qrcode.react'
 import { useContext } from 'react'
 import { GlobalContext } from '../../App'
 import Paragraph from '../../components/Paragraph'
-import { openInNewWindow, truncate } from '../../utils/misc'
+import { openInNewWindow } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import { Button } from '../../components/Buttons'
+import styled from 'styled-components'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
@@ -36,10 +37,7 @@ const AddressPage = () => {
   return (
     <PanelContainer>
       <SectionContent>{address && <QRCode value={address} style={{ marginTop: 25 }} />}</SectionContent>
-      <SectionContent>
-        <Paragraph>{truncate(address || '')}</Paragraph>
-      </SectionContent>
-
+      <ShortenParagraph>{address}</ShortenParagraph>
       <SectionContent inList>
         <Button secondary onClick={handleShowInExplorer}>
           Show in explorer
@@ -51,5 +49,12 @@ const AddressPage = () => {
     </PanelContainer>
   )
 }
+
+const ShortenParagraph = styled(Paragraph)`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin-top: 50px;
+`
 
 export default AddressPage

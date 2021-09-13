@@ -5,7 +5,7 @@ import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
-import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/misc'
+import { abbreviateAmount, calAmountDelta, openInNewWindow } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
@@ -19,6 +19,7 @@ import { Button } from '../../components/Buttons'
 import { isHTTPError } from '../../utils/api'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
+import Address from '../../components/Address'
 
 dayjs.extend(relativeTime)
 
@@ -28,7 +29,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
       .map((v) => v.address)
       .uniq()
       .value()
-      .map((v) => <Address key={v}>{truncate(v || '')}</Address>)
+      .map((v) => <Address key={v} hash={v || ''} />)
   } else {
     return <MiningRewardString>Mining Rewards</MiningRewardString>
   }
@@ -173,16 +174,16 @@ const WalletHomePage = () => {
               .map((t) => {
                 return <PendingTransactionItem key={t.txId} transaction={t} />
               })}
-            {loadedTxList && loadedTxList.length > 0 ? (
+            {loadedTxList &&
+              loadedTxList.length > 0 &&
               loadedTxList?.map((t) => {
                 return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
-              })
-            ) : (
-              <NoTransactionMessage>No transactions yet!</NoTransactionMessage>
-            )}
+              })}
           </LastTransactionList>
-          {loadedTxList && loadedTxList.length === totalNumberOfTx ? (
+          {loadedTxList && loadedTxList.length > 0 && loadedTxList.length === totalNumberOfTx ? (
             <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
+          ) : loadedTxList.length === 0 ? (
+            <NoMoreTransactionMessage>No transactions yet!</NoMoreTransactionMessage>
           ) : (
             <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
           )}
@@ -237,16 +238,18 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
   return (
     <TransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.hash}`)}>
       <TxDetails>
-        <DirectionLabel>{isOut ? 'TO' : 'FROM'}</DirectionLabel>
+        <DirectionLabel>{isOut ? '↑ TO' : '↓ FROM'}</DirectionLabel>
         <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
         <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
-      <AmountBadge
-        type={isOut ? 'minus' : 'plus'}
-        prefix={isOut ? '- ' : '+ '}
-        content={amountDelta < 0 ? (amountDelta * -1n).toString() : amountDelta.toString()}
-        amount
-      />
+      <TxAmountContainer>
+        <AmountBadge
+          type={isOut ? 'minus' : 'plus'}
+          prefix={isOut ? '- ' : '+ '}
+          content={amountDelta < 0 ? (amountDelta * -1n).toString() : amountDelta.toString()}
+          amount
+        />
+      </TxAmountContainer>
     </TransactionItemContainer>
   )
 }
@@ -260,7 +263,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
       <TxDetails>
         <DirectionLabel>TO</DirectionLabel>
         <IOAddresses>
-          <Address key={t.toAddress}>{truncate(t.toAddress || '')}</Address>
+          <Address key={t.toAddress} hash={t.toAddress || ''} />
         </IOAddresses>
         <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
       </TxDetails>
@@ -348,8 +351,8 @@ const WalletAmountHighlightOverlay = styled.div`
 const WalletAmountContainer = styled.div`
   position: relative;
   min-height: 150px;
-  margin-top: 25px;
   margin: 25px;
+  margin-top: 10px;
   border-radius: 7px;
   background-color: ${({ theme }) => theme.bg.contrast};
   overflow: hidden;
@@ -473,7 +476,7 @@ const TransactionsContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 25px;
-  padding-top: calc(25px + ${appHeaderHeight});
+  padding-top: calc(10px + ${appHeaderHeight});
 
   @media ${deviceBreakPoints.mobile} {
     overflow: initial;
@@ -509,7 +512,7 @@ const TransactionItemContainer = styled.div`
   transition: all 0.1s ease-out;
 
   &:hover {
-    background-color: ${({ theme }) => theme.bg.secondary};
+    background-color: ${({ theme }) => theme.bg.hover};
   }
 
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
@@ -523,6 +526,7 @@ const TxDetails = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `
 
 const DirectionLabel = styled.span`
@@ -532,12 +536,13 @@ const DirectionLabel = styled.span`
 
 const IOAddresses = styled.div`
   display: flex;
-  flex-direction: column;
   margin-bottom: 5px;
 `
 
-const Address = styled.span`
-  color: ${({ theme }) => theme.global.accent};
+const TxAmountContainer = styled.div`
+  flex: 0.5;
+  display: flex;
+  justify-content: flex-end;
 `
 
 const MiningRewardString = styled.span`
@@ -576,10 +581,6 @@ const PendingTransactionItemContainer = styled(TransactionItemContainer)`
       background-position: 0% 50%;
     }
   }
-`
-
-const NoTransactionMessage = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
 `
 
 const LoadMoreMessage = styled.div`

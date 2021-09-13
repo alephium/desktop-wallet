@@ -10,6 +10,7 @@ declare module 'styled-components' {
       primary: string
       secondary: string
       tertiary: string
+      hover: string
       contrast: string
       accent: string
     }
