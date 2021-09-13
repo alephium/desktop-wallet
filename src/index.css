@@ -5,3 +5,9 @@
   src: url('./style/fonts/Inter.var.woff2') format('woff2');
   font-weight: 100 1000;
 }
+
+/* Webkit drag handle */
+
+#app-header {
+  -webkit-app-region: drag;
+}

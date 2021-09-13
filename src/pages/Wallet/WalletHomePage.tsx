@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { SectionContent, MainPanel } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
 import { abbreviateAmount, calAmountDelta, openInNewWindow, truncate } from '../../utils/misc'
@@ -18,6 +18,7 @@ import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
 import { isHTTPError } from '../../utils/api'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
+import AppHeader from '../../components/AppHeader'
 
 dayjs.extend(relativeTime)
 
@@ -35,7 +36,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 
 const WalletHomePage = () => {
   const history = useHistory()
-  const { wallet, setSnackbarMessage, client } = useContext(GlobalContext)
+  const { wallet, setSnackbarMessage, client, setWallet } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
@@ -125,26 +126,28 @@ const WalletHomePage = () => {
 
   return (
     <WalletContainer>
-      <WalletAmountBoxContainer>
+      <AppHeader />
+      <WalletSidebar>
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
           <SettingsIcon />
         </SettingsButton>
-        <WalletAmountBox>
-          <WalletAmountContainer>
+        <WalletAmountContainer>
+          <WalletAmountHighlightOverlay />
+          <WalletAmountContent>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
-          </WalletAmountContainer>
-          <WalletActions>
-            <ActionsTitle>Quick actions</ActionsTitle>
-            <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
-            <WalletActionButton Icon={Send} label="Send token" link="/wallet/send" />
-            <WalletActionButton Icon={Lock} label="Lock wallet" link="/wallet/send" />
-          </WalletActions>
-        </WalletAmountBox>
-      </WalletAmountBoxContainer>
+          </WalletAmountContent>
+        </WalletAmountContainer>
+        <WalletActions>
+          <ActionsTitle>Quick actions</ActionsTitle>
+          <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
+          <WalletActionButton Icon={Send} label="Send token" link="/wallet/send" />
+          <WalletActionButton Icon={Lock} label="Lock wallet" onClick={() => setWallet(undefined)} />
+        </WalletActions>
+      </WalletSidebar>
       <AnimatePresence>
         {isHeaderCompact && (
           <CompactWalletAmountBoxContainer>
@@ -194,16 +197,28 @@ const WalletHomePage = () => {
 const WalletActionButton = ({
   Icon,
   label,
-  link
+  link,
+  onClick
 }: {
   Icon: (props: LucideProps) => JSX.Element
   label: string
-  link: string
+  link?: string
+  onClick?: () => void
 }) => {
   const theme = useTheme()
+  const history = useHistory()
+
+  const handleClick = () => {
+    if (link) {
+      history.push(link)
+    } else if (onClick) {
+      onClick()
+    }
+  }
+
   return (
-    <WalletActionButtonContainer>
-      <ActionContent to={link}>
+    <WalletActionButtonContainer onClick={handleClick}>
+      <ActionContent>
         <ActionIcon>
           <Icon color={theme.font.primary} size={18} />
         </ActionIcon>
@@ -271,8 +286,8 @@ const WalletContainer = styled.div`
   }
 `
 
-const WalletAmountBoxContainer = styled(SectionContent)`
-  align-items: flex-start;
+const WalletSidebar = styled(SectionContent)`
+  align-items: stretch;
   justify-content: flex-start;
   flex: 1;
   max-width: 400px;
@@ -285,19 +300,6 @@ const WalletAmountBoxContainer = styled(SectionContent)`
     flex: 0;
     max-width: inherit;
     border: none;
-  }
-`
-
-const WalletAmountBox = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-self: flex-start;
-  flex: 1;
-
-  @media ${deviceBreakPoints.mobile} {
-    flex: 0;
-    min-height: 300px;
   }
 `
 
@@ -318,18 +320,49 @@ const CompactWalletAmountBoxContainer = styled(SectionContent)`
   }
 `
 
-const WalletAmountContainer = styled.div`
+const WalletAmountContent = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 1;
+`
+
+const WalletAmountHighlightOverlay = styled.div`
+  background: ${({ theme }) => theme.global.highlightGradient};
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 0;
+
+  opacity: 0.7;
+
+  transition: all 0.15s ease-out;
+`
+
+const WalletAmountContainer = styled.div`
+  position: relative;
   min-height: 150px;
   margin-top: 25px;
   margin: 25px;
   border-radius: 7px;
-  background: ${({ theme }) => theme.global.highlightGradient};
+  background-color: ${({ theme }) => theme.bg.contrast};
+  overflow: hidden;
 
   @media ${deviceBreakPoints.mobile} {
     flex: 1.5;
+  }
+
+  &:hover {
+    ${WalletAmountHighlightOverlay} {
+      opacity: 0.9;
+    }
   }
 `
 
@@ -345,6 +378,10 @@ const CompactWalletAmountBox = styled(motion.div)`
   ${WalletAmountContainer} {
     margin: 0;
     background: transparent;
+
+    @media ${deviceBreakPoints.mobile} {
+      min-height: initial;
+    }
   }
 `
 
@@ -429,7 +466,7 @@ const SettingsButton = styled(Button)`
   margin: 7px !important;
 `
 
-const ActionContent = styled(Link)`
+const ActionContent = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
