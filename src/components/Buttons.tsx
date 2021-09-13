@@ -40,10 +40,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 46px;
-  width: ${({ squared }) => (squared ? '46px' : '80%')};
+  height: ${({ squared }) => (squared ? '40px' : '46px')};
+  width: ${({ squared }) => (squared ? '40px' : '80%')};
   max-width: 300px;
-  border-radius: ${({ squared }) => (squared ? '100%' : '7px')};
+  border-radius: 7px;
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
     alert && !secondary
@@ -53,9 +53,11 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       : secondary
       ? theme.bg.secondary
       : theme.global.accent};
-  color: ${({ theme, secondary, alert }) =>
+  color: ${({ theme, secondary, alert, transparent }) =>
     alert && secondary
       ? theme.global.alert
+      : transparent
+      ? theme.font.secondary
       : alert
       ? theme.font.contrastPrimary
       : secondary
@@ -63,20 +65,28 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       : theme.font.contrastPrimary};
   font-weight: 500;
   font-size: 1.1rem;
-  padding: 0 13px;
-  min-width: ${({ squared }) => (squared ? '46px' : '100px')};
+  padding: ${({ squared }) => (squared ? '10px' : '0 13px')};
+  min-width: ${({ squared }) => (squared ? '40px' : '100px')};
   text-align: center;
   cursor: pointer;
 
+  * {
+    cursor: pointer;
+  }
+
   transition: 0.2s ease-out;
 
-  margin: 12px 0;
+  margin: ${({ squared }) => (squared ? '0' : '12px 0')};
 
   &:hover {
-    background-color: ${({ theme, secondary }) =>
-      secondary
+    background-color: ${({ theme, secondary, transparent }) =>
+      transparent
+        ? 'transparent'
+        : secondary
         ? tinycolor(theme.bg.tertiary).darken(20).toString()
         : tinycolor(theme.global.accent).darken(10).toString()};
+
+    color: ${({ theme, transparent }) => transparent && theme.font.primary};
   }
 
   &:active {

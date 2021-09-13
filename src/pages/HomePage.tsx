@@ -15,6 +15,7 @@ import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
 import alephiumLogo from '../images/alephium_logo.svg'
 import { deviceBreakPoints } from '../style/globalStyles'
+import AppHeader from '../components/AppHeader'
 
 interface HomeProps {
   hasWallet: boolean
@@ -33,16 +34,18 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
 
   return (
     <HomeContainer>
-      <Header>
+      <AppHeader>
+        <SettingsButton transparent squared onClick={() => history.push('/settings')}>
+          <SettingsIcon />
+        </SettingsButton>
+      </AppHeader>
+      <Sidebar>
         <AtmosphericGlowBackground
           initial={{ bottom: '-10vh', opacity: 0 }}
           animate={{ bottom: 0, opacity: 0.6 }}
           transition={{ delay: 0.2, duration: 1.2 }}
         />
         <MainPanel transparentBg>
-          <SettingsButton transparent squared onClick={() => history.push('/settings')}>
-            <SettingsIcon />
-          </SettingsButton>
           <AlephiumLogo />
           <HeaderText>
             <PanelTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
@@ -81,7 +84,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             <MountainImage />
           </IllustrationsContainer>
         </MainPanel>
-      </Header>
+      </Sidebar>
       <InteractionArea>
         <MainPanel verticalAlign="center">
           {showActions ? (
@@ -205,7 +208,7 @@ const HomeContainer = styled.main`
   }
 `
 
-const Header = styled.header`
+const Sidebar = styled.div`
   flex: 0.5;
   min-width: 300px;
   background-color: ${({ theme }) => theme.bg.contrast};
@@ -359,12 +362,6 @@ const AlephiumLogo = styled.div`
   }
 `
 
-const SettingsButton = styled(Button)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 5px;
-  z-index: 10;
-`
+const SettingsButton = styled(Button)``
 
 export default HomePage

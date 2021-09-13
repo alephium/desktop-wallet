@@ -49,9 +49,9 @@ const WalletHomePage = () => {
 
   useEffect(() => {
     return scrollY.onChange((y) => {
-      if (y >= 300 && !isHeaderCompact) {
+      if (y >= 200 && !isHeaderCompact) {
         setIsHeaderCompact(true)
-      } else if (y < 300 && isHeaderCompact) {
+      } else if (y < 200 && isHeaderCompact) {
         setIsHeaderCompact(false)
       }
     })
@@ -126,14 +126,15 @@ const WalletHomePage = () => {
 
   return (
     <WalletContainer>
-      <AppHeader />
-      <WalletSidebar>
+      <AppHeader>
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
           <SettingsIcon />
         </SettingsButton>
+      </AppHeader>
+      <WalletSidebar>
         <WalletAmountContainer>
           <WalletAmountHighlightOverlay />
           <WalletAmountContent>
@@ -150,10 +151,7 @@ const WalletHomePage = () => {
       </WalletSidebar>
       <AnimatePresence>
         {isHeaderCompact && (
-          <CompactWalletAmountBoxContainer>
-            <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
-              {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
-            </RefreshButton>
+          <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <CompactWalletAmountBox>
               <WalletAmountContainer>
                 <WalletAmount style={{ scale: 0.7 }}>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
@@ -166,7 +164,7 @@ const WalletHomePage = () => {
         <MainPanel>
           <LastTransactionListHeader>
             <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-            {(isLoading || pendingTxList.length > 0) && <Spinner />}
+            {(isLoading || pendingTxList.length > 0) && <Spinner size={'16px'} />}
           </LastTransactionListHeader>
           <LastTransactionList>
             {pendingTxList
@@ -303,10 +301,11 @@ const WalletSidebar = styled(SectionContent)`
   }
 `
 
-const CompactWalletAmountBoxContainer = styled(SectionContent)`
+const CompactWalletAmountBoxContainer = styled(motion.div)`
   align-items: flex-start;
   justify-content: flex-start;
   margin: 5px !important;
+  margin-top: calc(${appHeaderHeight} + 5px) !important;
   flex: 0;
   position: fixed;
   top: 0;
@@ -372,7 +371,8 @@ const CompactWalletAmountBox = styled(motion.div)`
   height: 60px;
   padding: 0 25px;
   display: flex;
-  border-radius: 14px;
+  align-items: center;
+  border-radius: 7px;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
 
   ${WalletAmountContainer} {
@@ -451,20 +451,9 @@ const WalletActionButtonContainer = styled.div`
   }
 `
 
-const RefreshButton = styled(Button)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  margin: 7px !important;
-`
+const RefreshButton = styled(Button)``
 
-const SettingsButton = styled(Button)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 7px !important;
-`
+const SettingsButton = styled(Button)``
 
 const ActionContent = styled.div`
   flex: 1;
@@ -495,11 +484,11 @@ const TransactionsContainer = styled.div`
 const LastTransactionListHeader = styled.div`
   display: flex;
   align-items: center;
+  margin-bottom: 15px;
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin-left: 15px;
-  margin-top: 0;
+  margin: 0 15px 0 15px;
 
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;

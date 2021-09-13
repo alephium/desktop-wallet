@@ -40,7 +40,7 @@ const AddressPage = () => {
         <Paragraph>{truncate(address || '')}</Paragraph>
       </SectionContent>
 
-      <SectionContent>
+      <SectionContent inList>
         <Button secondary onClick={handleShowInExplorer}>
           Show in explorer
         </Button>

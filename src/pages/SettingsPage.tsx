@@ -139,7 +139,7 @@ const AccountSettings = () => {
           Show your secret phrase
         </Button>
         <Button secondary onClick={handleLogout}>
-          Disconnect
+          Lock wallet
         </Button>
         <Divider />
         <Button alert onClick={openRemoveAccountModal}>
