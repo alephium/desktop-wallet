@@ -7,7 +7,7 @@ export const lightTheme: DefaultTheme = {
     primary: '#ffffff',
     secondary: 'rgba(61, 64, 74, 0.05)',
     tertiary: 'rgba(61, 64, 74, 0.2)',
-    contrast: '#111c3e',
+    contrast: '#09122d',
     accent: tinycolor('#1f7fed').setAlpha(0.08).toString()
   },
   font: {
@@ -22,8 +22,9 @@ export const lightTheme: DefaultTheme = {
   },
   global: {
     accent: '#1f7fed',
-    secondary: '#FFC73B',
+    secondary: '#FF5D51',
     alert: '#ed4a34',
-    valid: '#4ebf08'
+    valid: '#4ebf08',
+    highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }

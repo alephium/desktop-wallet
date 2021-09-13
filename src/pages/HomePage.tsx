@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
+import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
 import { motion } from 'framer-motion'
 import { Form, Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
@@ -33,6 +34,11 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   return (
     <HomeContainer>
       <Header>
+        <AtmosphericGlowBackground
+          initial={{ bottom: '-10vh', opacity: 0 }}
+          animate={{ bottom: 0, opacity: 0.6 }}
+          transition={{ delay: 0.2, duration: 1.2 }}
+        />
         <MainPanel transparentBg>
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
@@ -47,8 +53,8 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
           </HeaderText>
           <IllustrationsContainer>
             <Moon
-              initial={{ bottom: '-10vh' }}
-              animate={{ bottom: '7vh' }}
+              initial={{ bottom: '-10vh', opacity: 0 }}
+              animate={{ bottom: '7vh', opacity: 1 }}
               transition={{ delay: 0.2, duration: 1.2 }}
             />
             <CloudGroup
@@ -200,7 +206,8 @@ const HomeContainer = styled.main`
 `
 
 const Header = styled.header`
-  flex: 1;
+  flex: 0.5;
+  min-width: 300px;
   background-color: ${({ theme }) => theme.bg.contrast};
   position: relative;
   overflow: hidden;
@@ -208,6 +215,7 @@ const Header = styled.header`
 
   @media ${deviceBreakPoints.mobile} {
     flex: 0.8;
+    min-width: initial;
     display: flex;
     align-items: center;
   }
@@ -216,6 +224,20 @@ const Header = styled.header`
 const IllustrationsContainer = styled.div`
   @media ${deviceBreakPoints.mobile} {
     display: none;
+  }
+`
+
+const AtmosphericGlowBackground = styled(motion(AtmosphericGlow))`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 300px;
+  transform: scale(3.5) translateY(25%);
+  opacity: 0.6;
+
+  @media ${deviceBreakPoints.mobile} {
+    transform: scale(3.5) translateY(35%);
   }
 `
 
@@ -258,7 +280,10 @@ const MountainImage = styled(MountainSVG)`
   width: 70%;
   height: 25%;
   bottom: -2px;
-  opacity: 0.3;
+
+  path {
+    fill: #1a0914;
+  }
 `
 
 const CloudGroup = ({
@@ -300,7 +325,7 @@ const StyledCloudGroup = styled(motion.div)`
 
 const Cloud = styled.div`
   position: absolute;
-  background-color: ${({ theme }) => tinycolor(theme.bg.primary).setAlpha(0.3).toString()};
+  background-color: ${({ theme }) => tinycolor(theme.global.secondary).setAlpha(0.3).toString()};
   height: 3px;
 `
 
@@ -330,6 +355,7 @@ const AlephiumLogo = styled.div`
     max-width: 80px;
     width: 15vw;
     height: 15vh;
+    z-index: 1;
   }
 `
 

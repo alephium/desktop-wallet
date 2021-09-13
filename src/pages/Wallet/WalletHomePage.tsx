@@ -326,8 +326,7 @@ const WalletAmountContainer = styled.div`
   margin-top: 25px;
   margin: 25px;
   border-radius: 7px;
-  background-color: ${({ theme }) => theme.global.accent};
-  border: 1px solid ${({ theme }) => theme.bg.accent};
+  background: ${({ theme }) => theme.global.highlightGradient};
 
   @media ${deviceBreakPoints.mobile} {
     flex: 1.5;

@@ -28,6 +28,7 @@ declare module 'styled-components' {
       secondary: string
       alert: string
       valid: string
+      highlightGradient: string
     }
   }
 }
