@@ -8,7 +8,7 @@ export const lightTheme: DefaultTheme = {
     secondary: 'rgba(61, 64, 74, 0.05)',
     tertiary: 'rgba(61, 64, 74, 0.2)',
     contrast: '#111c3e',
-    accent: tinycolor('#1f7fed').setAlpha(0.05).toString()
+    accent: tinycolor('#1f7fed').setAlpha(0.08).toString()
   },
   font: {
     primary: '#1b202f',

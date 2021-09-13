@@ -2,7 +2,14 @@ import { useContext } from 'react'
 import styled from 'styled-components'
 import { WalletManagementContext } from './WalletManagementContext'
 import { InfoBox } from '../../components/InfoBox'
-import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import {
+  FooterActions,
+  MainPanel,
+  PanelContainer,
+  PanelContent,
+  PanelTitle,
+  SectionContent
+} from '../../components/PageComponents'
 import { Edit3 } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { GlobalContext } from '../../App'
@@ -28,26 +35,30 @@ const WalletWordsPage = () => {
   }
 
   return (
-    <PageContainer>
-      <PageTitle color="primary" onBackButtonPress={onButtonBack}>
-        Your Wallet
-      </PageTitle>
-      <PublicAddressContent>
-        <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
-      </PublicAddressContent>
-      <WordsContent inList>
-        <Label>Secret words</Label>
-        <PhraseBox>{mnemonic}</PhraseBox>
-        <InfoBox
-          text={'Carefully note the 24 words. They are the keys to your wallet.'}
-          Icon={Edit3}
-          importance="alert"
-        />
-      </WordsContent>
-      <FooterActions apparitionDelay={0.3}>
-        <Button onClick={onButtonNext}>{"I've copied the words, continue"}</Button>
-      </FooterActions>
-    </PageContainer>
+    <MainPanel enforceMinHeight>
+      <PanelContainer>
+        <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
+          Your Wallet
+        </PanelTitle>
+        <PanelContent>
+          <PublicAddressContent>
+            <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
+          </PublicAddressContent>
+          <WordsContent inList>
+            <Label>Secret words</Label>
+            <PhraseBox>{mnemonic}</PhraseBox>
+            <InfoBox
+              text={'Carefully note the 24 words. They are the keys to your wallet.'}
+              Icon={Edit3}
+              importance="alert"
+            />
+          </WordsContent>
+        </PanelContent>
+        <FooterActions apparitionDelay={0.3}>
+          <Button onClick={onButtonNext}>{"I've copied the words, continue"}</Button>
+        </FooterActions>
+      </PanelContainer>
+    </MainPanel>
   )
 }
 

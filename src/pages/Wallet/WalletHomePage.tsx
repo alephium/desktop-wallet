@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { SectionContent, MainPanelContainer } from '../../components/PageComponents'
+import { SectionContent, MainPanel } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { Link, useHistory } from 'react-router-dom'
 import { Transaction } from 'alf-client/dist/api/api-explorer'
@@ -17,7 +17,7 @@ import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
 import { isHTTPError } from '../../utils/api'
-import { deviceBreakPoints } from '../../style/globalStyles'
+import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 
 dayjs.extend(relativeTime)
 
@@ -159,8 +159,8 @@ const WalletHomePage = () => {
           </CompactWalletAmountBoxContainer>
         )}
       </AnimatePresence>
-      <TransactionContent>
-        <MainPanelContainer>
+      <TransactionsContainer>
+        <MainPanel>
           <LastTransactionListHeader>
             <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
             {(isLoading || pendingTxList.length > 0) && <Spinner />}
@@ -185,8 +185,8 @@ const WalletHomePage = () => {
           ) : (
             <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
           )}
-        </MainPanelContainer>
-      </TransactionContent>
+        </MainPanel>
+      </TransactionsContainer>
     </WalletContainer>
   )
 }
@@ -278,6 +278,8 @@ const WalletAmountBoxContainer = styled(SectionContent)`
   max-width: 400px;
   position: relative;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.primary};
+  padding-top: ${appHeaderHeight};
 
   @media ${deviceBreakPoints.mobile} {
     flex: 0;
@@ -287,7 +289,6 @@ const WalletAmountBoxContainer = styled(SectionContent)`
 `
 
 const WalletAmountBox = styled(motion.div)`
-  background-color: ${({ theme }) => theme.bg.primary};
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -325,7 +326,7 @@ const WalletAmountContainer = styled.div`
   margin-top: 25px;
   margin: 25px;
   border-radius: 7px;
-  background-color: ${({ theme }) => theme.bg.accent};
+  background-color: ${({ theme }) => theme.global.accent};
   border: 1px solid ${({ theme }) => theme.bg.accent};
 
   @media ${deviceBreakPoints.mobile} {
@@ -350,7 +351,7 @@ const CompactWalletAmountBox = styled(motion.div)`
 
 const WalletAmount = styled(motion.div)`
   font-size: 2.5rem;
-  color: ${({ theme }) => theme.global.accent};
+  color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
   font-weight: 600;
 `
@@ -358,7 +359,7 @@ const WalletAmount = styled(motion.div)`
 const WalletAmountSubtitle = styled.div`
   margin: 0 auto;
   font-size: 1rem;
-  color: ${({ theme }) => theme.global.accent};
+  color: ${({ theme }) => theme.font.contrastSecondary};
   text-align: center;
   font-weight: 500;
 `
@@ -369,6 +370,10 @@ const WalletActions = styled.div`
   flex: 1;
   padding: 0 25px;
   border-top: 1px solid ${({ theme }) => theme.border.secondary};
+
+  @media ${deviceBreakPoints.mobile} {
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  }
 `
 
 const ActionsTitle = styled.h3`
@@ -437,12 +442,13 @@ const ActionContent = styled(Link)`
 
 // === TRANSACTION === //
 
-const TransactionContent = styled.div`
+const TransactionsContainer = styled.div`
   flex: 1;
   overflow: auto;
   flex-direction: column;
   justify-content: center;
   padding: 25px;
+  padding-top: calc(25px + ${appHeaderHeight});
 
   @media ${deviceBreakPoints.mobile} {
     overflow: initial;
@@ -458,6 +464,10 @@ const LastTransactionListHeader = styled.div`
 const LastTransactionListTitle = styled.h2`
   margin-left: 15px;
   margin-top: 0;
+
+  @media ${deviceBreakPoints.mobile} {
+    margin-left: 0;
+  }
 `
 
 const LastTransactionList = styled.div`
@@ -478,6 +488,10 @@ const TransactionItemContainer = styled.div`
   }
 
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+
+  @media ${deviceBreakPoints.mobile} {
+    padding: 15px 0;
+  }
 `
 
 const TxDetails = styled.div`

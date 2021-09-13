@@ -182,6 +182,10 @@ const AppContainer = styled.div`
     background-color: ${({ theme }) => theme.bg.primary};
     justify-content: initial;
   }
+
+  @media ${deviceBreakPoints.short} {
+    background-color: ${({ theme }) => theme.bg.primary};
+  }
 `
 
 const SnackbarManagerContainer = styled.div`
@@ -201,7 +205,7 @@ const SnackbarPopup = styled(motion.div)`
   width: 50vw;
   padding: 20px 15px;
   color: ${({ theme }) => theme.font.contrastPrimary};
-  border-radius: 14px;
+  border-radius: 7px;
   z-index: 1000;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
 

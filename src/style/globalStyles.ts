@@ -11,6 +11,8 @@ const freeSize = `
   height: 100%;
 `
 
+export const appHeaderHeight = '50px'
+
 export const GlobalStyle = createGlobalStyle`
   html {
     font-size: 13px;
@@ -118,5 +120,6 @@ export const deviceSizes = {
 export const deviceBreakPoints = {
   mobile: `(max-width: ${deviceSizes.mobile}px)`,
   tablet: `(max-width: ${deviceSizes.tablet}px)`,
-  desktop: `(min-width: ${deviceSizes.desktop}px)`
+  desktop: `(min-width: ${deviceSizes.desktop}px)`,
+  short: '(max-height: 600px)'
 }

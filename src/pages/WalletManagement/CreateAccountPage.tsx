@@ -1,5 +1,12 @@
 import { ChangeEvent, useState, useContext } from 'react'
-import { PageContainer, SectionContent, FooterActions, PageTitle } from '../../components/PageComponents'
+import {
+  PanelContainer,
+  SectionContent,
+  FooterActions,
+  PanelTitle,
+  MainPanel,
+  PanelContent
+} from '../../components/PageComponents'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
 import { AlertTriangle } from 'lucide-react'
@@ -71,49 +78,53 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   }
 
   return (
-    <PageContainer>
-      <PageTitle color="primary">{isRestoring ? 'Restore Account' : 'New Account'}</PageTitle>
-      <SectionContent inList>
-        <Input
-          value={username}
-          placeholder="Account Name"
-          onChange={onUpdateUsername}
-          error={usernameError}
-          isValid={username.length > 0 && usernameError.length === 0}
-        />
-        <Input
-          value={password}
-          placeholder="Password"
-          type="password"
-          onChange={onUpdatePassword}
-          error={passwordError}
-          isValid={!passwordError && password.length > 0}
-        />
-        <Input
-          value={passwordCheck}
-          placeholder="Retype password"
-          type="password"
-          onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
-          error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
-          isValid={password.length > 0 && password === passwordCheck}
-          disabled={!password || passwordError.length > 0}
-        />
-        <InfoBox
-          Icon={AlertTriangle}
-          importance="alert"
-          text={'Make sure to keep your password secured as it cannot be changed in the future.'}
-        />
-        <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
-      </SectionContent>
-      <FooterActions apparitionDelay={0.3}>
-        <Button secondary onClick={onButtonBack}>
-          Cancel
-        </Button>
-        <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick}>
-          Continue
-        </Button>
-      </FooterActions>
-    </PageContainer>
+    <MainPanel>
+      <PanelContainer>
+        <PanelTitle color="primary">{isRestoring ? 'Restore Account' : 'New Account'}</PanelTitle>
+        <PanelContent>
+          <SectionContent inList>
+            <Input
+              value={username}
+              placeholder="Account Name"
+              onChange={onUpdateUsername}
+              error={usernameError}
+              isValid={username.length > 0 && usernameError.length === 0}
+            />
+            <Input
+              value={password}
+              placeholder="Password"
+              type="password"
+              onChange={onUpdatePassword}
+              error={passwordError}
+              isValid={!passwordError && password.length > 0}
+            />
+            <Input
+              value={passwordCheck}
+              placeholder="Retype password"
+              type="password"
+              onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
+              error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
+              isValid={password.length > 0 && password === passwordCheck}
+              disabled={!password || passwordError.length > 0}
+            />
+            <InfoBox
+              Icon={AlertTriangle}
+              importance="alert"
+              text={'Make sure to keep your password secured as it cannot be changed in the future.'}
+            />
+            <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
+          </SectionContent>
+        </PanelContent>
+        <FooterActions apparitionDelay={0.3}>
+          <Button secondary onClick={onButtonBack}>
+            Cancel
+          </Button>
+          <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick}>
+            Continue
+          </Button>
+        </FooterActions>
+      </PanelContainer>
+    </MainPanel>
   )
 }
 

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { Form, Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
-import { MainPanelContainer, PageTitle, SectionContent } from '../components/PageComponents'
+import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph from '../components/Paragraph'
 import { walletOpen, getStorage, NetworkId } from 'alf-client'
@@ -33,15 +33,15 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   return (
     <HomeContainer>
       <Header>
-        <MainPanelContainer transparentBg>
+        <MainPanel transparentBg>
           <SettingsButton transparent squared onClick={() => history.push('/settings')}>
             <SettingsIcon />
           </SettingsButton>
           <AlephiumLogo />
           <HeaderText>
-            <PageTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
+            <PanelTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
               Alephium
-            </PageTitle>
+            </PanelTitle>
             <PageSubtitle>Official Wallet</PageSubtitle>
             <p>The easiest way to get started with Alephium.</p>
           </HeaderText>
@@ -59,7 +59,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
               ]}
               lengths={['30px', '20px', '25px']}
               style={{ bottom: '2vh' }}
-              distance="30%"
+              distance="5%"
               side="left"
             />
             <CloudGroup
@@ -68,33 +68,34 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
                 ['20px', '30px']
               ]}
               lengths={['25px', '32px']}
-              style={{ bottom: '10vh' }}
-              distance="50%"
+              style={{ bottom: '12vh' }}
+              distance="40%"
               side="left"
             />
             <MountainImage />
           </IllustrationsContainer>
-        </MainPanelContainer>
+        </MainPanel>
       </Header>
       <InteractionArea>
-        <MainPanelContainer verticalAlign="center">
+        <MainPanel verticalAlign="center">
           {showActions ? (
             <>
-              <PageTitle useLayoutId={false}>Actions</PageTitle>
+              <PanelTitle useLayoutId={false}>Actions</PanelTitle>
               {renderActions()}
             </>
           ) : hasWallet ? (
             <>
-              <PageTitle useLayoutId={false}>Welcome back!</PageTitle>
+              <PanelTitle useLayoutId={false}>Welcome back</PanelTitle>
+              <Paragraph>Please choose an account and enter your password to continue.</Paragraph>
               <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
             </>
           ) : (
             <>
-              <PageTitle useLayoutId={false}>Welcome!</PageTitle>
+              <PanelTitle useLayoutId={false}>Welcome</PanelTitle>
               {renderActions()}
             </>
           )}
-        </MainPanelContainer>
+        </MainPanel>
       </InteractionArea>
     </HomeContainer>
   )
@@ -177,9 +178,7 @@ const InitialActions = ({
 
   return (
     <>
-      <SectionContent inList>
-        <Paragraph>Please choose wether you want to create or new wallet, or import an existing one.</Paragraph>
-      </SectionContent>
+      <Paragraph>Please choose wether you want to create or new wallet, or import an existing one.</Paragraph>
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
@@ -230,7 +229,7 @@ const InteractionArea = styled.div`
 `
 
 const HeaderText = styled.div`
-  margin-top: 2vh;
+  margin-top: 5vh;
   max-width: 700px;
   color: ${({ theme }) => theme.font.contrastSecondary};
 

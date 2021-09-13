@@ -6,7 +6,7 @@ import { Send } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
-import { PageContainer, SectionContent } from '../../components/PageComponents'
+import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
@@ -105,10 +105,10 @@ const SendPage = () => {
   }
 
   return (
-    <PageContainer>
+    <PanelContainer>
       <LogoContent>
         <SendLogo>
-          {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'80%'} strokeWidth={0.7} />}
+          {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </SendLogo>
       </LogoContent>
       {!isChecking ? (
@@ -130,12 +130,12 @@ const SendPage = () => {
       ) : (
         <CheckTransactionContent address={address} amount={amount} />
       )}
-      <SectionContent>
+      <SectionContent inList>
         <Button onClick={handleSend} disabled={!isSendButtonActive()}>
           {isChecking ? 'Send' : 'Check'}
         </Button>
       </SectionContent>
-    </PageContainer>
+    </PanelContainer>
   )
 }
 
@@ -154,7 +154,7 @@ const LogoContent = styled(SectionContent)`
 `
 
 const SendLogo = styled.div`
-  height: 15vh;
+  height: 10vh;
   display: flex;
   justify-content: center;
   align-items: center;

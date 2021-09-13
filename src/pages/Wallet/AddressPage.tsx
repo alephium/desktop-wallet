@@ -1,4 +1,4 @@
-import { PageContainer, SectionContent } from '../../components/PageComponents'
+import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import QRCode from 'qrcode.react'
 import { useContext } from 'react'
 import { GlobalContext } from '../../App'
@@ -34,7 +34,7 @@ const AddressPage = () => {
   }
 
   return (
-    <PageContainer>
+    <PanelContainer>
       <SectionContent>{address && <QRCode value={address} style={{ marginTop: 25 }} />}</SectionContent>
       <SectionContent>
         <Paragraph>{truncate(address || '')}</Paragraph>
@@ -48,7 +48,7 @@ const AddressPage = () => {
           Copy address
         </Button>
       </SectionContent>
-    </PageContainer>
+    </PanelContainer>
   )
 }
 

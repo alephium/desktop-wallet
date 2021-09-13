@@ -1,32 +1,46 @@
 import { motion, MotionStyle, useTransform, useViewportScroll, Variants } from 'framer-motion'
 import React, { FC } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-export const MainPanelContainer = styled.main<{ verticalAlign?: 'center' | 'flex-start'; transparentBg?: boolean }>`
+export const MainPanel = styled.main<{
+  verticalAlign?: 'center' | 'flex-start'
+  enforceMinHeight?: boolean
+  transparentBg?: boolean
+}>`
   width: 100%;
   margin: 0 auto;
   max-width: 600px;
+  min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
   padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: 7px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ transparentBg }) => !transparentBg && '0 2px 2px rgba(0, 0, 0, 0.1)'};
 
   @media ${deviceBreakPoints.mobile} {
+    box-shadow: none;
+    max-width: initial;
+  }
+
+  @media ${deviceBreakPoints.short} {
     box-shadow: none;
   }
 `
 
-export const PageContainer = styled.div`
+export const PanelContainer = styled.div`
   flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-self: center;
+`
+
+export const PanelContent = styled.div`
+  flex: 1;
 `
 
 const contentVariants: Variants = {
@@ -88,7 +102,6 @@ interface SectionTitleProps {
 
 export const FooterActions = styled(SectionContent)`
   flex: 0;
-  margin-bottom: 5vh;
   margin-top: 25px;
   width: 100%;
 `
@@ -97,7 +110,7 @@ export const FooterActions = styled(SectionContent)`
 // == Title ==
 // ===========
 
-export const PageTitle: FC<SectionTitleProps> = ({
+export const PanelTitle: FC<SectionTitleProps> = ({
   color,
   children,
   onBackButtonPress,
@@ -106,12 +119,13 @@ export const PageTitle: FC<SectionTitleProps> = ({
   useLayoutId = true
 }) => {
   const { scrollY } = useViewportScroll()
+  const theme = useTheme()
 
   const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
 
   return (
     <TitleContainer
-      style={{ backgroundColor: backgroundColor || 'white' }}
+      style={{ backgroundColor: backgroundColor || theme.bg.primary }}
       layoutId={useLayoutId ? 'sectionTitle' : ''}
     >
       {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
@@ -143,5 +157,5 @@ const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
   margin: 0;
   color: ${({ theme, color }) => (color ? color : theme.font.primary)};
   font-size: ${({ smaller }) => (smaller ? '2.0rem' : 'auto')};
-  font-weight: 600;
+  font-weight: 500;
 `

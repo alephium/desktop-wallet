@@ -1,7 +1,14 @@
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { TextAreaTags } from '../../components/Inputs'
-import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import {
+  FooterActions,
+  MainPanel,
+  PanelContainer,
+  PanelContent,
+  PanelTitle,
+  SectionContent
+} from '../../components/PageComponents'
 import { bip39Words } from '../../utils/bip39'
 import { Button } from '../../components/Buttons'
 import { StepsContext } from '../MultiStepsController'
@@ -69,22 +76,24 @@ const ImportWordsPage = () => {
   }
 
   return (
-    <PageContainer>
-      <PageTitle color="primary">Secret words</PageTitle>
-      <SectionContent>
-        <TextAreaTags
-          tagifyRef={tagifyRef}
-          placeholder={phrase.length.toString()}
-          whitelist={allowedWords.current}
-          onChange={handlePhraseChange}
-        />
-      </SectionContent>
-      <CenteredSecondaryParagraph>
-        {!isNextButtonActive()
-          ? 'Make sure to properly write down the 24 secret words. They are the key to your wallet.'
-          : "All good? Let's continue!"}
-      </CenteredSecondaryParagraph>
-      <SectionContent>
+    <MainPanel>
+      <PanelContainer>
+        <PanelTitle color="primary">Secret words</PanelTitle>
+        <PanelContent>
+          <SectionContent>
+            <TextAreaTags
+              tagifyRef={tagifyRef}
+              placeholder={phrase.length.toString()}
+              whitelist={allowedWords.current}
+              onChange={handlePhraseChange}
+            />
+          </SectionContent>
+          <CenteredSecondaryParagraph>
+            {!isNextButtonActive()
+              ? 'Make sure to properly write down the 24 secret words. They are the key to your wallet.'
+              : "All good? Let's continue!"}
+          </CenteredSecondaryParagraph>
+        </PanelContent>
         {isNextButtonActive() && (
           <FooterActions>
             <Button secondary onClick={onButtonBack}>
@@ -93,8 +102,8 @@ const ImportWordsPage = () => {
             <Button onClick={handleWalletImport}>Continue</Button>
           </FooterActions>
         )}
-      </SectionContent>
-    </PageContainer>
+      </PanelContainer>
+    </MainPanel>
   )
 }
 

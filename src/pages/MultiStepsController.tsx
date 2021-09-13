@@ -1,5 +1,4 @@
 import React from 'react'
-import { MainPanelContainer } from '../components/PageComponents'
 import { useHistory, useParams } from 'react-router'
 
 interface RouteParams {
@@ -52,7 +51,7 @@ const MultiStepsController = ({ stepElements, baseUrl }: { stepElements: JSX.Ele
 
   return (
     <StepsContext.Provider value={{ onButtonNext, onButtonBack }}>
-      <MainPanelContainer>{isStepNumberCorrect() && stepElements[stepNumber]}</MainPanelContainer>
+      {isStepNumberCorrect() && stepElements[stepNumber]}
     </StepsContext.Provider>
   )
 }

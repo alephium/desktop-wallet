@@ -3,7 +3,7 @@ import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
 import { InfoBox } from '../components/InfoBox'
 import { Input } from '../components/Inputs'
-import { PageContainer, SectionContent } from '../components/PageComponents'
+import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
 import { Edit3, User } from 'lucide-react'
@@ -24,7 +24,7 @@ const SettingsPage = () => {
   const { wallet } = useContext(GlobalContext)
 
   return (
-    <PageContainer>
+    <PanelContainer>
       {wallet && <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>}
       {wallet && currentTab.value === 'account' ? (
         <AccountSettings />
@@ -33,7 +33,7 @@ const SettingsPage = () => {
       ) : (
         <ClientSettings />
       )}
-    </PageContainer>
+    </PanelContainer>
   )
 }
 

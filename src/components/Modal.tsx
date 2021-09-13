@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from './Buttons'
-import { PageTitle, StyledContent, TitleContainer } from './PageComponents'
+import { PanelTitle, StyledContent, TitleContainer } from './PageComponents'
 import { X } from 'lucide-react'
 
 interface ModalContext {
@@ -55,9 +55,9 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           <ModalHeader>
-            <PageTitle smaller useLayoutId={false}>
+            <PanelTitle smaller useLayoutId={false}>
               {currentTitle}
-            </PageTitle>
+            </PanelTitle>
             <CloseButton squared transparent onClick={handleClose}>
               <X />
             </CloseButton>

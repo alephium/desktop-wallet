@@ -2,7 +2,14 @@ import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { WalletManagementContext } from './WalletManagementContext'
 import { Button } from '../../components/Buttons'
-import { FooterActions, PageContainer, PageTitle, SectionContent } from '../../components/PageComponents'
+import {
+  FooterActions,
+  MainPanel,
+  PanelContainer,
+  PanelContent,
+  PanelTitle,
+  SectionContent
+} from '../../components/PageComponents'
 import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
 import { motion, PanInfo } from 'framer-motion'
@@ -182,30 +189,34 @@ const CheckWordsPage = () => {
   }
 
   return (
-    <PageContainer>
-      <PageTitle color="primary" onBackButtonPress={onButtonBack} smaller>
-        Security Check
-      </PageTitle>
-      <SectionContent>
-        <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
-        <SelectedWordList
-          className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
-        >
-          {renderSelectedWords()}
-        </SelectedWordList>
-        <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
-      </SectionContent>
-      {selectedWords.length === wordList.current.length && (
-        <FooterActions>
-          <Button secondary onClick={onButtonBack}>
-            Cancel
-          </Button>
-          <Button onClick={handleButtonNext} disabled={!areWordsValid()}>
-            Continue
-          </Button>
-        </FooterActions>
-      )}
-    </PageContainer>
+    <MainPanel enforceMinHeight>
+      <PanelContainer>
+        <PanelTitle color="primary" onBackButtonPress={onButtonBack} smaller>
+          Security Check
+        </PanelTitle>
+        <PanelContent>
+          <SectionContent>
+            <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
+            <SelectedWordList
+              className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
+            >
+              {renderSelectedWords()}
+            </SelectedWordList>
+            <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
+          </SectionContent>
+        </PanelContent>
+        {selectedWords.length === wordList.current.length && (
+          <FooterActions>
+            <Button secondary onClick={onButtonBack}>
+              Cancel
+            </Button>
+            <Button onClick={handleButtonNext} disabled={!areWordsValid()}>
+              Continue
+            </Button>
+          </FooterActions>
+        )}
+      </PanelContainer>
+    </MainPanel>
   )
 }
 
@@ -252,7 +263,7 @@ const DragCursor = styled(motion.div)`
 const SelectedWordList = styled.div`
   width: 100%;
   padding: 20px;
-  min-height: 30vh;
+  min-height: 200px;
   border-radius: 14px;
   border: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};

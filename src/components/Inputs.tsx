@@ -25,7 +25,7 @@ const variants: Variants = {
 }
 
 const placeHolderVariants: Variants = {
-  up: { y: -35, scale: 0.8 },
+  up: { y: -35, x: -5, scale: 0.8 },
   down: { y: 0, scale: 1 }
 }
 
@@ -264,7 +264,7 @@ const TextAreaTagsContainer = styled(motion.div)`
 const Label = styled(motion.label)`
   position: absolute;
   top: 16px;
-  left: 18px;
+  left: 13px;
   font-weight: 500;
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
@@ -299,7 +299,7 @@ const defaultStyle = (isValid?: boolean) => {
     border-radius: 7px;
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
-    padding: ${isValid ? '0 45px 0 15px' : '0 15px'};
+    padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
     font-weight: 500;
     font-size: 1em;
     text-align: left;

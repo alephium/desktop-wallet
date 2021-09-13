@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Confetti from 'react-confetti'
-import { FooterActions, PageContainer, SectionContent } from '../../components/PageComponents'
+import { FooterActions, PanelContainer, SectionContent } from '../../components/PageComponents'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
 import React, { useState } from 'react'
 import { Button } from '../../components/Buttons'
@@ -19,7 +19,7 @@ const WalletWelcomePage = () => {
   }, 3000)
 
   return (
-    <PageContainer>
+    <PanelContainer>
       <ConfettiWrapper>
         <Confetti width={width} height={height} numberOfPieces={confettiRunning ? 200 : 0} />
       </ConfettiWrapper>
@@ -30,7 +30,7 @@ const WalletWelcomePage = () => {
       <FooterActions apparitionDelay={0.3}>
         <Button onClick={() => history.push('/wallet')}>{"Let's go!"}</Button>
       </FooterActions>
-    </PageContainer>
+    </PanelContainer>
   )
 }
 

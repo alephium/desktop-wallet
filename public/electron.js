@@ -31,7 +31,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 680,
     height: 900,
-    useContentSize: true
+    useContentSize: true,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: true
   })
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
