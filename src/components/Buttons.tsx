@@ -76,7 +76,9 @@ const StyledButton = styled(motion.button)<ButtonProps>`
 
   transition: 0.2s ease-out;
 
-  margin: ${({ squared }) => (squared ? '0' : '12px 0')};
+  &:not(:last-child) {
+    margin: ${({ squared }) => (squared ? '0' : '12px 0')};
+  }
 
   &:hover {
     background-color: ${({ theme, secondary, transparent }) =>

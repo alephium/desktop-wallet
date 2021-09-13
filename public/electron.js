@@ -29,8 +29,8 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    width: 680,
-    height: 900,
+    width: 1000,
+    height: 800,
     titleBarStyle: 'hidden',
     titleBarOverlay: true
   })

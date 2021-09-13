@@ -170,7 +170,7 @@ const ClientSettings = () => {
 
   return (
     <div>
-      <SectionContent>
+      <SectionContent inList>
         <Input
           placeholder="Node host"
           value={tempSettings.nodeHost}
@@ -188,7 +188,7 @@ const ClientSettings = () => {
         />
       </SectionContent>
 
-      <SectionContent>
+      <SectionContent inList>
         <Button onClick={handleSave}>Save</Button>
       </SectionContent>
     </div>

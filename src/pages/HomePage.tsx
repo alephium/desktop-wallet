@@ -9,7 +9,7 @@ import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
-import Paragraph from '../components/Paragraph'
+import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, NetworkId } from 'alf-client'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
@@ -86,21 +86,23 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
         </MainPanel>
       </Sidebar>
       <InteractionArea>
-        <MainPanel verticalAlign="center">
+        <MainPanel verticalAlign="center" horizontalAlign="center">
           {showActions ? (
             <>
-              <PanelTitle useLayoutId={false}>Actions</PanelTitle>
+              <PanelTitle useLayoutId={false}>New account</PanelTitle>
               {renderActions()}
             </>
           ) : hasWallet ? (
             <>
-              <PanelTitle useLayoutId={false}>Welcome back</PanelTitle>
-              <Paragraph>Please choose an account and enter your password to continue.</Paragraph>
+              <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
+              <CenteredSecondaryParagraph>
+                Please choose an account and enter your password to continue.
+              </CenteredSecondaryParagraph>
               <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
             </>
           ) : (
             <>
-              <PanelTitle useLayoutId={false}>Welcome</PanelTitle>
+              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
               {renderActions()}
             </>
           )}
@@ -153,26 +155,30 @@ const Login = ({
   }
 
   return (
-    <SectionContent inList>
+    <>
       <Form>
-        <Select
-          placeholder="Account name"
-          options={usernames.map((u) => ({ label: u, value: u }))}
-          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
-        />
-        <Input
-          placeholder="Password"
-          type="password"
-          autoComplete="off"
-          onChange={(e) => handleCredentialsChange('password', e.target.value)}
-          value={credentials.password}
-        />
-        <Button onClick={handleLogin} type="submit">
-          Login
-        </Button>
-        <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+        <SectionContent inList>
+          <Select
+            placeholder="Account name"
+            options={usernames.map((u) => ({ label: u, value: u }))}
+            onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+          />
+          <Input
+            placeholder="Password"
+            type="password"
+            autoComplete="off"
+            onChange={(e) => handleCredentialsChange('password', e.target.value)}
+            value={credentials.password}
+          />
+        </SectionContent>
+        <SectionContent inList>
+          <Button onClick={handleLogin} type="submit">
+            Login
+          </Button>
+        </SectionContent>
       </Form>
-    </SectionContent>
+      <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+    </>
   )
 }
 
@@ -187,7 +193,9 @@ const InitialActions = ({
 
   return (
     <>
-      <Paragraph>Please choose wether you want to create or new wallet, or import an existing one.</Paragraph>
+      <CenteredSecondaryParagraph>
+        Please choose wether you want to create or new wallet, or import an existing one.
+      </CenteredSecondaryParagraph>
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
@@ -210,7 +218,7 @@ const HomeContainer = styled.main`
 
 const Sidebar = styled.div`
   flex: 0.5;
-  min-width: 300px;
+  min-width: 350px;
   background-color: ${({ theme }) => theme.bg.contrast};
   position: relative;
   overflow: hidden;

@@ -6,6 +6,7 @@ import { deviceBreakPoints } from '../style/globalStyles'
 
 export const MainPanel = styled.main<{
   verticalAlign?: 'center' | 'flex-start'
+  horizontalAlign?: 'center' | 'stretch'
   enforceMinHeight?: boolean
   transparentBg?: boolean
 }>`
@@ -17,6 +18,7 @@ export const MainPanel = styled.main<{
   display: flex;
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
+  align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: 7px;
   box-shadow: ${({ transparentBg }) => !transparentBg && '0 2px 2px rgba(0, 0, 0, 0.1)'};
@@ -88,6 +90,7 @@ export const StyledContent = styled(motion.div)<{ inList?: boolean }>`
   display: flex;
   align-items: center;
   flex-direction: column;
+  min-width: 400px;
 
   margin-top: ${({ inList }) => (inList ? '25px' : '0')};
 `
