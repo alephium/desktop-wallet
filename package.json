@@ -11,6 +11,8 @@
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-pack": "npm run build && npx electron-builder",
     "electron-pack-win": "npm run build && npx electron-builder -w",
+    "electron-pack-mac": "npm run build && npx electron-builder -m",
+    "electron-pack-linux": "npm run build && npx electron-builder -l",
     "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
     "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *",
     "start": "react-scripts start",

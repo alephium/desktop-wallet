@@ -16,7 +16,7 @@ const Storage = getStorage()
 
 const tabs = [
   { value: 'account', label: 'Account' },
-  { value: 'client', label: 'Client' }
+  { value: 'client', label: 'Endpoints' }
 ]
 
 const SettingsPage = () => {
@@ -151,13 +151,11 @@ const AccountSettings = () => {
 }
 
 const ClientSettings = () => {
-  const { settings: currentSettings, setSettings } = useContext(GlobalContext)
+  const { settings: currentSettings, setSettings, setSnackbarMessage } = useContext(GlobalContext)
 
   const [tempSettings, setTempSettings] = useState<Settings>({
-    host: currentSettings.host,
-    port: currentSettings.port,
+    nodeHost: currentSettings.nodeHost,
     explorerApiHost: currentSettings.explorerApiHost,
-    explorerApiPort: currentSettings.explorerApiPort,
     explorerUrl: currentSettings.explorerUrl
   })
 
@@ -167,6 +165,7 @@ const ClientSettings = () => {
 
   const handleSave = () => {
     setSettings(tempSettings)
+    setSnackbarMessage({ text: 'Settings saved!', type: 'info' })
   }
 
   return (
@@ -174,25 +173,13 @@ const ClientSettings = () => {
       <SectionContent>
         <Input
           placeholder="Node host"
-          value={tempSettings.host}
-          onChange={(e) => editSettings({ host: e.target.value })}
-        />
-        <Input
-          placeholder="Node port"
-          type="number"
-          value={tempSettings.port}
-          onChange={(e) => editSettings({ port: parseInt(e.target.value) })}
+          value={tempSettings.nodeHost}
+          onChange={(e) => editSettings({ nodeHost: e.target.value })}
         />
         <Input
           placeholder="Explorer API host"
           value={tempSettings.explorerApiHost}
           onChange={(e) => editSettings({ explorerApiHost: e.target.value })}
-        />
-        <Input
-          placeholder="Explorer API port"
-          type="number"
-          value={tempSettings.explorerApiPort || ''}
-          onChange={(e) => editSettings({ explorerApiPort: parseInt(e.target.value) })}
         />
         <Input
           placeholder="Explorer URL"

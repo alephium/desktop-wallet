@@ -73,7 +73,7 @@ const App = () => {
         console.log('Clients initialized.')
 
         setSnackbarMessage({
-          text: `Connected to Alephium's Node "${settings.host}"!`,
+          text: `Connected to Alephium's Node "${settings.nodeHost}"!`,
           type: 'info',
           duration: 2000
         })
@@ -199,15 +199,21 @@ const SnackbarManagerContainer = styled.div`
 
 const SnackbarPopup = styled(motion.div)`
   bottom: 10px;
-  margin: 10px auto;
+  left: 25px;
+  margin: 10px;
   text-align: center;
-  min-width: 300px;
-  width: 50vw;
+  min-width: 200px;
   padding: 20px 15px;
   color: ${({ theme }) => theme.font.contrastPrimary};
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 7px;
   z-index: 1000;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
+
+  @media ${deviceBreakPoints.mobile} {
+    left: initial;
+    margin: 10px auto;
+  }
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};

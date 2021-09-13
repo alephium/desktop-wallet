@@ -20,14 +20,14 @@ const TabBar = ({
   return (
     <Wrapper>
       <TabBarContainer>
+        <TabSelector
+          animate={{
+            x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%`
+          }}
+          transition={{ duration: 0.2 }}
+          style={{ width: `${100 / tabItems.length}%` }}
+        />
         <TabBarContent>
-          <TabSelector
-            animate={{
-              x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%`
-            }}
-            transition={{ duration: 0.2 }}
-            style={{ width: `${100 / tabItems.length}%` }}
-          />
           {tabItems.map((i) => {
             const isActive = activeTab.value === i.value
             return (
@@ -46,18 +46,17 @@ const TabBar = ({
 
 const Wrapper = styled.div`
   margin: 10px 0 25px 0;
-  padding-bottom: 8px;
   position: sticky;
   top: 0;
   z-index: 2;
   background-color: ${({ theme }) => theme.bg.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const TabBarContainer = styled.div`
   width: 100%;
-  padding: 8px;
   border-radius: 7px;
-  background-color: ${({ theme }) => theme.bg.secondary};
+  height: 40px;
 `
 
 const TabBarContent = styled.div`
@@ -70,20 +69,27 @@ const TabBarContent = styled.div`
 const TabContainer = styled.div`
   position: relative;
   flex: 1;
+  display: flex;
 `
 
 const Tab = styled.div<{ isActive: boolean }>`
+  flex: 1;
   text-align: center;
   padding: 8px;
-  color: ${({ theme, isActive }) => (isActive ? theme.font.contrastPrimary : theme.font.secondary)};
+  color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
+  font-weight: 600;
   z-index: 1;
   cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.font.primary};
+  }
 `
 
 const TabSelector = styled(motion.div)`
   position: absolute;
-  top: 0;
   bottom: 0;
+  height: 2px;
   border-radius: 7px;
   flex: 1;
   background-color: ${({ theme }) => theme.global.accent};
