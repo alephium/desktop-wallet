@@ -17,6 +17,8 @@ import { throttle } from 'lodash'
 import { getStorage } from 'alf-client'
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
+import { InfoBox } from '../../components/InfoBox'
+import { AlertTriangle, ThumbsUp } from 'lucide-react'
 
 const Storage = getStorage()
 
@@ -205,6 +207,17 @@ const CheckWordsPage = () => {
             <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
           </SectionContent>
         </PanelContent>
+        {selectedWords.length === wordList.current.length ? (
+          !areWordsValid() ? (
+            <InfoBox
+              Icon={AlertTriangle}
+              importance="alert"
+              text="It seems like you made a mistake in the words' order. But don't worry, you can reorder the words by dragging them around."
+            />
+          ) : (
+            <InfoBox small Icon={ThumbsUp} importance="accent" text="Great job! Remember to keep those words safe." />
+          )
+        ) : null}
         {selectedWords.length === wordList.current.length && (
           <FooterActions>
             <Button secondary onClick={onButtonBack}>

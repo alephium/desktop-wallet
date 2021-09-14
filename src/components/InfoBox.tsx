@@ -11,6 +11,7 @@ interface InfoBoxProps {
   ellipsis?: boolean
   wordBreak?: boolean
   onClick?: () => void
+  small?: boolean
 }
 
 const variants: Variants = {
@@ -18,11 +19,21 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-export const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wordBreak, onClick }: InfoBoxProps) => {
+export const InfoBox = ({
+  Icon,
+  text,
+  label,
+  importance,
+  className,
+  ellipsis,
+  wordBreak,
+  onClick,
+  small
+}: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
-    <BoxContainer className={className} onClick={onClick}>
+    <BoxContainer className={className} onClick={onClick} small={small}>
       {label && <Label variants={variants}>{label}</Label>}
       <StyledBox variants={variants} importance={importance}>
         {Icon && (
@@ -39,10 +50,11 @@ export const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wo
 }
 
 // === Styling === //
-const BoxContainer = styled.div`
+const BoxContainer = styled.div<{ small?: boolean }>`
   width: 100%;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
   margin-top: 10px;
+  max-width: ${({ small }) => (small ? '300px' : 'initial')};
 `
 
 const IconContainer = styled.div`

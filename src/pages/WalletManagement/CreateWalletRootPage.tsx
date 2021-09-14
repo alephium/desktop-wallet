@@ -15,6 +15,7 @@ import WalletWelcomePage from './WalletWelcomePage'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 import styled from 'styled-components'
 import { deviceBreakPoints } from '../../style/globalStyles'
+import AppHeader from '../../components/AppHeader'
 
 const CreateWallet = () => {
   const { networkId } = useContext(GlobalContext)
@@ -40,6 +41,7 @@ const CreateWallet = () => {
 
   return (
     <WalletManagementContext.Provider value={{ ...context, setContext }}>
+      <AppHeader />
       <FloatingLogo />
       <MultiStepsController stepElements={createWalletSteps} baseUrl="create" />
     </WalletManagementContext.Provider>
