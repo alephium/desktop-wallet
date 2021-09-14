@@ -112,6 +112,8 @@ const StyledModal = styled(motion.div)`
 
 const ModalHeader = styled.header`
   display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 `
 
 const CloseButton = styled(Button)`

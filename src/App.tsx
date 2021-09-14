@@ -194,13 +194,16 @@ const SnackbarManagerContainer = styled.div`
   right: 0;
   left: 0;
   display: flex;
+  justify-content: flex-end;
   z-index: 10001;
+
+  @media ${deviceBreakPoints.mobile} {
+    justify-content: center;
+  }
 `
 
 const SnackbarPopup = styled(motion.div)`
-  bottom: 10px;
-  left: 25px;
-  margin: 10px;
+  margin: 15px;
   text-align: center;
   min-width: 200px;
   padding: 20px 15px;
@@ -209,11 +212,6 @@ const SnackbarPopup = styled(motion.div)`
   border-radius: 7px;
   z-index: 1000;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
-
-  @media ${deviceBreakPoints.mobile} {
-    left: initial;
-    margin: 10px auto;
-  }
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};

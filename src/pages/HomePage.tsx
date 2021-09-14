@@ -218,7 +218,7 @@ const HomeContainer = styled.main`
 
 const Sidebar = styled.div`
   flex: 0.5;
-  min-width: 350px;
+  min-width: 300px;
   background-color: ${({ theme }) => theme.bg.contrast};
   position: relative;
   overflow: hidden;

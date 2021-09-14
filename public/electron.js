@@ -29,7 +29,7 @@ function createWindow() {
   }
 
   mainWindow = new BrowserWindow({
-    width: 1000,
+    width: 1200,
     height: 800,
     titleBarStyle: 'hidden',
     titleBarOverlay: true,
@@ -44,6 +44,10 @@ function createWindow() {
 
   mainWindow.on('closed', () => (mainWindow = null))
 }
+
+// Scaling
+app.commandLine.appendSwitch('high-dpi-support', 1)
+app.commandLine.appendSwitch('force-device-scale-factor', 1)
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
