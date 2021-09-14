@@ -1,20 +1,20 @@
 {
   "name": "alephium-wallet",
-  "version": "1.0.0",
+  "version": "0.8.0",
   "private": true,
   "homepage": "./",
-  "author": "Alephium <info@alephium.org>",
+  "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
   "scripts": {
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-pack": "npm run build && npx electron-builder",
-    "electron-pack-win": "npm run build && npx electron-builder -w",
-    "electron-pack-mac": "npm run build && npx electron-builder -m",
-    "electron-pack-linux": "npm run build && npx electron-builder -l",
+    "electron-pack-windows": "npm run build && npx electron-builder -w",
+    "electron-pack-macos": "npm run build && npx electron-builder -m",
+    "electron-pack-ubuntu": "npm run build && npx electron-builder -l",
     "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
-    "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *",
+    "extension-pack": "rm alephium-wallet.zip; npm run-script extension-build && cd build && zip -r ../alephium-wallet.zip *",
     "start": "react-scripts start",
     "test": "react-scripts test"
   },
@@ -81,7 +81,7 @@
     "zxcvbn": "^4.4.2"
   },
   "build": {
-    "appId": "org.alephium.alephium-webextension",
+    "appId": "org.alephium.alephium-wallet",
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -99,5 +99,8 @@
     "directories": {
       "buildResources": "assets"
     }
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
