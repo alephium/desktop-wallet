@@ -13,9 +13,19 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
+import { abbreviateAmount } from '../utils/misc'
 
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect'
+interface AmountProps {
+  value: bigint | undefined
+  className?: string
+}
+
+const Amount = ({ value, className }: AmountProps) => {
+  if (value !== undefined) {
+    return <span className={className}>{abbreviateAmount(value)}א</span>
+  } else {
+    return <span className={className}>- א</span>
+  }
+}
+
+export default Amount

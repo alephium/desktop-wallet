@@ -1,58 +1,22 @@
 {
-  "name": "alephium-webextension",
-  "version": "0.2.1",
+  "name": "alephium-wallet",
+  "version": "1.0.0",
   "private": true,
-  "author": "Alephium <info@alephium.org>",
   "homepage": "./",
+  "author": "Alephium <info@alephium.org>",
   "main": "public/electron.js",
-  "dependencies": {
-    "@material-ui/core": "^4.9.8",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "alf-client": "../alephium-js/",
-    "bcurl": "~0.1.6",
-    "bip39": "^3.0.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
-    "zxcvbn": "^4.4.2"
-  },
-  "devDependencies": {
-    "electron": "^7.1.7",
-    "electron-builder": "^22.7.0"
-  },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron .",
-    "electron-pack": "npm run-script build && npx electron-builder",
+    "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-pack": "npm run build && npx electron-builder",
+    "electron-pack-win": "npm run build && npx electron-builder -w",
+    "electron-pack-mac": "npm run build && npx electron-builder -m",
+    "electron-pack-linux": "npm run build && npx electron-builder -l",
     "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
-    "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *"
-  },
-  "build": {
-    "appId": "org.alephium.alephium-webextension",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "linux": {
-      "category": "Finance",
-      "executableName": "alephium",
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "icon": "icons/512x512.png"
-    },
-    "productName": "Alephium",
-    "directories": {
-      "buildResources": "assets"
-    }
+    "extension-pack": "rm ../alephium-webextension.zip; npm run-script extension-build && cd build && zip -r ../alephium-webextension.zip *",
+    "start": "react-scripts start",
+    "test": "react-scripts test"
   },
   "browserslist": {
     "production": [
@@ -68,5 +32,72 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.6",
+    "@testing-library/react": "^9.3.2",
+    "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.172",
+    "@types/node": "^14.17.12",
+    "@types/qrcode.react": "^1.0.2",
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.1.8",
+    "@types/styled-components": "^5.1.13",
+    "@types/tinycolor2": "^1.4.3",
+    "@types/yaireo__tagify": "^4.7.0",
+    "@types/zxcvbn": "^4.4.1",
+    "@yaireo/tagify": "^4.7.2",
+    "alephium-js": "^0.10.1",
+    "bip39": "^3.0.3",
+    "classnames": "^2.3.1",
+    "concurrently": "^6.2.1",
+    "dayjs": "^1.10.6",
+    "electron": "^14.0.0",
+    "electron-builder": "^22.10.5",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-unused-imports": "^1.1.4",
+    "framer-motion": "^4.1.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.15.31",
+    "prettier": "^2.3.2",
+    "qrcode.react": "^1.0.1",
+    "react": "^17.0.2",
+    "react-confetti": "^6.0.1",
+    "react-dom": "^17.0.2",
+    "react-is": "^16.13.1",
+    "react-router-dom": "^5.2.1",
+    "react-scripts": "^4.0.1",
+    "styled-components": "^5.3.1",
+    "tinycolor2": "^1.4.2",
+    "type-fest": "^1.4.0",
+    "typescript": "^4.4.2",
+    "wait-on": "5.3.0",
+    "zxcvbn": "^4.4.2"
+  },
+  "build": {
+    "appId": "org.alephium.alephium-webextension",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "category": "Finance",
+      "executableName": "alephium",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "icons/logo-512.png"
+    },
+    "productName": "Alephium",
+    "directories": {
+      "buildResources": "assets"
+    }
   }
 }

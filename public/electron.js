@@ -15,43 +15,34 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
-const url = require('url');
+const isDev = require('electron-is-dev')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
-  // Create the browser window.
+function createWindow() {
+  if (process.platform === 'win32') {
+    Menu.setApplicationMenu(null)
+  }
+
   mainWindow = new BrowserWindow({
-//    resizable: false,
-    height: 600,
-    width: 360,
-    useContentSize: true
+    width: 1200,
+    height: 800,
+    minWidth: 1000,
+    minHeight: 700,
+    titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden'
   })
 
-  // and load the index.html of the app.
-  const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '/../build/index.html'),
-    protocol: 'file:',
-    slashes: true
-  });
-  mainWindow.loadURL(startUrl);//loadFile('index.html')
+  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+  if (isDev) {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
+  }
 
-  mainWindow.setMenu(null);
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+  mainWindow.on('closed', () => (mainWindow = null))
 }
 
 // This method will be called when Electron has finished
