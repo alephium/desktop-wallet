@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { walletGenerate } from 'alf-client'
+import { walletGenerate } from 'alephium-js'
 import CreateAccountPage from './CreateAccountPage'
 import WalletWordsPage from './WalletWordsPage'
 import { GlobalContext } from '../../App'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Wallet } from 'alf-client'
+import { Wallet } from 'alephium-js'
 
 export interface WalletManagementContextType {
   plainWallet?: Wallet

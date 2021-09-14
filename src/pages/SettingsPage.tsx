@@ -9,7 +9,7 @@ import { Settings } from '../utils/clients'
 import { Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
-import { walletOpen, getStorage, Wallet } from 'alf-client'
+import { walletOpen, getStorage, Wallet } from 'alephium-js'
 import styled from 'styled-components'
 
 const Storage = getStorage()

@@ -6,7 +6,7 @@ import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import { AnimatePresence } from 'framer-motion'
 import AddressPage from './AddressPage'
-import { Transaction } from 'alf-client/dist/api/api-explorer'
+import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import SettingsPage from '../../pages/SettingsPage'
 
 export interface SimpleTx {
