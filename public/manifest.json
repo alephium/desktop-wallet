@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "alephium",
   "version": "1.0",
-  "homepage_url": "https://gitlab.com/alephium/alephium-webextension",
+  "homepage_url": "https://github.com/alephium/alephium-wallet",
   "icons": {
     "48": "icons/logo-48.png"
   },
