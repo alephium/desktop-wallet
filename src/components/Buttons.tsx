@@ -86,7 +86,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       transparent
         ? 'transparent'
         : secondary
-        ? tinycolor(theme.bg.tertiary).darken(5).toString()
+        ? tinycolor(theme.bg.tertiary).lighten(30).toString()
         : tinycolor(theme.global.accent).darken(5).toString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
@@ -96,7 +96,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
     background-color: ${({ theme, secondary }) =>
       secondary
         ? tinycolor(theme.bg.tertiary).darken(40).toString()
-        : tinycolor(theme.global.accent).darken(20).toString()};
+        : tinycolor(theme.global.accent).setAlpha(20).toString()};
   }
 
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};

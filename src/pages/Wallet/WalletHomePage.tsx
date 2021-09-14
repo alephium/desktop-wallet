@@ -20,6 +20,7 @@ import { isHTTPError } from '../../utils/api'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
 import Address from '../../components/Address'
+import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 
 dayjs.extend(relativeTime)
 
@@ -149,6 +150,7 @@ const WalletHomePage = () => {
           <WalletActionButton Icon={Send} label="Send token" link="/wallet/send" />
           <WalletActionButton Icon={Lock} label="Lock wallet" onClick={() => setWallet(undefined)} />
         </WalletActions>
+        <FloatingLogo />
       </WalletSidebar>
       <AnimatePresence>
         {isHeaderCompact && (
@@ -491,7 +493,7 @@ const LastTransactionListHeader = styled.div`
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin: 0 15px 0 15px;
+  margin: 0;
 
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;
@@ -598,6 +600,22 @@ const NoMoreTransactionMessage = styled.div`
   text-align: center;
   width: 100%;
   margin-top: 15px;
+`
+
+const FloatingLogo = styled(AlephiumLogoSVG)`
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  width: 40px;
+  height: 60px;
+
+  path {
+    fill: rgba(0, 0, 0, 0.05) !important;
+  }
+
+  @media ${deviceBreakPoints.mobile} {
+    display: none;
+  }
 `
 
 export default WalletHomePage
