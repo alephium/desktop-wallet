@@ -33,6 +33,12 @@ module.exports = {
           requireLast: false
         }
       }
+    ],
+    'prettier/prettier': [
+      'error',
+      {
+        'endOfLine': 'auto',
+      }
     ]
   },
   env: {
