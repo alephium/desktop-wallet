@@ -6,7 +6,7 @@ import { Input } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
-import { Edit3, User } from 'lucide-react'
+import { Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alf-client'
@@ -14,14 +14,15 @@ import styled from 'styled-components'
 
 const Storage = getStorage()
 
-const tabs = [
-  { value: 'account', label: 'Account' },
-  { value: 'client', label: 'Endpoints' }
-]
-
 const SettingsPage = () => {
+  const { wallet, currentUsername } = useContext(GlobalContext)
+
+  const tabs = [
+    { value: 'account', label: `Account (${currentUsername})` },
+    { value: 'client', label: 'Endpoints' }
+  ]
+
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
-  const { wallet } = useContext(GlobalContext)
 
   return (
     <PanelContainer>
@@ -133,8 +134,6 @@ const AccountSettings = () => {
           </Modal>
         )}
 
-        <InfoBox text={currentUsername} Icon={User} />
-        <Divider />
         <Button secondary alert onClick={openSecretPhraseModal}>
           Show your secret phrase
         </Button>
@@ -170,7 +169,7 @@ const ClientSettings = () => {
 
   return (
     <div>
-      <SectionContent inList>
+      <SectionContent>
         <Input
           placeholder="Node host"
           value={tempSettings.nodeHost}
@@ -207,7 +206,7 @@ const PhraseBox = styled.div`
 
 const Divider = styled.div`
   background-color: ${({ theme }) => theme.border.secondary};
-  margin: 10px 5px;
+  margin: 15px 5px;
   height: 1px;
   width: 100%;
 `
