@@ -9,7 +9,7 @@ export const lightTheme: DefaultTheme = {
     tertiary: 'rgba(61, 64, 74, 0.2)',
     hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#09122d',
-    accent: tinycolor('#1f7fed').setAlpha(0.08).toString()
+    accent: tinycolor('#5981f3').setAlpha(0.08).toString()
   },
   font: {
     primary: '#1b202f',
@@ -22,7 +22,7 @@ export const lightTheme: DefaultTheme = {
     secondary: '#f5f5f5'
   },
   global: {
-    accent: '#1f7fed',
+    accent: '#5981f3',
     secondary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#4ebf08',

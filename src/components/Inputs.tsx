@@ -276,7 +276,7 @@ const ErrorMessage = styled(motion.label)<InputProps>`
   right: 10px;
   font-weight: 500;
   opacity: 0;
-  font-size: 0.8rem;
+  font-size: 0.8em;
   color: ${({ theme }) => theme.global.alert};
 `
 
@@ -349,8 +349,7 @@ const StyledTags = styled(Tags)`
 
 const Chevron = styled.div`
   position: absolute;
-  font-size: 1.3rem;
-  top: 14px;
+  top: 12px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `

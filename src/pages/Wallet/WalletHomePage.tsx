@@ -507,7 +507,7 @@ const LastTransactionList = styled.div`
 const TransactionItemContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: 15px;
+  padding: 10px 5px;
   cursor: pointer;
   transition: all 0.1s ease-out;
 
@@ -527,11 +527,13 @@ const TxDetails = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  line-height: 16px;
 `
 
 const DirectionLabel = styled.span`
-  font-size: 0.8rem;
+  font-size: 0.9em;
   font-weight: 600;
+  margin-bottom: 5px;
 `
 
 const IOAddresses = styled.div`
@@ -557,7 +559,7 @@ const MiningRewardString = styled.span`
 
 const TxTimestamp = styled.span`
   color: ${({ theme }) => theme.font.secondary};
-  font-size: 0.9rem;
+  font-size: 0.9em;
 `
 
 const PendingTransactionItemContainer = styled(TransactionItemContainer)`

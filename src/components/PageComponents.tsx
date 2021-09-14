@@ -159,6 +159,6 @@ const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
   flex: 1;
   margin: 0;
   color: ${({ theme, color }) => (color ? color : theme.font.primary)};
-  font-size: ${({ smaller }) => (smaller ? '2.0rem' : 'auto')};
+  font-size: ${({ smaller }) => (smaller ? '2.0em' : 'revert')};
   font-weight: 500;
 `

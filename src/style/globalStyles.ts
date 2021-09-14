@@ -15,57 +15,12 @@ export const appHeaderHeight = '50px'
 
 export const GlobalStyle = createGlobalStyle`
   html {
-    font-size: 13px;
     ${!isElectron() ? limitedSize : freeSize}
   }
 
   body {
-    font-size: inherit;
-    margin: 0;
-    font-family: "Inter", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     color: ${({ theme }) => theme.font.primary};
     background-color: ${({ theme }) => theme.bg.primary};
-    overflow-y:auto;
-    height: 100%;
-    width: 100%;
-    font-weight: 500;
-  }
-
-  #root {
-    height: 100%;
-    display: flex;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 40px;
-    margin-top: 30px;
-  }
-
-  h2 {
-    font-weight: 600;
-  }
-
-  h3 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-	input, button {
-		outline: none;
-    border: none;
-    background: transparent;
-	}
-
-  a {
-    text-decoration: none;
-    color: inherit;
   }
 
   // Text area tags dropdown

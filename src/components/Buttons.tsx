@@ -42,7 +42,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   justify-content: center;
   height: ${({ squared }) => (squared ? '40px' : '46px')};
   width: ${({ squared }) => (squared ? '40px' : '80%')};
-  max-width: 300px;
+  max-width: 250px;
   border-radius: 7px;
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
@@ -64,9 +64,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       ? theme.global.accent
       : theme.font.contrastPrimary};
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: inherit;
+  font-family: inherit;
   padding: ${({ squared }) => (squared ? '10px' : '0 13px')};
-  min-width: ${({ squared }) => (squared ? '40px' : '100px')};
+  min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
   cursor: pointer;
 
@@ -85,8 +86,8 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       transparent
         ? 'transparent'
         : secondary
-        ? tinycolor(theme.bg.tertiary).darken(20).toString()
-        : tinycolor(theme.global.accent).darken(10).toString()};
+        ? tinycolor(theme.bg.tertiary).darken(5).toString()
+        : tinycolor(theme.global.accent).darken(5).toString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
   }
