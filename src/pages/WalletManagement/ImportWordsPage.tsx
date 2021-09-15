@@ -21,7 +21,7 @@ import { isHTTPError } from '../../utils/api'
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
-  const { networkId, setWallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { setWallet, setSnackbarMessage } = useContext(GlobalContext)
   const { password, username } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
@@ -60,7 +60,7 @@ const ImportWordsPage = () => {
       .replace(/,/g, ' ')
 
     try {
-      const wallet = walletImport(formatedPhrase, networkId)
+      const wallet = walletImport(formatedPhrase)
 
       setWallet(wallet)
 
