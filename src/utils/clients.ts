@@ -30,11 +30,15 @@ export async function createClient(settings?: Settings) {
     baseUrl: loadedSettings.explorerApiHost
   })
 
+  //If `nodeHost` have a port `....:12345`, we consider it as a multi-nodes clique
+  const isMultiNodesClique = loadedSettings.nodeHost.match(/(:[0-9]+)$/) != null
+
+  console.log('Multi-nodes clique: ' + isMultiNodesClique)
   console.log('Connecting to: ' + cliqueClient.baseUrl)
   console.log('Explorer backend: ' + explorerClient.baseUrl)
 
   // Init clients
-  await cliqueClient.init()
+  await cliqueClient.init(isMultiNodesClique)
 
   return { clique: cliqueClient, explorer: explorerClient }
 }
@@ -51,9 +55,9 @@ export interface Settings {
 
 export function settingsDefault(): Settings {
   return {
-    nodeHost: 'http://localhost:12973',
+    nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
-    explorerUrl: 'http://testnet.alephium.org'
+    explorerUrl: 'https://testnet.alephium.org'
   }
 }
 
