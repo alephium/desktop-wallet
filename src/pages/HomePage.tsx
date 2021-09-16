@@ -10,7 +10,7 @@ import tinycolor from 'tinycolor2'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
 import { useHistory } from 'react-router'
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
-import { walletOpen, getStorage, NetworkId } from 'alephium-js'
+import { walletOpen, getStorage } from 'alephium-js'
 import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
 import alephiumLogo from '../images/alephium_logo.svg'
@@ -20,7 +20,7 @@ import AppHeader from '../components/AppHeader'
 interface HomeProps {
   hasWallet: boolean
   usernames: string[]
-  networkId: NetworkId
+  networkId: number
 }
 
 const Storage = getStorage()
@@ -116,11 +116,10 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
 
 const Login = ({
   usernames,
-  networkId,
   setShowActions
 }: {
   usernames: string[]
-  networkId: NetworkId
+  networkId: number
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
@@ -133,7 +132,7 @@ const Login = ({
       setSnackbarMessage({ text: 'Unknown account name', type: 'info' })
     } else {
       try {
-        const wallet = await walletOpen(credentials.password, walletEncrypted, networkId)
+        const wallet = await walletOpen(credentials.password, walletEncrypted)
         if (wallet) {
           setWallet(wallet)
           setCurrentUsername(credentials.username)

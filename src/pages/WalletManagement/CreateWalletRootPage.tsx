@@ -23,7 +23,7 @@ const CreateWallet = () => {
 
   // Init wallet
   useEffect(() => {
-    const result = walletGenerate(networkId)
+    const result = walletGenerate()
     setContext((prevContext) => ({
       ...prevContext,
       plainWallet: result,

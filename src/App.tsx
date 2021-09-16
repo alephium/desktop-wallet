@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
-import { NetworkId, Wallet, getStorage } from 'alephium-js'
+import { Wallet, getStorage } from 'alephium-js'
 import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import { AsyncReturnType } from 'type-fest'
@@ -20,7 +20,7 @@ interface Context {
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
-  networkId: NetworkId
+  networkId: number
   client: Client | undefined
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
@@ -102,7 +102,7 @@ const App = () => {
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
-  const networkId: NetworkId = 1
+  const networkId = 1
 
   return (
     <GlobalContext.Provider
