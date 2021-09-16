@@ -1,6 +1,6 @@
 {
   "name": "alephium-wallet",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "private": true,
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
