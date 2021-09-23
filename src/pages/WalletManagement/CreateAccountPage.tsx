@@ -55,9 +55,9 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     let usernameError = ''
 
     if (username.length < 3) {
-      usernameError = 'Username is too short'
+      usernameError = 'Account name is too short'
     } else if (usernames?.includes(username)) {
-      usernameError = 'Username already taken'
+      usernameError = 'Account name already taken'
     }
 
     setState({ ...state, username, usernameError })

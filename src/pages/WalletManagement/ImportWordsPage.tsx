@@ -16,7 +16,6 @@ import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { walletImport, getStorage } from 'alephium-js'
 import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
-import { isHTTPError } from '../../utils/api'
 
 const Storage = getStorage()
 
@@ -69,9 +68,7 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (e) {
-      if (isHTTPError(e)) {
-        setSnackbarMessage({ text: e.error.detail, type: 'alert' })
-      }
+      setSnackbarMessage({ text: (e as Error).toString(), type: 'alert' })
     }
   }
 
