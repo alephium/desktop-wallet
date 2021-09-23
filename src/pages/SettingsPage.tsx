@@ -144,6 +144,8 @@ const AccountSettings = () => {
         <Button alert onClick={openRemoveAccountModal}>
           Remove account
         </Button>
+        <Divider />
+        <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
       </SectionContent>
     </div>
   )
@@ -209,6 +211,10 @@ const Divider = styled.div`
   margin: 15px 5px;
   height: 1px;
   width: 100%;
+`
+
+const VersionNumber = styled.span`
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 export default SettingsPage
