@@ -141,10 +141,19 @@ interface SelectOption {
 interface SelectProps extends HTMLMotionProps<'select'> {
   initialValue?: SelectOption
   options: SelectOption[]
+  title?: string
   onValueChange: (value: SelectOption | undefined) => void
 }
 
-export const Select = ({ options, placeholder, disabled, initialValue, className, onValueChange }: SelectProps) => {
+export const Select = ({
+  options,
+  title,
+  placeholder,
+  disabled,
+  initialValue,
+  className,
+  onValueChange
+}: SelectProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(initialValue)
   const [showPopup, setShowPopup] = useState(false)
@@ -192,6 +201,7 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
           <SelectOptionsPopup
             options={options}
             setValue={setInputValue}
+            title={title}
             handleBackgroundClick={() => {
               setShowPopup(false)
             }}
@@ -205,11 +215,13 @@ export const Select = ({ options, placeholder, disabled, initialValue, className
 const SelectOptionsPopup = ({
   options,
   setValue,
-  handleBackgroundClick
+  handleBackgroundClick,
+  title
 }: {
   options: SelectOption[]
   setValue: (value: SelectOption) => void | undefined
   handleBackgroundClick: () => void
+  title?: string
 }) => {
   const handleOptionSelect = (value: SelectOption) => {
     setValue(value)
@@ -230,6 +242,11 @@ const SelectOptionsPopup = ({
           e.stopPropagation()
         }}
       >
+        {title && (
+          <header>
+            <h2>{title}</h2>
+          </header>
+        )}
         {options.map((o) => (
           <OptionItem key={o.value} onClick={() => handleOptionSelect(o)}>
             {o.label}
@@ -361,7 +378,7 @@ const PopupContainer = styled(motion.div)`
   left: 0;
   bottom: 0;
   display: flex;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.3);
   z-index: 1000;
 `
 
