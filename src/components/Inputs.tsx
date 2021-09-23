@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, MoreVertical } from 'lucide-react'
 import Tags from '@yaireo/tagify/dist/react.tagify'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -181,7 +181,7 @@ export const Select = ({
 
   return (
     <>
-      <InputContainer
+      <SelectContainer
         variants={variants}
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
@@ -191,11 +191,11 @@ export const Select = ({
         <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
           {placeholder}
         </Label>
-        <Chevron>
-          <ChevronDown />
-        </Chevron>
+        <MoreIcon>
+          <MoreVertical />
+        </MoreIcon>
         <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} />
-      </InputContainer>
+      </SelectContainer>
       <AnimatePresence>
         {showPopup && (
           <SelectOptionsPopup
@@ -230,9 +230,9 @@ const SelectOptionsPopup = ({
 
   return (
     <PopupContainer
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       onClick={() => {
         handleBackgroundClick()
       }}
@@ -241,11 +241,14 @@ const SelectOptionsPopup = ({
         onClick={(e) => {
           e.stopPropagation()
         }}
+        initial={{ y: -10 }}
+        animate={{ y: 0 }}
+        exit={{ y: -10 }}
       >
         {title && (
-          <header>
+          <SelectOptionsHeader>
             <h2>{title}</h2>
-          </header>
+          </SelectOptionsHeader>
         )}
         {options.map((o) => (
           <OptionItem key={o.value} onClick={() => handleOptionSelect(o)}>
@@ -364,11 +367,15 @@ const StyledTags = styled(Tags)`
   border-radius: 7px;
 `
 
-const Chevron = styled.div`
+const MoreIcon = styled.div`
   position: absolute;
   top: 12px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const SelectContainer = styled(InputContainer)`
+  cursor: pointer;
 `
 
 const PopupContainer = styled(motion.div)`
@@ -378,24 +385,26 @@ const PopupContainer = styled(motion.div)`
   left: 0;
   bottom: 0;
   display: flex;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 1000;
 `
 
-const Popup = styled.div`
-  background-color: ${({ theme }) => theme.bg.primary};
-  border-radius: 14px;
+const Popup = styled(motion.div)`
+  border-radius: 7px;
   margin: auto;
   width: 30vw;
   min-width: 300px;
   max-height: 500px;
   overflow-x: hidden;
   overflow-y: auto;
+  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
+  background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const OptionItem = styled.div`
   padding: 15px;
   cursor: pointer;
+  background-color: ${({ theme }) => theme.bg.primary};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -404,6 +413,14 @@ const OptionItem = styled.div`
   &:hover {
     background-color: ${({ theme }) => theme.bg.secondary};
   }
+`
+
+const SelectOptionsHeader = styled.header`
+  padding: 5px 15px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.secondary};
+  display: flex;
+  align-items: center;
 `
 
 export const Form = styled.form`

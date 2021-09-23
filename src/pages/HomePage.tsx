@@ -158,9 +158,10 @@ const Login = ({
       <Form>
         <SectionContent inList>
           <Select
-            placeholder="Account name"
+            placeholder="Account"
             options={usernames.map((u) => ({ label: u, value: u }))}
             onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+            title="Select an account"
           />
           <Input
             placeholder="Password"
