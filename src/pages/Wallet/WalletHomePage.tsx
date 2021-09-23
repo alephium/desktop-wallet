@@ -127,7 +127,7 @@ const WalletHomePage = () => {
   if (!wallet) return null
 
   return (
-    <WalletContainer>
+    <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
@@ -279,7 +279,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
 // ==== STYLING ====
 // =================
 
-const WalletContainer = styled.div`
+const WalletContainer = styled(motion.div)`
   display: flex;
   flex: 1;
   overflow: hidden;

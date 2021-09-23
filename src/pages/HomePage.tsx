@@ -33,7 +33,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
 
   return (
-    <HomeContainer>
+    <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <SettingsButton transparent squared onClick={() => history.push('/settings')}>
           <SettingsIcon />
@@ -207,7 +207,7 @@ const InitialActions = ({
 
 // === Styling
 
-const HomeContainer = styled.main`
+const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
 
