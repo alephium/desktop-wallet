@@ -38,7 +38,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 
 const WalletHomePage = () => {
   const history = useHistory()
-  const { wallet, setSnackbarMessage, client, setWallet } = useContext(GlobalContext)
+  const { wallet, setSnackbarMessage, client, setWallet, currentUsername } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
@@ -142,6 +142,7 @@ const WalletHomePage = () => {
           <WalletAmountContent>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
+            <CurrentAccount>Account: {currentUsername}</CurrentAccount>
           </WalletAmountContent>
         </WalletAmountContainer>
         <WalletActions>
@@ -403,6 +404,13 @@ const WalletAmountSubtitle = styled.div`
   color: ${({ theme }) => theme.font.contrastSecondary};
   text-align: center;
   font-weight: 500;
+`
+
+const CurrentAccount = styled.span`
+  text-align: center;
+  color: ${({ theme }) => theme.font.contrastSecondary};
+  margin-top: 5px;
+  font-size: 0.95em;
 `
 
 const WalletActions = styled.div`

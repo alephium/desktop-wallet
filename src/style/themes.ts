@@ -15,7 +15,7 @@ export const lightTheme: DefaultTheme = {
     primary: '#1b202f',
     secondary: '#797979',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
-    contrastSecondary: 'rgba(255, 255, 255, 0.85)'
+    contrastSecondary: 'rgba(255, 255, 255, 0.8)'
   },
   border: {
     primary: '#ebebeb',
