@@ -43,7 +43,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
         <AtmosphericGlowBackground
           initial={{ bottom: '-10vh', opacity: 0 }}
           animate={{ bottom: 0, opacity: 0.6 }}
-          transition={{ delay: 0.2, duration: 1.2 }}
+          transition={{ delay: 1, duration: 1.2 }}
         />
         <MainPanel transparentBg>
           <AlephiumLogo />
@@ -58,7 +58,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             <Moon
               initial={{ bottom: '-10vh', opacity: 0 }}
               animate={{ bottom: '7vh', opacity: 1 }}
-              transition={{ delay: 0.2, duration: 1.2 }}
+              transition={{ delay: 1, duration: 1.2 }}
             />
             <CloudGroup
               coordinates={[
@@ -320,7 +320,7 @@ const CloudGroup = ({
     <StyledCloudGroup
       initial={{ [side]: '-100px' }}
       animate={{ [side]: distance }}
-      transition={{ delay: 0.1, duration: 0.5 }}
+      transition={{ delay: 1, duration: 0.5 }}
       style={style}
     >
       {clouds}

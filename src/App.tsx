@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import { deviceBreakPoints } from './style/globalStyles'
+import alephiumLogo from './images/alephium_logo.svg'
 
 interface Context {
   usernames: string[]
@@ -53,6 +54,7 @@ export const GlobalContext = React.createContext<Context>(initialContext)
 const Storage = getStorage()
 
 const App = () => {
+  const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [wallet, setWallet] = useState<Wallet>()
   const [currentUsername, setCurrentUsername] = useState('')
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
@@ -75,7 +77,7 @@ const App = () => {
         setSnackbarMessage({
           text: `Connected to Alephium's Node "${settings.nodeHost}"!`,
           type: 'info',
-          duration: 2000
+          duration: 4000
         })
         setClientIsLoading(false)
       } catch (e) {
@@ -120,6 +122,7 @@ const App = () => {
       }}
     >
       <AppContainer>
+        {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <AnimateSharedLayout type="crossfade">
           <Switch>
             <Route exact path="/create/:step?">
@@ -147,6 +150,25 @@ const App = () => {
       <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />
     </GlobalContext.Provider>
+  )
+}
+
+const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => {
+  return (
+    <StyledSplashScreen
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{ delay: 1 }}
+      onAnimationComplete={onSplashScreenShown}
+    >
+      <AlephiumLogoContainer
+        initial={{ opacity: 0, scale: 1.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <AlephiumLogo />
+      </AlephiumLogoContainer>
+    </StyledSplashScreen>
   )
 }
 
@@ -232,6 +254,36 @@ const ClientLoading = styled.div`
   left: 25px;
   transform: translateX(-50%);
   color: white;
+`
+
+const StyledSplashScreen = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10002;
+  background-color: ${({ theme }) => theme.bg.primary};
+`
+
+const AlephiumLogoContainer = styled(motion.div)`
+  width: 150px;
+  height: 150px;
+  border-radius: 100%;
+  display: flex;
+  background-color: ${({ theme }) => theme.bg.contrast};
+`
+
+const AlephiumLogo = styled.div`
+  background-image: url(${alephiumLogo});
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 60%;
+  height: 60%;
+  margin: auto;
 `
 
 export default App
