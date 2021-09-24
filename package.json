@@ -91,8 +91,7 @@
       "target": [
         "AppImage",
         "deb"
-      ],
-      "icon": "icons/logo-512.png"
+      ]
     },
     "productName": "Alephium",
     "directories": {
