@@ -319,6 +319,7 @@ const defaultStyle = (isValid?: boolean) => {
     border-radius: 7px;
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
+    color: ${({ theme }) => theme.font.primary};
     padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
     font-weight: 500;
     font-size: 1em;

@@ -48,7 +48,11 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
         <MainPanel transparentBg>
           <AlephiumLogo />
           <HeaderText>
-            <PanelTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
+            <PanelTitle
+              color={theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary}
+              backgroundColor="transparent"
+              useLayoutId={false}
+            >
               Alephium
             </PanelTitle>
             <PageSubtitle>Official Wallet</PageSubtitle>
@@ -219,7 +223,7 @@ const HomeContainer = styled(motion.main)`
 const Sidebar = styled.div`
   flex: 0.5;
   min-width: 300px;
-  background-color: ${({ theme }) => theme.bg.contrast};
+  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
   position: relative;
   overflow: hidden;
   padding: 3vw;
@@ -264,7 +268,7 @@ const InteractionArea = styled.div`
 const HeaderText = styled.div`
   margin-top: 5vh;
   max-width: 700px;
-  color: ${({ theme }) => theme.font.contrastSecondary};
+  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastSecondary : theme.font.secondary)};
 
   @media ${deviceBreakPoints.mobile} {
     display: none;

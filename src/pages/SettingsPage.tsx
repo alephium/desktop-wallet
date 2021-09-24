@@ -11,6 +11,7 @@ import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alephium-js'
 import styled from 'styled-components'
+import ThemeSwitcher from '../components/ThemeSwitcher'
 
 const Storage = getStorage()
 
@@ -34,6 +35,11 @@ const SettingsPage = () => {
       ) : (
         <ClientSettings />
       )}
+      <Divider />
+      <SectionContent>
+        <ThemeSwitcher />
+        <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
+      </SectionContent>
     </PanelContainer>
   )
 }
@@ -144,8 +150,6 @@ const AccountSettings = () => {
         <Button alert onClick={openRemoveAccountModal}>
           Remove account
         </Button>
-        <Divider />
-        <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
       </SectionContent>
     </div>
   )
@@ -215,6 +219,7 @@ const Divider = styled.div`
 
 const VersionNumber = styled.span`
   color: ${({ theme }) => theme.font.secondary};
+  margin-top: 15px;
 `
 
 export default SettingsPage

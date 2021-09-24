@@ -63,3 +63,15 @@ export const useWindowSize = () => {
   }, []) // Empty array ensures that effect is only run on mount
   return windowSize
 }
+
+// Local storage hook
+
+export function useStateWithLocalStorage<T>(localStorageKey: string, defaultValue: T) {
+  const [value, setValue] = useState(localStorage.getItem(localStorageKey) || defaultValue)
+
+  useEffect(() => {
+    localStorage.setItem(localStorageKey, value as string)
+  }, [localStorageKey, value])
+
+  return [value, setValue]
+}

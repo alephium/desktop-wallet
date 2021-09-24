@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
@@ -12,9 +12,10 @@ import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './u
 import SettingsPage from './pages/SettingsPage'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
-import { deviceBreakPoints } from './style/globalStyles'
+import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import alephiumLogo from './images/alephium_logo.svg'
-import { useInterval } from './utils/hooks'
+import { useInterval, useStateWithLocalStorage } from './utils/hooks'
+import { lightTheme, darkTheme, ThemeType } from './style/themes'
 
 interface Context {
   usernames: string[]
@@ -27,6 +28,8 @@ interface Context {
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
   setSnackbarMessage: (message: SnackbarMessage) => void
+  switchTheme: (theme: ThemeType) => void
+  currentTheme: ThemeType
 }
 
 type Client = AsyncReturnType<typeof createClient>
@@ -41,7 +44,9 @@ const initialContext: Context = {
   client: undefined,
   settings: loadSettingsOrDefault(),
   setSettings: () => null,
-  setSnackbarMessage: () => null
+  setSnackbarMessage: () => null,
+  switchTheme: () => null,
+  currentTheme: 'light'
 }
 
 interface SnackbarMessage {
@@ -64,6 +69,7 @@ const App = () => {
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
   const history = useHistory()
+  const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
 
   // Create client
   useEffect(() => {
@@ -139,53 +145,62 @@ const App = () => {
   const networkId = 1
 
   return (
-    <GlobalContext.Provider
-      value={{
-        usernames,
-        currentUsername,
-        setCurrentUsername,
-        wallet,
-        setWallet,
-        networkId,
-        client,
-        setSnackbarMessage,
-        settings,
-        setSettings
-      }}
-    >
-      <AppContainer>
-        {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
-        <AnimateSharedLayout type="crossfade">
-          <Switch>
-            <Route exact path="/create/:step?">
-              <CreateWalletPages />
-              <Redirect exact from="/create/" to="/create/0" />
-            </Route>
-            <Route exact path="/import/:step?">
-              <ImportWalletPages />
-              <Redirect exact from="/import/" to="/import/0" />
-            </Route>
-            <Route path="/wallet">
-              <WalletPages />
-            </Route>
-            <Route path="">
-              <HomePage hasWallet={hasWallet} usernames={usernames} networkId={networkId} />
-            </Route>
-          </Switch>
-        </AnimateSharedLayout>
-        <AnimatePresence exitBeforeEnter initial={false}>
-          <Switch>
-            <Route path="/settings">
-              <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-                <SettingsPage />
-              </Modal>
-            </Route>
-          </Switch>
-        </AnimatePresence>
-      </AppContainer>
-      <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
-      <SnackbarManager message={snackbarMessage} />
-    </GlobalContext.Provider>
+    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyle />
+
+      <GlobalContext.Provider
+        value={{
+          usernames,
+          currentUsername,
+          setCurrentUsername,
+          wallet,
+          setWallet,
+          networkId,
+          client,
+          setSnackbarMessage,
+          settings,
+          setSettings,
+          switchTheme: setTheme as (arg0: ThemeType) => void,
+          currentTheme: theme as ThemeType
+        }}
+      >
+        <AppContainer>
+          {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
+          <AnimateSharedLayout type="crossfade">
+            <Switch>
+              <Route exact path="/create/:step?">
+                <CreateWalletPages />
+                <Redirect exact from="/create/" to="/create/0" />
+              </Route>
+              <Route exact path="/import/:step?">
+                <ImportWalletPages />
+                <Redirect exact from="/import/" to="/import/0" />
+              </Route>
+              <Route path="/wallet">
+                <WalletPages />
+              </Route>
+              <Route path="">
+                <HomePage hasWallet={hasWallet} usernames={usernames} networkId={networkId} />
+              </Route>
+            </Switch>
+          </AnimateSharedLayout>
+          <AnimatePresence exitBeforeEnter initial={false}>
+            <Switch>
+              <Route path="/settings">
+                <Modal
+                  title="Settings"
+                  onClose={() => history.push(history.location.pathname.replace('/settings', ''))}
+                >
+                  <SettingsPage />
+                </Modal>
+              </Route>
+            </Switch>
+          </AnimatePresence>
+        </AppContainer>
+        <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
+        <SnackbarManager message={snackbarMessage} />
+      </GlobalContext.Provider>
+    </ThemeProvider>
   )
 }
 
@@ -265,8 +280,8 @@ const SnackbarPopup = styled(motion.div)`
   text-align: center;
   min-width: 200px;
   padding: 20px 15px;
-  color: ${({ theme }) => theme.font.contrastPrimary};
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
   z-index: 1000;
   box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
@@ -276,7 +291,7 @@ const SnackbarPopup = styled(motion.div)`
   }
 
   &.info {
-    background-color: ${({ theme }) => theme.font.primary};
+    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
   }
 
   &.success {
@@ -310,7 +325,7 @@ const AlephiumLogoContainer = styled(motion.div)`
   height: 150px;
   border-radius: 100%;
   display: flex;
-  background-color: ${({ theme }) => theme.bg.contrast};
+  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.secondary)};
 `
 
 const AlephiumLogo = styled.div`
