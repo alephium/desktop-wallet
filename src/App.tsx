@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import HomePage from './pages/HomePage'
@@ -14,6 +14,7 @@ import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import { deviceBreakPoints } from './style/globalStyles'
 import alephiumLogo from './images/alephium_logo.svg'
+import { useInterval } from './utils/hooks'
 
 interface Context {
   usernames: string[]
@@ -61,6 +62,7 @@ const App = () => {
   const [client, setClient] = useState<Client>()
   const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
   const [clientIsLoading, setClientIsLoading] = useState(false)
+  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
   const history = useHistory()
 
   // Create client
@@ -101,6 +103,36 @@ const App = () => {
       setTimeout(() => setSnackbarMessage(undefined), snackbarMessage.duration || 3000)
     }
   }, [snackbarMessage])
+
+  // Auto-lock mechanism
+  const updateLastInteractionTime = useCallback(() => {
+    const currentTime = new Date().getTime()
+
+    if (currentTime - lastInteractionTime > 10000) {
+      setLastInteractionTime(currentTime)
+    }
+  }, [lastInteractionTime])
+
+  useEffect(() => {
+    document.addEventListener('mousemove', updateLastInteractionTime)
+    document.addEventListener('keydown', updateLastInteractionTime)
+    document.addEventListener('scroll', updateLastInteractionTime)
+
+    return () => {
+      document.removeEventListener('mousemove', updateLastInteractionTime)
+      document.removeEventListener('keydown', updateLastInteractionTime)
+      document.removeEventListener('scroll', updateLastInteractionTime)
+    }
+  }, [updateLastInteractionTime])
+
+  useInterval(() => {
+    const currentTime = new Date().getTime()
+
+    if (currentTime - lastInteractionTime > 3 * 60 * 1000 && wallet) {
+      setWallet(undefined)
+      setLastInteractionTime(currentTime)
+    }
+  }, 2000)
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
