@@ -141,11 +141,15 @@ const App = () => {
             </Route>
           </Switch>
         </AnimateSharedLayout>
-        <Route path="/settings">
-          <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-            <SettingsPage />
-          </Modal>
-        </Route>
+        <AnimatePresence exitBeforeEnter initial={false}>
+          <Switch>
+            <Route path="/settings">
+              <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+                <SettingsPage />
+              </Modal>
+            </Route>
+          </Switch>
+        </AnimatePresence>
       </AppContainer>
       <ClientLoading>{clientIsLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />

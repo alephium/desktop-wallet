@@ -30,13 +30,22 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
     currentOnClose()
   }
 
+  // Prevent body scroll on mount
   useEffect(() => {
-    // Prevent body scroll on mount
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = 'unset'
     }
   }, [])
+
+  // Handle escape key press
+  useEffect(() => {
+    document.addEventListener('keydown', onClose, false)
+
+    return () => {
+      document.removeEventListener('keydown', onClose, false)
+    }
+  }, [onClose])
 
   return (
     <ModalContext.Provider
