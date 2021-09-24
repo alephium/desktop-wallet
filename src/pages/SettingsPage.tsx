@@ -6,11 +6,11 @@ import { Input } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
-import { Edit3 } from 'lucide-react'
+import { AlertTriangle, Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alephium-js'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 
 const Storage = getStorage()
@@ -51,6 +51,7 @@ const AccountSettings = () => {
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
   const [typedPassword, setTypedPassword] = useState('')
+  const theme = useTheme()
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTypedPassword(e.target.value)
@@ -123,18 +124,22 @@ const AccountSettings = () => {
         {isDisplayingRemoveModal && (
           <Modal title="Remove account" onClose={() => setIsDisplayingRemoveModal(false)} focusMode>
             <SectionContent>
-              <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
-              <CenteredSecondaryParagraph>
-                Type your password to confirm the account removal from your device. <br />
-                <b>
-                  Make sure that you have your 24 words secured somewhere safe, to allow you to recover it in the
-                  future!
-                </b>
-              </CenteredSecondaryParagraph>
+              <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
             </SectionContent>
             <SectionContent>
-              <Button alert onClick={() => handlePasswordVerification(() => handleRemoveAccount())}>
-                DELETE
+              <InfoBox
+                importance="alert"
+                text="Make sure that you have your 24 words secured somewhere safe, to allow you to recover it in the future!
+                If not, your account will be lost forever."
+              />
+
+              <CenteredSecondaryParagraph>
+                <b>Your keys, your crypto.</b>
+              </CenteredSecondaryParagraph>
+            </SectionContent>
+            <SectionContent inList>
+              <Button alert onClick={() => handleRemoveAccount()}>
+                CONFIRM DELETE
               </Button>
             </SectionContent>
           </Modal>

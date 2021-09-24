@@ -82,21 +82,25 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   }
 
   &:hover {
-    background-color: ${({ theme, secondary, transparent }) =>
+    background-color: ${({ theme, secondary, transparent, alert }) =>
       transparent
         ? 'transparent'
         : secondary
         ? tinycolor(theme.bg.tertiary).lighten(30).toString()
-        : tinycolor(theme.global.accent).darken(5).toString()};
+        : alert
+        ? tinycolor(theme.global.alert).darken(8).toString()
+        : tinycolor(theme.global.accent).darken(8).toString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
   }
 
   &:active {
-    background-color: ${({ theme, secondary }) =>
+    background-color: ${({ theme, secondary, alert }) =>
       secondary
         ? tinycolor(theme.bg.tertiary).darken(40).toString()
-        : tinycolor(theme.global.accent).setAlpha(20).toString()};
+        : alert
+        ? tinycolor(theme.global.alert).lighten(3).toString()
+        : tinycolor(theme.global.accent).lighten(3).toString()};
   }
 
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
