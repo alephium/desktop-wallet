@@ -29,6 +29,14 @@ export const isElectron = () => {
 // === STRING MANIP === //
 // ==================== //
 
+const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
+const QUINTILLION = 1000000000000000000
+
+export const truncateToDecimals = (num: number, dec = 2) => {
+  const calcDec = Math.pow(10, dec)
+  return Math.trunc(num * calcDec) / calcDec
+}
+
 const getNumberOfTrailingZeros = (numberArray: string[]) => {
   let numberOfZeros = 0
 
@@ -56,12 +64,8 @@ const removeTrailingZeros = (numString: string) => {
   return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
 
-const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
-
-const QUINTILLION = 1000000000000000000
-
-export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimals?: number) => {
-  const maxDecimals = 6
+export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number) => {
+  const minDigits = 3
 
   if (baseNum < 0n) return '0.00'
 
@@ -69,21 +73,13 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   const alephNum = Number(baseNum) / QUINTILLION
 
   // what tier? (determines SI symbol)
+
   let tier = (Math.log10(alephNum) / 3) | 0
 
-  const numberArray = baseNum.toString().split('')
+  const numberOfDigitsToDisplay = nbOfDecimalsToShow ? nbOfDecimalsToShow : minDigits
 
-  const numberOfZeros = getNumberOfTrailingZeros(numberArray)
-  const numberOfNonZero = numberArray.length - numberOfZeros
-
-  const numberOfDigitsToDisplay = nbOfDecimals
-    ? nbOfDecimals
-    : numberOfNonZero < maxDecimals
-    ? numberOfNonZero
-    : maxDecimals
-
-  if (tier < 0) {
-    return removeTrailingZeros(alephNum.toFixed(8))
+  if (tier < 0 || showFullPrecision) {
+    return removeTrailingZeros(alephNum.toFixed(18)) // Keep full precision for very low numbers (gas etc.)
   } else if (tier === 0) {
     // Small number, low precision is ok
     return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString())
@@ -95,16 +91,9 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   const suffix = MONEY_SYMBOL[tier]
   const scale = Math.pow(10, tier * 3)
 
-  // scale the bigNum
+  // Scale the bigNum
   // Here we need to be careful of precision issues
   const scaled = alephNum / scale
-
-  if (showFullPrecision) {
-    // Work with string to avoid rounding issues
-    const nonDigitLength = Math.round(scaled).toString().length
-    const numberArrayWithDecimals = [...numberArray.slice(0, nonDigitLength), '.', ...numberArray.slice(nonDigitLength)]
-    return removeTrailingZeros(numberArrayWithDecimals.join().replaceAll(',', '')) + suffix
-  }
 
   return scaled.toFixed(numberOfDigitsToDisplay) + suffix
 }

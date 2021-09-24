@@ -50,7 +50,7 @@ const getBadgeColor = (badgeType: BadgeType, theme: DefaultTheme) => {
       color = 'rgba(243, 113, 93, 1)'
       break
     case 'neutral':
-      backgroundColor = theme.name === 'dark' ? 'rgba(101, 16, 247, 0.28)' : 'rgba(101, 16, 247, 0.6)'
+      backgroundColor = theme.name === 'dark' ? 'rgba(58, 58, 58, 0.28)' : 'rgba(90, 90, 90, 0.6)'
       color = theme.name === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 1)'
       break
     case 'neutralHighlight':

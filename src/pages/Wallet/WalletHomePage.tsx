@@ -26,11 +26,15 @@ dayjs.extend(relativeTime)
 
 const renderIOAccountList = (currentAddress: string, io: { address?: string }[]) => {
   if (io.length > 0) {
-    return _(io.filter((o) => o.address !== currentAddress))
-      .map((v) => v.address)
-      .uniq()
-      .value()
-      .map((v) => <Address key={v} hash={v || ''} />)
+    if (io.every((o) => o.address === currentAddress)) {
+      return <Address key={currentAddress} hash={currentAddress} />
+    } else {
+      return _(io.filter((o) => o.address !== currentAddress))
+        .map((v) => v.address)
+        .uniq()
+        .value()
+        .map((v) => <Address key={v} hash={v || ''} />)
+    }
   } else {
     return <MiningRewardString>Mining Rewards</MiningRewardString>
   }
@@ -232,6 +236,7 @@ const WalletActionButton = ({
 
 const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Transaction; currentAddress: string }) => {
   const amountDelta = calAmountDelta(t, currentAddress)
+
   const isOut = amountDelta < 0
 
   const IOAddressesList = isOut ? t.outputs : t.inputs
@@ -264,7 +269,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
   return (
     <PendingTransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.txId}`)}>
       <TxDetails>
-        <DirectionLabel>TO</DirectionLabel>
+        <DirectionLabel>↑ TO</DirectionLabel>
         <IOAddresses>
           <Address key={t.toAddress} hash={t.toAddress || ''} />
         </IOAddresses>
@@ -501,7 +506,7 @@ const LastTransactionListHeader = styled.div`
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin: 0;
+  margin: 0 15px 0 0;
 
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;
