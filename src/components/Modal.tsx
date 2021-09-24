@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
+import React, { useCallback, useEffect, useState } from 'react'
+import styled, { useTheme } from 'styled-components'
 import { Button } from './Buttons'
 import { PanelTitle, StyledContent, TitleContainer } from './PageComponents'
 import { X } from 'lucide-react'
@@ -25,6 +25,7 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
 }) => {
   const [currentTitle, setCurrentTitle] = useState(title)
   const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
+  const theme = useTheme()
 
   const handleClose = () => {
     currentOnClose()
@@ -39,13 +40,22 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
   }, [])
 
   // Handle escape key press
+  const handleEscapeKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    },
+    [onClose]
+  )
+
   useEffect(() => {
-    document.addEventListener('keydown', onClose, false)
+    document.addEventListener('keydown', handleEscapeKeyPress, false)
 
     return () => {
-      document.removeEventListener('keydown', onClose, false)
+      document.removeEventListener('keydown', handleEscapeKeyPress, false)
     }
-  }, [onClose])
+  }, [handleEscapeKeyPress, onClose])
 
   return (
     <ModalContext.Provider
@@ -74,7 +84,16 @@ export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: b
           <ModalContent>{children}</ModalContent>
         </StyledModal>
         <ModalBackdrop
-          style={{ backgroundColor: focusMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.15)' }}
+          style={{
+            backgroundColor:
+              theme.name === 'light'
+                ? focusMode
+                  ? 'rgba(0, 0, 0, 0.8)'
+                  : 'rgba(0, 0, 0, 0.15)'
+                : focusMode
+                ? 'rgba(0, 0, 0, 0.9)'
+                : 'rgba(0, 0, 0, 0.6)'
+          }}
           onClick={handleClose}
         />
       </ModalContainer>
