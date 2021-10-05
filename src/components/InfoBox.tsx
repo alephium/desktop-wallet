@@ -90,7 +90,7 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
 const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
   padding: 10px 20px 10px 0;
   background-color: ${({ theme }) => theme.bg.primary};
-  border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.secondary)};
+  border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.primary)};
   display: flex;
   border-radius: 7px;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.05);

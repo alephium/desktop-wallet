@@ -76,8 +76,6 @@ const CheckWordsPage = () => {
       word: WordKey,
       currentSelectedElements: typeof selectedElements.current
     ) => {
-      //if (Math.abs(info.offset.x) < 5 || Math.abs(info.offset.y) < 2) return
-
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [word.key]: _currentElement, ...otherElements } = currentSelectedElements
       const closestElement = Object.values(otherElements).reduce(
