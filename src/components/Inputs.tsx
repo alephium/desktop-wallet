@@ -279,6 +279,12 @@ const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
   margin: 15px 0;
   border-radius: 7px;
+  color: ${({ theme }) => theme.font.secondary};
+
+  .tagify__input:empty::before {
+    // Placeholder
+    color: ${({ theme }) => theme.font.secondary};
+  }
 `
 
 const Label = styled(motion.label)`

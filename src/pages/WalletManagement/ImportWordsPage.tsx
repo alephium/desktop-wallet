@@ -91,14 +91,14 @@ const ImportWordsPage = () => {
               : "All good? Let's continue!"}
           </CenteredSecondaryParagraph>
         </PanelContent>
-        {isNextButtonActive() && (
-          <FooterActions>
-            <Button secondary onClick={onButtonBack}>
-              Cancel
-            </Button>
-            <Button onClick={handleWalletImport}>Continue</Button>
-          </FooterActions>
-        )}
+        <FooterActions>
+          <Button secondary onClick={onButtonBack}>
+            Cancel
+          </Button>
+          <Button onClick={handleWalletImport} disabled={!isNextButtonActive()}>
+            Continue
+          </Button>
+        </FooterActions>
       </PanelContainer>
     </MainPanel>
   )

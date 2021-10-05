@@ -80,19 +80,19 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   return (
     <MainPanel>
       <PanelContainer>
-        <PanelTitle color="primary">{isRestoring ? 'Restore Account' : 'New Account'}</PanelTitle>
+        <PanelTitle color="primary">{isRestoring ? 'Import Account' : 'New Account'}</PanelTitle>
         <PanelContent>
           <SectionContent inList>
             <Input
               value={username}
-              placeholder="Account Name"
+              placeholder={isRestoring ? 'New account name' : 'Account name'}
               onChange={onUpdateUsername}
               error={usernameError}
               isValid={username.length > 0 && usernameError.length === 0}
             />
             <Input
               value={password}
-              placeholder="Password"
+              placeholder={isRestoring ? 'New password' : 'Password'}
               type="password"
               onChange={onUpdatePassword}
               error={passwordError}
@@ -117,7 +117,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         </PanelContent>
         <FooterActions apparitionDelay={0.3}>
           <Button secondary onClick={onButtonBack}>
-            Cancel
+            Back
           </Button>
           <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick}>
             Continue
