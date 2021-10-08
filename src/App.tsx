@@ -111,10 +111,13 @@ const App = () => {
   }, [snackbarMessage])
 
   // Auto-lock mechanism
+  const lastInteractionTimeThrottle = 10000
+  const autoLockThreshold = 3 * 60 * 1000 // TODO: Allow to set this parameter in app settings
+
   const updateLastInteractionTime = useCallback(() => {
     const currentTime = new Date().getTime()
 
-    if (currentTime - lastInteractionTime > 10000) {
+    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
       setLastInteractionTime(currentTime)
     }
   }, [lastInteractionTime])
@@ -134,9 +137,8 @@ const App = () => {
   useInterval(() => {
     const currentTime = new Date().getTime()
 
-    if (currentTime - lastInteractionTime > 3 * 60 * 1000 && wallet) {
+    if (currentTime - lastInteractionTime > autoLockThreshold && wallet) {
       setWallet(undefined)
-      setLastInteractionTime(currentTime)
     }
   }, 2000)
 
