@@ -129,17 +129,16 @@ const AccountSettings = () => {
             <SectionContent>
               <InfoBox
                 importance="alert"
-                text="Make sure that you have your 24 words secured somewhere safe, to allow you to recover it in the future!
-                If not, your account will be lost forever."
+                text="Please make sure to have your 24 secret words saved and stored somewhere secure to restore your wallet in the future. Without the 24 secret words, your wallet will be unrecoverable and permanently lost."
               />
 
               <CenteredSecondaryParagraph>
-                <b>Your keys, your crypto.</b>
+                <b>Not your keys, not your coins.</b>
               </CenteredSecondaryParagraph>
             </SectionContent>
             <SectionContent inList>
               <Button alert onClick={() => handleRemoveAccount()}>
-                CONFIRM DELETE
+                CONFIRM REMOVAL
               </Button>
             </SectionContent>
           </Modal>
