@@ -142,7 +142,7 @@ const SendPage = () => {
 const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
   return (
     <SectionContent>
-      <InfoBox text={address} label="Recipient's address" />
+      <InfoBox text={address} label="Recipient's address" wordBreak />
       <InfoBox text={`${amount} ℵ`} label="Amount" />
     </SectionContent>
   )
