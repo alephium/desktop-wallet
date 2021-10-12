@@ -32,11 +32,6 @@ export const isElectron = () => {
 const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
 const QUINTILLION = 1000000000000000000
 
-export const truncateToDecimals = (num: number, dec = 2) => {
-  const calcDec = Math.pow(10, dec)
-  return Math.trunc(num * calcDec) / calcDec
-}
-
 const getNumberOfTrailingZeros = (numberArray: string[]) => {
   let numberOfZeros = 0
 
@@ -51,7 +46,7 @@ const getNumberOfTrailingZeros = (numberArray: string[]) => {
   return numberOfZeros
 }
 
-const removeTrailingZeros = (numString: string) => {
+export const removeTrailingZeros = (numString: string) => {
   const numberArray = numString.split('')
 
   const numberOfZeros = getNumberOfTrailingZeros(numberArray)
@@ -59,7 +54,7 @@ const removeTrailingZeros = (numString: string) => {
   const numberArrayWithoutTrailingZeros = [...numberArray.slice(0, numberArray.length - numberOfZeros)]
 
   if (numberArrayWithoutTrailingZeros[numberArrayWithoutTrailingZeros.length - 1] === '.')
-    numberArrayWithoutTrailingZeros.push('0')
+    numberArrayWithoutTrailingZeros.push('00')
 
   return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
@@ -67,7 +62,7 @@ const removeTrailingZeros = (numString: string) => {
 export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number) => {
   const minDigits = 3
 
-  if (baseNum < 0n) return '0.00'
+  if (baseNum <= 0n) return '0.00'
 
   // For abbreviation, we don't need full precision and can work with number
   const alephNum = Number(baseNum) / QUINTILLION
@@ -102,7 +97,7 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 // ===== BALANCES ===== //
 // ==================== //
 
-export function calAmountDelta(t: Transaction, id: string) {
+export const calAmountDelta = (t: Transaction, id: string) => {
   if (t.inputs && t.outputs) {
     const inputAmount = t.inputs.reduce<bigint>((acc, input) => {
       return input.amount && input.address === id ? acc + BigInt(input.amount) : acc
@@ -129,16 +124,6 @@ export const openInNewWindow = (url: string) => {
       newWindow.focus()
     }
   }
-}
-
-// =================== //
-// ===== NUMBERS ===== //
-// =================== //
-
-export const numberToPlainString = (num: number) => {
-  return ('' + +num).replace(/(-?)(\d*)\.?(\d*)e([+-]\d+)/, function (a, b, c, d, e) {
-    return e < 0 ? b + '0.' + Array(1 - e - c.length).join('0') + c + d : b + c + d + Array(e - d.length + 1).join('0')
-  })
 }
 
 // ===================== //
