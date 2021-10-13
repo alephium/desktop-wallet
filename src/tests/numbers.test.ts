@@ -7,7 +7,7 @@ const alf = (amount: bigint) => {
 const minDigits = 3
 
 it('Should abbreviate amount', () => {
-  expect(abbreviateAmount(alf(BigInt(-1)))).toEqual('0.000'),
+  expect(abbreviateAmount(alf(BigInt(-1)))).toEqual('???'),
     expect(abbreviateAmount(BigInt(0))).toEqual('0.000'),
     expect(abbreviateAmount(BigInt(1))).toEqual('0.000000000000000001'),
     expect(abbreviateAmount(BigInt(100000))).toEqual('0.0000000000001'),
