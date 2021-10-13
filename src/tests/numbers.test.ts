@@ -1,4 +1,4 @@
-import { abbreviateAmount, removeTrailingZeros } from '../utils/misc'
+import { abbreviateAmount, removeTrailingZeros } from '../utils/numbers'
 
 const alf = (amount: bigint) => {
   return amount * BigInt(1000000000000000000)

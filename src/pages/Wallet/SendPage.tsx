@@ -10,7 +10,7 @@ import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
-import { checkAddressValidity } from '../../utils/misc'
+import { checkAddressValidity } from '../../utils/addresses'
 import { isHTTPError } from '../../utils/api'
 
 const SendPage = () => {

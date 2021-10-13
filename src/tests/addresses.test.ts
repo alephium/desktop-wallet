@@ -1,4 +1,4 @@
-import { checkAddressValidity } from '../utils/misc'
+import { checkAddressValidity } from '../utils/addresses'
 
 it('Should return address string if correct', () => {
   expect(checkAddressValidity('1EfGPJaeHYN8MQfZmUT58HNbAWkJAbuJ7hCLoAaQwHFXz')).toEqual(

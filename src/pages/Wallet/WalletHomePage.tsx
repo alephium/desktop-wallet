@@ -5,7 +5,7 @@ import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
-import { abbreviateAmount, calAmountDelta, openInNewWindow } from '../../utils/misc'
+import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
@@ -21,6 +21,7 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
 import Address from '../../components/Address'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
+import { openInNewWindow } from '../../utils/misc'
 
 dayjs.extend(relativeTime)
 
