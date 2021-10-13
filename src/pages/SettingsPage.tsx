@@ -129,7 +129,7 @@ const AccountSettings = () => {
             <SectionContent>
               <InfoBox
                 importance="alert"
-                text="Please make sure to have your 24 secret words saved and stored somewhere secure to restore your wallet in the future. Without the 24 secret words, your wallet will be unrecoverable and permanently lost."
+                text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
               />
 
               <CenteredSecondaryParagraph>

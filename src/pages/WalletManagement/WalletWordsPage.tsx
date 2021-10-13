@@ -57,7 +57,7 @@ const WalletWordsPage = () => {
             <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
           </PublicAddressContent>
           <WordsContent inList>
-            <Label>Secret words</Label>
+            <Label>Secret phrase</Label>
             <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
             <InfoBox
               text={'Carefully note the 24 words. They are the keys to your wallet.'}

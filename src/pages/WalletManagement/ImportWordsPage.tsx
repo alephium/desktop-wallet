@@ -75,7 +75,7 @@ const ImportWordsPage = () => {
   return (
     <MainPanel>
       <PanelContainer>
-        <PanelTitle color="primary">Secret words</PanelTitle>
+        <PanelTitle color="primary">Secret phrase</PanelTitle>
         <PanelContent>
           <SectionContent>
             <TextAreaTags
@@ -87,7 +87,7 @@ const ImportWordsPage = () => {
           </SectionContent>
           <CenteredSecondaryParagraph>
             {!isNextButtonActive()
-              ? 'Make sure to properly write down the 24 secret words. They are the key to your wallet.'
+              ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
               : "All good? Let's continue!"}
           </CenteredSecondaryParagraph>
         </PanelContent>
