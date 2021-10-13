@@ -33,7 +33,18 @@ const getNumberOfTrailingZeros = (numberArray: string[]) => {
   return numberOfZeros
 }
 
-export const removeTrailingZeros = (numString: string) => {
+const produceTrailingZeros = (numberOfZeros: number) => {
+  let zerosString = ''
+  let i = 0
+  while (i < numberOfZeros) {
+    zerosString += '0'
+    i++
+  }
+
+  return zerosString
+}
+
+export const removeTrailingZeros = (numString: string, minDigits: number) => {
   const numberArray = numString.split('')
 
   const numberOfZeros = getNumberOfTrailingZeros(numberArray)
@@ -41,7 +52,7 @@ export const removeTrailingZeros = (numString: string) => {
   const numberArrayWithoutTrailingZeros = [...numberArray.slice(0, numberArray.length - numberOfZeros)]
 
   if (numberArrayWithoutTrailingZeros[numberArrayWithoutTrailingZeros.length - 1] === '.')
-    numberArrayWithoutTrailingZeros.push('00')
+    numberArrayWithoutTrailingZeros.push(produceTrailingZeros(minDigits))
 
   return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
@@ -49,7 +60,7 @@ export const removeTrailingZeros = (numString: string) => {
 export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number) => {
   const minDigits = 3
 
-  if (baseNum <= 0n) return '0.00'
+  if (baseNum <= 0n) return `0.${produceTrailingZeros(minDigits)}`
 
   // For abbreviation, we don't need full precision and can work with number
   const alephNum = Number(baseNum) / QUINTILLION
@@ -61,10 +72,10 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   const numberOfDigitsToDisplay = nbOfDecimalsToShow ? nbOfDecimalsToShow : minDigits
 
   if (tier < 0 || showFullPrecision) {
-    return removeTrailingZeros(alephNum.toFixed(18)) // Keep full precision for very low numbers (gas etc.)
+    return removeTrailingZeros(alephNum.toFixed(18), minDigits) // Keep full precision for very low numbers (gas etc.)
   } else if (tier === 0) {
     // Small number, low precision is ok
-    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString())
+    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString(), minDigits)
   } else if (tier >= MONEY_SYMBOL.length) {
     tier = MONEY_SYMBOL.length - 1
   }
