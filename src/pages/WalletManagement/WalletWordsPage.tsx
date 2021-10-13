@@ -67,7 +67,9 @@ const WalletWordsPage = () => {
           </WordsContent>
         </PanelContent>
         <FooterActions apparitionDelay={0.3}>
-          <Button onClick={onButtonNext}>{"I've copied the words, continue"}</Button>
+          <Button onClick={onButtonNext} submit>
+            {"I've copied the words, continue"}
+          </Button>
         </FooterActions>
       </PanelContainer>
     </MainPanel>

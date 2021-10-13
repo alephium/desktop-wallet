@@ -28,7 +28,9 @@ const WalletWelcomePage = () => {
         <SubParagraph>Welcome to Alephium.</SubParagraph>
       </SectionContent>
       <FooterActions apparitionDelay={0.3}>
-        <Button onClick={() => history.push('/wallet')}>{"Let's go!"}</Button>
+        <Button onClick={() => history.push('/wallet')} submit>
+          {"Let's go!"}
+        </Button>
       </FooterActions>
     </Container>
   )

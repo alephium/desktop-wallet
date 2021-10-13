@@ -221,7 +221,7 @@ const CheckWordsPage = () => {
             <Button secondary onClick={onButtonBack}>
               Cancel
             </Button>
-            <Button onClick={handleButtonNext} disabled={!areWordsValid()}>
+            <Button onClick={handleButtonNext} disabled={!areWordsValid()} submit>
               Continue
             </Button>
           </FooterActions>

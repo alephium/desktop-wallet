@@ -1,5 +1,5 @@
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
-import React, { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -9,6 +9,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   disabled?: boolean
   transparent?: boolean
   squared?: boolean
+  submit?: boolean
 }
 
 const variants: Variants = {
@@ -17,8 +18,23 @@ const variants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
-export const Button = ({ children, disabled, ...props }: ButtonProps) => {
+export const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimateds] = useState(props.squared ? true : false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if ((submit && e.code === 'Enter') || e.code === 'NumpadEnter') {
+        buttonRef.current?.click()
+      }
+    }
+
+    document.addEventListener('keydown', listener)
+
+    return () => {
+      document.removeEventListener('keydown', listener)
+    }
+  })
 
   return (
     <StyledButton
@@ -28,6 +44,8 @@ export const Button = ({ children, disabled, ...props }: ButtonProps) => {
       disabled={disabled}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimateds(true)}
+      type={submit ? 'submit' : 'button'}
+      ref={buttonRef}
     >
       {children}
     </StyledButton>

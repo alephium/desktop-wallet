@@ -119,7 +119,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
           <Button secondary onClick={onButtonBack}>
             Back
           </Button>
-          <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick}>
+          <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick} submit>
             Continue
           </Button>
         </FooterActions>

@@ -4,7 +4,7 @@ import styled, { useTheme } from 'styled-components'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
 import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
 import { motion } from 'framer-motion'
-import { Form, Input, Select } from '../components/Inputs'
+import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
@@ -159,28 +159,26 @@ const Login = ({
 
   return (
     <>
-      <Form>
-        <SectionContent inList>
-          <Select
-            placeholder="Account"
-            options={usernames.map((u) => ({ label: u, value: u }))}
-            onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
-            title="Select an account"
-          />
-          <Input
-            placeholder="Password"
-            type="password"
-            autoComplete="off"
-            onChange={(e) => handleCredentialsChange('password', e.target.value)}
-            value={credentials.password}
-          />
-        </SectionContent>
-        <SectionContent inList>
-          <Button onClick={handleLogin} type="submit">
-            Login
-          </Button>
-        </SectionContent>
-      </Form>
+      <SectionContent inList>
+        <Select
+          placeholder="Account"
+          options={usernames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+          title="Select an account"
+        />
+        <Input
+          placeholder="Password"
+          type="password"
+          autoComplete="off"
+          onChange={(e) => handleCredentialsChange('password', e.target.value)}
+          value={credentials.password}
+        />
+      </SectionContent>
+      <SectionContent inList>
+        <Button onClick={handleLogin} submit>
+          Login
+        </Button>
+      </SectionContent>
       <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
     </>
   )
