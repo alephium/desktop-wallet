@@ -624,7 +624,8 @@ const FloatingLogo = styled(AlephiumLogoSVG)`
   height: 60px;
 
   path {
-    fill: rgba(0, 0, 0, 0.05) !important;
+    fill: ${({ theme }) =>
+      theme.name === 'light' ? 'rgba(0, 0, 0, 0.08) !important' : 'rgba(0, 0, 0, 0.4) !important'};
   }
 
   @media ${deviceBreakPoints.mobile} {
