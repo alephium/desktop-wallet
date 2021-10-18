@@ -4,7 +4,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint',
+    'prettier',
     'plugin:prettier/recommended'
   ],
   plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'unused-imports'],
@@ -37,7 +37,7 @@ module.exports = {
     'prettier/prettier': [
       'error',
       {
-        'endOfLine': 'auto',
+        endOfLine: 'auto'
       }
     ]
   },

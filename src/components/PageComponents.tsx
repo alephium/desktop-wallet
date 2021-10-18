@@ -4,12 +4,22 @@ import styled, { useTheme } from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-export const MainPanel = styled.main<{
+interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
   horizontalAlign?: 'center' | 'stretch'
   enforceMinHeight?: boolean
   transparentBg?: boolean
-}>`
+}
+
+export const MainPanel: FC<MainPanelProps> = ({ children, ...props }) => {
+  return (
+    <StyledMainPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+      {children}
+    </StyledMainPanel>
+  )
+}
+
+const StyledMainPanel = styled(motion.main)<MainPanelProps>`
   width: 100%;
   margin: 0 auto;
   max-width: 600px;

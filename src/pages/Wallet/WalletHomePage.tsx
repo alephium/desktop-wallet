@@ -5,7 +5,7 @@ import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
-import { abbreviateAmount, calAmountDelta, openInNewWindow } from '../../utils/misc'
+import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
@@ -21,16 +21,21 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
 import Address from '../../components/Address'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
+import { openInNewWindow } from '../../utils/misc'
 
 dayjs.extend(relativeTime)
 
 const renderIOAccountList = (currentAddress: string, io: { address?: string }[]) => {
   if (io.length > 0) {
-    return _(io.filter((o) => o.address !== currentAddress))
-      .map((v) => v.address)
-      .uniq()
-      .value()
-      .map((v) => <Address key={v} hash={v || ''} />)
+    if (io.every((o) => o.address === currentAddress)) {
+      return <Address key={currentAddress} hash={currentAddress} />
+    } else {
+      return _(io.filter((o) => o.address !== currentAddress))
+        .map((v) => v.address)
+        .uniq()
+        .value()
+        .map((v) => <Address key={v} hash={v || ''} />)
+    }
   } else {
     return <MiningRewardString>Mining Rewards</MiningRewardString>
   }
@@ -38,7 +43,7 @@ const renderIOAccountList = (currentAddress: string, io: { address?: string }[])
 
 const WalletHomePage = () => {
   const history = useHistory()
-  const { wallet, setSnackbarMessage, client, setWallet } = useContext(GlobalContext)
+  const { wallet, setSnackbarMessage, client, setWallet, currentUsername } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
@@ -127,7 +132,7 @@ const WalletHomePage = () => {
   if (!wallet) return null
 
   return (
-    <WalletContainer>
+    <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
@@ -142,6 +147,7 @@ const WalletHomePage = () => {
           <WalletAmountContent>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
+            <CurrentAccount>Account: {currentUsername}</CurrentAccount>
           </WalletAmountContent>
         </WalletAmountContainer>
         <WalletActions>
@@ -231,6 +237,7 @@ const WalletActionButton = ({
 
 const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Transaction; currentAddress: string }) => {
   const amountDelta = calAmountDelta(t, currentAddress)
+
   const isOut = amountDelta < 0
 
   const IOAddressesList = isOut ? t.outputs : t.inputs
@@ -263,7 +270,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
   return (
     <PendingTransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.txId}`)}>
       <TxDetails>
-        <DirectionLabel>TO</DirectionLabel>
+        <DirectionLabel>↑ TO</DirectionLabel>
         <IOAddresses>
           <Address key={t.toAddress} hash={t.toAddress || ''} />
         </IOAddresses>
@@ -278,7 +285,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
 // ==== STYLING ====
 // =================
 
-const WalletContainer = styled.div`
+const WalletContainer = styled(motion.div)`
   display: flex;
   flex: 1;
   overflow: hidden;
@@ -405,6 +412,13 @@ const WalletAmountSubtitle = styled.div`
   font-weight: 500;
 `
 
+const CurrentAccount = styled.span`
+  text-align: center;
+  color: ${({ theme }) => theme.font.contrastSecondary};
+  margin-top: 5px;
+  font-size: 0.95em;
+`
+
 const WalletActions = styled.div`
   display: flex;
   flex-direction: column;
@@ -493,7 +507,7 @@ const LastTransactionListHeader = styled.div`
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin: 0;
+  margin: 0 15px 0 0;
 
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;
@@ -610,7 +624,8 @@ const FloatingLogo = styled(AlephiumLogoSVG)`
   height: 60px;
 
   path {
-    fill: rgba(0, 0, 0, 0.05) !important;
+    fill: ${({ theme }) =>
+      theme.name === 'light' ? 'rgba(0, 0, 0, 0.08) !important' : 'rgba(0, 0, 0, 0.4) !important'};
   }
 
   @media ${deviceBreakPoints.mobile} {

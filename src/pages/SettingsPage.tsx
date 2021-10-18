@@ -6,11 +6,12 @@ import { Input } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import { Settings } from '../utils/clients'
-import { Edit3 } from 'lucide-react'
+import { AlertTriangle, Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alephium-js'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
+import ThemeSwitcher from '../components/ThemeSwitcher'
 
 const Storage = getStorage()
 
@@ -34,6 +35,11 @@ const SettingsPage = () => {
       ) : (
         <ClientSettings />
       )}
+      <Divider />
+      <SectionContent>
+        <ThemeSwitcher />
+        <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
+      </SectionContent>
     </PanelContainer>
   )
 }
@@ -45,6 +51,7 @@ const AccountSettings = () => {
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
   const [typedPassword, setTypedPassword] = useState('')
+  const theme = useTheme()
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTypedPassword(e.target.value)
@@ -117,18 +124,21 @@ const AccountSettings = () => {
         {isDisplayingRemoveModal && (
           <Modal title="Remove account" onClose={() => setIsDisplayingRemoveModal(false)} focusMode>
             <SectionContent>
-              <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
-              <CenteredSecondaryParagraph>
-                Type your password to confirm the account removal from your device. <br />
-                <b>
-                  Make sure that you have your 24 words secured somewhere safe, to allow you to recover it in the
-                  future!
-                </b>
-              </CenteredSecondaryParagraph>
+              <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
             </SectionContent>
             <SectionContent>
-              <Button alert onClick={() => handlePasswordVerification(() => handleRemoveAccount())}>
-                DELETE
+              <InfoBox
+                importance="alert"
+                text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
+              />
+
+              <CenteredSecondaryParagraph>
+                <b>Not your keys, not your coins.</b>
+              </CenteredSecondaryParagraph>
+            </SectionContent>
+            <SectionContent inList>
+              <Button alert onClick={() => handleRemoveAccount()}>
+                CONFIRM REMOVAL
               </Button>
             </SectionContent>
           </Modal>
@@ -209,6 +219,11 @@ const Divider = styled.div`
   margin: 15px 5px;
   height: 1px;
   width: 100%;
+`
+
+const VersionNumber = styled.span`
+  color: ${({ theme }) => theme.font.secondary};
+  margin-top: 15px;
 `
 
 export default SettingsPage

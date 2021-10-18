@@ -1,5 +1,5 @@
 build
 dist
 node_modules
-alephium-wallet.zip
 .DS_Store
+alephium-*.zip

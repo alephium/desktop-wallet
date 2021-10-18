@@ -44,11 +44,11 @@ export const GlobalStyle = createGlobalStyle`
     .tagify__dropdown__wrapper {
       border: none;
       border-radius: 7px;
-      background-color: ${({ theme }) => theme.bg.contrast};
+      background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
     }
 
     .tagify__dropdown__item  {
-      color: ${({ theme }) => theme.font.contrastPrimary};
+      color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
       margin: 0;
       border-radius: 0;
       padding: 10px;

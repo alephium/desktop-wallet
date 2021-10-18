@@ -10,7 +10,7 @@ import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
-import { checkAddressValidity } from '../../utils/misc'
+import { checkAddressValidity } from '../../utils/addresses'
 import { isHTTPError } from '../../utils/api'
 
 const SendPage = () => {
@@ -142,7 +142,7 @@ const SendPage = () => {
 const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
   return (
     <SectionContent>
-      <InfoBox text={address} label="Recipient's address" />
+      <InfoBox text={address} label="Recipient's address" wordBreak />
       <InfoBox text={`${amount} ℵ`} label="Amount" />
     </SectionContent>
   )

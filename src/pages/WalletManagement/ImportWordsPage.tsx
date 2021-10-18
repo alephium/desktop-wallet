@@ -16,7 +16,6 @@ import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { walletImport, getStorage } from 'alephium-js'
 import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
-import { isHTTPError } from '../../utils/api'
 
 const Storage = getStorage()
 
@@ -69,16 +68,14 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (e) {
-      if (isHTTPError(e)) {
-        setSnackbarMessage({ text: e.error.detail, type: 'alert' })
-      }
+      setSnackbarMessage({ text: (e as Error).toString(), type: 'alert' })
     }
   }
 
   return (
     <MainPanel>
       <PanelContainer>
-        <PanelTitle color="primary">Secret words</PanelTitle>
+        <PanelTitle color="primary">Secret phrase</PanelTitle>
         <PanelContent>
           <SectionContent>
             <TextAreaTags
@@ -90,18 +87,18 @@ const ImportWordsPage = () => {
           </SectionContent>
           <CenteredSecondaryParagraph>
             {!isNextButtonActive()
-              ? 'Make sure to properly write down the 24 secret words. They are the key to your wallet.'
+              ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
               : "All good? Let's continue!"}
           </CenteredSecondaryParagraph>
         </PanelContent>
-        {isNextButtonActive() && (
-          <FooterActions>
-            <Button secondary onClick={onButtonBack}>
-              Cancel
-            </Button>
-            <Button onClick={handleWalletImport}>Continue</Button>
-          </FooterActions>
-        )}
+        <FooterActions>
+          <Button secondary onClick={onButtonBack}>
+            Cancel
+          </Button>
+          <Button onClick={handleWalletImport} disabled={!isNextButtonActive()} submit>
+            Continue
+          </Button>
+        </FooterActions>
       </PanelContainer>
     </MainPanel>
   )

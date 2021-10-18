@@ -4,7 +4,7 @@ import styled, { useTheme } from 'styled-components'
 import { ReactComponent as MountainSVG } from '../images/mountain.svg'
 import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
 import { motion } from 'framer-motion'
-import { Form, Input, Select } from '../components/Inputs'
+import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import tinycolor from 'tinycolor2'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
@@ -33,7 +33,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
 
   return (
-    <HomeContainer>
+    <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <SettingsButton transparent squared onClick={() => history.push('/settings')}>
           <SettingsIcon />
@@ -43,12 +43,16 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
         <AtmosphericGlowBackground
           initial={{ bottom: '-10vh', opacity: 0 }}
           animate={{ bottom: 0, opacity: 0.6 }}
-          transition={{ delay: 0.2, duration: 1.2 }}
+          transition={{ delay: 1, duration: 1.2 }}
         />
         <MainPanel transparentBg>
           <AlephiumLogo />
           <HeaderText>
-            <PanelTitle color={theme.font.contrastPrimary} backgroundColor="transparent" useLayoutId={false}>
+            <PanelTitle
+              color={theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary}
+              backgroundColor="transparent"
+              useLayoutId={false}
+            >
               Alephium
             </PanelTitle>
             <PageSubtitle>Official Wallet</PageSubtitle>
@@ -58,7 +62,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
             <Moon
               initial={{ bottom: '-10vh', opacity: 0 }}
               animate={{ bottom: '7vh', opacity: 1 }}
-              transition={{ delay: 0.2, duration: 1.2 }}
+              transition={{ delay: 1, duration: 1.2 }}
             />
             <CloudGroup
               coordinates={[
@@ -155,27 +159,26 @@ const Login = ({
 
   return (
     <>
-      <Form>
-        <SectionContent inList>
-          <Select
-            placeholder="Account name"
-            options={usernames.map((u) => ({ label: u, value: u }))}
-            onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
-          />
-          <Input
-            placeholder="Password"
-            type="password"
-            autoComplete="off"
-            onChange={(e) => handleCredentialsChange('password', e.target.value)}
-            value={credentials.password}
-          />
-        </SectionContent>
-        <SectionContent inList>
-          <Button onClick={handleLogin} type="submit">
-            Login
-          </Button>
-        </SectionContent>
-      </Form>
+      <SectionContent inList>
+        <Select
+          placeholder="Account"
+          options={usernames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+          title="Select an account"
+        />
+        <Input
+          placeholder="Password"
+          type="password"
+          autoComplete="off"
+          onChange={(e) => handleCredentialsChange('password', e.target.value)}
+          value={credentials.password}
+        />
+      </SectionContent>
+      <SectionContent inList>
+        <Button onClick={handleLogin} submit>
+          Login
+        </Button>
+      </SectionContent>
       <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
     </>
   )
@@ -206,7 +209,7 @@ const InitialActions = ({
 
 // === Styling
 
-const HomeContainer = styled.main`
+const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
 
@@ -218,7 +221,7 @@ const HomeContainer = styled.main`
 const Sidebar = styled.div`
   flex: 0.5;
   min-width: 300px;
-  background-color: ${({ theme }) => theme.bg.contrast};
+  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
   position: relative;
   overflow: hidden;
   padding: 3vw;
@@ -263,7 +266,7 @@ const InteractionArea = styled.div`
 const HeaderText = styled.div`
   margin-top: 5vh;
   max-width: 700px;
-  color: ${({ theme }) => theme.font.contrastSecondary};
+  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastSecondary : theme.font.secondary)};
 
   @media ${deviceBreakPoints.mobile} {
     display: none;
@@ -319,7 +322,7 @@ const CloudGroup = ({
     <StyledCloudGroup
       initial={{ [side]: '-100px' }}
       animate={{ [side]: distance }}
-      transition={{ delay: 0.1, duration: 0.5 }}
+      transition={{ delay: 1, duration: 0.5 }}
       style={style}
     >
       {clouds}
