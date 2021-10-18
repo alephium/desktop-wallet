@@ -2,11 +2,11 @@
 
 stdenv.mkDerivation rec {
   pname = "alephium-wallet";
-  version = "0.10.3";
+  version = "0.11.1";
 
   src = fetchurl {
     url = "https://github.com/alephium/alephium-wallet/releases/download/v${version}/alephium-wallet-linux-${version}.AppImage";
-    sha256 = "1hc6qp6rg8pgqafd7yhxg3ik8fsm4s5n8z8yy70sls5c10xncz22";
+    sha256 = "067nqh748n02cspaa7c74qfigg1qdb4amhgaq6fwyb3j6z3m3b4j";
     name = "${pname}-${version}.AppImage";
   };
 
