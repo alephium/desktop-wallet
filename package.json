@@ -6,7 +6,7 @@
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
   "scripts": {
-    "build": "REACT_APP_VERSION=$npm_package_version INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "build": "cross-env REACT_APP_VERSION=$npm_package_version INLINE_RUNTIME_CHUNK=false react-scripts build",
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-pack": "npm run build && npx electron-builder",
     "electron-pack-windows": "npm run build && npx electron-builder -w",
@@ -14,7 +14,7 @@
     "electron-pack-ubuntu": "npm run build && npx electron-builder -l",
     "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
     "extension-pack": "rm alephium-wallet.zip; npm run-script extension-build && cd build && zip -r ../alephium-wallet.zip *",
-    "start": "REACT_APP_VERSION=$npm_package_version react-scripts start",
+    "start": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
     "test": "react-scripts test"
   },
   "browserslist": {
@@ -54,6 +54,7 @@
     "bip39": "^3.0.4",
     "classnames": "^2.3.1",
     "concurrently": "^6.2.1",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.10.7",
     "electron": "^15.0.0",
     "electron-builder": "^22.11.7",
@@ -99,6 +100,6 @@
     }
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   }
 }
