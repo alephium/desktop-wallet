@@ -6,10 +6,11 @@ import Paragraph from '../../components/Paragraph'
 import { openInNewWindow } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import { Button } from '../../components/Buttons'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
+  const theme = useTheme()
 
   const address = wallet?.address
 
@@ -36,7 +37,11 @@ const AddressPage = () => {
 
   return (
     <PanelContainer>
-      <SectionContent>{address && <QRCode value={address} style={{ marginTop: 25 }} />}</SectionContent>
+      <SectionContent>
+        {address && (
+          <QRCode value={address} style={{ marginTop: 25 }} fgColor={theme.font.primary} bgColor={theme.bg.primary} />
+        )}
+      </SectionContent>
       <ShortenParagraph>{address}</ShortenParagraph>
       <SectionContent inList>
         <Button secondary onClick={handleShowInExplorer}>
