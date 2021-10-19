@@ -15,7 +15,7 @@ const Address = ({ hash }: { hash: string }) => {
 }
 
 const StyledAdress = styled.span`
-   text-overflow: ellipsis;
+  text-overflow: ellipsis;
   overflow: hidden;
   color: ${({ theme }) => theme.global.accent};
 
