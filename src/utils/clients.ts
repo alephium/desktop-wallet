@@ -53,12 +53,24 @@ export interface Settings {
   explorerUrl: string
 }
 
-export function settingsDefault(): Settings {
-  return {
+const networkTypes = ['testnet', 'mainnet'] as const
+export type NetworkType = typeof networkTypes[number]
+
+export const networkEndpoints: Record<NetworkType, Settings> = {
+  testnet: {
     nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
+  },
+  mainnet: {
+    nodeHost: 'https://mainnet-wallet.alephium.org',
+    explorerApiHost: 'https://mainnet-backend.alephium.org',
+    explorerUrl: 'https://explorer.alephium.org'
   }
+}
+
+export function settingsDefault(): Settings {
+  return networkEndpoints.testnet
 }
 
 export function loadSettings(): Settings | null {

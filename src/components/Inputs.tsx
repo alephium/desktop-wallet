@@ -1,10 +1,11 @@
-import { AnimatePresence, HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { AnimatePresence, motion, Variants } from 'framer-motion'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 import classNames from 'classnames'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Check, MoreVertical } from 'lucide-react'
 import Tags from '@yaireo/tagify/dist/react.tagify'
+import { isEqual } from 'lodash'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
@@ -133,44 +134,57 @@ export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
 
 // === SELECT === //
 
-interface SelectOption {
-  value: string
+interface SelectOption<T> {
+  value: T
   label: string
 }
 
-interface SelectProps extends HTMLMotionProps<'select'> {
-  initialValue?: SelectOption
-  options: SelectOption[]
+interface SelectProps<T> {
+  placeholder?: string
+  disabled?: boolean
+  controlledValue?: SelectOption<T>
+  options: SelectOption<T>[]
   title?: string
-  onValueChange: (value: SelectOption | undefined) => void
+  onValueChange: (value: SelectOption<T> | undefined) => void
+  className?: string
 }
 
-export const Select = ({
+export function Select<T>({
   options,
   title,
   placeholder,
   disabled,
-  initialValue,
+  controlledValue,
   className,
   onValueChange
-}: SelectProps) => {
+}: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const setInputValue = useCallback(
-    (option: SelectOption) => {
-      onValueChange && onValueChange(option)
-      setValue(option)
+    (option: SelectOption<T>) => {
+      if (!value || !isEqual(option, value)) {
+        onValueChange && onValueChange(option)
 
-      // Set value in input
-      if (inputRef.current && option) {
-        inputRef.current.value = option.label
+        setValue(option)
+
+        // Set value in input
+        if (inputRef.current && option) {
+          inputRef.current.value = option.label
+        }
       }
     },
-    [onValueChange]
+    [onValueChange, value]
   )
+
+  useEffect(() => {
+    // Controlled component
+    if (controlledValue) {
+      setInputValue(controlledValue)
+    }
+  }, [controlledValue, setInputValue])
 
   useEffect(() => {
     // If only one value, select it
@@ -212,18 +226,18 @@ export const Select = ({
   )
 }
 
-const SelectOptionsPopup = ({
+function SelectOptionsPopup<T>({
   options,
   setValue,
   handleBackgroundClick,
   title
 }: {
-  options: SelectOption[]
-  setValue: (value: SelectOption) => void | undefined
+  options: SelectOption<T>[]
+  setValue: (value: SelectOption<T>) => void | undefined
   handleBackgroundClick: () => void
   title?: string
-}) => {
-  const handleOptionSelect = (value: SelectOption) => {
+}) {
+  const handleOptionSelect = (value: SelectOption<T>) => {
     setValue(value)
     handleBackgroundClick()
   }
@@ -251,7 +265,7 @@ const SelectOptionsPopup = ({
           </SelectOptionsHeader>
         )}
         {options.map((o) => (
-          <OptionItem key={o.value} onClick={() => handleOptionSelect(o)}>
+          <OptionItem key={o.label} onClick={() => handleOptionSelect(o)}>
             {o.label}
           </OptionItem>
         ))}

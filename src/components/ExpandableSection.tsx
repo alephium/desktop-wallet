@@ -1,22 +1,34 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
-const ExpandableSection: FC<{ sectionTitle: string }> = ({ sectionTitle, children }) => {
-  const [expanded, setExpanded] = useState(false)
+const ExpandableSection: FC<{ sectionTitle: string; open?: boolean; onOpenChange?: (isOpen: boolean) => void }> = ({
+  sectionTitle,
+  open,
+  onOpenChange,
+  children
+}) => {
+  const [expanded, setExpanded] = useState(open)
+
+  useEffect(() => {
+    setExpanded(open)
+  }, [open])
 
   const handleTitleClick = () => {
-    setExpanded(!expanded)
+    const newState = !expanded
+    onOpenChange && onOpenChange(newState)
+    setExpanded(newState)
   }
 
   return (
     <Container>
       <Title onClick={handleTitleClick}>
-        <TitleText>{sectionTitle}</TitleText>
         <Chevron animate={{ rotate: expanded ? 180 : 0 }} />
+        <TitleText>{sectionTitle}</TitleText>
+        <Divider />
       </Title>
-      <ContentWrapper animate={{ height: expanded ? 'auto' : 0 }}>
+      <ContentWrapper animate={{ height: expanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
         <Content>{children}</Content>
       </ContentWrapper>
     </Container>
@@ -31,7 +43,7 @@ const Container = styled.div`
 const Title = styled.div`
   display: flex;
   cursor: pointer;
-  align-content: center;
+  align-items: center;
 `
 
 const Chevron = styled(motion(ChevronDown))`
@@ -40,7 +52,14 @@ const Chevron = styled(motion(ChevronDown))`
 `
 
 const TitleText = styled.span`
-  margin-right: 10px;
+  margin-left: 10px;
+  margin-right: 15px;
+`
+
+const Divider = styled.div`
+  height: 1px;
+  background-color: ${({ theme }) => theme.border.secondary};
+  flex: 1;
 `
 
 const ContentWrapper = styled(motion.div)`
@@ -51,8 +70,7 @@ const ContentWrapper = styled(motion.div)`
 const Content = styled.div`
   margin-top: 10px;
   padding: 10px;
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: 7px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 export default ExpandableSection
