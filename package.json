@@ -13,7 +13,7 @@
     "electron-pack-macos": "npm run build && npx electron-builder --mac --universal",
     "electron-pack-ubuntu": "npm run build && npx electron-builder -l",
     "extension-build": "rm -rf build; INLINE_RUNTIME_CHUNK=false npm run-script build;  cp public/background.js public/manifest.json build",
-    "extension-pack": "rm alephium-wallet.zip; npm run-script extension-build && cd build && zip -r ../alephium-wallet.zip *",
+    "extension-pack": "npm run-script extension-build && web-ext build --source-dir=build --artifacts-dir=. --filename=alephium-wallet.zip --overwrite-dest",
     "start": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
     "test": "react-scripts test",
     "lint": "eslint . --ext .ts,.tsx",
@@ -80,6 +80,7 @@
     "type-fest": "^2.3.4",
     "typescript": "^4.4.3",
     "wait-on": "6.0.0",
+    "web-ext": "^6.5.0",
     "zxcvbn": "^4.4.2"
   },
   "build": {
