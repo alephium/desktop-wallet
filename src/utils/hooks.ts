@@ -75,3 +75,8 @@ export function useStateWithLocalStorage<T>(localStorageKey: string, defaultValu
 
   return [value, setValue]
 }
+
+// On mount useEffect
+// (https://stackoverflow.com/questions/53120972/how-to-call-loading-function-with-react-useeffect-only-once)
+// eslint-disable-next-line react-hooks/exhaustive-deps
+export const useMountEffect = (fun: () => void) => useEffect(fun, [])

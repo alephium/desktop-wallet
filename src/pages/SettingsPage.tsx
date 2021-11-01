@@ -1,11 +1,11 @@
-import React, { ChangeEvent, useContext, useState } from 'react'
+import React, { ChangeEvent, useCallback, useContext, useState } from 'react'
 import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
 import { InfoBox } from '../components/InfoBox'
-import { Input } from '../components/Inputs'
+import { Input, Select } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
-import { Settings } from '../utils/clients'
+import { networkEndpoints, NetworkType, Settings } from '../utils/clients'
 import { AlertTriangle, Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
@@ -13,6 +13,8 @@ import { walletOpen, getStorage, Wallet } from 'alephium-js'
 import styled, { useTheme } from 'styled-components'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import ExpandableSection from '../components/ExpandableSection'
+import { isEqual } from 'lodash'
+import { useMountEffect } from '../utils/hooks'
 
 const Storage = getStorage()
 
@@ -44,6 +46,10 @@ const SettingsPage = () => {
     </PanelContainer>
   )
 }
+
+// ================
+// Account settings
+// ================
 
 const AccountSettings = () => {
   const { currentUsername, setSnackbarMessage, setWallet } = useContext(GlobalContext)
@@ -93,7 +99,7 @@ const AccountSettings = () => {
   }
 
   return (
-    <div>
+    <>
       <SectionContent>
         {isDisplayingSecretModal && (
           <Modal title="Secret phrase" onClose={() => setIsDisplayingSecretModal(false)} focusMode>
@@ -156,8 +162,17 @@ const AccountSettings = () => {
           Remove account
         </Button>
       </SectionContent>
-    </div>
+    </>
   )
+}
+
+// ================
+// Network settings
+// ================
+
+interface NetworkSelectOption {
+  label: string
+  value: NetworkType | 'custom'
 }
 
 const ClientSettings = () => {
@@ -169,18 +184,80 @@ const ClientSettings = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
+  const [currentNetwork, setCurrentNetwork] = useState<NetworkType | 'custom'>()
+
+  const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
+
+  const networkSelectOptions: NetworkSelectOption[] = [
+    { label: 'Mainnet', value: 'mainnet' },
+    { label: 'Testnet', value: 'testnet' },
+    { label: 'Custom', value: 'custom' }
+  ]
+
+  const overrideSelectionIfMatchesPreset = useCallback(
+    (newSettings: Settings) => {
+      // Check if values correspond to an existing preset
+      const existingPreset = Object.entries(networkEndpoints).find(([networkType, presetSettings]) => {
+        return isEqual(presetSettings, newSettings)
+      })?.[0] as NetworkType | undefined
+
+      if (existingPreset) {
+        // Set selected network to preset
+        if (currentNetwork !== existingPreset) setCurrentNetwork(existingPreset)
+      } else {
+        // Make sure "custom" is selected
+        if (currentNetwork !== 'custom') setCurrentNetwork('custom')
+      }
+    },
+    [currentNetwork]
+  )
+
   const editSettings = (v: Partial<Settings>) => {
-    setTempSettings((prev) => ({ ...prev, ...v }))
+    const newSettings = { ...tempSettings, ...v }
+
+    overrideSelectionIfMatchesPreset(newSettings)
+
+    setTempSettings(newSettings)
   }
 
+  const handleNetworkPresetChange = useCallback((option: typeof networkSelectOptions[number] | undefined) => {
+    if (option) {
+      setCurrentNetwork(option.value)
+
+      if (option.value === 'custom') {
+        // Make sure to open expandable advanced section
+        setAdvancedSectionOpen(true)
+      } else {
+        setTempSettings(networkEndpoints[option.value])
+      }
+    }
+  }, [])
+
   const handleSave = () => {
+    overrideSelectionIfMatchesPreset(tempSettings)
     setSettings(tempSettings)
     setSnackbarMessage({ text: 'Settings saved!', type: 'info' })
   }
 
+  // Set existing value on mount
+  useMountEffect(() => {
+    overrideSelectionIfMatchesPreset(currentSettings)
+  })
+
   return (
-    <div>
-      <ExpandableSection sectionTitle="Advanced">
+    <>
+      <Select
+        options={networkSelectOptions}
+        onValueChange={handleNetworkPresetChange}
+        controlledValue={networkSelectOptions.find((n) => n.value === currentNetwork)}
+        title="Network"
+        placeholder="Network"
+      />
+      <ExpandableSection
+        sectionTitle="Advanced settings"
+        open={advancedSectionOpen}
+        onOpenChange={(isOpen) => setAdvancedSectionOpen(isOpen)}
+      >
         <UrlInputs>
           <Input
             placeholder="Node host"
@@ -202,7 +279,7 @@ const ClientSettings = () => {
       <SectionContent inList>
         <Button onClick={handleSave}>Save</Button>
       </SectionContent>
-    </div>
+    </>
   )
 }
 
