@@ -12,6 +12,7 @@ import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import { walletOpen, getStorage, Wallet } from 'alephium-js'
 import styled, { useTheme } from 'styled-components'
 import ThemeSwitcher from '../components/ThemeSwitcher'
+import ExpandableSection from '../components/ExpandableSection'
 
 const Storage = getStorage()
 
@@ -20,7 +21,7 @@ const SettingsPage = () => {
 
   const tabs = [
     { value: 'account', label: `Account (${currentUsername})` },
-    { value: 'client', label: 'Endpoints' }
+    { value: 'client', label: 'Networks' }
   ]
 
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
@@ -179,24 +180,25 @@ const ClientSettings = () => {
 
   return (
     <div>
-      <SectionContent>
-        <Input
-          placeholder="Node host"
-          value={tempSettings.nodeHost}
-          onChange={(e) => editSettings({ nodeHost: e.target.value })}
-        />
-        <Input
-          placeholder="Explorer API host"
-          value={tempSettings.explorerApiHost}
-          onChange={(e) => editSettings({ explorerApiHost: e.target.value })}
-        />
-        <Input
-          placeholder="Explorer URL"
-          value={tempSettings.explorerUrl}
-          onChange={(e) => editSettings({ explorerUrl: e.target.value })}
-        />
-      </SectionContent>
-
+      <ExpandableSection sectionTitle="Advanced">
+        <UrlInputs>
+          <Input
+            placeholder="Node host"
+            value={tempSettings.nodeHost}
+            onChange={(e) => editSettings({ nodeHost: e.target.value })}
+          />
+          <Input
+            placeholder="Explorer API host"
+            value={tempSettings.explorerApiHost}
+            onChange={(e) => editSettings({ explorerApiHost: e.target.value })}
+          />
+          <Input
+            placeholder="Explorer URL"
+            value={tempSettings.explorerUrl}
+            onChange={(e) => editSettings({ explorerUrl: e.target.value })}
+          />
+        </UrlInputs>
+      </ExpandableSection>
       <SectionContent inList>
         <Button onClick={handleSave}>Save</Button>
       </SectionContent>
@@ -212,6 +214,11 @@ const PhraseBox = styled.div`
   background-color: ${({ theme }) => theme.global.alert};
   border-radius: 14px;
   margin-bottom: 20px;
+`
+
+const UrlInputs = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const Divider = styled.div`
