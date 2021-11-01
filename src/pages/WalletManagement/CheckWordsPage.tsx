@@ -22,13 +22,17 @@ import { AlertTriangle, ThumbsUp } from 'lucide-react'
 
 const Storage = getStorage()
 
-const getShuffledArr = (arr: string[]) => {
+const getAlphabeticallyOrderedList = (arr: string[]) => {
   const newArr = arr.slice()
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const rand = Math.floor(Math.random() * (i + 1))
-    ;[newArr[i], newArr[rand]] = [newArr[rand], newArr[i]]
-  }
-  return newArr
+  return newArr.sort(function (a, b) {
+    if (a > b) {
+      return 1
+    }
+    if (b > a) {
+      return -1
+    }
+    return 0
+  })
 }
 
 interface WordKey {
@@ -44,7 +48,10 @@ const CheckWordsPage = () => {
   const splitMnemonic = mnemonic.split(' ')
 
   const wordList = useRef<WordKey[]>(
-    getShuffledArr(splitMnemonic).map((wordString, i) => ({ word: wordString, key: `${wordString}-${i}` }))
+    getAlphabeticallyOrderedList(splitMnemonic).map((wordString, i) => ({
+      word: wordString,
+      key: `${wordString}-${i}`
+    }))
   )
 
   const [selectedWords, setSelectedWords] = useState<WordKey[]>([])
