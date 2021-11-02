@@ -23,16 +23,7 @@ import { AlertTriangle, ThumbsUp } from 'lucide-react'
 const Storage = getStorage()
 
 const getAlphabeticallyOrderedList = (arr: string[]) => {
-  const newArr = arr.slice()
-  return newArr.sort(function (a, b) {
-    if (a > b) {
-      return 1
-    }
-    if (b > a) {
-      return -1
-    }
-    return 0
-  })
+  return arr.slice().sort()
 }
 
 interface WordKey {
