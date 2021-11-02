@@ -47,10 +47,6 @@ const template = [
       ]
     : []),
   {
-    label: 'File',
-    submenu: [isMac ? { role: 'close' } : { role: 'quit' }]
-  },
-  {
     label: 'Edit',
     submenu: [
       { role: 'undo' },
@@ -96,10 +92,9 @@ const template = [
   {
     role: 'help',
     submenu: [
-      ...(isMac ? [] : [{ role: 'about' }]),
-      { type: 'separator' },
+      ...(isMac ? [] : [{ role: 'about' }, { type: 'separator' }]),
       {
-        label: 'Report a bug',
+        label: 'Report an issue',
         click: async () => {
           await shell.openExternal('https://github.com/alephium/alephium-wallet/issues/new')
         }
