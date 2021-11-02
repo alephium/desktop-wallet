@@ -48,3 +48,4 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm run-script extension-pack
