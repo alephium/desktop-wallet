@@ -90,10 +90,7 @@ const template = [
     label: 'Window',
     submenu: [
       { role: 'minimize' },
-      { role: 'zoom' },
-      ...(isMac
-        ? [{ type: 'separator' }, { role: 'front' }, { type: 'separator' }, { role: 'window' }]
-        : [{ role: 'close' }])
+      ...(isMac ? [{ role: 'zoom' }, { type: 'separator' }, { role: 'front' }] : [{ role: 'close' }])
     ]
   },
   {
