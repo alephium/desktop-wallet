@@ -87,11 +87,6 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   padding: ${({ squared }) => (squared ? '10px' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
-  cursor: pointer;
-
-  * {
-    cursor: pointer;
-  }
 
   transition: 0.2s ease-out;
 
@@ -110,6 +105,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
         : tinycolor(theme.global.accent).darken(8).toString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
+    cursor: pointer;
   }
 
   &:active {
