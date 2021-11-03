@@ -15,6 +15,9 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
+import { isEqual } from 'lodash'
+import { useContext } from 'react'
+import { GlobalContext } from '../App'
 
 // =================== //
 // === API CLIENTS === //
@@ -67,6 +70,17 @@ export const networkEndpoints: Record<NetworkType, Settings> = {
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
   }
+}
+
+export const getNetworkName = (settings: Settings) => {
+  return (Object.entries(networkEndpoints).find(([networkType, presetSettings]) => {
+    return isEqual(presetSettings, settings)
+  })?.[0] || 'custom') as NetworkType | 'custom'
+}
+
+export const useCurrentNetwork = () => {
+  const { settings } = useContext(GlobalContext)
+  return getNetworkName(settings)
 }
 
 export function settingsDefault(): Settings {

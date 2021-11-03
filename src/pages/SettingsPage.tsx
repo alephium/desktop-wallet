@@ -5,7 +5,7 @@ import { InfoBox } from '../components/InfoBox'
 import { Input, Select } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
-import { networkEndpoints, NetworkType, Settings } from '../utils/clients'
+import { getNetworkName, networkEndpoints, NetworkType, Settings, useCurrentNetwork } from '../utils/clients'
 import { AlertTriangle, Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
@@ -184,7 +184,7 @@ const ClientSettings = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
-  const [currentNetwork, setCurrentNetwork] = useState<NetworkType | 'custom'>()
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType | 'custom'>()
 
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
@@ -194,23 +194,12 @@ const ClientSettings = () => {
     { label: 'Custom', value: 'custom' }
   ]
 
-  const overrideSelectionIfMatchesPreset = useCallback(
-    (newSettings: Settings) => {
-      // Check if values correspond to an existing preset
-      const existingPreset = Object.entries(networkEndpoints).find(([networkType, presetSettings]) => {
-        return isEqual(presetSettings, newSettings)
-      })?.[0] as NetworkType | undefined
+  const overrideSelectionIfMatchesPreset = useCallback((newSettings: Settings) => {
+    // Check if values correspond to an existing preset
+    const newNetwork = getNetworkName(newSettings)
 
-      if (existingPreset) {
-        // Set selected network to preset
-        if (currentNetwork !== existingPreset) setCurrentNetwork(existingPreset)
-      } else {
-        // Make sure "custom" is selected
-        if (currentNetwork !== 'custom') setCurrentNetwork('custom')
-      }
-    },
-    [currentNetwork]
-  )
+    setSelectedNetwork(newNetwork)
+  }, [])
 
   const editSettings = (v: Partial<Settings>) => {
     const newSettings = { ...tempSettings, ...v }
@@ -222,7 +211,7 @@ const ClientSettings = () => {
 
   const handleNetworkPresetChange = useCallback((option: typeof networkSelectOptions[number] | undefined) => {
     if (option) {
-      setCurrentNetwork(option.value)
+      setSelectedNetwork(option.value)
 
       if (option.value === 'custom') {
         // Make sure to open expandable advanced section
@@ -249,7 +238,7 @@ const ClientSettings = () => {
       <Select
         options={networkSelectOptions}
         onValueChange={handleNetworkPresetChange}
-        controlledValue={networkSelectOptions.find((n) => n.value === currentNetwork)}
+        controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title="Network"
         placeholder="Network"
       />
