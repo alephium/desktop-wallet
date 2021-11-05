@@ -121,6 +121,10 @@ function createWindow() {
     titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden'
   })
 
+  if (process.platform === 'linux') {
+    mainWindow.setIcon(path.join(__dirname, "icons/logo-48.png"))
+  }
+
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
   if (isDev) {
     // Open the DevTools.
