@@ -584,7 +584,7 @@ const TxTimestamp = styled.span`
 const PendingTransactionItemContainer = styled(TransactionItemContainer)`
   opacity: 0.5;
 
-  background: linear-gradient(90deg, #ffffff, rgb(230, 230, 230));
+  background: linear-gradient(90deg, rgba(200, 200, 200, 0.4), rgba(200, 200, 200, 0.05));
   background-size: 400% 400%;
   animation: gradient 2s ease infinite;
 
