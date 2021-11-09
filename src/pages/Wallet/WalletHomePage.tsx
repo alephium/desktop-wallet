@@ -18,10 +18,11 @@ import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
 import { isHTTPError } from '../../utils/api'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
-import AppHeader from '../../components/AppHeader'
+import AppHeader, { HeaderDivider } from '../../components/AppHeader'
 import Address from '../../components/Address'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 import { openInNewWindow } from '../../utils/misc'
+import NetworkBadge from '../../components/NetworkBadge'
 
 dayjs.extend(relativeTime)
 
@@ -134,6 +135,8 @@ const WalletHomePage = () => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
+        <NetworkBadge />
+        <HeaderDivider />
         <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
           {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
@@ -581,7 +584,7 @@ const TxTimestamp = styled.span`
 const PendingTransactionItemContainer = styled(TransactionItemContainer)`
   opacity: 0.5;
 
-  background: linear-gradient(90deg, #ffffff, rgb(230, 230, 230));
+  background: linear-gradient(90deg, rgba(200, 200, 200, 0.4), rgba(200, 200, 200, 0.05));
   background-size: 400% 400%;
   animation: gradient 2s ease infinite;
 
@@ -625,7 +628,7 @@ const FloatingLogo = styled(AlephiumLogoSVG)`
 
   path {
     fill: ${({ theme }) =>
-      theme.name === 'light' ? 'rgba(0, 0, 0, 0.08) !important' : 'rgba(0, 0, 0, 0.4) !important'};
+      theme.name === 'light' ? 'rgba(0, 0, 0, 0.08) !important' : 'rgba(255, 255, 255, 0.03) !important'};
   }
 
   @media ${deviceBreakPoints.mobile} {

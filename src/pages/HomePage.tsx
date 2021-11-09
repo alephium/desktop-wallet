@@ -15,7 +15,8 @@ import { GlobalContext } from '../App'
 import { Settings as SettingsIcon } from 'lucide-react'
 import alephiumLogo from '../images/alephium_logo.svg'
 import { deviceBreakPoints } from '../style/globalStyles'
-import AppHeader from '../components/AppHeader'
+import AppHeader, { HeaderDivider } from '../components/AppHeader'
+import NetworkBadge from '../components/NetworkBadge'
 
 interface HomeProps {
   hasWallet: boolean
@@ -35,6 +36,8 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
+        <NetworkBadge />
+        <HeaderDivider />
         <SettingsButton transparent squared onClick={() => history.push('/settings')}>
           <SettingsIcon />
         </SettingsButton>

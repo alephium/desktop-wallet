@@ -15,13 +15,20 @@ const AppHeader: FC = ({ children }) => {
   )
 }
 
+export const HeaderDivider = styled.div`
+  width: 1px;
+  height: 10px;
+  margin: 0 10px;
+  background-color: ${({ theme }) => theme.border.primary};
+`
+
 const HeaderContainer = styled(motion.header)`
   height: 50px;
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
-  z-index: 10000;
+  z-index: 900;
   display: flex;
   justify-content: flex-end;
   align-items: center;

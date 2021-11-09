@@ -16,7 +16,7 @@
     "extension-pack": "npm run extension-build && web-ext build --source-dir=build --artifacts-dir=. --filename=alephium-wallet.zip --overwrite-dest",
     "start": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
     "test": "react-scripts test",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --fix --ext .ts,.tsx"
   },
   "browserslist": {
@@ -52,7 +52,7 @@
     "@types/yaireo__tagify": "^4.7.0",
     "@types/zxcvbn": "^4.4.1",
     "@yaireo/tagify": "^4.8.0",
-    "alephium-js": "^0.10.4",
+    "alephium-js": "^1.0.0",
     "bip39": "^3.0.4",
     "classnames": "^2.3.1",
     "concurrently": "^6.2.1",

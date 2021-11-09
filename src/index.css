@@ -52,7 +52,6 @@ a {
 
 #app-header {
   -webkit-app-region: drag;
-  z-index: 10000;
 }
 
 /* FONTS */

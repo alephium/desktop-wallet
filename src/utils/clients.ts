@@ -15,6 +15,9 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
+import { isEqual } from 'lodash'
+import { useContext } from 'react'
+import { GlobalContext } from '../App'
 
 // =================== //
 // === API CLIENTS === //
@@ -53,12 +56,35 @@ export interface Settings {
   explorerUrl: string
 }
 
-export function settingsDefault(): Settings {
-  return {
+const networkTypes = ['testnet', 'mainnet'] as const
+export type NetworkType = typeof networkTypes[number]
+
+export const networkEndpoints: Record<NetworkType, Settings> = {
+  mainnet: {
+    nodeHost: 'https://mainnet-wallet.alephium.org',
+    explorerApiHost: 'https://mainnet-backend.alephium.org',
+    explorerUrl: 'https://explorer.alephium.org'
+  },
+  testnet: {
     nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
   }
+}
+
+export const getNetworkName = (settings: Settings) => {
+  return (Object.entries(networkEndpoints).find(([networkType, presetSettings]) => {
+    return isEqual(presetSettings, settings)
+  })?.[0] || 'custom') as NetworkType | 'custom'
+}
+
+export const useCurrentNetwork = () => {
+  const { settings } = useContext(GlobalContext)
+  return getNetworkName(settings)
+}
+
+export function settingsDefault(): Settings {
+  return networkEndpoints.mainnet
 }
 
 export function loadSettings(): Settings | null {
