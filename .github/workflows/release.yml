@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    tags: [ "v[0-9]+.[0-9]+.[0-9]+*" ]
+    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
 
 jobs:
   release:
@@ -81,8 +81,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.release.outputs.upload-url }}
-          asset_path: dist/Alephium-${{ needs.release.outputs.version }}.dmg
-          asset_name: alephium-wallet-macos-${{ needs.release.outputs.version }}.dmg
+          asset_path: dist/Alephium-${{ needs.release.outputs.version }}-universal.dmg
+          asset_name: alephium-wallet-macos-universal-${{ needs.release.outputs.version }}.dmg
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
