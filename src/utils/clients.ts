@@ -33,8 +33,8 @@ export async function createClient(settings?: Settings) {
     baseUrl: loadedSettings.explorerApiHost
   })
 
-  //If `nodeHost` have a port `....:12345`, we consider it as a multi-nodes clique
-  const isMultiNodesClique = loadedSettings.nodeHost.match(/(:[0-9]+)$/) != null
+  //TODO Support multi-node clique
+  const isMultiNodesClique = false
 
   console.log('Multi-nodes clique: ' + isMultiNodesClique)
   console.log('Connecting to: ' + cliqueClient.baseUrl)
