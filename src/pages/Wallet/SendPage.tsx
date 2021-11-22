@@ -97,6 +97,9 @@ const SendPage = () => {
       } catch (e) {
         if (isHTTPError(e)) {
           setSnackbarMessage({ text: e.error.detail, type: 'alert' })
+        } else {
+          // Simple log for debugging purposes
+          console.log(e)
         }
       }
 
