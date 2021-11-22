@@ -16,7 +16,7 @@ import { useInterval } from '../../utils/hooks'
 import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Button } from '../../components/Buttons'
-import { isHTTPError } from '../../utils/api'
+import { getHumanReadableError } from '../../utils/api'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader, { HeaderDivider } from '../../components/AppHeader'
 import Address from '../../components/Address'
@@ -87,9 +87,11 @@ const WalletHomePage = () => {
         }
       } catch (e) {
         setIsLoading(false)
-        if (isHTTPError(e)) {
-          setSnackbarMessage({ text: e.error.detail, type: 'alert' })
-        }
+
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while fetching transactions and balance'),
+          type: 'alert'
+        })
       }
     }
 

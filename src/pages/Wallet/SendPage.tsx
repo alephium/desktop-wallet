@@ -11,8 +11,7 @@ import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
 import { checkAddressValidity } from '../../utils/addresses'
-import { getHumanReadableError, isHTTPError } from '../../utils/api'
-import { tryGetString } from '../../utils/types'
+import { getHumanReadableError } from '../../utils/api'
 
 const SendPage = () => {
   const history = useHistory()
