@@ -11,7 +11,8 @@ import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
 import { checkAddressValidity } from '../../utils/addresses'
-import { isHTTPError } from '../../utils/api'
+import { getHumanReadableError, isHTTPError } from '../../utils/api'
+import { tryGetString } from '../../utils/types'
 
 const SendPage = () => {
   const history = useHistory()
@@ -95,12 +96,11 @@ const SendPage = () => {
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
         history.push('/wallet')
       } catch (e) {
-        if (isHTTPError(e)) {
-          setSnackbarMessage({ text: e.error.detail, type: 'alert' })
-        } else {
-          // Simple log for debugging purposes
-          console.log(e)
-        }
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while sending the transaction'),
+          type: 'alert',
+          duration: 5000
+        })
       }
 
       setIsSending(false)
