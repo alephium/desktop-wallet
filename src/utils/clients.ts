@@ -33,10 +33,10 @@ export async function createClient(settings?: Settings) {
     baseUrl: loadedSettings.explorerApiHost
   })
 
-  //TODO Support multi-node clique
+  //TODO: Support multi-node clique
   const isMultiNodesClique = false
 
-  console.log('Multi-nodes clique: ' + isMultiNodesClique)
+  console.log('Multi-nodes clique: not supported for now.')
   console.log('Connecting to: ' + cliqueClient.baseUrl)
   console.log('Explorer backend: ' + explorerClient.baseUrl)
 
