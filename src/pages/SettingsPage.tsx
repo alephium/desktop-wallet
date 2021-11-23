@@ -203,8 +203,8 @@ const ClientSettings = () => {
   const editSettings = (v: Partial<Settings>) => {
     const newSettings = { ...tempSettings, ...v }
 
-    // Check if we need to append the http:// protocol if an IP is used
-    if (v.nodeHost?.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}[:[0-9]*]?$/)) {
+    // Check if we need to append the http:// protocol if an IP or localhost is used
+    if (v.nodeHost?.match(/^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|localhost)(?::[0-9]*)?$/)) {
       newSettings.nodeHost = `http://${v.nodeHost}`
     }
 
