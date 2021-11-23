@@ -10,15 +10,5 @@ export const isHTTPError = (e: unknown): e is APIError => {
 
 export const getHumanReadableError = (e: unknown, defaultErrorMessage: string) => {
   const stringifiedError = tryGetString(e)
-  let returnedError
-
-  if (isHTTPError(e)) {
-    returnedError = e.error.detail
-  } else if (stringifiedError) {
-    returnedError = stringifiedError
-  } else {
-    returnedError = defaultErrorMessage
-  }
-
-  return returnedError
+  return isHTTPError(e) ? e.error.detail : stringifiedError || defaultErrorMessage
 }
