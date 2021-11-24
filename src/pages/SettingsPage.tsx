@@ -190,6 +190,7 @@ const ClientSettings = () => {
   const networkSelectOptions: NetworkSelectOption[] = [
     { label: 'Mainnet', value: 'mainnet' },
     { label: 'Testnet', value: 'testnet' },
+    { label: 'Localhost', value: 'localhost' },
     { label: 'Custom', value: 'custom' }
   ]
 

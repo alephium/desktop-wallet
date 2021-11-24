@@ -56,7 +56,7 @@ export interface Settings {
   explorerUrl: string
 }
 
-const networkTypes = ['testnet', 'mainnet'] as const
+const networkTypes = ['testnet', 'mainnet', 'localhost'] as const
 export type NetworkType = typeof networkTypes[number]
 
 export const networkEndpoints: Record<NetworkType, Settings> = {
@@ -69,6 +69,11 @@ export const networkEndpoints: Record<NetworkType, Settings> = {
     nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
+  },
+  localhost: {
+    nodeHost: 'http://localhost:12973',
+    explorerApiHost: 'http://localhost:9090',
+    explorerUrl: 'http://localhost:3000'
   }
 }
 
