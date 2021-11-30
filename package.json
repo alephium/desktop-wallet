@@ -32,9 +32,6 @@
       "last 1 safari version"
     ]
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "dependencies": {
     "electron-is-dev": "^2.0.0"
   },
