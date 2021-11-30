@@ -9,6 +9,7 @@
 `npm run-script electron-pack`
 
 ## Authors
-* Alephium - [email](info@alephium.org)
+
+- Alephium - [email](info@alephium.org)
 
 The implementation is inspired by Coinbarn's wallet codebase.
