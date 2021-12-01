@@ -1,14 +1,39 @@
-# Packaginng
+# Alephium Wallet
 
-## Web Extension
+The official Alephium wallet.
 
-`npm run-script extension-pack`
+## Install
 
-## Desktop
+```shell
+npm install
+```
 
-`npm run-script electron-pack`
+## Packaging
 
-## Authors
-* Alephium - [email](info@alephium.org)
+### Web extension
+
+```shell
+npm run extension-pack
+```
+
+### Desktop app
+
+```shell
+npm run electron-pack
+```
+
+## Development
+
+```shell
+npm start
+```
+
+## Test
+
+```shell
+npm test
+```
+
+## Credits
 
 The implementation is inspired by Coinbarn's wallet codebase.

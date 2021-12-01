@@ -122,7 +122,7 @@ function createWindow() {
   })
 
   if (process.platform === 'linux') {
-    mainWindow.setIcon(path.join(__dirname, "icons/logo-48.png"))
+    mainWindow.setIcon(path.join(__dirname, 'icons/logo-48.png'))
   }
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
