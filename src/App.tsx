@@ -74,27 +74,19 @@ const App = () => {
   // Create client
   useEffect(() => {
     const getClient = async () => {
-      try {
-        setClientIsLoading(true)
-        // Get clients
-        const clientResp = await createClient(settings)
-        setClient(clientResp)
+      setClientIsLoading(true)
+      // Get clients
+      const clientResp = await createClient(settings)
+      setClient(clientResp)
 
-        console.log('Clients initialized.')
+      console.log('Clients initialized.')
 
-        setSnackbarMessage({
-          text: `Connected to Alephium's Node "${settings.nodeHost}"!`,
-          type: 'info',
-          duration: 4000
-        })
-        setClientIsLoading(false)
-      } catch (e) {
-        setSnackbarMessage({
-          text: 'Unable to initialize the client, please check your network settings.',
-          type: 'alert'
-        })
-        setClientIsLoading(false)
-      }
+      setSnackbarMessage({
+        text: `Alephium's Node URL: "${settings.nodeHost}"`,
+        type: 'info',
+        duration: 4000
+      })
+      setClientIsLoading(false)
 
       // Save settings
       saveSettings(settings)
