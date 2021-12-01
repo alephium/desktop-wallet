@@ -2,6 +2,12 @@
 
 The official Alephium wallet.
 
+## Install
+
+```shell
+npm install
+```
+
 ## Packaging
 
 ### Web extension
