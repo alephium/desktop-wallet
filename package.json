@@ -1,5 +1,6 @@
 {
   "name": "alephium-wallet",
+  "description": "The official Alephium wallet",
   "version": "1.0.0",
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
