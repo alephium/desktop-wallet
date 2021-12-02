@@ -16,7 +16,7 @@
 
 import styled from 'styled-components'
 
-import { useCurrentNetwork } from '../utils/clients'
+import { useCurrentNetwork } from '../utils/settings'
 
 const NetworkBadge = () => {
   const currentNetwork = useCurrentNetwork()

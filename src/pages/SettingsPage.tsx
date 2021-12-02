@@ -29,7 +29,7 @@ import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import ExpandableSection from '../components/ExpandableSection'
-import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/clients'
+import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/settings'
 import { useMountEffect } from '../utils/hooks'
 
 const Storage = getStorage()

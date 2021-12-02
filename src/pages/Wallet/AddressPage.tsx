@@ -23,7 +23,7 @@ import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import { openInWebBrowser } from '../../utils/misc'
-import { loadSettings } from '../../utils/clients'
+import { loadSettings } from '../../utils/settings'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)

@@ -25,7 +25,7 @@ import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import AddressPage from './AddressPage'
 import SettingsPage from '../../pages/SettingsPage'
-import { NetworkType, useCurrentNetwork } from '../../utils/clients'
+import { NetworkType, useCurrentNetwork } from '../../utils/settings'
 
 export interface SimpleTx {
   txId: string
