@@ -1,4 +1,4 @@
-// Copyright 2021 The Alephium Authors
+// Copyright 2018 - 2021 The Alephium Authors
 // This file is part of the alephium project.
 //
 // The library is free software: you can redistribute it and/or modify
