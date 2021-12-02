@@ -16,6 +16,7 @@
 
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
+
 import { loadSettingsOrDefault } from '../utils/clients'
 import { openInWebBrowser } from '../utils/misc'
 

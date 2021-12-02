@@ -15,20 +15,21 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { ChangeEvent, useCallback, useContext, useState } from 'react'
+import { AlertTriangle, Edit3 } from 'lucide-react'
+import { walletOpen, getStorage, Wallet } from 'alephium-js'
+import styled, { useTheme } from 'styled-components'
+
 import { GlobalContext } from '../App'
 import { Button } from '../components/Buttons'
 import { InfoBox } from '../components/InfoBox'
 import { Input, Select } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
-import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/clients'
-import { AlertTriangle, Edit3 } from 'lucide-react'
 import Modal from '../components/Modal'
 import { CenteredSecondaryParagraph } from '../components/Paragraph'
-import { walletOpen, getStorage, Wallet } from 'alephium-js'
-import styled, { useTheme } from 'styled-components'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import ExpandableSection from '../components/ExpandableSection'
+import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/clients'
 import { useMountEffect } from '../utils/hooks'
 
 const Storage = getStorage()

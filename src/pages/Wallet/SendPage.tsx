@@ -17,15 +17,16 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
-import { GlobalContext } from '../../App'
 import { Send } from 'lucide-react'
+
+import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import { InfoBox } from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import { PanelContainer, SectionContent } from '../../components/PageComponents'
-import { WalletContext } from './WalletRootPage'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
+import { WalletContext } from './WalletRootPage'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 

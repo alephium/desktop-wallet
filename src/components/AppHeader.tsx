@@ -17,6 +17,7 @@
 import { motion, useTransform, useViewportScroll } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
+
 import { deviceBreakPoints } from '../style/globalStyles'
 
 const AppHeader: FC = ({ children }) => {

@@ -17,6 +17,7 @@
 import { CliqueClient, ExplorerClient } from 'alephium-js'
 import { isEqual } from 'lodash'
 import { useContext } from 'react'
+
 import { GlobalContext } from '../App'
 
 // =================== //

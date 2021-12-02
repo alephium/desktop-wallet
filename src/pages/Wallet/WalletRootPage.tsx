@@ -15,14 +15,15 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useContext, useEffect, useState } from 'react'
-import Modal from '../../components/Modal'
-import { GlobalContext } from '../../App'
 import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
+import { Transaction } from 'alephium-js/dist/api/api-explorer'
+
+import { GlobalContext } from '../../App'
+import Modal from '../../components/Modal'
 import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
-import { AnimatePresence } from 'framer-motion'
 import AddressPage from './AddressPage'
-import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import SettingsPage from '../../pages/SettingsPage'
 import { NetworkType, useCurrentNetwork } from '../../utils/clients'
 

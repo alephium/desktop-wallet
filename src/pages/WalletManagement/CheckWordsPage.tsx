@@ -16,7 +16,15 @@
 
 import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
+import { motion, PanInfo } from 'framer-motion'
+import { throttle } from 'lodash'
+import { getStorage } from 'alephium-js'
+import { AlertTriangle, ThumbsUp } from 'lucide-react'
+
+import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
+import { StepsContext } from '../MultiStepsController'
 import { Button } from '../../components/Buttons'
 import {
   FooterActions,
@@ -26,15 +34,8 @@ import {
   PanelTitle,
   SectionContent
 } from '../../components/PageComponents'
-import tinycolor from 'tinycolor2'
 import Paragraph from '../../components/Paragraph'
-import { motion, PanInfo } from 'framer-motion'
-import { throttle } from 'lodash'
-import { getStorage } from 'alephium-js'
-import { GlobalContext } from '../../App'
-import { StepsContext } from '../MultiStepsController'
 import { InfoBox } from '../../components/InfoBox'
-import { AlertTriangle, ThumbsUp } from 'lucide-react'
 
 const Storage = getStorage()
 

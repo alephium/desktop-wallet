@@ -18,6 +18,7 @@ import { motion, MotionStyle, useTransform, useViewportScroll, Variants } from '
 import React, { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
+
 import { deviceBreakPoints } from '../style/globalStyles'
 
 interface MainPanelProps {

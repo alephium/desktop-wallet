@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useState } from 'react'
+import { useState } from 'react'
+import styled from 'styled-components'
+
 import {
   WalletManagementContext,
   WalletManagementContextType,
@@ -24,10 +26,10 @@ import CreateAccountPage from './CreateAccountPage'
 import MultiStepsController from '../MultiStepsController'
 import ImportWordsPage from './ImportWordsPage'
 import WalletWelcomePage from './WalletWelcomePage'
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 import AppHeader from '../../components/AppHeader'
 import { deviceBreakPoints } from '../../style/globalStyles'
-import styled from 'styled-components'
+
+import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 
 const ImportWalletRootPage = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)

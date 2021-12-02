@@ -16,23 +16,24 @@
 
 import React, { useCallback, useContext, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-
-import { ReactComponent as MountainSVG } from '../images/mountain.svg'
-import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
 import { motion } from 'framer-motion'
+import tinycolor from 'tinycolor2'
+import { useHistory } from 'react-router'
+import { walletOpen, getStorage } from 'alephium-js'
+import { Settings as SettingsIcon } from 'lucide-react'
+
+import { GlobalContext } from '../App'
+import { deviceBreakPoints } from '../style/globalStyles'
 import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
-import tinycolor from 'tinycolor2'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
-import { useHistory } from 'react-router'
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
-import { walletOpen, getStorage } from 'alephium-js'
-import { GlobalContext } from '../App'
-import { Settings as SettingsIcon } from 'lucide-react'
-import alephiumLogo from '../images/alephium_logo.svg'
-import { deviceBreakPoints } from '../style/globalStyles'
 import AppHeader, { HeaderDivider } from '../components/AppHeader'
 import NetworkBadge from '../components/NetworkBadge'
+
+import alephiumLogo from '../images/alephium_logo.svg'
+import { ReactComponent as MountainSVG } from '../images/mountain.svg'
+import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
 
 interface HomeProps {
   hasWallet: boolean

@@ -15,11 +15,12 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, createContext, FC } from 'react'
 import styled, { useTheme } from 'styled-components'
+import { X } from 'lucide-react'
+
 import { Button } from './Buttons'
 import { PanelTitle, StyledContent, TitleContainer } from './PageComponents'
-import { X } from 'lucide-react'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void
@@ -27,13 +28,13 @@ interface ModalContext {
   overrideOnClose: (newFn: () => void) => void
 }
 
-export const ModalContext = React.createContext<ModalContext>({
+export const ModalContext = createContext<ModalContext>({
   setModalTitle: () => null,
   onClose: () => null,
   overrideOnClose: () => null
 })
 
-export const Modal: React.FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
+export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
   children,
   title,
   onClose,

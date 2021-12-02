@@ -15,6 +15,13 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { ChangeEvent, useState, useContext } from 'react'
+import { AlertTriangle } from 'lucide-react'
+import styled from 'styled-components'
+import zxcvbn from 'zxcvbn'
+
+import { GlobalContext } from '../../App'
+import { StepsContext } from '../MultiStepsController'
+import { WalletManagementContext } from './WalletManagementContext'
 import {
   PanelContainer,
   SectionContent,
@@ -25,14 +32,8 @@ import {
 } from '../../components/PageComponents'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
-import { AlertTriangle } from 'lucide-react'
-import styled from 'styled-components'
 import Paragraph from '../../components/Paragraph'
-import zxcvbn from 'zxcvbn'
 import { Button } from '../../components/Buttons'
-import { GlobalContext } from '../../App'
-import { StepsContext } from '../MultiStepsController'
-import { WalletManagementContext } from './WalletManagementContext'
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useContext(GlobalContext)

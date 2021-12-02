@@ -16,7 +16,12 @@
 
 import { useContext } from 'react'
 import styled from 'styled-components'
+import { Edit3 } from 'lucide-react'
+import tinycolor from 'tinycolor2'
+
+import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
+import { StepsContext } from '../MultiStepsController'
 import { InfoBox } from '../../components/InfoBox'
 import {
   FooterActions,
@@ -26,11 +31,7 @@ import {
   PanelTitle,
   SectionContent
 } from '../../components/PageComponents'
-import { Edit3 } from 'lucide-react'
 import { Button } from '../../components/Buttons'
-import { GlobalContext } from '../../App'
-import { StepsContext } from '../MultiStepsController'
-import tinycolor from 'tinycolor2'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)

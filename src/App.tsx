@@ -17,21 +17,22 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
+import { Wallet, getStorage } from 'alephium-js'
+import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
+import { AsyncReturnType } from 'type-fest'
+
 import HomePage from './pages/HomePage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
-import { Wallet, getStorage } from 'alephium-js'
-import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
 import WalletPages from './pages/Wallet/WalletRootPage'
-import { AsyncReturnType } from 'type-fest'
-import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
 import SettingsPage from './pages/SettingsPage'
+import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
+import { useInterval, useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
-import alephiumLogo from './images/alephium_logo.svg'
-import { useInterval, useStateWithLocalStorage } from './utils/hooks'
 import { lightTheme, darkTheme, ThemeType } from './style/themes'
+import alephiumLogo from './images/alephium_logo.svg'
 
 interface Context {
   usernames: string[]

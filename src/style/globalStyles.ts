@@ -15,8 +15,8 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createGlobalStyle } from 'styled-components'
-import { isElectron } from '../utils/misc'
 
+import { isElectron } from '../utils/misc'
 import resets from './resets'
 import tags from './tags'
 
