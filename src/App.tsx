@@ -26,7 +26,7 @@ import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import SettingsPage from './pages/SettingsPage'
-import { createClient, loadSettingsOrDefault, saveSettings, Settings } from './utils/clients'
+import { createClient, loadSettings, saveSettings, Settings } from './utils/clients'
 import { useInterval, useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
@@ -57,7 +57,7 @@ const initialContext: Context = {
   wallet: undefined,
   setWallet: () => null,
   client: undefined,
-  settings: loadSettingsOrDefault(),
+  settings: loadSettings(),
   setSettings: () => null,
   setSnackbarMessage: () => null,
   switchTheme: () => null,
@@ -80,7 +80,7 @@ const App = () => {
   const [currentUsername, setCurrentUsername] = useState('')
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
-  const [settings, setSettings] = useState<Settings>(loadSettingsOrDefault())
+  const [settings, setSettings] = useState<Settings>(loadSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
   const history = useHistory()

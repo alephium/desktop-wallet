@@ -25,7 +25,7 @@ import { GlobalContext } from '../App'
 // =================== //
 
 export async function createClient(settings?: Settings) {
-  const loadedSettings = settings || loadSettingsOrDefault()
+  const loadedSettings = settings || loadSettings()
   const cliqueClient = new CliqueClient({
     baseUrl: loadedSettings.nodeHost
   })
@@ -93,22 +93,10 @@ export function settingsDefault(): Settings {
   return networkEndpoints.mainnet
 }
 
-export function loadSettings(): Settings | null {
-  const str = window.localStorage.getItem('settings')
-  if (str) {
-    return JSON.parse(str)
-  } else {
-    return null
-  }
-}
+export function loadSettings(): Settings {
+  const storedSettings = window.localStorage.getItem('settings')
 
-export function loadSettingsOrDefault() {
-  const settings = loadSettings()
-  if (!settings) {
-    return settingsDefault()
-  } else {
-    return settings
-  }
+  return storedSettings ? JSON.parse(storedSettings) : settingsDefault()
 }
 
 export function saveSettings(settings: Settings) {

@@ -33,7 +33,7 @@ import AppHeader, { HeaderDivider } from '../../components/AppHeader'
 import Address from '../../components/Address'
 import NetworkBadge from '../../components/NetworkBadge'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadSettingsOrDefault, useCurrentNetwork } from '../../utils/clients'
+import { loadSettings, useCurrentNetwork } from '../../utils/clients'
 import { useInterval } from '../../utils/hooks'
 import { getHumanReadableError } from '../../utils/api'
 import { openInWebBrowser } from '../../utils/misc'
@@ -284,7 +284,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
 
   const isOut = amountDelta < 0
 
-  const { explorerUrl } = loadSettingsOrDefault()
+  const { explorerUrl } = loadSettings()
 
   return (
     <TransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.hash}`)}>
@@ -309,7 +309,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
 
 // Transaction that has been sent and waiting to be fetched
 const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) => {
-  const { explorerUrl } = loadSettingsOrDefault()
+  const { explorerUrl } = loadSettings()
 
   return (
     <PendingTransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.txId}`)}>

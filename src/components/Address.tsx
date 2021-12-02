@@ -17,11 +17,11 @@
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { loadSettingsOrDefault } from '../utils/clients'
+import { loadSettings } from '../utils/clients'
 import { openInWebBrowser } from '../utils/misc'
 
 const Address = ({ hash }: { hash: string }) => {
-  const { explorerUrl } = loadSettingsOrDefault()
+  const { explorerUrl } = loadSettings()
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
