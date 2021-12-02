@@ -31,6 +31,7 @@ import { loadSettings, saveSettings, Settings } from './utils/settings'
 import { useInterval, useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
+import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { lightTheme, darkTheme, ThemeType } from './style/themes'
 import alephiumLogo from './images/alephium_logo.svg'
@@ -44,7 +45,7 @@ interface Context {
   client: Client | undefined
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
-  setSnackbarMessage: (message: SnackbarMessage) => void
+  setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   switchTheme: (theme: ThemeType) => void
   currentTheme: ThemeType
 }
@@ -63,12 +64,6 @@ const initialContext: Context = {
   setSnackbarMessage: () => null,
   switchTheme: () => null,
   currentTheme: 'light'
-}
-
-interface SnackbarMessage {
-  text: string
-  type: 'info' | 'alert' | 'success'
-  duration?: number
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
@@ -110,13 +105,6 @@ const App = () => {
 
     getClient()
   }, [setSnackbarMessage, settings])
-
-  // Remove snackbar popup
-  useEffect(() => {
-    if (snackbarMessage) {
-      setTimeout(() => setSnackbarMessage(undefined), snackbarMessage.duration || 3000)
-    }
-  }, [snackbarMessage])
 
   // Auto-lock mechanism
   const lastInteractionTimeThrottle = 10000
@@ -231,25 +219,6 @@ const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void
   )
 }
 
-const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  return (
-    <SnackbarManagerContainer>
-      <AnimatePresence>
-        {message && (
-          <SnackbarPopup
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={message?.type}
-          >
-            {message?.text}
-          </SnackbarPopup>
-        )}
-      </AnimatePresence>
-    </SnackbarManagerContainer>
-  )
-}
-
 // === Styling === //
 
 const AppContainer = styled.div`
@@ -266,44 +235,6 @@ const AppContainer = styled.div`
 
   @media ${deviceBreakPoints.short} {
     background-color: ${({ theme }) => theme.bg.primary};
-  }
-`
-
-const SnackbarManagerContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: flex-end;
-  z-index: 10001;
-
-  @media ${deviceBreakPoints.mobile} {
-    justify-content: center;
-  }
-`
-
-const SnackbarPopup = styled(motion.div)`
-  margin: 15px;
-  text-align: center;
-  min-width: 200px;
-  padding: 20px 15px;
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
-  z-index: 1000;
-  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
-
-  &.alert {
-    background-color: ${({ theme }) => theme.global.alert};
-  }
-
-  &.info {
-    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
-  }
-
-  &.success {
-    background-color: ${({ theme }) => theme.global.valid};
   }
 `
 
