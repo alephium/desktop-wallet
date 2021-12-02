@@ -17,6 +17,8 @@
 import { createGlobalStyle } from 'styled-components'
 import { isElectron } from '../utils/misc'
 
+import tags from './tags'
+
 export const appHeaderHeight = '50px'
 
 const extensionWindowDimensions = `
@@ -38,45 +40,7 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.bg.primary};
   }
 
-  // Text area tags dropdown
-  .tagify__tag__removeBtn {
-    display: none;
-  }
-
-  .tagify__input::before {
-    line-height: 22px;
-  }
-
-  .tags-dropdown {
-    position: fixed;
-    bottom: 10px !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
-    top: auto !important;
-    margin: 0;
-
-    .tagify__dropdown__wrapper {
-      border: none;
-      border-radius: 7px;
-      background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
-    }
-
-    .tagify__dropdown__item  {
-      color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-      margin: 0;
-      border-radius: 0;
-      padding: 10px;
-
-      &:not(:last-child) {
-        border-bottom: 1px solid ${({ theme }) => theme.border};
-      }
-    }
-
-    .tagify__dropdown__item--active {
-      background-color: ${({ theme }) => theme.global.accent};
-    }
-  }
+  ${tags}
 `
 
 // Breakpoints
