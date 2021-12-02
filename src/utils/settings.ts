@@ -37,6 +37,8 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> 
   }
 }
 
+export const walletIdleForTooLongThreshold = 3 * 60 * 1000 // 3 minutes
+
 export const defaultSettings = networkEndpoints.mainnet
 
 export interface Settings {

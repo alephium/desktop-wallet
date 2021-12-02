@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import { Wallet, getStorage } from 'alephium-js'
@@ -28,13 +28,14 @@ import WalletPages from './pages/Wallet/WalletRootPage'
 import SettingsPage from './pages/SettingsPage'
 import { createClient } from './utils/api-clients'
 import { loadSettings, saveSettings, Settings } from './utils/settings'
-import { useInterval, useStateWithLocalStorage } from './utils/hooks'
+import { useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { lightTheme, darkTheme, ThemeType } from './style/themes'
 import alephiumLogo from './images/alephium_logo.svg'
+import useIdleForTooLong from './hooks/useIdleForTooLong'
 
 interface Context {
   usernames: string[]
@@ -78,9 +79,13 @@ const App = () => {
   const [client, setClient] = useState<Client>()
   const [settings, setSettings] = useState<Settings>(loadSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
-  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
   const history = useHistory()
   const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
+
+  const lockWallet = () => {
+    if (wallet) setWallet(undefined)
+  }
+  useIdleForTooLong(lockWallet)
 
   // Create client
   useEffect(() => {
@@ -105,38 +110,6 @@ const App = () => {
 
     getClient()
   }, [setSnackbarMessage, settings])
-
-  // Auto-lock mechanism
-  const lastInteractionTimeThrottle = 10000
-  const autoLockThreshold = 3 * 60 * 1000 // TODO: Allow to set this parameter in app settings
-
-  const updateLastInteractionTime = useCallback(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
-      setLastInteractionTime(currentTime)
-    }
-  }, [lastInteractionTime])
-
-  useEffect(() => {
-    document.addEventListener('mousemove', updateLastInteractionTime)
-    document.addEventListener('keydown', updateLastInteractionTime)
-    document.addEventListener('scroll', updateLastInteractionTime)
-
-    return () => {
-      document.removeEventListener('mousemove', updateLastInteractionTime)
-      document.removeEventListener('keydown', updateLastInteractionTime)
-      document.removeEventListener('scroll', updateLastInteractionTime)
-    }
-  }, [updateLastInteractionTime])
-
-  useInterval(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > autoLockThreshold && wallet) {
-      setWallet(undefined)
-    }
-  }, 2000)
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
