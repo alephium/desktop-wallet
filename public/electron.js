@@ -102,7 +102,7 @@ const template = [
       {
         label: 'Get some help',
         click: async () => {
-          await shell.openExternal('https://discord.gg/nD8FzcTugn')
+          await shell.openExternal('https://discord.gg/JErgRBfRSB')
         }
       }
     ]
