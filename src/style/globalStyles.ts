@@ -17,21 +17,20 @@
 import { createGlobalStyle } from 'styled-components'
 import { isElectron } from '../utils/misc'
 
-// Extension: define window size
-const limitedSize = `
+export const appHeaderHeight = '50px'
+
+const extensionWindowDimensions = `
   height: 600px;
   width: 400px;
 `
 
-const freeSize = `
+const electronWindowDimensions = `
   height: 100%;
 `
 
-export const appHeaderHeight = '50px'
-
 export const GlobalStyle = createGlobalStyle`
   html {
-    ${!isElectron() ? limitedSize : freeSize}
+    ${isElectron() ? electronWindowDimensions : extensionWindowDimensions}
   }
 
   body {
