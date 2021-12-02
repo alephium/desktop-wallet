@@ -17,6 +17,7 @@
 import { createGlobalStyle } from 'styled-components'
 import { isElectron } from '../utils/misc'
 
+import resets from './resets'
 import tags from './tags'
 
 export const appHeaderHeight = '50px'
@@ -31,6 +32,8 @@ const electronWindowDimensions = `
 `
 
 export const GlobalStyle = createGlobalStyle`
+  ${resets}
+
   html {
     ${isElectron() ? electronWindowDimensions : extensionWindowDimensions}
   }
