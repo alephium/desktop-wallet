@@ -37,12 +37,11 @@ import NetworkBadge from '../components/NetworkBadge'
 interface HomeProps {
   hasWallet: boolean
   usernames: string[]
-  networkId: number
 }
 
 const Storage = getStorage()
 
-const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
+const HomePage = ({ hasWallet, usernames }: HomeProps) => {
   const history = useHistory()
   const [showActions, setShowActions] = useState(false)
   const theme = useTheme()
@@ -121,7 +120,7 @@ const HomePage = ({ hasWallet, usernames, networkId }: HomeProps) => {
               <CenteredSecondaryParagraph>
                 Please choose an account and enter your password to continue.
               </CenteredSecondaryParagraph>
-              <Login setShowActions={setShowActions} usernames={usernames} networkId={networkId} />
+              <Login setShowActions={setShowActions} usernames={usernames} />
             </>
           ) : (
             <>
@@ -142,7 +141,6 @@ const Login = ({
   setShowActions
 }: {
   usernames: string[]
-  networkId: number
   setShowActions: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })

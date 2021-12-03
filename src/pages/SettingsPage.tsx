@@ -187,7 +187,7 @@ const AccountSettings = () => {
 
 interface NetworkSelectOption {
   label: string
-  value: NetworkType | 'custom'
+  value: NetworkType
 }
 
 const ClientSettings = () => {
@@ -199,7 +199,7 @@ const ClientSettings = () => {
     explorerUrl: currentSettings.explorerUrl
   })
 
-  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType | 'custom'>()
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
 
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
