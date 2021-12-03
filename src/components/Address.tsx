@@ -1,14 +1,14 @@
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 import { loadSettingsOrDefault } from '../utils/clients'
-import { openInNewWindow } from '../utils/misc'
+import { openInWebBrowser } from '../utils/misc'
 
 const Address = ({ hash }: { hash: string }) => {
   const { explorerUrl } = loadSettingsOrDefault()
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
-    openInNewWindow(`${explorerUrl}/#/addresses/${hash}`)
+    openInWebBrowser(`${explorerUrl}/#/addresses/${hash}`)
   }
 
   return <StyledAdress onClick={handleClick}>{hash}</StyledAdress>

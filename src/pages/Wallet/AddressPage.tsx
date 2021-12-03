@@ -3,7 +3,7 @@ import QRCode from 'qrcode.react'
 import { useContext } from 'react'
 import { GlobalContext } from '../../App'
 import Paragraph from '../../components/Paragraph'
-import { openInNewWindow } from '../../utils/misc'
+import { openInWebBrowser } from '../../utils/misc'
 import { loadSettingsOrDefault } from '../../utils/clients'
 import { Button } from '../../components/Buttons'
 import styled, { useTheme } from 'styled-components'
@@ -18,7 +18,7 @@ const AddressPage = () => {
     const { explorerUrl } = loadSettingsOrDefault()
     if (explorerUrl) {
       const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
-      openInNewWindow(cleanURL)
+      openInWebBrowser(cleanURL)
     }
   }
 

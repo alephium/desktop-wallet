@@ -21,7 +21,7 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader, { HeaderDivider } from '../../components/AppHeader'
 import Address from '../../components/Address'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
-import { openInNewWindow } from '../../utils/misc'
+import { openInWebBrowser } from '../../utils/misc'
 import NetworkBadge from '../../components/NetworkBadge'
 
 dayjs.extend(relativeTime)
@@ -250,7 +250,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
   const { explorerUrl } = loadSettingsOrDefault()
 
   return (
-    <TransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.hash}`)}>
+    <TransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.hash}`)}>
       <TxDetails>
         <DirectionLabel>{isOut ? '↑ TO' : '↓ FROM'}</DirectionLabel>
         <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
@@ -273,7 +273,7 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
   const { explorerUrl } = loadSettingsOrDefault()
 
   return (
-    <PendingTransactionItemContainer onClick={() => openInNewWindow(`${explorerUrl}/#/transactions/${t.txId}`)}>
+    <PendingTransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.txId}`)}>
       <TxDetails>
         <DirectionLabel>↑ TO</DirectionLabel>
         <IOAddresses>
