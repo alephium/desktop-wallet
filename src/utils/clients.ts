@@ -56,7 +56,7 @@ export interface Settings {
   explorerUrl: string
 }
 
-const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
+export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 export type NetworkType = typeof networkTypes[number]
 
 export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> = {
