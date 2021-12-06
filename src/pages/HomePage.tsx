@@ -44,19 +44,21 @@ const Storage = getStorage()
 
 const HomePage = ({ hasWallet, usernames }: HomeProps) => {
   const history = useHistory()
-  const [showActions, setShowActions] = useState(false)
+  const [showInitialActions, setShowInitialActions] = useState(false)
   const theme = useTheme()
 
-  const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
+  const renderInitialActions = () => (
+    <InitialActions hasWallet={hasWallet} onLinkClick={() => setShowInitialActions(false)} />
+  )
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <SettingsButton transparent squared onClick={() => history.push('/settings')}>
+        <Button transparent squared onClick={() => history.push('/settings')}>
           <SettingsIcon />
-        </SettingsButton>
+        </Button>
       </AppHeader>
       <Sidebar>
         <AtmosphericGlowBackground
@@ -110,10 +112,10 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
       </Sidebar>
       <InteractionArea>
         <MainPanel verticalAlign="center" horizontalAlign="center">
-          {showActions ? (
+          {showInitialActions ? (
             <>
               <PanelTitle useLayoutId={false}>New account</PanelTitle>
-              {renderActions()}
+              {renderInitialActions()}
             </>
           ) : hasWallet ? (
             <>
@@ -121,12 +123,12 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
               <CenteredSecondaryParagraph>
                 Please choose an account and enter your password to continue.
               </CenteredSecondaryParagraph>
-              <Login setShowActions={setShowActions} usernames={usernames} />
+              <Login onLinkClick={() => setShowInitialActions(true)} usernames={usernames} />
             </>
           ) : (
             <>
               <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
-              {renderActions()}
+              {renderInitialActions()}
             </>
           )}
         </MainPanel>
@@ -137,13 +139,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 
 // === Components
 
-const Login = ({
-  usernames,
-  setShowActions
-}: {
-  usernames: string[]
-  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: () => void }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const { setWallet, setCurrentUsername, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
@@ -197,18 +193,12 @@ const Login = ({
           Login
         </Button>
       </SectionContent>
-      <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+      <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
     </>
   )
 }
 
-const InitialActions = ({
-  hasWallet,
-  setShowActions
-}: {
-  hasWallet: boolean
-  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+const InitialActions = ({ hasWallet, onLinkClick }: { hasWallet: boolean; onLinkClick: () => void }) => {
   const history = useHistory()
 
   return (
@@ -219,7 +209,7 @@ const InitialActions = ({
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
+        {hasWallet && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
       </SectionContent>
     </>
   )
@@ -389,7 +379,5 @@ const AlephiumLogo = styled.div`
     z-index: 1;
   }
 `
-
-const SettingsButton = styled(Button)``
 
 export default HomePage
