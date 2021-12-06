@@ -199,25 +199,23 @@ const IOList = ({
   isOut: boolean
   transaction: Transaction
 }) => {
-  const io = (isOut ? transaction.outputs : transaction.inputs) as Array<Output | Input>
+  const io = (isOut ? transaction.outputs : transaction.inputs) as Array<Output | Input> | undefined
   const genesisTimestamp = 1231006505000
 
   if (io && io.length > 0) {
-    if (io.every((o) => o.address === currentAddress)) {
-      return <Address key={currentAddress} hash={currentAddress} />
-    } else {
-      return (
-        <>
-          {_(io.filter((o) => o.address !== currentAddress))
-            .map((v) => v.address)
-            .uniq()
-            .value()
-            .map((v) => (
-              <Address key={v} hash={v || ''} />
-            ))}
-        </>
-      )
-    }
+    return io.every((o) => o.address === currentAddress) ? (
+      <Address key={currentAddress} hash={currentAddress} />
+    ) : (
+      <>
+        {_(io.filter((o) => o.address !== currentAddress))
+          .map((v) => v.address)
+          .uniq()
+          .value()
+          .map((v) => (
+            <Address key={v} hash={v || ''} />
+          ))}
+      </>
+    )
   } else if (transaction.timestamp === genesisTimestamp) {
     return <TXSpecialTypeLabel>Genesis TX</TXSpecialTypeLabel>
   } else {
