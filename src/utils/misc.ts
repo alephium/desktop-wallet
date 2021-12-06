@@ -27,7 +27,7 @@ export const isElectron = () => {
 // ===== LINKS ===== //
 // ================= //
 
-export const openInNewWindow = (url: string) => {
+export const openInWebBrowser = (url: string) => {
   if (url) {
     const newWindow = window.open(`${url}`, '_blank', 'noopener,noreferrer')
     if (newWindow) {

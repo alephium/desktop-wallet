@@ -131,6 +131,12 @@ function createWindow() {
     mainWindow.webContents.openDevTools()
   }
 
+  // Set default window open handler (open new windows in the web browser by default)
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url)
+    return { action: 'deny' }
+  })
+
   mainWindow.on('closed', () => (mainWindow = null))
 }
 
