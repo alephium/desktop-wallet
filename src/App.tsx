@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import { Wallet, getStorage } from 'alephium-js'
-import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import { AsyncReturnType } from 'type-fest'
 
 import HomePage from './pages/HomePage'
@@ -32,9 +32,9 @@ import { useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
+import SplashScreen from './components/SplashScreen'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { lightTheme, darkTheme, ThemeType } from './style/themes'
-import alephiumLogo from './images/alephium_logo.svg'
 import useIdleForTooLong from './hooks/useIdleForTooLong'
 
 interface Context {
@@ -173,27 +173,6 @@ const App = () => {
   )
 }
 
-const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => {
-  return (
-    <StyledSplashScreen
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ delay: 1 }}
-      onAnimationComplete={onSplashScreenShown}
-    >
-      <AlephiumLogoContainer
-        initial={{ opacity: 0, scale: 1.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <AlephiumLogo />
-      </AlephiumLogoContainer>
-    </StyledSplashScreen>
-  )
-}
-
-// === Styling === //
-
 const AppContainer = styled.div`
   flex: 1;
   display: flex;
@@ -217,36 +196,6 @@ const ClientLoading = styled.div`
   left: 25px;
   transform: translateX(-50%);
   color: white;
-`
-
-const StyledSplashScreen = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10002;
-  background-color: ${({ theme }) => theme.bg.primary};
-`
-
-const AlephiumLogoContainer = styled(motion.div)`
-  width: 150px;
-  height: 150px;
-  border-radius: 100%;
-  display: flex;
-  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.secondary)};
-`
-
-const AlephiumLogo = styled.div`
-  background-image: url(${alephiumLogo});
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 60%;
-  height: 60%;
-  margin: auto;
 `
 
 export default App
