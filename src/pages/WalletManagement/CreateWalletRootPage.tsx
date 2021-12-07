@@ -16,7 +16,6 @@
 
 import { useEffect, useState } from 'react'
 import { walletGenerate } from 'alephium-js'
-import styled from 'styled-components'
 
 import CreateAccountPage from './CreateAccountPage'
 import WalletWordsPage from './WalletWordsPage'
@@ -29,10 +28,8 @@ import {
   WalletManagementContextType
 } from './WalletManagementContext'
 import WalletWelcomePage from './WalletWelcomePage'
-import { deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
-
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
+import FloatingLogo from '../../components/FloatingLogo'
 
 const CreateWallet = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
@@ -63,21 +60,5 @@ const CreateWallet = () => {
     </WalletManagementContext.Provider>
   )
 }
-
-const FloatingLogo = styled(AlephiumLogoSVG)`
-  position: absolute;
-  top: 50px;
-  left: 25px;
-  width: 60px;
-  height: 60px;
-
-  path {
-    fill: rgba(0, 0, 0, 0.05) !important;
-  }
-
-  @media ${deviceBreakPoints.mobile} {
-    display: none;
-  }
-`
 
 export default CreateWallet
