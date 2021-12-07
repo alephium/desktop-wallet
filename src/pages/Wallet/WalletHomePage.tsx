@@ -135,15 +135,16 @@ const WalletHomePage = () => {
 
   if (!wallet) return null
 
-  const pendingTxLength = (pendingTxList[currentNetwork] || []).length
+  const pendingTxs = pendingTxList[currentNetwork] || []
+  const showSpinner = isLoading || pendingTxs.length > 0
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxLength > 0}>
-          {isLoading || pendingTxLength > 0 ? <Spinner /> : <RefreshCw />}
+        <RefreshButton transparent squared onClick={fetchData} disabled={showSpinner}>
+          {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
           <SettingsIcon />
@@ -181,10 +182,10 @@ const WalletHomePage = () => {
         <MainPanel>
           <LastTransactionListHeader>
             <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-            {(isLoading || pendingTxLength > 0) && <Spinner size={'16px'} />}
+            {showSpinner && <Spinner size={'16px'} />}
           </LastTransactionListHeader>
           <LastTransactionList>
-            {(pendingTxList[currentNetwork] || [])
+            {pendingTxs
               .slice(0)
               .reverse()
               .map((t) => {
