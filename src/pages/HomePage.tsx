@@ -42,10 +42,8 @@ const Storage = getStorage()
 const HomePage = ({ hasWallet, usernames }: HomeProps) => {
   const history = useHistory()
   const [showInitialActions, setShowInitialActions] = useState(false)
-
-  const renderInitialActions = () => (
-    <InitialActions hasWallet={hasWallet} onLinkClick={() => setShowInitialActions(false)} />
-  )
+  const hideInitialActions = () => setShowInitialActions(false)
+  const displayInitialActions = () => setShowInitialActions(true)
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -59,23 +57,25 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
       <SideBar />
       <InteractionArea>
         <MainPanel verticalAlign="center" horizontalAlign="center">
-          {showInitialActions ? (
+          {!showInitialActions && !hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>New account</PanelTitle>
-              {renderInitialActions()}
+              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
+              <InitialActions />
             </>
-          ) : hasWallet ? (
+          )}
+          {!showInitialActions && hasWallet && (
             <>
               <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
               <CenteredSecondaryParagraph>
                 Please choose an account and enter your password to continue.
               </CenteredSecondaryParagraph>
-              <Login onLinkClick={() => setShowInitialActions(true)} usernames={usernames} />
+              <Login onLinkClick={displayInitialActions} usernames={usernames} />
             </>
-          ) : (
+          )}
+          {showInitialActions && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
-              {renderInitialActions()}
+              <PanelTitle useLayoutId={false}>New account</PanelTitle>
+              <InitialActions showLinkToExistingAccounts onLinkClick={hideInitialActions} />
             </>
           )}
         </MainPanel>
@@ -145,7 +145,13 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
   )
 }
 
-const InitialActions = ({ hasWallet, onLinkClick }: { hasWallet: boolean; onLinkClick: () => void }) => {
+const InitialActions = ({
+  showLinkToExistingAccounts,
+  onLinkClick
+}: {
+  showLinkToExistingAccounts?: boolean
+  onLinkClick?: () => void
+}) => {
   const history = useHistory()
 
   return (
@@ -156,7 +162,7 @@ const InitialActions = ({ hasWallet, onLinkClick }: { hasWallet: boolean; onLink
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {hasWallet && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
+        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
       </SectionContent>
     </>
   )
