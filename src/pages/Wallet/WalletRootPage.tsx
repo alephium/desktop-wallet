@@ -59,7 +59,7 @@ const Wallet = () => {
   const [pendingTxList, setPendingTxList] = useState<WalletContextType['pendingTxList']>({})
 
   const addPendingTx = (tx: SimpleTx) => {
-    setPendingTxList((prev) => (tx ? { ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] } : prev))
+    tx && setPendingTxList((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
   }
 
   // Redirect if not wallet is set
