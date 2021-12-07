@@ -76,7 +76,7 @@ const ShortenParagraph = styled(Paragraph)`
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  margin-top: 50px;
+  margin-top: var(--spacing-50);
 `
 
 export default AddressPage

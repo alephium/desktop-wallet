@@ -27,16 +27,16 @@ const tags = css`
 
   .tags-dropdown {
     position: fixed;
-    bottom: 10px !important;
-    left: 10px !important;
-    right: 10px !important;
+    bottom: var(--spacing-10) !important;
+    left: var(--spacing-10) !important;
+    right: var(--spacing-10) !important;
     width: auto !important;
     top: auto !important;
     margin: 0;
 
     .tagify__dropdown__wrapper {
       border: none;
-      border-radius: 7px;
+      border-radius: var(--radius);
       background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
     }
 
@@ -44,7 +44,7 @@ const tags = css`
       color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
       margin: 0;
       border-radius: 0;
-      padding: 10px;
+      padding: var(--spacing-10);
 
       &:not(:last-child) {
         border-bottom: 1px solid ${({ theme }) => theme.border};

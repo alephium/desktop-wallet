@@ -74,10 +74,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared }) => (squared ? '40px' : '46px')};
-  width: ${({ squared }) => (squared ? '40px' : '80%')};
+  height: ${({ squared }) => (squared ? 'var(--spacing-40)' : 'var(--spacing-46)')};
+  width: ${({ squared }) => (squared ? 'var(--spacing-40)' : '80%')};
   max-width: 250px;
-  border-radius: 7px;
+  border-radius: var(--radius);
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
     alert && !secondary
@@ -97,17 +97,17 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       : secondary
       ? theme.global.accent
       : theme.font.contrastPrimary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   font-size: inherit;
   font-family: inherit;
-  padding: ${({ squared }) => (squared ? '10px' : '0 13px')};
-  min-width: ${({ squared }) => (squared ? '40px' : '60px')};
+  padding: ${({ squared }) => (squared ? 'var(--spacing-10)' : '0 13px')};
+  min-width: ${({ squared }) => (squared ? 'var(--spacing-40)' : 'var(--spacing-60)')};
   text-align: center;
 
   transition: 0.2s ease-out;
 
   &:not(:last-child) {
-    margin: ${({ squared }) => (squared ? '0' : '12px 0')};
+    margin: ${({ squared }) => (squared ? '0' : 'var(--spacing-12) 0')};
   }
 
   &:hover {

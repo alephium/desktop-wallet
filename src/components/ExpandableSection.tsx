@@ -63,13 +63,13 @@ const Title = styled.div`
 `
 
 const Chevron = styled(motion(ChevronDown))`
-  width: 16px;
+  width: var(--spacing-16);
   height: 100%;
 `
 
 const TitleText = styled.span`
-  margin-left: 10px;
-  margin-right: 15px;
+  margin-left: var(--spacing-10);
+  margin-right: var(--spacing-15);
 `
 
 const Divider = styled.div`
@@ -84,8 +84,8 @@ const ContentWrapper = styled(motion.div)`
 `
 
 const Content = styled.div`
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: var(--spacing-10);
+  padding: var(--spacing-10);
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 

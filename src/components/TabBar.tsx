@@ -61,7 +61,7 @@ const TabBar = ({
 }
 
 const Wrapper = styled.div`
-  margin: 10px 0 25px 0;
+  margin: var(--spacing-10) 0 var(--spacing-25) 0;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -71,8 +71,8 @@ const Wrapper = styled.div`
 
 const TabBarContainer = styled.div`
   width: 100%;
-  border-radius: 7px;
-  height: 40px;
+  border-radius: var(--radius);
+  height: var(--spacing-40);
 `
 
 const TabBarContent = styled.div`
@@ -91,9 +91,9 @@ const TabContainer = styled.div`
 const Tab = styled.div<{ isActive: boolean }>`
   flex: 1;
   text-align: center;
-  padding: 8px;
+  padding: var(--spacing-8);
   color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
-  font-weight: 600;
+  font-weight: var(--fontWeight-semiBold);
   z-index: 1;
   cursor: pointer;
 
@@ -106,7 +106,7 @@ const TabSelector = styled(motion.div)`
   position: absolute;
   bottom: 0;
   height: 2px;
-  border-radius: 7px;
+  border-radius: var(--radius);
   flex: 1;
   background-color: ${({ theme }) => theme.global.accent};
   z-index: -1;

@@ -179,13 +179,13 @@ const InteractionArea = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 25px;
+  padding: var(--spacing-25);
 `
 
 const SwitchLink = styled(Paragraph)`
   color: ${({ theme }) => theme.global.accent};
   background-color: ${({ theme }) => theme.bg.primary};
-  padding: 5px;
+  padding: var(--spacing-5);
   cursor: pointer;
 
   &:hover {

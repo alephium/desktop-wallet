@@ -192,10 +192,10 @@ const AppContainer = styled.div`
 
 const ClientLoading = styled.div`
   position: absolute;
-  top: 15px;
-  left: 25px;
+  top: var(--spacing-15);
+  left: var(--spacing-25);
   transform: translateX(-50%);
-  color: white;
+  color: var(--color-white);
 `
 
 export default App

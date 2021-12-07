@@ -132,7 +132,7 @@ const HeaderText = styled.div`
 `
 
 const PageSubtitle = styled.h3`
-  margin-top: 5px;
+  margin-top: var(--spacing-5);
 `
 
 const Moon = styled(motion.div)`
@@ -140,8 +140,8 @@ const Moon = styled(motion.div)`
   right: 25%;
   height: 10vw;
   width: 10vw;
-  max-height: 60px;
-  max-width: 60px;
+  max-height: var(--spacing-60);
+  max-width: var(--spacing-60);
   border-radius: 200px;
   background-color: ${({ theme }) => theme.global.secondary};
 `
@@ -189,7 +189,7 @@ const CloudGroup = ({
 }
 
 const StyledCloudGroup = styled(motion.div)`
-  height: 50px;
+  height: var(--spacing-50);
   width: 100px;
   position: absolute;
 `
@@ -197,7 +197,7 @@ const StyledCloudGroup = styled(motion.div)`
 const Cloud = styled.div`
   position: absolute;
   background-color: ${({ theme }) => tinycolor(theme.global.secondary).setAlpha(0.3).toString()};
-  height: 3px;
+  height: var(--spacing-3);
 `
 
 const AlephiumLogo = styled.div`
@@ -206,13 +206,13 @@ const AlephiumLogo = styled.div`
   background-position: center;
   height: 10vh;
   width: 10vw;
-  margin-top: 20px;
-  max-width: 60px;
-  min-width: 30px;
+  margin-top: var(--spacing-20);
+  max-width: var(--spacing-60);
+  min-width: var(--spacing-30);
 
   @media ${deviceBreakPoints.mobile} {
     margin: auto;
-    max-width: 80px;
+    max-width: var(--spacing-80);
     width: 15vw;
     height: 15vh;
     z-index: 1;

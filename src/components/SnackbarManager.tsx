@@ -75,15 +75,15 @@ const SnackbarManagerContainer = styled.div`
 `
 
 const SnackbarPopup = styled(motion.div)`
-  margin: 15px;
+  margin: var(--spacing-15);
   text-align: center;
   min-width: 200px;
-  padding: 20px 15px;
+  padding: var(--spacing-20) var(--spacing-15);
   color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
+  border-radius: var(--radius);
   z-index: 1000;
-  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};

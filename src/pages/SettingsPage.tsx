@@ -296,12 +296,12 @@ const ClientSettings = () => {
 
 const PhraseBox = styled.div`
   width: 100%;
-  padding: 20px;
+  padding: var(--spacing-20);
   color: ${({ theme }) => theme.font.contrastPrimary};
-  font-weight: 600;
+  font-weight: var(--fontWeight-semiBold);
   background-color: ${({ theme }) => theme.global.alert};
-  border-radius: 14px;
-  margin-bottom: 20px;
+  border-radius: var(--radius-big);
+  margin-bottom: var(--spacing-20);
 `
 
 const UrlInputs = styled.div`
@@ -311,14 +311,14 @@ const UrlInputs = styled.div`
 
 const Divider = styled.div`
   background-color: ${({ theme }) => theme.border.secondary};
-  margin: 15px 5px;
+  margin: var(--spacing-15) var(--spacing-5);
   height: 1px;
   width: 100%;
 `
 
 const VersionNumber = styled.span`
   color: ${({ theme }) => theme.font.secondary};
-  margin-top: 15px;
+  margin-top: var(--spacing-15);
 `
 
 export default SettingsPage

@@ -68,8 +68,8 @@ export const InfoBox = ({
 // === Styling === //
 const BoxContainer = styled.div<{ small?: boolean }>`
   width: 100%;
-  margin: 0 auto 20px auto;
-  margin-top: 10px;
+  margin: 0 auto var(--spacing-20) auto;
+  margin-top: var(--spacing-10);
   max-width: ${({ small }) => (small ? '300px' : 'initial')};
 `
 
@@ -86,9 +86,9 @@ const IconContainer = styled.div`
 `
 
 const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
-  padding: 0 20px;
+  padding: 0 var(--spacing-20);
   flex: 2;
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
 
   ${({ ellipsis }) => {
@@ -104,20 +104,20 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
 `
 
 const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
-  padding: 10px 20px 10px 0;
+  padding: var(--spacing-10) var(--spacing-20) var(--spacing-10) 0;
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.primary)};
   display: flex;
-  border-radius: 7px;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius);
+  box-shadow: 0 5px 5px var(--color-shadow-5);
   align-items: center;
 `
 
 const Label = styled(motion.label)`
   display: block;
   width: 100%;
-  margin-left: 15px;
-  margin-bottom: 7px;
+  margin-left: var(--spacing-15);
+  margin-bottom: var(--spacing-7);
   color: ${({ theme }) => theme.font.secondary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
 `

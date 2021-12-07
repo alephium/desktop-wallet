@@ -22,13 +22,13 @@ import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monoc
 
 const FloatingLogo = styled(AlephiumLogoSVG)`
   position: absolute;
-  top: 50px;
-  left: 25px;
-  width: 60px;
-  height: 60px;
+  top: var(--spacing-50);
+  left: var(--spacing-25);
+  width: var(--spacing-60);
+  height: var(--spacing-60);
 
   path {
-    fill: rgba(0, 0, 0, 0.05) !important;
+    fill: var(--color-shadow-5) !important;
   }
 
   @media ${deviceBreakPoints.mobile} {

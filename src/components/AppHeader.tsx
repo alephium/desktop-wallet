@@ -34,13 +34,13 @@ const AppHeader: FC = ({ children }) => {
 
 export const HeaderDivider = styled.div`
   width: 1px;
-  height: 10px;
-  margin: 0 10px;
+  height: var(--spacing-10);
+  margin: 0 var(--spacing-10);
   background-color: ${({ theme }) => theme.border.primary};
 `
 
 const HeaderContainer = styled(motion.header)`
-  height: 50px;
+  height: var(--spacing-50);
   position: fixed;
   top: 0;
   right: 0;
@@ -49,10 +49,10 @@ const HeaderContainer = styled(motion.header)`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 var(--spacing-20);
 
   > *:not(:last-child) {
-    margin-right: 5px;
+    margin-right: var(--spacing-5);
   }
 
   @media ${deviceBreakPoints.mobile} {

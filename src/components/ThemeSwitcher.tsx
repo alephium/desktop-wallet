@@ -27,7 +27,7 @@ interface ThemeSwitcherProps {
 }
 
 const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
-  return theme === buttonTheme ? (theme === 'dark' ? '#F6C76A' : 'white') : '#646775'
+  return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
 }
 
 const toggleWidth = 80
@@ -35,8 +35,8 @@ const toggleHeight = toggleWidth / 2
 const toggleIndicatorSize = toggleWidth / 2
 
 const toggleVariants = {
-  light: { left: 0, backgroundColor: '#F6C76A' },
-  dark: { left: toggleWidth - toggleIndicatorSize, backgroundColor: '#3A0595' }
+  light: { left: 0, backgroundColor: 'var(--color-orange)' },
+  dark: { left: toggleWidth - toggleIndicatorSize, backgroundColor: 'var(--color-purple)' }
 }
 
 const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {

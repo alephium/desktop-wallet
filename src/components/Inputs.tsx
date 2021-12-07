@@ -294,21 +294,21 @@ function SelectOptionsPopup<T>({
 
 const InputContainer = styled(motion.div)`
   position: relative;
-  height: 46px;
+  height: var(--spacing-46);
   width: 100%;
-  margin: 15px 0;
+  margin: var(--spacing-15) 0;
 `
 
 const TextAreaContainer = styled(motion.div)`
   position: relative;
   width: 100%;
-  margin: 15px 0;
+  margin: var(--spacing-15) 0;
 `
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
-  margin: 15px 0;
-  border-radius: 7px;
+  margin: var(--spacing-15) 0;
+  border-radius: var(--radius);
   color: ${({ theme }) => theme.font.secondary};
 
   .tagify__input:empty::before {
@@ -319,18 +319,18 @@ const TextAreaTagsContainer = styled(motion.div)`
 
 const Label = styled(motion.label)`
   position: absolute;
-  top: 16px;
+  top: var(--spacing-16);
   left: 13px;
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
 `
 
 const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
-  bottom: -7px;
-  right: 10px;
-  font-weight: 500;
+  bottom: calc(var(--spacing-7) * -1);
+  right: var(--spacing-10);
+  font-weight: var(--fontWeight-medium);
   opacity: 0;
   font-size: 0.8em;
   color: ${({ theme }) => theme.global.alert};
@@ -340,8 +340,8 @@ const ValidIconContainer = styled(motion.div)`
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 20px;
-  font-weight: 500;
+  right: var(--spacing-20);
+  font-weight: var(--fontWeight-medium);
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.global.valid};
@@ -350,14 +350,14 @@ const ValidIconContainer = styled(motion.div)`
 const defaultStyle = (isValid?: boolean) => {
   return css`
     background-image: none;
-    height: 46px;
+    height: var(--spacing-46);
     width: 100%;
-    border-radius: 7px;
+    border-radius: var(--radius);
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
     color: ${({ theme }) => theme.font.primary};
-    padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
-    font-weight: 500;
+    padding: ${isValid ? '0 45px 0 var(--spacing-12)' : '0 var(--spacing-12)'};
+    font-weight: var(--fontWeight-medium);
     font-size: 1em;
     text-align: left;
     font-family: inherit;
@@ -391,7 +391,7 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
   outline: none;
   padding-top: 13px;
   min-height: 300px;
-  border-radius: 7px;
+  border-radius: var(--radius);
 `
 
 // NOTE: Tags dropdown is styled in GlobalStyles
@@ -399,14 +399,14 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
 const StyledTags = styled(Tags)`
   ${defaultStyle(true)}
   height: auto;
-  padding: 5px;
+  padding: var(--spacing-5);
   line-height: 20px;
-  border-radius: 7px;
+  border-radius: var(--radius);
 `
 
 const MoreIcon = styled.div`
   position: absolute;
-  top: 12px;
+  top: var(--spacing-12);
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `
@@ -427,19 +427,19 @@ const PopupContainer = styled(motion.div)`
 `
 
 const Popup = styled(motion.div)`
-  border-radius: 7px;
+  border-radius: var(--radius);
   margin: auto;
   width: 30vw;
   min-width: 300px;
   max-height: 500px;
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const OptionItem = styled.div`
-  padding: 15px;
+  padding: var(--spacing-15);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
 
@@ -453,7 +453,7 @@ const OptionItem = styled.div`
 `
 
 const SelectOptionsHeader = styled.header`
-  padding: 5px 15px;
+  padding: var(--spacing-5) var(--spacing-15);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
