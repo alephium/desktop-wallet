@@ -19,7 +19,7 @@ import styled, { useTheme } from 'styled-components'
 import { SectionContent, MainPanel } from '../../components/PageComponents'
 import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
-import { Transaction } from 'alephium-js/dist/api/api-explorer'
+import { Input, Output, Transaction } from 'alephium-js/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadSettingsOrDefault } from '../../utils/clients'
@@ -41,22 +41,6 @@ import { openInWebBrowser } from '../../utils/misc'
 import NetworkBadge from '../../components/NetworkBadge'
 
 dayjs.extend(relativeTime)
-
-const renderIOAccountList = (currentAddress: string, io: { address?: string }[]) => {
-  if (io.length > 0) {
-    if (io.every((o) => o.address === currentAddress)) {
-      return <Address key={currentAddress} hash={currentAddress} />
-    } else {
-      return _(io.filter((o) => o.address !== currentAddress))
-        .map((v) => v.address)
-        .uniq()
-        .value()
-        .map((v) => <Address key={v} hash={v || ''} />)
-    }
-  } else {
-    return <MiningRewardString>Mining Rewards</MiningRewardString>
-  }
-}
 
 const WalletHomePage = () => {
   const history = useHistory()
@@ -222,6 +206,39 @@ const WalletHomePage = () => {
   )
 }
 
+const IOList = ({
+  currentAddress,
+  isOut,
+  transaction
+}: {
+  currentAddress: string
+  isOut: boolean
+  transaction: Transaction
+}) => {
+  const io = (isOut ? transaction.outputs : transaction.inputs) as Array<Output | Input> | undefined
+  const genesisTimestamp = 1231006505000
+
+  if (io && io.length > 0) {
+    return io.every((o) => o.address === currentAddress) ? (
+      <Address key={currentAddress} hash={currentAddress} />
+    ) : (
+      <>
+        {_(io.filter((o) => o.address !== currentAddress))
+          .map((v) => v.address)
+          .uniq()
+          .value()
+          .map((v) => (
+            <Address key={v} hash={v || ''} />
+          ))}
+      </>
+    )
+  } else if (transaction.timestamp === genesisTimestamp) {
+    return <TXSpecialTypeLabel>Genesis TX</TXSpecialTypeLabel>
+  } else {
+    return <TXSpecialTypeLabel>Mining Rewards</TXSpecialTypeLabel>
+  }
+}
+
 const WalletActionButton = ({
   Icon,
   label,
@@ -261,15 +278,15 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
 
   const isOut = amountDelta < 0
 
-  const IOAddressesList = isOut ? t.outputs : t.inputs
-
   const { explorerUrl } = loadSettingsOrDefault()
 
   return (
     <TransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.hash}`)}>
       <TxDetails>
         <DirectionLabel>{isOut ? '↑ TO' : '↓ FROM'}</DirectionLabel>
-        <IOAddresses>{IOAddressesList && renderIOAccountList(currentAddress, IOAddressesList)}</IOAddresses>
+        <AddressListContainer>
+          <IOList currentAddress={currentAddress} isOut={isOut} transaction={t} />
+        </AddressListContainer>
         <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
       <TxAmountContainer>
@@ -292,9 +309,9 @@ const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) =
     <PendingTransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.txId}`)}>
       <TxDetails>
         <DirectionLabel>↑ TO</DirectionLabel>
-        <IOAddresses>
+        <AddressListContainer>
           <Address key={t.toAddress} hash={t.toAddress || ''} />
-        </IOAddresses>
+        </AddressListContainer>
         <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
       </TxDetails>
       <AmountBadge type="minus" prefix="-" content={t.amount} amount />
@@ -573,7 +590,7 @@ const DirectionLabel = styled.span`
   margin-bottom: 5px;
 `
 
-const IOAddresses = styled.div`
+const AddressListContainer = styled.div`
   display: flex;
   margin-bottom: 5px;
 `
@@ -584,7 +601,7 @@ const TxAmountContainer = styled.div`
   justify-content: flex-end;
 `
 
-const MiningRewardString = styled.span`
+const TXSpecialTypeLabel = styled.span`
   align-self: flex-start;
   color: ${({ theme }) => theme.font.secondary};
   background-color: ${({ theme }) => theme.bg.secondary};
