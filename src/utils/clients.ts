@@ -56,10 +56,10 @@ export interface Settings {
   explorerUrl: string
 }
 
-const networkTypes = ['testnet', 'mainnet', 'localhost'] as const
+export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 export type NetworkType = typeof networkTypes[number]
 
-export const networkEndpoints: Record<NetworkType, Settings> = {
+export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> = {
   mainnet: {
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',

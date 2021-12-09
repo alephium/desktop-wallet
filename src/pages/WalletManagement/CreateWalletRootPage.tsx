@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { walletGenerate } from 'alephium-js'
 import CreateAccountPage from './CreateAccountPage'
 import WalletWordsPage from './WalletWordsPage'
-import { GlobalContext } from '../../App'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
 import MultiStepsController from '../MultiStepsController'
@@ -34,7 +33,6 @@ import { deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
 
 const CreateWallet = () => {
-  const { networkId } = useContext(GlobalContext)
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
 
   // Init wallet
@@ -45,7 +43,7 @@ const CreateWallet = () => {
       plainWallet: result,
       mnemonic: result.mnemonic
     }))
-  }, [networkId])
+  }, [])
 
   const createWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" />,

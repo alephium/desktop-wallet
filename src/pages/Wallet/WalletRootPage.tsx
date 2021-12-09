@@ -24,6 +24,7 @@ import { AnimatePresence } from 'framer-motion'
 import AddressPage from './AddressPage'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import SettingsPage from '../../pages/SettingsPage'
+import { NetworkType, useCurrentNetwork } from '../../utils/clients'
 
 export interface SimpleTx {
   txId: string
@@ -32,36 +33,33 @@ export interface SimpleTx {
   timestamp: number
 }
 
-interface WalletContext {
-  pendingTxList: SimpleTx[]
+interface WalletContextType {
+  networkPendingTxLists: { [key in NetworkType]?: SimpleTx[] }
   addPendingTx: (tx: SimpleTx) => void
   loadedTxList: Transaction[]
   setLoadedTxList: (list: Transaction[]) => void
 }
 
-const initialContext: WalletContext = {
-  pendingTxList: [],
+const initialContext: WalletContextType = {
+  networkPendingTxLists: {},
   addPendingTx: () => null,
   loadedTxList: [],
   setLoadedTxList: () => null
 }
 
-export const WalletContext = React.createContext<WalletContext>(initialContext)
+export const WalletContext = React.createContext<WalletContextType>(initialContext)
 
 const Wallet = () => {
   const { wallet } = useContext(GlobalContext)
+  const currentNetwork = useCurrentNetwork()
   const history = useHistory()
   const location = useLocation()
 
-  const [loadedTxList, setLoadedTxList] = useState<Transaction[]>([])
-  const [pendingTxList, setPendingTxList] = useState<SimpleTx[]>([])
+  const [loadedTxList, setLoadedTxList] = useState<WalletContextType['loadedTxList']>([])
+  const [networkPendingTxLists, setNetworkPendingTxLists] = useState<WalletContextType['networkPendingTxLists']>({})
 
   const addPendingTx = (tx: SimpleTx) => {
-    setPendingTxList((prev) => {
-      if (prev && tx) {
-        return [...prev, tx]
-      } else return prev
-    })
+    tx && setNetworkPendingTxLists((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
   }
 
   // Redirect if not wallet is set
@@ -73,11 +71,14 @@ const Wallet = () => {
 
   // Manage state of pending tx (clean if in loaded list)
   useEffect(() => {
-    setPendingTxList((prev) => prev.filter((t) => !loadedTxList.find((tx) => tx.hash === t.txId)))
-  }, [loadedTxList])
+    setNetworkPendingTxLists((prev) => ({
+      ...prev,
+      [currentNetwork]: prev?.[currentNetwork]?.filter((t) => !loadedTxList.find((tx) => tx.hash === t.txId)) || []
+    }))
+  }, [currentNetwork, loadedTxList])
 
   return (
-    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, pendingTxList, loadedTxList }}>
+    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, networkPendingTxLists, loadedTxList }}>
       <Route path="/wallet">
         <WalletHomePage />
       </Route>

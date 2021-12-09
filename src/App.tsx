@@ -39,7 +39,6 @@ interface Context {
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
-  networkId: number
   client: Client | undefined
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
@@ -56,7 +55,6 @@ const initialContext: Context = {
   setCurrentUsername: () => null,
   wallet: undefined,
   setWallet: () => null,
-  networkId: 1,
   client: undefined,
   settings: loadSettingsOrDefault(),
   setSettings: () => null,
@@ -152,7 +150,6 @@ const App = () => {
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
-  const networkId = 1
 
   return (
     <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
@@ -165,7 +162,6 @@ const App = () => {
           setCurrentUsername,
           wallet,
           setWallet,
-          networkId,
           client,
           setSnackbarMessage,
           settings,
@@ -190,7 +186,7 @@ const App = () => {
                 <WalletPages />
               </Route>
               <Route path="">
-                <HomePage hasWallet={hasWallet} usernames={usernames} networkId={networkId} />
+                <HomePage hasWallet={hasWallet} usernames={usernames} />
               </Route>
             </Switch>
           </AnimateSharedLayout>

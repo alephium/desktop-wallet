@@ -22,7 +22,7 @@ import { useHistory } from 'react-router-dom'
 import { Input, Output, Transaction } from 'alephium-js/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadSettingsOrDefault } from '../../utils/clients'
+import { loadSettingsOrDefault, useCurrentNetwork } from '../../utils/clients'
 import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
 import dayjs from 'dayjs'
@@ -44,9 +44,10 @@ dayjs.extend(relativeTime)
 
 const WalletHomePage = () => {
   const history = useHistory()
+  const currentNetwork = useCurrentNetwork()
   const { wallet, setSnackbarMessage, client, setWallet, currentUsername } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
-  const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
+  const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
@@ -130,17 +131,20 @@ const WalletHomePage = () => {
   }, [fetchData])
 
   // Polling (when pending tx)
-  useInterval(fetchData, 2000, pendingTxList.length === 0)
+  useInterval(fetchData, 2000, networkPendingTxLists[currentNetwork]?.length === 0)
 
   if (!wallet) return null
+
+  const pendingTxs = networkPendingTxLists[currentNetwork] || []
+  const showSpinner = isLoading || pendingTxs.length > 0
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <RefreshButton transparent squared onClick={fetchData} disabled={isLoading || pendingTxList.length > 0}>
-          {isLoading || pendingTxList.length > 0 ? <Spinner /> : <RefreshCw />}
+        <RefreshButton transparent squared onClick={fetchData} disabled={showSpinner}>
+          {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
           <SettingsIcon />
@@ -178,10 +182,10 @@ const WalletHomePage = () => {
         <MainPanel>
           <LastTransactionListHeader>
             <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-            {(isLoading || pendingTxList.length > 0) && <Spinner size={'16px'} />}
+            {showSpinner && <Spinner size={'16px'} />}
           </LastTransactionListHeader>
           <LastTransactionList>
-            {pendingTxList
+            {pendingTxs
               .slice(0)
               .reverse()
               .map((t) => {
