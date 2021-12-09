@@ -30,7 +30,7 @@ const SideBar: FC<{ className?: string }> = ({ className }) => {
   const theme = useTheme()
 
   return (
-    <Sidebar data-testid="home-sidebar">
+    <Sidebar data-testid="sidebar">
       <AtmosphericGlowBackground
         initial={{ bottom: '-10vh', opacity: 0 }}
         animate={{ bottom: 0, opacity: 0.6 }}

@@ -61,7 +61,7 @@ export const Input = ({ placeholder, error, isValid, disabled, onChange, value, 
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={props.id}>
         {placeholder}
       </Label>
       <StyledInput
@@ -161,6 +161,7 @@ interface SelectProps<T> {
   controlledValue?: SelectOption<T>
   options: SelectOption<T>[]
   title?: string
+  id: string
   onValueChange: (value: SelectOption<T> | undefined) => void
   className?: string
 }
@@ -172,6 +173,7 @@ export function Select<T>({
   disabled,
   controlledValue,
   className,
+  id,
   onValueChange
 }: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
@@ -218,13 +220,13 @@ export function Select<T>({
         custom={disabled}
         onClick={() => setShowPopup(true)}
       >
-        <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+        <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={id}>
           {placeholder}
         </Label>
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>
-        <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} />
+        <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} id={id} />
       </SelectContainer>
       <AnimatePresence>
         {showPopup && (

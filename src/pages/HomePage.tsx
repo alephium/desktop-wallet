@@ -126,6 +126,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
           options={usernames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
           title="Select an account"
+          id="account"
         />
         <Input
           placeholder="Password"
@@ -133,6 +134,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
           value={credentials.password}
+          id="password"
         />
       </SectionContent>
       <SectionContent inList>

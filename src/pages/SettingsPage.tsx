@@ -263,6 +263,7 @@ const ClientSettings = () => {
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title="Network"
         placeholder="Network"
+        id="network"
       />
       <ExpandableSection
         sectionTitle="Advanced settings"
