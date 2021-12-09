@@ -14,14 +14,15 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import { useState } from 'react'
 import styled from 'styled-components'
 import Confetti from 'react-confetti'
-import { FooterActions, SectionContent } from '../../components/PageComponents'
-import { useTimeout, useWindowSize } from '../../utils/hooks'
-import React, { useState } from 'react'
-import { Button } from '../../components/Buttons'
 import { useHistory } from 'react-router'
+
+import { FooterActions, SectionContent } from '../../components/PageComponents'
+import { Button } from '../../components/Buttons'
 import Paragraph from '../../components/Paragraph'
+import { useTimeout, useWindowSize } from '../../utils/hooks'
 
 // This is shown when a user create or import a wallet
 

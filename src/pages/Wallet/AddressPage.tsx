@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import QRCode from 'qrcode.react'
 import { useContext } from 'react'
-import { GlobalContext } from '../../App'
-import Paragraph from '../../components/Paragraph'
-import { openInWebBrowser } from '../../utils/misc'
-import { loadSettingsOrDefault } from '../../utils/clients'
-import { Button } from '../../components/Buttons'
 import styled, { useTheme } from 'styled-components'
+
+import { GlobalContext } from '../../App'
+import { PanelContainer, SectionContent } from '../../components/PageComponents'
+import Paragraph from '../../components/Paragraph'
+import { Button } from '../../components/Buttons'
+import { openInWebBrowser } from '../../utils/misc'
+import { loadSettings } from '../../utils/settings'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
@@ -31,7 +32,7 @@ const AddressPage = () => {
   const address = wallet?.address
 
   const handleShowInExplorer = () => {
-    const { explorerUrl } = loadSettingsOrDefault()
+    const { explorerUrl } = loadSettings()
     if (explorerUrl) {
       const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
       openInWebBrowser(cleanURL)

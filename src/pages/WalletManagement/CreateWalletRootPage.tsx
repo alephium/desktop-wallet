@@ -16,6 +16,8 @@
 
 import { useEffect, useState } from 'react'
 import { walletGenerate } from 'alephium-js'
+import styled from 'styled-components'
+
 import CreateAccountPage from './CreateAccountPage'
 import WalletWordsPage from './WalletWordsPage'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
@@ -27,10 +29,10 @@ import {
   WalletManagementContextType
 } from './WalletManagementContext'
 import WalletWelcomePage from './WalletWelcomePage'
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
-import styled from 'styled-components'
 import { deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader from '../../components/AppHeader'
+
+import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 
 const CreateWallet = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)

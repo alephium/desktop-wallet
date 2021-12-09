@@ -15,6 +15,7 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled, { DefaultTheme } from 'styled-components'
+
 import Amount from './Amount'
 
 type BadgeType = 'plus' | 'minus' | 'neutral' | 'neutralHighlight'

@@ -15,7 +15,8 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
-import { useCurrentNetwork } from '../utils/clients'
+
+import { useCurrentNetwork } from '../utils/settings'
 
 const NetworkBadge = () => {
   const currentNetwork = useCurrentNetwork()

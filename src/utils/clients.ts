@@ -15,16 +15,15 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
-import { isEqual } from 'lodash'
-import { useContext } from 'react'
-import { GlobalContext } from '../App'
+
+import { Settings, loadSettings } from './settings'
 
 // =================== //
 // === API CLIENTS === //
 // =================== //
 
 export async function createClient(settings?: Settings) {
-  const loadedSettings = settings || loadSettingsOrDefault()
+  const loadedSettings = settings || loadSettings()
   const cliqueClient = new CliqueClient({
     baseUrl: loadedSettings.nodeHost
   })
@@ -44,73 +43,4 @@ export async function createClient(settings?: Settings) {
   await cliqueClient.init(isMultiNodesClique)
 
   return { clique: cliqueClient, explorer: explorerClient }
-}
-
-// ================ //
-// === SETTINGS === //
-// ================ //
-
-export interface Settings {
-  nodeHost: string
-  explorerApiHost: string
-  explorerUrl: string
-}
-
-export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
-export type NetworkType = typeof networkTypes[number]
-
-export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> = {
-  mainnet: {
-    nodeHost: 'https://mainnet-wallet.alephium.org',
-    explorerApiHost: 'https://mainnet-backend.alephium.org',
-    explorerUrl: 'https://explorer.alephium.org'
-  },
-  testnet: {
-    nodeHost: 'https://testnet-wallet.alephium.org',
-    explorerApiHost: 'https://testnet-backend.alephium.org',
-    explorerUrl: 'https://testnet.alephium.org'
-  },
-  localhost: {
-    nodeHost: 'http://localhost:12973',
-    explorerApiHost: 'http://localhost:9090',
-    explorerUrl: 'http://localhost:3000'
-  }
-}
-
-export const getNetworkName = (settings: Settings) => {
-  return (Object.entries(networkEndpoints).find(([networkType, presetSettings]) => {
-    return isEqual(presetSettings, settings)
-  })?.[0] || 'custom') as NetworkType | 'custom'
-}
-
-export const useCurrentNetwork = () => {
-  const { settings } = useContext(GlobalContext)
-  return getNetworkName(settings)
-}
-
-export function settingsDefault(): Settings {
-  return networkEndpoints.mainnet
-}
-
-export function loadSettings(): Settings | null {
-  const str = window.localStorage.getItem('settings')
-  if (str) {
-    return JSON.parse(str)
-  } else {
-    return null
-  }
-}
-
-export function loadSettingsOrDefault() {
-  const settings = loadSettings()
-  if (!settings) {
-    return settingsDefault()
-  } else {
-    return settings
-  }
-}
-
-export function saveSettings(settings: Settings) {
-  const str = JSON.stringify(settings)
-  window.localStorage.setItem('settings', str)
 }

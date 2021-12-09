@@ -16,29 +16,31 @@
 
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { SectionContent, MainPanel } from '../../components/PageComponents'
-import { GlobalContext } from '../../App'
 import { useHistory } from 'react-router-dom'
 import { Input, Output, Transaction } from 'alephium-js/dist/api/api-explorer'
 import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
-import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadSettingsOrDefault, useCurrentNetwork } from '../../utils/clients'
-import AmountBadge from '../../components/Badge'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { SimpleTx, WalletContext } from './WalletRootPage'
-import { useInterval } from '../../utils/hooks'
-import Spinner from '../../components/Spinner'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
+
+import { GlobalContext } from '../../App'
+import { SectionContent, MainPanel } from '../../components/PageComponents'
+import AmountBadge from '../../components/Badge'
+import Spinner from '../../components/Spinner'
 import { Button } from '../../components/Buttons'
-import { getHumanReadableError } from '../../utils/api'
-import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import AppHeader, { HeaderDivider } from '../../components/AppHeader'
 import Address from '../../components/Address'
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
-import { openInWebBrowser } from '../../utils/misc'
 import NetworkBadge from '../../components/NetworkBadge'
+import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
+import { loadSettings, useCurrentNetwork } from '../../utils/settings'
+import { useInterval } from '../../utils/hooks'
+import { getHumanReadableError } from '../../utils/api'
+import { openInWebBrowser } from '../../utils/misc'
+import { SimpleTx, WalletContext } from './WalletRootPage'
+import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
+
+import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 
 dayjs.extend(relativeTime)
 
@@ -282,7 +284,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
 
   const isOut = amountDelta < 0
 
-  const { explorerUrl } = loadSettingsOrDefault()
+  const { explorerUrl } = loadSettings()
 
   return (
     <TransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.hash}`)}>
@@ -307,7 +309,7 @@ const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Tran
 
 // Transaction that has been sent and waiting to be fetched
 const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) => {
-  const { explorerUrl } = loadSettingsOrDefault()
+  const { explorerUrl } = loadSettings()
 
   return (
     <PendingTransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.txId}`)}>
