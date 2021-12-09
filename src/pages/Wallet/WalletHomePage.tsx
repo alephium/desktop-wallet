@@ -47,7 +47,7 @@ const WalletHomePage = () => {
   const currentNetwork = useCurrentNetwork()
   const { wallet, setSnackbarMessage, client, setWallet, currentUsername } = useContext(GlobalContext)
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
-  const { pendingTxList, loadedTxList, setLoadedTxList } = useContext(WalletContext)
+  const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useContext(WalletContext)
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
@@ -131,11 +131,11 @@ const WalletHomePage = () => {
   }, [fetchData])
 
   // Polling (when pending tx)
-  useInterval(fetchData, 2000, pendingTxList[currentNetwork]?.length === 0)
+  useInterval(fetchData, 2000, networkPendingTxLists[currentNetwork]?.length === 0)
 
   if (!wallet) return null
 
-  const pendingTxs = pendingTxList[currentNetwork] || []
+  const pendingTxs = networkPendingTxLists[currentNetwork] || []
   const showSpinner = isLoading || pendingTxs.length > 0
 
   return (

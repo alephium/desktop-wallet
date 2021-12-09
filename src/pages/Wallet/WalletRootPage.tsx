@@ -34,14 +34,14 @@ export interface SimpleTx {
 }
 
 interface WalletContextType {
-  pendingTxList: { [key in NetworkType]?: SimpleTx[] }
+  networkPendingTxLists: { [key in NetworkType]?: SimpleTx[] }
   addPendingTx: (tx: SimpleTx) => void
   loadedTxList: Transaction[]
   setLoadedTxList: (list: Transaction[]) => void
 }
 
 const initialContext: WalletContextType = {
-  pendingTxList: {},
+  networkPendingTxLists: {},
   addPendingTx: () => null,
   loadedTxList: [],
   setLoadedTxList: () => null
@@ -56,10 +56,10 @@ const Wallet = () => {
   const location = useLocation()
 
   const [loadedTxList, setLoadedTxList] = useState<WalletContextType['loadedTxList']>([])
-  const [pendingTxList, setPendingTxList] = useState<WalletContextType['pendingTxList']>({})
+  const [networkPendingTxLists, setNetworkPendingTxLists] = useState<WalletContextType['networkPendingTxLists']>({})
 
   const addPendingTx = (tx: SimpleTx) => {
-    tx && setPendingTxList((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
+    tx && setNetworkPendingTxLists((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
   }
 
   // Redirect if not wallet is set
@@ -71,14 +71,14 @@ const Wallet = () => {
 
   // Manage state of pending tx (clean if in loaded list)
   useEffect(() => {
-    setPendingTxList((prev) => ({
+    setNetworkPendingTxLists((prev) => ({
       ...prev,
       [currentNetwork]: prev?.[currentNetwork]?.filter((t) => !loadedTxList.find((tx) => tx.hash === t.txId)) || []
     }))
   }, [currentNetwork, loadedTxList])
 
   return (
-    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, pendingTxList, loadedTxList }}>
+    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, networkPendingTxLists, loadedTxList }}>
       <Route path="/wallet">
         <WalletHomePage />
       </Route>
