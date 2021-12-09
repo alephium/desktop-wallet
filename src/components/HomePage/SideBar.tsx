@@ -20,13 +20,13 @@ import { motion } from 'framer-motion'
 import tinycolor from 'tinycolor2'
 
 import { deviceBreakPoints } from '../../style/globalStyles'
-import { MainPanel, PanelTitle } from '../PageComponents'
+import { PanelContainer, PanelTitle } from '../PageComponents'
 
 import alephiumLogo from '../../images/alephium_logo.svg'
 import { ReactComponent as MountainSVG } from '../../images/mountain.svg'
 import { ReactComponent as AtmosphericGlow } from '../../images/athmospheric_glow.svg'
 
-let SideBar: FC<{ className?: string }> = ({ className }) => {
+const SideBar: FC<{ className?: string }> = ({ className }) => {
   const theme = useTheme()
 
   return (
@@ -36,7 +36,7 @@ let SideBar: FC<{ className?: string }> = ({ className }) => {
         animate={{ bottom: 0, opacity: 0.6 }}
         transition={{ delay: 1, duration: 1.2 }}
       />
-      <MainPanel transparentBg>
+      <SidebarContents>
         <AlephiumLogo />
         <HeaderText>
           <PanelTitle
@@ -78,12 +78,10 @@ let SideBar: FC<{ className?: string }> = ({ className }) => {
           />
           <MountainImage />
         </IllustrationsContainer>
-      </MainPanel>
+      </SidebarContents>
     </Sidebar>
   )
 }
-
-SideBar = styled(SideBar)``
 
 const Sidebar = styled.div`
   flex: 0.5;
@@ -99,6 +97,10 @@ const Sidebar = styled.div`
     display: flex;
     align-items: center;
   }
+`
+
+const SidebarContents = styled(PanelContainer)`
+  padding: var(--spacing-25);
 `
 
 const IllustrationsContainer = styled.div`
