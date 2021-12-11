@@ -214,7 +214,7 @@ const InitialActions = ({
   return (
     <>
       <CenteredSecondaryParagraph>
-        Please choose wether you want to create a new wallet, or import an existing one.
+        Please choose whether you want to create a new wallet or import an existing one.
       </CenteredSecondaryParagraph>
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>

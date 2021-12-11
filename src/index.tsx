@@ -22,9 +22,9 @@ import { ThemeProvider } from 'styled-components'
 import App from './App'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
-import './index.css'
 
-import '@yaireo/tagify/dist/tagify.css' // Tagify CSS
+import './index.css' // Importing CSS through CSS file to avoid font flickering
+import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
 import * as serviceWorker from './serviceWorker'
 

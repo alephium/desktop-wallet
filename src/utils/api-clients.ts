@@ -18,10 +18,6 @@ import { CliqueClient, ExplorerClient } from 'alephium-js'
 
 import { Settings, loadSettings } from './settings'
 
-// =================== //
-// === API CLIENTS === //
-// =================== //
-
 export async function createClient(settings?: Settings) {
   const loadedSettings = settings || loadSettings()
   const cliqueClient = new CliqueClient({

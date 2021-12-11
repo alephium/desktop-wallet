@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import { Wallet, getStorage } from 'alephium-js'
-import { AnimatePresence, AnimateSharedLayout, motion } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import { AsyncReturnType } from 'type-fest'
 
 import HomePage from './pages/HomePage'
@@ -26,14 +26,16 @@ import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import SettingsPage from './pages/SettingsPage'
-import { createClient } from './utils/clients'
+import { createClient } from './utils/api-clients'
 import { loadSettings, saveSettings, Settings } from './utils/settings'
-import { useInterval, useStateWithLocalStorage } from './utils/hooks'
+import { useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
+import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
+import SplashScreen from './components/SplashScreen'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { lightTheme, darkTheme, ThemeType } from './style/themes'
-import alephiumLogo from './images/alephium_logo.svg'
+import useIdleForTooLong from './hooks/useIdleForTooLong'
 
 interface Context {
   usernames: string[]
@@ -44,7 +46,7 @@ interface Context {
   client: Client | undefined
   settings: Settings
   setSettings: React.Dispatch<React.SetStateAction<Settings>>
-  setSnackbarMessage: (message: SnackbarMessage) => void
+  setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   switchTheme: (theme: ThemeType) => void
   currentTheme: ThemeType
 }
@@ -65,12 +67,6 @@ const initialContext: Context = {
   currentTheme: 'light'
 }
 
-interface SnackbarMessage {
-  text: string
-  type: 'info' | 'alert' | 'success'
-  duration?: number
-}
-
 export const GlobalContext = React.createContext<Context>(initialContext)
 
 const Storage = getStorage()
@@ -83,9 +79,13 @@ const App = () => {
   const [client, setClient] = useState<Client>()
   const [settings, setSettings] = useState<Settings>(loadSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
-  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
   const history = useHistory()
   const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
+
+  const lockWallet = () => {
+    if (wallet) setWallet(undefined)
+  }
+  useIdleForTooLong(lockWallet)
 
   // Create client
   useEffect(() => {
@@ -110,45 +110,6 @@ const App = () => {
 
     getClient()
   }, [setSnackbarMessage, settings])
-
-  // Remove snackbar popup
-  useEffect(() => {
-    if (snackbarMessage) {
-      setTimeout(() => setSnackbarMessage(undefined), snackbarMessage.duration || 3000)
-    }
-  }, [snackbarMessage])
-
-  // Auto-lock mechanism
-  const lastInteractionTimeThrottle = 10000
-  const autoLockThreshold = 3 * 60 * 1000 // TODO: Allow to set this parameter in app settings
-
-  const updateLastInteractionTime = useCallback(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
-      setLastInteractionTime(currentTime)
-    }
-  }, [lastInteractionTime])
-
-  useEffect(() => {
-    document.addEventListener('mousemove', updateLastInteractionTime)
-    document.addEventListener('keydown', updateLastInteractionTime)
-    document.addEventListener('scroll', updateLastInteractionTime)
-
-    return () => {
-      document.removeEventListener('mousemove', updateLastInteractionTime)
-      document.removeEventListener('keydown', updateLastInteractionTime)
-      document.removeEventListener('scroll', updateLastInteractionTime)
-    }
-  }, [updateLastInteractionTime])
-
-  useInterval(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > autoLockThreshold && wallet) {
-      setWallet(undefined)
-    }
-  }, 2000)
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
@@ -212,46 +173,6 @@ const App = () => {
   )
 }
 
-const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => {
-  return (
-    <StyledSplashScreen
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ delay: 1 }}
-      onAnimationComplete={onSplashScreenShown}
-    >
-      <AlephiumLogoContainer
-        initial={{ opacity: 0, scale: 1.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <AlephiumLogo />
-      </AlephiumLogoContainer>
-    </StyledSplashScreen>
-  )
-}
-
-const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  return (
-    <SnackbarManagerContainer>
-      <AnimatePresence>
-        {message && (
-          <SnackbarPopup
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={message?.type}
-          >
-            {message?.text}
-          </SnackbarPopup>
-        )}
-      </AnimatePresence>
-    </SnackbarManagerContainer>
-  )
-}
-
-// === Styling === //
-
 const AppContainer = styled.div`
   flex: 1;
   display: flex;
@@ -269,80 +190,12 @@ const AppContainer = styled.div`
   }
 `
 
-const SnackbarManagerContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: flex-end;
-  z-index: 10001;
-
-  @media ${deviceBreakPoints.mobile} {
-    justify-content: center;
-  }
-`
-
-const SnackbarPopup = styled(motion.div)`
-  margin: 15px;
-  text-align: center;
-  min-width: 200px;
-  padding: 20px 15px;
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
-  z-index: 1000;
-  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
-
-  &.alert {
-    background-color: ${({ theme }) => theme.global.alert};
-  }
-
-  &.info {
-    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
-  }
-
-  &.success {
-    background-color: ${({ theme }) => theme.global.valid};
-  }
-`
-
 const ClientLoading = styled.div`
   position: absolute;
   top: 15px;
   left: 25px;
   transform: translateX(-50%);
   color: white;
-`
-
-const StyledSplashScreen = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10002;
-  background-color: ${({ theme }) => theme.bg.primary};
-`
-
-const AlephiumLogoContainer = styled(motion.div)`
-  width: 150px;
-  height: 150px;
-  border-radius: 100%;
-  display: flex;
-  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.secondary)};
-`
-
-const AlephiumLogo = styled.div`
-  background-image: url(${alephiumLogo});
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 60%;
-  height: 60%;
-  margin: auto;
 `
 
 export default App
