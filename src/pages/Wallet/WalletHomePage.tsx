@@ -70,14 +70,15 @@ const WalletHomePage = () => {
 
   // Fetching data
   const fetchData = useCallback(() => {
-    setLastLoadedPage(1) // Reload only most recent page
+    const page = 1
+    setLastLoadedPage(page) // Reload only most recent page
 
     const getTransactionsAndBalance = async () => {
       setIsLoading(true)
       try {
         if (wallet && client) {
           const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
-          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, 1)
+          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, page)
 
           if (addressDetailsResp.data) {
             setBalance(BigInt(addressDetailsResp.data.balance))
