@@ -74,9 +74,9 @@ const WalletHomePage = () => {
     setLastLoadedPage(page) // Reload only most recent page
 
     const getTransactionsAndBalance = async () => {
-      setIsLoading(true)
-      try {
-        if (wallet && client) {
+      if (wallet && client) {
+        setIsLoading(true)
+        try {
           const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
           const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, page)
 
@@ -86,14 +86,14 @@ const WalletHomePage = () => {
           setTotalNumberOfTx(addressDetailsResp.data.txNumber)
           setLoadedTxList(addressTransactionsResp.data)
           setIsLoading(false)
-        }
-      } catch (e) {
-        setIsLoading(false)
+        } catch (e) {
+          setIsLoading(false)
 
-        setSnackbarMessage({
-          text: getHumanReadableError(e, 'Error while fetching transactions and balance'),
-          type: 'alert'
-        })
+          setSnackbarMessage({
+            text: getHumanReadableError(e, 'Error while fetching transactions and balance'),
+            type: 'alert'
+          })
+        }
       }
     }
 
