@@ -80,12 +80,10 @@ const WalletHomePage = () => {
           const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
           const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, page)
 
-          if (addressDetailsResp.data) {
-            setBalance(BigInt(addressDetailsResp.data.balance))
-            setTotalNumberOfTx(addressDetailsResp.data.txNumber)
-          } else return
+          if (!addressDetailsResp.data) return
 
-          // Transactions
+          setBalance(BigInt(addressDetailsResp.data.balance))
+          setTotalNumberOfTx(addressDetailsResp.data.txNumber)
           setLoadedTxList(addressTransactionsResp.data)
           setIsLoading(false)
         }
