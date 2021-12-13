@@ -19,15 +19,27 @@ import { FC } from 'react'
 import styled from 'styled-components'
 
 import { deviceBreakPoints } from '../style/globalStyles'
+import NetworkBadge from '../components/NetworkBadge'
+import { Button } from '../components/Buttons'
+import { Settings as SettingsIcon } from 'lucide-react'
 
-const AppHeader: FC = ({ children }) => {
+const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsClick }) => {
   const { scrollY } = useViewportScroll()
 
   const headerBGColor = useTransform(scrollY, [0, 100], ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'])
 
   return (
     <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
-      {children}
+      {(children || onSettingsClick) && (
+        <>
+          <NetworkBadge />
+          <HeaderDivider />
+          {children}
+          <Button transparent squared onClick={onSettingsClick} aria-label="Settings">
+            <SettingsIcon />
+          </Button>
+        </>
+      )}
     </HeaderContainer>
   )
 }

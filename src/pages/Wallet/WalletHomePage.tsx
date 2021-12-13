@@ -18,7 +18,7 @@ import { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { useHistory } from 'react-router-dom'
 import { Input, Output, Transaction } from 'alephium-js/dist/api/api-explorer'
-import { Send, QrCode, RefreshCw, Lock, LucideProps, Settings as SettingsIcon } from 'lucide-react'
+import { Send, QrCode, RefreshCw, Lock, LucideProps } from 'lucide-react'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -29,9 +29,8 @@ import { SectionContent, MainPanel } from '../../components/PageComponents'
 import AmountBadge from '../../components/Badge'
 import Spinner from '../../components/Spinner'
 import { Button } from '../../components/Buttons'
-import AppHeader, { HeaderDivider } from '../../components/AppHeader'
+import AppHeader from '../../components/AppHeader'
 import Address from '../../components/Address'
-import NetworkBadge from '../../components/NetworkBadge'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadSettings, useCurrentNetwork } from '../../utils/settings'
 import { useInterval } from '../../utils/hooks'
@@ -148,9 +147,7 @@ const WalletHomePage = () => {
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader>
-        <NetworkBadge />
-        <HeaderDivider />
+      <AppHeader onSettingsClick={() => history.push('/wallet/settings')}>
         <RefreshButton
           transparent
           squared
@@ -160,9 +157,6 @@ const WalletHomePage = () => {
         >
           {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
-        <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')} aria-label="Settings">
-          <SettingsIcon />
-        </SettingsButton>
       </AppHeader>
       <WalletSidebar>
         <WalletAmountContainer>
@@ -527,8 +521,6 @@ const WalletActionButtonContainer = styled.div`
 `
 
 const RefreshButton = styled(Button)``
-
-const SettingsButton = styled(Button)``
 
 const ActionContent = styled.div`
   flex: 1;

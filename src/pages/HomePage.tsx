@@ -20,7 +20,6 @@ import { motion } from 'framer-motion'
 import tinycolor from 'tinycolor2'
 import { useHistory } from 'react-router'
 import { walletOpen, getStorage } from 'alephium-js'
-import { Settings as SettingsIcon } from 'lucide-react'
 
 import { GlobalContext } from '../App'
 import { deviceBreakPoints } from '../style/globalStyles'
@@ -28,8 +27,7 @@ import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
-import AppHeader, { HeaderDivider } from '../components/AppHeader'
-import NetworkBadge from '../components/NetworkBadge'
+import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
 
 interface HomeProps {
@@ -47,13 +45,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader>
-        <NetworkBadge />
-        <HeaderDivider />
-        <Button transparent squared onClick={() => history.push('/settings')}>
-          <SettingsIcon />
-        </Button>
-      </AppHeader>
+      <AppHeader onSettingsClick={() => history.push('/settings')} />
       <SideBar />
       <InteractionArea>
         <MainPanel verticalAlign="center" horizontalAlign="center">
