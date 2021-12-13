@@ -69,7 +69,7 @@ const WalletHomePage = () => {
   }, [isHeaderCompact, scrollY])
 
   // Fetching data
-  const fetchData = useCallback(() => {
+  const fetchBalanceAndLatestTransactions = useCallback(() => {
     const page = 1
     setLastLoadedPage(page) // Reload only most recent page
 
@@ -100,7 +100,7 @@ const WalletHomePage = () => {
     getTransactionsAndBalance()
   }, [client, setLoadedTxList, setSnackbarMessage, wallet])
 
-  const fetchMore = useCallback(
+  const fetchTransactionsByPage = useCallback(
     (pageToLoad: number) => {
       setLastLoadedPage(pageToLoad)
 
@@ -110,29 +110,36 @@ const WalletHomePage = () => {
             const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, pageToLoad)
 
             if (
+              loadedTxList.length > 0 &&
+              addressTransactionsResp.data.length > 0 &&
               loadedTxList[loadedTxList.length - 1].hash !==
-              addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
+                addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
             ) {
               setLoadedTxList([...loadedTxList, ...addressTransactionsResp.data])
             }
           }
         } catch (e) {
           console.log(e)
+
+          setSnackbarMessage({
+            text: getHumanReadableError(e, `Error while fetching transactions of page ${pageToLoad}`),
+            type: 'alert'
+          })
         }
       }
 
       fetchNewPage()
     },
-    [client, loadedTxList, setLoadedTxList, wallet]
+    [client, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet]
   )
 
   // Make initial calls
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchBalanceAndLatestTransactions()
+  }, [fetchBalanceAndLatestTransactions])
 
   // Polling (when pending tx)
-  useInterval(fetchData, 2000, networkPendingTxLists[currentNetwork]?.length === 0)
+  useInterval(fetchBalanceAndLatestTransactions, 2000, networkPendingTxLists[currentNetwork]?.length === 0)
 
   if (!wallet) return null
 
@@ -144,7 +151,7 @@ const WalletHomePage = () => {
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <RefreshButton transparent squared onClick={fetchData} disabled={showSpinner}>
+        <RefreshButton transparent squared onClick={fetchBalanceAndLatestTransactions} disabled={showSpinner}>
           {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
         <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
@@ -203,7 +210,7 @@ const WalletHomePage = () => {
           ) : loadedTxList.length === 0 ? (
             <NoMoreTransactionMessage>No transactions yet!</NoMoreTransactionMessage>
           ) : (
-            <LoadMoreMessage onClick={() => fetchMore(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
+            <LoadMoreMessage onClick={() => fetchTransactionsByPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
           )}
         </MainPanel>
       </TransactionsContainer>
