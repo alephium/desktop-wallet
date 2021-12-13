@@ -151,10 +151,16 @@ const WalletHomePage = () => {
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <RefreshButton transparent squared onClick={fetchBalanceAndLatestTransactions} disabled={showSpinner}>
+        <RefreshButton
+          transparent
+          squared
+          onClick={fetchBalanceAndLatestTransactions}
+          disabled={showSpinner}
+          aria-label="Refresh"
+        >
           {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
-        <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')}>
+        <SettingsButton transparent squared onClick={() => history.push('/wallet/settings')} aria-label="Settings">
           <SettingsIcon />
         </SettingsButton>
       </AppHeader>
