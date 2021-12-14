@@ -77,7 +77,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   height: ${({ squared }) => (squared ? '40px' : '46px')};
   width: ${({ squared }) => (squared ? '40px' : '80%')};
   max-width: 250px;
-  border-radius: 7px;
+  border-radius: var(--radius);
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
     alert && !secondary
@@ -97,10 +97,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       : secondary
       ? theme.global.accent
       : theme.font.contrastPrimary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   font-size: inherit;
   font-family: inherit;
-  padding: ${({ squared }) => (squared ? '10px' : '0 13px')};
+  padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 

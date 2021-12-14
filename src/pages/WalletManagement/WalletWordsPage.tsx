@@ -95,10 +95,10 @@ const WalletWordsPage = () => {
 
 const Label = styled.label`
   width: 100%;
-  padding-left: 15px;
-  padding-bottom: 5px;
+  padding-left: var(--spacing-3);
+  padding-bottom: var(--spacing-1);
   color: ${({ theme }) => theme.font.secondary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
 `
 
 const PublicAddressContent = styled(SectionContent)`
@@ -113,26 +113,26 @@ const WordsContent = styled(SectionContent)`
 const PhraseBox = styled.div`
   display: flex;
   width: 100%;
-  padding: 20px;
+  padding: var(--spacing-4);
   color: ${({ theme }) => theme.font.contrastPrimary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.4).toString()};
   border: 1px solid ${({ theme }) => theme.global.alert};
-  border-radius: 7px;
-  margin-bottom: 20px;
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-4);
   flex-wrap: wrap;
 `
 
 const MnemonicWordContainer = styled.div`
   margin: 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-small);
   overflow: hidden;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 5px var(--color-shadow-10);
 `
 
 const MnemonicNumber = styled.div`
   display: inline-block;
-  padding: 5px;
+  padding: var(--spacing-1);
   border-right: 1px ${({ theme }) => theme.bg.secondary};
   background-color: ${({ theme }) =>
     theme.name === 'light'
@@ -145,8 +145,8 @@ const MnemonicWord = styled.div`
   display: inline-block;
   background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.primary : theme.bg.contrast)};
   color: ${({ theme }) => (theme.name === 'light' ? theme.font.primary : theme.font.contrastSecondary)};
-  padding: 5px 8px;
-  font-weight: 600;
+  padding: var(--spacing-1) 8px;
+  font-weight: var(--fontWeight-semiBold);
 `
 
 export default WalletWordsPage

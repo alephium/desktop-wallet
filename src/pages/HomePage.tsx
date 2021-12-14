@@ -15,7 +15,7 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useCallback, useContext, useState } from 'react'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 import { motion } from 'framer-motion'
 import tinycolor from 'tinycolor2'
 import { useHistory } from 'react-router'
@@ -30,10 +30,7 @@ import { MainPanel, PanelTitle, SectionContent } from '../components/PageCompone
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
 import AppHeader, { HeaderDivider } from '../components/AppHeader'
 import NetworkBadge from '../components/NetworkBadge'
-
-import alephiumLogo from '../images/alephium_logo.svg'
-import { ReactComponent as MountainSVG } from '../images/mountain.svg'
-import { ReactComponent as AtmosphericGlow } from '../images/athmospheric_glow.svg'
+import SideBar from '../components/HomePage/SideBar'
 
 interface HomeProps {
   hasWallet: boolean
@@ -44,89 +41,41 @@ const Storage = getStorage()
 
 const HomePage = ({ hasWallet, usernames }: HomeProps) => {
   const history = useHistory()
-  const [showActions, setShowActions] = useState(false)
-  const theme = useTheme()
-
-  const renderActions = () => <InitialActions hasWallet={hasWallet} setShowActions={setShowActions} />
+  const [showInitialActions, setShowInitialActions] = useState(false)
+  const hideInitialActions = () => setShowInitialActions(false)
+  const displayInitialActions = () => setShowInitialActions(true)
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         <NetworkBadge />
         <HeaderDivider />
-        <SettingsButton transparent squared onClick={() => history.push('/settings')}>
+        <Button transparent squared onClick={() => history.push('/settings')}>
           <SettingsIcon />
-        </SettingsButton>
+        </Button>
       </AppHeader>
-      <Sidebar>
-        <AtmosphericGlowBackground
-          initial={{ bottom: '-10vh', opacity: 0 }}
-          animate={{ bottom: 0, opacity: 0.6 }}
-          transition={{ delay: 1, duration: 1.2 }}
-        />
-        <MainPanel transparentBg>
-          <AlephiumLogo />
-          <HeaderText>
-            <PanelTitle
-              color={theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary}
-              backgroundColor="transparent"
-              useLayoutId={false}
-            >
-              Alephium
-            </PanelTitle>
-            <PageSubtitle>Official Wallet</PageSubtitle>
-            <p>The easiest way to get started with Alephium.</p>
-          </HeaderText>
-          <IllustrationsContainer>
-            <Moon
-              initial={{ bottom: '-10vh', opacity: 0 }}
-              animate={{ bottom: '7vh', opacity: 1 }}
-              transition={{ delay: 1, duration: 1.2 }}
-            />
-            <CloudGroup
-              coordinates={[
-                ['10px', '0px'],
-                ['0px', '15px'],
-                ['15px', '30px']
-              ]}
-              lengths={['30px', '20px', '25px']}
-              style={{ bottom: '2vh' }}
-              distance="5%"
-              side="left"
-            />
-            <CloudGroup
-              coordinates={[
-                ['40px', '15px'],
-                ['20px', '30px']
-              ]}
-              lengths={['25px', '32px']}
-              style={{ bottom: '12vh' }}
-              distance="40%"
-              side="left"
-            />
-            <MountainImage />
-          </IllustrationsContainer>
-        </MainPanel>
-      </Sidebar>
+      <SideBar />
       <InteractionArea>
         <MainPanel verticalAlign="center" horizontalAlign="center">
-          {showActions ? (
+          {!showInitialActions && !hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>New account</PanelTitle>
-              {renderActions()}
+              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
+              <InitialActions />
             </>
-          ) : hasWallet ? (
+          )}
+          {!showInitialActions && hasWallet && (
             <>
               <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
               <CenteredSecondaryParagraph>
                 Please choose an account and enter your password to continue.
               </CenteredSecondaryParagraph>
-              <Login setShowActions={setShowActions} usernames={usernames} />
+              <Login onLinkClick={displayInitialActions} usernames={usernames} />
             </>
-          ) : (
+          )}
+          {showInitialActions && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
-              {renderActions()}
+              <PanelTitle useLayoutId={false}>New account</PanelTitle>
+              <InitialActions showLinkToExistingAccounts onLinkClick={hideInitialActions} />
             </>
           )}
         </MainPanel>
@@ -137,13 +86,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 
 // === Components
 
-const Login = ({
-  usernames,
-  setShowActions
-}: {
-  usernames: string[]
-  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: () => void }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const { setWallet, setCurrentUsername, setSnackbarMessage } = useContext(GlobalContext)
   const history = useHistory()
@@ -183,6 +126,7 @@ const Login = ({
           options={usernames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
           title="Select an account"
+          id="account"
         />
         <Input
           placeholder="Password"
@@ -190,6 +134,7 @@ const Login = ({
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
           value={credentials.password}
+          id="password"
         />
       </SectionContent>
       <SectionContent inList>
@@ -197,17 +142,17 @@ const Login = ({
           Login
         </Button>
       </SectionContent>
-      <SwitchLink onClick={() => setShowActions(true)}>Create / import a new wallet</SwitchLink>
+      <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
     </>
   )
 }
 
 const InitialActions = ({
-  hasWallet,
-  setShowActions
+  showLinkToExistingAccounts,
+  onLinkClick
 }: {
-  hasWallet: boolean
-  setShowActions: React.Dispatch<React.SetStateAction<boolean>>
+  showLinkToExistingAccounts?: boolean
+  onLinkClick?: () => void
 }) => {
   const history = useHistory()
 
@@ -219,7 +164,7 @@ const InitialActions = ({
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {hasWallet && <SwitchLink onClick={() => setShowActions(false)}>Use an existing account</SwitchLink>}
+        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
       </SectionContent>
     </>
   )
@@ -227,48 +172,12 @@ const InitialActions = ({
 
 // === Styling
 
-const HomeContainer = styled(motion.main)`
+const HomeContainer = styled(motion.div)`
   display: flex;
   flex: 1;
 
   @media ${deviceBreakPoints.mobile} {
     flex-direction: column;
-  }
-`
-
-const Sidebar = styled.div`
-  flex: 0.5;
-  min-width: 300px;
-  background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
-  position: relative;
-  overflow: hidden;
-  padding: 3vw;
-
-  @media ${deviceBreakPoints.mobile} {
-    flex: 0.8;
-    min-width: initial;
-    display: flex;
-    align-items: center;
-  }
-`
-
-const IllustrationsContainer = styled.div`
-  @media ${deviceBreakPoints.mobile} {
-    display: none;
-  }
-`
-
-const AtmosphericGlowBackground = styled(motion(AtmosphericGlow))`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  height: 300px;
-  transform: scale(3.5) translateY(25%);
-  opacity: 0.6;
-
-  @media ${deviceBreakPoints.mobile} {
-    transform: scale(3.5) translateY(35%);
   }
 `
 
@@ -278,118 +187,18 @@ const InteractionArea = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 25px;
-`
-
-const HeaderText = styled.div`
-  margin-top: 5vh;
-  max-width: 700px;
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastSecondary : theme.font.secondary)};
-
-  @media ${deviceBreakPoints.mobile} {
-    display: none;
-  }
-`
-
-const PageSubtitle = styled.h3`
-  margin-top: 5px;
-`
-
-const Moon = styled(motion.div)`
-  position: absolute;
-  right: 25%;
-  height: 10vw;
-  width: 10vw;
-  max-height: 60px;
-  max-width: 60px;
-  border-radius: 200px;
-  background-color: ${({ theme }) => theme.global.secondary};
-`
-
-const MountainImage = styled(MountainSVG)`
-  position: absolute;
-  width: 70%;
-  height: 25%;
-  bottom: -2px;
-
-  path {
-    fill: #1a0914;
-  }
-`
-
-const CloudGroup = ({
-  coordinates,
-  lengths,
-  side,
-  distance,
-  style
-}: {
-  coordinates: [string, string][]
-  lengths: string[]
-  side: 'right' | 'left'
-  distance: string
-  style?: React.CSSProperties | undefined
-}) => {
-  const clouds = []
-
-  for (let i = 0; i < coordinates.length; i++) {
-    clouds.push(<Cloud key={i} style={{ left: coordinates[i][0], top: coordinates[i][1], width: lengths[i] }} />)
-  }
-
-  return (
-    <StyledCloudGroup
-      initial={{ [side]: '-100px' }}
-      animate={{ [side]: distance }}
-      transition={{ delay: 1, duration: 0.5 }}
-      style={style}
-    >
-      {clouds}
-    </StyledCloudGroup>
-  )
-}
-
-const StyledCloudGroup = styled(motion.div)`
-  height: 50px;
-  width: 100px;
-  position: absolute;
-`
-
-const Cloud = styled.div`
-  position: absolute;
-  background-color: ${({ theme }) => tinycolor(theme.global.secondary).setAlpha(0.3).toString()};
-  height: 3px;
+  padding: var(--spacing-5);
 `
 
 const SwitchLink = styled(Paragraph)`
   color: ${({ theme }) => theme.global.accent};
   background-color: ${({ theme }) => theme.bg.primary};
-  padding: 5px;
+  padding: var(--spacing-1);
   cursor: pointer;
 
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
   }
 `
-
-const AlephiumLogo = styled.div`
-  background-image: url(${alephiumLogo});
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 10vh;
-  width: 10vw;
-  margin-top: 20px;
-  max-width: 60px;
-  min-width: 30px;
-
-  @media ${deviceBreakPoints.mobile} {
-    margin: auto;
-    max-width: 80px;
-    width: 15vw;
-    height: 15vh;
-    z-index: 1;
-  }
-`
-
-const SettingsButton = styled(Button)``
 
 export default HomePage

@@ -249,7 +249,7 @@ const CheckWordsPage = () => {
 const RemainingWordList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  margin: 20px 0;
+  margin: var(--spacing-4) 0;
   flex: 1;
   align-items: flex-start;
   justify-content: flex-start;
@@ -257,18 +257,18 @@ const RemainingWordList = styled.div`
 `
 
 const SelectedWord = styled(motion.div)`
-  padding: 6px 10px;
+  padding: 6px var(--spacing-2);
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
   color: ${({ theme }) => theme.font.contrastPrimary};
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--spacing-2);
   position: relative;
   cursor: pointer;
 
   &:not(:last-child) {
-    margin-right: 10px;
+    margin-right: var(--spacing-2);
   }
 
   &:hover {
@@ -288,12 +288,12 @@ const DragCursor = styled(motion.div)`
 
 const SelectedWordList = styled.div`
   width: 100%;
-  padding: 20px;
+  padding: var(--spacing-4);
   min-height: 200px;
-  border-radius: 14px;
+  border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-4);
 
   display: flex;
   flex-wrap: wrap;

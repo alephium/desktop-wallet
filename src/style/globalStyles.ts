@@ -34,6 +34,34 @@ const electronWindowDimensions = `
 export const GlobalStyle = createGlobalStyle`
   ${resets}
 
+  :root {
+    --color-white: #fff;
+    --color-orange: #f6c76a;
+    --color-grey: #646775;
+    --color-purple: #3a0595;
+    --color-shadow-15: rgba(0, 0, 0, 0.15);
+    --color-shadow-10: rgba(0, 0, 0, 0.1);
+    --color-shadow-5: rgba(0, 0, 0, 0.05);
+
+    --shadow: 0 15px 15px var(--color-shadow-15);
+
+    /* spacial system of 5px linear scale */
+    --spacing-1: 5px;
+    --spacing-2: 10px;
+    --spacing-3: 15px;
+    --spacing-4: 20px;
+    --spacing-5: 25px;
+
+    --radius-small: 4px;
+    --radius: 7px;
+    --radius-big: 14px;
+    --radius-full: 100%;
+
+    --fontWeight-medium: 500;
+    --fontWeight-semiBold: 600;
+    --fontWeight-bold: 800;
+  }
+
   html {
     ${isElectron() ? electronWindowDimensions : extensionWindowDimensions}
   }

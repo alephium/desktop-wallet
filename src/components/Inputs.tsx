@@ -61,7 +61,7 @@ export const Input = ({ placeholder, error, isValid, disabled, onChange, value, 
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+      <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={props.id}>
         {placeholder}
       </Label>
       <StyledInput
@@ -161,6 +161,7 @@ interface SelectProps<T> {
   controlledValue?: SelectOption<T>
   options: SelectOption<T>[]
   title?: string
+  id: string
   onValueChange: (value: SelectOption<T> | undefined) => void
   className?: string
 }
@@ -172,6 +173,7 @@ export function Select<T>({
   disabled,
   controlledValue,
   className,
+  id,
   onValueChange
 }: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
@@ -218,13 +220,13 @@ export function Select<T>({
         custom={disabled}
         onClick={() => setShowPopup(true)}
       >
-        <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'}>
+        <Label variants={placeHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={id}>
           {placeholder}
         </Label>
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>
-        <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} />
+        <StyledInput type="button" className={className} ref={inputRef} disabled={disabled} id={id} />
       </SelectContainer>
       <AnimatePresence>
         {showPopup && (
@@ -296,19 +298,19 @@ const InputContainer = styled(motion.div)`
   position: relative;
   height: 46px;
   width: 100%;
-  margin: 15px 0;
+  margin: var(--spacing-3) 0;
 `
 
 const TextAreaContainer = styled(motion.div)`
   position: relative;
   width: 100%;
-  margin: 15px 0;
+  margin: var(--spacing-3) 0;
 `
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
-  margin: 15px 0;
-  border-radius: 7px;
+  margin: var(--spacing-3) 0;
+  border-radius: var(--radius);
   color: ${({ theme }) => theme.font.secondary};
 
   .tagify__input:empty::before {
@@ -321,7 +323,7 @@ const Label = styled(motion.label)`
   position: absolute;
   top: 16px;
   left: 13px;
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
 `
@@ -329,8 +331,8 @@ const Label = styled(motion.label)`
 const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
   bottom: -7px;
-  right: 10px;
-  font-weight: 500;
+  right: var(--spacing-2);
+  font-weight: var(--fontWeight-medium);
   opacity: 0;
   font-size: 0.8em;
   color: ${({ theme }) => theme.global.alert};
@@ -340,8 +342,8 @@ const ValidIconContainer = styled(motion.div)`
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 20px;
-  font-weight: 500;
+  right: var(--spacing-4);
+  font-weight: var(--fontWeight-medium);
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.global.valid};
@@ -352,12 +354,12 @@ const defaultStyle = (isValid?: boolean) => {
     background-image: none;
     height: 46px;
     width: 100%;
-    border-radius: 7px;
+    border-radius: var(--radius);
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
     color: ${({ theme }) => theme.font.primary};
     padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
-    font-weight: 500;
+    font-weight: var(--fontWeight-medium);
     font-size: 1em;
     text-align: left;
     font-family: inherit;
@@ -391,7 +393,7 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
   outline: none;
   padding-top: 13px;
   min-height: 300px;
-  border-radius: 7px;
+  border-radius: var(--radius);
 `
 
 // NOTE: Tags dropdown is styled in GlobalStyles
@@ -399,9 +401,9 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
 const StyledTags = styled(Tags)`
   ${defaultStyle(true)}
   height: auto;
-  padding: 5px;
+  padding: var(--spacing-1);
   line-height: 20px;
-  border-radius: 7px;
+  border-radius: var(--radius);
 `
 
 const MoreIcon = styled.div`
@@ -427,19 +429,19 @@ const PopupContainer = styled(motion.div)`
 `
 
 const Popup = styled(motion.div)`
-  border-radius: 7px;
+  border-radius: var(--radius);
   margin: auto;
   width: 30vw;
   min-width: 300px;
   max-height: 500px;
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow: 0 15px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const OptionItem = styled.div`
-  padding: 15px;
+  padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
 
@@ -453,7 +455,7 @@ const OptionItem = styled.div`
 `
 
 const SelectOptionsHeader = styled.header`
-  padding: 5px 15px;
+  padding: var(--spacing-1) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;

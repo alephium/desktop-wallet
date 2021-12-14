@@ -360,8 +360,8 @@ const WalletSidebar = styled(SectionContent)`
 const CompactWalletAmountBoxContainer = styled(motion.div)`
   align-items: flex-start;
   justify-content: flex-start;
-  margin: 5px !important;
-  margin-top: calc(${appHeaderHeight} + 5px) !important;
+  margin: var(--spacing-1) !important;
+  margin-top: calc(${appHeaderHeight} + var(--spacing-1)) !important;
   flex: 0;
   position: fixed;
   top: 0;
@@ -404,9 +404,9 @@ const WalletAmountHighlightOverlay = styled.div`
 const WalletAmountContainer = styled.div`
   position: relative;
   min-height: 150px;
-  margin: 25px;
-  margin-top: 10px;
-  border-radius: 7px;
+  margin: var(--spacing-5);
+  margin-top: var(--spacing-2);
+  border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.contrast};
   overflow: hidden;
 
@@ -425,11 +425,11 @@ const CompactWalletAmountBox = styled(motion.div)`
   background-color: ${({ theme }) => theme.font.primary};
   width: 100%;
   height: 60px;
-  padding: 0 25px;
+  padding: 0 var(--spacing-5);
   display: flex;
   align-items: center;
-  border-radius: 7px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 10px var(--color-shadow-10);
 
   ${WalletAmountContainer} {
     margin: 0;
@@ -445,7 +445,7 @@ const WalletAmount = styled(motion.div)`
   font-size: 2.5rem;
   color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const WalletAmountSubtitle = styled.div`
@@ -453,13 +453,13 @@ const WalletAmountSubtitle = styled.div`
   font-size: 1rem;
   color: ${({ theme }) => theme.font.contrastSecondary};
   text-align: center;
-  font-weight: 500;
+  font-weight: var(--fontWeight-medium);
 `
 
 const CurrentAccount = styled.span`
   text-align: center;
   color: ${({ theme }) => theme.font.contrastSecondary};
-  margin-top: 5px;
+  margin-top: var(--spacing-1);
   font-size: 0.95em;
 `
 
@@ -467,7 +467,7 @@ const WalletActions = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 0 25px;
+  padding: 0 var(--spacing-5);
   border-top: 1px solid ${({ theme }) => theme.border.secondary};
 
   @media ${deviceBreakPoints.mobile} {
@@ -481,7 +481,7 @@ const ActionsTitle = styled.h3`
 
 const ActionIcon = styled.div`
   display: flex;
-  margin-right: 15px;
+  margin-right: var(--spacing-3);
   opacity: 0.5;
   transition: all 0.1s ease-out;
 `
@@ -535,7 +535,7 @@ const TransactionsContainer = styled.div`
   overflow: auto;
   flex-direction: column;
   justify-content: center;
-  padding: 25px;
+  padding: var(--spacing-5);
   padding-top: calc(10px + ${appHeaderHeight});
 
   @media ${deviceBreakPoints.mobile} {
@@ -547,11 +547,11 @@ const TransactionsContainer = styled.div`
 const LastTransactionListHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-3);
 `
 
 const LastTransactionListTitle = styled.h2`
-  margin: 0 15px 0 0;
+  margin: 0 var(--spacing-3) 0 0;
 
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;
@@ -567,7 +567,7 @@ const LastTransactionList = styled.div`
 const TransactionItemContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px 5px;
+  padding: var(--spacing-2) var(--spacing-1);
   cursor: pointer;
   transition: all 0.1s ease-out;
 
@@ -578,7 +578,7 @@ const TransactionItemContainer = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 
   @media ${deviceBreakPoints.mobile} {
-    padding: 15px 0;
+    padding: var(--spacing-3) 0;
   }
 `
 
@@ -592,13 +592,13 @@ const TxDetails = styled.div`
 
 const DirectionLabel = styled.span`
   font-size: 0.9em;
-  font-weight: 600;
-  margin-bottom: 5px;
+  font-weight: var(--fontWeight-semiBold);
+  margin-bottom: var(--spacing-1);
 `
 
 const AddressListContainer = styled.div`
   display: flex;
-  margin-bottom: 5px;
+  margin-bottom: var(--spacing-1);
 `
 
 const TxAmountContainer = styled.div`
@@ -613,7 +613,7 @@ const TXSpecialTypeLabel = styled.span`
   background-color: ${({ theme }) => theme.bg.secondary};
   padding: 3px 6px;
   margin: 3px 0;
-  border-radius: 4px;
+  border-radius: var(--radius-small);
   font-style: italic;
 `
 
@@ -649,21 +649,21 @@ const LoadMoreMessage = styled.div`
   color: ${({ theme }) => theme.global.accent};
   cursor: pointer;
   align-self: center;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
 `
 
 const NoMoreTransactionMessage = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   text-align: center;
   width: 100%;
-  margin-top: 15px;
+  margin-top: var(--spacing-3);
 `
 
 const FloatingLogo = styled(AlephiumLogoSVG)`
   position: absolute;
-  bottom: 25px;
-  left: 25px;
+  bottom: var(--spacing-5);
+  left: var(--spacing-5);
   width: 40px;
   height: 60px;
 

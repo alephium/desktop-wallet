@@ -34,8 +34,8 @@ const AppHeader: FC = ({ children }) => {
 
 export const HeaderDivider = styled.div`
   width: 1px;
-  height: 10px;
-  margin: 0 10px;
+  height: var(--spacing-2);
+  margin: 0 var(--spacing-2);
   background-color: ${({ theme }) => theme.border.primary};
 `
 
@@ -49,10 +49,10 @@ const HeaderContainer = styled(motion.header)`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 var(--spacing-4);
 
   > *:not(:last-child) {
-    margin-right: 5px;
+    margin-right: var(--spacing-1);
   }
 
   @media ${deviceBreakPoints.mobile} {

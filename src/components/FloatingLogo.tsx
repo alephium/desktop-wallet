@@ -14,16 +14,26 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { ThemeConsumer } from 'styled-components'
+import styled from 'styled-components'
 
-import { lightTheme } from './style/themes'
+import { deviceBreakPoints } from '../style/globalStyles'
 
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect'
+import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monochrome.svg'
 
-beforeEach(() => {
-  ThemeConsumer._currentValue = lightTheme // Make `theme` prop available in all components
-})
+const FloatingLogo = styled(AlephiumLogoSVG)`
+  position: absolute;
+  top: 50px;
+  left: var(--spacing-5);
+  width: 60px;
+  height: 60px;
+
+  path {
+    fill: var(--color-shadow-5) !important;
+  }
+
+  @media ${deviceBreakPoints.mobile} {
+    display: none;
+  }
+`
+
+export default FloatingLogo

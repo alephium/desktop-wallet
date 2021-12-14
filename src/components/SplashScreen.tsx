@@ -54,7 +54,7 @@ const StyledSplashScreen = styled(motion.div)`
 const AlephiumLogoContainer = styled(motion.div)`
   width: 150px;
   height: 150px;
-  border-radius: 100%;
+  border-radius: var(--radius-full);
   display: flex;
   background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.secondary)};
 `

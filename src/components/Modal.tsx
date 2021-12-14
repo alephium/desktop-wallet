@@ -125,7 +125,7 @@ const ModalContainer = styled(motion.div)`
   right: 0;
   left: 0;
   display: flex;
-  padding: 20px;
+  padding: var(--spacing-4);
   z-index: 1000;
 `
 
@@ -144,32 +144,32 @@ const StyledModal = styled(motion.div)`
   width: 100%;
   max-width: 500px;
   max-height: 95vh;
-  box-shadow: 0 30px 30px rgba(0, 0, 0, 0.15);
-  border-radius: 7px;
+  box-shadow: 0 30px 30px var(--color-shadow-15);
+  border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.primary};
   z-index: 1;
 
   ${TitleContainer} {
     flex: 1;
-    margin: 15px 20px 15px 20px;
+    margin: var(--spacing-3) var(--spacing-4) var(--spacing-3) var(--spacing-4);
   }
 `
 
 const ModalHeader = styled.header`
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-3);
 `
 
 const CloseButton = styled(Button)`
   color: ${({ theme }) => theme.font.primary};
-  margin-right: 10px;
+  margin-right: var(--spacing-2);
 `
 
 const ModalContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 20px 0 20px;
+  padding: 0 var(--spacing-4) 0 var(--spacing-4);
 
   ${StyledContent}:last-child {
     margin-bottom: 30px;
