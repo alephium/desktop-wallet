@@ -15,27 +15,25 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback, useContext, useEffect, useState } from 'react'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
-import { Input, Output, Transaction } from 'alephium-js/dist/api/api-explorer'
-import { Send, QrCode, RefreshCw, Lock, LucideProps } from 'lucide-react'
-import _ from 'lodash'
+import { Transaction } from 'alephium-js/dist/api/api-explorer'
+import { Send, QrCode, RefreshCw, Lock } from 'lucide-react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 
 import { GlobalContext } from '../../App'
 import { SectionContent, MainPanel } from '../../components/PageComponents'
-import AmountBadge from '../../components/Badge'
 import Spinner from '../../components/Spinner'
 import { Button } from '../../components/Buttons'
 import AppHeader from '../../components/AppHeader'
-import Address from '../../components/Address'
+import TransactionItem from '../../components/TransactionItem'
+import ActionButton from '../../components/ActionButton'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadSettings, useCurrentNetwork } from '../../utils/settings'
 import { useInterval } from '../../utils/hooks'
 import { getHumanReadableError } from '../../utils/api'
-import { openInWebBrowser } from '../../utils/misc'
 import { SimpleTx, WalletContext } from './WalletRootPage'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 
@@ -53,6 +51,8 @@ const WalletHomePage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const [lastLoadedPage, setLastLoadedPage] = useState(1)
+
+  const { explorerUrl } = loadSettings()
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()
@@ -144,6 +144,7 @@ const WalletHomePage = () => {
 
   const pendingTxs = networkPendingTxLists[currentNetwork] || []
   const showSpinner = isLoading || pendingTxs.length > 0
+  const transactionsHaveLoaded = loadedTxList && loadedTxList.length > 0
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -169,9 +170,9 @@ const WalletHomePage = () => {
         </WalletAmountContainer>
         <WalletActions>
           <ActionsTitle>Quick actions</ActionsTitle>
-          <WalletActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
-          <WalletActionButton Icon={Send} label="Send token" link="/wallet/send" />
-          <WalletActionButton Icon={Lock} label="Lock wallet" onClick={() => setWallet(undefined)} />
+          <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
+          <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
+          <ActionButton Icon={Lock} label="Lock wallet" onClick={() => setWallet(undefined)} />
         </WalletActions>
         <FloatingLogo />
       </WalletSidebar>
@@ -196,16 +197,35 @@ const WalletHomePage = () => {
             {pendingTxs
               .slice(0)
               .reverse()
-              .map((t) => {
-                return <PendingTransactionItem key={t.txId} transaction={t} />
+              .map((t: SimpleTx) => {
+                return (
+                  <TransactionItem
+                    pending
+                    key={t.txId}
+                    txUrl={`${explorerUrl}/#/transactions/${t.txId}`}
+                    address={t.toAddress}
+                    timestamp={t.timestamp}
+                    amount={t.amount}
+                  />
+                )
               })}
-            {loadedTxList &&
-              loadedTxList.length > 0 &&
-              loadedTxList?.map((t) => {
-                return <TransactionItem key={t.hash} transaction={t} currentAddress={wallet.address} />
+            {transactionsHaveLoaded &&
+              loadedTxList.map((t: Transaction) => {
+                const amountDelta = calAmountDelta(t, wallet.address)
+                return (
+                  <TransactionItem
+                    key={t.hash}
+                    txUrl={`${explorerUrl}/#/transactions/${t.hash}`}
+                    address={wallet.address}
+                    amount={amountDelta}
+                    inputs={t.inputs}
+                    outputs={t.outputs}
+                    timestamp={t.timestamp}
+                  />
+                )
               })}
           </LastTransactionList>
-          {loadedTxList && loadedTxList.length > 0 && loadedTxList.length === totalNumberOfTx ? (
+          {transactionsHaveLoaded && loadedTxList.length === totalNumberOfTx ? (
             <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
           ) : loadedTxList.length === 0 ? (
             <NoMoreTransactionMessage>No transactions yet!</NoMoreTransactionMessage>
@@ -215,119 +235,6 @@ const WalletHomePage = () => {
         </MainPanel>
       </TransactionsContainer>
     </WalletContainer>
-  )
-}
-
-const IOList = ({
-  currentAddress,
-  isOut,
-  transaction
-}: {
-  currentAddress: string
-  isOut: boolean
-  transaction: Transaction
-}) => {
-  const io = (isOut ? transaction.outputs : transaction.inputs) as Array<Output | Input> | undefined
-  const genesisTimestamp = 1231006505000
-
-  if (io && io.length > 0) {
-    return io.every((o) => o.address === currentAddress) ? (
-      <Address key={currentAddress} hash={currentAddress} />
-    ) : (
-      <>
-        {_(io.filter((o) => o.address !== currentAddress))
-          .map((v) => v.address)
-          .uniq()
-          .value()
-          .map((v) => (
-            <Address key={v} hash={v || ''} />
-          ))}
-      </>
-    )
-  } else if (transaction.timestamp === genesisTimestamp) {
-    return <TXSpecialTypeLabel>Genesis TX</TXSpecialTypeLabel>
-  } else {
-    return <TXSpecialTypeLabel>Mining Rewards</TXSpecialTypeLabel>
-  }
-}
-
-const WalletActionButton = ({
-  Icon,
-  label,
-  link,
-  onClick
-}: {
-  Icon: (props: LucideProps) => JSX.Element
-  label: string
-  link?: string
-  onClick?: () => void
-}) => {
-  const theme = useTheme()
-  const history = useHistory()
-
-  const handleClick = () => {
-    if (link) {
-      history.push(link)
-    } else if (onClick) {
-      onClick()
-    }
-  }
-
-  return (
-    <WalletActionButtonContainer onClick={handleClick}>
-      <ActionContent>
-        <ActionIcon>
-          <Icon color={theme.font.primary} size={18} />
-        </ActionIcon>
-        <ActionLabel>{label}</ActionLabel>
-      </ActionContent>
-    </WalletActionButtonContainer>
-  )
-}
-
-const TransactionItem = ({ transaction: t, currentAddress }: { transaction: Transaction; currentAddress: string }) => {
-  const amountDelta = calAmountDelta(t, currentAddress)
-
-  const isOut = amountDelta < 0
-
-  const { explorerUrl } = loadSettings()
-
-  return (
-    <TransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.hash}`)}>
-      <TxDetails>
-        <DirectionLabel>{isOut ? '↑ TO' : '↓ FROM'}</DirectionLabel>
-        <AddressListContainer>
-          <IOList currentAddress={currentAddress} isOut={isOut} transaction={t} />
-        </AddressListContainer>
-        <TxTimestamp>{dayjs(t.timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
-      </TxDetails>
-      <TxAmountContainer>
-        <AmountBadge
-          type={isOut ? 'minus' : 'plus'}
-          prefix={isOut ? '- ' : '+ '}
-          content={amountDelta < 0 ? (amountDelta * -1n).toString() : amountDelta.toString()}
-          amount
-        />
-      </TxAmountContainer>
-    </TransactionItemContainer>
-  )
-}
-
-// Transaction that has been sent and waiting to be fetched
-const PendingTransactionItem = ({ transaction: t }: { transaction: SimpleTx }) => {
-  const { explorerUrl } = loadSettings()
-
-  return (
-    <PendingTransactionItemContainer onClick={() => openInWebBrowser(`${explorerUrl}/#/transactions/${t.txId}`)}>
-      <TxDetails>
-        <DirectionLabel>↑ TO</DirectionLabel>
-        <AddressListContainer>
-          <Address key={t.toAddress} hash={t.toAddress || ''} />
-        </AddressListContainer>
-        <TxTimestamp>{dayjs().to(t.timestamp)}</TxTimestamp>
-      </TxDetails>
-      <AmountBadge type="minus" prefix="-" content={t.amount} amount />
-    </PendingTransactionItemContainer>
   )
 }
 
@@ -485,52 +392,7 @@ const ActionsTitle = styled.h3`
   width: 100%;
 `
 
-const ActionIcon = styled.div`
-  display: flex;
-  margin-right: var(--spacing-3);
-  opacity: 0.5;
-  transition: all 0.1s ease-out;
-`
-
-const ActionLabel = styled.label`
-  color: ${({ theme }) => theme.font.secondary};
-  text-align: center;
-  transition: all 0.1s ease-out;
-`
-
-const WalletActionButtonContainer = styled.div`
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  height: 50px;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-  }
-
-  &:hover {
-    cursor: pointer;
-    ${ActionLabel} {
-      color: ${({ theme }) => theme.global.accent};
-    }
-
-    ${ActionIcon} {
-      opacity: 1;
-    }
-  }
-`
-
 const RefreshButton = styled(Button)``
-
-const ActionContent = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-
-  * {
-    cursor: pointer;
-  }
-`
 
 // === TRANSACTION === //
 
@@ -566,87 +428,6 @@ const LastTransactionList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`
-
-const TransactionItemContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-1);
-  cursor: pointer;
-  transition: all 0.1s ease-out;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.bg.hover};
-  }
-
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-
-  @media ${deviceBreakPoints.mobile} {
-    padding: var(--spacing-3) 0;
-  }
-`
-
-const TxDetails = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  line-height: 16px;
-`
-
-const DirectionLabel = styled.span`
-  font-size: 0.9em;
-  font-weight: var(--fontWeight-semiBold);
-  margin-bottom: var(--spacing-1);
-`
-
-const AddressListContainer = styled.div`
-  display: flex;
-  margin-bottom: var(--spacing-1);
-`
-
-const TxAmountContainer = styled.div`
-  flex: 0.5;
-  display: flex;
-  justify-content: flex-end;
-`
-
-const TXSpecialTypeLabel = styled.span`
-  align-self: flex-start;
-  color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  padding: 3px 6px;
-  margin: 3px 0;
-  border-radius: var(--radius-small);
-  font-style: italic;
-`
-
-const TxTimestamp = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 0.9em;
-`
-
-const PendingTransactionItemContainer = styled(TransactionItemContainer)`
-  opacity: 0.5;
-
-  background: linear-gradient(90deg, rgba(200, 200, 200, 0.4), rgba(200, 200, 200, 0.05));
-  background-size: 400% 400%;
-  animation: gradient 2s ease infinite;
-
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    25% {
-      background-position: 100% 50%;
-    }
-    75% {
-      background-position: 25% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
 `
 
 const LoadMoreMessage = styled.div`
