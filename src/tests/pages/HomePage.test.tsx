@@ -54,22 +54,24 @@ it('navigates correctly between "New account" and login pages', () => {
   expect(main).toHaveTextContent('Please choose an account and enter your password to continue')
 })
 
-it('navigates to new wallet creation page', () => {
-  render(<HomePage hasWallet={false} usernames={[]} />)
+describe('Button correctly links to', () => {
+  beforeEach(() => {
+    render(<HomePage hasWallet={false} usernames={[]} />)
+  })
 
-  const button = screen.getByRole('button', { name: 'New wallet' })
-  fireEvent.click(button)
-  expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
-  expect(mockedHistoryPush).toHaveBeenCalledWith('/create')
-})
+  it('the new wallet creation page', () => {
+    const button = screen.getByRole('button', { name: 'New wallet' })
+    fireEvent.click(button)
+    expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
+    expect(mockedHistoryPush).toHaveBeenCalledWith('/create')
+  })
 
-it('navigates to new wallet import page', () => {
-  render(<HomePage hasWallet={false} usernames={[]} />)
-
-  const button = screen.getByRole('button', { name: 'Import wallet' })
-  fireEvent.click(button)
-  expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
-  expect(mockedHistoryPush).toHaveBeenCalledWith('/import')
+  it('the new wallet import page', () => {
+    const button = screen.getByRole('button', { name: 'Import wallet' })
+    fireEvent.click(button)
+    expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
+    expect(mockedHistoryPush).toHaveBeenCalledWith('/import')
+  })
 })
 
 // TODO: test login form
