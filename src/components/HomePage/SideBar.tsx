@@ -100,7 +100,7 @@ const Sidebar = styled.div`
 `
 
 const SidebarContents = styled(PanelContainer)`
-  padding: var(--spacing-25);
+  padding: var(--spacing-5);
 `
 
 const IllustrationsContainer = styled.div`
@@ -134,7 +134,7 @@ const HeaderText = styled.div`
 `
 
 const PageSubtitle = styled.h3`
-  margin-top: var(--spacing-5);
+  margin-top: var(--spacing-1);
 `
 
 const Moon = styled(motion.div)`
@@ -142,8 +142,8 @@ const Moon = styled(motion.div)`
   right: 25%;
   height: 10vw;
   width: 10vw;
-  max-height: var(--spacing-60);
-  max-width: var(--spacing-60);
+  max-height: 60px;
+  max-width: 60px;
   border-radius: 200px;
   background-color: ${({ theme }) => theme.global.secondary};
 `
@@ -191,7 +191,7 @@ const CloudGroup = ({
 }
 
 const StyledCloudGroup = styled(motion.div)`
-  height: var(--spacing-50);
+  height: 50px;
   width: 100px;
   position: absolute;
 `
@@ -199,7 +199,7 @@ const StyledCloudGroup = styled(motion.div)`
 const Cloud = styled.div`
   position: absolute;
   background-color: ${({ theme }) => tinycolor(theme.global.secondary).setAlpha(0.3).toString()};
-  height: var(--spacing-3);
+  height: 3px;
 `
 
 const AlephiumLogo = styled.div`
@@ -208,13 +208,13 @@ const AlephiumLogo = styled.div`
   background-position: center;
   height: 10vh;
   width: 10vw;
-  margin-top: var(--spacing-20);
-  max-width: var(--spacing-60);
-  min-width: var(--spacing-30);
+  margin-top: var(--spacing-4);
+  max-width: 60px;
+  min-width: 30px;
 
   @media ${deviceBreakPoints.mobile} {
     margin: auto;
-    max-width: var(--spacing-80);
+    max-width: 80px;
     width: 15vw;
     height: 15vh;
     z-index: 1;

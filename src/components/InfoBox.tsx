@@ -68,8 +68,8 @@ export const InfoBox = ({
 // === Styling === //
 const BoxContainer = styled.div<{ small?: boolean }>`
   width: 100%;
-  margin: 0 auto var(--spacing-20) auto;
-  margin-top: var(--spacing-10);
+  margin: 0 auto var(--spacing-4) auto;
+  margin-top: var(--spacing-2);
   max-width: ${({ small }) => (small ? '300px' : 'initial')};
 `
 
@@ -86,7 +86,7 @@ const IconContainer = styled.div`
 `
 
 const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
-  padding: 0 var(--spacing-20);
+  padding: 0 var(--spacing-4);
   flex: 2;
   font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
@@ -104,7 +104,7 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
 `
 
 const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
-  padding: var(--spacing-10) var(--spacing-20) var(--spacing-10) 0;
+  padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.primary)};
   display: flex;
@@ -116,8 +116,8 @@ const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
 const Label = styled(motion.label)`
   display: block;
   width: 100%;
-  margin-left: var(--spacing-15);
-  margin-bottom: var(--spacing-7);
+  margin-left: var(--spacing-3);
+  margin-bottom: 7px;
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
 `

@@ -95,8 +95,8 @@ const WalletWordsPage = () => {
 
 const Label = styled.label`
   width: 100%;
-  padding-left: var(--spacing-15);
-  padding-bottom: var(--spacing-5);
+  padding-left: var(--spacing-3);
+  padding-bottom: var(--spacing-1);
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
 `
@@ -113,18 +113,18 @@ const WordsContent = styled(SectionContent)`
 const PhraseBox = styled.div`
   display: flex;
   width: 100%;
-  padding: var(--spacing-20);
+  padding: var(--spacing-4);
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: var(--fontWeight-medium);
   background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.4).toString()};
   border: 1px solid ${({ theme }) => theme.global.alert};
   border-radius: var(--radius);
-  margin-bottom: var(--spacing-20);
+  margin-bottom: var(--spacing-4);
   flex-wrap: wrap;
 `
 
 const MnemonicWordContainer = styled.div`
-  margin: var(--spacing-6);
+  margin: 6px;
   border-radius: var(--radius-small);
   overflow: hidden;
   box-shadow: 0 5px 5px var(--color-shadow-10);
@@ -132,7 +132,7 @@ const MnemonicWordContainer = styled.div`
 
 const MnemonicNumber = styled.div`
   display: inline-block;
-  padding: var(--spacing-5);
+  padding: var(--spacing-1);
   border-right: 1px ${({ theme }) => theme.bg.secondary};
   background-color: ${({ theme }) =>
     theme.name === 'light'
@@ -145,7 +145,7 @@ const MnemonicWord = styled.div`
   display: inline-block;
   background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.primary : theme.bg.contrast)};
   color: ${({ theme }) => (theme.name === 'light' ? theme.font.primary : theme.font.contrastSecondary)};
-  padding: var(--spacing-5) var(--spacing-8);
+  padding: var(--spacing-1) 8px;
   font-weight: var(--fontWeight-semiBold);
 `
 

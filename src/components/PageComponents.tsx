@@ -41,7 +41,7 @@ const StyledMainPanel = styled(motion.main)<MainPanelProps>`
   margin: 0 auto;
   max-width: 600px;
   min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
-  padding: var(--spacing-25);
+  padding: var(--spacing-5);
   display: flex;
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
@@ -119,7 +119,7 @@ export const StyledContent = styled(motion.div)<{ inList?: boolean }>`
   flex-direction: column;
   min-width: 400px;
 
-  margin-top: ${({ inList }) => (inList ? 'var(--spacing-25)' : '0')};
+  margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
 
 interface SectionTitleProps {
@@ -132,7 +132,7 @@ interface SectionTitleProps {
 
 export const FooterActions = styled(SectionContent)`
   flex: 0;
-  margin-top: var(--spacing-25);
+  margin-top: var(--spacing-5);
   width: 100%;
 `
 
@@ -169,7 +169,7 @@ export const PanelTitle: FC<SectionTitleProps> = ({
 export const TitleContainer = styled(motion.div)`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-15);
+  margin-bottom: var(--spacing-3);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -177,8 +177,8 @@ export const TitleContainer = styled(motion.div)`
 
 const BackArrow = styled(ArrowLeft)`
   height: 47px;
-  width: var(--spacing-20);
-  margin-right: var(--spacing-20);
+  width: var(--spacing-4);
+  margin-right: var(--spacing-4);
   cursor: pointer;
 `
 

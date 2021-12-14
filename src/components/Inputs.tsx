@@ -296,20 +296,20 @@ function SelectOptionsPopup<T>({
 
 const InputContainer = styled(motion.div)`
   position: relative;
-  height: var(--spacing-46);
+  height: 46px;
   width: 100%;
-  margin: var(--spacing-15) 0;
+  margin: var(--spacing-3) 0;
 `
 
 const TextAreaContainer = styled(motion.div)`
   position: relative;
   width: 100%;
-  margin: var(--spacing-15) 0;
+  margin: var(--spacing-3) 0;
 `
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
-  margin: var(--spacing-15) 0;
+  margin: var(--spacing-3) 0;
   border-radius: var(--radius);
   color: ${({ theme }) => theme.font.secondary};
 
@@ -321,7 +321,7 @@ const TextAreaTagsContainer = styled(motion.div)`
 
 const Label = styled(motion.label)`
   position: absolute;
-  top: var(--spacing-16);
+  top: 16px;
   left: 13px;
   font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
@@ -330,8 +330,8 @@ const Label = styled(motion.label)`
 
 const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
-  bottom: calc(var(--spacing-7) * -1);
-  right: var(--spacing-10);
+  bottom: calc(7px * -1);
+  right: var(--spacing-2);
   font-weight: var(--fontWeight-medium);
   opacity: 0;
   font-size: 0.8em;
@@ -342,7 +342,7 @@ const ValidIconContainer = styled(motion.div)`
   position: absolute;
   top: 0;
   bottom: 0;
-  right: var(--spacing-20);
+  right: var(--spacing-4);
   font-weight: var(--fontWeight-medium);
   display: flex;
   align-items: center;
@@ -352,13 +352,13 @@ const ValidIconContainer = styled(motion.div)`
 const defaultStyle = (isValid?: boolean) => {
   return css`
     background-image: none;
-    height: var(--spacing-46);
+    height: 46px;
     width: 100%;
     border-radius: var(--radius);
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
     color: ${({ theme }) => theme.font.primary};
-    padding: ${isValid ? '0 45px 0 var(--spacing-12)' : '0 var(--spacing-12)'};
+    padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
     font-weight: var(--fontWeight-medium);
     font-size: 1em;
     text-align: left;
@@ -401,14 +401,14 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
 const StyledTags = styled(Tags)`
   ${defaultStyle(true)}
   height: auto;
-  padding: var(--spacing-5);
+  padding: var(--spacing-1);
   line-height: 20px;
   border-radius: var(--radius);
 `
 
 const MoreIcon = styled.div`
   position: absolute;
-  top: var(--spacing-12);
+  top: 12px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `
@@ -441,7 +441,7 @@ const Popup = styled(motion.div)`
 `
 
 const OptionItem = styled.div`
-  padding: var(--spacing-15);
+  padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
 
@@ -455,7 +455,7 @@ const OptionItem = styled.div`
 `
 
 const SelectOptionsHeader = styled.header`
-  padding: var(--spacing-5) var(--spacing-15);
+  padding: var(--spacing-1) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;

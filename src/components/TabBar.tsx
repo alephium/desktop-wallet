@@ -61,7 +61,7 @@ const TabBar = ({
 }
 
 const Wrapper = styled.div`
-  margin: var(--spacing-10) 0 var(--spacing-25) 0;
+  margin: var(--spacing-2) 0 var(--spacing-5) 0;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -72,7 +72,7 @@ const Wrapper = styled.div`
 const TabBarContainer = styled.div`
   width: 100%;
   border-radius: var(--radius);
-  height: var(--spacing-40);
+  height: 40px;
 `
 
 const TabBarContent = styled.div`
@@ -91,7 +91,7 @@ const TabContainer = styled.div`
 const Tab = styled.div<{ isActive: boolean }>`
   flex: 1;
   text-align: center;
-  padding: var(--spacing-8);
+  padding: 8px;
   color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
   font-weight: var(--fontWeight-semiBold);
   z-index: 1;

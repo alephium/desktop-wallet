@@ -20,7 +20,7 @@ import { isElectron } from '../utils/misc'
 import resets from './resets'
 import tags from './tags'
 
-export const appHeaderHeight = 'var(--spacing-50)'
+export const appHeaderHeight = '50px'
 
 const extensionWindowDimensions = `
   height: 600px;
@@ -45,23 +45,12 @@ export const GlobalStyle = createGlobalStyle`
 
     --shadow: 0 15px 15px var(--color-shadow-15);
 
-    --spacing-3: 3px;
-    --spacing-5: 5px;
-    --spacing-6: 6px;
-    --spacing-7: 7px;
-    --spacing-8: 8px;
-    --spacing-10: 10px;
-    --spacing-12: 12px;
-    --spacing-15: 15px;
-    --spacing-16: 16px;
-    --spacing-20: 20px;
-    --spacing-25: 25px;
-    --spacing-30: 30px;
-    --spacing-40: 40px;
-    --spacing-46: 46px;
-    --spacing-50: 50px;
-    --spacing-60: 60px;
-    --spacing-80: 80px;
+    /* spacial system of 5px linear scale */
+    --spacing-1: 5px;
+    --spacing-2: 10px;
+    --spacing-3: 15px;
+    --spacing-4: 20px;
+    --spacing-5: 25px;
 
     --radius-small: 4px;
     --radius: 7px;

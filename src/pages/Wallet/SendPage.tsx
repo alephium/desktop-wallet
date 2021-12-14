@@ -169,7 +169,7 @@ const CheckTransactionContent = ({ address, amount }: { address: string; amount:
 
 const LogoContent = styled(SectionContent)`
   flex: 0;
-  margin: var(--spacing-20);
+  margin: var(--spacing-4);
 `
 
 const SendLogo = styled.div`

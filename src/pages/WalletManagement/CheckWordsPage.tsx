@@ -249,7 +249,7 @@ const CheckWordsPage = () => {
 const RemainingWordList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  margin: var(--spacing-20) 0;
+  margin: var(--spacing-4) 0;
   flex: 1;
   align-items: flex-start;
   justify-content: flex-start;
@@ -257,18 +257,18 @@ const RemainingWordList = styled.div`
 `
 
 const SelectedWord = styled(motion.div)`
-  padding: var(--spacing-6) var(--spacing-10);
+  padding: 6px var(--spacing-2);
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: var(--fontWeight-medium);
   text-align: center;
-  margin-bottom: var(--spacing-10);
+  margin-bottom: var(--spacing-2);
   position: relative;
   cursor: pointer;
 
   &:not(:last-child) {
-    margin-right: var(--spacing-10);
+    margin-right: var(--spacing-2);
   }
 
   &:hover {
@@ -278,7 +278,7 @@ const SelectedWord = styled(motion.div)`
 
 const DragCursor = styled(motion.div)`
   position: absolute;
-  left: calc(var(--spacing-7) * -1);
+  left: calc(7px * -1);
   top: 0;
   bottom: 0;
   width: 4px;
@@ -288,12 +288,12 @@ const DragCursor = styled(motion.div)`
 
 const SelectedWordList = styled.div`
   width: 100%;
-  padding: var(--spacing-20);
+  padding: var(--spacing-4);
   min-height: 200px;
   border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};
-  margin-bottom: var(--spacing-20);
+  margin-bottom: var(--spacing-4);
 
   display: flex;
   flex-wrap: wrap;

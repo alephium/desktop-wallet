@@ -25,7 +25,7 @@ const NetworkBadge = () => {
 }
 
 const BadgeContainer = styled.div`
-  padding: var(--spacing-5) var(--spacing-10);
+  padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-small);
   background-color: ${({ theme }) => theme.bg.primary};
   color: ${({ theme }) => theme.font.secondary};

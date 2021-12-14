@@ -22,10 +22,10 @@ import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monoc
 
 const FloatingLogo = styled(AlephiumLogoSVG)`
   position: absolute;
-  top: var(--spacing-50);
-  left: var(--spacing-25);
-  width: var(--spacing-60);
-  height: var(--spacing-60);
+  top: 50px;
+  left: var(--spacing-5);
+  width: 60px;
+  height: 60px;
 
   path {
     fill: var(--color-shadow-5) !important;

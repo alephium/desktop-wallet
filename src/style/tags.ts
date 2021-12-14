@@ -27,9 +27,9 @@ const tags = css`
 
   .tags-dropdown {
     position: fixed;
-    bottom: var(--spacing-10) !important;
-    left: var(--spacing-10) !important;
-    right: var(--spacing-10) !important;
+    bottom: var(--spacing-2) !important;
+    left: var(--spacing-2) !important;
+    right: var(--spacing-2) !important;
     width: auto !important;
     top: auto !important;
     margin: 0;
@@ -44,7 +44,7 @@ const tags = css`
       color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
       margin: 0;
       border-radius: 0;
-      padding: var(--spacing-10);
+      padding: var(--spacing-2);
 
       &:not(:last-child) {
         border-bottom: 1px solid ${({ theme }) => theme.border};
