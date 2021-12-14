@@ -278,7 +278,7 @@ const SelectedWord = styled(motion.div)`
 
 const DragCursor = styled(motion.div)`
   position: absolute;
-  left: calc(7px * -1);
+  left: -7px;
   top: 0;
   bottom: 0;
   width: 4px;

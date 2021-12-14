@@ -330,7 +330,7 @@ const Label = styled(motion.label)`
 
 const ErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;
-  bottom: calc(7px * -1);
+  bottom: -7px;
   right: var(--spacing-2);
   font-weight: var(--fontWeight-medium);
   opacity: 0;
