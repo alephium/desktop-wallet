@@ -22,18 +22,12 @@ import zxcvbn from 'zxcvbn'
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
-import {
-  PanelContainer,
-  SectionContent,
-  FooterActions,
-  PanelTitle,
-  MainPanel,
-  PanelContent
-} from '../../components/PageComponents'
+import { PanelContainer, SectionContent, FooterActions, MainPanel, PanelContent } from '../../components/PageComponents'
 import { Input } from '../../components/Inputs'
 import { InfoBox } from '../../components/InfoBox'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useContext(GlobalContext)

@@ -26,16 +26,10 @@ import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
 import { StepsContext } from '../MultiStepsController'
 import { Button } from '../../components/Buttons'
-import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
 import Paragraph from '../../components/Paragraph'
 import { InfoBox } from '../../components/InfoBox'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const Storage = getStorage()
 

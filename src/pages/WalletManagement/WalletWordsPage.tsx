@@ -23,15 +23,9 @@ import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
 import { StepsContext } from '../MultiStepsController'
 import { InfoBox } from '../../components/InfoBox'
-import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
 import { Button } from '../../components/Buttons'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)

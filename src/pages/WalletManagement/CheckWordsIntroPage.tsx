@@ -19,19 +19,13 @@ import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
 import { Button } from '../../components/Buttons'
-import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
 import { CenteredMainParagraph, CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { StepsContext } from '../MultiStepsController'
 
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
 import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const CheckWordsIntroPage = () => {
   const { onButtonBack, onButtonNext } = useContext(StepsContext)

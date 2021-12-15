@@ -22,17 +22,11 @@ import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 import { TextAreaTags } from '../../components/Inputs'
-import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
 import { Button } from '../../components/Buttons'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const Storage = getStorage()
 

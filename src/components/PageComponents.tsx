@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { motion, MotionStyle, useTransform, useViewportScroll, Variants } from 'framer-motion'
+import { motion, MotionStyle, Variants } from 'framer-motion'
 import React, { FC } from 'react'
-import styled, { useTheme } from 'styled-components'
-import { ArrowLeft } from 'lucide-react'
+import styled from 'styled-components'
 
 import { deviceBreakPoints } from '../style/globalStyles'
 
@@ -133,13 +132,13 @@ export const StyledContent = styled(motion.div)<{ align: ContentAlignment; inLis
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
 
-interface SectionTitleProps {
-  color?: string
-  onBackButtonPress?: () => void
-  smaller?: boolean
-  backgroundColor?: string
-  useLayoutId?: boolean
-}
+export const SecondaryContainer = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-radius: var(--radius);
+  width: 100%;
+`
 
 export const FooterActions = styled(SectionContent)`
   flex: 0;
@@ -150,32 +149,6 @@ export const FooterActions = styled(SectionContent)`
 // ===========
 // == Title ==
 // ===========
-
-export const PanelTitle: FC<SectionTitleProps> = ({
-  color,
-  children,
-  onBackButtonPress,
-  smaller,
-  backgroundColor,
-  useLayoutId = true
-}) => {
-  const { scrollY } = useViewportScroll()
-  const theme = useTheme()
-
-  const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
-
-  return (
-    <TitleContainer
-      style={{ backgroundColor: backgroundColor || theme.bg.primary }}
-      layoutId={useLayoutId ? 'sectionTitle' : ''}
-    >
-      {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
-      <H1 color={color} smaller={smaller} style={{ scale: titleScale, originX: 0 }}>
-        {children}
-      </H1>
-    </TitleContainer>
-  )
-}
 
 export const TitleContainer = styled(motion.div)`
   display: flex;
@@ -191,19 +164,4 @@ export const HorizontalDivider = styled.div`
   margin: var(--spacing-3) var(--spacing-1);
   height: 1px;
   width: 100%;
-`
-
-const BackArrow = styled(ArrowLeft)`
-  height: 47px;
-  width: var(--spacing-4);
-  margin-right: var(--spacing-4);
-  cursor: pointer;
-`
-
-const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
-  flex: 1;
-  margin: 0;
-  color: ${({ theme, color }) => (color ? color : theme.font.primary)};
-  font-size: ${({ smaller }) => (smaller ? '2.0em' : 'revert')};
-  font-weight: var(--fontWeight-medium);
 `

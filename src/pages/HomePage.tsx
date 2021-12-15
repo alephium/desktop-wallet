@@ -25,10 +25,11 @@ import { GlobalContext } from '../App'
 import { deviceBreakPoints } from '../style/globalStyles'
 import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
-import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
+import { MainPanel, SectionContent } from '../components/PageComponents'
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
+import PanelTitle from '../components/PageComponents/PanelTitle'
 
 interface HomeProps {
   hasWallet: boolean

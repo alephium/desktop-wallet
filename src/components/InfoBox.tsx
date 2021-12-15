@@ -123,3 +123,5 @@ const Label = styled(motion.label)`
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
 `
+
+export default InfoBox

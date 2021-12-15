@@ -20,7 +20,8 @@ import styled, { useTheme } from 'styled-components'
 import { X } from 'lucide-react'
 
 import { Button } from './Buttons'
-import { PanelTitle, StyledContent, TitleContainer } from './PageComponents'
+import { StyledContent, TitleContainer } from './PageComponents'
+import PanelTitle from './PageComponents/PanelTitle'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void

@@ -25,6 +25,7 @@ import SecretPhraseModal from './SecretPhraseModal'
 import { InfoBox } from '../../components/InfoBox'
 import styled from 'styled-components'
 import { MoreVertical } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const Storage = getStorage()
 
@@ -96,7 +97,7 @@ const AccountItem = ({ accountName }: { accountName: string }) => {
   )
 }
 
-const AccountListContainer = styled.div`
+const AccountListContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.bg.secondary};
