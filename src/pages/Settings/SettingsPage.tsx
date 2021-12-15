@@ -26,8 +26,8 @@ import { HorizontalDivider } from '../../components/PageComponents/HorizontalDiv
 
 const SettingsPage = () => {
   const tabs = [
-    { value: 'accounts', label: 'Accounts' },
-    { value: 'client', label: 'Networks' }
+    { value: 'client', label: 'Networks' },
+    { value: 'accounts', label: 'Accounts' }
   ]
 
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
