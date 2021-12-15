@@ -19,7 +19,7 @@ import { useTheme } from 'styled-components'
 import Modal from '../../components/Modal'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '../../components/Buttons'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
 import { SectionContent } from '../../components/PageComponents'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 

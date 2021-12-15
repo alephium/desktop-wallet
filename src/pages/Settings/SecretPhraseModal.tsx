@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import Modal from '../../components/Modal'
 import { SectionContent } from '../../components/PageComponents'

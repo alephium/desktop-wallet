@@ -21,7 +21,7 @@ import { Send } from 'lucide-react'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import { PanelContainer, SectionContent } from '../../components/PageComponents'
 import Spinner from '../../components/Spinner'

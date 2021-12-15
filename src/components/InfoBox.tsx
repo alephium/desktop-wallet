@@ -37,17 +37,7 @@ const variants: Variants = {
   shown: { y: 0, opacity: 1 }
 }
 
-export const InfoBox = ({
-  Icon,
-  text,
-  label,
-  importance,
-  className,
-  ellipsis,
-  wordBreak,
-  onClick,
-  small
-}: InfoBoxProps) => {
+const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wordBreak, onClick, small }: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
