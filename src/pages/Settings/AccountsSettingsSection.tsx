@@ -23,11 +23,13 @@ import { SectionContent } from '../../components/PageComponents'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import { InfoBox } from '../../components/InfoBox'
+import styled from 'styled-components'
+import { MoreVertical } from 'lucide-react'
 
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { currentUsername, setWallet } = useContext(GlobalContext)
+  const { usernames, currentUsername, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingRemoveModal, setIsDisplayingRemoveModal] = useState(false)
 
@@ -57,6 +59,11 @@ const AccountsSettingsSection = () => {
       )}
       <SectionContent align="left">
         <h2>Account list</h2>
+        <AccountListContainer>
+          {usernames.map((n) => {
+            return <AccountItem key={n} accountName={n} />
+          })}
+        </AccountListContainer>
       </SectionContent>
       <SectionContent align="left">
         <h2>Current account</h2>
@@ -76,5 +83,33 @@ const AccountsSettingsSection = () => {
     </>
   )
 }
+
+const AccountItem = ({ accountName }: { accountName: string }) => {
+  return (
+    <AccountItemContainer>
+      <AccountName>{accountName}</AccountName>
+      <AccountOptionButton squared transparent>
+        <MoreVertical />
+      </AccountOptionButton>
+    </AccountItemContainer>
+  )
+}
+
+const AccountListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const AccountItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-2);
+`
+
+const AccountName = styled.div`
+  flex: 1;
+`
+
+const AccountOptionButton = styled(Button)``
 
 export default AccountsSettingsSection
