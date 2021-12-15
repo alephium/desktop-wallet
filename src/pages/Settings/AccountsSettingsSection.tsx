@@ -30,7 +30,7 @@ import { HorizontalDivider } from '../../components/PageComponents/HorizontalDiv
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { usernames, currentUsername, setWallet } = useContext(GlobalContext)
+  const { usernames, currentUsername, wallet, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingRemoveModal, setIsDisplayingRemoveModal] = useState(false)
 
@@ -66,22 +66,26 @@ const AccountsSettingsSection = () => {
           })}
         </BoxContainer>
       </Section>
-      <HorizontalDivider />
-      <Section align="left">
-        <h2>Current account</h2>
-        <InfoBox label="Account name" text={currentUsername} />
-      </Section>
-      <Section>
-        <Button secondary onClick={handleLogout}>
-          Lock account
-        </Button>
-        <Button secondary alert onClick={openSecretPhraseModal}>
-          Show your secret phrase
-        </Button>
-        <Button alert onClick={openRemoveAccountModal}>
-          Remove account
-        </Button>
-      </Section>
+      {wallet && (
+        <>
+          <HorizontalDivider />
+          <Section align="left">
+            <h2>Current account</h2>
+            <InfoBox label="Account name" text={currentUsername} />
+          </Section>
+          <Section>
+            <Button secondary onClick={handleLogout}>
+              Lock account
+            </Button>
+            <Button secondary alert onClick={openSecretPhraseModal}>
+              Show your secret phrase
+            </Button>
+            <Button alert onClick={openRemoveAccountModal}>
+              Remove account
+            </Button>
+          </Section>
+        </>
+      )}
     </>
   )
 }

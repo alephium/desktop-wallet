@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
@@ -26,8 +25,6 @@ import AccountsSettingsSection from './AccountsSettingsSection'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const SettingsPage = () => {
-  const { wallet } = useContext(GlobalContext)
-
   const tabs = [
     { value: 'accounts', label: 'Accounts' },
     { value: 'client', label: 'Networks' }
@@ -37,8 +34,8 @@ const SettingsPage = () => {
 
   return (
     <PanelContentContainer>
-      {wallet && <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>}
-      {wallet && currentTab.value === 'accounts' ? (
+      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
+      {currentTab.value === 'accounts' ? (
         <AccountsSettingsSection />
       ) : currentTab.value === 'client' ? (
         <NetworkSettingsSection />
