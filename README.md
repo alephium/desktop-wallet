@@ -24,8 +24,16 @@ npm run electron-pack
 
 ## Development
 
+To launch the app as a web app, run:
+
 ```shell
 npm start
+```
+
+To launch it as an electron app, run:
+
+```shell
+npm run electron-dev
 ```
 
 ## Test
