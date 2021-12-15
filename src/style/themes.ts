@@ -30,7 +30,7 @@ export const lightTheme: DefaultTheme = {
     accent: tinycolor('#5981f3').setAlpha(0.08).toString()
   },
   font: {
-    primary: '#1b202f',
+    primary: '#000',
     secondary: '#797979',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)'
@@ -59,8 +59,8 @@ export const darkTheme: DefaultTheme = {
     accent: tinycolor('#5981f3').setAlpha(0.08).toString()
   },
   font: {
-    primary: 'rgba(255, 255, 255, 0.8)',
-    secondary: 'rgba(255, 255, 255, 0.5)',
+    primary: 'rgba(255, 255, 255, 0.95)',
+    secondary: 'rgba(255, 255, 255, 0.65)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)'
   },
