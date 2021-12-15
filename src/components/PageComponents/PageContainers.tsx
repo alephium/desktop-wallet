@@ -54,6 +54,12 @@ const sectionVariants: Variants = {
   }
 }
 
+export const sectionChildrenVariants: Variants = {
+  hidden: { y: 5, opacity: 0 },
+  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
+  disabled: { y: 0, opacity: 0.5 }
+}
+
 export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => {
   return (
     <StyledFloatingPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
@@ -85,6 +91,10 @@ export const Section: React.FC<SectionProps> = ({
       {children}
     </SectionContainer>
   )
+}
+
+export const BoxContainer: FC = ({ children }) => {
+  return <StyledBoxContainer variants={sectionChildrenVariants}>{children}</StyledBoxContainer>
 }
 
 const StyledFloatingPanel = styled(motion.main)<MainPanelProps>`
@@ -126,7 +136,7 @@ export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignm
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
 
-export const BoxContainer = styled(motion.div)`
+const StyledBoxContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.bg.secondary};

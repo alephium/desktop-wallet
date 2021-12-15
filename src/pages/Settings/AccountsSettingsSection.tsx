@@ -19,13 +19,12 @@ import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { Section } from '../../components/PageComponents/PageContainers'
+import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import InfoBox from '../../components/InfoBox'
 import styled from 'styled-components'
 import { MoreVertical } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const Storage = getStorage()
@@ -61,11 +60,11 @@ const AccountsSettingsSection = () => {
       )}
       <Section align="left">
         <h2>Account list</h2>
-        <AccountListContainer>
+        <BoxContainer>
           {usernames.map((n) => {
             return <AccountItem key={n} accountName={n} />
           })}
-        </AccountListContainer>
+        </BoxContainer>
       </Section>
       <HorizontalDivider />
       <Section align="left">
@@ -97,14 +96,6 @@ const AccountItem = ({ accountName }: { accountName: string }) => {
     </AccountItemContainer>
   )
 }
-
-const AccountListContainer = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: var(--radius);
-  width: 100%;
-`
 
 const AccountItemContainer = styled.div`
   display: flex;

@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
+
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
@@ -26,12 +28,6 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   transparent?: boolean
   squared?: boolean
   submit?: boolean
-}
-
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
-  disabled: { y: 0, opacity: 0.5 }
 }
 
 export const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
@@ -55,7 +51,7 @@ export const Button = ({ children, disabled, submit, ...props }: ButtonProps) =>
   return (
     <StyledButton
       {...props}
-      variants={variants}
+      variants={sectionChildrenVariants}
       custom={disabled}
       disabled={disabled}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}

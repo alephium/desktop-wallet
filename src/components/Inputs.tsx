@@ -23,6 +23,8 @@ import { Check, MoreVertical } from 'lucide-react'
 import Tags from '@yaireo/tagify/dist/react.tagify'
 import { isEqual } from 'lodash'
 
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
   isValid?: boolean
@@ -33,12 +35,6 @@ interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
   error?: string
   isValid?: boolean
   disabled?: boolean
-}
-
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
-  disabled: { y: 0, opacity: 0.5 }
 }
 
 const placeHolderVariants: Variants = {
@@ -56,7 +52,7 @@ export const Input = ({ placeholder, error, isValid, disabled, onChange, value, 
 
   return (
     <InputContainer
-      variants={variants}
+      variants={sectionChildrenVariants}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
@@ -94,7 +90,7 @@ export const TextArea = ({ placeholder, error, isValid, disabled, onChange, valu
 
   return (
     <TextAreaContainer
-      variants={variants}
+      variants={sectionChildrenVariants}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
@@ -214,7 +210,7 @@ export function Select<T>({
   return (
     <>
       <SelectContainer
-        variants={variants}
+        variants={sectionChildrenVariants}
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}

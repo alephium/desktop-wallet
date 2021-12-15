@@ -16,7 +16,9 @@
 
 import styled, { css, useTheme } from 'styled-components'
 import { LucideProps } from 'lucide-react'
-import { motion, Variants } from 'framer-motion'
+import { motion } from 'framer-motion'
+
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 type InfoBoxImportance = 'accent' | 'alert'
 
@@ -32,18 +34,13 @@ interface InfoBoxProps {
   small?: boolean
 }
 
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: { y: 0, opacity: 1 }
-}
-
 const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wordBreak, onClick, small }: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
     <BoxContainer className={className} onClick={onClick} small={small}>
-      {label && <Label variants={variants}>{label}</Label>}
-      <StyledBox variants={variants} importance={importance}>
+      {label && <Label variants={sectionChildrenVariants}>{label}</Label>}
+      <StyledBox variants={sectionChildrenVariants} importance={importance}>
         {Icon && (
           <IconContainer>
             <Icon color={importance ? theme.global.accent : theme.global.accent} strokeWidth={1.5} />
