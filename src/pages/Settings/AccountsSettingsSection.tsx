@@ -62,7 +62,7 @@ const AccountsSettingsSection = () => {
         <h2>Account list</h2>
         <BoxContainer>
           {usernames.map((n) => {
-            return <AccountItem key={n} accountName={n} />
+            return <AccountItem key={n} accountName={n} isCurrent={n === currentUsername} />
           })}
         </BoxContainer>
       </Section>
@@ -75,13 +75,13 @@ const AccountsSettingsSection = () => {
           </Section>
           <Section>
             <Button secondary onClick={handleLogout}>
-              Lock account
+              Lock current account
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
               Show your secret phrase
             </Button>
             <Button alert onClick={openRemoveAccountModal}>
-              Remove account
+              Remove current account
             </Button>
           </Section>
         </>
@@ -90,10 +90,13 @@ const AccountsSettingsSection = () => {
   )
 }
 
-const AccountItem = ({ accountName }: { accountName: string }) => {
+const AccountItem = ({ accountName, isCurrent }: { accountName: string; isCurrent: boolean }) => {
   return (
     <AccountItemContainer>
-      <AccountName>{accountName}</AccountName>
+      <AccountName>
+        {accountName}
+        {isCurrent && <CurrentAccountLabel> (current)</CurrentAccountLabel>}
+      </AccountName>
       <AccountOptionButton squared transparent>
         <MoreVertical />
       </AccountOptionButton>
@@ -113,6 +116,10 @@ const AccountItemContainer = styled.div`
 
 const AccountName = styled.div`
   flex: 1;
+`
+
+const CurrentAccountLabel = styled.span`
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const AccountOptionButton = styled(Button)``
