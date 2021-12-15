@@ -14,56 +14,27 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { getStorage, Wallet, walletOpen } from 'alephium-js'
-import { Edit3 } from 'lucide-react'
-import { useContext, useState, ChangeEvent } from 'react'
-import styled from 'styled-components'
+import { useContext, useState } from 'react'
+import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { InfoBox } from '../../components/InfoBox'
-import { Input } from '../../components/Inputs'
-import Modal from '../../components/Modal'
 import { HorizontalDivider, SectionContent } from '../../components/PageComponents'
-import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import AccountRemovalModal from './AccountRemovalModal'
+import SecretPhraseModal from './SecretPhraseModal'
 
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { currentUsername, setSnackbarMessage, setWallet } = useContext(GlobalContext)
+  const { currentUsername, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isDisplayingRemoveModal, setIsDisplayingRemoveModal] = useState(false)
-  const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
-  const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()
-  const [typedPassword, setTypedPassword] = useState('')
-
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTypedPassword(e.target.value)
-  }
-
-  const handlePasswordVerification = async (callback: () => void) => {
-    const walletEncrypted = Storage.load(currentUsername)
-
-    try {
-      const plainWallet = await walletOpen(typedPassword, walletEncrypted)
-
-      if (plainWallet) {
-        setDecryptedWallet(plainWallet)
-        callback()
-      }
-    } catch (e) {
-      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
-    }
-  }
 
   const openSecretPhraseModal = () => {
-    setTypedPassword('')
     setIsDisplayingSecretModal(true)
   }
 
   const openRemoveAccountModal = () => {
-    setTypedPassword('')
     setIsDisplayingRemoveModal(true)
   }
 
@@ -79,32 +50,7 @@ const AccountsSettingsSection = () => {
   return (
     <>
       <SectionContent>
-        {isDisplayingSecretModal && (
-          <Modal title="Secret phrase" onClose={() => setIsDisplayingSecretModal(false)} focusMode>
-            {!isDisplayingPhrase ? (
-              <div>
-                <SectionContent>
-                  <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
-                  <CenteredSecondaryParagraph>
-                    Type your password above to show your 24 words phrase.
-                  </CenteredSecondaryParagraph>
-                </SectionContent>
-                <SectionContent>
-                  <Button onClick={() => handlePasswordVerification(() => setIsDisplayingPhrase(true))}>Show</Button>
-                </SectionContent>
-              </div>
-            ) : (
-              <SectionContent>
-                <InfoBox
-                  text={'Carefully note the 24 words. They are the keys to your wallet.'}
-                  Icon={Edit3}
-                  importance="alert"
-                />
-                <PhraseBox>{decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
-              </SectionContent>
-            )}
-          </Modal>
-        )}
+        {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
 
         {isDisplayingRemoveModal && (
           <AccountRemovalModal
@@ -127,15 +73,5 @@ const AccountsSettingsSection = () => {
     </>
   )
 }
-
-const PhraseBox = styled.div`
-  width: 100%;
-  padding: var(--spacing-4);
-  color: ${({ theme }) => theme.font.contrastPrimary};
-  font-weight: var(--fontWeight-semiBold);
-  background-color: ${({ theme }) => theme.global.alert};
-  border-radius: var(--radius-big);
-  margin-bottom: var(--spacing-4);
-`
 
 export default AccountsSettingsSection
