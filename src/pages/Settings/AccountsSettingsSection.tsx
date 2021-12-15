@@ -19,7 +19,7 @@ import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { SectionContent } from '../../components/PageComponents'
+import { HorizontalDivider, SectionContent } from '../../components/PageComponents'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import { InfoBox } from '../../components/InfoBox'
@@ -65,16 +65,17 @@ const AccountsSettingsSection = () => {
           })}
         </AccountListContainer>
       </SectionContent>
+      <HorizontalDivider />
       <SectionContent align="left">
         <h2>Current account</h2>
         <InfoBox label="Account name" text={currentUsername} />
       </SectionContent>
       <SectionContent>
+        <Button secondary onClick={handleLogout}>
+          Lock account
+        </Button>
         <Button secondary alert onClick={openSecretPhraseModal}>
           Show your secret phrase
-        </Button>
-        <Button secondary onClick={handleLogout}>
-          Lock wallet
         </Button>
         <Button alert onClick={openRemoveAccountModal}>
           Remove account
@@ -98,12 +99,19 @@ const AccountItem = ({ accountName }: { accountName: string }) => {
 const AccountListContainer = styled.div`
   display: flex;
   flex-direction: column;
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-radius: var(--radius);
+  width: 100%;
 `
 
 const AccountItemContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
 `
 
 const AccountName = styled.div`

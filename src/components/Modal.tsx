@@ -142,7 +142,7 @@ const StyledModal = styled(motion.div)`
   flex-direction: column;
   margin: auto;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 95vh;
   box-shadow: 0 30px 30px var(--color-shadow-15);
   border-radius: var(--radius);

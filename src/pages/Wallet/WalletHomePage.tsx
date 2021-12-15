@@ -172,7 +172,7 @@ const WalletHomePage = () => {
           <ActionsTitle>Quick actions</ActionsTitle>
           <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
           <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
-          <ActionButton Icon={Lock} label="Lock wallet" onClick={() => setWallet(undefined)} />
+          <ActionButton Icon={Lock} label="Lock account" onClick={() => setWallet(undefined)} />
         </WalletActions>
         <FloatingLogo />
       </WalletSidebar>

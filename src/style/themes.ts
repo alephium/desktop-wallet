@@ -23,8 +23,8 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: 'rgba(61, 64, 74, 0.05)',
-    tertiary: 'rgba(61, 64, 74, 0.2)',
+    secondary: 'rgba(61, 64, 74, 0.04)',
+    tertiary: 'rgba(61, 64, 74, 0.15)',
     hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#212126',
     accent: tinycolor('#5981f3').setAlpha(0.08).toString()
@@ -36,8 +36,8 @@ export const lightTheme: DefaultTheme = {
     contrastSecondary: 'rgba(255, 255, 255, 0.8)'
   },
   border: {
-    primary: '#ebebeb',
-    secondary: '#f5f5f5'
+    primary: 'rgba(0, 0, 0, 0.05)',
+    secondary: 'rgba(0, 0, 0, 0.02)'
   },
   global: {
     accent: '#5981f3',

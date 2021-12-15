@@ -18,11 +18,13 @@ import styled, { css, useTheme } from 'styled-components'
 import { LucideProps } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'
 
+type InfoBoxImportance = 'accent' | 'alert'
+
 interface InfoBoxProps {
   text: string
   Icon?: (props: LucideProps) => JSX.Element
   label?: string
-  importance?: 'accent' | 'alert'
+  importance?: InfoBoxImportance
   className?: string
   ellipsis?: boolean
   wordBreak?: boolean
@@ -54,7 +56,7 @@ export const InfoBox = ({
       <StyledBox variants={variants} importance={importance}>
         {Icon && (
           <IconContainer>
-            <Icon color={importance ? theme.global[importance] : theme.global.accent} strokeWidth={1.5} />
+            <Icon color={importance ? theme.global.accent : theme.global.accent} strokeWidth={1.5} />
           </IconContainer>
         )}
         <TextContainer wordBreak={wordBreak} ellipsis={ellipsis}>
@@ -103,13 +105,13 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
   }}
 `
 
-const StyledBox = styled(motion.div)<{ importance?: 'accent' | 'alert' }>`
+const StyledBox = styled(motion.div)<{ importance?: InfoBoxImportance }>`
   padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.primary)};
   display: flex;
   border-radius: var(--radius);
-  box-shadow: 0 5px 5px var(--color-shadow-5);
+  box-shadow: 0 2px 2px var(--color-shadow-5);
   align-items: center;
 `
 
