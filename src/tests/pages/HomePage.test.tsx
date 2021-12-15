@@ -74,4 +74,6 @@ describe('Button correctly links to', () => {
   })
 })
 
-// TODO: test login form
+afterAll(() => {
+  jest.clearAllMocks()
+})

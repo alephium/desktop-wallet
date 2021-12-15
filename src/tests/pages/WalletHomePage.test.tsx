@@ -1,4 +1,4 @@
-import { render, fireEvent, screen, act, waitFor } from '@testing-library/react'
+import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { Wallet } from 'alephium-js'
 
@@ -51,4 +51,8 @@ it('Button correctly links to wallet settings page', async () => {
 
 it('Loads balance and transaction data', () => {
   expect(screen.getByText('299.000 ℵ')).toBeInTheDocument()
+})
+
+afterAll(() => {
+  jest.clearAllMocks()
 })
