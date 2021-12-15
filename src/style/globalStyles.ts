@@ -60,6 +60,8 @@ export const GlobalStyle = createGlobalStyle`
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
     --fontWeight-bold: 800;
+
+    --inputHeight: 46px;
   }
 
   html {

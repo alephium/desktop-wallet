@@ -20,7 +20,6 @@ import styled, { useTheme } from 'styled-components'
 import { X } from 'lucide-react'
 
 import { Button } from './Buttons'
-import { SectionContainer } from './PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalContext {
@@ -170,11 +169,7 @@ const CloseButton = styled(Button)`
 const ModalContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 var(--spacing-4) 0 var(--spacing-4);
-
-  ${SectionContainer}:last-child {
-    margin-bottom: 30px;
-  }
+  padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
 `
 
 export default Modal

@@ -33,6 +33,9 @@ import InfoBox from '../../components/InfoBox'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import { getStorage } from 'alephium-js'
+
+const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useContext(GlobalContext)
@@ -47,7 +50,8 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     passwordCheck: existingPassword
   })
   const { username, usernameError, password, passwordError, passwordCheck } = state
-  const { usernames } = useContext(GlobalContext)
+
+  const usernames = Storage.list()
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value

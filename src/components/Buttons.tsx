@@ -70,7 +70,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared }) => (squared ? '40px' : '46px')};
+  height: ${({ squared }) => (squared ? '40px' : 'var(--inputHeight)')};
   width: ${({ squared }) => (squared ? '40px' : '80%')};
   max-width: 250px;
   border-radius: var(--radius);

@@ -23,11 +23,19 @@ import InfoBox from '../../components/InfoBox'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 
-const AccountRemovalModal = ({ onAccountRemove, onClose }: { onAccountRemove: () => void; onClose: () => void }) => {
+const AccountRemovalModal = ({
+  accountName,
+  onAccountRemove,
+  onClose
+}: {
+  accountName: string
+  onAccountRemove: () => void
+  onClose: () => void
+}) => {
   const theme = useTheme()
 
   return (
-    <Modal title="Remove account" onClose={onClose} focusMode>
+    <Modal title={`Remove account "${accountName}"`} onClose={onClose} focusMode>
       <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
       </Section>

@@ -272,7 +272,7 @@ function SelectOptionsPopup<T>({
 
 const InputContainer = styled(motion.div)`
   position: relative;
-  height: 46px;
+  height: var(--inputHeight);
   width: 100%;
   margin: var(--spacing-3) 0;
 `

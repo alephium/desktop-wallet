@@ -38,7 +38,6 @@ import { lightTheme, darkTheme, ThemeType } from './style/themes'
 import useIdleForTooLong from './hooks/useIdleForTooLong'
 
 interface Context {
-  usernames: string[]
   currentUsername: string
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
@@ -54,7 +53,6 @@ interface Context {
 type Client = AsyncReturnType<typeof createClient>
 
 const initialContext: Context = {
-  usernames: [],
   currentUsername: '',
   setCurrentUsername: () => null,
   wallet: undefined,
@@ -121,7 +119,6 @@ const App = () => {
 
       <GlobalContext.Provider
         value={{
-          usernames,
           currentUsername,
           setCurrentUsername,
           wallet,

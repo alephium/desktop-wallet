@@ -24,45 +24,59 @@ import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import InfoBox from '../../components/InfoBox'
 import styled from 'styled-components'
-import { MoreVertical } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { usernames, currentUsername, wallet, setWallet } = useContext(GlobalContext)
+  const { currentUsername, wallet, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [isDisplayingRemoveModal, setIsDisplayingRemoveModal] = useState(false)
+  const [isShowingRemoveModalForAccount, setIsShowingRemoveModalForAccount] = useState<string | false>(false)
+
+  const usernames = Storage.list()
+
+  const openRemoveAccountModal = (accountName: string) => {
+    setIsShowingRemoveModalForAccount(accountName)
+  }
+
+  const handleRemoveAccount = (accountName: string) => {
+    Storage.remove(accountName)
+
+    accountName === currentUsername ? handleLogout() : setIsShowingRemoveModalForAccount(false)
+  }
 
   const openSecretPhraseModal = () => {
     setIsDisplayingSecretModal(true)
-  }
-
-  const openRemoveAccountModal = () => {
-    setIsDisplayingRemoveModal(true)
   }
 
   const handleLogout = () => {
     setWallet(undefined)
   }
 
-  const handleRemoveAccount = () => {
-    Storage.remove(currentUsername)
-    handleLogout()
-  }
-
   return (
     <>
       {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
 
-      {isDisplayingRemoveModal && (
-        <AccountRemovalModal onClose={() => setIsDisplayingRemoveModal(false)} onAccountRemove={handleRemoveAccount} />
+      {isShowingRemoveModalForAccount && (
+        <AccountRemovalModal
+          accountName={isShowingRemoveModalForAccount}
+          onClose={() => setIsShowingRemoveModalForAccount(false)}
+          onAccountRemove={() => handleRemoveAccount(isShowingRemoveModalForAccount)}
+        />
       )}
       <Section align="left">
         <h2>Account list</h2>
         <BoxContainer>
           {usernames.map((n) => {
-            return <AccountItem key={n} accountName={n} isCurrent={n === currentUsername} />
+            return (
+              <AccountItem
+                key={n}
+                accountName={n}
+                isCurrent={n === currentUsername}
+                onAccountDelete={(name) => setIsShowingRemoveModalForAccount(name)}
+              />
+            )
           })}
         </BoxContainer>
       </Section>
@@ -80,7 +94,7 @@ const AccountsSettingsSection = () => {
             <Button secondary alert onClick={openSecretPhraseModal}>
               Show your secret phrase
             </Button>
-            <Button alert onClick={openRemoveAccountModal}>
+            <Button alert onClick={() => openRemoveAccountModal(currentUsername)}>
               Remove current account
             </Button>
           </Section>
@@ -90,16 +104,31 @@ const AccountsSettingsSection = () => {
   )
 }
 
-const AccountItem = ({ accountName, isCurrent }: { accountName: string; isCurrent: boolean }) => {
+const AccountItem = ({
+  accountName,
+  isCurrent,
+  onAccountDelete
+}: {
+  accountName: string
+  isCurrent: boolean
+  onAccountDelete: (accountName: string) => void
+}) => {
+  const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
+
   return (
-    <AccountItemContainer>
+    <AccountItemContainer
+      onMouseEnter={() => setIsShowingDeleteButton(true)}
+      onMouseLeave={() => setIsShowingDeleteButton(false)}
+    >
       <AccountName>
         {accountName}
         {isCurrent && <CurrentAccountLabel> (current)</CurrentAccountLabel>}
       </AccountName>
-      <AccountOptionButton squared transparent>
-        <MoreVertical />
-      </AccountOptionButton>
+      {isShowingDeleteButton && (
+        <AccountDeleteButton squared transparent onClick={() => onAccountDelete(accountName)}>
+          <Trash size={15} />
+        </AccountDeleteButton>
+      )}
     </AccountItemContainer>
   )
 }
@@ -107,7 +136,8 @@ const AccountItem = ({ accountName, isCurrent }: { accountName: string; isCurren
 const AccountItemContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: var(--spacing-1) var(--spacing-2);
+  height: var(--inputHeight);
+  padding: 0 var(--spacing-2);
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -122,6 +152,6 @@ const CurrentAccountLabel = styled.span`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AccountOptionButton = styled(Button)``
+const AccountDeleteButton = styled(Button)``
 
 export default AccountsSettingsSection
