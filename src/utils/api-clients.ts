@@ -20,23 +20,29 @@ import { Settings, loadSettings } from './settings'
 
 export async function createClient(settings?: Settings) {
   const loadedSettings = settings || loadSettings()
-  const cliqueClient = new CliqueClient({
-    baseUrl: loadedSettings.nodeHost
-  })
 
-  const explorerClient = new ExplorerClient({
-    baseUrl: loadedSettings.explorerApiHost
-  })
+  try {
+    const cliqueClient = new CliqueClient({
+      baseUrl: loadedSettings.nodeHost
+    })
 
-  //TODO: Support multi-node clique
-  const isMultiNodesClique = false
+    const explorerClient = new ExplorerClient({
+      baseUrl: loadedSettings.explorerApiHost
+    })
 
-  console.log('Multi-nodes clique: not supported for now.')
-  console.log('Connecting to: ' + cliqueClient.baseUrl)
-  console.log('Explorer backend: ' + explorerClient.baseUrl)
+    //TODO: Support multi-node clique
+    const isMultiNodesClique = false
 
-  // Init clients
-  await cliqueClient.init(isMultiNodesClique)
+    console.log('Multi-nodes clique: not supported for now.')
+    console.log('Connecting to: ' + cliqueClient.baseUrl)
+    console.log('Explorer backend: ' + explorerClient.baseUrl)
 
-  return { clique: cliqueClient, explorer: explorerClient }
+    // Init clients
+    await cliqueClient.init(isMultiNodesClique)
+
+    return { clique: cliqueClient, explorer: explorerClient }
+  } catch (error) {
+    console.error(error)
+    return false
+  }
 }

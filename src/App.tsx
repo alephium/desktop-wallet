@@ -27,7 +27,7 @@ import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import SettingsPage from './pages/SettingsPage'
 import { createClient } from './utils/api-clients'
-import { loadSettings, saveSettings, Settings } from './utils/settings'
+import { loadSettings, saveSettings, Settings, useCurrentNetwork } from './utils/settings'
 import { useStateWithLocalStorage } from './utils/hooks'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
@@ -81,6 +81,7 @@ const App = () => {
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
   const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
+  const currentNetwork = useCurrentNetwork()
 
   const lockWallet = () => {
     if (wallet) setWallet(undefined)
@@ -93,15 +94,15 @@ const App = () => {
       setClientIsLoading(true)
       // Get clients
       const clientResp = await createClient(settings)
-      setClient(clientResp)
+      if (clientResp) {
+        setClient(clientResp)
 
-      console.log('Clients initialized.')
+        console.log('Clients initialized.')
 
-      setSnackbarMessage({
-        text: `Alephium's Node URL: "${settings.nodeHost}"`,
-        type: 'info',
-        duration: 4000
-      })
+        setSnackbarMessage({ text: `Alephium's Node URL: "${settings.nodeHost}"`, type: 'info', duration: 4000 })
+      } else {
+        setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
+      }
       setClientIsLoading(false)
 
       // Save settings
@@ -109,7 +110,7 @@ const App = () => {
     }
 
     getClient()
-  }, [setSnackbarMessage, settings])
+  }, [currentNetwork, setSnackbarMessage, settings])
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
