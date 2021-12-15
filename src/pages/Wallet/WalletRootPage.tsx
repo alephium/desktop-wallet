@@ -24,7 +24,7 @@ import Modal from '../../components/Modal'
 import WalletHomePage from './WalletHomePage'
 import SendPage from './SendPage'
 import AddressPage from './AddressPage'
-import SettingsPage from '../../pages/SettingsPage'
+import SettingsPage from '../Settings/SettingsPage'
 import { NetworkType, useCurrentNetwork } from '../../utils/settings'
 
 export interface SimpleTx {

@@ -19,18 +19,19 @@ import { AlertTriangle, Edit3 } from 'lucide-react'
 import { walletOpen, getStorage, Wallet } from 'alephium-js'
 import styled, { useTheme } from 'styled-components'
 
-import { GlobalContext } from '../App'
-import { Button } from '../components/Buttons'
-import { InfoBox } from '../components/InfoBox'
-import { Input, Select } from '../components/Inputs'
-import { PanelContainer, SectionContent } from '../components/PageComponents'
-import TabBar, { TabItem } from '../components/TabBar'
-import Modal from '../components/Modal'
-import { CenteredSecondaryParagraph } from '../components/Paragraph'
-import ThemeSwitcher from '../components/ThemeSwitcher'
-import ExpandableSection from '../components/ExpandableSection'
-import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/settings'
-import { useMountEffect } from '../utils/hooks'
+import { GlobalContext } from '../../App'
+import { Button } from '../../components/Buttons'
+import { InfoBox } from '../../components/InfoBox'
+import { Input, Select } from '../../components/Inputs'
+import { PanelContainer, SectionContent } from '../../components/PageComponents'
+import TabBar, { TabItem } from '../../components/TabBar'
+import Modal from '../../components/Modal'
+import { CenteredSecondaryParagraph } from '../../components/Paragraph'
+import ThemeSwitcher from '../../components/ThemeSwitcher'
+import ExpandableSection from '../../components/ExpandableSection'
+import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../../utils/settings'
+import { useMountEffect } from '../../utils/hooks'
+import AccountRemovalModal from './AccountRemovalModal'
 
 const Storage = getStorage()
 
@@ -38,7 +39,7 @@ const SettingsPage = () => {
   const { wallet, currentUsername } = useContext(GlobalContext)
 
   const tabs = [
-    { value: 'account', label: `Account (${currentUsername})` },
+    { value: 'accounts', label: 'Accounts' },
     { value: 'client', label: 'Networks' }
   ]
 
@@ -47,7 +48,7 @@ const SettingsPage = () => {
   return (
     <PanelContainer>
       {wallet && <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>}
-      {wallet && currentTab.value === 'account' ? (
+      {wallet && currentTab.value === 'accounts' ? (
         <AccountSettings />
       ) : currentTab.value === 'client' ? (
         <ClientSettings />
@@ -145,26 +146,10 @@ const AccountSettings = () => {
         )}
 
         {isDisplayingRemoveModal && (
-          <Modal title="Remove account" onClose={() => setIsDisplayingRemoveModal(false)} focusMode>
-            <SectionContent>
-              <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
-            </SectionContent>
-            <SectionContent>
-              <InfoBox
-                importance="alert"
-                text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
-              />
-
-              <CenteredSecondaryParagraph>
-                <b>Not your keys, not your coins.</b>
-              </CenteredSecondaryParagraph>
-            </SectionContent>
-            <SectionContent inList>
-              <Button alert onClick={() => handleRemoveAccount()}>
-                CONFIRM REMOVAL
-              </Button>
-            </SectionContent>
-          </Modal>
+          <AccountRemovalModal
+            onClose={() => setIsDisplayingRemoveModal(false)}
+            onAccountRemove={handleRemoveAccount}
+          />
         )}
 
         <Button secondary alert onClick={openSecretPhraseModal}>
