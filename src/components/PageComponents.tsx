@@ -89,14 +89,24 @@ const contentVariants: Variants = {
   }
 }
 
+type ContentAlignment = 'left' | 'center'
+
 interface ContentProps {
   apparitionDelay?: number
   style?: MotionStyle
   className?: string
   inList?: boolean
+  align?: ContentAlignment
 }
 
-export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDelay, inList, style, className }) => {
+export const SectionContent: React.FC<ContentProps> = ({
+  children,
+  apparitionDelay,
+  inList,
+  align = 'center',
+  style,
+  className
+}) => {
   return (
     <StyledContent
       variants={contentVariants}
@@ -104,18 +114,19 @@ export const SectionContent: React.FC<ContentProps> = ({ children, apparitionDel
       animate="shown"
       exit="hidden"
       custom={apparitionDelay}
+      inList={inList}
+      align={align}
       style={style}
       className={className}
-      inList={inList}
     >
       {children}
     </StyledContent>
   )
 }
 
-export const StyledContent = styled(motion.div)<{ inList?: boolean }>`
+export const StyledContent = styled(motion.div)<{ align: ContentAlignment; inList?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ align }) => (align === 'left' ? 'flex-start' : 'center')};
   flex-direction: column;
   min-width: 400px;
 

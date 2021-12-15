@@ -100,15 +100,12 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   font-weight: var(--fontWeight-medium);
   font-size: inherit;
   font-family: inherit;
+  margin: ${({ squared }) => (squared ? '0' : '12px 0')};
   padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 
   transition: 0.2s ease-out;
-
-  &:not(:last-child) {
-    margin: ${({ squared }) => (squared ? '0' : '12px 0')};
-  }
 
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>

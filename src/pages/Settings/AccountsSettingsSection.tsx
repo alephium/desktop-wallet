@@ -19,9 +19,10 @@ import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { HorizontalDivider, SectionContent } from '../../components/PageComponents'
+import { SectionContent } from '../../components/PageComponents'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
+import { InfoBox } from '../../components/InfoBox'
 
 const Storage = getStorage()
 
@@ -49,23 +50,25 @@ const AccountsSettingsSection = () => {
 
   return (
     <>
+      {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
+
+      {isDisplayingRemoveModal && (
+        <AccountRemovalModal onClose={() => setIsDisplayingRemoveModal(false)} onAccountRemove={handleRemoveAccount} />
+      )}
+      <SectionContent align="left">
+        <h2>Account list</h2>
+      </SectionContent>
+      <SectionContent align="left">
+        <h2>Current account</h2>
+        <InfoBox label="Account name" text={currentUsername} />
+      </SectionContent>
       <SectionContent>
-        {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
-
-        {isDisplayingRemoveModal && (
-          <AccountRemovalModal
-            onClose={() => setIsDisplayingRemoveModal(false)}
-            onAccountRemove={handleRemoveAccount}
-          />
-        )}
-
         <Button secondary alert onClick={openSecretPhraseModal}>
           Show your secret phrase
         </Button>
         <Button secondary onClick={handleLogout}>
           Lock wallet
         </Button>
-        <HorizontalDivider />
         <Button alert onClick={openRemoveAccountModal}>
           Remove account
         </Button>
