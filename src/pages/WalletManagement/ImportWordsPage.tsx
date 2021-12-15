@@ -22,7 +22,12 @@ import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 import { TextAreaTags } from '../../components/Inputs'
-import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
+import {
+  FooterActionsContainer,
+  FloatingPanel,
+  PanelContentContainer,
+  Section
+} from '../../components/PageComponents/PageContainers'
 import { Button } from '../../components/Buttons'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
@@ -84,34 +89,32 @@ const ImportWordsPage = () => {
   }
 
   return (
-    <MainPanel>
-      <PanelContainer>
-        <PanelTitle color="primary">Secret phrase</PanelTitle>
-        <PanelContent>
-          <SectionContent>
-            <TextAreaTags
-              tagifyRef={tagifyRef}
-              placeholder={phrase.length.toString()}
-              whitelist={allowedWords.current}
-              onChange={handlePhraseChange}
-            />
-          </SectionContent>
-          <CenteredSecondaryParagraph>
-            {!isNextButtonActive()
-              ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
-              : "All good? Let's continue!"}
-          </CenteredSecondaryParagraph>
-        </PanelContent>
-        <FooterActions>
-          <Button secondary onClick={onButtonBack}>
-            Cancel
-          </Button>
-          <Button onClick={handleWalletImport} disabled={!isNextButtonActive()} submit>
-            Continue
-          </Button>
-        </FooterActions>
-      </PanelContainer>
-    </MainPanel>
+    <FloatingPanel>
+      <PanelTitle color="primary">Secret phrase</PanelTitle>
+      <PanelContentContainer>
+        <Section>
+          <TextAreaTags
+            tagifyRef={tagifyRef}
+            placeholder={phrase.length.toString()}
+            whitelist={allowedWords.current}
+            onChange={handlePhraseChange}
+          />
+        </Section>
+        <CenteredSecondaryParagraph>
+          {!isNextButtonActive()
+            ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
+            : "All good? Let's continue!"}
+        </CenteredSecondaryParagraph>
+      </PanelContentContainer>
+      <FooterActionsContainer>
+        <Button secondary onClick={onButtonBack}>
+          Cancel
+        </Button>
+        <Button onClick={handleWalletImport} disabled={!isNextButtonActive()} submit>
+          Continue
+        </Button>
+      </FooterActionsContainer>
+    </FloatingPanel>
   )
 }
 

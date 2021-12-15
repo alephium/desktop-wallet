@@ -21,7 +21,7 @@ import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import ExpandableSection from '../../components/ExpandableSection'
 import { Select, Input } from '../../components/Inputs'
-import { SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import { useMountEffect } from '../../utils/hooks'
 import { NetworkType, getNetworkName, networkEndpoints, Settings } from '../../utils/settings'
 
@@ -127,9 +127,9 @@ const NetworkSettingsSection = () => {
           />
         </UrlInputs>
       </ExpandableSection>
-      <SectionContent inList>
+      <Section inList>
         <Button onClick={handleSave}>Save</Button>
-      </SectionContent>
+      </Section>
     </>
   )
 }

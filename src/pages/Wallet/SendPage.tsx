@@ -23,7 +23,7 @@ import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
-import { PanelContainer, SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
 import { WalletContext } from './WalletRootPage'
@@ -124,14 +124,14 @@ const SendPage = () => {
   }
 
   return (
-    <PanelContainer>
+    <>
       <LogoContent>
         <SendLogo>
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </SendLogo>
       </LogoContent>
       {!isChecking ? (
-        <SectionContent>
+        <Section>
           <Input
             placeholder="Recipient's address"
             value={address}
@@ -145,29 +145,29 @@ const SendPage = () => {
             onChange={(e) => handleAmountChange(e.target.value)}
             type="number"
           />
-        </SectionContent>
+        </Section>
       ) : (
         <CheckTransactionContent address={address} amount={amount} />
       )}
-      <SectionContent inList>
+      <Section inList>
         <Button onClick={handleSend} disabled={!isSendButtonActive()}>
           {isChecking ? 'Send' : 'Check'}
         </Button>
-      </SectionContent>
-    </PanelContainer>
+      </Section>
+    </>
   )
 }
 
 const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
   return (
-    <SectionContent>
+    <Section>
       <InfoBox text={address} label="Recipient's address" wordBreak />
       <InfoBox text={`${amount} ℵ`} label="Amount" />
-    </SectionContent>
+    </Section>
   )
 }
 
-const LogoContent = styled(SectionContent)`
+const LogoContent = styled(Section)`
   flex: 0;
   margin: var(--spacing-4);
 `

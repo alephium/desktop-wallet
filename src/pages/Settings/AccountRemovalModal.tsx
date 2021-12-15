@@ -20,7 +20,7 @@ import Modal from '../../components/Modal'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
-import { SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 
 const AccountRemovalModal = ({ onAccountRemove, onClose }: { onAccountRemove: () => void; onClose: () => void }) => {
@@ -28,10 +28,10 @@ const AccountRemovalModal = ({ onAccountRemove, onClose }: { onAccountRemove: ()
 
   return (
     <Modal title="Remove account" onClose={onClose} focusMode>
-      <SectionContent>
+      <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
-      </SectionContent>
-      <SectionContent>
+      </Section>
+      <Section>
         <InfoBox
           importance="alert"
           text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
@@ -40,12 +40,12 @@ const AccountRemovalModal = ({ onAccountRemove, onClose }: { onAccountRemove: ()
         <CenteredSecondaryParagraph>
           <b>Not your keys, not your coins.</b>
         </CenteredSecondaryParagraph>
-      </SectionContent>
-      <SectionContent inList>
+      </Section>
+      <Section inList>
         <Button alert onClick={onAccountRemove}>
           CONFIRM REMOVAL
         </Button>
-      </SectionContent>
+      </Section>
     </Modal>
   )
 }

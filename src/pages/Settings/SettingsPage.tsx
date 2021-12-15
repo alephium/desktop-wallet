@@ -18,11 +18,12 @@ import { useContext, useState } from 'react'
 import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
-import { HorizontalDivider, PanelContainer, SectionContent } from '../../components/PageComponents'
+import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import NetworkSettingsSection from './NetworkSettingsSection'
 import AccountsSettingsSection from './AccountsSettingsSection'
+import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const SettingsPage = () => {
   const { wallet } = useContext(GlobalContext)
@@ -35,7 +36,7 @@ const SettingsPage = () => {
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
-    <PanelContainer>
+    <PanelContentContainer>
       {wallet && <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>}
       {wallet && currentTab.value === 'accounts' ? (
         <AccountsSettingsSection />
@@ -45,11 +46,11 @@ const SettingsPage = () => {
         <NetworkSettingsSection />
       )}
       <HorizontalDivider />
-      <SectionContent>
+      <Section>
         <ThemeSwitcher />
         <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
-      </SectionContent>
-    </PanelContainer>
+      </Section>
+    </PanelContentContainer>
   )
 }
 

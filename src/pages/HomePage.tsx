@@ -25,7 +25,7 @@ import { GlobalContext } from '../App'
 import { deviceBreakPoints } from '../style/globalStyles'
 import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
-import { MainPanel, SectionContent } from '../components/PageComponents'
+import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
@@ -49,7 +49,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
       <AppHeader onSettingsClick={() => history.push('/settings')} />
       <SideBar />
       <InteractionArea>
-        <MainPanel verticalAlign="center" horizontalAlign="center">
+        <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
             <>
               <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
@@ -71,7 +71,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
               <InitialActions showLinkToExistingAccounts onLinkClick={hideInitialActions} />
             </>
           )}
-        </MainPanel>
+        </FloatingPanel>
       </InteractionArea>
     </HomeContainer>
   )
@@ -113,7 +113,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
 
   return (
     <>
-      <SectionContent inList>
+      <Section inList>
         <Select
           placeholder="Account"
           options={usernames.map((u) => ({ label: u, value: u }))}
@@ -129,12 +129,12 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
           value={credentials.password}
           id="password"
         />
-      </SectionContent>
-      <SectionContent inList>
+      </Section>
+      <Section inList>
         <Button onClick={handleLogin} submit>
           Login
         </Button>
-      </SectionContent>
+      </Section>
       <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
     </>
   )
@@ -154,11 +154,11 @@ const InitialActions = ({
       <CenteredSecondaryParagraph>
         Please choose whether you want to create a new wallet or import an existing one.
       </CenteredSecondaryParagraph>
-      <SectionContent inList>
+      <Section inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
         {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
-      </SectionContent>
+      </Section>
     </>
   )
 }

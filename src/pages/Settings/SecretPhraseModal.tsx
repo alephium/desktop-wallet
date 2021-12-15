@@ -24,7 +24,7 @@ import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import Modal from '../../components/Modal'
-import { SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import { CenteredSecondaryParagraph } from '../../components/Paragraph'
 
 const Storage = getStorage()
@@ -58,27 +58,27 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
     <Modal title="Secret phrase" onClose={onClose} focusMode>
       {!isDisplayingPhrase ? (
         <div>
-          <SectionContent>
+          <Section>
             <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
             <CenteredSecondaryParagraph>
               Type your password above to show your 24 words phrase.
             </CenteredSecondaryParagraph>
-          </SectionContent>
-          <SectionContent>
+          </Section>
+          <Section>
             <Button onClick={() => handlePasswordVerification(() => setIsDisplayingPhrase(true))} submit>
               Show
             </Button>
-          </SectionContent>
+          </Section>
         </div>
       ) : (
-        <SectionContent>
+        <Section>
           <InfoBox
             text={'Carefully note the 24 words. They are the keys to your wallet.'}
             Icon={Edit3}
             importance="alert"
           />
           <PhraseBox>{decryptedWallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
-        </SectionContent>
+        </Section>
       )}
     </Modal>
   )

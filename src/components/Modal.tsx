@@ -20,8 +20,8 @@ import styled, { useTheme } from 'styled-components'
 import { X } from 'lucide-react'
 
 import { Button } from './Buttons'
-import { StyledContent, TitleContainer } from './PageComponents'
-import PanelTitle from './PageComponents/PanelTitle'
+import { SectionContainer } from './PageComponents/PageContainers'
+import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void
@@ -172,7 +172,7 @@ const ModalContent = styled.div`
   overflow-x: hidden;
   padding: 0 var(--spacing-4) 0 var(--spacing-4);
 
-  ${StyledContent}:last-child {
+  ${SectionContainer}:last-child {
     margin-bottom: 30px;
   }
 `

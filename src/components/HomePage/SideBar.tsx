@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
 import tinycolor from 'tinycolor2'
 
 import { deviceBreakPoints } from '../../style/globalStyles'
-import { PanelContainer } from '../PageComponents'
+import { PanelContentContainer } from '../PageComponents/PageContainers'
 
 import alephiumLogo from '../../images/alephium_logo.svg'
 import { ReactComponent as MountainSVG } from '../../images/mountain.svg'
@@ -100,7 +100,7 @@ const Sidebar = styled.div`
   }
 `
 
-const SidebarContents = styled(PanelContainer)`
+const SidebarContents = styled(PanelContentContainer)`
   padding: var(--spacing-5);
 `
 

@@ -19,8 +19,6 @@ import { useViewportScroll, useTransform, motion } from 'framer-motion'
 import styled, { useTheme } from 'styled-components'
 import { ArrowLeft } from 'lucide-react'
 
-import { TitleContainer } from '../PageComponents'
-
 interface PanelTitleProps {
   color?: string
   onBackButtonPress?: () => void
@@ -54,6 +52,15 @@ const PanelTitle: FC<PanelTitleProps> = ({
     </TitleContainer>
   )
 }
+
+export const TitleContainer = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+`
 
 const BackArrow = styled(ArrowLeft)`
   height: 47px;

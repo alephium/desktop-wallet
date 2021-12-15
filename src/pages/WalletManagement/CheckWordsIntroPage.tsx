@@ -19,7 +19,12 @@ import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
 import { Button } from '../../components/Buttons'
-import { FooterActions, MainPanel, PanelContainer, PanelContent, SectionContent } from '../../components/PageComponents'
+import {
+  FooterActionsContainer,
+  FloatingPanel,
+  PanelContentContainer,
+  Section
+} from '../../components/PageComponents/PageContainers'
 import { CenteredMainParagraph, CenteredSecondaryParagraph } from '../../components/Paragraph'
 import { StepsContext } from '../MultiStepsController'
 
@@ -31,38 +36,36 @@ const CheckWordsIntroPage = () => {
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
   return (
-    <MainPanel enforceMinHeight>
-      <PanelContainer>
-        <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
-          Security Check
-        </PanelTitle>
-        <PanelContent>
-          <SectionContent>
-            <LockContainer>
-              <Lock
-                initial={{ rotate: 0 }}
-                animate={{ rotate: [0, 10, -5, 0], y: [0, 10, -5, 0] }}
-                transition={{ delay: 1.1, duration: 0.3 }}
-              >
-                <LockHandleContainer initial={{ y: 10 }} animate={{ y: 50 }} transition={{ delay: 1 }}>
-                  <LockHandle />
-                </LockHandleContainer>
-                <LockBodyContainer>
-                  <LockBody />
-                </LockBodyContainer>
-              </Lock>
-            </LockContainer>
-            <CenteredMainParagraph>Alright! Time to check if you got your words right!</CenteredMainParagraph>
-            <CenteredSecondaryParagraph>Select the words in the right order. Ready?</CenteredSecondaryParagraph>
-          </SectionContent>
-        </PanelContent>
-        <FooterActions apparitionDelay={0.3}>
-          <Button onClick={onButtonNext} submit>
-            Ready!
-          </Button>
-        </FooterActions>
-      </PanelContainer>
-    </MainPanel>
+    <FloatingPanel enforceMinHeight>
+      <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
+        Security Check
+      </PanelTitle>
+      <PanelContentContainer>
+        <Section>
+          <LockContainer>
+            <Lock
+              initial={{ rotate: 0 }}
+              animate={{ rotate: [0, 10, -5, 0], y: [0, 10, -5, 0] }}
+              transition={{ delay: 1.1, duration: 0.3 }}
+            >
+              <LockHandleContainer initial={{ y: 10 }} animate={{ y: 50 }} transition={{ delay: 1 }}>
+                <LockHandle />
+              </LockHandleContainer>
+              <LockBodyContainer>
+                <LockBody />
+              </LockBodyContainer>
+            </Lock>
+          </LockContainer>
+          <CenteredMainParagraph>Alright! Time to check if you got your words right!</CenteredMainParagraph>
+          <CenteredSecondaryParagraph>Select the words in the right order. Ready?</CenteredSecondaryParagraph>
+        </Section>
+      </PanelContentContainer>
+      <FooterActionsContainer apparitionDelay={0.3}>
+        <Button onClick={onButtonNext} submit>
+          Ready!
+        </Button>
+      </FooterActionsContainer>
+    </FloatingPanel>
   )
 }
 

@@ -19,7 +19,7 @@ import { useContext } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { GlobalContext } from '../../App'
-import { PanelContainer, SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import { openInWebBrowser } from '../../utils/misc'
@@ -53,22 +53,22 @@ const AddressPage = () => {
   }
 
   return (
-    <PanelContainer>
-      <SectionContent>
+    <>
+      <Section>
         {address && (
           <QRCode value={address} style={{ marginTop: 25 }} fgColor={theme.font.primary} bgColor={theme.bg.primary} />
         )}
-      </SectionContent>
+      </Section>
       <ShortenParagraph>{address}</ShortenParagraph>
-      <SectionContent inList>
+      <Section inList>
         <Button secondary onClick={handleShowInExplorer}>
           Show in explorer
         </Button>
         <Button secondary onClick={handleCopy}>
           Copy address
         </Button>
-      </SectionContent>
-    </PanelContainer>
+      </Section>
+    </>
   )
 }
 

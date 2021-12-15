@@ -24,7 +24,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 
 import { GlobalContext } from '../../App'
-import { SectionContent, MainPanel } from '../../components/PageComponents'
+import { Section, FloatingPanel } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { Button } from '../../components/Buttons'
 import AppHeader from '../../components/AppHeader'
@@ -188,7 +188,7 @@ const WalletHomePage = () => {
         )}
       </AnimatePresence>
       <TransactionsContainer>
-        <MainPanel>
+        <FloatingPanel>
           <LastTransactionListHeader>
             <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
             {showSpinner && <Spinner size={'16px'} />}
@@ -232,7 +232,7 @@ const WalletHomePage = () => {
           ) : (
             <LoadMoreMessage onClick={() => fetchTransactionsByPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
           )}
-        </MainPanel>
+        </FloatingPanel>
       </TransactionsContainer>
     </WalletContainer>
   )
@@ -253,7 +253,7 @@ const WalletContainer = styled(motion.div)`
   }
 `
 
-const WalletSidebar = styled(SectionContent)`
+const WalletSidebar = styled(Section)`
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;

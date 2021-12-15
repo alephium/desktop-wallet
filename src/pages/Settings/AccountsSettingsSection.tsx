@@ -19,13 +19,14 @@ import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { HorizontalDivider, SectionContent } from '../../components/PageComponents'
+import { Section } from '../../components/PageComponents/PageContainers'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import InfoBox from '../../components/InfoBox'
 import styled from 'styled-components'
 import { MoreVertical } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const Storage = getStorage()
 
@@ -58,20 +59,20 @@ const AccountsSettingsSection = () => {
       {isDisplayingRemoveModal && (
         <AccountRemovalModal onClose={() => setIsDisplayingRemoveModal(false)} onAccountRemove={handleRemoveAccount} />
       )}
-      <SectionContent align="left">
+      <Section align="left">
         <h2>Account list</h2>
         <AccountListContainer>
           {usernames.map((n) => {
             return <AccountItem key={n} accountName={n} />
           })}
         </AccountListContainer>
-      </SectionContent>
+      </Section>
       <HorizontalDivider />
-      <SectionContent align="left">
+      <Section align="left">
         <h2>Current account</h2>
         <InfoBox label="Account name" text={currentUsername} />
-      </SectionContent>
-      <SectionContent>
+      </Section>
+      <Section>
         <Button secondary onClick={handleLogout}>
           Lock account
         </Button>
@@ -81,7 +82,7 @@ const AccountsSettingsSection = () => {
         <Button alert onClick={openRemoveAccountModal}>
           Remove account
         </Button>
-      </SectionContent>
+      </Section>
     </>
   )
 }

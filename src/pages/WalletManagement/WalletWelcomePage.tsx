@@ -19,7 +19,7 @@ import styled from 'styled-components'
 import Confetti from 'react-confetti'
 import { useHistory } from 'react-router'
 
-import { FooterActions, SectionContent } from '../../components/PageComponents'
+import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import { Button } from '../../components/Buttons'
 import Paragraph from '../../components/Paragraph'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
@@ -40,15 +40,15 @@ const WalletWelcomePage = () => {
       <ConfettiWrapper>
         <Confetti width={width} height={height} numberOfPieces={confettiRunning ? 200 : 0} />
       </ConfettiWrapper>
-      <SectionContent>
+      <Section>
         <ReadyParagraph>Everything is ready!</ReadyParagraph>
         <SubParagraph>Welcome to Alephium.</SubParagraph>
-      </SectionContent>
-      <FooterActions apparitionDelay={0.3}>
+      </Section>
+      <FooterActionsContainer apparitionDelay={0.3}>
         <Button onClick={() => history.push('/wallet')} submit>
           {"Let's go!"}
         </Button>
-      </FooterActions>
+      </FooterActionsContainer>
     </Container>
   )
 }
