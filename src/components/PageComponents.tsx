@@ -175,6 +175,13 @@ export const TitleContainer = styled(motion.div)`
   z-index: 1;
 `
 
+export const HorizontalDivider = styled.div`
+  background-color: ${({ theme }) => theme.border.secondary};
+  margin: var(--spacing-3) var(--spacing-1);
+  height: 1px;
+  width: 100%;
+`
+
 const BackArrow = styled(ArrowLeft)`
   height: 47px;
   width: var(--spacing-4);
