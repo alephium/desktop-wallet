@@ -66,7 +66,7 @@ const AccountsSettingsSection = () => {
         />
       )}
       <Section align="left">
-        <h2>Account list</h2>
+        <h2>Account list ({usernames.length})</h2>
         <BoxContainer>
           {usernames.map((n) => {
             return (

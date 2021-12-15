@@ -61,7 +61,7 @@ const TabBar = ({
 }
 
 const Wrapper = styled.div`
-  margin: var(--spacing-2) 0 var(--spacing-5) 0;
+  margin: var(--spacing-2) 0;
   position: sticky;
   top: 0;
   z-index: 2;

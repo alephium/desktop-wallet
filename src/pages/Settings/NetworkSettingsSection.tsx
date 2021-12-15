@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import { AlertTriangle } from 'lucide-react'
 import { useContext, useState, useCallback } from 'react'
 import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import ExpandableSection from '../../components/ExpandableSection'
+import InfoBox from '../../components/InfoBox'
 import { Select, Input } from '../../components/Inputs'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useMountEffect } from '../../utils/hooks'
@@ -96,12 +98,16 @@ const NetworkSettingsSection = () => {
 
   return (
     <>
+      <InfoBox
+        Icon={AlertTriangle}
+        text="Make sure to always check what is the selected network before sending transactions."
+      />
       <Select
         options={networkSelectOptions}
         onValueChange={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title="Network"
-        placeholder="Network"
+        placeholder="Current network"
         id="network"
       />
       <ExpandableSection
