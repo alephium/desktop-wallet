@@ -54,6 +54,7 @@ const ExpandableSection: FC<{ sectionTitle: string; open?: boolean; onOpenChange
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  margin: var(--spacing-2) 0;
 `
 
 const Title = styled.div`
