@@ -16,6 +16,8 @@
 
 import { useContext, useState } from 'react'
 import { getStorage } from 'alephium-js'
+import styled from 'styled-components'
+import { Trash } from 'lucide-react'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
@@ -23,8 +25,6 @@ import { BoxContainer, Section } from '../../components/PageComponents/PageConta
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 import InfoBox from '../../components/InfoBox'
-import styled from 'styled-components'
-import { Trash } from 'lucide-react'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const Storage = getStorage()

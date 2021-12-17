@@ -15,9 +15,9 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useTheme } from 'styled-components'
+import { AlertTriangle } from 'lucide-react'
 
 import Modal from '../../components/Modal'
-import { AlertTriangle } from 'lucide-react'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { Section } from '../../components/PageComponents/PageContainers'

@@ -18,6 +18,7 @@ import { ChangeEvent, useState, useContext } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
+import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
@@ -33,7 +34,6 @@ import InfoBox from '../../components/InfoBox'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { getStorage } from 'alephium-js'
 
 const Storage = getStorage()
 
