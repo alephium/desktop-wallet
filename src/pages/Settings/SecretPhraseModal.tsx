@@ -73,7 +73,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
       ) : (
         <Section>
           <InfoBox
-            text={'Carefully note the 24 words. They are the keys to your wallet.'}
+            text={'Carefully note down the 24 words. They are the keys to your wallet.'}
             Icon={Edit3}
             importance="alert"
           />
