@@ -26,7 +26,7 @@ import { deviceBreakPoints } from '../style/globalStyles'
 import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import { MainPanel, PanelTitle, SectionContent } from '../components/PageComponents'
-import Paragraph, { CenteredSecondaryParagraph } from '../components/Paragraph'
+import Paragraph from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
 
@@ -58,9 +58,9 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
           {!showInitialActions && hasWallet && (
             <>
               <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
-              <CenteredSecondaryParagraph>
+              <Paragraph centered secondary>
                 Please choose an account and enter your password to continue.
-              </CenteredSecondaryParagraph>
+              </Paragraph>
               <Login onLinkClick={displayInitialActions} usernames={usernames} />
             </>
           )}
@@ -150,9 +150,9 @@ const InitialActions = ({
 
   return (
     <>
-      <CenteredSecondaryParagraph>
+      <Paragraph centered secondary>
         Please choose whether you want to create a new wallet or import an existing one.
-      </CenteredSecondaryParagraph>
+      </Paragraph>
       <SectionContent inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>

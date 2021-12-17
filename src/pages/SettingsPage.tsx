@@ -26,7 +26,7 @@ import { Input, Select } from '../components/Inputs'
 import { PanelContainer, SectionContent } from '../components/PageComponents'
 import TabBar, { TabItem } from '../components/TabBar'
 import Modal from '../components/Modal'
-import { CenteredSecondaryParagraph } from '../components/Paragraph'
+import Paragraph from '../components/Paragraph'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import ExpandableSection from '../components/ExpandableSection'
 import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../utils/settings'
@@ -123,9 +123,9 @@ const AccountSettings = () => {
               <div>
                 <SectionContent>
                   <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
-                  <CenteredSecondaryParagraph>
+                  <Paragraph centered secondary>
                     Type your password above to show your 24 words phrase.
-                  </CenteredSecondaryParagraph>
+                  </Paragraph>
                 </SectionContent>
                 <SectionContent>
                   <Button onClick={() => handlePasswordVerification(() => setIsDisplayingPhrase(true))}>Show</Button>
@@ -155,9 +155,9 @@ const AccountSettings = () => {
                 text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
               />
 
-              <CenteredSecondaryParagraph>
+              <Paragraph centered secondary>
                 <b>Not your keys, not your coins.</b>
-              </CenteredSecondaryParagraph>
+              </Paragraph>
             </SectionContent>
             <SectionContent inList>
               <Button alert onClick={() => handleRemoveAccount()}>
