@@ -32,18 +32,18 @@ const Storage = getStorage()
 const AccountsSettingsSection = () => {
   const { currentUsername, wallet, setWallet } = useContext(GlobalContext)
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [isShowingRemoveModalForAccount, setIsShowingRemoveModalForAccount] = useState<string | false>(false)
+  const [accountToRemove, setAccountToRemove] = useState<string>('')
 
   const usernames = Storage.list()
 
   const openRemoveAccountModal = (accountName: string) => {
-    setIsShowingRemoveModalForAccount(accountName)
+    setAccountToRemove(accountName)
   }
 
   const handleRemoveAccount = (accountName: string) => {
     Storage.remove(accountName)
 
-    accountName === currentUsername ? handleLogout() : setIsShowingRemoveModalForAccount(false)
+    accountName === currentUsername ? handleLogout() : setAccountToRemove('')
   }
 
   const openSecretPhraseModal = () => {
@@ -58,11 +58,11 @@ const AccountsSettingsSection = () => {
     <>
       {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
 
-      {isShowingRemoveModalForAccount && (
+      {accountToRemove && (
         <AccountRemovalModal
-          accountName={isShowingRemoveModalForAccount}
-          onClose={() => setIsShowingRemoveModalForAccount(false)}
-          onAccountRemove={() => handleRemoveAccount(isShowingRemoveModalForAccount)}
+          accountName={accountToRemove}
+          onClose={() => setAccountToRemove('')}
+          onAccountRemove={() => handleRemoveAccount(accountToRemove)}
         />
       )}
       <Section align="left">
@@ -74,7 +74,7 @@ const AccountsSettingsSection = () => {
                 key={n}
                 accountName={n}
                 isCurrent={n === currentUsername}
-                onAccountDelete={(name) => setIsShowingRemoveModalForAccount(name)}
+                onAccountDelete={(name) => setAccountToRemove(name)}
               />
             )
           })}
