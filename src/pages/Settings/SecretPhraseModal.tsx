@@ -25,7 +25,7 @@ import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
 import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
-import { CenteredSecondaryParagraph } from '../../components/Paragraph'
+import Paragraph from '../../components/Paragraph'
 
 const Storage = getStorage()
 
@@ -60,9 +60,9 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
         <div>
           <Section>
             <Input value={typedPassword} placeholder="Password" type="password" onChange={handlePasswordChange} />
-            <CenteredSecondaryParagraph>
+            <Paragraph secondary centered>
               Type your password above to show your 24 words phrase.
-            </CenteredSecondaryParagraph>
+            </Paragraph>
           </Section>
           <Section>
             <Button onClick={() => handlePasswordVerification(() => setIsDisplayingPhrase(true))} submit>

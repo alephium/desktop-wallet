@@ -29,7 +29,7 @@ import {
   Section
 } from '../../components/PageComponents/PageContainers'
 import { Button } from '../../components/Buttons'
-import { CenteredSecondaryParagraph } from '../../components/Paragraph'
+import Paragraph from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 
@@ -100,11 +100,11 @@ const ImportWordsPage = () => {
             onChange={handlePhraseChange}
           />
         </Section>
-        <CenteredSecondaryParagraph>
+        <Paragraph secondary centered>
           {!isNextButtonActive()
             ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
             : "All good? Let's continue!"}
-        </CenteredSecondaryParagraph>
+        </Paragraph>
       </PanelContentContainer>
       <FooterActionsContainer>
         <Button secondary onClick={onButtonBack}>

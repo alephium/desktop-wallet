@@ -16,30 +16,52 @@
 
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { FC } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
+
+interface ParagraphProps {
+  centered?: boolean
+  secondary?: boolean
+}
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
-const Paragraph: FC<HTMLMotionProps<'p'>> = ({ children, className, style, ...props }) => {
+const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
+  centered,
+  secondary,
+  children,
+  className,
+  style,
+  ...props
+}) => {
   return (
-    <StyledParagraph variants={sectionChildrenVariants} className={className} style={style} {...props}>
+    <StyledParagraph
+      variants={sectionChildrenVariants}
+      className={className}
+      centered={centered}
+      secondary={secondary}
+      style={style}
+      {...props}
+    >
       {children}
     </StyledParagraph>
   )
 }
 
-const StyledParagraph = styled(motion.p)`
+const StyledParagraph = styled(motion.p)<ParagraphProps>`
   white-space: pre-wrap;
   font-weight: var(--fontWeight-medium);
-`
 
-export const CenteredMainParagraph = styled(Paragraph)`
-  text-align: center;
-`
+  ${({ centered }) =>
+    centered &&
+    css`
+      text-align: center;
+    `}
 
-export const CenteredSecondaryParagraph = styled(Paragraph)`
-  text-align: center;
-  color: ${({ theme }) => theme.font.secondary};
+  ${({ secondary, theme }) =>
+    secondary &&
+    css`
+      color: ${theme.font.secondary};
+    `}
 `
 
 export default Paragraph

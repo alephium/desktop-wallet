@@ -21,7 +21,7 @@ import Modal from '../../components/Modal'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { Section } from '../../components/PageComponents/PageContainers'
-import { CenteredSecondaryParagraph } from '../../components/Paragraph'
+import Paragraph from '../../components/Paragraph'
 
 const AccountRemovalModal = ({
   accountName,
@@ -45,9 +45,9 @@ const AccountRemovalModal = ({
           text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
         />
 
-        <CenteredSecondaryParagraph>
+        <Paragraph secondary centered>
           <b>Not your keys, not your coins.</b>
-        </CenteredSecondaryParagraph>
+        </Paragraph>
       </Section>
       <Section inList>
         <Button alert onClick={onAccountRemove}>

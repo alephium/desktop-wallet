@@ -25,7 +25,7 @@ import {
   PanelContentContainer,
   Section
 } from '../../components/PageComponents/PageContainers'
-import { CenteredMainParagraph, CenteredSecondaryParagraph } from '../../components/Paragraph'
+import Paragraph from '../../components/Paragraph'
 import { StepsContext } from '../MultiStepsController'
 
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
@@ -56,8 +56,10 @@ const CheckWordsIntroPage = () => {
               </LockBodyContainer>
             </Lock>
           </LockContainer>
-          <CenteredMainParagraph>Alright! Time to check if you got your words right!</CenteredMainParagraph>
-          <CenteredSecondaryParagraph>Select the words in the right order. Ready?</CenteredSecondaryParagraph>
+          <Paragraph centered>Alright! Time to check if you got your words right!</Paragraph>
+          <Paragraph secondary centered>
+            Select the words in the right order. Ready?
+          </Paragraph>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
