@@ -35,7 +35,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, setSettings, setSnackbarMessage } = useContext(GlobalContext)
+  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useContext(GlobalContext)
 
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
 
@@ -80,19 +80,19 @@ const NetworkSettingsSection = () => {
           setAdvancedSectionOpen(true)
         } else {
           const newNetworkSettings = networkEndpoints[option.value]
-          setSettings((prev) => ({ ...prev, network: newNetworkSettings }))
+          updateSettings('network', newNetworkSettings)
           setTempAdvancedSettings(newNetworkSettings)
         }
       }
     },
-    [setSettings]
+    [updateSettings]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    setSettings((prev) => ({ ...prev, network: tempAdvancedSettings }))
+    updateSettings('network', tempAdvancedSettings)
     setSnackbarMessage({ text: 'Custom network settings saved.', type: 'info' })
-  }, [overrideSelectionIfMatchesPreset, setSettings, setSnackbarMessage, tempAdvancedSettings])
+  }, [overrideSelectionIfMatchesPreset, updateSettings, setSnackbarMessage, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {

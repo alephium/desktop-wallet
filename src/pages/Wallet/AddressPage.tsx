@@ -23,7 +23,7 @@ import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import { openInWebBrowser } from '../../utils/misc'
-import { loadSettings } from '../../utils/settings'
+import { loadStoredSettings } from '../../utils/settings'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
@@ -34,7 +34,7 @@ const AddressPage = () => {
   const handleShowInExplorer = () => {
     const {
       network: { explorerUrl }
-    } = loadSettings()
+    } = loadStoredSettings()
 
     if (explorerUrl) {
       const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed

@@ -31,6 +31,13 @@ export interface Settings {
   }
 }
 
+export type UpdateSettingsFunctionSignature = <T extends keyof Settings>(
+  settingKeyToUpdate: T,
+  newSettings: Partial<Settings[T]>
+) => Settings | null
+
+type DeprecatedNetworkSettings = Settings['network']
+
 export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['network']> = {
   mainnet: {
     nodeHost: 'https://mainnet-wallet.alephium.org',
@@ -68,17 +75,28 @@ export const useCurrentNetwork = () => {
   return getNetworkName(settings.network)
 }
 
-export const loadSettings = (): Settings => {
-  const rawStoredSettings = window.localStorage.getItem('settings')
+const returnSettingsObject = () => {
+  const rawSettings = window.localStorage.getItem('settings')
 
-  if (!rawStoredSettings) return defaultSettings
+  if (!rawSettings) return defaultSettings
 
-  const storedSettings = JSON.parse(rawStoredSettings)
+  try {
+    return JSON.parse(rawSettings) as Settings
+  } catch (e) {
+    console.error(e)
+    return defaultSettings // Fallback to default settings if something went wrong
+  }
+}
+
+export const loadStoredSettings = (): Settings => {
+  const storedSettings = returnSettingsObject()
 
   const deprecatedThemeSetting = window.localStorage.getItem('theme')
 
   // Migrate values if needed
-  const migratedNetworkSettings = !storedSettings.network ? { network: storedSettings as Settings['network'] } : {}
+  const migratedNetworkSettings = !storedSettings.network
+    ? { network: storedSettings as unknown as DeprecatedNetworkSettings }
+    : {}
   const migratedGeneralSettings = deprecatedThemeSetting
     ? {
         general: {
@@ -98,7 +116,28 @@ export const loadSettings = (): Settings => {
   }
 }
 
-export function saveSettings(settings: Settings) {
+export const saveStoredSettings = (settings: Settings) => {
   const str = JSON.stringify(settings)
   window.localStorage.setItem('settings', str)
+}
+
+export const getStoredSettings = <T extends keyof Settings>(key: T): Settings[T] => {
+  return returnSettingsObject()[key]
+}
+
+export const updateStoredSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, settings) => {
+  const rawPreviousSettings = window.localStorage.getItem('settings')
+  const previousSettings = rawPreviousSettings && JSON.parse(rawPreviousSettings)
+
+  const newSettings = {
+    ...previousSettings,
+    [settingKeyToUpdate]: {
+      ...previousSettings[settingKeyToUpdate],
+      ...settings
+    }
+  }
+
+  window.localStorage.setItem('settings', JSON.stringify(newSettings))
+
+  return newSettings
 }

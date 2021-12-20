@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext } from 'react'
+import React, { useCallback, useContext } from 'react'
 import styled from 'styled-components'
 import { Moon, Sun } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -40,7 +40,19 @@ const toggleVariants = {
 }
 
 const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
-  const { currentTheme, switchTheme } = useContext(GlobalContext)
+  const {
+    settings: {
+      general: { theme: currentTheme }
+    },
+    updateSettings
+  } = useContext(GlobalContext)
+
+  const switchTheme = useCallback(
+    (theme: ThemeType) => {
+      updateSettings('general', { theme })
+    },
+    [updateSettings]
+  )
 
   return (
     <StyledThemeSwitcher onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')} className={className}>

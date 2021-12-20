@@ -31,7 +31,7 @@ import AppHeader from '../../components/AppHeader'
 import TransactionItem from '../../components/TransactionItem'
 import ActionButton from '../../components/ActionButton'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadSettings, useCurrentNetwork } from '../../utils/settings'
+import { loadStoredSettings, useCurrentNetwork } from '../../utils/settings'
 import { useInterval } from '../../utils/hooks'
 import { getHumanReadableError } from '../../utils/api'
 import { SimpleTx, WalletContext } from './WalletRootPage'
@@ -54,7 +54,7 @@ const WalletHomePage = () => {
 
   const {
     network: { explorerUrl }
-  } = loadSettings()
+  } = loadStoredSettings()
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()

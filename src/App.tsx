@@ -27,14 +27,20 @@ import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import WalletPages from './pages/Wallet/WalletRootPage'
 import SettingsPage from './pages/Settings/SettingsPage'
 import { createClient } from './utils/api-clients'
-import { loadSettings, saveSettings, Settings, useCurrentNetwork } from './utils/settings'
-import { useStateWithLocalStorage } from './utils/hooks'
+import {
+  loadStoredSettings,
+  saveStoredSettings,
+  Settings,
+  UpdateSettingsFunctionSignature,
+  updateStoredSettings,
+  useCurrentNetwork
+} from './utils/settings'
 import { Modal } from './components/Modal'
 import Spinner from './components/Spinner'
 import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
 import SplashScreen from './components/SplashScreen'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
-import { lightTheme, darkTheme, ThemeType } from './style/themes'
+import { lightTheme, darkTheme } from './style/themes'
 import useIdleForTooLong from './hooks/useIdleForTooLong'
 
 interface Context {
@@ -44,10 +50,8 @@ interface Context {
   setWallet: (w: Wallet | undefined) => void
   client: Client | undefined
   settings: Settings
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>
+  updateSettings: UpdateSettingsFunctionSignature
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  switchTheme: (theme: ThemeType) => void
-  currentTheme: ThemeType
 }
 
 type Client = AsyncReturnType<typeof createClient>
@@ -58,11 +62,9 @@ const initialContext: Context = {
   wallet: undefined,
   setWallet: () => null,
   client: undefined,
-  settings: loadSettings(),
-  setSettings: () => null,
-  setSnackbarMessage: () => null,
-  switchTheme: () => null,
-  currentTheme: 'light'
+  settings: loadStoredSettings(),
+  updateSettings: () => null,
+  setSnackbarMessage: () => null
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
@@ -75,10 +77,9 @@ const App = () => {
   const [currentUsername, setCurrentUsername] = useState('')
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
-  const [settings, setSettings] = useState<Settings>(loadSettings())
+  const [settings, setSettings] = useState<Settings>(loadStoredSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
-  const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
   const currentNetwork = useCurrentNetwork()
 
   const lockWallet = () => {
@@ -108,17 +109,23 @@ const App = () => {
       setClientIsLoading(false)
 
       // Save settings
-      saveSettings(settings)
+      saveStoredSettings(settings)
     }
 
     getClient()
   }, [currentNetwork, setSnackbarMessage, settings])
 
+  const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
+    const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
+    updatedSettings && setSettings(updatedSettings)
+    return updatedSettings
+  }
+
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
 
   return (
-    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
 
       <GlobalContext.Provider
@@ -130,9 +137,7 @@ const App = () => {
           client,
           setSnackbarMessage,
           settings,
-          setSettings,
-          switchTheme: setTheme as (arg0: ThemeType) => void,
-          currentTheme: theme as ThemeType
+          updateSettings
         }}
       >
         <AppContainer>

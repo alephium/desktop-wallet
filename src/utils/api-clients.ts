@@ -16,10 +16,10 @@
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
 
-import { Settings, loadSettings } from './settings'
+import { Settings, loadStoredSettings } from './settings'
 
 export async function createClient(settings?: Settings) {
-  const loadedSettings = settings || loadSettings()
+  const loadedSettings = settings || loadStoredSettings()
 
   try {
     const cliqueClient = new CliqueClient({
