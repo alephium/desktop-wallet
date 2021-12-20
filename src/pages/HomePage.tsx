@@ -90,7 +90,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
       setSnackbarMessage({ text: 'Unknown account name', type: 'info' })
     } else {
       try {
-        const wallet = await walletOpen(credentials.password, walletEncrypted)
+        const wallet = walletOpen(credentials.password, walletEncrypted)
         if (wallet) {
           setWallet(wallet)
           setCurrentUsername(credentials.username)

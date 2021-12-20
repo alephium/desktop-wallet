@@ -16,7 +16,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 
-import { useInterval } from '../utils/hooks'
 import { walletIdleForTooLongThreshold } from '../utils/settings'
 
 const useIdleForTooLong = (onIdleForTooLong: () => void) => {
@@ -33,6 +32,14 @@ const useIdleForTooLong = (onIdleForTooLong: () => void) => {
   }, [timeOnLastInteraction])
 
   useEffect(() => {
+    const checkIfIdleForTooLong = setInterval(() => {
+      const currentTime = new Date().getTime()
+
+      if (currentTime - timeOnLastInteraction > walletIdleForTooLongThreshold) {
+        onIdleForTooLong()
+      }
+    }, 2000)
+
     document.addEventListener('mousemove', updateTimeOnLastInteraction)
     document.addEventListener('keydown', updateTimeOnLastInteraction)
     document.addEventListener('scroll', updateTimeOnLastInteraction)
@@ -41,16 +48,9 @@ const useIdleForTooLong = (onIdleForTooLong: () => void) => {
       document.removeEventListener('mousemove', updateTimeOnLastInteraction)
       document.removeEventListener('keydown', updateTimeOnLastInteraction)
       document.removeEventListener('scroll', updateTimeOnLastInteraction)
+      clearInterval(checkIfIdleForTooLong)
     }
-  }, [updateTimeOnLastInteraction])
-
-  useInterval(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - timeOnLastInteraction > walletIdleForTooLongThreshold) {
-      onIdleForTooLong()
-    }
-  }, 2000)
+  }, [onIdleForTooLong, timeOnLastInteraction, updateTimeOnLastInteraction])
 }
 
 export default useIdleForTooLong
