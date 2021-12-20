@@ -52,7 +52,9 @@ const WalletHomePage = () => {
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const [lastLoadedPage, setLastLoadedPage] = useState(1)
 
-  const { explorerUrl } = loadSettings()
+  const {
+    network: { explorerUrl }
+  } = loadSettings()
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()

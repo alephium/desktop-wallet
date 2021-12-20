@@ -97,7 +97,11 @@ const App = () => {
 
         console.log('Clients initialized.')
 
-        setSnackbarMessage({ text: `Alephium's Node URL: "${settings.nodeHost}"`, type: 'info', duration: 4000 })
+        setSnackbarMessage({
+          text: `Alephium's Node URL: "${settings.network.nodeHost}"`,
+          type: 'info',
+          duration: 4000
+        })
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
       }

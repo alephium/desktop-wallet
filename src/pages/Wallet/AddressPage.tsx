@@ -32,7 +32,10 @@ const AddressPage = () => {
   const address = wallet?.address
 
   const handleShowInExplorer = () => {
-    const { explorerUrl } = loadSettings()
+    const {
+      network: { explorerUrl }
+    } = loadSettings()
+
     if (explorerUrl) {
       const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
       openInWebBrowser(cleanURL)

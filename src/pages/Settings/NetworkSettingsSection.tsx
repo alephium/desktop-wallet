@@ -32,14 +32,12 @@ interface NetworkSelectOption {
   value: NetworkType
 }
 
+type NetworkSettings = Settings['network']
+
 const NetworkSettingsSection = () => {
   const { settings: currentSettings, setSettings, setSnackbarMessage } = useContext(GlobalContext)
 
-  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<Settings>({
-    nodeHost: currentSettings.nodeHost,
-    explorerApiHost: currentSettings.explorerApiHost,
-    explorerUrl: currentSettings.explorerUrl
-  })
+  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
 
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
 
@@ -52,14 +50,14 @@ const NetworkSettingsSection = () => {
     { label: 'Custom', value: 'custom' }
   ]
 
-  const overrideSelectionIfMatchesPreset = useCallback((newSettings: Settings) => {
+  const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
     const newNetwork = getNetworkName(newSettings)
 
     setSelectedNetwork(newNetwork)
   }, [])
 
-  const editAdvancedSettings = (v: Partial<Settings>) => {
+  const editAdvancedSettings = (v: Partial<NetworkSettings>) => {
     const newSettings = { ...tempAdvancedSettings, ...v }
 
     // Check if we need to append the http:// protocol if an IP or localhost is used
@@ -82,7 +80,7 @@ const NetworkSettingsSection = () => {
           setAdvancedSectionOpen(true)
         } else {
           const newNetworkSettings = networkEndpoints[option.value]
-          setSettings(newNetworkSettings)
+          setSettings((prev) => ({ ...prev, network: newNetworkSettings }))
           setTempAdvancedSettings(newNetworkSettings)
         }
       }
@@ -92,13 +90,13 @@ const NetworkSettingsSection = () => {
 
   const handleAdvancedSettingsSave = useCallback(() => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    setSettings(tempAdvancedSettings)
+    setSettings((prev) => ({ ...prev, network: tempAdvancedSettings }))
     setSnackbarMessage({ text: 'Custom network settings saved.', type: 'info' })
   }, [overrideSelectionIfMatchesPreset, setSettings, setSnackbarMessage, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {
-    overrideSelectionIfMatchesPreset(currentSettings)
+    overrideSelectionIfMatchesPreset(currentSettings.network)
   })
 
   return (

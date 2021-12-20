@@ -18,8 +18,20 @@ import { isEqual } from 'lodash'
 import { useContext } from 'react'
 
 import { GlobalContext } from '../App'
+import { ThemeType } from '../style/themes'
 
-export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> = {
+export interface Settings {
+  general: {
+    theme: ThemeType
+  }
+  network: {
+    nodeHost: string
+    explorerApiHost: string
+    explorerUrl: string
+  }
+}
+
+export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['network']> = {
   mainnet: {
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',
@@ -39,19 +51,13 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> 
 
 export const walletIdleForTooLongThreshold = 3 * 60 * 1000 // 3 minutes
 
-export const defaultSettings = networkEndpoints.mainnet
-
-export interface Settings {
-  nodeHost: string
-  explorerApiHost: string
-  explorerUrl: string
-}
+export const defaultSettings: Settings = { general: { theme: 'light' }, network: networkEndpoints.mainnet }
 
 export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 
 export type NetworkType = typeof networkTypes[number]
 
-export const getNetworkName = (settings: Settings) => {
+export const getNetworkName = (settings: Settings['network']) => {
   return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
     return isEqual(presetSettings, settings)
   })?.[0] || 'custom') as NetworkType | 'custom'
@@ -59,13 +65,37 @@ export const getNetworkName = (settings: Settings) => {
 
 export const useCurrentNetwork = () => {
   const { settings } = useContext(GlobalContext)
-  return getNetworkName(settings)
+  return getNetworkName(settings.network)
 }
 
 export const loadSettings = (): Settings => {
-  const storedSettings = window.localStorage.getItem('settings')
+  const rawStoredSettings = window.localStorage.getItem('settings')
 
-  return storedSettings ? JSON.parse(storedSettings) : defaultSettings
+  if (!rawStoredSettings) return defaultSettings
+
+  const storedSettings = JSON.parse(rawStoredSettings)
+
+  const deprecatedThemeSetting = window.localStorage.getItem('theme')
+
+  // Migrate values if needed
+  const migratedNetworkSettings = !storedSettings.network ? { network: storedSettings as Settings['network'] } : {}
+  const migratedGeneralSettings = deprecatedThemeSetting
+    ? {
+        general: {
+          theme: deprecatedThemeSetting as ThemeType
+        }
+      }
+    : {}
+
+  // Clean old values up if needed
+  deprecatedThemeSetting && window.localStorage.removeItem('theme')
+
+  return {
+    ...defaultSettings,
+    ...storedSettings,
+    ...migratedNetworkSettings,
+    ...migratedGeneralSettings
+  }
 }
 
 export function saveSettings(settings: Settings) {

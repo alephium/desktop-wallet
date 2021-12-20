@@ -21,7 +21,9 @@ import { loadSettings } from '../utils/settings'
 import { openInWebBrowser } from '../utils/misc'
 
 const Address = ({ hash }: { hash: string }) => {
-  const { explorerUrl } = loadSettings()
+  const {
+    network: { explorerUrl }
+  } = loadSettings()
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()

@@ -23,11 +23,11 @@ export async function createClient(settings?: Settings) {
 
   try {
     const cliqueClient = new CliqueClient({
-      baseUrl: loadedSettings.nodeHost
+      baseUrl: loadedSettings.network.nodeHost
     })
 
     const explorerClient = new ExplorerClient({
-      baseUrl: loadedSettings.explorerApiHost
+      baseUrl: loadedSettings.network.explorerApiHost
     })
 
     //TODO: Support multi-node clique
