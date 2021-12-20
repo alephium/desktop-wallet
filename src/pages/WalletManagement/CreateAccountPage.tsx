@@ -18,22 +18,24 @@ import { ChangeEvent, useState, useContext } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
+import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 import {
-  PanelContainer,
-  SectionContent,
-  FooterActions,
-  PanelTitle,
-  MainPanel,
-  PanelContent
-} from '../../components/PageComponents'
+  Section,
+  FooterActionsContainer,
+  FloatingPanel,
+  PanelContentContainer
+} from '../../components/PageComponents/PageContainers'
 import { Input } from '../../components/Inputs'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
+
+const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useContext(GlobalContext)
@@ -48,7 +50,8 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     passwordCheck: existingPassword
   })
   const { username, usernameError, password, passwordError, passwordCheck } = state
-  const { usernames } = useContext(GlobalContext)
+
+  const usernames = Storage.list()
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value
@@ -95,53 +98,51 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   }
 
   return (
-    <MainPanel>
-      <PanelContainer>
-        <PanelTitle color="primary">{isRestoring ? 'Import Account' : 'New Account'}</PanelTitle>
-        <PanelContent>
-          <SectionContent inList>
-            <Input
-              value={username}
-              placeholder={isRestoring ? 'New account name' : 'Account name'}
-              onChange={onUpdateUsername}
-              error={usernameError}
-              isValid={username.length > 0 && usernameError.length === 0}
-            />
-            <Input
-              value={password}
-              placeholder={isRestoring ? 'New password' : 'Password'}
-              type="password"
-              onChange={onUpdatePassword}
-              error={passwordError}
-              isValid={!passwordError && password.length > 0}
-            />
-            <Input
-              value={passwordCheck}
-              placeholder="Retype password"
-              type="password"
-              onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
-              error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
-              isValid={password.length > 0 && password === passwordCheck}
-              disabled={!password || passwordError.length > 0}
-            />
-            <InfoBox
-              Icon={AlertTriangle}
-              importance="alert"
-              text={'Make sure to keep your password secured as it cannot be changed in the future.'}
-            />
-            <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
-          </SectionContent>
-        </PanelContent>
-        <FooterActions apparitionDelay={0.3}>
-          <Button secondary onClick={onButtonBack}>
-            Back
-          </Button>
-          <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick} submit>
-            Continue
-          </Button>
-        </FooterActions>
-      </PanelContainer>
-    </MainPanel>
+    <FloatingPanel>
+      <PanelTitle color="primary">{isRestoring ? 'Import Account' : 'New Account'}</PanelTitle>
+      <PanelContentContainer>
+        <Section inList>
+          <Input
+            value={username}
+            placeholder={isRestoring ? 'New account name' : 'Account name'}
+            onChange={onUpdateUsername}
+            error={usernameError}
+            isValid={username.length > 0 && usernameError.length === 0}
+          />
+          <Input
+            value={password}
+            placeholder={isRestoring ? 'New password' : 'Password'}
+            type="password"
+            onChange={onUpdatePassword}
+            error={passwordError}
+            isValid={!passwordError && password.length > 0}
+          />
+          <Input
+            value={passwordCheck}
+            placeholder="Retype password"
+            type="password"
+            onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
+            error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
+            isValid={password.length > 0 && password === passwordCheck}
+            disabled={!password || passwordError.length > 0}
+          />
+          <InfoBox
+            Icon={AlertTriangle}
+            importance="alert"
+            text={'Make sure to keep your password secured as it cannot be changed in the future.'}
+          />
+          <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
+        </Section>
+      </PanelContentContainer>
+      <FooterActionsContainer apparitionDelay={0.3}>
+        <Button secondary onClick={onButtonBack}>
+          Back
+        </Button>
+        <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick} submit>
+          Continue
+        </Button>
+      </FooterActionsContainer>
+    </FloatingPanel>
   )
 }
 

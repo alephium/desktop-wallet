@@ -27,15 +27,14 @@ import { WalletManagementContext } from './WalletManagementContext'
 import { StepsContext } from '../MultiStepsController'
 import { Button } from '../../components/Buttons'
 import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+  FooterActionsContainer,
+  FloatingPanel,
+  PanelContentContainer,
+  Section
+} from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const Storage = getStorage()
 
@@ -204,45 +203,43 @@ const CheckWordsPage = () => {
   }
 
   return (
-    <MainPanel enforceMinHeight>
-      <PanelContainer>
-        <PanelTitle color="primary" onBackButtonPress={onButtonBack} smaller>
-          Security Check
-        </PanelTitle>
-        <PanelContent>
-          <SectionContent>
-            <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
-            <SelectedWordList
-              className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
-            >
-              {renderSelectedWords()}
-            </SelectedWordList>
-            <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
-          </SectionContent>
-        </PanelContent>
-        {selectedWords.length === wordList.current.length ? (
-          !areWordsValid() ? (
-            <InfoBox
-              Icon={AlertTriangle}
-              importance="alert"
-              text="It seems like you made a mistake in the words' order. But don't worry, you can reorder the words by dragging them around."
-            />
-          ) : (
-            <InfoBox small Icon={ThumbsUp} importance="accent" text="Great job! Remember to keep those words safe." />
-          )
-        ) : null}
-        {selectedWords.length === wordList.current.length && (
-          <FooterActions>
-            <Button secondary onClick={onButtonBack}>
-              Cancel
-            </Button>
-            <Button onClick={handleButtonNext} disabled={!areWordsValid()} submit>
-              Continue
-            </Button>
-          </FooterActions>
-        )}
-      </PanelContainer>
-    </MainPanel>
+    <FloatingPanel enforceMinHeight>
+      <PanelTitle color="primary" onBackButtonPress={onButtonBack} smaller>
+        Security Check
+      </PanelTitle>
+      <PanelContentContainer>
+        <Section>
+          <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
+          <SelectedWordList
+            className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
+          >
+            {renderSelectedWords()}
+          </SelectedWordList>
+          <RemainingWordList>{renderRemainingWords()}</RemainingWordList>
+        </Section>
+      </PanelContentContainer>
+      {selectedWords.length === wordList.current.length ? (
+        !areWordsValid() ? (
+          <InfoBox
+            Icon={AlertTriangle}
+            importance="alert"
+            text="It seems like you made a mistake in the words' order. But don't worry, you can reorder the words by dragging them around."
+          />
+        ) : (
+          <InfoBox small Icon={ThumbsUp} importance="accent" text="Great job! Remember to keep those words safe." />
+        )
+      ) : null}
+      {selectedWords.length === wordList.current.length && (
+        <FooterActionsContainer>
+          <Button secondary onClick={onButtonBack}>
+            Cancel
+          </Button>
+          <Button onClick={handleButtonNext} disabled={!areWordsValid()} submit>
+            Continue
+          </Button>
+        </FooterActionsContainer>
+      )}
+    </FloatingPanel>
   )
 }
 

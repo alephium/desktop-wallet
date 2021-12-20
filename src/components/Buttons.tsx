@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
+
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   secondary?: boolean
@@ -26,12 +28,6 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   transparent?: boolean
   squared?: boolean
   submit?: boolean
-}
-
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
-  disabled: { y: 0, opacity: 0.5 }
 }
 
 export const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
@@ -55,7 +51,7 @@ export const Button = ({ children, disabled, submit, ...props }: ButtonProps) =>
   return (
     <StyledButton
       {...props}
-      variants={variants}
+      variants={sectionChildrenVariants}
       custom={disabled}
       disabled={disabled}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
@@ -74,7 +70,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared }) => (squared ? '40px' : '46px')};
+  height: ${({ squared }) => (squared ? '40px' : 'var(--inputHeight)')};
   width: ${({ squared }) => (squared ? '40px' : '80%')};
   max-width: 250px;
   border-radius: var(--radius);
@@ -100,15 +96,12 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   font-weight: var(--fontWeight-medium);
   font-size: inherit;
   font-family: inherit;
+  margin: ${({ squared }) => (squared ? '0' : '12px 0')};
   padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 
   transition: 0.2s ease-out;
-
-  &:not(:last-child) {
-    margin: ${({ squared }) => (squared ? '0' : '12px 0')};
-  }
 
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>

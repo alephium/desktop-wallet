@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { HTMLMotionProps, motion } from 'framer-motion'
 import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
@@ -23,10 +23,7 @@ interface ParagraphProps {
   secondary?: boolean
 }
 
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: { y: 0, opacity: 1 }
-}
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
   centered,
@@ -38,7 +35,7 @@ const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
 }) => {
   return (
     <StyledParagraph
-      variants={variants}
+      variants={sectionChildrenVariants}
       className={className}
       centered={centered}
       secondary={secondary}

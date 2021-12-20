@@ -20,11 +20,12 @@ import { motion } from 'framer-motion'
 import tinycolor from 'tinycolor2'
 
 import { deviceBreakPoints } from '../../style/globalStyles'
-import { PanelContainer, PanelTitle } from '../PageComponents'
+import { PanelContentContainer } from '../PageComponents/PageContainers'
 
 import alephiumLogo from '../../images/alephium_logo.svg'
 import { ReactComponent as MountainSVG } from '../../images/mountain.svg'
 import { ReactComponent as AtmosphericGlow } from '../../images/athmospheric_glow.svg'
+import PanelTitle from '../PageComponents/PanelTitle'
 
 const SideBar: FC<{ className?: string }> = ({ className }) => {
   const theme = useTheme()
@@ -99,7 +100,7 @@ const Sidebar = styled.div`
   }
 `
 
-const SidebarContents = styled(PanelContainer)`
+const SidebarContents = styled(PanelContentContainer)`
   padding: var(--spacing-5);
 `
 

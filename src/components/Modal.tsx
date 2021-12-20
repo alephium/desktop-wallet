@@ -20,7 +20,7 @@ import styled, { useTheme } from 'styled-components'
 import { X } from 'lucide-react'
 
 import { Button } from './Buttons'
-import { PanelTitle, StyledContent, TitleContainer } from './PageComponents'
+import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void
@@ -142,7 +142,7 @@ const StyledModal = styled(motion.div)`
   flex-direction: column;
   margin: auto;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 95vh;
   box-shadow: 0 30px 30px var(--color-shadow-15);
   border-radius: var(--radius);
@@ -169,11 +169,7 @@ const CloseButton = styled(Button)`
 const ModalContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 var(--spacing-4) 0 var(--spacing-4);
-
-  ${StyledContent}:last-child {
-    margin-bottom: 30px;
-  }
+  padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
 `
 
 export default Modal

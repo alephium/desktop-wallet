@@ -22,16 +22,15 @@ import tinycolor from 'tinycolor2'
 import { GlobalContext } from '../../App'
 import { WalletManagementContext } from './WalletManagementContext'
 import { StepsContext } from '../MultiStepsController'
-import { InfoBox } from '../../components/InfoBox'
+import InfoBox from '../../components/InfoBox'
 import {
-  FooterActions,
-  MainPanel,
-  PanelContainer,
-  PanelContent,
-  PanelTitle,
-  SectionContent
-} from '../../components/PageComponents'
+  FooterActionsContainer,
+  FloatingPanel,
+  PanelContentContainer,
+  Section
+} from '../../components/PageComponents/PageContainers'
 import { Button } from '../../components/Buttons'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)
@@ -64,32 +63,30 @@ const WalletWordsPage = () => {
   }
 
   return (
-    <MainPanel enforceMinHeight>
-      <PanelContainer>
-        <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
-          Your Wallet
-        </PanelTitle>
-        <PanelContent>
-          <PublicAddressContent>
-            <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
-          </PublicAddressContent>
-          <WordsContent inList>
-            <Label>Secret phrase</Label>
-            <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
-            <InfoBox
-              text={'Carefully note the 24 words. They are the keys to your wallet.'}
-              Icon={Edit3}
-              importance="alert"
-            />
-          </WordsContent>
-        </PanelContent>
-        <FooterActions apparitionDelay={0.3}>
-          <Button onClick={onButtonNext} submit>
-            {"I've copied the words, continue"}
-          </Button>
-        </FooterActions>
-      </PanelContainer>
-    </MainPanel>
+    <FloatingPanel enforceMinHeight>
+      <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
+        Your Wallet
+      </PanelTitle>
+      <PanelContentContainer>
+        <PublicAddressContent>
+          <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
+        </PublicAddressContent>
+        <WordsContent inList>
+          <Label>Secret phrase</Label>
+          <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
+          <InfoBox
+            text={'Carefully note down the 24 words. They are the keys to your wallet.'}
+            Icon={Edit3}
+            importance="alert"
+          />
+        </WordsContent>
+      </PanelContentContainer>
+      <FooterActionsContainer apparitionDelay={0.3}>
+        <Button onClick={onButtonNext} submit>
+          {"I've copied the words, continue"}
+        </Button>
+      </FooterActionsContainer>
+    </FloatingPanel>
   )
 }
 
@@ -101,12 +98,12 @@ const Label = styled.label`
   font-weight: var(--fontWeight-medium);
 `
 
-const PublicAddressContent = styled(SectionContent)`
+const PublicAddressContent = styled(Section)`
   flex: 0;
   justify-content: flex-start;
 `
 
-const WordsContent = styled(SectionContent)`
+const WordsContent = styled(Section)`
   justify-content: flex-start;
 `
 

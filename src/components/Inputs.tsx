@@ -23,6 +23,9 @@ import { Check, MoreVertical } from 'lucide-react'
 import Tags from '@yaireo/tagify/dist/react.tagify'
 import { isEqual } from 'lodash'
 
+import { sectionChildrenVariants } from './PageComponents/PageContainers'
+import Popup from './Popup'
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
   isValid?: boolean
@@ -33,12 +36,6 @@ interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
   error?: string
   isValid?: boolean
   disabled?: boolean
-}
-
-const variants: Variants = {
-  hidden: { y: 10, opacity: 0 },
-  shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
-  disabled: { y: 0, opacity: 0.5 }
 }
 
 const placeHolderVariants: Variants = {
@@ -56,7 +53,7 @@ export const Input = ({ placeholder, error, isValid, disabled, onChange, value, 
 
   return (
     <InputContainer
-      variants={variants}
+      variants={sectionChildrenVariants}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
@@ -94,7 +91,7 @@ export const TextArea = ({ placeholder, error, isValid, disabled, onChange, valu
 
   return (
     <TextAreaContainer
-      variants={variants}
+      variants={sectionChildrenVariants}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
@@ -214,7 +211,7 @@ export function Select<T>({
   return (
     <>
       <SelectContainer
-        variants={variants}
+        variants={sectionChildrenVariants}
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
@@ -234,7 +231,7 @@ export function Select<T>({
             options={options}
             setValue={setInputValue}
             title={title}
-            handleBackgroundClick={() => {
+            onBackgroundClick={() => {
               setShowPopup(false)
             }}
           />
@@ -247,48 +244,27 @@ export function Select<T>({
 function SelectOptionsPopup<T>({
   options,
   setValue,
-  handleBackgroundClick,
+  onBackgroundClick,
   title
 }: {
   options: SelectOption<T>[]
   setValue: (value: SelectOption<T>) => void | undefined
-  handleBackgroundClick: () => void
+  onBackgroundClick: () => void
   title?: string
 }) {
   const handleOptionSelect = (value: SelectOption<T>) => {
     setValue(value)
-    handleBackgroundClick()
+    onBackgroundClick()
   }
 
   return (
-    <PopupContainer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={() => {
-        handleBackgroundClick()
-      }}
-    >
-      <Popup
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-        initial={{ y: -10 }}
-        animate={{ y: 0 }}
-        exit={{ y: -10 }}
-      >
-        {title && (
-          <SelectOptionsHeader>
-            <h2>{title}</h2>
-          </SelectOptionsHeader>
-        )}
-        {options.map((o) => (
-          <OptionItem key={o.label} onClick={() => handleOptionSelect(o)}>
-            {o.label}
-          </OptionItem>
-        ))}
-      </Popup>
-    </PopupContainer>
+    <Popup title={title} onBackgroundClick={onBackgroundClick}>
+      {options.map((o) => (
+        <OptionItem key={o.label} onClick={() => handleOptionSelect(o)}>
+          {o.label}
+        </OptionItem>
+      ))}
+    </Popup>
   )
 }
 
@@ -296,7 +272,7 @@ function SelectOptionsPopup<T>({
 
 const InputContainer = styled(motion.div)`
   position: relative;
-  height: 46px;
+  height: var(--inputHeight);
   width: 100%;
   margin: var(--spacing-3) 0;
 `
@@ -417,29 +393,6 @@ const SelectContainer = styled(InputContainer)`
   cursor: pointer;
 `
 
-const PopupContainer = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-`
-
-const Popup = styled(motion.div)`
-  border-radius: var(--radius);
-  margin: auto;
-  width: 30vw;
-  min-width: 300px;
-  max-height: 500px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  box-shadow: var(--shadow);
-  background-color: ${({ theme }) => theme.bg.primary};
-`
-
 const OptionItem = styled.div`
   padding: var(--spacing-3);
   cursor: pointer;
@@ -452,14 +405,6 @@ const OptionItem = styled.div`
   &:hover {
     background-color: ${({ theme }) => theme.bg.secondary};
   }
-`
-
-const SelectOptionsHeader = styled.header`
-  padding: var(--spacing-1) var(--spacing-3);
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  display: flex;
-  align-items: center;
 `
 
 export const Form = styled.form`
