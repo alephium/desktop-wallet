@@ -36,11 +36,8 @@ type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
   const { settings: currentSettings, updateSettings, setSnackbarMessage } = useContext(GlobalContext)
-
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
-
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
-
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const networkSelectOptions: NetworkSelectOption[] = [
@@ -72,7 +69,7 @@ const NetworkSettingsSection = () => {
 
   const handleNetworkPresetChange = useCallback(
     (option: typeof networkSelectOptions[number] | undefined) => {
-      if (option) {
+      if (option && option.value !== getNetworkName(currentSettings.network)) {
         setSelectedNetwork(option.value)
 
         if (option.value === 'custom') {
@@ -85,7 +82,7 @@ const NetworkSettingsSection = () => {
         }
       }
     },
-    [updateSettings]
+    [currentSettings.network, updateSettings]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
