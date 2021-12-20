@@ -69,7 +69,7 @@ export const darkTheme: DefaultTheme = {
     secondary: '#27282d'
   },
   global: {
-    accent: '#397de3',
+    accent: '#3482f7',
     secondary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#4ebf08',
