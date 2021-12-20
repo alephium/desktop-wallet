@@ -38,7 +38,7 @@ const TabBar = ({
       <TabBarContainer>
         <TabSelector
           animate={{
-            x: `${(tabItems.findIndex((t) => t.value === activeTab.value) / (tabItems.length - 1)) * 100}%`
+            x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%`
           }}
           transition={{ duration: 0.2 }}
           style={{ width: `${100 / tabItems.length}%` }}

@@ -23,25 +23,21 @@ import ThemeSwitcher from '../../components/ThemeSwitcher'
 import NetworkSettingsSection from './NetworkSettingsSection'
 import AccountsSettingsSection from './AccountsSettingsSection'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
+import GeneralSettingsSection from './GeneralSettingsSection'
+
+const tabs = [
+  { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
+  { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
+  { value: 'accounts', label: 'Accounts', component: <AccountsSettingsSection /> }
+]
 
 const SettingsPage = () => {
-  const tabs = [
-    { value: 'client', label: 'Networks' },
-    { value: 'accounts', label: 'Accounts' }
-  ]
-
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
     <PanelContentContainer>
       <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
-      {currentTab.value === 'accounts' ? (
-        <AccountsSettingsSection />
-      ) : currentTab.value === 'client' ? (
-        <NetworkSettingsSection />
-      ) : (
-        <NetworkSettingsSection />
-      )}
+      {tabs.find((t) => t.value === currentTab.value)?.component}
       <HorizontalDivider />
       <Section>
         <ThemeSwitcher />
