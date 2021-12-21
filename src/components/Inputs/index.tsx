@@ -38,7 +38,7 @@ export const inputPlaceHolderVariants: Variants = {
 export const inputDefaultStyle = (isValid?: boolean) => {
   return css`
     background-image: none;
-    height: 46px;
+    height: var(--inputHeight);
     width: 100%;
     border-radius: var(--radius);
     background-color: ${({ theme }) => theme.bg.secondary};

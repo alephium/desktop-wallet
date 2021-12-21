@@ -15,9 +15,10 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
-import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
+import styled from 'styled-components'
 import Tags from '@yaireo/tagify/dist/react.tagify'
+
+import { inputDefaultStyle } from './index'
 
 export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
   return (
@@ -57,44 +58,10 @@ const TextAreaTagsContainer = styled(motion.div)`
   }
 `
 
-const defaultStyle = (isValid?: boolean) => {
-  return css`
-    background-image: none;
-    height: 46px;
-    width: 100%;
-    border-radius: var(--radius);
-    background-color: ${({ theme }) => theme.bg.secondary};
-    border: 1px solid ${({ theme }) => theme.border.primary};
-    color: ${({ theme }) => theme.font.primary};
-    padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
-    font-weight: var(--fontWeight-medium);
-    font-size: 1em;
-    text-align: left;
-    font-family: inherit;
-
-    transition: 0.2s ease-out;
-
-    &:focus {
-      background-color: ${({ theme }) => theme.bg.primary};
-      border: 1px solid ${({ theme }) => theme.global.accent};
-    }
-
-    &.error {
-      border: 1px solid ${({ theme }) => theme.global.alert};
-      background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
-    }
-
-    &:disabled {
-      background-color: ${({ theme }) => theme.bg.secondary};
-      border: 1px solid ${({ theme }) => theme.border.primary};
-    }
-  `
-}
-
 // NOTE: Tags dropdown is styled in GlobalStyles
 
 const StyledTags = styled(Tags)`
-  ${defaultStyle(true)}
+  ${inputDefaultStyle(true)}
   height: auto;
   padding: var(--spacing-1);
   line-height: 20px;

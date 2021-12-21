@@ -15,8 +15,8 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect, useState, useCallback, useContext } from 'react'
-import { GlobalContext } from '../App'
 
+import { GlobalContext } from '../App'
 import { useInterval } from '../utils/hooks'
 
 const useIdleForTooLong = (onIdleForTooLong: () => void) => {
