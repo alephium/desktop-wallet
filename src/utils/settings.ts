@@ -23,7 +23,7 @@ import { ThemeType } from '../style/themes'
 export interface Settings {
   general: {
     theme: ThemeType
-    walletLockTimeInMinutes: number
+    walletLockTimeInMinutes: number | null
   }
   network: {
     nodeHost: string

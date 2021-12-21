@@ -19,11 +19,14 @@ const GeneralSettingsSection = () => {
         description="Duration in minutes after which the wallet will be locked automatically."
         InputComponent={
           <Input
-            value={walletLockTimeInMinutes}
-            onChange={(v) => updateSettings('general', { walletLockTimeInMinutes: parseInt(v.target.value) })}
-            placeholder="Minutes"
+            value={walletLockTimeInMinutes || ''}
+            onChange={(v) =>
+              updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
+            }
+            placeholder={walletLockTimeInMinutes ? 'Minutes' : 'Off'}
             type="number"
             step={1}
+            min={1}
           />
         }
       />

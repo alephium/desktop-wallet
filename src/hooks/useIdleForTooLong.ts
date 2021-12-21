@@ -50,6 +50,8 @@ const useIdleForTooLong = (onIdleForTooLong: () => void) => {
   }, [updateLastInteractionTime])
 
   useInterval(() => {
+    if (!walletLockTimeInMinutes) return
+
     const currentTime = new Date().getTime()
     const lockTimeInMs = walletLockTimeInMinutes * 60 * 1000
 
