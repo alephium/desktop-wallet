@@ -98,16 +98,16 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 // ==================== //
 
 export const calAmountDelta = (t: Transaction, id: string) => {
-  if (t.inputs && t.outputs) {
-    const inputAmount = t.inputs.reduce<bigint>((acc, input) => {
-      return input.amount && input.address === id ? acc + BigInt(input.amount) : acc
-    }, 0n)
-    const outputAmount = t.outputs.reduce<bigint>((acc, output) => {
-      return output.address === id ? acc + BigInt(output.amount) : acc
-    }, 0n)
-
-    return outputAmount - inputAmount
-  } else {
+  if (!t.inputs || !t.outputs) {
     throw 'Missing transaction details'
   }
+
+  const inputAmount = t.inputs.reduce<bigint>((acc, input) => {
+    return input.amount && input.address === id ? acc + BigInt(input.amount) : acc
+  }, 0n)
+  const outputAmount = t.outputs.reduce<bigint>((acc, output) => {
+    return output.address === id ? acc + BigInt(output.amount) : acc
+  }, 0n)
+
+  return outputAmount - inputAmount
 }

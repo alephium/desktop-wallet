@@ -1,0 +1,179 @@
+{
+  "oneInputOneOutput": {
+    "hash": "c99559da00e05bf967227c452f9dc33904cc8aac9819f71ca9b3382d037317c1",
+    "blockHash": "000000000000d3a4088bd4a177dd4c99f8df7642e095dd6f375d99d3a4a2760a",
+    "timestamp": 1639679587756,
+    "inputs": [
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      }
+    ],
+    "outputs": [
+      {
+        "hint": 1770492891,
+        "key": "685eedf4a7eef2cccd55dfcc0d7d72c2aef788b118236d2dc8b27d924206da9d",
+        "amount": "409200570768056060",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA2",
+        "spent": "4d8e564e1731ecc09e167211c25da7b91a3fab8096a951a0df3b7ce1549d6cd9"
+      },
+      {
+        "hint": 269352581,
+        "key": "162784ca82a5dfc796bc6514658453e51aacdb48ed7bec716850152a61b55b82",
+        "amount": "50000000000000000000",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "spent": "f823bcb78fbbc6c18dea882fe697cb8be9c5e2cb020e65670041dbe39b80c3d8"
+      }
+    ],
+    "gasAmount": 68060,
+    "gasPrice": "100000000000"
+  },
+  "twoInputsOneOutput": {
+    "hash": "c99559da00e05bf967227c452f9dc33904cc8aac9819f71ca9b3382d037317c1",
+    "blockHash": "000000000000d3a4088bd4a177dd4c99f8df7642e095dd6f375d99d3a4a2760a",
+    "timestamp": 1639679587756,
+    "inputs": [
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      },
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      }
+    ],
+    "outputs": [
+      {
+        "hint": 1770492891,
+        "key": "685eedf4a7eef2cccd55dfcc0d7d72c2aef788b118236d2dc8b27d924206da9d",
+        "amount": "150000000000000000000",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA2",
+        "spent": "4d8e564e1731ecc09e167211c25da7b91a3fab8096a951a0df3b7ce1549d6cd9"
+      },
+      {
+        "hint": 269352581,
+        "key": "162784ca82a5dfc796bc6514658453e51aacdb48ed7bec716850152a61b55b82",
+        "amount": "50000000000000000000",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "spent": "f823bcb78fbbc6c18dea882fe697cb8be9c5e2cb020e65670041dbe39b80c3d8"
+      }
+    ],
+    "gasAmount": 68060,
+    "gasPrice": "100000000000"
+  },
+  "twoInputsZeroOutput": {
+    "hash": "c99559da00e05bf967227c452f9dc33904cc8aac9819f71ca9b3382d037317c1",
+    "blockHash": "000000000000d3a4088bd4a177dd4c99f8df7642e095dd6f375d99d3a4a2760a",
+    "timestamp": 1639679587756,
+    "inputs": [
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      },
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      }
+    ],
+    "outputs": [
+      {
+        "hint": 1770492891,
+        "key": "685eedf4a7eef2cccd55dfcc0d7d72c2aef788b118236d2dc8b27d924206da9d",
+        "amount": "150000000000000000000",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA2",
+        "spent": "4d8e564e1731ecc09e167211c25da7b91a3fab8096a951a0df3b7ce1549d6cd9"
+      },
+      {
+        "hint": 269352581,
+        "key": "162784ca82a5dfc796bc6514658453e51aacdb48ed7bec716850152a61b55b82",
+        "amount": "50000000000000000000",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA3",
+        "spent": "f823bcb78fbbc6c18dea882fe697cb8be9c5e2cb020e65670041dbe39b80c3d8"
+      }
+    ],
+    "gasAmount": 68060,
+    "gasPrice": "100000000000"
+  },
+  "missingInputs": {
+    "hash": "c99559da00e05bf967227c452f9dc33904cc8aac9819f71ca9b3382d037317c1",
+    "blockHash": "000000000000d3a4088bd4a177dd4c99f8df7642e095dd6f375d99d3a4a2760a",
+    "timestamp": 1639679587756,
+    "outputs": [
+      {
+        "hint": 1770492891,
+        "key": "685eedf4a7eef2cccd55dfcc0d7d72c2aef788b118236d2dc8b27d924206da9d",
+        "amount": "150000000000000000000",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA2",
+        "spent": "4d8e564e1731ecc09e167211c25da7b91a3fab8096a951a0df3b7ce1549d6cd9"
+      },
+      {
+        "hint": 269352581,
+        "key": "162784ca82a5dfc796bc6514658453e51aacdb48ed7bec716850152a61b55b82",
+        "amount": "50000000000000000000",
+        "address": "1D3cMU5kaHmm8rnhF5ZErqErnRgp5xopDheubHVUizWA3",
+        "spent": "f823bcb78fbbc6c18dea882fe697cb8be9c5e2cb020e65670041dbe39b80c3d8"
+      }
+    ],
+    "gasAmount": 68060,
+    "gasPrice": "100000000000"
+  },
+  "missingOutputs": {
+    "hash": "c99559da00e05bf967227c452f9dc33904cc8aac9819f71ca9b3382d037317c1",
+    "blockHash": "000000000000d3a4088bd4a177dd4c99f8df7642e095dd6f375d99d3a4a2760a",
+    "timestamp": 1639679587756,
+    "inputs": [
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      },
+      {
+        "outputRef": {
+          "hint": 269352581,
+          "key": "25abffce393aea71c3acf15c701ada53d69ccb4361d28f4b980560bca3303864"
+        },
+        "unlockScript": "00026e6e0839c322d59b54feb6501b207b8439ada411839268a5842e298acf8608d5",
+        "txHashRef": "1bd6040d255021cb4a551644f343344a2f1f0f32093244cbb273f6cdef55567f",
+        "address": "16sR3EMn2BdFgENRhz6N2TJ78nfaADdv3prKXUQMaB6m3",
+        "amount": "100000000000000000000"
+      }
+    ],
+    "gasAmount": 68060,
+    "gasPrice": "100000000000"
+  }
+}

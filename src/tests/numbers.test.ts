@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, removeTrailingZeros } from '../utils/numbers'
+import { abbreviateAmount, removeTrailingZeros, calAmountDelta } from '../utils/numbers'
+import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
   return amount * BigInt(1000000000000000000)
@@ -45,4 +46,22 @@ it('Should remove trailing zeros', () => {
     expect(removeTrailingZeros('10000.000', minDigits)).toEqual('10000.000'),
     expect(removeTrailingZeros('-10000.0001000', minDigits)).toEqual('-10000.0001'),
     expect(removeTrailingZeros('-0.0001020000', minDigits)).toEqual('-0.000102')
+})
+
+it('should calucate the amount delta between the inputs and outputs of an address in a transaction', () => {
+  expect(calAmountDelta(transactions.oneInputOneOutput, transactions.oneInputOneOutput.inputs[0].address)).toEqual(
+    alf(BigInt(-50))
+  ),
+    expect(calAmountDelta(transactions.twoInputsOneOutput, transactions.twoInputsOneOutput.inputs[0].address)).toEqual(
+      alf(BigInt(-150))
+    ),
+    expect(
+      calAmountDelta(transactions.twoInputsZeroOutput, transactions.twoInputsZeroOutput.inputs[0].address)
+    ).toEqual(alf(BigInt(-200))),
+    expect(() =>
+      calAmountDelta(transactions.missingInputs, transactions.missingInputs.outputs[0].address)
+    ).toThrowError('Missing transaction details'),
+    expect(() =>
+      calAmountDelta(transactions.missingOutputs, transactions.missingOutputs.inputs[0].address)
+    ).toThrowError('Missing transaction details')
 })
