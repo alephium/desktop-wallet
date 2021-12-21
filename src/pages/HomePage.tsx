@@ -132,7 +132,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
         />
       </Section>
       <Section inList>
-        <Button onClick={handleLogin} submit>
+        <Button onClick={handleLogin} submit disabled={!credentials.username || !credentials.password}>
           Login
         </Button>
       </Section>

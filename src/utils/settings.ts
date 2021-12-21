@@ -58,7 +58,7 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['
 }
 
 export const defaultSettings: Settings = {
-  general: { theme: 'light', walletLockTimeInMinutes: 3 /* minutes */ },
+  general: { theme: 'light', walletLockTimeInMinutes: 3 },
   network: clone(networkEndpoints.mainnet)
 }
 

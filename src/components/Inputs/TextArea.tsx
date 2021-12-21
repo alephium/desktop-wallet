@@ -15,8 +15,7 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion, Variants } from 'framer-motion'
-import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
+import styled from 'styled-components'
 import classNames from 'classnames'
 import { useState } from 'react'
 import { Check } from 'lucide-react'
