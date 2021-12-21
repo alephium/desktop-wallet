@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useContext, useEffect, useState } from 'react'
-import { Route, useHistory, Switch, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
+import { AnimatePresence } from 'framer-motion'
+import React, { useContext, useEffect, useState } from 'react'
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
 import { GlobalContext } from '../../App'
 import Modal from '../../components/Modal'
-import WalletHomePage from './WalletHomePage'
-import SendPage from './SendPage'
-import AddressPage from './AddressPage'
-import SettingsPage from '../Settings/SettingsPage'
 import { NetworkType, useCurrentNetwork } from '../../utils/settings'
+import SettingsPage from '../Settings/SettingsPage'
+import AddressPage from './AddressPage'
+import SendPage from './SendPage'
+import WalletHomePage from './WalletHomePage'
 
 export interface SimpleTx {
   txId: string

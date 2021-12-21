@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useCallback, useContext, useState } from 'react'
-import styled from 'styled-components'
+import { getStorage, walletOpen } from 'alephium-js'
 import { motion } from 'framer-motion'
-import tinycolor from 'tinycolor2'
+import React, { useCallback, useContext, useState } from 'react'
 import { useHistory } from 'react-router'
-import { walletOpen, getStorage } from 'alephium-js'
+import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 import { GlobalContext } from '../App'
-import { deviceBreakPoints } from '../style/globalStyles'
-import { Input, Select } from '../components/Inputs'
-import { Button } from '../components/Buttons'
-import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
-import Paragraph from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
+import { Button } from '../components/Buttons'
 import SideBar from '../components/HomePage/SideBar'
+import { Input, Select } from '../components/Inputs'
+import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
+import Paragraph from '../components/Paragraph'
+import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean

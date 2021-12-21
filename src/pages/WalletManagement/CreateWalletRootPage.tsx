@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useState } from 'react'
 import { walletGenerate } from 'alephium-js'
+import { useEffect, useState } from 'react'
 
-import CreateAccountPage from './CreateAccountPage'
-import WalletWordsPage from './WalletWordsPage'
+import AppHeader from '../../components/AppHeader'
+import FloatingLogo from '../../components/FloatingLogo'
+import MultiStepsController from '../MultiStepsController'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
-import MultiStepsController from '../MultiStepsController'
+import CreateAccountPage from './CreateAccountPage'
 import {
   initialWalletManagementContext,
   WalletManagementContext,
   WalletManagementContextType
 } from './WalletManagementContext'
 import WalletWelcomePage from './WalletWelcomePage'
-import AppHeader from '../../components/AppHeader'
-import FloatingLogo from '../../components/FloatingLogo'
+import WalletWordsPage from './WalletWordsPage'
 
 const CreateWallet = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)

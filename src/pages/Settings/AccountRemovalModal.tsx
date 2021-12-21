@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useTheme } from 'styled-components'
 import { AlertTriangle } from 'lucide-react'
+import { useTheme } from 'styled-components'
 
-import Modal from '../../components/Modal'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
+import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 

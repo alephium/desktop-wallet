@@ -17,12 +17,12 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
-import NetworkSettingsSection from './NetworkSettingsSection'
 import AccountsSettingsSection from './AccountsSettingsSection'
-import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
+import NetworkSettingsSection from './NetworkSettingsSection'
 
 const SettingsPage = () => {
   const tabs = [

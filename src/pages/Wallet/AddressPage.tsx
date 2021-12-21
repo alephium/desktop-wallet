@@ -19,9 +19,9 @@ import { useContext } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { GlobalContext } from '../../App'
+import { Button } from '../../components/Buttons'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
-import { Button } from '../../components/Buttons'
 import { openInWebBrowser } from '../../utils/misc'
 import { loadSettings } from '../../utils/settings'
 

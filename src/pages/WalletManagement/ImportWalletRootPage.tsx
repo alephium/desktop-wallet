@@ -16,17 +16,17 @@
 
 import { useState } from 'react'
 
-import {
-  WalletManagementContext,
-  WalletManagementContextType,
-  initialWalletManagementContext
-} from './WalletManagementContext'
-import CreateAccountPage from './CreateAccountPage'
-import MultiStepsController from '../MultiStepsController'
-import ImportWordsPage from './ImportWordsPage'
-import WalletWelcomePage from './WalletWelcomePage'
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
+import MultiStepsController from '../MultiStepsController'
+import CreateAccountPage from './CreateAccountPage'
+import ImportWordsPage from './ImportWordsPage'
+import {
+  initialWalletManagementContext,
+  WalletManagementContext,
+  WalletManagementContextType
+} from './WalletManagementContext'
+import WalletWelcomePage from './WalletWelcomePage'
 
 const ImportWalletRootPage = () => {
   const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)

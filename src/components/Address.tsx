@@ -17,8 +17,8 @@
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { loadSettings } from '../utils/settings'
 import { openInWebBrowser } from '../utils/misc'
+import { loadSettings } from '../utils/settings'
 
 const Address = ({ hash }: { hash: string }) => {
   const { explorerUrl } = loadSettings()

@@ -14,19 +14,18 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import './index.css' // Importing CSS through CSS file to avoid font flickering
+import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
 import App from './App'
+import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
-
-import './index.css' // Importing CSS through CSS file to avoid font flickering
-import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
-
-import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
   <React.StrictMode>

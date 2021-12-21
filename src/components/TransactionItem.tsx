@@ -1,12 +1,12 @@
-import { FC } from 'react'
-import styled, { css } from 'styled-components'
+import { Input, Output } from 'alephium-js/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import _ from 'lodash'
-import { Input, Output } from 'alephium-js/dist/api/api-explorer'
+import { FC } from 'react'
+import styled, { css } from 'styled-components'
 
-import { openInWebBrowser } from '../utils/misc'
 import { deviceBreakPoints } from '../style/globalStyles'
+import { openInWebBrowser } from '../utils/misc'
 import Address from './Address'
 import AmountBadge from './Badge'
 

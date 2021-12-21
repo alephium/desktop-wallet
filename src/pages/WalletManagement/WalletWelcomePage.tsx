@@ -15,12 +15,12 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useState } from 'react'
-import styled from 'styled-components'
 import Confetti from 'react-confetti'
 import { useHistory } from 'react-router'
+import styled from 'styled-components'
 
-import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import { Button } from '../../components/Buttons'
+import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
 

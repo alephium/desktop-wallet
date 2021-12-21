@@ -14,28 +14,28 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react'
-import styled, { ThemeProvider } from 'styled-components'
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
-import { Wallet, getStorage } from 'alephium-js'
+import { getStorage, Wallet } from 'alephium-js'
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
+import styled, { ThemeProvider } from 'styled-components'
 import { AsyncReturnType } from 'type-fest'
 
+import { Modal } from './components/Modal'
+import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
+import Spinner from './components/Spinner'
+import SplashScreen from './components/SplashScreen'
+import useIdleForTooLong from './hooks/useIdleForTooLong'
 import HomePage from './pages/HomePage'
+import SettingsPage from './pages/Settings/SettingsPage'
+import WalletPages from './pages/Wallet/WalletRootPage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
-import WalletPages from './pages/Wallet/WalletRootPage'
-import SettingsPage from './pages/Settings/SettingsPage'
-import { createClient } from './utils/api-clients'
-import { loadSettings, saveSettings, Settings, useCurrentNetwork } from './utils/settings'
-import { useStateWithLocalStorage } from './utils/hooks'
-import { Modal } from './components/Modal'
-import Spinner from './components/Spinner'
-import SnackbarManager, { SnackbarMessage } from './components/SnackbarManager'
-import SplashScreen from './components/SplashScreen'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
-import { lightTheme, darkTheme, ThemeType } from './style/themes'
-import useIdleForTooLong from './hooks/useIdleForTooLong'
+import { darkTheme, lightTheme, ThemeType } from './style/themes'
+import { createClient } from './utils/api-clients'
+import { useStateWithLocalStorage } from './utils/hooks'
+import { loadSettings, saveSettings, Settings, useCurrentNetwork } from './utils/settings'
 
 interface Context {
   currentUsername: string

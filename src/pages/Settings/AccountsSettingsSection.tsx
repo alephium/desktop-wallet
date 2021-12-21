@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useContext, useState } from 'react'
 import { getStorage } from 'alephium-js'
-import styled from 'styled-components'
 import { Trash } from 'lucide-react'
+import { useContext, useState } from 'react'
+import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
+import InfoBox from '../../components/InfoBox'
+import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
-import InfoBox from '../../components/InfoBox'
-import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 
 const Storage = getStorage()
 

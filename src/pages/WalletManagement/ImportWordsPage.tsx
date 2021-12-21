@@ -15,23 +15,23 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
+import { getStorage, walletImport } from 'alephium-js'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { walletImport, getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
-import { StepsContext } from '../MultiStepsController'
-import { WalletManagementContext } from './WalletManagementContext'
+import { Button } from '../../components/Buttons'
 import { TextAreaTags } from '../../components/Inputs'
 import {
-  FooterActionsContainer,
   FloatingPanel,
+  FooterActionsContainer,
   PanelContentContainer,
   Section
 } from '../../components/PageComponents/PageContainers'
-import { Button } from '../../components/Buttons'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
+import { StepsContext } from '../MultiStepsController'
+import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
 

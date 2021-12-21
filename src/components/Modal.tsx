@@ -15,9 +15,9 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
-import { useCallback, useEffect, useState, createContext, FC } from 'react'
-import styled, { useTheme } from 'styled-components'
 import { X } from 'lucide-react'
+import { createContext, FC, useCallback, useEffect, useState } from 'react'
+import styled, { useTheme } from 'styled-components'
 
 import { Button } from './Buttons'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'

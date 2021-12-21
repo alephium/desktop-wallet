@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import Tags from '@yaireo/tagify/dist/react.tagify'
+import classNames from 'classnames'
 import { AnimatePresence, motion, Variants } from 'framer-motion'
+import { isEqual } from 'lodash'
+import { Check, MoreVertical } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
-import classNames from 'classnames'
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Check, MoreVertical } from 'lucide-react'
-import Tags from '@yaireo/tagify/dist/react.tagify'
-import { isEqual } from 'lodash'
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 import Popup from './Popup'

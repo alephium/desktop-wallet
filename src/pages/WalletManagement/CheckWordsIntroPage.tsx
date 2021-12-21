@@ -14,23 +14,22 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import { motion } from 'framer-motion'
 import { useContext } from 'react'
 import styled from 'styled-components'
-import { motion } from 'framer-motion'
 
 import { Button } from '../../components/Buttons'
 import {
-  FooterActionsContainer,
   FloatingPanel,
+  FooterActionsContainer,
   PanelContentContainer,
   Section
 } from '../../components/PageComponents/PageContainers'
-import Paragraph from '../../components/Paragraph'
-import { StepsContext } from '../MultiStepsController'
-
-import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
-import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import Paragraph from '../../components/Paragraph'
+import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
+import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
+import { StepsContext } from '../MultiStepsController'
 
 const CheckWordsIntroPage = () => {
   const { onButtonBack, onButtonNext } = useContext(StepsContext)

@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { FC } from 'react'
-import { useViewportScroll, useTransform, motion } from 'framer-motion'
-import styled, { useTheme } from 'styled-components'
+import { motion, useTransform, useViewportScroll } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
+import { FC } from 'react'
+import styled, { useTheme } from 'styled-components'
 
 interface PanelTitleProps {
   color?: string

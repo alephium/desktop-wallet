@@ -14,26 +14,26 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { ChangeEvent, useState, useContext } from 'react'
+import { getStorage } from 'alephium-js'
 import { AlertTriangle } from 'lucide-react'
+import { ChangeEvent, useContext, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
-import { getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../../App'
+import { Button } from '../../components/Buttons'
+import InfoBox from '../../components/InfoBox'
+import { Input } from '../../components/Inputs'
+import {
+  FloatingPanel,
+  FooterActionsContainer,
+  PanelContentContainer,
+  Section
+} from '../../components/PageComponents/PageContainers'
+import PanelTitle from '../../components/PageComponents/PanelTitle'
+import Paragraph from '../../components/Paragraph'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
-import {
-  Section,
-  FooterActionsContainer,
-  FloatingPanel,
-  PanelContentContainer
-} from '../../components/PageComponents/PageContainers'
-import { Input } from '../../components/Inputs'
-import InfoBox from '../../components/InfoBox'
-import Paragraph from '../../components/Paragraph'
-import { Button } from '../../components/Buttons'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
 
 const Storage = getStorage()
 

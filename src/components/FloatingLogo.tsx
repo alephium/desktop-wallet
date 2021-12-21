@@ -16,9 +16,8 @@
 
 import styled from 'styled-components'
 
-import { deviceBreakPoints } from '../style/globalStyles'
-
 import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monochrome.svg'
+import { deviceBreakPoints } from '../style/globalStyles'
 
 const FloatingLogo = styled(AlephiumLogoSVG)`
   position: absolute;

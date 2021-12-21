@@ -14,27 +14,27 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import { getStorage } from 'alephium-js'
+import { motion, PanInfo } from 'framer-motion'
+import { throttle } from 'lodash'
+import { AlertTriangle, ThumbsUp } from 'lucide-react'
 import React, { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
-import { motion, PanInfo } from 'framer-motion'
-import { throttle } from 'lodash'
-import { getStorage } from 'alephium-js'
-import { AlertTriangle, ThumbsUp } from 'lucide-react'
 
 import { GlobalContext } from '../../App'
-import { WalletManagementContext } from './WalletManagementContext'
-import { StepsContext } from '../MultiStepsController'
 import { Button } from '../../components/Buttons'
+import InfoBox from '../../components/InfoBox'
 import {
-  FooterActionsContainer,
   FloatingPanel,
+  FooterActionsContainer,
   PanelContentContainer,
   Section
 } from '../../components/PageComponents/PageContainers'
-import Paragraph from '../../components/Paragraph'
-import InfoBox from '../../components/InfoBox'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import Paragraph from '../../components/Paragraph'
+import { StepsContext } from '../MultiStepsController'
+import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
 

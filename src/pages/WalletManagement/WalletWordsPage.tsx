@@ -14,23 +14,23 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
+import { Edit3 } from 'lucide-react'
 import { useContext } from 'react'
 import styled from 'styled-components'
-import { Edit3 } from 'lucide-react'
 import tinycolor from 'tinycolor2'
 
 import { GlobalContext } from '../../App'
-import { WalletManagementContext } from './WalletManagementContext'
-import { StepsContext } from '../MultiStepsController'
+import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import {
-  FooterActionsContainer,
   FloatingPanel,
+  FooterActionsContainer,
   PanelContentContainer,
   Section
 } from '../../components/PageComponents/PageContainers'
-import { Button } from '../../components/Buttons'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import { StepsContext } from '../MultiStepsController'
+import { WalletManagementContext } from './WalletManagementContext'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)

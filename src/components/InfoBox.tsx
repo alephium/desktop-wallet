@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import styled, { css, useTheme } from 'styled-components'
-import { LucideProps } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { LucideProps } from 'lucide-react'
+import styled, { css, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 

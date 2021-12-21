@@ -15,17 +15,17 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AlertTriangle } from 'lucide-react'
-import { useContext, useState, useCallback } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
-import { Select, Input } from '../../components/Inputs'
+import { Input, Select } from '../../components/Inputs'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useMountEffect } from '../../utils/hooks'
-import { NetworkType, getNetworkName, networkEndpoints, Settings } from '../../utils/settings'
+import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../../utils/settings'
 
 interface NetworkSelectOption {
   label: string
