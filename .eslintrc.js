@@ -7,7 +7,7 @@ module.exports = {
     'prettier',
     'plugin:prettier/recommended'
   ],
-  plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'unused-imports'],
+  plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'unused-imports', 'simple-import-sort'],
   rules: {
     'react/prop-types': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -20,6 +20,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
     'unused-imports/no-unused-imports-ts': 'warn',
+    'simple-import-sort/imports': 'warn',
     quotes: [1, 'single', { avoidEscape: true }],
     'jsx-quotes': [2, 'prefer-double'],
     '@typescript-eslint/member-delimiter-style': [
