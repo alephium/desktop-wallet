@@ -26,9 +26,10 @@ const NetworkBadge = () => {
 
 const BadgeContainer = styled.div`
   padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--radius-small);
-  background-color: ${({ theme }) => theme.bg.primary};
   color: ${({ theme }) => theme.font.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-big);
+  font-weight: var(--fontWeight-semiBold);
 `
 
 export default NetworkBadge

@@ -50,7 +50,6 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
 export const HeaderDivider = styled.div`
   width: 1px;
   height: var(--spacing-2);
-  margin: 0 var(--spacing-2);
   background-color: ${({ theme }) => theme.border.primary};
 `
 
@@ -65,6 +64,7 @@ const HeaderContainer = styled(motion.header)`
   justify-content: flex-end;
   align-items: center;
   padding: 0 var(--spacing-4);
+  gap: var(--spacing-1);
 
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
