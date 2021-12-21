@@ -9,8 +9,9 @@ const GeneralSettingsSection = () => {
     <>
       <KeyValueInput
         label="Lock time"
+        description="Duration in seconds after which the wallet will be locked automatically."
         onValueChange={setLockTime}
-        InputComponent={<Input value={lockTime} onChange={(v) => setLockTime(v.target.value)} />}
+        InputComponent={<Input value={lockTime} onChange={(v) => setLockTime(v.target.value)} placeholder="Seconds" />}
       />
     </>
   )

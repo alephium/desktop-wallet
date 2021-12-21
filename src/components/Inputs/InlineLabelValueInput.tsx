@@ -29,20 +29,26 @@ const KeyValueInputContainer = styled.div`
   display: flex;
   padding: var(--spacing-4) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  gap: var(--spacing-4);
 `
 
 const KeyContainer = styled.div`
-  flex: 1;
+  flex: 4;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-1);
 `
 
-const DescriptionContainer = styled.div``
+const DescriptionContainer = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+`
 
 const InputContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex: 1;
 `
 
 export default InlineLabelValueInput
