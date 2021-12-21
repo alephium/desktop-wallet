@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual, merge } from 'lodash'
+import { clone, isEqual, merge } from 'lodash'
 import { useContext } from 'react'
 
 import { GlobalContext } from '../App'
@@ -59,7 +59,7 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['
 
 export const defaultSettings: Settings = {
   general: { theme: 'light', walletLockTimeInMinutes: 3 /* minutes */ },
-  network: networkEndpoints.mainnet
+  network: clone(networkEndpoints.mainnet)
 }
 
 export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const

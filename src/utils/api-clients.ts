@@ -18,16 +18,16 @@ import { CliqueClient, ExplorerClient } from 'alephium-js'
 
 import { Settings, loadStoredSettings } from './settings'
 
-export async function createClient(settings?: Settings) {
-  const loadedSettings = settings || loadStoredSettings()
+export async function createClient(settings?: Settings['network']) {
+  const loadedSettings = settings || loadStoredSettings().network
 
   try {
     const cliqueClient = new CliqueClient({
-      baseUrl: loadedSettings.network.nodeHost
+      baseUrl: loadedSettings.nodeHost
     })
 
     const explorerClient = new ExplorerClient({
-      baseUrl: loadedSettings.network.explorerApiHost
+      baseUrl: loadedSettings.explorerApiHost
     })
 
     //TODO: Support multi-node clique

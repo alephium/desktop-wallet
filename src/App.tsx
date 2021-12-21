@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import { Wallet, getStorage } from 'alephium-js'
@@ -29,7 +29,7 @@ import SettingsPage from './pages/Settings/SettingsPage'
 import { createClient } from './utils/api-clients'
 import {
   loadStoredSettings,
-  saveStoredSettings,
+  NetworkType,
   Settings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings,
@@ -80,7 +80,9 @@ const App = () => {
   const [settings, setSettings] = useState<Settings>(loadStoredSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
+
   const currentNetwork = useCurrentNetwork()
+  const previousNetwork = useRef<NetworkType>()
 
   const lockWallet = () => {
     if (wallet) setWallet(undefined)
@@ -90,30 +92,31 @@ const App = () => {
   // Create client
   useEffect(() => {
     const getClient = async () => {
+      if (previousNetwork.current === currentNetwork) return
+
       setClientIsLoading(true)
       // Get clients
-      const clientResp = await createClient(settings)
+      const clientResp = await createClient(settings.network)
       if (clientResp) {
         setClient(clientResp)
 
         console.log('Clients initialized.')
 
         setSnackbarMessage({
-          text: `Alephium's Node URL: "${settings.network.nodeHost}"`,
+          text: `Current network: ${currentNetwork}.`,
           type: 'info',
           duration: 4000
         })
+
+        previousNetwork.current = currentNetwork
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
       }
       setClientIsLoading(false)
-
-      // Save settings
-      saveStoredSettings(settings)
     }
 
     getClient()
-  }, [currentNetwork, setSnackbarMessage, settings])
+  }, [currentNetwork, setSnackbarMessage, settings.network])
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)

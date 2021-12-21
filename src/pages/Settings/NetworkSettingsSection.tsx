@@ -70,7 +70,7 @@ const NetworkSettingsSection = () => {
 
   const handleNetworkPresetChange = useCallback(
     (option: typeof networkSelectOptions[number] | undefined) => {
-      if (option && option.value !== getNetworkName(currentSettings.network)) {
+      if (option && option.value !== selectedNetwork) {
         setSelectedNetwork(option.value)
 
         if (option.value === 'custom') {
@@ -83,7 +83,7 @@ const NetworkSettingsSection = () => {
         }
       }
     },
-    [currentSettings.network, updateSettings]
+    [selectedNetwork, updateSettings]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
