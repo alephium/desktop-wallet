@@ -30,6 +30,7 @@ import { createClient } from './utils/api-clients'
 import {
   loadStoredSettings,
   NetworkType,
+  saveStoredSettings,
   Settings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings,
@@ -117,6 +118,11 @@ const App = () => {
 
     getClient()
   }, [currentNetwork, setSnackbarMessage, settings.network])
+
+  // Save settings to local storage
+  useEffect(() => {
+    saveStoredSettings(settings)
+  }, [settings])
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
