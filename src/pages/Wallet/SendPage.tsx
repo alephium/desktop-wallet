@@ -22,13 +22,13 @@ import { Send } from 'lucide-react'
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
-import { Input } from '../../components/Inputs'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { ModalContext } from '../../components/Modal'
 import { WalletContext } from './WalletRootPage'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
+import { Input } from '../../components/Inputs/Input'
 
 const SendPage = () => {
   const history = useHistory()

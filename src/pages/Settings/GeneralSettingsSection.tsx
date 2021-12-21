@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Input } from '../../components/Inputs'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
+import { Input } from '../../components/Inputs/Input'
 
 const GeneralSettingsSection = () => {
   const [lockTime, setLockTime] = useState('')

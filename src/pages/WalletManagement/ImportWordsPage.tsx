@@ -21,7 +21,6 @@ import { walletImport, getStorage } from 'alephium-js'
 import { GlobalContext } from '../../App'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
-import { TextAreaTags } from '../../components/Inputs'
 import {
   FooterActionsContainer,
   FloatingPanel,
@@ -32,6 +31,7 @@ import { Button } from '../../components/Buttons'
 import Paragraph from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import { TextAreaTags } from '../../components/Inputs/TextAreaTags'
 
 const Storage = getStorage()
 

@@ -22,10 +22,10 @@ import styled from 'styled-components'
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
-import { Input } from '../../components/Inputs'
 import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
+import { Input } from '../../components/Inputs/Input'
 
 const Storage = getStorage()
 

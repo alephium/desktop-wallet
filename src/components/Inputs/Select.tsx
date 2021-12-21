@@ -15,8 +15,7 @@
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence, motion } from 'framer-motion'
-import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
+import styled from 'styled-components'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { MoreVertical } from 'lucide-react'
 import { isEqual } from 'lodash'

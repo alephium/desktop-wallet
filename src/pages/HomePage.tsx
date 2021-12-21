@@ -23,13 +23,14 @@ import { walletOpen, getStorage } from 'alephium-js'
 
 import { GlobalContext } from '../App'
 import { deviceBreakPoints } from '../style/globalStyles'
-import { Input, Select } from '../components/Inputs'
 import { Button } from '../components/Buttons'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import Paragraph from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
 import PanelTitle from '../components/PageComponents/PanelTitle'
+import { Select } from '../components/Inputs/Select'
+import { Input } from '../components/Inputs/Input'
 
 interface HomeProps {
   hasWallet: boolean
