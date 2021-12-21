@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual } from 'lodash'
+import { isEqual, merge } from 'lodash'
 import { useContext } from 'react'
 
 import { GlobalContext } from '../App'
@@ -23,6 +23,7 @@ import { ThemeType } from '../style/themes'
 export interface Settings {
   general: {
     theme: ThemeType
+    walletLockTimeInMinutes: number
   }
   network: {
     nodeHost: string
@@ -56,9 +57,10 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['
   }
 }
 
-export const walletIdleForTooLongThreshold = 3 * 60 * 1000 // 3 minutes
-
-export const defaultSettings: Settings = { general: { theme: 'light' }, network: networkEndpoints.mainnet }
+export const defaultSettings: Settings = {
+  general: { theme: 'light', walletLockTimeInMinutes: 3 /* minutes */ },
+  network: networkEndpoints.mainnet
+}
 
 export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 
@@ -108,12 +110,7 @@ export const loadStoredSettings = (): Settings => {
   // Clean old values up if needed
   deprecatedThemeSetting && window.localStorage.removeItem('theme')
 
-  return {
-    ...defaultSettings,
-    ...storedSettings,
-    ...migratedNetworkSettings,
-    ...migratedGeneralSettings
-  }
+  return merge(defaultSettings, storedSettings, migratedNetworkSettings, migratedGeneralSettings)
 }
 
 export const saveStoredSettings = (settings: Settings) => {

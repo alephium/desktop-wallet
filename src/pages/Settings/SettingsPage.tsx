@@ -19,10 +19,8 @@ import styled from 'styled-components'
 
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
-import ThemeSwitcher from '../../components/ThemeSwitcher'
 import NetworkSettingsSection from './NetworkSettingsSection'
 import AccountsSettingsSection from './AccountsSettingsSection'
-import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import GeneralSettingsSection from './GeneralSettingsSection'
 
 const tabs = [
@@ -38,9 +36,7 @@ const SettingsPage = () => {
     <PanelContentContainer>
       <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
       {tabs.find((t) => t.value === currentTab.value)?.component}
-      <HorizontalDivider />
       <Section>
-        <ThemeSwitcher />
         <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
       </Section>
     </PanelContentContainer>

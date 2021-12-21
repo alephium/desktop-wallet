@@ -4,13 +4,11 @@ import styled from 'styled-components'
 const InlineLabelValueInput = ({
   label,
   InputComponent,
-  onValueChange,
   description,
   className
 }: {
   label: string
   InputComponent: ReactNode
-  onValueChange: (v: string) => void
   description?: string
   className?: string
 }) => {
