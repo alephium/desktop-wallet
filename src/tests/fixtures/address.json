@@ -1,82 +1,203 @@
 {
-  "details": {
-    "balance": "299000000000000000000",
-    "txNumber": 1
-  },
-  "transactions": [
-    {
-      "hash": "8fc5f0d120b730f97f6cea5f02ae4a6ee7bf451d9261c623ea69d85e870201d2",
-      "blockHash": "000000eb4a6e3d3327ef1deeb3f2bc49d4b4af637c749a49bea2a0bfd63d6590",
-      "timestamp": 1633096699956,
-      "inputs": [
-        {
-          "outputRef": {
-            "hint": 1472622741,
-            "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7da9f063c05ac9bb0d0fbd5698ba17"
-          },
-          "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
-          "txHashRef": "string",
-          "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
-          "amount": "10000000000000000000"
-        }
-      ],
-      "outputs": [
-        {
-          "hint": 0,
-          "key": "string",
-          "amount": "4000000000000000000",
-          "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
-          "lockTime": 0,
-          "spent": "string"
-        },
-        {
-          "hint": 0,
-          "key": "string",
-          "amount": "6000000000000000000",
-          "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
-          "lockTime": 0,
-          "spent": "string"
-        }
-      ],
-      "gasAmount": 80000,
-      "gasPrice": "100000000000"
+  "initialFetch": {
+    "details": {
+      "balance": "299000000000000000000",
+      "txNumber": 2
     },
-    {
-      "hash": "798e9e137aec7c2d59d9655b4ffa640f301f628bf7c365083bb255f6aa5f89ef",
-      "blockHash": "503bfb16230888af4924aa8f8250d7d348b862e267d75d3147f1998050b6da69",
-      "timestamp": 1633596699956,
-      "inputs": [
-        {
-          "outputRef": {
-            "hint": 1472622741,
-            "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7fa9f063c05ac9bb0d0fbd5698ba17"
+    "transactions": [
+      {
+        "hash": "8fc5f0d120b730f97f6cea5f02ae4a6ee7bf451d9261c623ea69d85e870201d2",
+        "blockHash": "000000eb4a6e3d3327ef1deeb3f2bc49d4b4af637c749a49bea2a0bfd63d6590",
+        "timestamp": 1633096699956,
+        "inputs": [
+          {
+            "outputRef": {
+              "hint": 1472622741,
+              "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7da9f063c05ac9bb0d0fbd5698ba17"
+            },
+            "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
+            "txHashRef": "string",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "amount": "10000000000000000000"
+          }
+        ],
+        "outputs": [
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "4000000000000000000",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "lockTime": 0,
+            "spent": "string"
           },
-          "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
-          "txHashRef": "string",
-          "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
-          "amount": "20000000000000000000"
-        }
-      ],
-      "outputs": [
-        {
-          "hint": 0,
-          "key": "string",
-          "amount": "5000000000000000000",
-          "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
-          "lockTime": 0,
-          "spent": "string"
-        },
-        {
-          "hint": 0,
-          "key": "string",
-          "amount": "15000000000000000000",
-          "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
-          "lockTime": 0,
-          "spent": "string"
-        }
-      ],
-      "gasAmount": 80000,
-      "gasPrice": "100000000000"
-    }
-  ]
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "6000000000000000000",
+            "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
+            "lockTime": 0,
+            "spent": "string"
+          }
+        ],
+        "gasAmount": 80000,
+        "gasPrice": "100000000000"
+      },
+      {
+        "hash": "798e9e137aec7c2d59d9655b4ffa640f301f628bf7c365083bb255f6aa5f89ef",
+        "blockHash": "503bfb16230888af4924aa8f8250d7d348b862e267d75d3147f1998050b6da69",
+        "timestamp": 1633596699956,
+        "inputs": [
+          {
+            "outputRef": {
+              "hint": 1472622741,
+              "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7fa9f063c05ac9bb0d0fbd5698ba17"
+            },
+            "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
+            "txHashRef": "string",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "amount": "20000000000000000000"
+          }
+        ],
+        "outputs": [
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "5000000000000000000",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "lockTime": 0,
+            "spent": "string"
+          },
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "15000000000000000000",
+            "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
+            "lockTime": 0,
+            "spent": "string"
+          }
+        ],
+        "gasAmount": 80000,
+        "gasPrice": "100000000000"
+      }
+    ]
+  },
+  "refresh": {
+    "details": {
+      "balance": "300000000000000000000",
+      "txNumber": 3
+    },
+    "transactions": [
+      {
+        "hash": "8fc5f0d120b730f97f6cea5f02ae4a6ee7bf451d9261c623ea69d85e870201d2",
+        "blockHash": "000000eb4a6e3d3327ef1deeb3f2bc49d4b4af637c749a49bea2a0bfd63d6590",
+        "timestamp": 1633096699956,
+        "inputs": [
+          {
+            "outputRef": {
+              "hint": 1472622741,
+              "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7da9f063c05ac9bb0d0fbd5698ba17"
+            },
+            "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
+            "txHashRef": "string",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "amount": "10000000000000000000"
+          }
+        ],
+        "outputs": [
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "4000000000000000000",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "lockTime": 0,
+            "spent": "string"
+          },
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "6000000000000000000",
+            "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
+            "lockTime": 0,
+            "spent": "string"
+          }
+        ],
+        "gasAmount": 80000,
+        "gasPrice": "100000000000"
+      },
+      {
+        "hash": "798e9e137aec7c2d59d9655b4ffa640f301f628bf7c365083bb255f6aa5f89ef",
+        "blockHash": "503bfb16230888af4924aa8f8250d7d348b862e267d75d3147f1998050b6da69",
+        "timestamp": 1633596699956,
+        "inputs": [
+          {
+            "outputRef": {
+              "hint": 1472622741,
+              "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7fa9f063c05ac9bb0d0fbd5698ba17"
+            },
+            "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
+            "txHashRef": "string",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "amount": "20000000000000000000"
+          }
+        ],
+        "outputs": [
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "5000000000000000000",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "lockTime": 0,
+            "spent": "string"
+          },
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "15000000000000000000",
+            "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
+            "lockTime": 0,
+            "spent": "string"
+          }
+        ],
+        "gasAmount": 80000,
+        "gasPrice": "100000000000"
+      },
+      {
+        "hash": "798e9e137aec7c2d59d9655b4ffa640f301f628bf7c365083bb255f6aa5f89ef",
+        "blockHash": "503bfb16230888af4924aa8f8250d7d348b862e267d75d3147f1998050b6da69",
+        "timestamp": 1633596699956,
+        "inputs": [
+          {
+            "outputRef": {
+              "hint": 1472622741,
+              "key": "c89da3210c5f709cd9363f6c12c3fdd1ac7fa9f063c05ac9bb0d0fbd5698ba17"
+            },
+            "unlockScript": "0003dc84c5228297efb1d02c95ca9ec6091c065d4c8a3695ecce9e2c0dd0d04fafbd",
+            "txHashRef": "string",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "amount": "20000000000000000000"
+          }
+        ],
+        "outputs": [
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "5000000000000000000",
+            "address": "1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q",
+            "lockTime": 0,
+            "spent": "string"
+          },
+          {
+            "hint": 0,
+            "key": "string",
+            "amount": "15000000000000000000",
+            "address": "1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r",
+            "lockTime": 0,
+            "spent": "string"
+          }
+        ],
+        "gasAmount": 80000,
+        "gasPrice": "100000000000"
+      }
+    ]
+  }
 }
