@@ -22,6 +22,7 @@ import { deviceBreakPoints } from '../style/globalStyles'
 import NetworkBadge from '../components/NetworkBadge'
 import { Button } from '../components/Buttons'
 import { Settings as SettingsIcon } from 'lucide-react'
+import ThemeSwitcher from './ThemeSwitcher'
 
 const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsClick }) => {
   const { scrollY } = useViewportScroll()
@@ -32,6 +33,8 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
     <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
       {(children || onSettingsClick) && (
         <>
+          <ThemeSwitcher small />
+          <HeaderDivider />
           <NetworkBadge />
           <HeaderDivider />
           {children}

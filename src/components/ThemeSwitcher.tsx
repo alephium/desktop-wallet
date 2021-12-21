@@ -23,6 +23,7 @@ import { ThemeType } from '../style/themes'
 import { GlobalContext } from '../App'
 
 interface ThemeSwitcherProps {
+  small?: boolean
   className?: string
 }
 
@@ -32,14 +33,13 @@ const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
 
 const toggleWidth = 80
 const toggleHeight = toggleWidth / 2
-const toggleIndicatorSize = toggleWidth / 2
 
 const toggleVariants = {
   light: { left: 0, backgroundColor: 'var(--color-orange)' },
-  dark: { left: toggleWidth - toggleIndicatorSize, backgroundColor: 'var(--color-purple)' }
+  dark: { left: '50%', backgroundColor: 'var(--color-purple)' }
 }
 
-const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
+const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ small = false, className }) => {
   const {
     settings: {
       general: { theme: currentTheme }
@@ -55,7 +55,11 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
   )
 
   return (
-    <StyledThemeSwitcher onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')} className={className}>
+    <StyledThemeSwitcher
+      onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')}
+      className={className}
+      small={small}
+    >
       <ToggleContent>
         <ToggleIcon>
           <Sun onClick={() => switchTheme('light')} color={getButtonColor(currentTheme, 'light')} size={18} />
@@ -73,10 +77,10 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
   )
 }
 
-export const StyledThemeSwitcher = styled.div`
+export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
   position: relative;
-  width: ${toggleWidth}px;
-  height: ${toggleHeight}px;
+  width: ${({ small }) => (small ? toggleWidth / 1.5 : toggleWidth)}px;
+  height: ${({ small }) => (small ? toggleHeight / 1.5 : toggleHeight)}px;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: 60px;
   background-color: ${({ theme }) => theme.bg.secondary};
@@ -108,8 +112,8 @@ const ToggleIcon = styled.div`
 
 const ToggleFloatingIndicator = styled(motion.div)`
   position: absolute;
-  width: ${toggleIndicatorSize}px;
-  height: ${toggleIndicatorSize}px;
+  width: 50%;
+  height: 100%;
   background-color: ${({ theme }) => theme.font.primary};
   border-radius: 60px;
   z-index: 0;
