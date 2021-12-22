@@ -20,7 +20,7 @@ import { getStorage } from 'alephium-js'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
-import React, { useContext, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -189,7 +189,7 @@ const CheckWordsPage = () => {
 
   const createEncryptedWallet = async () => {
     if (areWordsValid() && plainWallet) {
-      const walletEncrypted = await plainWallet.encrypt(password)
+      const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(username, walletEncrypted)
       setWallet(plainWallet)
       return true

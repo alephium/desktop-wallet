@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Send } from 'lucide-react'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
@@ -41,8 +41,8 @@ const SendPage = () => {
   const { setModalTitle, onClose, overrideOnClose } = useContext(ModalContext)
 
   const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState<string>('')
-  const [addressError, setAddressError] = useState<string>('')
+  const [amount, setAmount] = useState('')
+  const [addressError, setAddressError] = useState('')
   const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
 
