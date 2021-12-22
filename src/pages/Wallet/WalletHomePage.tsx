@@ -46,6 +46,7 @@ const WalletHomePage = () => {
   const history = useHistory()
   const { wallet, setSnackbarMessage, client, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
+  const [lockedBalance, setLockedBalance] = useState<bigint>(BigInt(0))
   const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useTransactionsContext()
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -84,6 +85,7 @@ const WalletHomePage = () => {
           if (!addressDetailsResp.data) return
 
           setBalance(BigInt(addressDetailsResp.data.balance))
+          setLockedBalance(BigInt(addressDetailsResp.data.lockedBalance))
           setTotalNumberOfTx(addressDetailsResp.data.txNumber)
           setLoadedTxList(addressTransactionsResp.data)
           setIsLoading(false)
@@ -167,6 +169,11 @@ const WalletHomePage = () => {
           <WalletAmountContent>
             <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
+            {lockedBalance > 0 && (
+              <LockedBalance>
+                <LockedBalanceIcon /> {abbreviateAmount(lockedBalance)} ℵ
+              </LockedBalance>
+            )}
             <CurrentAccount>Account: {currentUsername}</CurrentAccount>
           </WalletAmountContent>
         </WalletAmountContainer>
@@ -287,11 +294,9 @@ const CompactWalletAmountBoxContainer = styled(motion.div)`
 `
 
 const WalletAmountContent = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  position: relative;
+  height: 100%;
+  padding: var(--spacing-5);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -370,7 +375,7 @@ const WalletAmountSubtitle = styled.div`
 const CurrentAccount = styled.span`
   text-align: center;
   color: ${({ theme }) => theme.font.contrastSecondary};
-  margin-top: var(--spacing-1);
+  margin-top: var(--spacing-2);
   font-size: 0.95em;
 `
 
@@ -441,6 +446,20 @@ const NoMoreTransactionMessage = styled.div`
   text-align: center;
   width: 100%;
   margin-top: var(--spacing-3);
+`
+
+const LockedBalance = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.font.contrastSecondary};
+  margin-top: var(--spacing-2);
+  font-weight: var(--fontWeight-medium);
+  font-size: 1rem;
+`
+
+const LockedBalanceIcon = styled(Lock)`
+  height: 1rem;
 `
 
 export default WalletHomePage
