@@ -46,12 +46,12 @@ const SendPage = () => {
   const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
 
-  const onCloseButtonPress = (isChecking: boolean) => {
+  const onCloseButtonClick = (isChecking: boolean) => {
     if (!isChecking) {
       onClose()
     } else {
       setIsChecking(false)
-      overrideOnClose(() => () => onCloseButtonPress(false))
+      overrideOnClose(() => () => onCloseButtonClick(false))
       setModalTitle('Send')
     }
   }
@@ -80,7 +80,7 @@ const SendPage = () => {
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
-      overrideOnClose(() => () => onCloseButtonPress(true))
+      overrideOnClose(() => () => onCloseButtonClick(true))
       setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!

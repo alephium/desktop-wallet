@@ -66,7 +66,7 @@ const WalletWordsPage = () => {
 
   return (
     <FloatingPanel enforceMinHeight>
-      <PanelTitle color="primary" onBackButtonPress={onButtonBack}>
+      <PanelTitle color="primary" onBackButtonClick={onButtonBack}>
         Your Wallet
       </PanelTitle>
       <PanelContentContainer>

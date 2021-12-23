@@ -23,7 +23,7 @@ import styled, { useTheme } from 'styled-components'
 
 interface PanelTitleProps {
   color?: string
-  onBackButtonPress?: () => void
+  onBackButtonClick?: () => void
   smaller?: boolean
   backgroundColor?: string
   useLayoutId?: boolean
@@ -32,7 +32,7 @@ interface PanelTitleProps {
 const PanelTitle: FC<PanelTitleProps> = ({
   color,
   children,
-  onBackButtonPress,
+  onBackButtonClick,
   smaller,
   backgroundColor,
   useLayoutId = true
@@ -47,7 +47,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
       style={{ backgroundColor: backgroundColor || theme.bg.primary }}
       layoutId={useLayoutId ? 'sectionTitle' : ''}
     >
-      {onBackButtonPress && <BackArrow onClick={onBackButtonPress} strokeWidth={3} />}
+      {onBackButtonClick && <BackArrow onClick={onBackButtonClick} strokeWidth={3} />}
       <H1 color={color} smaller={smaller} style={{ scale: titleScale, originX: 0 }}>
         {children}
       </H1>
