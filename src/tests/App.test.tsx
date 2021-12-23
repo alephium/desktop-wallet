@@ -41,11 +41,13 @@ jest.mock('alephium-js', () => ({
   }
 }))
 
+const walletLockTimeInMinutes = 4
+
 beforeEach(async () => {
   const context: PartialDeep<Context> = {
     settings: {
       general: {
-        walletLockTimeInMinutes: 4
+        walletLockTimeInMinutes: walletLockTimeInMinutes
       }
     }
   }
@@ -89,8 +91,9 @@ it('should lock the wallet when idle for too long after successful login', async
     jest.runOnlyPendingTimers()
   })
 
-  // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 3 minutes)
-  jest.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
+  // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 1 minute less)
+  const stayIdleTimeoutInMinutes = walletLockTimeInMinutes - 1
+  jest.setSystemTime(new Date(new Date().getTime() + stayIdleTimeoutInMinutes * 60 * 1000))
   act(() => {
     jest.runOnlyPendingTimers()
   })
