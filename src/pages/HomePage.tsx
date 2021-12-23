@@ -27,7 +27,8 @@ import { GlobalContext } from '../App'
 import AppHeader from '../components/AppHeader'
 import { Button } from '../components/Buttons'
 import SideBar from '../components/HomePage/SideBar'
-import { Input, Select } from '../components/Inputs'
+import Input from '../components/Inputs/Input'
+import Select from '../components/Inputs/Select'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
@@ -133,7 +134,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
         />
       </Section>
       <Section inList>
-        <Button onClick={handleLogin} submit>
+        <Button onClick={handleLogin} submit disabled={!credentials.username || !credentials.password}>
           Login
         </Button>
       </Section>

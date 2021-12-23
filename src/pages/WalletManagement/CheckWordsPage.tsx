@@ -315,7 +315,7 @@ const SelectedWordList = styled.div`
 
 const RemainingWord = styled(SelectedWord)`
   background-color: ${({ theme }) => theme.global.accent};
-  background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.2).toString()};
+  background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.1).toString()};
   color: ${({ theme }) => theme.global.accent};
 
   &:hover {

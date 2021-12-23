@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
 
-import { loadSettings, Settings } from './settings'
+import { loadStoredSettings, Settings } from './settings'
 
-export async function createClient(settings?: Settings) {
-  const loadedSettings = settings || loadSettings()
+export async function createClient(settings?: Settings['network']) {
+  const loadedSettings = settings || loadStoredSettings().network
 
   try {
     const cliqueClient = new CliqueClient({

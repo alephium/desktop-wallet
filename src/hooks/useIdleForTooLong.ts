@@ -18,41 +18,45 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { walletIdleForTooLongThreshold } from '../utils/settings'
+const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) => {
+  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
 
-const useIdleForTooLong = (onIdleForTooLong: () => void) => {
-  const [timeOnLastInteraction, setTimeOnLastInteraction] = useState(new Date().getTime())
+  const lastInteractionTimeThrottle = 10000 // 10 seconds
 
-  const timeOnLastInteractionThrottle = 10000 // 10 seconds
+  const updateLastInteractionTime = useCallback(() => {
+    const currentTime = new Date().getTime()
 
-  const updateTimeOnLastInteraction = useCallback(() => {
-    const timeOnNewInteraction = new Date().getTime()
-
-    if (timeOnNewInteraction - timeOnLastInteraction > timeOnLastInteractionThrottle) {
-      setTimeOnLastInteraction(timeOnNewInteraction)
+    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
+      setLastInteractionTime(currentTime)
     }
-  }, [timeOnLastInteraction])
+  }, [lastInteractionTime])
 
   useEffect(() => {
-    const checkIfIdleForTooLong = setInterval(() => {
-      const currentTime = new Date().getTime()
+    let checkIfIdleForTooLong: ReturnType<typeof setInterval> | null = null
 
-      if (currentTime - timeOnLastInteraction > walletIdleForTooLongThreshold) {
-        onIdleForTooLong()
-      }
-    }, 2000)
+    if (timeoutInMs) {
+      checkIfIdleForTooLong = setInterval(() => {
+        const currentTime = new Date().getTime()
 
-    document.addEventListener('mousemove', updateTimeOnLastInteraction)
-    document.addEventListener('keydown', updateTimeOnLastInteraction)
-    document.addEventListener('scroll', updateTimeOnLastInteraction)
+        if (currentTime - lastInteractionTime > timeoutInMs) {
+          onIdleForTooLong()
+        }
+      }, 2000)
+
+      document.addEventListener('mousemove', updateLastInteractionTime)
+      document.addEventListener('keydown', updateLastInteractionTime)
+      document.addEventListener('scroll', updateLastInteractionTime)
+    }
 
     return () => {
-      document.removeEventListener('mousemove', updateTimeOnLastInteraction)
-      document.removeEventListener('keydown', updateTimeOnLastInteraction)
-      document.removeEventListener('scroll', updateTimeOnLastInteraction)
-      clearInterval(checkIfIdleForTooLong)
+      if (checkIfIdleForTooLong) {
+        document.removeEventListener('mousemove', updateLastInteractionTime)
+        document.removeEventListener('keydown', updateLastInteractionTime)
+        document.removeEventListener('scroll', updateLastInteractionTime)
+        clearInterval(checkIfIdleForTooLong)
+      }
     }
-  }, [onIdleForTooLong, timeOnLastInteraction, updateTimeOnLastInteraction])
+  }, [lastInteractionTime, onIdleForTooLong, timeoutInMs, updateLastInteractionTime])
 }
 
 export default useIdleForTooLong

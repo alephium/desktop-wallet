@@ -37,7 +37,7 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadSettings, useCurrentNetwork } from '../../utils/settings'
+import { loadStoredSettings, useCurrentNetwork } from '../../utils/settings'
 import { SimpleTx, WalletContext } from './WalletRootPage'
 
 dayjs.extend(relativeTime)
@@ -53,7 +53,9 @@ const WalletHomePage = () => {
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const [lastLoadedPage, setLastLoadedPage] = useState(1)
 
-  const { explorerUrl } = loadSettings()
+  const {
+    network: { explorerUrl }
+  } = loadStoredSettings()
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()

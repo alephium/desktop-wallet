@@ -24,7 +24,8 @@ import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
-import { Input, Select } from '../../components/Inputs'
+import Input from '../../components/Inputs/Input'
+import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useMountEffect } from '../../utils/hooks'
 import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../../utils/settings'
@@ -34,17 +35,12 @@ interface NetworkSelectOption {
   value: NetworkType
 }
 
+type NetworkSettings = Settings['network']
+
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, setSettings, setSnackbarMessage } = useContext(GlobalContext)
-
-  const [tempSettings, setTempSettings] = useState<Settings>({
-    nodeHost: currentSettings.nodeHost,
-    explorerApiHost: currentSettings.explorerApiHost,
-    explorerUrl: currentSettings.explorerUrl
-  })
-
+  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useContext(GlobalContext)
+  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
-
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const networkSelectOptions: NetworkSelectOption[] = [
@@ -54,15 +50,15 @@ const NetworkSettingsSection = () => {
     { label: 'Custom', value: 'custom' }
   ]
 
-  const overrideSelectionIfMatchesPreset = useCallback((newSettings: Settings) => {
+  const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
     const newNetwork = getNetworkName(newSettings)
 
     setSelectedNetwork(newNetwork)
   }, [])
 
-  const editSettings = (v: Partial<Settings>) => {
-    const newSettings = { ...tempSettings, ...v }
+  const editAdvancedSettings = (v: Partial<NetworkSettings>) => {
+    const newSettings = { ...tempAdvancedSettings, ...v }
 
     // Check if we need to append the http:// protocol if an IP or localhost is used
     if (v.nodeHost?.match(/^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|localhost)(?::[0-9]*)?$/)) {
@@ -71,31 +67,36 @@ const NetworkSettingsSection = () => {
 
     overrideSelectionIfMatchesPreset(newSettings)
 
-    setTempSettings(newSettings)
+    setTempAdvancedSettings(newSettings)
   }
 
-  const handleNetworkPresetChange = useCallback((option: typeof networkSelectOptions[number] | undefined) => {
-    if (option) {
-      setSelectedNetwork(option.value)
+  const handleNetworkPresetChange = useCallback(
+    (option: typeof networkSelectOptions[number] | undefined) => {
+      if (option && option.value !== selectedNetwork) {
+        setSelectedNetwork(option.value)
 
-      if (option.value === 'custom') {
-        // Make sure to open expandable advanced section
-        setAdvancedSectionOpen(true)
-      } else {
-        setTempSettings(networkEndpoints[option.value])
+        if (option.value === 'custom') {
+          // Make sure to open expandable advanced section
+          setAdvancedSectionOpen(true)
+        } else {
+          const newNetworkSettings = networkEndpoints[option.value]
+          updateSettings('network', newNetworkSettings)
+          setTempAdvancedSettings(newNetworkSettings)
+        }
       }
-    }
-  }, [])
+    },
+    [selectedNetwork, updateSettings]
+  )
 
-  const handleSave = () => {
-    overrideSelectionIfMatchesPreset(tempSettings)
-    setSettings(tempSettings)
-    setSnackbarMessage({ text: 'Settings saved!', type: 'info' })
-  }
+  const handleAdvancedSettingsSave = useCallback(() => {
+    overrideSelectionIfMatchesPreset(tempAdvancedSettings)
+    updateSettings('network', tempAdvancedSettings)
+    setSnackbarMessage({ text: 'Custom network settings saved.', type: 'info' })
+  }, [overrideSelectionIfMatchesPreset, updateSettings, setSnackbarMessage, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {
-    overrideSelectionIfMatchesPreset(currentSettings)
+    overrideSelectionIfMatchesPreset(currentSettings.network)
   })
 
   return (
@@ -120,24 +121,24 @@ const NetworkSettingsSection = () => {
         <UrlInputs>
           <Input
             placeholder="Node host"
-            value={tempSettings.nodeHost}
-            onChange={(e) => editSettings({ nodeHost: e.target.value })}
+            value={tempAdvancedSettings.nodeHost}
+            onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
           />
           <Input
             placeholder="Explorer API host"
-            value={tempSettings.explorerApiHost}
-            onChange={(e) => editSettings({ explorerApiHost: e.target.value })}
+            value={tempAdvancedSettings.explorerApiHost}
+            onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
           />
           <Input
             placeholder="Explorer URL"
-            value={tempSettings.explorerUrl}
-            onChange={(e) => editSettings({ explorerUrl: e.target.value })}
+            value={tempAdvancedSettings.explorerUrl}
+            onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
           />
         </UrlInputs>
+        <Section inList>
+          <Button onClick={handleAdvancedSettingsSave}>Save</Button>
+        </Section>
       </ExpandableSection>
-      <Section inList>
-        <Button onClick={handleSave}>Save</Button>
-      </Section>
     </>
   )
 }

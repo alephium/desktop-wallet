@@ -25,7 +25,7 @@ import zxcvbn from 'zxcvbn'
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
-import { Input } from '../../components/Inputs'
+import Input from '../../components/Inputs/Input'
 import {
   FloatingPanel,
   FooterActionsContainer,

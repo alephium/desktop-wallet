@@ -16,22 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import { render } from '@testing-library/react'
+import { merge } from 'lodash'
+import { PartialDeep } from 'type-fest'
 
-import { useCurrentNetwork } from '../utils/settings'
+import { Context, GlobalContext, initialContext } from '../App'
 
-const NetworkBadge = () => {
-  const currentNetwork = useCurrentNetwork()
-
-  return <BadgeContainer>{currentNetwork}</BadgeContainer>
+export const renderWithGlobalContext = async (contextObject: PartialDeep<Context>, el: JSX.Element) => {
+  return await render(
+    <GlobalContext.Provider value={merge(initialContext, contextObject)}>{el}</GlobalContext.Provider>
+  )
 }
-
-const BadgeContainer = styled.div`
-  padding: var(--spacing-1) var(--spacing-2);
-  color: ${({ theme }) => theme.font.secondary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-big);
-  font-weight: var(--fontWeight-semiBold);
-`
-
-export default NetworkBadge

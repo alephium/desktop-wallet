@@ -16,12 +16,32 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { isEqual } from 'lodash'
+import { clone, isEqual, merge } from 'lodash'
 import { useContext } from 'react'
 
 import { GlobalContext } from '../App'
+import { ThemeType } from '../style/themes'
 
-export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> = {
+export interface Settings {
+  general: {
+    theme: ThemeType
+    walletLockTimeInMinutes: number | null
+  }
+  network: {
+    nodeHost: string
+    explorerApiHost: string
+    explorerUrl: string
+  }
+}
+
+export type UpdateSettingsFunctionSignature = <T extends keyof Settings>(
+  settingKeyToUpdate: T,
+  newSettings: Partial<Settings[T]>
+) => Settings | null
+
+type DeprecatedNetworkSettings = Settings['network']
+
+export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['network']> = {
   mainnet: {
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',
@@ -39,21 +59,16 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings> 
   }
 }
 
-export const walletIdleForTooLongThreshold = 3 * 60 * 1000 // 3 minutes
-
-export const defaultSettings = networkEndpoints.mainnet
-
-export interface Settings {
-  nodeHost: string
-  explorerApiHost: string
-  explorerUrl: string
+export const defaultSettings: Settings = {
+  general: { theme: 'light', walletLockTimeInMinutes: 3 },
+  network: clone(networkEndpoints.mainnet)
 }
 
 export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 
 export type NetworkType = typeof networkTypes[number]
 
-export const getNetworkName = (settings: Settings) => {
+export const getNetworkName = (settings: Settings['network']) => {
   return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
     return isEqual(presetSettings, settings)
   })?.[0] || 'custom') as NetworkType | 'custom'
@@ -61,16 +76,67 @@ export const getNetworkName = (settings: Settings) => {
 
 export const useCurrentNetwork = () => {
   const { settings } = useContext(GlobalContext)
-  return getNetworkName(settings)
+  return getNetworkName(settings.network)
 }
 
-export const loadSettings = (): Settings => {
-  const storedSettings = window.localStorage.getItem('settings')
+const returnSettingsObject = () => {
+  const rawSettings = window.localStorage.getItem('settings')
 
-  return storedSettings ? JSON.parse(storedSettings) : defaultSettings
+  if (!rawSettings) return defaultSettings
+
+  try {
+    return JSON.parse(rawSettings) as Settings
+  } catch (e) {
+    console.error(e)
+    return defaultSettings // Fallback to default settings if something went wrong
+  }
 }
 
-export function saveSettings(settings: Settings) {
+export const loadStoredSettings = (): Settings => {
+  const storedSettings = returnSettingsObject()
+
+  const deprecatedThemeSetting = window.localStorage.getItem('theme')
+
+  // Migrate values if needed
+  const migratedNetworkSettings = !storedSettings.network
+    ? { network: storedSettings as unknown as DeprecatedNetworkSettings }
+    : {}
+  const migratedGeneralSettings = deprecatedThemeSetting
+    ? {
+        general: {
+          theme: deprecatedThemeSetting as ThemeType
+        }
+      }
+    : {}
+
+  // Clean old values up if needed
+  deprecatedThemeSetting && window.localStorage.removeItem('theme')
+
+  return merge(defaultSettings, storedSettings, migratedNetworkSettings, migratedGeneralSettings)
+}
+
+export const saveStoredSettings = (settings: Settings) => {
   const str = JSON.stringify(settings)
   window.localStorage.setItem('settings', str)
+}
+
+export const getStoredSettings = <T extends keyof Settings>(key: T): Settings[T] => {
+  return returnSettingsObject()[key]
+}
+
+export const updateStoredSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, settings) => {
+  const rawPreviousSettings = window.localStorage.getItem('settings')
+  const previousSettings = rawPreviousSettings && JSON.parse(rawPreviousSettings)
+
+  const newSettings = {
+    ...previousSettings,
+    [settingKeyToUpdate]: {
+      ...previousSettings[settingKeyToUpdate],
+      ...settings
+    }
+  }
+
+  window.localStorage.setItem('settings', JSON.stringify(newSettings))
+
+  return newSettings
 }

@@ -1,7 +1,26 @@
-import { fireEvent, render, screen, waitFor, act } from '@testing-library/react'
-import { HashRouter as Router } from 'react-router-dom'
+/*
+Copyright 2018 - 2021 The Alephium Authors
+This file is part of the alephium project.
 
-import App from '../App'
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
+import { HashRouter as Router } from 'react-router-dom'
+import { PartialDeep } from 'type-fest'
+
+import App, { Context } from '../App'
+import { renderWithGlobalContext } from '.'
 
 jest.mock('alephium-js', () => ({
   getStorage: jest.fn().mockImplementation(() => ({
@@ -23,13 +42,22 @@ jest.mock('alephium-js', () => ({
 }))
 
 beforeEach(async () => {
-  await waitFor(() =>
-    render(
+  const context: PartialDeep<Context> = {
+    settings: {
+      general: {
+        walletLockTimeInMinutes: 4
+      }
+    }
+  }
+
+  await waitFor(() => {
+    renderWithGlobalContext(
+      context,
       <Router>
         <App />
       </Router>
     )
-  )
+  })
 })
 
 it('should display login form when accounts exist in storage', () => {
@@ -61,8 +89,8 @@ it('should lock the wallet when idle for too long after successful login', async
     jest.runOnlyPendingTimers()
   })
 
-  // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 2 minutes)
-  jest.setSystemTime(new Date(new Date().getTime() + 2 * 60 * 1000))
+  // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 3 minutes)
+  jest.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
   act(() => {
     jest.runOnlyPendingTimers()
   })
@@ -73,15 +101,15 @@ it('should lock the wallet when idle for too long after successful login', async
     fireEvent.mouseMove(screen.getByRole('main'))
   })
 
-  // 6. Advance time and ensure that we are still not locked out, since the mouse moved (ex: another 2 minutes)
-  jest.setSystemTime(new Date(new Date().getTime() + 2 * 60 * 1000))
+  // 6. Advance time and ensure that we are still not locked out, since the mouse moved (ex: another 3 minutes)
+  jest.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
   act(() => {
     jest.runOnlyPendingTimers()
   })
   expect(screen.getByText('Account: Account 1')).toBeInTheDocument()
 
   // 8. Finally, advance time without any interaction and expect to be locked out
-  jest.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
+  jest.setSystemTime(new Date(new Date().getTime() + 4 * 60 * 1000))
   act(() => {
     jest.runOnlyPendingTimers()
   })

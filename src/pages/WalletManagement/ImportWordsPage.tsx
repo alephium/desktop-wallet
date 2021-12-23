@@ -22,7 +22,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
-import { TextAreaTags } from '../../components/Inputs'
+import TextAreaTags from '../../components/Inputs/TextAreaTags'
 import {
   FloatingPanel,
   FooterActionsContainer,

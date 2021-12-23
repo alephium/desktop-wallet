@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, Wallet } from 'alephium-js'
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import styled, { ThemeProvider } from 'styled-components'
 import { AsyncReturnType } from 'type-fest'
@@ -34,37 +34,40 @@ import WalletPages from './pages/Wallet/WalletRootPage'
 import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
 import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
-import { darkTheme, lightTheme, ThemeType } from './style/themes'
+import { darkTheme, lightTheme } from './style/themes'
 import { createClient } from './utils/api-clients'
-import { useStateWithLocalStorage } from './utils/hooks'
-import { loadSettings, saveSettings, Settings, useCurrentNetwork } from './utils/settings'
+import {
+  loadStoredSettings,
+  NetworkType,
+  saveStoredSettings,
+  Settings,
+  UpdateSettingsFunctionSignature,
+  updateStoredSettings,
+  useCurrentNetwork
+} from './utils/settings'
 
-interface Context {
+export interface Context {
   currentUsername: string
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   client: Client | undefined
   settings: Settings
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>
+  updateSettings: UpdateSettingsFunctionSignature
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  switchTheme: (theme: ThemeType) => void
-  currentTheme: ThemeType
 }
 
 type Client = AsyncReturnType<typeof createClient>
 
-const initialContext: Context = {
+export const initialContext: Context = {
   currentUsername: '',
   setCurrentUsername: () => null,
   wallet: undefined,
   setWallet: () => null,
   client: undefined,
-  settings: loadSettings(),
-  setSettings: () => null,
-  setSnackbarMessage: () => null,
-  switchTheme: () => null,
-  currentTheme: 'light'
+  settings: loadStoredSettings(),
+  updateSettings: () => null,
+  setSnackbarMessage: () => null
 }
 
 export const GlobalContext = React.createContext<Context>(initialContext)
@@ -77,46 +80,64 @@ const App = () => {
   const [currentUsername, setCurrentUsername] = useState('')
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [client, setClient] = useState<Client>()
-  const [settings, setSettings] = useState<Settings>(loadSettings())
+  const [settings, setSettings] = useState<Settings>(loadStoredSettings())
   const [clientIsLoading, setClientIsLoading] = useState(false)
   const history = useHistory()
-  const [theme, setTheme] = useStateWithLocalStorage<ThemeType>('theme', 'light')
+
   const currentNetwork = useCurrentNetwork()
+  const previousNetwork = useRef<NetworkType>()
 
   const lockWallet = () => {
     if (wallet) setWallet(undefined)
   }
-  useIdleForTooLong(lockWallet)
+
+  useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   // Create client
   useEffect(() => {
     const getClient = async () => {
+      if (previousNetwork.current === currentNetwork) return
+
       setClientIsLoading(true)
       // Get clients
-      const clientResp = await createClient(settings)
+      const clientResp = await createClient(settings.network)
       if (clientResp) {
         setClient(clientResp)
 
         console.log('Clients initialized.')
 
-        setSnackbarMessage({ text: `Alephium's Node URL: "${settings.nodeHost}"`, type: 'info', duration: 4000 })
+        setSnackbarMessage({
+          text: `Current network: ${currentNetwork}.`,
+          type: 'info',
+          duration: 4000
+        })
+
+        previousNetwork.current = currentNetwork
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
       }
       setClientIsLoading(false)
-
-      // Save settings
-      saveSettings(settings)
     }
 
     getClient()
-  }, [currentNetwork, setSnackbarMessage, settings])
+  }, [currentNetwork, setSnackbarMessage, settings.network])
+
+  // Save settings to local storage
+  useEffect(() => {
+    saveStoredSettings(settings)
+  }, [settings])
+
+  const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
+    const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
+    updatedSettings && setSettings(updatedSettings)
+    return updatedSettings
+  }
 
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
 
   return (
-    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
 
       <GlobalContext.Provider
@@ -128,9 +149,7 @@ const App = () => {
           client,
           setSnackbarMessage,
           settings,
-          setSettings,
-          switchTheme: setTheme as (arg0: ThemeType) => void,
-          currentTheme: theme as ThemeType
+          updateSettings
         }}
       >
         <AppContainer>

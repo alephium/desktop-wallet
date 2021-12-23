@@ -25,7 +25,7 @@ import { Button } from '../../components/Buttons'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { openInWebBrowser } from '../../utils/misc'
-import { loadSettings } from '../../utils/settings'
+import { loadStoredSettings } from '../../utils/settings'
 
 const AddressPage = () => {
   const { wallet, setSnackbarMessage } = useContext(GlobalContext)
@@ -34,7 +34,10 @@ const AddressPage = () => {
   const address = wallet?.address
 
   const handleShowInExplorer = () => {
-    const { explorerUrl } = loadSettings()
+    const {
+      network: { explorerUrl }
+    } = loadStoredSettings()
+
     if (explorerUrl) {
       const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
       openInWebBrowser(cleanURL)

@@ -19,34 +19,26 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
-import ThemeSwitcher from '../../components/ThemeSwitcher'
 import AccountsSettingsSection from './AccountsSettingsSection'
+import GeneralSettingsSection from './GeneralSettingsSection'
 import NetworkSettingsSection from './NetworkSettingsSection'
 
-const SettingsPage = () => {
-  const tabs = [
-    { value: 'client', label: 'Networks' },
-    { value: 'accounts', label: 'Accounts' }
-  ]
+const tabs = [
+  { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
+  { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
+  { value: 'accounts', label: 'Accounts', component: <AccountsSettingsSection /> }
+]
 
+const SettingsPage = () => {
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
     <PanelContentContainer>
       <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
-      {currentTab.value === 'accounts' ? (
-        <AccountsSettingsSection />
-      ) : currentTab.value === 'client' ? (
-        <NetworkSettingsSection />
-      ) : (
-        <NetworkSettingsSection />
-      )}
-      <HorizontalDivider />
+      {tabs.find((t) => t.value === currentTab.value)?.component}
       <Section>
-        <ThemeSwitcher />
         <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
       </Section>
     </PanelContentContainer>
