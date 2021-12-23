@@ -75,7 +75,7 @@ const SendPage = () => {
     setAmount(value)
   }
 
-  const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
+  const isSendButtonActive = address.length > 0 && addressError.length === 0 && amount.length > 0
 
   const handleSend = async () => {
     if (!isChecking) {
@@ -152,7 +152,7 @@ const SendPage = () => {
         <CheckTransactionContent address={address} amount={amount} />
       )}
       <Section inList>
-        <Button onClick={handleSend} disabled={!isSendButtonActive()}>
+        <Button onClick={handleSend} disabled={!isSendButtonActive}>
           {isChecking ? 'Send' : 'Check'}
         </Button>
       </Section>
