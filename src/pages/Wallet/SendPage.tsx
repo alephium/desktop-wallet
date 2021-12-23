@@ -30,6 +30,7 @@ import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
+import { convertToQALPH } from '../../utils/numbers'
 import { WalletContext } from './WalletRootPage'
 
 const SendPage = () => {
@@ -86,16 +87,14 @@ const SendPage = () => {
       // Send it!
       setIsSending(true)
 
-      // Transform amount in qALF (1e-18)
-      const fullAmount = BigInt(Number(amount) * 1e18)
+      const fullAmount = convertToQALPH(amount).toString()
 
       try {
         const txCreateResp = await client.clique.transactionCreate(
           wallet.address,
           wallet.publicKey,
           address,
-          fullAmount.toString(),
-          undefined
+          fullAmount
         )
 
         const { txId, unsignedTx } = txCreateResp.data
@@ -108,7 +107,7 @@ const SendPage = () => {
           txId: txSendResp.data.txId,
           toAddress: address,
           timestamp: new Date().getTime(),
-          amount: fullAmount.toString()
+          amount: fullAmount
         })
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })

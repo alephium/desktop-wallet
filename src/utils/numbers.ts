@@ -111,3 +111,9 @@ export const calAmountDelta = (t: Transaction, id: string) => {
 
   return outputAmount - inputAmount
 }
+
+export const convertToQALPH = (amount: string) => {
+  const numberOfDecimals = amount.includes('.') ? amount.length - 1 - amount.indexOf('.') : 0
+  const numberOfZerosToAdd = 18 - numberOfDecimals
+  return BigInt(`${amount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+}

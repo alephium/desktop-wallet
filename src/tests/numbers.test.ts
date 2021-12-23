@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, calAmountDelta, removeTrailingZeros } from '../utils/numbers'
+import { abbreviateAmount, calAmountDelta, convertToQALPH, removeTrailingZeros } from '../utils/numbers'
 import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
@@ -64,4 +64,18 @@ it('should calucate the amount delta between the inputs and outputs of an addres
     expect(() =>
       calAmountDelta(transactions.missingOutputs, transactions.missingOutputs.inputs[0].address)
     ).toThrowError('Missing transaction details')
+})
+
+it('should convert to qALPH', () => {
+  expect(convertToQALPH('-1')).toEqual(BigInt(-1000000000000000000n)),
+    expect(convertToQALPH('0')).toEqual(BigInt(0)),
+    expect(convertToQALPH('1')).toEqual(BigInt(1000000000000000000n)),
+    expect(convertToQALPH('10')).toEqual(BigInt(10000000000000000000n)),
+    expect(convertToQALPH('999999999')).toEqual(BigInt(999999999000000000000000000n)),
+    expect(convertToQALPH('999999999999')).toEqual(BigInt(999999999999000000000000000000n)),
+    expect(convertToQALPH('0.1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('0.01')).toEqual(BigInt(10000000000000000n)),
+    expect(convertToQALPH('0.00000009')).toEqual(BigInt(90000000000n)),
+    expect(convertToQALPH('0.000000000000000001')).toEqual(BigInt(1n)),
+    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n))
 })
