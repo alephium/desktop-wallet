@@ -1,43 +1,44 @@
-// Copyright 2018 - 2021 The Alephium Authors
-// This file is part of the alephium project.
-//
-// The library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the library. If not, see <http://www.gnu.org/licenses/>.
+/*
+Copyright 2018 - 2021 The Alephium Authors
+This file is part of the alephium project.
 
-import { useCallback, useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
-import { useHistory } from 'react-router-dom'
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
-import { Send, QrCode, RefreshCw, Lock } from 'lucide-react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
+import { Lock, QrCode, RefreshCw, Send } from 'lucide-react'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+import styled from 'styled-components'
 
 import { GlobalContext } from '../../App'
-import { Section, FloatingPanel } from '../../components/PageComponents/PageContainers'
-import Spinner from '../../components/Spinner'
-import { Button } from '../../components/Buttons'
-import AppHeader from '../../components/AppHeader'
-import TransactionItem from '../../components/TransactionItem'
 import ActionButton from '../../components/ActionButton'
+import AppHeader from '../../components/AppHeader'
+import { Button } from '../../components/Buttons'
+import { FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
+import Spinner from '../../components/Spinner'
+import TransactionItem from '../../components/TransactionItem'
+import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
+import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
+import { getHumanReadableError } from '../../utils/api'
+import { useInterval } from '../../utils/hooks'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
 import { loadStoredSettings, useCurrentNetwork } from '../../utils/settings'
-import { useInterval } from '../../utils/hooks'
-import { getHumanReadableError } from '../../utils/api'
 import { SimpleTx, WalletContext } from './WalletRootPage'
-import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
-
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 
 dayjs.extend(relativeTime)
 

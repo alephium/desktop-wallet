@@ -1,36 +1,38 @@
-// Copyright 2018 - 2021 The Alephium Authors
-// This file is part of the alephium project.
-//
-// The library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the library. If not, see <http://www.gnu.org/licenses/>.
+/*
+Copyright 2018 - 2021 The Alephium Authors
+This file is part of the alephium project.
 
-import React, { useCallback, useContext, useState } from 'react'
-import styled from 'styled-components'
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+import { getStorage, walletOpen } from 'alephium-js'
 import { motion } from 'framer-motion'
-import tinycolor from 'tinycolor2'
+import React, { useCallback, useContext, useState } from 'react'
 import { useHistory } from 'react-router'
-import { walletOpen, getStorage } from 'alephium-js'
+import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 import { GlobalContext } from '../App'
-import { deviceBreakPoints } from '../style/globalStyles'
-import { Button } from '../components/Buttons'
-import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
-import Paragraph from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
+import { Button } from '../components/Buttons'
 import SideBar from '../components/HomePage/SideBar'
-import PanelTitle from '../components/PageComponents/PanelTitle'
-import Select from '../components/Inputs/Select'
 import Input from '../components/Inputs/Input'
+import Select from '../components/Inputs/Select'
+import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
+import PanelTitle from '../components/PageComponents/PanelTitle'
+import Paragraph from '../components/Paragraph'
+import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean
@@ -91,7 +93,7 @@ const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: (
       setSnackbarMessage({ text: 'Unknown account name', type: 'info' })
     } else {
       try {
-        const wallet = await walletOpen(credentials.password, walletEncrypted)
+        const wallet = walletOpen(credentials.password, walletEncrypted)
         if (wallet) {
           setWallet(wallet)
           setCurrentUsername(credentials.username)
