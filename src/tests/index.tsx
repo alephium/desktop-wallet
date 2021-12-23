@@ -17,21 +17,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { render } from '@testing-library/react'
+import { merge } from 'lodash'
 import { PartialDeep } from 'type-fest'
 
 import { Context, GlobalContext, initialContext } from '../App'
 
 export const renderWithGlobalContext = async (contextObject: PartialDeep<Context>, el: JSX.Element) => {
   return await render(
-    <GlobalContext.Provider
-      value={
-        {
-          ...initialContext,
-          ...contextObject
-        } as Context
-      }
-    >
-      {el}
-    </GlobalContext.Provider>
+    <GlobalContext.Provider value={merge(initialContext, contextObject)}>{el}</GlobalContext.Provider>
   )
 }

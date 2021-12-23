@@ -18,8 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { useInterval } from '../utils/hooks'
-
 const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) => {
   const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
 
@@ -34,29 +32,31 @@ const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) =
   }, [lastInteractionTime])
 
   useEffect(() => {
-    document.addEventListener('mousemove', updateLastInteractionTime)
-    document.addEventListener('keydown', updateLastInteractionTime)
-    document.addEventListener('scroll', updateLastInteractionTime)
+    let checkIfIdleForTooLong: ReturnType<typeof setInterval> | null = null
+
+    if (timeoutInMs) {
+      checkIfIdleForTooLong = setInterval(() => {
+        const currentTime = new Date().getTime()
+
+        if (currentTime - lastInteractionTime > timeoutInMs) {
+          onIdleForTooLong()
+        }
+      }, 2000)
+
+      document.addEventListener('mousemove', updateLastInteractionTime)
+      document.addEventListener('keydown', updateLastInteractionTime)
+      document.addEventListener('scroll', updateLastInteractionTime)
+    }
 
     return () => {
-      document.removeEventListener('mousemove', updateLastInteractionTime)
-      document.removeEventListener('keydown', updateLastInteractionTime)
-      document.removeEventListener('scroll', updateLastInteractionTime)
+      if (checkIfIdleForTooLong) {
+        document.removeEventListener('mousemove', updateLastInteractionTime)
+        document.removeEventListener('keydown', updateLastInteractionTime)
+        document.removeEventListener('scroll', updateLastInteractionTime)
+        clearInterval(checkIfIdleForTooLong)
+      }
     }
-  }, [updateLastInteractionTime])
-
-  useInterval(() => {
-    // Not defining a timeout avoids executing the logic
-    // while still respecting the rules of hooks
-
-    if (!timeoutInMs) return
-
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > timeoutInMs) {
-      onIdleForTooLong()
-    }
-  }, 2000)
+  }, [lastInteractionTime, onIdleForTooLong, timeoutInMs, updateLastInteractionTime])
 }
 
 export default useIdleForTooLong

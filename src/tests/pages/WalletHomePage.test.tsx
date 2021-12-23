@@ -19,11 +19,13 @@ import '@testing-library/jest-dom'
 
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { Wallet } from 'alephium-js'
+import { PartialDeep } from 'type-fest'
 
+import { Context } from '../../App'
 import WalletHomePage from '../../pages/Wallet/WalletHomePage'
+import { renderWithGlobalContext } from '..'
 import addressMockData from '../fixtures/address.json'
 import wallet from '../fixtures/wallet.json'
-import { renderWithGlobalContext } from '../index.test'
 
 const mockedHistoryPush = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -38,7 +40,7 @@ beforeEach(async () => {
   const getAddressDetailsMock = jest.fn().mockResolvedValue({ data: addressMockData.details })
   const getAddressTransactionsMock = jest.fn().mockResolvedValue({ data: addressMockData.transactions })
 
-  const context = {
+  const context: PartialDeep<Context> = {
     wallet: walletMock,
     client: {
       explorer: {
