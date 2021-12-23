@@ -20,6 +20,7 @@ import { tryGetString } from './types'
 
 interface APIError {
   error: {
+    detail?: string
     message?: string
   }
   status: number
@@ -32,5 +33,7 @@ export const isHTTPError = (e: unknown): e is APIError => {
 
 export const getHumanReadableError = (e: unknown, defaultErrorMessage: string) => {
   const stringifiedError = tryGetString(e)
-  return isHTTPError(e) ? `(${e.status}: ${e.statusText}) ${e.error.message}` : stringifiedError || defaultErrorMessage
+  return isHTTPError(e)
+    ? e.error.detail || `(${e.status}: ${e.statusText}) ${e.error.message || ''}`
+    : `${defaultErrorMessage}${stringifiedError && `(${stringifiedError})`}`
 }
