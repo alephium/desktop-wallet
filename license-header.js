@@ -15,11 +15,3 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-
-export const checkAddressValidity = (address: string) => {
-  const match = address.match(/^[1-9A-HJ-NP-Za-km-z]+$/)
-
-  if (match === null) return false
-
-  return match[0] === address && address
-}

@@ -1,34 +1,36 @@
-// Copyright 2018 - 2021 The Alephium Authors
-// This file is part of the alephium project.
-//
-// The library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the library. If not, see <http://www.gnu.org/licenses/>.
+/*
+Copyright 2018 - 2021 The Alephium Authors
+This file is part of the alephium project.
 
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+import { Send } from 'lucide-react'
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
-import { Send } from 'lucide-react'
 
 import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { Input } from '../../components/Inputs'
+import { ModalContext } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
-import { ModalContext } from '../../components/Modal'
-import { WalletContext } from './WalletRootPage'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
+import { WalletContext } from './WalletRootPage'
 
 const SendPage = () => {
   const history = useHistory()
