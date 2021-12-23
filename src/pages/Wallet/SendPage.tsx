@@ -146,6 +146,7 @@ const SendPage = () => {
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
             type="number"
+            min="0"
           />
         </Section>
       ) : (
