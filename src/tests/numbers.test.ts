@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, removeTrailingZeros, calAmountDelta } from '../utils/numbers'
+import { abbreviateAmount, calAmountDelta, removeTrailingZeros } from '../utils/numbers'
 import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
