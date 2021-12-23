@@ -23,7 +23,7 @@ import { Check } from 'lucide-react'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { InputProps, InputErrorMessage, inputPlaceHolderVariants, inputDefaultStyle } from './index'
 
-export const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
+const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames({
@@ -91,3 +91,5 @@ const ValidIconContainer = styled(motion.div)`
 const StyledInput = styled.input<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
 `
+
+export default Input

@@ -29,8 +29,8 @@ import Paragraph from '../components/Paragraph'
 import AppHeader from '../components/AppHeader'
 import SideBar from '../components/HomePage/SideBar'
 import PanelTitle from '../components/PageComponents/PanelTitle'
-import { Select } from '../components/Inputs/Select'
-import { Input } from '../components/Inputs/Input'
+import Select from '../components/Inputs/Select'
+import Input from '../components/Inputs/Input'
 
 interface HomeProps {
   hasWallet: boolean

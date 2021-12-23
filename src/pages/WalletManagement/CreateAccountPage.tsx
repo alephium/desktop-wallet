@@ -33,7 +33,7 @@ import InfoBox from '../../components/InfoBox'
 import Paragraph from '../../components/Paragraph'
 import { Button } from '../../components/Buttons'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { Input } from '../../components/Inputs/Input'
+import Input from '../../components/Inputs/Input'
 
 const Storage = getStorage()
 

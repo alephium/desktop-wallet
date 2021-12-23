@@ -40,7 +40,7 @@ interface SelectProps<T> {
   className?: string
 }
 
-export function Select<T>({
+function Select<T>({
   options,
   title,
   placeholder,
@@ -182,3 +182,5 @@ const OptionItem = styled.div`
 const ClickableInput = styled.input<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
 `
+
+export default Select

@@ -28,7 +28,7 @@ const placeHolderVariants: Variants = {
   down: { y: 0, scale: 1 }
 }
 
-export const TextArea = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: TextAreaProps) => {
+const TextArea = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: TextAreaProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames({
@@ -79,3 +79,5 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
   min-height: 300px;
   border-radius: var(--radius);
 `
+
+export default TextArea

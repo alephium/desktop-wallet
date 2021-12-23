@@ -25,7 +25,7 @@ import InfoBox from '../../components/InfoBox'
 import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
-import { Input } from '../../components/Inputs/Input'
+import Input from '../../components/Inputs/Input'
 
 const Storage = getStorage()
 

@@ -28,7 +28,7 @@ import { ModalContext } from '../../components/Modal'
 import { WalletContext } from './WalletRootPage'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
-import { Input } from '../../components/Inputs/Input'
+import Input from '../../components/Inputs/Input'
 
 const SendPage = () => {
   const history = useHistory()

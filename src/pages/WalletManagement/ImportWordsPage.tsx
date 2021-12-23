@@ -31,7 +31,7 @@ import { Button } from '../../components/Buttons'
 import Paragraph from '../../components/Paragraph'
 import { bip39Words } from '../../utils/bip39'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { TextAreaTags } from '../../components/Inputs/TextAreaTags'
+import TextAreaTags from '../../components/Inputs/TextAreaTags'
 
 const Storage = getStorage()
 

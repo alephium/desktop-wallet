@@ -18,7 +18,7 @@ import { useContext } from 'react'
 
 import { GlobalContext } from '../../App'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
-import { Input } from '../../components/Inputs/Input'
+import Input from '../../components/Inputs/Input'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 
 const GeneralSettingsSection = () => {

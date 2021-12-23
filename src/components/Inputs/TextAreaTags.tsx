@@ -20,7 +20,7 @@ import Tags from '@yaireo/tagify/dist/react.tagify'
 
 import { inputDefaultStyle } from './index'
 
-export const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
+const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
   return (
     <TextAreaTagsContainer className={props.className}>
       <StyledTags
@@ -67,3 +67,5 @@ const StyledTags = styled(Tags)`
   line-height: 20px;
   border-radius: var(--radius);
 `
+
+export default TextAreaTags
