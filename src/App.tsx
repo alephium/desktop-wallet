@@ -88,7 +88,8 @@ const App = () => {
   const lockWallet = () => {
     if (wallet) setWallet(undefined)
   }
-  useIdleForTooLong(lockWallet)
+
+  useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   // Create client
   useEffect(() => {

@@ -14,18 +14,12 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the library. If not, see <http://www.gnu.org/licenses/>.
 
-import { useEffect, useState, useCallback, useContext } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
-import { GlobalContext } from '../App'
 import { useInterval } from '../utils/hooks'
 
-const useIdleForTooLong = (onIdleForTooLong: () => void) => {
+const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) => {
   const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
-  const {
-    settings: {
-      general: { walletLockTimeInMinutes }
-    }
-  } = useContext(GlobalContext)
 
   const lastInteractionTimeThrottle = 10000 // 10 seconds
 
@@ -50,12 +44,14 @@ const useIdleForTooLong = (onIdleForTooLong: () => void) => {
   }, [updateLastInteractionTime])
 
   useInterval(() => {
-    if (!walletLockTimeInMinutes) return
+    // Not defining a timeout avoids executing the logic
+    // while still respecting the rules of hooks
+
+    if (!timeoutInMs) return
 
     const currentTime = new Date().getTime()
-    const lockTimeInMs = walletLockTimeInMinutes * 60 * 1000
 
-    if (currentTime - lastInteractionTime > lockTimeInMs) {
+    if (currentTime - lastInteractionTime > timeoutInMs) {
       onIdleForTooLong()
     }
   }, 2000)
