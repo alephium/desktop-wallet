@@ -18,41 +18,41 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { useInterval } from '../utils/hooks'
 import { walletIdleForTooLongThreshold } from '../utils/settings'
 
 const useIdleForTooLong = (onIdleForTooLong: () => void) => {
-  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
+  const [timeOnLastInteraction, setTimeOnLastInteraction] = useState(new Date().getTime())
 
-  const lastInteractionTimeThrottle = 10000 // 10 seconds
+  const timeOnLastInteractionThrottle = 10000 // 10 seconds
 
-  const updateLastInteractionTime = useCallback(() => {
-    const currentTime = new Date().getTime()
+  const updateTimeOnLastInteraction = useCallback(() => {
+    const timeOnNewInteraction = new Date().getTime()
 
-    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
-      setLastInteractionTime(currentTime)
+    if (timeOnNewInteraction - timeOnLastInteraction > timeOnLastInteractionThrottle) {
+      setTimeOnLastInteraction(timeOnNewInteraction)
     }
-  }, [lastInteractionTime])
+  }, [timeOnLastInteraction])
 
   useEffect(() => {
-    document.addEventListener('mousemove', updateLastInteractionTime)
-    document.addEventListener('keydown', updateLastInteractionTime)
-    document.addEventListener('scroll', updateLastInteractionTime)
+    const checkIfIdleForTooLong = setInterval(() => {
+      const currentTime = new Date().getTime()
+
+      if (currentTime - timeOnLastInteraction > walletIdleForTooLongThreshold) {
+        onIdleForTooLong()
+      }
+    }, 2000)
+
+    document.addEventListener('mousemove', updateTimeOnLastInteraction)
+    document.addEventListener('keydown', updateTimeOnLastInteraction)
+    document.addEventListener('scroll', updateTimeOnLastInteraction)
 
     return () => {
-      document.removeEventListener('mousemove', updateLastInteractionTime)
-      document.removeEventListener('keydown', updateLastInteractionTime)
-      document.removeEventListener('scroll', updateLastInteractionTime)
+      document.removeEventListener('mousemove', updateTimeOnLastInteraction)
+      document.removeEventListener('keydown', updateTimeOnLastInteraction)
+      document.removeEventListener('scroll', updateTimeOnLastInteraction)
+      clearInterval(checkIfIdleForTooLong)
     }
-  }, [updateLastInteractionTime])
-
-  useInterval(() => {
-    const currentTime = new Date().getTime()
-
-    if (currentTime - lastInteractionTime > walletIdleForTooLongThreshold) {
-      onIdleForTooLong()
-    }
-  }, 2000)
+  }, [onIdleForTooLong, timeOnLastInteraction, updateTimeOnLastInteraction])
 }
 
 export default useIdleForTooLong
