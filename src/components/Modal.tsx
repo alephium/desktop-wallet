@@ -26,14 +26,14 @@ import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalContext {
   setModalTitle: (newTitle: string) => void
-  onClose: () => void
-  overrideOnClose: (newFn: () => void) => void
+  onModalClose: () => void
+  overrideOnModalClose: (newFn: () => void) => void
 }
 
 export const ModalContext = createContext<ModalContext>({
   setModalTitle: () => null,
-  onClose: () => null,
-  overrideOnClose: () => null
+  onModalClose: () => null,
+  overrideOnModalClose: () => null
 })
 
 export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
@@ -78,7 +78,7 @@ export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean
 
   return (
     <ModalContext.Provider
-      value={{ setModalTitle: setCurrentTitle, onClose: currentOnClose, overrideOnClose: setCurrentOnClose }}
+      value={{ setModalTitle: setCurrentTitle, onModalClose: currentOnClose, overrideOnModalClose: setCurrentOnClose }}
     >
       <ModalContainer
         initial={{ opacity: 0 }}

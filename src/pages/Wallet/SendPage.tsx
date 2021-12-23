@@ -38,7 +38,7 @@ const SendPage = () => {
   const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
   const { addPendingTx } = useContext(WalletContext)
 
-  const { setModalTitle, onClose, overrideOnClose } = useContext(ModalContext)
+  const { setModalTitle, onModalClose, overrideOnModalClose } = useContext(ModalContext)
 
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
@@ -48,10 +48,10 @@ const SendPage = () => {
 
   const onCloseButtonClick = (isChecking: boolean) => {
     if (!isChecking) {
-      onClose()
+      onModalClose()
     } else {
       setIsChecking(false)
-      overrideOnClose(() => () => onCloseButtonClick(false))
+      overrideOnModalClose(() => () => onCloseButtonClick(false))
       setModalTitle('Send')
     }
   }
@@ -80,7 +80,7 @@ const SendPage = () => {
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
-      overrideOnClose(() => () => onCloseButtonClick(true))
+      overrideOnModalClose(() => () => onCloseButtonClick(true))
       setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!
