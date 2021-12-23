@@ -22,6 +22,7 @@ import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
 import { Button } from '../../components/Buttons'
+import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import { Section } from '../../components/PageComponents/PageContainers'
@@ -32,7 +33,43 @@ import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
-import { convertToQALPH } from '../../utils/numbers'
+import { minimalGasAmount, minimalGasPrice } from '../../utils/constants'
+import { abbreviateAmount, convertToQALPH } from '../../utils/numbers'
+
+const onAmountInputValueChange = ({
+  amount,
+  minAmount,
+  stateSetter,
+  errorMessage,
+  currentErrorState,
+  errorStateSetter,
+  shouldConvertToQALPH
+}: {
+  amount: string
+  minAmount: bigint
+  errorMessage: string
+  stateSetter: (v: string) => void
+  currentErrorState: string
+  errorStateSetter: (v: string) => void
+  shouldConvertToQALPH?: boolean
+}) => {
+  let amountNumber
+
+  try {
+    amountNumber = BigInt(shouldConvertToQALPH ? convertToQALPH(amount) : amount)
+  } catch (e) {
+    console.error(e)
+    return
+  }
+
+  if (amountNumber < minAmount) {
+    errorStateSetter(errorMessage)
+  } else {
+    if (currentErrorState) errorStateSetter('')
+  }
+
+  stateSetter(amount)
+}
 
 type StepIndex = 1 | 2 | 3
 
@@ -44,8 +81,12 @@ const SendPage = () => {
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
   const initialOnModalClose = useRef(onModalClose)
+
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
+  const [gasAmount, setGasAmount] = useState('')
+  const [gasPrice, setGasPrice] = useState('')
+
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
 
@@ -62,9 +103,11 @@ const SendPage = () => {
     }
   }, [setStep, setModalTitle, setOnModalClose, step])
 
-  const verifyTransactionContent = (address: string, amount: string) => {
+  const verifyTransactionContent = (address: string, amount: string, gasAmount: string, gasPrice: string) => {
     setAddress(address)
     setAmount(amount)
+    setGasAmount(gasAmount)
+    setGasPrice(gasPrice)
     setStep(2)
   }
 
@@ -120,8 +163,24 @@ const SendPage = () => {
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </SendLogo>
       </LogoContent>
-      {step === 1 && <TransactionForm address={address} amount={amount} onSubmit={verifyTransactionContent} />}
-      {step === 2 && <CheckTransactionContent address={address} amount={amount} onSend={confirmPassword} />}
+      {step === 1 && (
+        <TransactionForm
+          address={address}
+          amount={amount}
+          gasAmount={gasAmount}
+          gasPrice={gasPrice}
+          onSubmit={verifyTransactionContent}
+        />
+      )}
+      {step === 2 && (
+        <CheckTransactionContent
+          address={address}
+          amount={amount}
+          gasAmount={gasAmount}
+          gasPrice={gasPrice}
+          onSend={confirmPassword}
+        />
+      )}
       {step === 3 && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
@@ -136,16 +195,23 @@ const SendPage = () => {
 interface TransactionData {
   address: string
   amount: string
+  gasAmount: string
+  gasPrice: string
 }
 
 interface TransactionFormProps extends TransactionData {
-  onSubmit: (address: string, amount: string) => void
+  onSubmit: (address: string, amount: string, gasAmount: string, gasPrice: string) => void
 }
 
-const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) => {
+const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: TransactionFormProps) => {
   const [addressState, setAddress] = useState(address)
   const [amountState, setAmount] = useState(amount)
+  const [gasAmountState, setGasAmount] = useState(gasAmount)
+  const [gasPriceState, setGasPrice] = useState(gasPrice)
   const [addressError, setAddressError] = useState('')
+  const [gasAmountError, setGasAmountError] = useState('')
+  const [gasPriceError, setGasPriceError] = useState('')
+  const minimalGasPriceInALPH = abbreviateAmount(minimalGasPrice)
 
   const handleAddressChange = (value: string) => {
     setAddress(value)
@@ -157,6 +223,29 @@ const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) =>
     } else {
       setAddressError('Address format is incorrect')
     }
+  }
+
+  const handleGasAmountChange = (newAmount: string) => {
+    onAmountInputValueChange({
+      amount: newAmount,
+      minAmount: BigInt(minimalGasAmount),
+      stateSetter: setGasAmount,
+      errorMessage: `Gas amount must be greater than ${minimalGasAmount}.`,
+      currentErrorState: gasAmountError,
+      errorStateSetter: setGasAmountError
+    })
+  }
+
+  const handleGasPriceChange = (newPrice: string) => {
+    onAmountInputValueChange({
+      amount: newPrice,
+      minAmount: minimalGasPrice,
+      stateSetter: setGasPrice,
+      errorMessage: `Gas price must be greater than ${abbreviateAmount(minimalGasPrice)}ℵ.`,
+      currentErrorState: gasPriceError,
+      errorStateSetter: setGasPriceError,
+      shouldConvertToQALPH: true
+    })
   }
 
   const isSubmitButtonActive = addressState.length > 0 && addressError.length === 0 && amountState.length > 0
@@ -179,8 +268,31 @@ const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) =>
           min="0"
         />
       </Section>
+      <ExpandableSection sectionTitle="Advanced settings">
+        <Input
+          id="gas-amount"
+          placeholder="Gas amount"
+          value={gasAmountState}
+          onChange={(e) => handleGasAmountChange(e.target.value)}
+          type="number"
+          error={gasAmountError}
+        />
+        <Input
+          id="gas-price"
+          placeholder="Gas price"
+          value={gasPriceState}
+          type="number"
+          min={minimalGasPriceInALPH}
+          onChange={(e) => handleGasPriceChange(e.target.value)}
+          step={minimalGasPriceInALPH}
+          error={gasPriceError}
+        />
+      </ExpandableSection>
       <Section inList>
-        <Button onClick={() => onSubmit(addressState, amountState)} disabled={!isSubmitButtonActive}>
+        <Button
+          onClick={() => onSubmit(addressState, amountState, gasAmountState, gasPriceState)}
+          disabled={!isSubmitButtonActive}
+        >
           Check
         </Button>
       </Section>

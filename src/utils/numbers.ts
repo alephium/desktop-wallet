@@ -19,7 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 
 const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
-const QUINTILLION = 1000000000000000000
+
+export const QUINTILLION = 1000000000000000000
+export const BILLION = 1000000000
 
 const getNumberOfTrailingZeros = (numberArray: string[]) => {
   let numberOfZeros = 0
