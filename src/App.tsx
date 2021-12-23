@@ -46,7 +46,7 @@ import {
   useCurrentNetwork
 } from './utils/settings'
 
-interface Context {
+export interface Context {
   currentUsername: string
   setCurrentUsername: (username: string) => void
   wallet?: Wallet
@@ -59,7 +59,7 @@ interface Context {
 
 type Client = AsyncReturnType<typeof createClient>
 
-const initialContext: Context = {
+export const initialContext: Context = {
   currentUsername: '',
   setCurrentUsername: () => null,
   wallet: undefined,
