@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QRCode from 'qrcode.react'
 import { useContext } from 'react'
+import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import { GlobalContext } from '../../App'
@@ -48,8 +48,9 @@ const AddressPage = () => {
     if (address) {
       navigator.clipboard
         .writeText(address)
-        .catch((e) => {
-          throw e
+        .catch((error) => {
+          setSnackbarMessage({ text: 'Could not copy to clipboard, please copy manually', type: 'alert' })
+          console.error('Error during copying address to clipboard:', error)
         })
         .then(() => {
           setSnackbarMessage({ text: 'Address copied to clipboard!', type: 'info' })
@@ -61,7 +62,13 @@ const AddressPage = () => {
     <>
       <Section>
         {address && (
-          <QRCode value={address} style={{ marginTop: 25 }} fgColor={theme.font.primary} bgColor={theme.bg.primary} />
+          <QRCode
+            value={address}
+            style={{ marginTop: 25 }}
+            fgColor={theme.font.primary}
+            bgColor={theme.bg.primary}
+            size={128}
+          />
         )}
       </Section>
       <ShortenParagraph>{address}</ShortenParagraph>

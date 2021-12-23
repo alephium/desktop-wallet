@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, removeTrailingZeros } from '../utils/numbers'
+import { abbreviateAmount, calAmountDelta, convertToQALPH, removeTrailingZeros } from '../utils/numbers'
+import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
   return amount * BigInt(1000000000000000000)
@@ -45,4 +46,36 @@ it('Should remove trailing zeros', () => {
     expect(removeTrailingZeros('10000.000', minDigits)).toEqual('10000.000'),
     expect(removeTrailingZeros('-10000.0001000', minDigits)).toEqual('-10000.0001'),
     expect(removeTrailingZeros('-0.0001020000', minDigits)).toEqual('-0.000102')
+})
+
+it('should calucate the amount delta between the inputs and outputs of an address in a transaction', () => {
+  expect(calAmountDelta(transactions.oneInputOneOutput, transactions.oneInputOneOutput.inputs[0].address)).toEqual(
+    alf(BigInt(-50))
+  ),
+    expect(calAmountDelta(transactions.twoInputsOneOutput, transactions.twoInputsOneOutput.inputs[0].address)).toEqual(
+      alf(BigInt(-150))
+    ),
+    expect(
+      calAmountDelta(transactions.twoInputsZeroOutput, transactions.twoInputsZeroOutput.inputs[0].address)
+    ).toEqual(alf(BigInt(-200))),
+    expect(() =>
+      calAmountDelta(transactions.missingInputs, transactions.missingInputs.outputs[0].address)
+    ).toThrowError('Missing transaction details'),
+    expect(() =>
+      calAmountDelta(transactions.missingOutputs, transactions.missingOutputs.inputs[0].address)
+    ).toThrowError('Missing transaction details')
+})
+
+it('should convert to qALPH', () => {
+  expect(convertToQALPH('-1')).toEqual(BigInt(-1000000000000000000n)),
+    expect(convertToQALPH('0')).toEqual(BigInt(0)),
+    expect(convertToQALPH('1')).toEqual(BigInt(1000000000000000000n)),
+    expect(convertToQALPH('10')).toEqual(BigInt(10000000000000000000n)),
+    expect(convertToQALPH('999999999')).toEqual(BigInt(999999999000000000000000000n)),
+    expect(convertToQALPH('999999999999')).toEqual(BigInt(999999999999000000000000000000n)),
+    expect(convertToQALPH('0.1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('0.01')).toEqual(BigInt(10000000000000000n)),
+    expect(convertToQALPH('0.00000009')).toEqual(BigInt(90000000000n)),
+    expect(convertToQALPH('0.000000000000000001')).toEqual(BigInt(1n)),
+    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n))
 })

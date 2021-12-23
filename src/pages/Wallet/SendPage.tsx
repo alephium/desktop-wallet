@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Send } from 'lucide-react'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
@@ -30,6 +30,7 @@ import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
+import { convertToQALPH } from '../../utils/numbers'
 import { WalletContext } from './WalletRootPage'
 
 const SendPage = () => {
@@ -38,20 +39,20 @@ const SendPage = () => {
   const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
   const { addPendingTx } = useContext(WalletContext)
 
-  const { setModalTitle, onClose, overrideOnClose } = useContext(ModalContext)
+  const { setModalTitle, onModalClose, overrideOnModalClose } = useContext(ModalContext)
 
   const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState<string>('')
-  const [addressError, setAddressError] = useState<string>('')
+  const [amount, setAmount] = useState('')
+  const [addressError, setAddressError] = useState('')
   const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
 
-  const onCloseButtonPress = (isChecking: boolean) => {
+  const onCloseButtonClick = (isChecking: boolean) => {
     if (!isChecking) {
-      onClose()
+      onModalClose()
     } else {
       setIsChecking(false)
-      overrideOnClose(() => () => onCloseButtonPress(false))
+      overrideOnModalClose(() => () => onCloseButtonClick(false))
       setModalTitle('Send')
     }
   }
@@ -75,27 +76,25 @@ const SendPage = () => {
     setAmount(value)
   }
 
-  const isSendButtonActive = () => address.length > 0 && addressError.length === 0 && amount.length > 0
+  const isSendButtonActive = address.length > 0 && addressError.length === 0 && amount.length > 0
 
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
-      overrideOnClose(() => () => onCloseButtonPress(true))
+      overrideOnModalClose(() => () => onCloseButtonClick(true))
       setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!
       setIsSending(true)
 
-      // Transform amount in qALF (1e-18)
-      const fullAmount = BigInt(Number(amount) * 1e18)
+      const fullAmount = convertToQALPH(amount).toString()
 
       try {
         const txCreateResp = await client.clique.transactionCreate(
           wallet.address,
           wallet.publicKey,
           address,
-          fullAmount.toString(),
-          undefined
+          fullAmount
         )
 
         const { txId, unsignedTx } = txCreateResp.data
@@ -108,7 +107,7 @@ const SendPage = () => {
           txId: txSendResp.data.txId,
           toAddress: address,
           timestamp: new Date().getTime(),
-          amount: fullAmount.toString()
+          amount: fullAmount
         })
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
@@ -146,13 +145,14 @@ const SendPage = () => {
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
             type="number"
+            min="0"
           />
         </Section>
       ) : (
         <CheckTransactionContent address={address} amount={amount} />
       )}
       <Section inList>
-        <Button onClick={handleSend} disabled={!isSendButtonActive()}>
+        <Button onClick={handleSend} disabled={!isSendButtonActive}>
           {isChecking ? 'Send' : 'Check'}
         </Button>
       </Section>

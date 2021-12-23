@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import '@testing-library/jest-dom'
 
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
 import { Wallet } from 'alephium-js'
 import { PartialDeep } from 'type-fest'
 
@@ -37,8 +37,14 @@ jest.mock('react-router-dom', () => ({
 
 beforeEach(async () => {
   const walletMock = new Wallet({ ...wallet, seed: Buffer.from(wallet.seed, 'hex') })
-  const getAddressDetailsMock = jest.fn().mockResolvedValue({ data: addressMockData.details })
-  const getAddressTransactionsMock = jest.fn().mockResolvedValue({ data: addressMockData.transactions })
+  const getAddressDetailsMock = jest
+    .fn()
+    .mockResolvedValueOnce({ data: addressMockData.initialFetch.details })
+    .mockResolvedValueOnce({ data: addressMockData.refresh.details })
+  const getAddressTransactionsMock = jest
+    .fn()
+    .mockResolvedValueOnce({ data: addressMockData.initialFetch.transactions })
+    .mockResolvedValueOnce({ data: addressMockData.refresh.transactions })
 
   const context: PartialDeep<Context> = {
     wallet: walletMock,
@@ -59,8 +65,18 @@ it('Button correctly links to wallet settings page', async () => {
   expect(mockedHistoryPush).toHaveBeenCalledWith('/wallet/settings')
 })
 
-it('Loads balance and transaction data', () => {
+it('Loads balance and number of transactions', () => {
   expect(screen.getByText('299.000 ℵ')).toBeInTheDocument()
+  expect(screen.getByText('Transactions (2)')).toBeInTheDocument()
+})
+
+it('Refreshes balance and number of transactions', async () => {
+  expect(screen.getByText('299.000 ℵ')).toBeInTheDocument()
+  const button = screen.getByLabelText('Refresh')
+  fireEvent.click(button)
+  await waitForElementToBeRemoved(() => screen.queryByText('299.000 ℵ'))
+  expect(screen.getByText('300.000 ℵ')).toBeInTheDocument()
+  expect(screen.getByText('Transactions (3)')).toBeInTheDocument()
 })
 
 afterAll(() => {

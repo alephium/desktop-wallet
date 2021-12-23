@@ -65,7 +65,7 @@ const Wallet = () => {
     tx && setNetworkPendingTxLists((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
   }
 
-  // Redirect if not wallet is set
+  // Redirect if wallet is not set
   useEffect(() => {
     if (!wallet) {
       history.push('/')
