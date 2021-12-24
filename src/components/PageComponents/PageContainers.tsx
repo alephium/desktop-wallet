@@ -29,7 +29,7 @@ interface MainPanelProps {
   transparentBg?: boolean
 }
 
-type SectionContentAlignment = 'left' | 'center'
+type SectionContentAlignment = 'flex-start' | 'center' | 'stretch'
 
 interface SectionProps {
   apparitionDelay?: number
@@ -131,7 +131,7 @@ export const PanelContentContainer = styled.div`
 
 export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignment; inList?: boolean }>`
   display: flex;
-  align-items: ${({ align }) => (align === 'left' ? 'flex-start' : 'center')};
+  align-items: ${({ align }) => align};
   flex-direction: column;
   min-width: 400px;
 

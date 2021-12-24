@@ -63,7 +63,7 @@ const AccountsSettingsSection = () => {
           onAccountRemove={() => handleRemoveAccount(accountToRemove)}
         />
       )}
-      <Section align="left">
+      <Section align="flex-start">
         <h2>Account list ({usernames.length})</h2>
         <BoxContainer>
           {usernames.map((n) => {
@@ -81,7 +81,7 @@ const AccountsSettingsSection = () => {
       {wallet && (
         <>
           <HorizontalDivider />
-          <Section align="left">
+          <Section align="flex-start">
             <h2>Current account</h2>
             <InfoBox label="Account name" text={currentUsername} />
           </Section>
