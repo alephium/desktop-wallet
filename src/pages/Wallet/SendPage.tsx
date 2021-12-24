@@ -73,6 +73,10 @@ const onAmountInputValueChange = ({
 
 type StepIndex = 1 | 2 | 3
 
+const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
+  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), true)
+}
+
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
@@ -86,7 +90,7 @@ const SendPage = () => {
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
   const [gasAmount, setGasAmount] = useState<string>(minimalGasAmount.toString())
-  const [gasPrice, setGasPrice] = useState<string>(minimalGasPriceInALPH)
+  const [gasPriceInALPH, setGasPriceInALPH] = useState<string>(minimalGasPriceInALPH)
 
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -108,7 +112,7 @@ const SendPage = () => {
     setAddress(address)
     setAmount(amount)
     setGasAmount(gasAmount)
-    setGasPrice(gasPrice)
+    setGasPriceInALPH(gasPrice)
     setStep(2)
   }
 
@@ -117,7 +121,9 @@ const SendPage = () => {
   }
 
   const handleSend = async () => {
-    if (wallet && client) {
+    const isDataComplete = address && amount && gasPriceInALPH && gasAmount
+
+    if (wallet && client && isDataComplete) {
       setIsSending(true)
 
       const fullAmount = convertToQALPH(amount).toString()
@@ -127,7 +133,10 @@ const SendPage = () => {
           wallet.address,
           wallet.publicKey,
           address,
-          fullAmount
+          fullAmount,
+          undefined,
+          parseInt(gasAmount),
+          gasPriceInALPH
         )
 
         const { txId, unsignedTx } = txCreateResp.data
@@ -159,17 +168,17 @@ const SendPage = () => {
 
   return (
     <>
-      <LogoContent>
-        <SendLogo>
+      <HeaderContent>
+        <HeaderLogo>
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
-        </SendLogo>
-      </LogoContent>
+        </HeaderLogo>
+      </HeaderContent>
       {step === 1 && (
         <TransactionForm
           address={address}
           amount={amount}
           gasAmount={gasAmount}
-          gasPrice={gasPrice}
+          gasPrice={gasPriceInALPH}
           onSubmit={verifyTransactionContent}
         />
       )}
@@ -178,7 +187,7 @@ const SendPage = () => {
           address={address}
           amount={amount}
           gasAmount={gasAmount}
-          gasPrice={gasPrice}
+          gasPrice={gasPriceInALPH}
           onSend={confirmPassword}
         />
       )}
@@ -249,6 +258,8 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
     })
   }
 
+  const expectedFeeInALPH = gasAmountState && gasPriceState && getExpectedFee(gasAmountState, gasPriceState)
+
   const isSubmitButtonActive =
     addressState && amountState && gasPriceState && gasAmountState && !addressError && !gasPriceError && !gasAmountError
 
@@ -269,6 +280,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
           type="number"
           min="0"
         />
+        {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH}ℵ`} />}
       </Section>
       <ExpandableSection sectionTitle="Advanced settings">
         <Input
@@ -306,7 +318,7 @@ interface CheckTransactionContentProps extends TransactionData {
   onSend: () => void
 }
 
-const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionContentProps) => {
+const CheckTransactionContent = ({ address, amount, gasAmount, gasPrice, onSend }: CheckTransactionContentProps) => {
   const isSendButtonActive = address.length > 0 && amount.length > 0
 
   return (
@@ -314,6 +326,9 @@ const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionCo
       <Section>
         <InfoBox text={address} label="Recipient's address" wordBreak />
         <InfoBox text={`${amount} ℵ`} label="Amount" />
+        <InfoBox text={gasAmount} label="Gas amount" />
+        <InfoBox text={`${gasPrice} ℵ`} label="Gas price" />
+        <InfoBox text={`${getExpectedFee(gasAmount, gasPrice)} ℵ`} label="Expected fee" />
       </Section>
       <Section inList>
         <Button onClick={onSend} disabled={!isSendButtonActive}>
@@ -324,12 +339,12 @@ const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionCo
   )
 }
 
-const LogoContent = styled(Section)`
+const HeaderContent = styled(Section)`
   flex: 0;
-  margin: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 `
 
-const SendLogo = styled.div`
+const HeaderLogo = styled.div`
   height: 10vh;
   display: flex;
   justify-content: center;

@@ -34,15 +34,27 @@ interface InfoBoxProps {
   wordBreak?: boolean
   onClick?: () => void
   small?: boolean
+  short?: boolean
 }
 
-const InfoBox = ({ Icon, text, label, importance, className, ellipsis, wordBreak, onClick, small }: InfoBoxProps) => {
+const InfoBox = ({
+  Icon,
+  text,
+  label,
+  importance,
+  className,
+  ellipsis,
+  wordBreak,
+  onClick,
+  small,
+  short
+}: InfoBoxProps) => {
   const theme = useTheme()
 
   return (
     <BoxContainer className={className} onClick={onClick} small={small}>
       {label && <Label variants={sectionChildrenVariants}>{label}</Label>}
-      <StyledBox variants={sectionChildrenVariants} importance={importance}>
+      <StyledBox variants={sectionChildrenVariants} importance={importance} short={short}>
         {Icon && (
           <IconContainer>
             <Icon color={importance ? theme.global.accent : theme.global.accent} strokeWidth={1.5} />
@@ -94,8 +106,9 @@ const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
   }}
 `
 
-const StyledBox = styled(motion.div)<{ importance?: InfoBoxImportance }>`
+const StyledBox = styled(motion.div)<{ importance?: InfoBoxImportance; short?: boolean }>`
   padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
+  height: ${({ short }) => (short ? 'var(--inputHeight)' : 'auto')};
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme, importance }) => (importance === 'alert' ? theme.global.alert : theme.border.primary)};
   display: flex;
