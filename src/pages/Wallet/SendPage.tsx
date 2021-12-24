@@ -58,7 +58,7 @@ const onAmountInputValueChange = ({
   try {
     amountNumber = BigInt(shouldConvertToQALPH ? convertToQALPH(amount) : amount)
   } catch (e) {
-    console.error(e)
+    console.log(e)
     return
   }
 
@@ -81,11 +81,12 @@ const SendPage = () => {
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
   const initialOnModalClose = useRef(onModalClose)
+  const minimalGasPriceInALPH = abbreviateAmount(minimalGasPrice)
 
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
-  const [gasAmount, setGasAmount] = useState('')
-  const [gasPrice, setGasPrice] = useState('')
+  const [gasAmount, setGasAmount] = useState<string>(minimalGasAmount.toString())
+  const [gasPrice, setGasPrice] = useState<string>(minimalGasPriceInALPH)
 
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -261,7 +262,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
           isValid={addressState.length > 0 && !addressError}
         />
         <Input
-          placeholder="Amount"
+          placeholder="Amount (ℵ)"
           value={amountState}
           onChange={(e) => setAmount(e.target.value)}
           type="number"
@@ -279,7 +280,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
         />
         <Input
           id="gas-price"
-          placeholder="Gas price"
+          placeholder="Gas price (ℵ)"
           value={gasPriceState}
           type="number"
           min={minimalGasPriceInALPH}
