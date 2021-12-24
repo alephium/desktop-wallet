@@ -19,7 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { tryGetString } from './types'
 
 interface APIError {
-  error: { detail: string }
+  error: {
+    detail?: string
+    message?: string
+  }
+  status: number
+  statusText: string
 }
 
 export const isHTTPError = (e: unknown): e is APIError => {
@@ -28,5 +33,7 @@ export const isHTTPError = (e: unknown): e is APIError => {
 
 export const getHumanReadableError = (e: unknown, defaultErrorMessage: string) => {
   const stringifiedError = tryGetString(e)
-  return isHTTPError(e) ? e.error.detail : stringifiedError || defaultErrorMessage
+  return isHTTPError(e)
+    ? e.error.detail || `(${e.status}: ${e.statusText}) ${e.error.message || ''}`
+    : `${defaultErrorMessage}${stringifiedError && `(${stringifiedError})`}`
 }
