@@ -249,7 +249,8 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
     })
   }
 
-  const isSubmitButtonActive = addressState.length > 0 && addressError.length === 0 && amountState.length > 0
+  const isSubmitButtonActive =
+    addressState && amountState && gasPriceState && gasAmountState && !addressError && !gasPriceError && !gasAmountError
 
   return (
     <>
