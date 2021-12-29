@@ -18,12 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, walletOpen } from 'alephium-js'
 import { motion } from 'framer-motion'
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { GlobalContext } from '../App'
 import AppHeader from '../components/AppHeader'
 import { Button } from '../components/Buttons'
 import SideBar from '../components/HomePage/SideBar'
@@ -32,6 +31,7 @@ import Select from '../components/Inputs/Select'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
+import { useGlobalContext } from '../contexts/global'
 import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
@@ -84,7 +84,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 
 const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: () => void }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const { setWallet, setCurrentUsername, setSnackbarMessage } = useContext(GlobalContext)
+  const { setWallet, setCurrentUsername, setSnackbarMessage } = useGlobalContext()
   const history = useHistory()
 
   const login = async (callback: () => void) => {

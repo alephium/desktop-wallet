@@ -19,7 +19,8 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { HashRouter as Router } from 'react-router-dom'
 import { PartialDeep } from 'type-fest'
 
-import App, { Context } from '../App'
+import App from '../App'
+import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
 
 jest.mock('alephium-js', () => ({
@@ -44,7 +45,7 @@ jest.mock('alephium-js', () => ({
 const walletLockTimeInMinutes = 4
 
 beforeEach(async () => {
-  const context: PartialDeep<Context> = {
+  const context: PartialDeep<GlobalContextProps> = {
     settings: {
       general: {
         walletLockTimeInMinutes: walletLockTimeInMinutes
@@ -54,10 +55,10 @@ beforeEach(async () => {
 
   await waitFor(() => {
     renderWithGlobalContext(
-      context,
       <Router>
         <App />
-      </Router>
+      </Router>,
+      context
     )
   })
 })

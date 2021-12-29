@@ -24,7 +24,6 @@ import { useContext, useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import {
@@ -35,6 +34,7 @@ import {
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
+import { useGlobalContext } from '../../contexts/global'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
@@ -53,7 +53,7 @@ const CheckWordsPage = () => {
   const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 
-  const { setWallet } = useContext(GlobalContext)
+  const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
 
   const wordList = useRef<WordKey[]>(

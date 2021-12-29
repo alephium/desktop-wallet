@@ -17,9 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { clone, isEqual, merge } from 'lodash'
-import { useContext } from 'react'
 
-import { GlobalContext } from '../App'
 import { ThemeType } from '../style/themes'
 
 export interface Settings {
@@ -72,11 +70,6 @@ export const getNetworkName = (settings: Settings['network']) => {
   return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
     return isEqual(presetSettings, settings)
   })?.[0] || 'custom') as NetworkType | 'custom'
-}
-
-export const useCurrentNetwork = () => {
-  const { settings } = useContext(GlobalContext)
-  return getNetworkName(settings.network)
 }
 
 const returnSettingsObject = () => {

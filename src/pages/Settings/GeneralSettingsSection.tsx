@@ -16,12 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useContext } from 'react'
-
-import { GlobalContext } from '../../App'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
+import { useGlobalContext } from '../../contexts/global'
 
 const GeneralSettingsSection = () => {
   const {
@@ -29,7 +27,7 @@ const GeneralSettingsSection = () => {
       general: { walletLockTimeInMinutes }
     },
     updateSettings
-  } = useContext(GlobalContext)
+  } = useGlobalContext()
 
   return (
     <>

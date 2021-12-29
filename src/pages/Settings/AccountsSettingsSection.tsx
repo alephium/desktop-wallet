@@ -18,21 +18,21 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from 'alephium-js'
 import { Trash } from 'lucide-react'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
+import { useGlobalContext } from '../../contexts/global'
 import AccountRemovalModal from './AccountRemovalModal'
 import SecretPhraseModal from './SecretPhraseModal'
 
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { currentUsername, wallet, setWallet } = useContext(GlobalContext)
+  const { currentUsername, wallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [accountToRemove, setAccountToRemove] = useState<string>('')
 
@@ -45,15 +45,11 @@ const AccountsSettingsSection = () => {
   const handleRemoveAccount = (accountName: string) => {
     Storage.remove(accountName)
 
-    accountName === currentUsername ? handleLogout() : setAccountToRemove('')
+    accountName === currentUsername ? lockWallet() : setAccountToRemove('')
   }
 
   const openSecretPhraseModal = () => {
     setIsDisplayingSecretModal(true)
-  }
-
-  const handleLogout = () => {
-    setWallet(undefined)
   }
 
   return (
@@ -90,7 +86,7 @@ const AccountsSettingsSection = () => {
             <InfoBox label="Account name" text={currentUsername} />
           </Section>
           <Section>
-            <Button secondary onClick={handleLogout}>
+            <Button secondary onClick={lockWallet}>
               Lock current account
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>

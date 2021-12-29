@@ -21,13 +21,13 @@ import { useContext, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import { ModalContext } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
+import { useGlobalContext } from '../../contexts/global'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 import { convertToQALPH } from '../../utils/numbers'
@@ -36,7 +36,7 @@ import { WalletContext } from './WalletRootPage'
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
-  const { client, wallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { client, wallet, setSnackbarMessage } = useGlobalContext()
   const { addPendingTx } = useContext(WalletContext)
 
   const { setModalTitle, onModalClose, overrideOnModalClose } = useContext(ModalContext)

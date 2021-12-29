@@ -18,12 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { AnimatePresence } from 'framer-motion'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
-import { GlobalContext } from '../../App'
 import Modal from '../../components/Modal'
-import { NetworkType, useCurrentNetwork } from '../../utils/settings'
+import { useGlobalContext } from '../../contexts/global'
+import { NetworkType } from '../../utils/settings'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressPage from './AddressPage'
 import SendPage from './SendPage'
@@ -53,8 +53,7 @@ const initialContext: WalletContextType = {
 export const WalletContext = React.createContext<WalletContextType>(initialContext)
 
 const Wallet = () => {
-  const { wallet } = useContext(GlobalContext)
-  const currentNetwork = useCurrentNetwork()
+  const { wallet, currentNetwork } = useGlobalContext()
   const history = useHistory()
   const location = useLocation()
 

@@ -17,10 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../App'
+import { useGlobalContext } from '../contexts/global'
 import { deviceBreakPoints } from '../style/globalStyles'
 
 export interface SnackbarMessage {
@@ -30,7 +30,7 @@ export interface SnackbarMessage {
 }
 
 const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  const { setSnackbarMessage } = useContext(GlobalContext)
+  const { setSnackbarMessage } = useGlobalContext()
 
   // Remove snackbar popup after its duration
   useEffect(() => {

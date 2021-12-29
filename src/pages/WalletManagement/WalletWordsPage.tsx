@@ -21,7 +21,6 @@ import { useContext } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import {
@@ -31,13 +30,14 @@ import {
   Section
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
+import { useGlobalContext } from '../../contexts/global'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
-  const { setSnackbarMessage } = useContext(GlobalContext)
+  const { setSnackbarMessage } = useGlobalContext()
 
   const handleAddressClick = () => {
     const address = plainWallet?.address

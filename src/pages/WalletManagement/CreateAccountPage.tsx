@@ -22,7 +22,6 @@ import { ChangeEvent, useContext, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
@@ -34,13 +33,14 @@ import {
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
+import { useGlobalContext } from '../../contexts/global'
 import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
-  const { setCurrentUsername } = useContext(GlobalContext)
+  const { setCurrentUsername } = useGlobalContext()
   const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useContext(StepsContext)
 

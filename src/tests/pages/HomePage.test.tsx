@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 import HomePage from '../../pages/HomePage'
+import { renderWithGlobalContext } from '..'
 
 const mockedHistoryPush = jest.fn()
 jest.mock('react-router', () => ({
@@ -29,8 +30,8 @@ jest.mock('react-router', () => ({
   })
 }))
 
-it('welcomes the new user and displays initial actions', () => {
-  render(<HomePage hasWallet={false} usernames={[]} />)
+it('welcomes the new user and displays initial actions', async () => {
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} usernames={[]} />))
 
   const main = screen.getByRole('main')
   expect(main).toHaveTextContent('Welcome!')
@@ -41,8 +42,8 @@ it('welcomes the new user and displays initial actions', () => {
   expect(screen.getByTestId('sidebar')).toBeInTheDocument()
 })
 
-it('welcomes the user back and displays the login form', () => {
-  render(<HomePage hasWallet={true} usernames={['John Doe']} />)
+it('welcomes the user back and displays the login form', async () => {
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} usernames={['John Doe']} />))
 
   const main = screen.getByRole('main')
   expect(main).toHaveTextContent('Welcome back!')
@@ -56,8 +57,8 @@ it('welcomes the user back and displays the login form', () => {
   expect(screen.getByTestId('sidebar')).toBeInTheDocument()
 })
 
-it('navigates correctly between "New account" and login pages', () => {
-  render(<HomePage hasWallet={true} usernames={['John Doe']} />)
+it('navigates correctly between "New account" and login pages', async () => {
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} usernames={['John Doe']} />))
 
   const main = screen.getByRole('main')
 
@@ -73,8 +74,8 @@ it('navigates correctly between "New account" and login pages', () => {
 })
 
 describe('Button correctly links to', () => {
-  beforeEach(() => {
-    render(<HomePage hasWallet={false} usernames={[]} />)
+  beforeEach(async () => {
+    await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} usernames={[]} />))
   })
 
   it('the new wallet creation page', () => {

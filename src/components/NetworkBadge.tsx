@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import { useCurrentNetwork } from '../utils/settings'
+import { useGlobalContext } from '../contexts/global'
 
 const NetworkBadge = () => {
-  const currentNetwork = useCurrentNetwork()
+  const { currentNetwork } = useGlobalContext()
 
   return <BadgeContainer>{currentNetwork}</BadgeContainer>
 }
