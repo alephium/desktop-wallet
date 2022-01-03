@@ -28,16 +28,16 @@ import { ModalContext } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { useGlobalContext } from '../../contexts/global'
+import { useWalletContext } from '../../contexts/wallet'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 import { convertToQALPH } from '../../utils/numbers'
-import { WalletContext } from './WalletRootPage'
 
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
   const { client, wallet, setSnackbarMessage } = useGlobalContext()
-  const { addPendingTx } = useContext(WalletContext)
+  const { addPendingTx } = useWalletContext()
 
   const { setModalTitle, onModalClose, overrideOnModalClose } = useContext(ModalContext)
 

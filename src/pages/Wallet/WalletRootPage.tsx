@@ -16,53 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { AnimatePresence } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
 import Modal from '../../components/Modal'
 import { useGlobalContext } from '../../contexts/global'
-import { NetworkType } from '../../utils/settings'
+import { WalletContextProvider } from '../../contexts/wallet'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressPage from './AddressPage'
 import SendPage from './SendPage'
 import WalletHomePage from './WalletHomePage'
 
-export interface SimpleTx {
-  txId: string
-  toAddress: string
-  amount: string
-  timestamp: number
-}
-
-interface WalletContextType {
-  networkPendingTxLists: { [key in NetworkType]?: SimpleTx[] }
-  addPendingTx: (tx: SimpleTx) => void
-  loadedTxList: Transaction[]
-  setLoadedTxList: (list: Transaction[]) => void
-}
-
-const initialContext: WalletContextType = {
-  networkPendingTxLists: {},
-  addPendingTx: () => null,
-  loadedTxList: [],
-  setLoadedTxList: () => null
-}
-
-export const WalletContext = React.createContext<WalletContextType>(initialContext)
-
 const Wallet = () => {
-  const { wallet, currentNetwork } = useGlobalContext()
+  const { wallet } = useGlobalContext()
   const history = useHistory()
   const location = useLocation()
-
-  const [loadedTxList, setLoadedTxList] = useState<WalletContextType['loadedTxList']>([])
-  const [networkPendingTxLists, setNetworkPendingTxLists] = useState<WalletContextType['networkPendingTxLists']>({})
-
-  const addPendingTx = (tx: SimpleTx) => {
-    tx && setNetworkPendingTxLists((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
-  }
 
   // Redirect if wallet is not set
   useEffect(() => {
@@ -71,16 +40,8 @@ const Wallet = () => {
     }
   }, [history, wallet])
 
-  // Manage state of pending tx (clean if in loaded list)
-  useEffect(() => {
-    setNetworkPendingTxLists((prev) => ({
-      ...prev,
-      [currentNetwork]: prev?.[currentNetwork]?.filter((t) => !loadedTxList.find((tx) => tx.hash === t.txId)) || []
-    }))
-  }, [currentNetwork, loadedTxList])
-
   return (
-    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, networkPendingTxLists, loadedTxList }}>
+    <WalletContextProvider>
       <Route path="/wallet">
         <WalletHomePage />
       </Route>
@@ -103,7 +64,7 @@ const Wallet = () => {
           </Route>
         </Switch>
       </AnimatePresence>
-    </WalletContext.Provider>
+    </WalletContextProvider>
   )
 }
 
