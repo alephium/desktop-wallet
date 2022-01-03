@@ -20,7 +20,7 @@ import { useState } from 'react'
 
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
-import MultiStepsController from '../MultiStepsController'
+import { StepsContextProvider } from '../../contexts/steps'
 import CreateAccountPage from './CreateAccountPage'
 import ImportWordsPage from './ImportWordsPage'
 import {
@@ -43,7 +43,7 @@ const ImportWalletRootPage = () => {
     <WalletManagementContext.Provider value={{ ...context, setContext }}>
       <AppHeader />
       <FloatingLogo />
-      <MultiStepsController stepElements={importWalletSteps} baseUrl="import" />
+      <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
     </WalletManagementContext.Provider>
   )
 }

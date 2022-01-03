@@ -31,12 +31,12 @@ import {
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import { useGlobalContext } from '../../contexts/global'
-import { StepsContext } from '../MultiStepsController'
+import { useStepsContext } from '../../contexts/steps'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const WalletWordsPage = () => {
   const { mnemonic, plainWallet } = useContext(WalletManagementContext)
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
+  const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
 
   const handleAddressClick = () => {

@@ -31,8 +31,8 @@ import {
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
+import { useStepsContext } from '../../contexts/steps'
 import { bip39Words } from '../../utils/bip39'
-import { StepsContext } from '../MultiStepsController'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
@@ -40,7 +40,7 @@ const Storage = getStorage()
 const ImportWordsPage = () => {
   const { setWallet, setSnackbarMessage } = useGlobalContext()
   const { password, username } = useContext(WalletManagementContext)
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
+  const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))

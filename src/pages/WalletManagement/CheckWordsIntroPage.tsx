@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useContext } from 'react'
 import styled from 'styled-components'
 
 import { Button } from '../../components/Buttons'
@@ -29,12 +28,12 @@ import {
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
+import { useStepsContext } from '../../contexts/steps'
 import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
-import { StepsContext } from '../MultiStepsController'
 
 const CheckWordsIntroPage = () => {
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
+  const { onButtonBack, onButtonNext } = useStepsContext()
 
   return (
     <FloatingPanel enforceMinHeight>

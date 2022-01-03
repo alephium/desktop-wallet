@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react'
 
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
-import MultiStepsController from '../MultiStepsController'
+import { StepsContextProvider } from '../../contexts/steps'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
 import CreateAccountPage from './CreateAccountPage'
@@ -58,7 +58,7 @@ const CreateWallet = () => {
     <WalletManagementContext.Provider value={{ ...context, setContext }}>
       <AppHeader />
       <FloatingLogo />
-      <MultiStepsController stepElements={createWalletSteps} baseUrl="create" />
+      <StepsContextProvider stepElements={createWalletSteps} baseUrl="create" />
     </WalletManagementContext.Provider>
   )
 }

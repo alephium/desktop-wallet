@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import React from 'react'
+import { createContext, FC, useContext } from 'react'
 import { useHistory, useParams } from 'react-router'
 
 interface RouteParams {
@@ -32,13 +32,13 @@ const initialContext: StepsContext = {
   onButtonBack: () => null
 }
 
-export const StepsContext = React.createContext<StepsContext>(initialContext)
+export const StepsContext = createContext<StepsContext>(initialContext)
 
-// ============== //
-/* MAIN COMPONENT */
-// ============== //
-
-const MultiStepsController = ({ stepElements, baseUrl }: { stepElements: JSX.Element[]; baseUrl: string }) => {
+export const StepsContextProvider: FC<{ stepElements: JSX.Element[]; baseUrl: string }> = ({
+  baseUrl,
+  stepElements,
+  children
+}) => {
   const history = useHistory()
   const { step } = useParams<RouteParams>()
 
@@ -63,15 +63,14 @@ const MultiStepsController = ({ stepElements, baseUrl }: { stepElements: JSX.Ele
     history.replace(`/${baseUrl}/${stepElements.length - 1}`)
   }
 
-  const isStepNumberCorrect = () => {
-    return stepNumber >= 0 && stepNumber < stepElements.length
-  }
+  const isStepNumberCorrect = stepNumber >= 0 && stepNumber < stepElements.length
 
   return (
     <StepsContext.Provider value={{ onButtonNext, onButtonBack }}>
-      {isStepNumberCorrect() && stepElements[stepNumber]}
+      {isStepNumberCorrect && stepElements[stepNumber]}
+      {children}
     </StepsContext.Provider>
   )
 }
 
-export default MultiStepsController
+export const useStepsContext = () => useContext(StepsContext)

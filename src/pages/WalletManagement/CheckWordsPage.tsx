@@ -35,7 +35,7 @@ import {
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
-import { StepsContext } from '../MultiStepsController'
+import { useStepsContext } from '../../contexts/steps'
 import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
@@ -51,7 +51,7 @@ interface WordKey {
 
 const CheckWordsPage = () => {
   const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
+  const { onButtonBack, onButtonNext } = useStepsContext()
 
   const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
