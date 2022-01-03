@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Wallet } from 'alephium-js'
 import { createContext, Dispatch, FC, SetStateAction, useContext, useState } from 'react'
 
-export interface WalletManagementContextType {
+export interface WalletContextType {
   plainWallet?: Wallet | undefined
   setPlainWallet: Dispatch<SetStateAction<Wallet | undefined>>
   mnemonic: string
@@ -30,7 +30,7 @@ export interface WalletManagementContextType {
   setPassword: Dispatch<SetStateAction<string>>
 }
 
-export const initialWalletManagementContext: WalletManagementContextType = {
+export const initialWalletContext: WalletContextType = {
   mnemonic: '',
   setMnemonic: () => null,
   username: '',
@@ -40,21 +40,21 @@ export const initialWalletManagementContext: WalletManagementContextType = {
   setPlainWallet: () => null
 }
 
-export const WalletManagementContext = createContext<WalletManagementContextType>(initialWalletManagementContext)
+export const WalletContext = createContext<WalletContextType>(initialWalletContext)
 
-export const WalletManagementContextProvider: FC = ({ children }) => {
+export const WalletContextProvider: FC = ({ children }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [plainWallet, setPlainWallet] = useState<Wallet>()
   const [mnemonic, setMnemonic] = useState('')
 
   return (
-    <WalletManagementContext.Provider
+    <WalletContext.Provider
       value={{ username, setUsername, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
     >
       {children}
-    </WalletManagementContext.Provider>
+    </WalletContext.Provider>
   )
 }
 
-export const useWalletManagementContext = () => useContext(WalletManagementContext)
+export const useWalletContext = () => useContext(WalletContext)

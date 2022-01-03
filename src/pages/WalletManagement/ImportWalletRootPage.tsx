@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
 import { StepsContextProvider } from '../../contexts/steps'
-import { WalletManagementContextProvider } from '../../contexts/walletManagement'
+import { WalletContextProvider } from '../../contexts/wallet'
 import CreateAccountPage from './CreateAccountPage'
 import ImportWordsPage from './ImportWordsPage'
 import WalletWelcomePage from './WalletWelcomePage'
@@ -32,11 +32,11 @@ const ImportWalletRootPage = () => {
   ]
 
   return (
-    <WalletManagementContextProvider>
+    <WalletContextProvider>
       <AppHeader />
       <FloatingLogo />
       <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
-    </WalletManagementContextProvider>
+    </WalletContextProvider>
   )
 }
 

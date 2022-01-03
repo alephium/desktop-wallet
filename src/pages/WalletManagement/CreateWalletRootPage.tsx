@@ -22,7 +22,7 @@ import { FC, useEffect } from 'react'
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
 import { StepsContextProvider } from '../../contexts/steps'
-import { useWalletManagementContext, WalletManagementContextProvider } from '../../contexts/walletManagement'
+import { useWalletContext, WalletContextProvider } from '../../contexts/wallet'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
 import CreateAccountPage from './CreateAccountPage'
@@ -39,14 +39,14 @@ const CreateWalletRootPage = () => {
   ]
 
   return (
-    <WalletManagementContextProvider>
+    <WalletContextProvider>
       <CreateWallet stepElements={createWalletSteps} baseUrl="create" />
-    </WalletManagementContextProvider>
+    </WalletContextProvider>
   )
 }
 
 const CreateWallet: FC<{ stepElements: JSX.Element[]; baseUrl: string }> = ({ stepElements, baseUrl }) => {
-  const { setPlainWallet, setMnemonic } = useWalletManagementContext()
+  const { setPlainWallet, setMnemonic } = useWalletContext()
 
   // Init wallet
   useEffect(() => {

@@ -31,10 +31,10 @@ import {
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { useWalletManagementContext } from '../../contexts/walletManagement'
+import { useWalletContext } from '../../contexts/wallet'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet } = useWalletManagementContext()
+  const { mnemonic, plainWallet } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
 

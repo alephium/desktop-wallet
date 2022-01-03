@@ -35,18 +35,13 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { WalletManagementContext } from '../../contexts/walletManagement'
+import { WalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useGlobalContext()
-  const {
-    setUsername,
-    setPassword,
-    username: existingUsername,
-    password: existingPassword
-  } = useContext(WalletManagementContext)
+  const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useContext(WalletContext)
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [state, setState] = useState({

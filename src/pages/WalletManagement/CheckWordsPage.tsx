@@ -36,7 +36,7 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { useWalletManagementContext } from '../../contexts/walletManagement'
+import { useWalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
@@ -50,7 +50,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
-  const { mnemonic, plainWallet, password, username } = useWalletManagementContext()
+  const { mnemonic, plainWallet, password, username } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const { setWallet } = useGlobalContext()

@@ -32,14 +32,14 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { useWalletManagementContext } from '../../contexts/walletManagement'
+import { useWalletContext } from '../../contexts/wallet'
 import { bip39Words } from '../../utils/bip39'
 
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
   const { setWallet, setSnackbarMessage } = useGlobalContext()
-  const { password, username } = useWalletManagementContext()
+  const { password, username } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
