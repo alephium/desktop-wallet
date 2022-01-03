@@ -33,7 +33,7 @@ import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
-import { minimalGasAmount, minimalGasPrice } from '../../utils/constants'
+import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { abbreviateAmount, convertToQALPH } from '../../utils/numbers'
 
 const onAmountInputValueChange = ({
@@ -85,11 +85,11 @@ const SendPage = () => {
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
   const initialOnModalClose = useRef(onModalClose)
-  const minimalGasPriceInALPH = abbreviateAmount(minimalGasPrice)
+  const minimalGasPriceInALPH = abbreviateAmount(MINIMAL_GAS_PRICE)
 
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
-  const [gasAmount, setGasAmount] = useState<string>(minimalGasAmount.toString())
+  const [gasAmount, setGasAmount] = useState<string>(MINIMAL_GAS_AMOUNT.toString())
   const [gasPriceInALPH, setGasPriceInALPH] = useState<string>(minimalGasPriceInALPH)
 
   const [isSending, setIsSending] = useState(false)
@@ -221,7 +221,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
   const [addressError, setAddressError] = useState('')
   const [gasAmountError, setGasAmountError] = useState('')
   const [gasPriceError, setGasPriceError] = useState('')
-  const minimalGasPriceInALPH = abbreviateAmount(minimalGasPrice)
+  const minimalGasPriceInALPH = abbreviateAmount(MINIMAL_GAS_PRICE)
 
   const handleAddressChange = (value: string) => {
     setAddress(value)
@@ -238,9 +238,9 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
   const handleGasAmountChange = (newAmount: string) => {
     onAmountInputValueChange({
       amount: newAmount,
-      minAmount: BigInt(minimalGasAmount),
+      minAmount: BigInt(MINIMAL_GAS_PRICE),
       stateSetter: setGasAmount,
-      errorMessage: `Gas amount must be greater than ${minimalGasAmount}.`,
+      errorMessage: `Gas amount must be greater than ${MINIMAL_GAS_PRICE}.`,
       currentErrorState: gasAmountError,
       errorStateSetter: setGasAmountError
     })
@@ -249,9 +249,9 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
   const handleGasPriceChange = (newPrice: string) => {
     onAmountInputValueChange({
       amount: newPrice,
-      minAmount: minimalGasPrice,
+      minAmount: MINIMAL_GAS_PRICE,
       stateSetter: setGasPrice,
-      errorMessage: `Gas price must be greater than ${abbreviateAmount(minimalGasPrice)}ℵ.`,
+      errorMessage: `Gas price must be greater than ${abbreviateAmount(MINIMAL_GAS_PRICE)}ℵ.`,
       currentErrorState: gasPriceError,
       errorStateSetter: setGasPriceError,
       shouldConvertToQALPH: true
