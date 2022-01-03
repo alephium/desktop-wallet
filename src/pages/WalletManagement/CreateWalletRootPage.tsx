@@ -17,35 +17,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { walletGenerate } from 'alephium-js'
-import { useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
 import { StepsContextProvider } from '../../contexts/steps'
+import { useWalletManagementContext, WalletManagementContextProvider } from '../../contexts/walletManagement'
 import CheckWordsIntroPage from './CheckWordsIntroPage'
 import CheckWordsPage from './CheckWordsPage'
 import CreateAccountPage from './CreateAccountPage'
-import {
-  initialWalletManagementContext,
-  WalletManagementContext,
-  WalletManagementContextType
-} from './WalletManagementContext'
 import WalletWelcomePage from './WalletWelcomePage'
 import WalletWordsPage from './WalletWordsPage'
 
-const CreateWallet = () => {
-  const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
-
-  // Init wallet
-  useEffect(() => {
-    const result = walletGenerate()
-    setContext((prevContext) => ({
-      ...prevContext,
-      plainWallet: result,
-      mnemonic: result.mnemonic
-    }))
-  }, [])
-
+const CreateWalletRootPage = () => {
   const createWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" />,
     <WalletWordsPage key="wallet-words" />,
@@ -55,12 +39,29 @@ const CreateWallet = () => {
   ]
 
   return (
-    <WalletManagementContext.Provider value={{ ...context, setContext }}>
-      <AppHeader />
-      <FloatingLogo />
-      <StepsContextProvider stepElements={createWalletSteps} baseUrl="create" />
-    </WalletManagementContext.Provider>
+    <WalletManagementContextProvider>
+      <CreateWallet stepElements={createWalletSteps} baseUrl="create" />
+    </WalletManagementContextProvider>
   )
 }
 
-export default CreateWallet
+const CreateWallet: FC<{ stepElements: JSX.Element[]; baseUrl: string }> = ({ stepElements, baseUrl }) => {
+  const { setPlainWallet, setMnemonic } = useWalletManagementContext()
+
+  // Init wallet
+  useEffect(() => {
+    const wallet = walletGenerate()
+    setPlainWallet(wallet)
+    setMnemonic(wallet.mnemonic)
+  }, [setMnemonic, setPlainWallet])
+
+  return (
+    <>
+      <AppHeader />
+      <FloatingLogo />
+      <StepsContextProvider stepElements={stepElements} baseUrl={baseUrl} />
+    </>
+  )
+}
+
+export default CreateWalletRootPage

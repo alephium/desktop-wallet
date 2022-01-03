@@ -16,23 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
-
 import AppHeader from '../../components/AppHeader'
 import FloatingLogo from '../../components/FloatingLogo'
 import { StepsContextProvider } from '../../contexts/steps'
+import { WalletManagementContextProvider } from '../../contexts/walletManagement'
 import CreateAccountPage from './CreateAccountPage'
 import ImportWordsPage from './ImportWordsPage'
-import {
-  initialWalletManagementContext,
-  WalletManagementContext,
-  WalletManagementContextType
-} from './WalletManagementContext'
 import WalletWelcomePage from './WalletWelcomePage'
 
 const ImportWalletRootPage = () => {
-  const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
-
   const importWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" isRestoring />,
     <ImportWordsPage key="import-words" />,
@@ -40,11 +32,11 @@ const ImportWalletRootPage = () => {
   ]
 
   return (
-    <WalletManagementContext.Provider value={{ ...context, setContext }}>
+    <WalletManagementContextProvider>
       <AppHeader />
       <FloatingLogo />
       <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
-    </WalletManagementContext.Provider>
+    </WalletManagementContextProvider>
   )
 }
 

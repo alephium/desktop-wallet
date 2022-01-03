@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { getStorage, walletImport } from 'alephium-js'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '../../components/Buttons'
 import TextAreaTags from '../../components/Inputs/TextAreaTags'
@@ -32,14 +32,14 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
+import { useWalletManagementContext } from '../../contexts/walletManagement'
 import { bip39Words } from '../../utils/bip39'
-import { WalletManagementContext } from './WalletManagementContext'
 
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
   const { setWallet, setSnackbarMessage } = useGlobalContext()
-  const { password, username } = useContext(WalletManagementContext)
+  const { password, username } = useWalletManagementContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
@@ -60,9 +60,7 @@ const ImportWordsPage = () => {
     )
   }
 
-  const isNextButtonActive = () => {
-    return phrase.length === 24
-  }
+  const isNextButtonActive = phrase.length === 24
 
   useEffect(() => {
     if (tagifyRef.current) {
@@ -103,7 +101,7 @@ const ImportWordsPage = () => {
           />
         </Section>
         <Paragraph secondary centered>
-          {!isNextButtonActive()
+          {!isNextButtonActive
             ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
             : "All good? Let's continue!"}
         </Paragraph>
@@ -112,7 +110,7 @@ const ImportWordsPage = () => {
         <Button secondary onClick={onButtonBack}>
           Cancel
         </Button>
-        <Button onClick={handleWalletImport} disabled={!isNextButtonActive()} submit>
+        <Button onClick={handleWalletImport} disabled={!isNextButtonActive} submit>
           Continue
         </Button>
       </FooterActionsContainer>

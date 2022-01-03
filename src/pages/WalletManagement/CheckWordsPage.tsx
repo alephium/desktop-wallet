@@ -20,7 +20,7 @@ import { getStorage } from 'alephium-js'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
-import { useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -36,7 +36,7 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { WalletManagementContext } from './WalletManagementContext'
+import { useWalletManagementContext } from '../../contexts/walletManagement'
 
 const Storage = getStorage()
 
@@ -50,7 +50,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
-  const { mnemonic, plainWallet, password, username } = useContext(WalletManagementContext)
+  const { mnemonic, plainWallet, password, username } = useWalletManagementContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const { setWallet } = useGlobalContext()
@@ -183,12 +183,10 @@ const CheckWordsPage = () => {
     ))
   }
 
-  const areWordsValid = () => {
-    return selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
-  }
+  const areWordsValid = selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
 
   const createEncryptedWallet = async () => {
-    if (areWordsValid() && plainWallet) {
+    if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(username, walletEncrypted)
       setWallet(plainWallet)
@@ -213,7 +211,7 @@ const CheckWordsPage = () => {
         <Section>
           <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
           <SelectedWordList
-            className={selectedWords.length === wordList.current.length ? (areWordsValid() ? 'valid' : 'error') : ''}
+            className={selectedWords.length === wordList.current.length ? (areWordsValid ? 'valid' : 'error') : ''}
           >
             {renderSelectedWords()}
           </SelectedWordList>
@@ -221,7 +219,7 @@ const CheckWordsPage = () => {
         </Section>
       </PanelContentContainer>
       {selectedWords.length === wordList.current.length ? (
-        !areWordsValid() ? (
+        !areWordsValid ? (
           <InfoBox
             Icon={AlertTriangle}
             importance="alert"
@@ -236,7 +234,7 @@ const CheckWordsPage = () => {
           <Button secondary onClick={onButtonBack}>
             Cancel
           </Button>
-          <Button onClick={handleButtonNext} disabled={!areWordsValid()} submit>
+          <Button onClick={handleButtonNext} disabled={!areWordsValid} submit>
             Continue
           </Button>
         </FooterActionsContainer>

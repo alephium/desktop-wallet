@@ -35,13 +35,18 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { WalletManagementContext } from './WalletManagementContext'
+import { WalletManagementContext } from '../../contexts/walletManagement'
 
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useGlobalContext()
-  const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
+  const {
+    setUsername,
+    setPassword,
+    username: existingUsername,
+    password: existingPassword
+  } = useContext(WalletManagementContext)
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [state, setState] = useState({
@@ -94,7 +99,8 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     usernameError.length === 0
 
   const handleNextButtonClick = () => {
-    setContext((prevContext) => ({ ...prevContext, username, password }))
+    setUsername(username)
+    setPassword(password)
     setCurrentUsername(username)
     onButtonNext()
   }

@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Edit3 } from 'lucide-react'
-import { useContext } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -32,10 +31,10 @@ import {
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { WalletManagementContext } from './WalletManagementContext'
+import { useWalletManagementContext } from '../../contexts/walletManagement'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet } = useContext(WalletManagementContext)
+  const { mnemonic, plainWallet } = useWalletManagementContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
 
