@@ -17,17 +17,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Send } from 'lucide-react'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import { ModalContext } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { useGlobalContext } from '../../contexts/global'
+import { useModalContext } from '../../contexts/modal'
 import { useWalletContext } from '../../contexts/wallet'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
@@ -38,8 +38,7 @@ const SendPage = () => {
   const theme = useTheme()
   const { client, wallet, setSnackbarMessage } = useGlobalContext()
   const { addPendingTx } = useWalletContext()
-
-  const { setModalTitle, onModalClose, overrideOnModalClose } = useContext(ModalContext)
+  const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
@@ -52,7 +51,7 @@ const SendPage = () => {
       onModalClose()
     } else {
       setIsChecking(false)
-      overrideOnModalClose(() => () => onCloseButtonClick(false))
+      setOnModalClose(() => () => onCloseButtonClick(false))
       setModalTitle('Send')
     }
   }
@@ -81,7 +80,7 @@ const SendPage = () => {
   const handleSend = async () => {
     if (!isChecking) {
       setIsChecking(true)
-      overrideOnModalClose(() => () => onCloseButtonClick(true))
+      setOnModalClose(() => () => onCloseButtonClick(true))
       setModalTitle('Info Check')
     } else if (wallet && client) {
       // Send it!

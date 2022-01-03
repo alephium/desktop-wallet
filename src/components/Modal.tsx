@@ -18,105 +18,65 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { createContext, FC, useCallback, useEffect, useState } from 'react'
+import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 
+import { ModalContextProvider, useModalContext } from '../contexts/modal'
 import { Button } from './Buttons'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
-
-interface ModalContext {
-  setModalTitle: (newTitle: string) => void
-  onModalClose: () => void
-  overrideOnModalClose: (newFn: () => void) => void
-}
-
-export const ModalContext = createContext<ModalContext>({
-  setModalTitle: () => null,
-  onModalClose: () => null,
-  overrideOnModalClose: () => null
-})
 
 export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
   children,
   title,
   onClose,
   focusMode
-}) => {
-  const [currentTitle, setCurrentTitle] = useState(title)
-  const [currentOnClose, setCurrentOnClose] = useState(() => onClose)
+}) => (
+  <ModalContextProvider title={title} onClose={onClose}>
+    <ModalContents focusMode={focusMode}>{children}</ModalContents>
+  </ModalContextProvider>
+)
+
+const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => {
+  const { modalTitle, onModalClose } = useModalContext()
   const theme = useTheme()
 
-  const handleClose = () => {
-    currentOnClose()
-  }
-
-  // Prevent body scroll on mount
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [])
-
-  // Handle escape key press
-  const handleEscapeKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress, false)
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress, false)
-    }
-  }, [handleEscapeKeyPress, onClose])
-
   return (
-    <ModalContext.Provider
-      value={{ setModalTitle: setCurrentTitle, onModalClose: currentOnClose, overrideOnModalClose: setCurrentOnClose }}
+    <ModalContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ModalContainer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <StyledModal
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
-        <StyledModal
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-        >
-          <ModalHeader>
-            <PanelTitle smaller useLayoutId={false}>
-              {currentTitle}
-            </PanelTitle>
-            <CloseButton squared transparent onClick={handleClose}>
-              <X />
-            </CloseButton>
-          </ModalHeader>
-          <ModalContent>{children}</ModalContent>
-        </StyledModal>
-        <ModalBackdrop
-          style={{
-            backgroundColor:
-              theme.name === 'light'
-                ? focusMode
-                  ? 'rgba(0, 0, 0, 0.8)'
-                  : 'rgba(0, 0, 0, 0.15)'
-                : focusMode
-                ? 'rgba(0, 0, 0, 0.9)'
-                : 'rgba(0, 0, 0, 0.6)'
-          }}
-          onClick={handleClose}
-        />
-      </ModalContainer>
-    </ModalContext.Provider>
+        <ModalHeader>
+          <PanelTitle smaller useLayoutId={false}>
+            {modalTitle}
+          </PanelTitle>
+          <CloseButton squared transparent onClick={onModalClose}>
+            <X />
+          </CloseButton>
+        </ModalHeader>
+        <ModalContent>{children}</ModalContent>
+      </StyledModal>
+      <ModalBackdrop
+        style={{
+          backgroundColor:
+            theme.name === 'light'
+              ? focusMode
+                ? 'rgba(0, 0, 0, 0.8)'
+                : 'rgba(0, 0, 0, 0.15)'
+              : focusMode
+              ? 'rgba(0, 0, 0, 0.9)'
+              : 'rgba(0, 0, 0, 0.6)'
+        }}
+        onClick={onModalClose}
+      />
+    </ModalContainer>
   )
 }
 
