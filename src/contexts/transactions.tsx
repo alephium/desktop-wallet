@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { createContext, FC, useContext, useEffect, useState } from 'react'
 
-import { useGlobalContext } from '../contexts/global'
 import { NetworkType } from '../utils/settings'
+import { useGlobalContext } from './global'
 
 export interface SimpleTx {
   txId: string
@@ -29,27 +29,29 @@ export interface SimpleTx {
   timestamp: number
 }
 
-interface WalletContextType {
+interface TransactionsContextType {
   networkPendingTxLists: { [key in NetworkType]?: SimpleTx[] }
   addPendingTx: (tx: SimpleTx) => void
   loadedTxList: Transaction[]
   setLoadedTxList: (list: Transaction[]) => void
 }
 
-const initialContext: WalletContextType = {
+const initialContext: TransactionsContextType = {
   networkPendingTxLists: {},
   addPendingTx: () => null,
   loadedTxList: [],
   setLoadedTxList: () => null
 }
 
-export const WalletContext = createContext<WalletContextType>(initialContext)
+export const TransactionsContext = createContext<TransactionsContextType>(initialContext)
 
-export const WalletContextProvider: FC = ({ children }) => {
+export const TransactionsContextProvider: FC = ({ children }) => {
   const { currentNetwork } = useGlobalContext()
 
-  const [loadedTxList, setLoadedTxList] = useState<WalletContextType['loadedTxList']>([])
-  const [networkPendingTxLists, setNetworkPendingTxLists] = useState<WalletContextType['networkPendingTxLists']>({})
+  const [loadedTxList, setLoadedTxList] = useState<TransactionsContextType['loadedTxList']>([])
+  const [networkPendingTxLists, setNetworkPendingTxLists] = useState<TransactionsContextType['networkPendingTxLists']>(
+    {}
+  )
 
   const addPendingTx = (tx: SimpleTx) => {
     tx && setNetworkPendingTxLists((prev) => ({ ...prev, [currentNetwork]: [...(prev[currentNetwork] || []), tx] }))
@@ -64,10 +66,10 @@ export const WalletContextProvider: FC = ({ children }) => {
   }, [currentNetwork, loadedTxList])
 
   return (
-    <WalletContext.Provider value={{ addPendingTx, setLoadedTxList, networkPendingTxLists, loadedTxList }}>
+    <TransactionsContext.Provider value={{ addPendingTx, setLoadedTxList, networkPendingTxLists, loadedTxList }}>
       {children}
-    </WalletContext.Provider>
+    </TransactionsContext.Provider>
   )
 }
 
-export const useWalletContext = () => useContext(WalletContext)
+export const useTransactionsContext = () => useContext(TransactionsContext)

@@ -22,7 +22,7 @@ import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
 import Modal from '../../components/Modal'
 import { useGlobalContext } from '../../contexts/global'
-import { WalletContextProvider } from '../../contexts/wallet'
+import { TransactionsContextProvider } from '../../contexts/transactions'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressPage from './AddressPage'
 import SendPage from './SendPage'
@@ -41,7 +41,7 @@ const Wallet = () => {
   }, [history, wallet])
 
   return (
-    <WalletContextProvider>
+    <TransactionsContextProvider>
       <Route path="/wallet">
         <WalletHomePage />
       </Route>
@@ -64,7 +64,7 @@ const Wallet = () => {
           </Route>
         </Switch>
       </AnimatePresence>
-    </WalletContextProvider>
+    </TransactionsContextProvider>
   )
 }
 

@@ -28,7 +28,7 @@ import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
-import { useWalletContext } from '../../contexts/wallet'
+import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 import { convertToQALPH } from '../../utils/numbers'
@@ -37,7 +37,7 @@ const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
   const { client, wallet, setSnackbarMessage } = useGlobalContext()
-  const { addPendingTx } = useWalletContext()
+  const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
   const [address, setAddress] = useState('')
