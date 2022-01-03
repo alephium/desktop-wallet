@@ -19,17 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { walletGenerate } from 'alephium-js'
 import { FC, useEffect } from 'react'
 
-import AppHeader from '../../components/AppHeader'
-import FloatingLogo from '../../components/FloatingLogo'
-import { StepsContextProvider } from '../../contexts/steps'
-import { useWalletContext, WalletContextProvider } from '../../contexts/wallet'
-import CheckWordsIntroPage from './CheckWordsIntroPage'
-import CheckWordsPage from './CheckWordsPage'
-import CreateAccountPage from './CreateAccountPage'
-import WalletWelcomePage from './WalletWelcomePage'
-import WalletWordsPage from './WalletWordsPage'
+import AppHeader from '../components/AppHeader'
+import FloatingLogo from '../components/FloatingLogo'
+import { StepsContextProvider } from '../contexts/steps'
+import { useWalletContext, WalletContextProvider } from '../contexts/wallet'
+import CheckWordsIntroPage from '../pages/WalletManagement/CheckWordsIntroPage'
+import CheckWordsPage from '../pages/WalletManagement/CheckWordsPage'
+import CreateAccountPage from '../pages/WalletManagement/CreateAccountPage'
+import WalletWelcomePage from '../pages/WalletManagement/WalletWelcomePage'
+import WalletWordsPage from '../pages/WalletManagement/WalletWordsPage'
 
-const CreateWalletRootPage = () => {
+const CreateWalletRoutes = () => {
   const createWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" />,
     <WalletWordsPage key="wallet-words" />,
@@ -64,4 +64,4 @@ const CreateWallet: FC<{ stepElements: JSX.Element[]; baseUrl: string }> = ({ st
   )
 }
 
-export default CreateWalletRootPage
+export default CreateWalletRoutes

@@ -20,15 +20,15 @@ import { AnimatePresence } from 'framer-motion'
 import { useEffect } from 'react'
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
-import Modal from '../../components/Modal'
-import { useGlobalContext } from '../../contexts/global'
-import { TransactionsContextProvider } from '../../contexts/transactions'
-import SettingsPage from '../Settings/SettingsPage'
-import AddressPage from './AddressPage'
-import SendPage from './SendPage'
-import WalletHomePage from './WalletHomePage'
+import Modal from '../components/Modal'
+import { useGlobalContext } from '../contexts/global'
+import { TransactionsContextProvider } from '../contexts/transactions'
+import SettingsPage from '../pages/Settings/SettingsPage'
+import AddressPage from '../pages/Wallet/AddressPage'
+import SendPage from '../pages/Wallet/SendPage'
+import WalletHomePage from '../pages/Wallet/WalletHomePage'
 
-const Wallet = () => {
+const WalletRoutes = () => {
   const { wallet } = useGlobalContext()
   const history = useHistory()
   const location = useLocation()
@@ -68,4 +68,4 @@ const Wallet = () => {
   )
 }
 
-export default Wallet
+export default WalletRoutes

@@ -16,34 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from 'alephium-js'
-import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import { useState } from 'react'
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import styled, { ThemeProvider } from 'styled-components'
 
-import { Modal } from './components/Modal'
 import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
 import { useGlobalContext } from './contexts/global'
-import HomePage from './pages/HomePage'
-import SettingsPage from './pages/Settings/SettingsPage'
-import WalletPages from './pages/Wallet/WalletRootPage'
-import CreateWalletPages from './pages/WalletManagement/CreateWalletRootPage'
-import ImportWalletPages from './pages/WalletManagement/ImportWalletRootPage'
+import Routes from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
-
-const Storage = getStorage()
 
 const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const { settings, snackbarMessage, isClientLoading } = useGlobalContext()
-  const history = useHistory()
-
-  const usernames = Storage.list()
-  const hasWallet = usernames.length > 0
 
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
@@ -51,33 +37,7 @@ const App = () => {
 
       <AppContainer>
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
-        <AnimateSharedLayout type="crossfade">
-          <Switch>
-            <Route exact path="/create/:step?">
-              <CreateWalletPages />
-              <Redirect exact from="/create/" to="/create/0" />
-            </Route>
-            <Route exact path="/import/:step?">
-              <ImportWalletPages />
-              <Redirect exact from="/import/" to="/import/0" />
-            </Route>
-            <Route path="/wallet">
-              <WalletPages />
-            </Route>
-            <Route path="">
-              <HomePage hasWallet={hasWallet} usernames={usernames} />
-            </Route>
-          </Switch>
-        </AnimateSharedLayout>
-        <AnimatePresence exitBeforeEnter initial={false}>
-          <Switch>
-            <Route path="/settings">
-              <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
-                <SettingsPage />
-              </Modal>
-            </Route>
-          </Switch>
-        </AnimatePresence>
+        <Routes />
       </AppContainer>
       <ClientLoading>{isClientLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />

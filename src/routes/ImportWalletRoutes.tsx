@@ -16,15 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import AppHeader from '../../components/AppHeader'
-import FloatingLogo from '../../components/FloatingLogo'
-import { StepsContextProvider } from '../../contexts/steps'
-import { WalletContextProvider } from '../../contexts/wallet'
-import CreateAccountPage from './CreateAccountPage'
-import ImportWordsPage from './ImportWordsPage'
-import WalletWelcomePage from './WalletWelcomePage'
+import AppHeader from '../components/AppHeader'
+import FloatingLogo from '../components/FloatingLogo'
+import { StepsContextProvider } from '../contexts/steps'
+import { WalletContextProvider } from '../contexts/wallet'
+import CreateAccountPage from '../pages/WalletManagement/CreateAccountPage'
+import ImportWordsPage from '../pages/WalletManagement/ImportWordsPage'
+import WalletWelcomePage from '../pages/WalletManagement/WalletWelcomePage'
 
-const ImportWalletRootPage = () => {
+const ImportWalletRoutes = () => {
   const importWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" isRestoring />,
     <ImportWordsPage key="import-words" />,
@@ -40,4 +40,4 @@ const ImportWalletRootPage = () => {
   )
 }
 
-export default ImportWalletRootPage
+export default ImportWalletRoutes
