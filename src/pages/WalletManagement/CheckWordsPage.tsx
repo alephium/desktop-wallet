@@ -40,10 +40,6 @@ import { useWalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
-const getAlphabeticallyOrderedList = (arr: string[]) => {
-  return arr.slice().sort()
-}
-
 interface WordKey {
   word: string
   key: string // Used to build layout and ensure anims are working when duplicates exist
@@ -241,6 +237,10 @@ const CheckWordsPage = () => {
       )}
     </FloatingPanel>
   )
+}
+
+const getAlphabeticallyOrderedList = (arr: string[]) => {
+  return arr.slice().sort()
 }
 
 const RemainingWordList = styled.div`
