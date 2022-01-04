@@ -22,7 +22,6 @@ import { ChangeEvent, useContext, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
@@ -34,15 +33,16 @@ import {
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
-import { StepsContext } from '../MultiStepsController'
-import { WalletManagementContext } from './WalletManagementContext'
+import { useGlobalContext } from '../../contexts/global'
+import { useStepsContext } from '../../contexts/steps'
+import { WalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
-  const { setCurrentUsername } = useContext(GlobalContext)
-  const { setContext, username: existingUsername, password: existingPassword } = useContext(WalletManagementContext)
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
+  const { setCurrentUsername } = useGlobalContext()
+  const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useContext(WalletContext)
+  const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [state, setState] = useState({
     username: existingUsername,
@@ -94,7 +94,8 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     usernameError.length === 0
 
   const handleNextButtonClick = () => {
-    setContext((prevContext) => ({ ...prevContext, username, password }))
+    setUsername(username)
+    setPassword(password)
     setCurrentUsername(username)
     onButtonNext()
   }

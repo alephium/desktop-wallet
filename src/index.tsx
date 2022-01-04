@@ -25,6 +25,7 @@ import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
 import App from './App'
+import { GlobalContextProvider } from './contexts/global'
 import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
@@ -32,10 +33,12 @@ import { lightTheme } from './style/themes'
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <ThemeProvider theme={lightTheme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
+      <GlobalContextProvider>
+        <ThemeProvider theme={lightTheme}>
+          <GlobalStyle />
+          <App />
+        </ThemeProvider>
+      </GlobalContextProvider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

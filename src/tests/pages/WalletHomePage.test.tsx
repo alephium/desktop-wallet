@@ -21,7 +21,7 @@ import { fireEvent, screen, waitFor, waitForElementToBeRemoved } from '@testing-
 import { Wallet } from 'alephium-js'
 import { PartialDeep } from 'type-fest'
 
-import { Context } from '../../App'
+import { GlobalContextProps } from '../../contexts/global'
 import WalletHomePage from '../../pages/Wallet/WalletHomePage'
 import { renderWithGlobalContext } from '..'
 import addressMockData from '../fixtures/address.json'
@@ -40,13 +40,15 @@ beforeEach(async () => {
   const getAddressDetailsMock = jest
     .fn()
     .mockResolvedValueOnce({ data: addressMockData.initialFetch.details })
+    .mockResolvedValueOnce({ data: addressMockData.initialFetch.details }) // TODO: Remove this line after figuring out why useEffect is called twice
     .mockResolvedValueOnce({ data: addressMockData.refresh.details })
   const getAddressTransactionsMock = jest
     .fn()
     .mockResolvedValueOnce({ data: addressMockData.initialFetch.transactions })
+    .mockResolvedValueOnce({ data: addressMockData.initialFetch.transactions }) // TODO: Remove this line after figuring out why useEffect is called twice
     .mockResolvedValueOnce({ data: addressMockData.refresh.transactions })
 
-  const context: PartialDeep<Context> = {
+  const context: PartialDeep<GlobalContextProps> = {
     wallet: walletMock,
     client: {
       explorer: {
@@ -55,7 +57,7 @@ beforeEach(async () => {
       }
     }
   }
-  await waitFor(() => renderWithGlobalContext(context, <WalletHomePage />))
+  await waitFor(() => renderWithGlobalContext(<WalletHomePage />, context))
 })
 
 it('Button correctly links to wallet settings page', async () => {

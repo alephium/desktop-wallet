@@ -16,23 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import AppHeader from '../components/AppHeader'
+import FloatingLogo from '../components/FloatingLogo'
+import { StepsContextProvider } from '../contexts/steps'
+import { WalletContextProvider } from '../contexts/wallet'
+import CreateAccountPage from '../pages/WalletManagement/CreateAccountPage'
+import ImportWordsPage from '../pages/WalletManagement/ImportWordsPage'
+import WalletWelcomePage from '../pages/WalletManagement/WalletWelcomePage'
 
-import AppHeader from '../../components/AppHeader'
-import FloatingLogo from '../../components/FloatingLogo'
-import MultiStepsController from '../MultiStepsController'
-import CreateAccountPage from './CreateAccountPage'
-import ImportWordsPage from './ImportWordsPage'
-import {
-  initialWalletManagementContext,
-  WalletManagementContext,
-  WalletManagementContextType
-} from './WalletManagementContext'
-import WalletWelcomePage from './WalletWelcomePage'
-
-const ImportWalletRootPage = () => {
-  const [context, setContext] = useState<WalletManagementContextType>(initialWalletManagementContext)
-
+const ImportWalletRoutes = () => {
   const importWalletSteps: JSX.Element[] = [
     <CreateAccountPage key="create-account" isRestoring />,
     <ImportWordsPage key="import-words" />,
@@ -40,12 +32,12 @@ const ImportWalletRootPage = () => {
   ]
 
   return (
-    <WalletManagementContext.Provider value={{ ...context, setContext }}>
+    <WalletContextProvider>
       <AppHeader />
       <FloatingLogo />
-      <MultiStepsController stepElements={importWalletSteps} baseUrl="import" />
-    </WalletManagementContext.Provider>
+      <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
+    </WalletContextProvider>
   )
 }
 
-export default ImportWalletRootPage
+export default ImportWalletRoutes

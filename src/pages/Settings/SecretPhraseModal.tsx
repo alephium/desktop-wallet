@@ -18,21 +18,21 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, Wallet, walletOpen } from 'alephium-js'
 import { Edit3 } from 'lucide-react'
-import { ChangeEvent, useContext, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
+import { useGlobalContext } from '../../contexts/global'
 
 const Storage = getStorage()
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
-  const { currentUsername, setSnackbarMessage } = useContext(GlobalContext)
+  const { currentUsername, setSnackbarMessage } = useGlobalContext()
   const [typedPassword, setTypedPassword] = useState('')
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
   const [decryptedWallet, setDecryptedWallet] = useState<Wallet>()

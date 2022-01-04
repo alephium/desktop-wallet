@@ -17,16 +17,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AlertTriangle } from 'lucide-react'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
+import { useGlobalContext } from '../../contexts/global'
 import { useMountEffect } from '../../utils/hooks'
 import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../../utils/settings'
 
@@ -38,7 +38,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useContext(GlobalContext)
+  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)

@@ -17,11 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Edit3 } from 'lucide-react'
-import { useContext } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import {
@@ -31,13 +29,14 @@ import {
   Section
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { StepsContext } from '../MultiStepsController'
-import { WalletManagementContext } from './WalletManagementContext'
+import { useGlobalContext } from '../../contexts/global'
+import { useStepsContext } from '../../contexts/steps'
+import { useWalletContext } from '../../contexts/wallet'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet } = useContext(WalletManagementContext)
-  const { onButtonBack, onButtonNext } = useContext(StepsContext)
-  const { setSnackbarMessage } = useContext(GlobalContext)
+  const { mnemonic, plainWallet } = useWalletContext()
+  const { onButtonBack, onButtonNext } = useStepsContext()
+  const { setSnackbarMessage } = useGlobalContext()
 
   const handleAddressClick = () => {
     const address = plainWallet?.address

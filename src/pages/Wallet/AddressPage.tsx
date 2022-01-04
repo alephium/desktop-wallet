@@ -16,19 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useContext } from 'react'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import { Button } from '../../components/Buttons'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
+import { useGlobalContext } from '../../contexts/global'
 import { openInWebBrowser } from '../../utils/misc'
 import { loadStoredSettings } from '../../utils/settings'
 
 const AddressPage = () => {
-  const { wallet, setSnackbarMessage } = useContext(GlobalContext)
+  const { wallet, setSnackbarMessage } = useGlobalContext()
   const theme = useTheme()
 
   const address = wallet?.address

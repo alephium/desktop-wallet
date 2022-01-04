@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback } from 'react'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../App'
+import { useGlobalContext } from '../contexts/global'
 import { ThemeType } from '../style/themes'
 
 interface ThemeSwitcherProps {
@@ -47,7 +47,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ small = false, className 
       general: { theme: currentTheme }
     },
     updateSettings
-  } = useContext(GlobalContext)
+  } = useGlobalContext()
 
   const switchTheme = useCallback(
     (theme: ThemeType) => {

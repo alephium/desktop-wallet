@@ -21,33 +21,32 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Lock, QrCode, RefreshCw, Send } from 'lucide-react'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { GlobalContext } from '../../App'
 import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
 import { Button } from '../../components/Buttons'
 import { FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
+import { useGlobalContext } from '../../contexts/global'
+import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
 import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
-import { loadStoredSettings, useCurrentNetwork } from '../../utils/settings'
-import { SimpleTx, WalletContext } from './WalletRootPage'
+import { loadStoredSettings } from '../../utils/settings'
 
 dayjs.extend(relativeTime)
 
 const WalletHomePage = () => {
   const history = useHistory()
-  const currentNetwork = useCurrentNetwork()
-  const { wallet, setSnackbarMessage, client, setWallet, currentUsername } = useContext(GlobalContext)
+  const { wallet, setSnackbarMessage, client, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
-  const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useContext(WalletContext)
+  const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useTransactionsContext()
   const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
@@ -175,7 +174,7 @@ const WalletHomePage = () => {
           <ActionsTitle>Quick actions</ActionsTitle>
           <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
           <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
-          <ActionButton Icon={Lock} label="Lock account" onClick={() => setWallet(undefined)} />
+          <ActionButton Icon={Lock} label="Lock account" onClick={lockWallet} />
         </WalletActions>
         <FloatingLogo />
       </WalletSidebar>
