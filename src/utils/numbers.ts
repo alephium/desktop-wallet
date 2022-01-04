@@ -179,7 +179,6 @@ export const convertScientificToFloatString = (scientificNumber: string) => {
   return newNumber
 }
 
-// Counts up to 10 decimals
 export const countDecimals = (value: number) => {
   if (Number.isInteger(value)) return 0
 
