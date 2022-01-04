@@ -32,7 +32,12 @@ export const ModalContext = createContext<ModalContext>({
   setOnModalClose: () => null
 })
 
-export const ModalContextProvider: FC<{ title: string; onClose: () => void }> = ({ children, title, onClose }) => {
+interface ModalContextProviderProps {
+  title: string
+  onClose: () => void
+}
+
+export const ModalContextProvider: FC<ModalContextProviderProps> = ({ children, title, onClose }) => {
   const [modalTitle, setModalTitle] = useState(title)
   const [onModalClose, setOnModalClose] = useState(() => onClose)
 

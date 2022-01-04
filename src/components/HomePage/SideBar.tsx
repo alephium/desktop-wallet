@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -28,7 +27,7 @@ import { deviceBreakPoints } from '../../style/globalStyles'
 import { PanelContentContainer } from '../PageComponents/PageContainers'
 import PanelTitle from '../PageComponents/PanelTitle'
 
-const SideBar: FC<{ className?: string }> = ({ className }) => {
+const SideBar = () => {
   const theme = useTheme()
 
   return (

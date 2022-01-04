@@ -34,11 +34,12 @@ const initialContext: StepsContext = {
 
 export const StepsContext = createContext<StepsContext>(initialContext)
 
-export const StepsContextProvider: FC<{ stepElements: JSX.Element[]; baseUrl: string }> = ({
-  baseUrl,
-  stepElements,
-  children
-}) => {
+interface StepsContextProviderProps {
+  stepElements: JSX.Element[]
+  baseUrl: string
+}
+
+export const StepsContextProvider: FC<StepsContextProviderProps> = ({ baseUrl, stepElements, children }) => {
   const history = useHistory()
   const { step } = useParams<RouteParams>()
 

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
-import React, { useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
@@ -41,7 +41,7 @@ const toggleVariants = {
   dark: { left: '50%', backgroundColor: 'var(--color-purple)' }
 }
 
-const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ small = false, className }) => {
+const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => {
   const {
     settings: {
       general: { theme: currentTheme }

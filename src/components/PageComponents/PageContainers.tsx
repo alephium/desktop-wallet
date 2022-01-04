@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, MotionStyle, Variants } from 'framer-motion'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 
 import { deviceBreakPoints } from '../../style/globalStyles'
@@ -70,7 +70,7 @@ export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => {
   )
 }
 
-export const Section: React.FC<SectionProps> = ({
+export const Section: FC<SectionProps> = ({
   children,
   apparitionDelay,
   inList,
