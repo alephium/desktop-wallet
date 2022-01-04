@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from 'alephium-js'
 import { AlertTriangle } from 'lucide-react'
-import { ChangeEvent, useContext, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
@@ -35,13 +35,13 @@ import PanelTitle from '../../components/PageComponents/PanelTitle'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
-import { WalletContext } from '../../contexts/wallet'
+import { useWalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { setCurrentUsername } = useGlobalContext()
-  const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useContext(WalletContext)
+  const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   const [state, setState] = useState({
