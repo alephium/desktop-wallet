@@ -19,4 +19,4 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { BILLION } from './numbers'
 
 export const MINIMAL_GAS_AMOUNT = 20000
-export const MINIMAL_GAS_PRICE = BigInt(BILLION) // 1 nanoAlph
+export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
