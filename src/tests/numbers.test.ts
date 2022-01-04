@@ -105,6 +105,7 @@ it('should convert to qALPH', () => {
     expect(convertToQALPH('999999999')).toEqual(BigInt(999999999000000000000000000n)),
     expect(convertToQALPH('999999999999')).toEqual(BigInt(999999999999000000000000000000n)),
     expect(convertToQALPH('0.1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('.1')).toEqual(BigInt(100000000000000000n)),
     expect(convertToQALPH('0.01')).toEqual(BigInt(10000000000000000n)),
     expect(convertToQALPH('0.00000009')).toEqual(BigInt(90000000000n)),
     expect(convertToQALPH('0.000000000000000001')).toEqual(BigInt(1n)),
@@ -169,7 +170,10 @@ it('should convert scientific numbers to floats or integers', () => {
     expect(convertScientificToFloatString('-1e+18')).toEqual('-1000000000000000000'),
     expect(convertScientificToFloatString('-1.1e+1')).toEqual('-11'),
     expect(convertScientificToFloatString('-1.99999999999999999e+1')).toEqual('-19.9999999999999999'),
-    expect(convertScientificToFloatString('-123.45678e+2')).toEqual('-12345.678')
+    expect(convertScientificToFloatString('-123.45678e+2')).toEqual('-12345.678'),
+    expect(convertScientificToFloatString('123.45678e2')).toEqual('12345.678'),
+    expect(convertScientificToFloatString('1e18')).toEqual('1000000000000000000'),
+    expect(convertScientificToFloatString('.1e19')).toEqual('1000000000000000000')
 })
 
 it('should calculate number of decimals', () => {
@@ -177,6 +181,7 @@ it('should calculate number of decimals', () => {
     expect(countDecimals(0.19)).toEqual(2),
     expect(countDecimals(1000000.10001)).toEqual(5),
     expect(countDecimals(1000000.0000000001)).toEqual(10),
+    expect(countDecimals(0.1234567891234567)).toEqual(16),
     expect(countDecimals(-0.1)).toEqual(1),
     expect(countDecimals(-0.19)).toEqual(2),
     expect(countDecimals(-1000000.10001)).toEqual(5),

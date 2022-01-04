@@ -130,14 +130,21 @@ export const convertToQALPH = (amount: string) => {
 
 export const convertScientificToFloatString = (scientificNumber: string) => {
   let newNumber = scientificNumber
+  const scientificNotation = scientificNumber.includes('e-')
+    ? 'e-'
+    : scientificNumber.includes('e+')
+    ? 'e+'
+    : scientificNumber.includes('e')
+    ? 'e'
+    : ''
 
   if (scientificNumber.startsWith('-')) {
     newNumber = newNumber.substring(1)
   }
 
-  if (newNumber.includes('e-')) {
-    const positionOfE = newNumber.indexOf('e-')
-    const moveDotBy = Number(newNumber.substring(positionOfE + 2, newNumber.length))
+  if (scientificNotation === 'e-') {
+    const positionOfE = newNumber.indexOf(scientificNotation)
+    const moveDotBy = Number(newNumber.substring(positionOfE + scientificNotation.length, newNumber.length))
     const positionOfDot = newNumber.indexOf('.')
     const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
     if (moveDotBy >= positionOfDot) {
@@ -149,9 +156,9 @@ export const convertScientificToFloatString = (scientificNumber: string) => {
         newPositionOfDot
       )}`
     }
-  } else if (newNumber.includes('e+')) {
-    const positionOfE = newNumber.indexOf('e+')
-    const moveDotBy = Number(newNumber.substring(positionOfE + 2, newNumber.length))
+  } else if (scientificNotation === 'e+' || scientificNotation === 'e') {
+    const positionOfE = newNumber.indexOf(scientificNotation)
+    const moveDotBy = Number(newNumber.substring(positionOfE + scientificNotation.length, newNumber.length))
     const numberOfDecimals = newNumber.indexOf('.') > -1 ? positionOfE - newNumber.indexOf('.') - 1 : 0
     const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
     if (numberOfDecimals <= moveDotBy) {
