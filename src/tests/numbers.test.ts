@@ -26,7 +26,7 @@ import {
 import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
-  return amount * BigInt(1000000000000000000)
+  return amount * BigInt(1000000000000000000n)
 }
 
 const minDigits = 3
@@ -39,9 +39,9 @@ it('Should abbreviate amount', () => {
     expect(abbreviateAmount(BigInt(1000000000))).toEqual('0.000000001'),
     expect(abbreviateAmount(BigInt(2000000000))).toEqual('0.000000002'),
     expect(abbreviateAmount(BigInt(2000000000000000))).toEqual('0.002'),
-    expect(abbreviateAmount(BigInt(20000000000000000))).toEqual('0.02'),
-    expect(abbreviateAmount(BigInt(200000000000000000))).toEqual('0.2'),
-    expect(abbreviateAmount(BigInt(2000000000000000000))).toEqual('2.000'),
+    expect(abbreviateAmount(BigInt(20000000000000000n))).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000n))).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000n))).toEqual('2.000'),
     expect(abbreviateAmount(alf(BigInt(1230)))).toEqual('1.230K'),
     expect(abbreviateAmount(alf(BigInt(1230000)))).toEqual('1.230M'),
     expect(abbreviateAmount(alf(BigInt(1230000000)))).toEqual('1.230B'),
@@ -60,9 +60,9 @@ it('Should keep full amount precision', () => {
     expect(abbreviateAmount(BigInt(2000000000), true)).toEqual('0.000000002'),
     expect(abbreviateAmount(BigInt(2000000002), true)).toEqual('0.000000002000000002'),
     expect(abbreviateAmount(BigInt(2000000000000000), true)).toEqual('0.002'),
-    expect(abbreviateAmount(BigInt(20000000000000000), true)).toEqual('0.02'),
-    expect(abbreviateAmount(BigInt(200000000000000000), true)).toEqual('0.2'),
-    expect(abbreviateAmount(BigInt(2000000000000000000), true)).toEqual('2.000'),
+    expect(abbreviateAmount(BigInt(20000000000000000n), true)).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000n), true)).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000n), true)).toEqual('2.000'),
     expect(abbreviateAmount(alf(BigInt(1230)), true)).toEqual('1230.000'),
     expect(abbreviateAmount(alf(BigInt(1230000)), true)).toEqual('1230000.000'),
     expect(abbreviateAmount(alf(BigInt(1230000000)), true)).toEqual('1230000000.000'),
