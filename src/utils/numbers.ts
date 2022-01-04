@@ -73,7 +73,7 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 
   let tier = (Math.log10(alephNum) / 3) | 0
 
-  const numberOfDigitsToDisplay = nbOfDecimalsToShow ? nbOfDecimalsToShow : minDigits
+  const numberOfDigitsToDisplay = nbOfDecimalsToShow || minDigits
 
   if (tier < 0 || showFullPrecision) {
     // Keep full precision for very low numbers (gas etc.)
@@ -85,7 +85,7 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
     return removeTrailingZeros(alephNum.toFixed(18), minDigits)
   } else if (tier === 0) {
     // Small number, low precision is ok
-    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString(), minDigits)
+    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay), minDigits)
   } else if (tier >= MONEY_SYMBOL.length) {
     tier = MONEY_SYMBOL.length - 1
   }
@@ -172,14 +172,12 @@ export const convertScientificToFloatString = (scientificNumber: string) => {
   return newNumber
 }
 
+// Counts up to 10 decimals
 export const countDecimals = (value: number) => {
-  if (Math.floor(value) === value) return 0
+  if (Number.isInteger(value)) return 0
 
-  const str = value.toString()
-  if (str.indexOf('.') !== -1 && str.indexOf('-') !== -1) {
-    return str.split('-')[1] || 0
-  } else if (str.indexOf('.') !== -1) {
-    return str.split('.')[1].length || 0
-  }
-  return str.split('-')[1] || 0
+  let str = value.toString()
+  if (str.startsWith('-')) str = str.substring(1)
+
+  return str.substring(str.indexOf('.')).length - 1
 }
