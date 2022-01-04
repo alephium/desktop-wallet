@@ -34,7 +34,7 @@ import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
-import { abbreviateAmount, convertToQALPH } from '../../utils/numbers'
+import { abbreviateAmount, convertScientificToFloatString, convertToQALPH } from '../../utils/numbers'
 
 type StepIndex = 1 | 2 | 3
 
@@ -333,7 +333,13 @@ const onAmountInputValueChange = ({
     if (currentErrorState) errorStateSetter('')
   }
 
-  stateSetter(amount)
+  let cleanedAmount = amount
+
+  if (amount.includes('e')) {
+    cleanedAmount = convertScientificToFloatString(amount)
+  }
+
+  stateSetter(cleanedAmount)
 }
 
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {

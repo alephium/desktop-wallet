@@ -16,7 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, calAmountDelta, convertToQALPH, removeTrailingZeros } from '../utils/numbers'
+import {
+  abbreviateAmount,
+  calAmountDelta,
+  convertScientificToFloatString,
+  convertToQALPH,
+  removeTrailingZeros
+} from '../utils/numbers'
 import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
@@ -101,5 +107,37 @@ it('should convert to qALPH', () => {
     expect(convertToQALPH('0.01')).toEqual(BigInt(10000000000000000n)),
     expect(convertToQALPH('0.00000009')).toEqual(BigInt(90000000000n)),
     expect(convertToQALPH('0.000000000000000001')).toEqual(BigInt(1n)),
-    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n))
+    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n)),
+    expect(convertToQALPH('1e-1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('1e-2')).toEqual(BigInt(10000000000000000n)),
+    expect(convertToQALPH('1e-17')).toEqual(BigInt(10n)),
+    expect(convertToQALPH('1e-18')).toEqual(BigInt(1n)),
+    expect(convertToQALPH('1.1e-1')).toEqual(BigInt(110000000000000000n)),
+    expect(convertToQALPH('1.11e-1')).toEqual(BigInt(111000000000000000n)),
+    expect(convertToQALPH('1.99999999999999999e-1')).toEqual(BigInt(199999999999999999n)),
+    expect(convertToQALPH('1e+1')).toEqual(BigInt(10000000000000000000n)),
+    expect(convertToQALPH('1e+2')).toEqual(BigInt(100000000000000000000n)),
+    expect(convertToQALPH('1e+17')).toEqual(BigInt(100000000000000000000000000000000000n)),
+    expect(convertToQALPH('1e+18')).toEqual(BigInt(1000000000000000000000000000000000000n)),
+    expect(convertToQALPH('1.1e+1')).toEqual(BigInt(11000000000000000000n)),
+    expect(convertToQALPH('1.99999999999999999e+1')).toEqual(BigInt(19999999999999999900n)),
+    expect(convertToQALPH('123.45678e+2')).toEqual(BigInt(12345678000000000000000n))
+})
+
+it('should convert scientific numbers to floats or integers', () => {
+  expect(convertScientificToFloatString('1e-1')).toEqual('0.1'),
+    expect(convertScientificToFloatString('1e-2')).toEqual('0.01'),
+    expect(convertScientificToFloatString('1e-17')).toEqual('0.00000000000000001'),
+    expect(convertScientificToFloatString('1e-18')).toEqual('0.000000000000000001'),
+    expect(convertScientificToFloatString('1.1e-1')).toEqual('0.11'),
+    expect(convertScientificToFloatString('1.11e-1')).toEqual('0.111'),
+    expect(convertScientificToFloatString('1.99999999999999999e-1')).toEqual('0.199999999999999999'),
+    expect(convertScientificToFloatString('123.45678e-2')).toEqual('1.2345678'),
+    expect(convertScientificToFloatString('1e+1')).toEqual('10'),
+    expect(convertScientificToFloatString('1e+2')).toEqual('100'),
+    expect(convertScientificToFloatString('1e+17')).toEqual('100000000000000000'),
+    expect(convertScientificToFloatString('1e+18')).toEqual('1000000000000000000'),
+    expect(convertScientificToFloatString('1.1e+1')).toEqual('11'),
+    expect(convertScientificToFloatString('1.99999999999999999e+1')).toEqual('19.9999999999999999'),
+    expect(convertScientificToFloatString('123.45678e+2')).toEqual('12345.678')
 })

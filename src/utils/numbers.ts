@@ -117,9 +117,48 @@ export const calAmountDelta = (t: Transaction, id: string) => {
 }
 
 export const convertToQALPH = (amount: string) => {
-  const numberOfDecimals = amount.includes('.') ? amount.length - 1 - amount.indexOf('.') : 0
+  let cleanedAmount = amount
+
+  if (amount.includes('e')) {
+    cleanedAmount = convertScientificToFloatString(amount)
+  }
+
+  const numberOfDecimals = cleanedAmount.includes('.') ? cleanedAmount.length - 1 - cleanedAmount.indexOf('.') : 0
   const numberOfZerosToAdd = 18 - numberOfDecimals
-  return BigInt(`${amount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+  return BigInt(`${cleanedAmount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+}
+
+export const convertScientificToFloatString = (scientificNumber: string) => {
+  if (scientificNumber.includes('e-')) {
+    const positionOfE = scientificNumber.indexOf('e-')
+    const moveDotBy = Number(scientificNumber.substring(positionOfE + 2, scientificNumber.length))
+    const positionOfDot = scientificNumber.indexOf('.')
+    const amountWithoutEandDot = scientificNumber.substring(0, positionOfE).replace('.', '')
+    if (moveDotBy >= positionOfDot) {
+      const numberOfZeros = moveDotBy - (positionOfDot > -1 ? positionOfDot : 1)
+      return `0.${produceTrailingZeros(numberOfZeros)}${amountWithoutEandDot}`
+    } else {
+      const newPositionOfDot = positionOfDot - moveDotBy
+      return `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+        newPositionOfDot
+      )}`
+    }
+  } else if (scientificNumber.includes('e+')) {
+    const positionOfE = scientificNumber.indexOf('e+')
+    const moveDotBy = Number(scientificNumber.substring(positionOfE + 2, scientificNumber.length))
+    const numberOfDecimals = scientificNumber.indexOf('.') > -1 ? positionOfE - scientificNumber.indexOf('.') - 1 : 0
+    const amountWithoutEandDot = scientificNumber.substring(0, positionOfE).replace('.', '')
+    if (numberOfDecimals <= moveDotBy) {
+      return `${amountWithoutEandDot}${produceTrailingZeros(moveDotBy - numberOfDecimals)}`
+    } else {
+      const positionOfDot = scientificNumber.indexOf('.')
+      const newPositionOfDot = positionOfDot + moveDotBy
+      return `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+        newPositionOfDot
+      )}`
+    }
+  }
+  return scientificNumber
 }
 
 export const countDecimals = (value: number) => {
