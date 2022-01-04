@@ -23,7 +23,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import { inputDefaultStyle, InputErrorMessage, InputLabel, InputValidIconContainer, TextAreaProps } from './index'
+import { inputDefaultStyle, InputErrorMessage, InputLabel, InputValidIconContainer, TextAreaProps } from '.'
 
 const placeHolderVariants: Variants = {
   up: { y: -35, x: -5, scale: 0.8 },

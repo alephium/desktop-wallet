@@ -24,7 +24,7 @@ import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
-import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from './index'
+import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from './'
 
 interface SelectOption<T> {
   value: T

@@ -23,7 +23,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import { inputDefaultStyle, InputErrorMessage, inputPlaceHolderVariants, InputProps } from './index'
+import { inputDefaultStyle, InputErrorMessage, inputPlaceHolderVariants, InputProps } from '.'
 
 const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)

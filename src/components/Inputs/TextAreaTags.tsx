@@ -20,7 +20,7 @@ import Tags from '@yaireo/tagify/dist/react.tagify'
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-import { inputDefaultStyle } from './index'
+import { inputDefaultStyle } from '.'
 
 const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
   return (
