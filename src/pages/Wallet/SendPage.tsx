@@ -337,7 +337,7 @@ const onAmountInputValueChange = ({
 }
 
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), true)
+  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), false, 6)
 }
 
 const HeaderContent = styled(Section)`

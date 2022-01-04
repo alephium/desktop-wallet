@@ -33,12 +33,36 @@ it('Should abbreviate amount', () => {
     expect(abbreviateAmount(BigInt(1000000000))).toEqual('0.000000001'),
     expect(abbreviateAmount(BigInt(2000000000))).toEqual('0.000000002'),
     expect(abbreviateAmount(BigInt(2000000000000000))).toEqual('0.002'),
+    expect(abbreviateAmount(BigInt(20000000000000000))).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000))).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000))).toEqual('2.000'),
     expect(abbreviateAmount(alf(BigInt(1230)))).toEqual('1.230K'),
     expect(abbreviateAmount(alf(BigInt(1230000)))).toEqual('1.230M'),
     expect(abbreviateAmount(alf(BigInt(1230000000)))).toEqual('1.230B'),
     expect(abbreviateAmount(alf(BigInt(1230000000000)))).toEqual('1.230T'),
     expect(abbreviateAmount(alf(BigInt(1230000000000000)))).toEqual('1230.000T'),
     expect(abbreviateAmount(alf(BigInt(1)))).toEqual('1.000')
+})
+
+it('Should keep full amount precision', () => {
+  expect(abbreviateAmount(alf(BigInt(-1)))).toEqual('???'),
+    expect(abbreviateAmount(BigInt(0), true)).toEqual('0.000'),
+    expect(abbreviateAmount(BigInt(1), true)).toEqual('0.000000000000000001'),
+    expect(abbreviateAmount(BigInt(100001), true)).toEqual('0.000000000000100001'),
+    expect(abbreviateAmount(BigInt(1000000000), true)).toEqual('0.000000001'),
+    expect(abbreviateAmount(BigInt(1000000001), true)).toEqual('0.000000001000000001'),
+    expect(abbreviateAmount(BigInt(2000000000), true)).toEqual('0.000000002'),
+    expect(abbreviateAmount(BigInt(2000000002), true)).toEqual('0.000000002000000002'),
+    expect(abbreviateAmount(BigInt(2000000000000000), true)).toEqual('0.002'),
+    expect(abbreviateAmount(BigInt(20000000000000000), true)).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000), true)).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000), true)).toEqual('2.000'),
+    expect(abbreviateAmount(alf(BigInt(1230)), true)).toEqual('1230.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000)), true)).toEqual('1230000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000)), true)).toEqual('1230000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000000)), true)).toEqual('1230000000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000000000)), true)).toEqual('1230000000000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1)), true)).toEqual('1.000')
 })
 
 it('Should remove trailing zeros', () => {

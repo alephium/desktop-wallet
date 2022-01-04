@@ -76,7 +76,13 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
   const numberOfDigitsToDisplay = nbOfDecimalsToShow ? nbOfDecimalsToShow : minDigits
 
   if (tier < 0 || showFullPrecision) {
-    return removeTrailingZeros(alephNum.toFixed(18), minDigits) // Keep full precision for very low numbers (gas etc.)
+    // Keep full precision for very low numbers (gas etc.)
+
+    if (countDecimals(alephNum) === 1) {
+      return removeTrailingZeros(alephNum.toFixed(16), minDigits) // Avoid precision issue edge case
+    }
+
+    return removeTrailingZeros(alephNum.toFixed(18), minDigits)
   } else if (tier === 0) {
     // Small number, low precision is ok
     return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString(), minDigits)
@@ -94,10 +100,6 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 
   return scaled.toFixed(numberOfDigitsToDisplay) + suffix
 }
-
-// ==================== //
-// ===== BALANCES ===== //
-// ==================== //
 
 export const calAmountDelta = (t: Transaction, id: string) => {
   if (!t.inputs || !t.outputs) {
@@ -118,4 +120,16 @@ export const convertToQALPH = (amount: string) => {
   const numberOfDecimals = amount.includes('.') ? amount.length - 1 - amount.indexOf('.') : 0
   const numberOfZerosToAdd = 18 - numberOfDecimals
   return BigInt(`${amount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+}
+
+export const countDecimals = (value: number) => {
+  if (Math.floor(value) === value) return 0
+
+  const str = value.toString()
+  if (str.indexOf('.') !== -1 && str.indexOf('-') !== -1) {
+    return str.split('-')[1] || 0
+  } else if (str.indexOf('.') !== -1) {
+    return str.split('.')[1].length || 0
+  }
+  return str.split('-')[1] || 0
 }
