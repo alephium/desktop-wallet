@@ -38,9 +38,9 @@ export const GlobalStyle = createGlobalStyle`
 
   :root {
     --color-white: #fff;
-    --color-orange: #f6c76a;
+    --color-orange: #F6C76A;
     --color-grey: #646775;
-    --color-purple: #3a0595;
+    --color-purple: #3A0595;
     --color-shadow-15: rgba(0, 0, 0, 0.15);
     --color-shadow-10: rgba(0, 0, 0, 0.1);
     --color-shadow-5: rgba(0, 0, 0, 0.05);

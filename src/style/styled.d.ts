@@ -43,7 +43,7 @@ declare module 'styled-components' {
     }
     global: {
       accent: string
-      secondary: string
+      complementary: string
       alert: string
       valid: string
       highlightGradient: string
