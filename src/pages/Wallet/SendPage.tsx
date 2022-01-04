@@ -36,46 +36,7 @@ import { getHumanReadableError } from '../../utils/api'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { abbreviateAmount, convertToQALPH } from '../../utils/numbers'
 
-const onAmountInputValueChange = ({
-  amount,
-  minAmount,
-  stateSetter,
-  errorMessage,
-  currentErrorState,
-  errorStateSetter,
-  shouldConvertToQALPH
-}: {
-  amount: string
-  minAmount: bigint
-  errorMessage: string
-  stateSetter: (v: string) => void
-  currentErrorState: string
-  errorStateSetter: (v: string) => void
-  shouldConvertToQALPH?: boolean
-}) => {
-  let amountNumber
-
-  try {
-    amountNumber = BigInt(shouldConvertToQALPH ? convertToQALPH(amount) : amount)
-  } catch (e) {
-    console.log(e)
-    return
-  }
-
-  if (amountNumber < minAmount) {
-    errorStateSetter(errorMessage)
-  } else {
-    if (currentErrorState) errorStateSetter('')
-  }
-
-  stateSetter(amount)
-}
-
 type StepIndex = 1 | 2 | 3
-
-const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), true)
-}
 
 const SendPage = () => {
   const history = useHistory()
@@ -280,7 +241,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
           type="number"
           min="0"
         />
-        {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH}ℵ`} />}
+        {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
       </Section>
       <ExpandableSection sectionTitle="Advanced settings">
         <Input
@@ -289,6 +250,7 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
           value={gasAmountState}
           onChange={(e) => handleGasAmountChange(e.target.value)}
           type="number"
+          min={MINIMAL_GAS_AMOUNT}
           error={gasAmountError}
         />
         <Input
@@ -337,6 +299,45 @@ const CheckTransactionContent = ({ address, amount, gasAmount, gasPrice, onSend 
       </Section>
     </>
   )
+}
+
+const onAmountInputValueChange = ({
+  amount,
+  minAmount,
+  stateSetter,
+  errorMessage,
+  currentErrorState,
+  errorStateSetter,
+  shouldConvertToQALPH
+}: {
+  amount: string
+  minAmount: bigint
+  errorMessage: string
+  stateSetter: (v: string) => void
+  currentErrorState: string
+  errorStateSetter: (v: string) => void
+  shouldConvertToQALPH?: boolean
+}) => {
+  let amountNumber
+
+  try {
+    amountNumber = BigInt(shouldConvertToQALPH ? convertToQALPH(amount) : amount)
+  } catch (e) {
+    console.log(e)
+    return
+  }
+
+  if (amountNumber < minAmount) {
+    errorStateSetter(errorMessage)
+  } else {
+    if (currentErrorState) errorStateSetter('')
+  }
+
+  stateSetter(amount)
+}
+
+const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
+  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), true)
 }
 
 const HeaderContent = styled(Section)`
