@@ -129,36 +129,47 @@ export const convertToQALPH = (amount: string) => {
 }
 
 export const convertScientificToFloatString = (scientificNumber: string) => {
-  if (scientificNumber.includes('e-')) {
-    const positionOfE = scientificNumber.indexOf('e-')
-    const moveDotBy = Number(scientificNumber.substring(positionOfE + 2, scientificNumber.length))
-    const positionOfDot = scientificNumber.indexOf('.')
-    const amountWithoutEandDot = scientificNumber.substring(0, positionOfE).replace('.', '')
+  let newNumber = scientificNumber
+
+  if (scientificNumber.startsWith('-')) {
+    newNumber = newNumber.substring(1)
+  }
+
+  if (newNumber.includes('e-')) {
+    const positionOfE = newNumber.indexOf('e-')
+    const moveDotBy = Number(newNumber.substring(positionOfE + 2, newNumber.length))
+    const positionOfDot = newNumber.indexOf('.')
+    const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
     if (moveDotBy >= positionOfDot) {
       const numberOfZeros = moveDotBy - (positionOfDot > -1 ? positionOfDot : 1)
-      return `0.${produceTrailingZeros(numberOfZeros)}${amountWithoutEandDot}`
+      newNumber = `0.${produceTrailingZeros(numberOfZeros)}${amountWithoutEandDot}`
     } else {
       const newPositionOfDot = positionOfDot - moveDotBy
-      return `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+      newNumber = `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
         newPositionOfDot
       )}`
     }
-  } else if (scientificNumber.includes('e+')) {
-    const positionOfE = scientificNumber.indexOf('e+')
-    const moveDotBy = Number(scientificNumber.substring(positionOfE + 2, scientificNumber.length))
-    const numberOfDecimals = scientificNumber.indexOf('.') > -1 ? positionOfE - scientificNumber.indexOf('.') - 1 : 0
-    const amountWithoutEandDot = scientificNumber.substring(0, positionOfE).replace('.', '')
+  } else if (newNumber.includes('e+')) {
+    const positionOfE = newNumber.indexOf('e+')
+    const moveDotBy = Number(newNumber.substring(positionOfE + 2, newNumber.length))
+    const numberOfDecimals = newNumber.indexOf('.') > -1 ? positionOfE - newNumber.indexOf('.') - 1 : 0
+    const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
     if (numberOfDecimals <= moveDotBy) {
-      return `${amountWithoutEandDot}${produceTrailingZeros(moveDotBy - numberOfDecimals)}`
+      newNumber = `${amountWithoutEandDot}${produceTrailingZeros(moveDotBy - numberOfDecimals)}`
     } else {
-      const positionOfDot = scientificNumber.indexOf('.')
+      const positionOfDot = newNumber.indexOf('.')
       const newPositionOfDot = positionOfDot + moveDotBy
-      return `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+      newNumber = `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
         newPositionOfDot
       )}`
     }
   }
-  return scientificNumber
+
+  if (scientificNumber.startsWith('-')) {
+    newNumber = `-${newNumber}`
+  }
+
+  return newNumber
 }
 
 export const countDecimals = (value: number) => {
