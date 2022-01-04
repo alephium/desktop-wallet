@@ -29,10 +29,6 @@ interface ThemeSwitcherProps {
   className?: string
 }
 
-const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
-  return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
-}
-
 const toggleWidth = 80
 const toggleHeight = toggleWidth / 2
 
@@ -77,6 +73,10 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => 
       />
     </StyledThemeSwitcher>
   )
+}
+
+const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
+  return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
 }
 
 export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
