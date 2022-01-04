@@ -43,15 +43,11 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   const { setCurrentUsername } = useGlobalContext()
   const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-
-  const [state, setState] = useState({
-    username: existingUsername,
-    usernameError: '',
-    password: existingPassword,
-    passwordError: '',
-    passwordCheck: existingPassword
-  })
-  const { username, usernameError, password, passwordError, passwordCheck } = state
+  const [username, setUsernameState] = useState(existingUsername)
+  const [usernameError, setUsernameError] = useState('')
+  const [password, setPasswordState] = useState(existingPassword)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordCheck, setPasswordCheck] = useState(existingPassword)
 
   const usernames = Storage.list()
 
@@ -59,9 +55,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     const password = e.target.value
     let passwordError = ''
 
-    if (password.length === 0) {
-      passwordError = ''
-    } else {
+    if (password.length) {
       const strength = zxcvbn(password)
       if (strength.score < 1) {
         passwordError = 'Password is too weak'
@@ -69,7 +63,8 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         passwordError = 'Insecure password'
       }
     }
-    setState({ ...state, password, passwordError })
+    setPasswordState(password)
+    setPasswordError(passwordError)
   }
 
   const onUpdateUsername = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,11 +77,11 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
       usernameError = 'Account name already taken'
     }
 
-    setState({ ...state, username, usernameError })
+    setUsernameState(username)
+    setUsernameError(usernameError)
   }
 
-  // Is next button activated?
-  const isNextButtonActive = () =>
+  const isNextButtonActive =
     password.length > 0 &&
     passwordError.length === 0 &&
     password === passwordCheck &&
@@ -124,7 +119,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
             value={passwordCheck}
             placeholder="Retype password"
             type="password"
-            onChange={(e) => setState({ ...state, passwordCheck: e.target.value })}
+            onChange={(e) => setPasswordCheck(e.target.value)}
             error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
             isValid={password.length > 0 && password === passwordCheck}
             disabled={!password || passwordError.length > 0}
@@ -141,7 +136,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         <Button secondary onClick={onButtonBack}>
           Back
         </Button>
-        <Button disabled={!isNextButtonActive()} onClick={handleNextButtonClick} submit>
+        <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick} submit>
           Continue
         </Button>
       </FooterActionsContainer>
