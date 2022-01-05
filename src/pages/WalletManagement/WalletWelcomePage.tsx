@@ -26,7 +26,7 @@ import { FooterActionsContainer, Section } from '../../components/PageComponents
 import Paragraph from '../../components/Paragraph'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
 
-// This is shown when a user create or import a wallet
+// This is shown when a user creates or imports a wallet
 
 const WalletWelcomePage = () => {
   const { width, height } = useWindowSize()
