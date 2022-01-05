@@ -21,15 +21,16 @@ import styled from 'styled-components'
 import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monochrome.svg'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-const FloatingLogo = styled(AlephiumLogoSVG)`
+const FloatingLogo = styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
   position: absolute;
-  top: 50px;
   left: var(--spacing-5);
-  width: 60px;
-  height: 60px;
+  width: 35px;
+  height: auto;
+  ${({ position }) => (position === 'bottom' ? 'bottom: var(--spacing-5)' : 'top: 50px')};
 
   path {
-    fill: var(--color-shadow-5) !important;
+    fill: ${({ theme }) =>
+      theme.name === 'light' ? 'var(--color-shadow-5) !important' : 'rgba(255, 255, 255, 0.03) !important'};
   }
 
   @media ${deviceBreakPoints.mobile} {
