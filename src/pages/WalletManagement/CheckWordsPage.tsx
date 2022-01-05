@@ -181,7 +181,7 @@ const CheckWordsPage = () => {
 
   const areWordsValid = selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
 
-  const createEncryptedWallet = async () => {
+  const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(username, walletEncrypted)
@@ -190,8 +190,8 @@ const CheckWordsPage = () => {
     }
   }
 
-  const handleButtonNext = async () => {
-    const success = await createEncryptedWallet()
+  const handleButtonNext = () => {
+    const success = createEncryptedWallet()
     if (success) onButtonNext()
     else {
       console.error('Something went wrong when creating encrypted wallet!')
