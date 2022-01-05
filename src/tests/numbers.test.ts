@@ -185,20 +185,27 @@ it('should calculate number of decimals', () => {
     expect(countDecimals(-0.1)).toEqual(1),
     expect(countDecimals(-0.19)).toEqual(2),
     expect(countDecimals(-1000000.10001)).toEqual(5),
-    expect(countDecimals(-1000000.0000000001)).toEqual(10)
-  // expect(countDecimals(1000000000000000.01)).toEqual(2), // TODO: Fix this failing test
-  // expect(countDecimals(100000000000000.001)).toEqual(3), // TODO: Fix this failing test
-  // expect(countDecimals(10000000000000.0001)).toEqual(4), // TODO: Fix this failing test
-  // expect(countDecimals(1000000000000.00001)).toEqual(5), // TODO: Fix this failing test
-  // expect(countDecimals(100000000000.000001)).toEqual(6), // TODO: Fix this failing test
-  // expect(countDecimals(10000000000.0000001)).toEqual(7), // TODO: Fix this failing test
-  // expect(countDecimals(1000000000.00000001)).toEqual(8), // TODO: Fix this failing test
-  // expect(countDecimals(100000000.000000001)).toEqual(9), // TODO: Fix this failing test
-  // expect(countDecimals(10000000.0000000001)).toEqual(10), // TODO: Fix this failing test
-  // expect(countDecimals(1000000.00000000001)).toEqual(11), // TODO: Fix this failing test
-  // expect(countDecimals(100000.000000000001)).toEqual(12), // TODO: Fix this failing test
-  // expect(countDecimals(10000.0000000000001)).toEqual(13), // TODO: Fix this failing test
-  // expect(countDecimals(1000.00000000000001)).toEqual(14), // TODO: Fix this failing test
-  // expect(countDecimals(100.000000000000001)).toEqual(15), // TODO: Fix this failing test
-  // expect(countDecimals(10.0000000000000001)).toEqual(16) // TODO: Fix this failing test
+    expect(countDecimals(-1000000.0000000001)).toEqual(10),
+    expect(countDecimals(1e-17)).toEqual(17),
+    expect(countDecimals(1.1e-17)).toEqual(18),
+    expect(countDecimals(-1.23456789e-20)).toEqual(28),
+    expect(countDecimals(-1.2e100)).toEqual(0),
+    expect(countDecimals(1.23456789e-20)).toEqual(28)
+
+  // The following tests will fail:
+  // expect(countDecimals(1000000000000000.01)).toEqual(2),
+  // expect(countDecimals(100000000000000.001)).toEqual(3),
+  // expect(countDecimals(10000000000000.0001)).toEqual(4),
+  // expect(countDecimals(1000000000000.00001)).toEqual(5),
+  // expect(countDecimals(100000000000.000001)).toEqual(6),
+  // expect(countDecimals(10000000000.0000001)).toEqual(7),
+  // expect(countDecimals(1000000000.00000001)).toEqual(8),
+  // expect(countDecimals(100000000.000000001)).toEqual(9),
+  // expect(countDecimals(10000000.0000000001)).toEqual(10),
+  // expect(countDecimals(1000000.00000000001)).toEqual(11),
+  // expect(countDecimals(100000.000000000001)).toEqual(12),
+  // expect(countDecimals(10000.0000000000001)).toEqual(13),
+  // expect(countDecimals(1000.00000000000001)).toEqual(14),
+  // expect(countDecimals(100.000000000000001)).toEqual(15),
+  // expect(countDecimals(10.0000000000000001)).toEqual(16)
 })

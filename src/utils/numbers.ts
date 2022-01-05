@@ -61,7 +61,7 @@ export const removeTrailingZeros = (numString: string, minDigits: number) => {
   return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
 
-export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number) => {
+export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number): string => {
   const minDigits = 3
 
   if (baseNum < 0n) return '???'
@@ -116,7 +116,7 @@ export const calAmountDelta = (t: Transaction, id: string) => {
   return outputAmount - inputAmount
 }
 
-export const convertToQALPH = (amount: string) => {
+export const convertToQALPH = (amount: string): bigint => {
   let cleanedAmount = amount
 
   if (amount.includes('e')) {
@@ -128,7 +128,7 @@ export const convertToQALPH = (amount: string) => {
   return BigInt(`${cleanedAmount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
 }
 
-export const convertScientificToFloatString = (scientificNumber: string) => {
+export const convertScientificToFloatString = (scientificNumber: string): string => {
   let newNumber = scientificNumber
   const scientificNotation = scientificNumber.includes('e-')
     ? 'e-'
@@ -185,5 +185,10 @@ export const countDecimals = (value: number) => {
   let str = value.toString()
   if (str.startsWith('-')) str = str.substring(1)
 
-  return str.substring(str.indexOf('.')).length - 1
+  if (str.indexOf('.') !== -1 && str.indexOf('e-') !== -1) {
+    return parseInt(str.split('e-')[1]) + str.split('e-')[0].split('.')[1].length || 0
+  } else if (str.indexOf('.') !== -1) {
+    return str.split('.')[1].length || 0
+  }
+  return parseInt(str.split('e-')[1]) || 0
 }
