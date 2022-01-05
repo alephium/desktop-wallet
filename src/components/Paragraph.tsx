@@ -34,20 +34,18 @@ const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
   className,
   style,
   ...props
-}) => {
-  return (
-    <StyledParagraph
-      variants={sectionChildrenVariants}
-      className={className}
-      centered={centered}
-      secondary={secondary}
-      style={style}
-      {...props}
-    >
-      {children}
-    </StyledParagraph>
-  )
-}
+}) => (
+  <StyledParagraph
+    variants={sectionChildrenVariants}
+    className={className}
+    centered={centered}
+    secondary={secondary}
+    style={style}
+    {...props}
+  >
+    {children}
+  </StyledParagraph>
+)
 
 const StyledParagraph = styled(motion.p)<ParagraphProps>`
   white-space: pre-wrap;

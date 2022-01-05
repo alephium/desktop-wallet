@@ -30,28 +30,26 @@ interface TabBarProps {
   activeTab: TabItem
 }
 
-const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
-  return (
-    <Wrapper>
-      <TabBarContainer>
-        <TabSelector
-          animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
-          transition={{ duration: 0.2 }}
-          style={{ width: `${100 / tabItems.length}%` }}
-        />
-        <TabBarContent>
-          {tabItems.map((i) => (
-            <TabContainer key={i.value}>
-              <Tab onClick={() => onTabChange(i)} isActive={activeTab.value === i.value}>
-                {i.label}
-              </Tab>
-            </TabContainer>
-          ))}
-        </TabBarContent>
-      </TabBarContainer>
-    </Wrapper>
-  )
-}
+const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => (
+  <Wrapper>
+    <TabBarContainer>
+      <TabSelector
+        animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
+        transition={{ duration: 0.2 }}
+        style={{ width: `${100 / tabItems.length}%` }}
+      />
+      <TabBarContent>
+        {tabItems.map((i) => (
+          <TabContainer key={i.value}>
+            <Tab onClick={() => onTabChange(i)} isActive={activeTab.value === i.value}>
+              {i.label}
+            </Tab>
+          </TabContainer>
+        ))}
+      </TabBarContent>
+    </TabBarContainer>
+  </Wrapper>
+)
 
 const Wrapper = styled.div`
   margin: var(--spacing-2) 0;

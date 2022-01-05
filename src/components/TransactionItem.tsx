@@ -118,19 +118,15 @@ const TransactionItemContainer = styled.div<{ pending: boolean }>`
     `}
 `
 
-const IOList = ({
-  currentAddress,
-  isOut,
-  outputs,
-  inputs,
-  timestamp
-}: {
+interface IOListProps {
   currentAddress: string
   isOut: boolean
   outputs?: Output[]
   inputs?: Input[]
   timestamp: number
-}) => {
+}
+
+const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp }: IOListProps) => {
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
   const genesisTimestamp = 1231006505000
 

@@ -21,37 +21,34 @@ import { ChevronDown } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { Section } from './PageComponents/PageContainers'
+interface ExpandableSectionProps {
+  sectionTitle: string
+  open?: boolean
+  onOpenChange?: (isOpen: boolean) => void
+}
 
-const ExpandableSection: FC<{ sectionTitle: string; open?: boolean; onOpenChange?: (isOpen: boolean) => void }> = ({
-  sectionTitle,
-  open,
-  onOpenChange,
-  children
-}) => {
-  const [expanded, setExpanded] = useState(open)
+const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onOpenChange, children }) => {
+  const [isExpanded, setIsExpanded] = useState(open)
 
   useEffect(() => {
-    setExpanded(open)
+    setIsExpanded(open)
   }, [open])
 
   const handleTitleClick = () => {
-    const newState = !expanded
+    const newState = !isExpanded
     onOpenChange && onOpenChange(newState)
-    setExpanded(newState)
+    setIsExpanded(newState)
   }
 
   return (
     <Container>
       <Title onClick={handleTitleClick}>
-        <Chevron animate={{ rotate: expanded ? 180 : 0 }} />
+        <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{sectionTitle}</TitleText>
         <Divider />
       </Title>
-      <ContentWrapper animate={{ height: expanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
-        <Content>
-          <Section align="stretch">{children}</Section>
-        </Content>
+      <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
+        <Content>{{ children }}</Content>
       </ContentWrapper>
     </Container>
   )

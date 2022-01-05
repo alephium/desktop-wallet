@@ -21,24 +21,22 @@ import styled from 'styled-components'
 
 import alephiumLogo from '../images/alephium_logo.svg'
 
-const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => {
-  return (
-    <StyledSplashScreen
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ delay: 1 }}
-      onAnimationComplete={onSplashScreenShown}
+const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => (
+  <StyledSplashScreen
+    initial={{ opacity: 1 }}
+    animate={{ opacity: 0 }}
+    transition={{ delay: 1 }}
+    onAnimationComplete={onSplashScreenShown}
+  >
+    <AlephiumLogoContainer
+      initial={{ opacity: 0, scale: 1.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
     >
-      <AlephiumLogoContainer
-        initial={{ opacity: 0, scale: 1.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <AlephiumLogo />
-      </AlephiumLogoContainer>
-    </StyledSplashScreen>
-  )
-}
+      <AlephiumLogo />
+    </AlephiumLogoContainer>
+  </StyledSplashScreen>
+)
 
 const StyledSplashScreen = styled(motion.div)`
   position: fixed;

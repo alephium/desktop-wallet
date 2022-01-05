@@ -36,11 +36,9 @@ const AccountsSettingsSection = () => {
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [accountToRemove, setAccountToRemove] = useState<string>('')
 
-  const usernames = Storage.list()
-
-  const openRemoveAccountModal = (accountName: string) => {
-    setAccountToRemove(accountName)
-  }
+  const openRemoveAccountModal = (accountName: string) => setAccountToRemove(accountName)
+  const openSecretPhraseModal = () => setIsDisplayingSecretModal(true)
+  const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
 
   const handleRemoveAccount = (accountName: string) => {
     Storage.remove(accountName)
@@ -48,13 +46,11 @@ const AccountsSettingsSection = () => {
     accountName === currentUsername ? lockWallet() : setAccountToRemove('')
   }
 
-  const openSecretPhraseModal = () => {
-    setIsDisplayingSecretModal(true)
-  }
+  const usernames = Storage.list()
 
   return (
     <>
-      {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
+      {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
 
       {accountToRemove && (
         <AccountRemovalModal
@@ -102,15 +98,13 @@ const AccountsSettingsSection = () => {
   )
 }
 
-const AccountItem = ({
-  accountName,
-  isCurrent,
-  onAccountDelete
-}: {
+interface AccountItemProps {
   accountName: string
   isCurrent: boolean
   onAccountDelete: (accountName: string) => void
-}) => {
+}
+
+const AccountItem = ({ accountName, isCurrent, onAccountDelete }: AccountItemProps) => {
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
   return (

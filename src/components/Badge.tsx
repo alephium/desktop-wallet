@@ -30,14 +30,12 @@ interface BadgeProps {
   prefix?: string
 }
 
-let Badge = ({ content, className, amount, prefix }: BadgeProps) => {
-  return (
-    <div className={className}>
-      {prefix && <span>{prefix}</span>}
-      {amount && content ? <Amount value={BigInt(content)} /> : content}
-    </div>
-  )
-}
+let Badge = ({ content, className, amount, prefix }: BadgeProps) => (
+  <div className={className}>
+    {prefix && <span>{prefix}</span>}
+    {amount && content ? <Amount value={BigInt(content)} /> : content}
+  </div>
+)
 
 const getBadgeColor = (badgeType: BadgeType, theme: DefaultTheme) => {
   let backgroundColor

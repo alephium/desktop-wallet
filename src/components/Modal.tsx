@@ -25,12 +25,13 @@ import { ModalContextProvider, useModalContext } from '../contexts/modal'
 import { Button } from './Buttons'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
-export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
-  children,
-  title,
-  onClose,
-  focusMode
-}) => (
+interface ModalProps {
+  title: string
+  onClose: () => void
+  focusMode?: boolean
+}
+
+export const Modal: FC<ModalProps> = ({ children, title, onClose, focusMode }) => (
   <ModalContextProvider title={title} onClose={onClose}>
     <ModalContents focusMode={focusMode}>{children}</ModalContents>
   </ModalContextProvider>
