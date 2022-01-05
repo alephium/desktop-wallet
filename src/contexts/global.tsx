@@ -88,7 +88,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     return updatedSettings
   }
 
-  const lockWallet = () => setWallet(undefined)
+  const lockWallet = () => {
+    setCurrentUsername('')
+    setWallet(undefined)
+  }
 
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
