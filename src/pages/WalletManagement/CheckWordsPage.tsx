@@ -48,6 +48,7 @@ interface WordKey {
 const CheckWordsPage = () => {
   const { mnemonic, plainWallet, password, username } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
+  const { setSnackbarMessage } = useGlobalContext()
 
   const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
@@ -194,7 +195,7 @@ const CheckWordsPage = () => {
     const success = createEncryptedWallet()
     if (success) onButtonNext()
     else {
-      console.error('Something went wrong when creating encrypted wallet!')
+      setSnackbarMessage({ text: 'Something went wrong when creating encrypted wallet.', type: 'alert' })
     }
   }
 

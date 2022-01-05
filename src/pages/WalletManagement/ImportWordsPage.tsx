@@ -33,6 +33,7 @@ import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
+import { getHumanReadableError } from '../../utils/api'
 import { bip39Words } from '../../utils/bip39'
 
 const Storage = getStorage()
@@ -84,7 +85,7 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (e) {
-      setSnackbarMessage({ text: (e as Error).toString(), type: 'alert' })
+      setSnackbarMessage({ text: getHumanReadableError(e, 'Error while importing wallet'), type: 'alert' })
     }
   }
 
