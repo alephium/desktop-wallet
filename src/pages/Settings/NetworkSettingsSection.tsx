@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import styled from 'styled-components'
@@ -28,7 +29,7 @@ import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
 import { useMountEffect } from '../../utils/hooks'
-import { getNetworkName, networkEndpoints, NetworkType, Settings } from '../../utils/settings'
+import { getNetworkName, networkEndpoints, NetworkType, networkTypes, Settings } from '../../utils/settings'
 
 interface NetworkSelectOption {
   label: string
@@ -43,12 +44,10 @@ const NetworkSettingsSection = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
-  const networkSelectOptions: NetworkSelectOption[] = [
-    { label: 'Mainnet', value: 'mainnet' },
-    { label: 'Testnet', value: 'testnet' },
-    { label: 'Localhost', value: 'localhost' },
-    { label: 'Custom', value: 'custom' }
-  ]
+  const networkSelectOptions: NetworkSelectOption[] = networkTypes.map((networkType) => ({
+    label: capitalize(networkType),
+    value: networkType
+  }))
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
