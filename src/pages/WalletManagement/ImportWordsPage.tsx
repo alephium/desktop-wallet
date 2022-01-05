@@ -45,7 +45,8 @@ const ImportWordsPage = () => {
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
-  const [customPlaceholder, setCustomPlaceholder] = useState('Type your 24 words')
+  const defaultPlaceholder = 'Type your 24 words'
+  const [customPlaceholder, setCustomPlaceholder] = useState(defaultPlaceholder)
   const tagifyRef = useRef<Tagify<TagData> | undefined>()
 
   const handlePhraseChange = (event: CustomEvent<ChangeEventData<BaseTagData>>) => {
@@ -53,15 +54,9 @@ const ImportWordsPage = () => {
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
     setCustomPlaceholder(
-      newPhrase.length > 0
-        ? newPhrase.length === 24
-          ? ''
-          : `${24 - newPhrase.length} words left`
-        : 'Type your 24 words'
+      newPhrase.length > 0 ? (newPhrase.length === 24 ? '' : `${24 - newPhrase.length} words left`) : defaultPlaceholder
     )
   }
-
-  const isNextButtonActive = phrase.length === 24
 
   useEffect(() => {
     if (tagifyRef.current) {
@@ -88,6 +83,8 @@ const ImportWordsPage = () => {
       setSnackbarMessage({ text: getHumanReadableError(e, 'Error while importing wallet'), type: 'alert' })
     }
   }
+
+  const isNextButtonActive = phrase.length === 24
 
   return (
     <FloatingPanel>
