@@ -36,7 +36,7 @@ const SettingsPage = () => {
 
   return (
     <PanelContentContainer>
-      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
+      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {tabs.find((t) => t.value === currentTab.value)?.component}
       <Section>
         <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>

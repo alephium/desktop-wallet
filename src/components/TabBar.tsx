@@ -24,38 +24,29 @@ export interface TabItem {
   label: string
 }
 
-//const indicatorMargin =
-
-const TabBar = ({
-  tabItems,
-  onTabChange,
-  activeTab
-}: {
+interface TabBarProps {
   tabItems: TabItem[]
   onTabChange: (tab: TabItem) => void
   activeTab: TabItem
-}) => {
+}
+
+const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
   return (
     <Wrapper>
       <TabBarContainer>
         <TabSelector
-          animate={{
-            x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%`
-          }}
+          animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
           transition={{ duration: 0.2 }}
           style={{ width: `${100 / tabItems.length}%` }}
         />
         <TabBarContent>
-          {tabItems.map((i) => {
-            const isActive = activeTab.value === i.value
-            return (
-              <TabContainer key={i.value}>
-                <Tab onClick={() => onTabChange(i)} isActive={isActive}>
-                  {i.label}
-                </Tab>
-              </TabContainer>
-            )
-          })}
+          {tabItems.map((i) => (
+            <TabContainer key={i.value}>
+              <Tab onClick={() => onTabChange(i)} isActive={activeTab.value === i.value}>
+                {i.label}
+              </Tab>
+            </TabContainer>
+          ))}
         </TabBarContent>
       </TabBarContainer>
     </Wrapper>
