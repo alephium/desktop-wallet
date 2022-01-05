@@ -97,7 +97,7 @@ const SendPage = () => {
           fullAmount,
           undefined,
           parseInt(gasAmount),
-          gasPriceInALPH
+          convertToQALPH(gasPriceInALPH).toString()
         )
 
         const { txId, unsignedTx } = txCreateResp.data
