@@ -240,10 +240,6 @@ const WalletHomePage = () => {
   )
 }
 
-// =================
-// ==== STYLING ====
-// =================
-
 const WalletContainer = styled(motion.div)`
   display: flex;
   flex: 1;

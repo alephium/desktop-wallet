@@ -66,8 +66,6 @@ export const Button = ({ children, disabled, submit, ...props }: ButtonProps) =>
   )
 }
 
-// === Styling
-
 const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;

@@ -68,8 +68,6 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
   )
 }
 
-// === Styling
-
 const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);

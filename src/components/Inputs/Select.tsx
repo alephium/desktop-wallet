@@ -147,8 +147,6 @@ function SelectOptionsPopup<T>({
   )
 }
 
-// === Styling
-
 const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);

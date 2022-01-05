@@ -68,7 +68,6 @@ const InfoBox = ({
   )
 }
 
-// === Styling === //
 const BoxContainer = styled.div<{ small?: boolean }>`
   width: 100%;
   margin: 0 auto var(--spacing-4) auto;
