@@ -44,15 +44,13 @@ const SendPage = () => {
   const { client, wallet, setSnackbarMessage } = useGlobalContext()
   const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
-
   const initialOnModalClose = useRef(onModalClose)
-  const minimalGasPriceInALPH = abbreviateAmount(MINIMAL_GAS_PRICE)
-
-  const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState('')
-  const [gasAmount, setGasAmount] = useState<string>(MINIMAL_GAS_AMOUNT.toString())
-  const [gasPriceInALPH, setGasPriceInALPH] = useState<string>(minimalGasPriceInALPH)
-
+  const [transactionData, setTransactionData] = useState<TransactionData>({
+    address: '',
+    amount: '',
+    gasAmount: MINIMAL_GAS_AMOUNT.toString(),
+    gasPrice: abbreviateAmount(MINIMAL_GAS_PRICE)
+  })
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
 
@@ -69,11 +67,8 @@ const SendPage = () => {
     }
   }, [setStep, setModalTitle, setOnModalClose, step])
 
-  const verifyTransactionContent = (address: string, amount: string, gasAmount: string, gasPrice: string) => {
-    setAddress(address)
-    setAmount(amount)
-    setGasAmount(gasAmount)
-    setGasPriceInALPH(gasPrice)
+  const verifyTransactionContent = (transactionData: TransactionData) => {
+    setTransactionData(transactionData)
     setStep(2)
   }
 
@@ -82,7 +77,8 @@ const SendPage = () => {
   }
 
   const handleSend = async () => {
-    const isDataComplete = address && amount && gasPriceInALPH && gasAmount
+    const { address, amount, gasAmount, gasPrice } = transactionData
+    const isDataComplete = address && amount && gasPrice && gasAmount
 
     if (wallet && client && isDataComplete) {
       setIsSending(true)
@@ -97,7 +93,7 @@ const SendPage = () => {
           fullAmount,
           undefined,
           parseInt(gasAmount),
-          convertToQALPH(gasPriceInALPH).toString()
+          convertToQALPH(gasPrice).toString()
         )
 
         const { txId, unsignedTx } = txCreateResp.data
@@ -134,24 +130,8 @@ const SendPage = () => {
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </HeaderLogo>
       </HeaderContent>
-      {step === 1 && (
-        <TransactionForm
-          address={address}
-          amount={amount}
-          gasAmount={gasAmount}
-          gasPrice={gasPriceInALPH}
-          onSubmit={verifyTransactionContent}
-        />
-      )}
-      {step === 2 && (
-        <CheckTransactionContent
-          address={address}
-          amount={amount}
-          gasAmount={gasAmount}
-          gasPrice={gasPriceInALPH}
-          onSend={confirmPassword}
-        />
-      )}
+      {step === 1 && <TransactionForm data={transactionData} onSubmit={verifyTransactionContent} />}
+      {step === 2 && <CheckTransactionContent data={transactionData} onSend={confirmPassword} />}
       {step === 3 && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
@@ -170,15 +150,16 @@ interface TransactionData {
   gasPrice: string
 }
 
-interface TransactionFormProps extends TransactionData {
-  onSubmit: (address: string, amount: string, gasAmount: string, gasPrice: string) => void
+interface TransactionFormProps {
+  data: TransactionData
+  onSubmit: (data: TransactionData) => void
 }
 
-const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: TransactionFormProps) => {
-  const [addressState, setAddress] = useState(address)
-  const [amountState, setAmount] = useState(amount)
-  const [gasAmountState, setGasAmount] = useState(gasAmount)
-  const [gasPriceState, setGasPrice] = useState(gasPrice)
+const TransactionForm = ({ data, onSubmit }: TransactionFormProps) => {
+  const [addressState, setAddress] = useState(data.address)
+  const [amountState, setAmount] = useState(data.amount)
+  const [gasAmountState, setGasAmount] = useState(data.gasAmount)
+  const [gasPriceState, setGasPrice] = useState(data.gasPrice)
   const [addressError, setAddressError] = useState('')
   const [gasAmountError, setGasAmountError] = useState('')
   const [gasPriceError, setGasPriceError] = useState('')
@@ -199,9 +180,9 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
   const handleGasAmountChange = (newAmount: string) => {
     onAmountInputValueChange({
       amount: newAmount,
-      minAmount: BigInt(MINIMAL_GAS_PRICE),
+      minAmount: BigInt(MINIMAL_GAS_AMOUNT),
       stateSetter: setGasAmount,
-      errorMessage: `Gas amount must be greater than ${MINIMAL_GAS_PRICE}.`,
+      errorMessage: `Gas amount must be greater than ${MINIMAL_GAS_AMOUNT}.`,
       currentErrorState: gasAmountError,
       errorStateSetter: setGasAmountError
     })
@@ -266,7 +247,14 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
       </ExpandableSection>
       <Section inList>
         <Button
-          onClick={() => onSubmit(addressState, amountState, gasAmountState, gasPriceState)}
+          onClick={() =>
+            onSubmit({
+              address: addressState,
+              amount: amountState,
+              gasAmount: gasAmountState,
+              gasPrice: gasPriceState
+            })
+          }
           disabled={!isSubmitButtonActive}
         >
           Check
@@ -276,21 +264,22 @@ const TransactionForm = ({ address, amount, gasAmount, gasPrice, onSubmit }: Tra
   )
 }
 
-interface CheckTransactionContentProps extends TransactionData {
+interface CheckTransactionContentProps {
+  data: TransactionData
   onSend: () => void
 }
 
-const CheckTransactionContent = ({ address, amount, gasAmount, gasPrice, onSend }: CheckTransactionContentProps) => {
-  const isSendButtonActive = address.length > 0 && amount.length > 0
+const CheckTransactionContent = ({ data, onSend }: CheckTransactionContentProps) => {
+  const isSendButtonActive = data.address.length > 0 && data.amount.length > 0
 
   return (
     <>
       <Section>
-        <InfoBox text={address} label="Recipient's address" wordBreak />
-        <InfoBox text={`${amount} ℵ`} label="Amount" />
-        <InfoBox text={gasAmount} label="Gas amount" />
-        <InfoBox text={`${gasPrice} ℵ`} label="Gas price" />
-        <InfoBox text={`${getExpectedFee(gasAmount, gasPrice)} ℵ`} label="Expected fee" />
+        <InfoBox text={data.address} label="Recipient's address" wordBreak />
+        <InfoBox text={`${data.amount} ℵ`} label="Amount" />
+        <InfoBox text={data.gasAmount} label="Gas amount" />
+        <InfoBox text={`${data.gasPrice} ℵ`} label="Gas price" />
+        <InfoBox text={`${getExpectedFee(data.gasAmount, data.gasPrice)} ℵ`} label="Expected fee" />
       </Section>
       <Section inList>
         <Button onClick={onSend} disabled={!isSendButtonActive}>
