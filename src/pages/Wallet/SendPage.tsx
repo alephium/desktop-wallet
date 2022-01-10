@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Send } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
@@ -43,32 +43,33 @@ const SendPage = () => {
   const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
+  const initialOnModalClose = useRef(onModalClose)
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
 
   useEffect(() => {
-    setModalTitle('Send')
-  }, [setModalTitle])
-
-  const goToStep = (step: StepIndex) => {
-    setStep(step)
-    setModalTitle(step === 1 ? 'Send' : step === 2 ? 'Info Check' : 'Password Check')
-    setOnModalClose(
-      step === 1 ? () => () => onModalClose() : step === 2 ? () => () => goToStep(1) : () => () => goToStep(2)
-    )
-  }
+    if (step === 1) {
+      setModalTitle('Send')
+      setOnModalClose(() => initialOnModalClose.current)
+    } else if (step === 2) {
+      setModalTitle('Info Check')
+      setOnModalClose(() => () => setStep(1))
+    } else if (step === 3) {
+      setModalTitle('Password Check')
+      setOnModalClose(() => () => setStep(2))
+    }
+  }, [setStep, setModalTitle, setOnModalClose, step])
 
   const verifyTransactionContent = (address: string, amount: string) => {
     setAddress(address)
     setAmount(amount)
-
-    goToStep(2)
+    setStep(2)
   }
 
   const confirmPassword = () => {
-    goToStep(3)
+    setStep(3)
   }
 
   const handleSend = async () => {
