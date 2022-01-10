@@ -21,6 +21,8 @@ import { ChevronDown } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
+import { Section } from './PageComponents/PageContainers'
+
 interface ExpandableSectionProps {
   sectionTitle: string
   open?: boolean
@@ -48,7 +50,9 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onO
         <Divider />
       </Title>
       <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
-        <Content>{{ children }}</Content>
+        <Content>
+          <Section align="stretch">{children}</Section>
+        </Content>
       </ContentWrapper>
     </Container>
   )
