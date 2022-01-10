@@ -22,6 +22,7 @@ import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
 import { Button } from '../../components/Buttons'
+import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import { Section } from '../../components/PageComponents/PageContainers'
@@ -32,7 +33,8 @@ import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
-import { convertToQALPH } from '../../utils/numbers'
+import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
+import { abbreviateAmount, convertScientificToFloatString, convertToQALPH } from '../../utils/numbers'
 
 type StepIndex = 1 | 2 | 3
 
@@ -42,10 +44,13 @@ const SendPage = () => {
   const { client, wallet, setSnackbarMessage } = useGlobalContext()
   const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
-
   const initialOnModalClose = useRef(onModalClose)
-  const [address, setAddress] = useState('')
-  const [amount, setAmount] = useState('')
+  const [transactionData, setTransactionData] = useState<TransactionData>({
+    address: '',
+    amount: '',
+    gasAmount: MINIMAL_GAS_AMOUNT.toString(),
+    gasPrice: abbreviateAmount(MINIMAL_GAS_PRICE)
+  })
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
 
@@ -62,9 +67,8 @@ const SendPage = () => {
     }
   }, [setStep, setModalTitle, setOnModalClose, step])
 
-  const verifyTransactionContent = (address: string, amount: string) => {
-    setAddress(address)
-    setAmount(amount)
+  const verifyTransactionContent = (transactionData: TransactionData) => {
+    setTransactionData(transactionData)
     setStep(2)
   }
 
@@ -73,7 +77,10 @@ const SendPage = () => {
   }
 
   const handleSend = async () => {
-    if (wallet && client) {
+    const { address, amount, gasAmount, gasPrice } = transactionData
+    const isDataComplete = address && amount && gasPrice && gasAmount
+
+    if (wallet && client && isDataComplete) {
       setIsSending(true)
 
       const fullAmount = convertToQALPH(amount).toString()
@@ -83,7 +90,10 @@ const SendPage = () => {
           wallet.address,
           wallet.publicKey,
           address,
-          fullAmount
+          fullAmount,
+          undefined,
+          parseInt(gasAmount),
+          convertToQALPH(gasPrice).toString()
         )
 
         const { txId, unsignedTx } = txCreateResp.data
@@ -115,13 +125,13 @@ const SendPage = () => {
 
   return (
     <>
-      <LogoContent>
-        <SendLogo>
+      <HeaderContent>
+        <HeaderLogo>
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
-        </SendLogo>
-      </LogoContent>
-      {step === 1 && <TransactionForm address={address} amount={amount} onSubmit={verifyTransactionContent} />}
-      {step === 2 && <CheckTransactionContent address={address} amount={amount} onSend={confirmPassword} />}
+        </HeaderLogo>
+      </HeaderContent>
+      {step === 1 && <TransactionForm data={transactionData} onSubmit={verifyTransactionContent} />}
+      {step === 2 && <CheckTransactionContent data={transactionData} onSend={confirmPassword} />}
       {step === 3 && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
@@ -136,16 +146,24 @@ const SendPage = () => {
 interface TransactionData {
   address: string
   amount: string
+  gasAmount: string
+  gasPrice: string
 }
 
-interface TransactionFormProps extends TransactionData {
-  onSubmit: (address: string, amount: string) => void
+interface TransactionFormProps {
+  data: TransactionData
+  onSubmit: (data: TransactionData) => void
 }
 
-const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) => {
-  const [addressState, setAddress] = useState(address)
-  const [amountState, setAmount] = useState(amount)
+const TransactionForm = ({ data, onSubmit }: TransactionFormProps) => {
+  const [addressState, setAddress] = useState(data.address)
+  const [amountState, setAmount] = useState(data.amount)
+  const [gasAmountState, setGasAmount] = useState(data.gasAmount)
+  const [gasPriceState, setGasPrice] = useState(data.gasPrice)
   const [addressError, setAddressError] = useState('')
+  const [gasAmountError, setGasAmountError] = useState('')
+  const [gasPriceError, setGasPriceError] = useState('')
+  const minimalGasPriceInALPH = abbreviateAmount(MINIMAL_GAS_PRICE)
 
   const handleAddressChange = (value: string) => {
     setAddress(value)
@@ -159,7 +177,33 @@ const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) =>
     }
   }
 
-  const isSubmitButtonActive = addressState.length > 0 && addressError.length === 0 && amountState.length > 0
+  const handleGasAmountChange = (newAmount: string) => {
+    onAmountInputValueChange({
+      amount: newAmount,
+      minAmount: BigInt(MINIMAL_GAS_AMOUNT),
+      stateSetter: setGasAmount,
+      errorMessage: `Gas amount must be greater than ${MINIMAL_GAS_AMOUNT}.`,
+      currentErrorState: gasAmountError,
+      errorStateSetter: setGasAmountError
+    })
+  }
+
+  const handleGasPriceChange = (newPrice: string) => {
+    onAmountInputValueChange({
+      amount: newPrice,
+      minAmount: MINIMAL_GAS_PRICE,
+      stateSetter: setGasPrice,
+      errorMessage: `Gas price must be greater than ${abbreviateAmount(MINIMAL_GAS_PRICE)}ℵ.`,
+      currentErrorState: gasPriceError,
+      errorStateSetter: setGasPriceError,
+      shouldConvertToQALPH: true
+    })
+  }
+
+  const expectedFeeInALPH = gasAmountState && gasPriceState && getExpectedFee(gasAmountState, gasPriceState)
+
+  const isSubmitButtonActive =
+    addressState && amountState && gasPriceState && gasAmountState && !addressError && !gasPriceError && !gasAmountError
 
   return (
     <>
@@ -172,15 +216,47 @@ const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) =>
           isValid={addressState.length > 0 && !addressError}
         />
         <Input
-          placeholder="Amount"
+          placeholder="Amount (ℵ)"
           value={amountState}
           onChange={(e) => setAmount(e.target.value)}
           type="number"
           min="0"
         />
+        {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
       </Section>
+      <ExpandableSection sectionTitle="Advanced settings">
+        <Input
+          id="gas-amount"
+          placeholder="Gas amount"
+          value={gasAmountState}
+          onChange={(e) => handleGasAmountChange(e.target.value)}
+          type="number"
+          min={MINIMAL_GAS_AMOUNT}
+          error={gasAmountError}
+        />
+        <Input
+          id="gas-price"
+          placeholder="Gas price (ℵ)"
+          value={gasPriceState}
+          type="number"
+          min={minimalGasPriceInALPH}
+          onChange={(e) => handleGasPriceChange(e.target.value)}
+          step={minimalGasPriceInALPH}
+          error={gasPriceError}
+        />
+      </ExpandableSection>
       <Section inList>
-        <Button onClick={() => onSubmit(addressState, amountState)} disabled={!isSubmitButtonActive}>
+        <Button
+          onClick={() =>
+            onSubmit({
+              address: addressState,
+              amount: amountState,
+              gasAmount: gasAmountState,
+              gasPrice: gasPriceState
+            })
+          }
+          disabled={!isSubmitButtonActive}
+        >
           Check
         </Button>
       </Section>
@@ -188,18 +264,22 @@ const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) =>
   )
 }
 
-interface CheckTransactionContentProps extends TransactionData {
+interface CheckTransactionContentProps {
+  data: TransactionData
   onSend: () => void
 }
 
-const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionContentProps) => {
-  const isSendButtonActive = address.length > 0 && amount.length > 0
+const CheckTransactionContent = ({ data, onSend }: CheckTransactionContentProps) => {
+  const isSendButtonActive = data.address.length > 0 && data.amount.length > 0
 
   return (
     <>
       <Section>
-        <InfoBox text={address} label="Recipient's address" wordBreak />
-        <InfoBox text={`${amount} ℵ`} label="Amount" />
+        <InfoBox text={data.address} label="Recipient's address" wordBreak />
+        <InfoBox text={`${data.amount} ℵ`} label="Amount" />
+        <InfoBox text={data.gasAmount} label="Gas amount" />
+        <InfoBox text={`${data.gasPrice} ℵ`} label="Gas price" />
+        <InfoBox text={`${getExpectedFee(data.gasAmount, data.gasPrice)} ℵ`} label="Expected fee" />
       </Section>
       <Section inList>
         <Button onClick={onSend} disabled={!isSendButtonActive}>
@@ -210,12 +290,57 @@ const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionCo
   )
 }
 
-const LogoContent = styled(Section)`
+const onAmountInputValueChange = ({
+  amount,
+  minAmount,
+  stateSetter,
+  errorMessage,
+  currentErrorState,
+  errorStateSetter,
+  shouldConvertToQALPH
+}: {
+  amount: string
+  minAmount: bigint
+  errorMessage: string
+  stateSetter: (v: string) => void
+  currentErrorState: string
+  errorStateSetter: (v: string) => void
+  shouldConvertToQALPH?: boolean
+}) => {
+  let amountNumber
+
+  try {
+    amountNumber = BigInt(shouldConvertToQALPH ? convertToQALPH(amount) : amount)
+  } catch (e) {
+    console.log(e)
+    return
+  }
+
+  if (amountNumber < minAmount) {
+    errorStateSetter(errorMessage)
+  } else {
+    if (currentErrorState) errorStateSetter('')
+  }
+
+  let cleanedAmount = amount
+
+  if (amount.includes('e')) {
+    cleanedAmount = convertScientificToFloatString(amount)
+  }
+
+  stateSetter(cleanedAmount)
+}
+
+const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
+  return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), false, 7)
+}
+
+const HeaderContent = styled(Section)`
   flex: 0;
-  margin: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 `
 
-const SendLogo = styled.div`
+const HeaderLogo = styled.div`
   height: 10vh;
   display: flex;
   justify-content: center;

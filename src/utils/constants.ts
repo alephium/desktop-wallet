@@ -16,37 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'styled-components'
+import { BILLION } from './numbers'
 
-import { ThemeType } from './themes'
-
-declare module 'styled-components' {
-  export interface DefaultTheme {
-    name: ThemeType
-    bg: {
-      primary: string
-      secondary: string
-      tertiary: string
-      hover: string
-      contrast: string
-      accent: string
-    }
-    font: {
-      primary: string
-      secondary: string
-      contrastPrimary: string
-      contrastSecondary: string
-    }
-    border: {
-      primary: string
-      secondary: string
-    }
-    global: {
-      accent: string
-      complementary: string
-      alert: string
-      valid: string
-      highlightGradient: string
-    }
-  }
-}
+export const MINIMAL_GAS_AMOUNT = 20000
+export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks

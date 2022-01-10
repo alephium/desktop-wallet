@@ -68,6 +68,18 @@ export const inputDefaultStyle = (isValid?: boolean) => {
       background-color: ${({ theme }) => theme.bg.secondary};
       border: 1px solid ${({ theme }) => theme.border.primary};
     }
+
+    // Remove number arrows
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type='number'] {
+      -moz-appearance: textfield;
+    }
   `
 }
 

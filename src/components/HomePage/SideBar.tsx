@@ -147,7 +147,7 @@ const Moon = styled(motion.div)`
   max-height: 60px;
   max-width: 60px;
   border-radius: 200px;
-  background-color: ${({ theme }) => theme.global.secondary};
+  background-color: ${({ theme }) => theme.global.complementary};
 `
 
 const MountainImage = styled(MountainSVG)`
@@ -200,7 +200,7 @@ const StyledCloudGroup = styled(motion.div)`
 
 const Cloud = styled.div`
   position: absolute;
-  background-color: ${({ theme }) => tinycolor(theme.global.secondary).setAlpha(0.3).toString()};
+  background-color: ${({ theme }) => tinycolor(theme.global.complementary).setAlpha(0.3).toString()};
   height: 3px;
 `
 

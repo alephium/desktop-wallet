@@ -16,11 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, calAmountDelta, convertToQALPH, removeTrailingZeros } from '../utils/numbers'
+import {
+  abbreviateAmount,
+  calAmountDelta,
+  convertScientificToFloatString,
+  convertToQALPH,
+  countDecimals,
+  removeTrailingZeros
+} from '../utils/numbers'
 import transactions from './fixtures/transactions.json'
 
 const alf = (amount: bigint) => {
-  return amount * BigInt(1000000000000000000)
+  return amount * BigInt(1000000000000000000n)
 }
 
 const minDigits = 3
@@ -33,12 +40,36 @@ it('Should abbreviate amount', () => {
     expect(abbreviateAmount(BigInt(1000000000))).toEqual('0.000000001'),
     expect(abbreviateAmount(BigInt(2000000000))).toEqual('0.000000002'),
     expect(abbreviateAmount(BigInt(2000000000000000))).toEqual('0.002'),
+    expect(abbreviateAmount(BigInt(20000000000000000n))).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000n))).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000n))).toEqual('2.000'),
     expect(abbreviateAmount(alf(BigInt(1230)))).toEqual('1.230K'),
     expect(abbreviateAmount(alf(BigInt(1230000)))).toEqual('1.230M'),
     expect(abbreviateAmount(alf(BigInt(1230000000)))).toEqual('1.230B'),
     expect(abbreviateAmount(alf(BigInt(1230000000000)))).toEqual('1.230T'),
     expect(abbreviateAmount(alf(BigInt(1230000000000000)))).toEqual('1230.000T'),
     expect(abbreviateAmount(alf(BigInt(1)))).toEqual('1.000')
+})
+
+it('Should keep full amount precision', () => {
+  expect(abbreviateAmount(alf(BigInt(-1)))).toEqual('???'),
+    expect(abbreviateAmount(BigInt(0), true)).toEqual('0.000'),
+    expect(abbreviateAmount(BigInt(1), true)).toEqual('0.000000000000000001'),
+    expect(abbreviateAmount(BigInt(100001), true)).toEqual('0.000000000000100001'),
+    expect(abbreviateAmount(BigInt(1000000000), true)).toEqual('0.000000001'),
+    expect(abbreviateAmount(BigInt(1000000001), true)).toEqual('0.000000001000000001'),
+    expect(abbreviateAmount(BigInt(2000000000), true)).toEqual('0.000000002'),
+    expect(abbreviateAmount(BigInt(2000000002), true)).toEqual('0.000000002000000002'),
+    expect(abbreviateAmount(BigInt(2000000000000000), true)).toEqual('0.002'),
+    expect(abbreviateAmount(BigInt(20000000000000000n), true)).toEqual('0.02'),
+    expect(abbreviateAmount(BigInt(200000000000000000n), true)).toEqual('0.2'),
+    expect(abbreviateAmount(BigInt(2000000000000000000n), true)).toEqual('2.000'),
+    expect(abbreviateAmount(alf(BigInt(1230)), true)).toEqual('1230.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000)), true)).toEqual('1230000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000)), true)).toEqual('1230000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000000)), true)).toEqual('1230000000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1230000000000000)), true)).toEqual('1230000000000000.000'),
+    expect(abbreviateAmount(alf(BigInt(1)), true)).toEqual('1.000')
 })
 
 it('Should remove trailing zeros', () => {
@@ -74,8 +105,107 @@ it('should convert to qALPH', () => {
     expect(convertToQALPH('999999999')).toEqual(BigInt(999999999000000000000000000n)),
     expect(convertToQALPH('999999999999')).toEqual(BigInt(999999999999000000000000000000n)),
     expect(convertToQALPH('0.1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('.1')).toEqual(BigInt(100000000000000000n)),
     expect(convertToQALPH('0.01')).toEqual(BigInt(10000000000000000n)),
     expect(convertToQALPH('0.00000009')).toEqual(BigInt(90000000000n)),
     expect(convertToQALPH('0.000000000000000001')).toEqual(BigInt(1n)),
-    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n))
+    expect(convertToQALPH('-0.000000000000000001')).toEqual(BigInt(-1n)),
+    expect(convertToQALPH('1e-1')).toEqual(BigInt(100000000000000000n)),
+    expect(convertToQALPH('1e-2')).toEqual(BigInt(10000000000000000n)),
+    expect(convertToQALPH('1e-17')).toEqual(BigInt(10n)),
+    expect(convertToQALPH('1e-18')).toEqual(BigInt(1n)),
+    expect(convertToQALPH('1.1e-1')).toEqual(BigInt(110000000000000000n)),
+    expect(convertToQALPH('1.11e-1')).toEqual(BigInt(111000000000000000n)),
+    expect(convertToQALPH('1.99999999999999999e-1')).toEqual(BigInt(199999999999999999n)),
+    expect(convertToQALPH('1e+1')).toEqual(BigInt(10000000000000000000n)),
+    expect(convertToQALPH('1e+2')).toEqual(BigInt(100000000000000000000n)),
+    expect(convertToQALPH('1e+17')).toEqual(BigInt(100000000000000000000000000000000000n)),
+    expect(convertToQALPH('1e+18')).toEqual(BigInt(1000000000000000000000000000000000000n)),
+    expect(convertToQALPH('1.1e+1')).toEqual(BigInt(11000000000000000000n)),
+    expect(convertToQALPH('1.99999999999999999e+1')).toEqual(BigInt(19999999999999999900n)),
+    expect(convertToQALPH('123.45678e+2')).toEqual(BigInt(12345678000000000000000n)),
+    expect(convertToQALPH('-1e-1')).toEqual(BigInt(-100000000000000000n)),
+    expect(convertToQALPH('-1e-2')).toEqual(BigInt(-10000000000000000n)),
+    expect(convertToQALPH('-1e-17')).toEqual(BigInt(-10n)),
+    expect(convertToQALPH('-1e-18')).toEqual(BigInt(-1n)),
+    expect(convertToQALPH('-1.1e-1')).toEqual(BigInt(-110000000000000000n)),
+    expect(convertToQALPH('-1.11e-1')).toEqual(BigInt(-111000000000000000n)),
+    expect(convertToQALPH('-1.99999999999999999e-1')).toEqual(BigInt(-199999999999999999n)),
+    expect(convertToQALPH('-1e+1')).toEqual(BigInt(-10000000000000000000n)),
+    expect(convertToQALPH('-1e+2')).toEqual(BigInt(-100000000000000000000n)),
+    expect(convertToQALPH('-1e+17')).toEqual(BigInt(-100000000000000000000000000000000000n)),
+    expect(convertToQALPH('-1e+18')).toEqual(BigInt(-1000000000000000000000000000000000000n)),
+    expect(convertToQALPH('-1.1e+1')).toEqual(BigInt(-11000000000000000000n)),
+    expect(convertToQALPH('-1.99999999999999999e+1')).toEqual(BigInt(-19999999999999999900n)),
+    expect(convertToQALPH('-123.45678e+2')).toEqual(BigInt(-12345678000000000000000n))
+})
+
+it('should convert scientific numbers to floats or integers', () => {
+  expect(convertScientificToFloatString('1e-1')).toEqual('0.1'),
+    expect(convertScientificToFloatString('1e-2')).toEqual('0.01'),
+    expect(convertScientificToFloatString('1e-17')).toEqual('0.00000000000000001'),
+    expect(convertScientificToFloatString('1e-18')).toEqual('0.000000000000000001'),
+    expect(convertScientificToFloatString('1.1e-1')).toEqual('0.11'),
+    expect(convertScientificToFloatString('1.11e-1')).toEqual('0.111'),
+    expect(convertScientificToFloatString('1.99999999999999999e-1')).toEqual('0.199999999999999999'),
+    expect(convertScientificToFloatString('123.45678e-2')).toEqual('1.2345678'),
+    expect(convertScientificToFloatString('1e+1')).toEqual('10'),
+    expect(convertScientificToFloatString('1e+2')).toEqual('100'),
+    expect(convertScientificToFloatString('1e+17')).toEqual('100000000000000000'),
+    expect(convertScientificToFloatString('1e+18')).toEqual('1000000000000000000'),
+    expect(convertScientificToFloatString('1.1e+1')).toEqual('11'),
+    expect(convertScientificToFloatString('1.99999999999999999e+1')).toEqual('19.9999999999999999'),
+    expect(convertScientificToFloatString('123.45678e+2')).toEqual('12345.678'),
+    expect(convertScientificToFloatString('-1e-1')).toEqual('-0.1'),
+    expect(convertScientificToFloatString('-1e-2')).toEqual('-0.01'),
+    expect(convertScientificToFloatString('-1e-17')).toEqual('-0.00000000000000001'),
+    expect(convertScientificToFloatString('-1e-18')).toEqual('-0.000000000000000001'),
+    expect(convertScientificToFloatString('-1.1e-1')).toEqual('-0.11'),
+    expect(convertScientificToFloatString('-1.11e-1')).toEqual('-0.111'),
+    expect(convertScientificToFloatString('-1.99999999999999999e-1')).toEqual('-0.199999999999999999'),
+    expect(convertScientificToFloatString('-123.45678e-2')).toEqual('-1.2345678'),
+    expect(convertScientificToFloatString('-1e+1')).toEqual('-10'),
+    expect(convertScientificToFloatString('-1e+2')).toEqual('-100'),
+    expect(convertScientificToFloatString('-1e+17')).toEqual('-100000000000000000'),
+    expect(convertScientificToFloatString('-1e+18')).toEqual('-1000000000000000000'),
+    expect(convertScientificToFloatString('-1.1e+1')).toEqual('-11'),
+    expect(convertScientificToFloatString('-1.99999999999999999e+1')).toEqual('-19.9999999999999999'),
+    expect(convertScientificToFloatString('-123.45678e+2')).toEqual('-12345.678'),
+    expect(convertScientificToFloatString('123.45678e2')).toEqual('12345.678'),
+    expect(convertScientificToFloatString('1e18')).toEqual('1000000000000000000'),
+    expect(convertScientificToFloatString('.1e19')).toEqual('1000000000000000000')
+})
+
+it('should calculate number of decimals', () => {
+  expect(countDecimals(0.1)).toEqual(1),
+    expect(countDecimals(0.19)).toEqual(2),
+    expect(countDecimals(1000000.10001)).toEqual(5),
+    expect(countDecimals(1000000.0000000001)).toEqual(10),
+    expect(countDecimals(0.1234567891234567)).toEqual(16),
+    expect(countDecimals(-0.1)).toEqual(1),
+    expect(countDecimals(-0.19)).toEqual(2),
+    expect(countDecimals(-1000000.10001)).toEqual(5),
+    expect(countDecimals(-1000000.0000000001)).toEqual(10),
+    expect(countDecimals(1e-17)).toEqual(17),
+    expect(countDecimals(1.1e-17)).toEqual(18),
+    expect(countDecimals(-1.23456789e-20)).toEqual(28),
+    expect(countDecimals(-1.2e100)).toEqual(0),
+    expect(countDecimals(1.23456789e-20)).toEqual(28)
+
+  // The following tests will fail:
+  // expect(countDecimals(1000000000000000.01)).toEqual(2),
+  // expect(countDecimals(100000000000000.001)).toEqual(3),
+  // expect(countDecimals(10000000000000.0001)).toEqual(4),
+  // expect(countDecimals(1000000000000.00001)).toEqual(5),
+  // expect(countDecimals(100000000000.000001)).toEqual(6),
+  // expect(countDecimals(10000000000.0000001)).toEqual(7),
+  // expect(countDecimals(1000000000.00000001)).toEqual(8),
+  // expect(countDecimals(100000000.000000001)).toEqual(9),
+  // expect(countDecimals(10000000.0000000001)).toEqual(10),
+  // expect(countDecimals(1000000.00000000001)).toEqual(11),
+  // expect(countDecimals(100000.000000000001)).toEqual(12),
+  // expect(countDecimals(10000.0000000000001)).toEqual(13),
+  // expect(countDecimals(1000.00000000000001)).toEqual(14),
+  // expect(countDecimals(100.000000000000001)).toEqual(15),
+  // expect(countDecimals(10.0000000000000001)).toEqual(16)
 })

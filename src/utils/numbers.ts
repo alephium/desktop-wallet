@@ -19,7 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 
 const MONEY_SYMBOL = ['', 'K', 'M', 'B', 'T']
-const QUINTILLION = 1000000000000000000
+
+export const QUINTILLION = 1000000000000000000
+export const BILLION = 1000000000
 
 const getNumberOfTrailingZeros = (numberArray: string[]) => {
   let numberOfZeros = 0
@@ -59,7 +61,7 @@ export const removeTrailingZeros = (numString: string, minDigits: number) => {
   return numberArrayWithoutTrailingZeros.join().replace(/,/g, '')
 }
 
-export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number) => {
+export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbOfDecimalsToShow?: number): string => {
   const minDigits = 3
 
   if (baseNum < 0n) return '???'
@@ -71,13 +73,19 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 
   let tier = (Math.log10(alephNum) / 3) | 0
 
-  const numberOfDigitsToDisplay = nbOfDecimalsToShow ? nbOfDecimalsToShow : minDigits
+  const numberOfDigitsToDisplay = nbOfDecimalsToShow || minDigits
 
   if (tier < 0 || showFullPrecision) {
-    return removeTrailingZeros(alephNum.toFixed(18), minDigits) // Keep full precision for very low numbers (gas etc.)
+    // Keep full precision for very low numbers (gas etc.)
+
+    if (countDecimals(alephNum) === 1) {
+      return removeTrailingZeros(alephNum.toFixed(16), minDigits) // Avoid precision issue edge case
+    }
+
+    return removeTrailingZeros(alephNum.toFixed(18), minDigits)
   } else if (tier === 0) {
     // Small number, low precision is ok
-    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay).toString(), minDigits)
+    return removeTrailingZeros(alephNum.toFixed(numberOfDigitsToDisplay), minDigits)
   } else if (tier >= MONEY_SYMBOL.length) {
     tier = MONEY_SYMBOL.length - 1
   }
@@ -92,10 +100,6 @@ export const abbreviateAmount = (baseNum: bigint, showFullPrecision = false, nbO
 
   return scaled.toFixed(numberOfDigitsToDisplay) + suffix
 }
-
-// ==================== //
-// ===== BALANCES ===== //
-// ==================== //
 
 export const calAmountDelta = (t: Transaction, id: string) => {
   if (!t.inputs || !t.outputs) {
@@ -112,8 +116,79 @@ export const calAmountDelta = (t: Transaction, id: string) => {
   return outputAmount - inputAmount
 }
 
-export const convertToQALPH = (amount: string) => {
-  const numberOfDecimals = amount.includes('.') ? amount.length - 1 - amount.indexOf('.') : 0
+export const convertToQALPH = (amount: string): bigint => {
+  let cleanedAmount = amount
+
+  if (amount.includes('e')) {
+    cleanedAmount = convertScientificToFloatString(amount)
+  }
+
+  const numberOfDecimals = cleanedAmount.includes('.') ? cleanedAmount.length - 1 - cleanedAmount.indexOf('.') : 0
   const numberOfZerosToAdd = 18 - numberOfDecimals
-  return BigInt(`${amount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+  return BigInt(`${cleanedAmount.replace('.', '')}${produceTrailingZeros(numberOfZerosToAdd)}`)
+}
+
+export const convertScientificToFloatString = (scientificNumber: string): string => {
+  let newNumber = scientificNumber
+  const scientificNotation = scientificNumber.includes('e-')
+    ? 'e-'
+    : scientificNumber.includes('e+')
+    ? 'e+'
+    : scientificNumber.includes('e')
+    ? 'e'
+    : ''
+
+  if (scientificNumber.startsWith('-')) {
+    newNumber = newNumber.substring(1)
+  }
+
+  if (scientificNotation === 'e-') {
+    const positionOfE = newNumber.indexOf(scientificNotation)
+    const moveDotBy = Number(newNumber.substring(positionOfE + scientificNotation.length, newNumber.length))
+    const positionOfDot = newNumber.indexOf('.')
+    const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
+    if (moveDotBy >= positionOfDot) {
+      const numberOfZeros = moveDotBy - (positionOfDot > -1 ? positionOfDot : 1)
+      newNumber = `0.${produceTrailingZeros(numberOfZeros)}${amountWithoutEandDot}`
+    } else {
+      const newPositionOfDot = positionOfDot - moveDotBy
+      newNumber = `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+        newPositionOfDot
+      )}`
+    }
+  } else if (scientificNotation === 'e+' || scientificNotation === 'e') {
+    const positionOfE = newNumber.indexOf(scientificNotation)
+    const moveDotBy = Number(newNumber.substring(positionOfE + scientificNotation.length, newNumber.length))
+    const numberOfDecimals = newNumber.indexOf('.') > -1 ? positionOfE - newNumber.indexOf('.') - 1 : 0
+    const amountWithoutEandDot = newNumber.substring(0, positionOfE).replace('.', '')
+    if (numberOfDecimals <= moveDotBy) {
+      newNumber = `${amountWithoutEandDot}${produceTrailingZeros(moveDotBy - numberOfDecimals)}`
+    } else {
+      const positionOfDot = newNumber.indexOf('.')
+      const newPositionOfDot = positionOfDot + moveDotBy
+      newNumber = `${amountWithoutEandDot.substring(0, newPositionOfDot)}.${amountWithoutEandDot.substring(
+        newPositionOfDot
+      )}`
+    }
+  }
+
+  if (scientificNumber.startsWith('-')) {
+    newNumber = `-${newNumber}`
+  }
+
+  return newNumber
+}
+
+export const countDecimals = (value: number) => {
+  if (Number.isInteger(value)) return 0
+
+  let str = value.toString()
+  if (str.startsWith('-')) str = str.substring(1)
+
+  if (str.indexOf('.') !== -1 && str.indexOf('e-') !== -1) {
+    return parseInt(str.split('e-')[1]) + str.split('e-')[0].split('.')[1].length || 0
+  } else if (str.indexOf('.') !== -1) {
+    return str.split('.')[1].length || 0
+  }
+  return parseInt(str.split('e-')[1]) || 0
 }
