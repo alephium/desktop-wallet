@@ -23,7 +23,8 @@ interface AmountProps {
   className?: string
 }
 
-const Amount = ({ value, className }: AmountProps) =>
-  value ? <span className={className}>{abbreviateAmount(value)}א</span> : <span className={className}>- א</span>
+const Amount = ({ value, className }: AmountProps) => (
+  <span className={className}>{value !== undefined ? abbreviateAmount(value) : '-'} א</span>
+)
 
 export default Amount
