@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Send } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
 
@@ -25,6 +25,7 @@ import { Button } from '../../components/Buttons'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import { Section } from '../../components/PageComponents/PageContainers'
+import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
@@ -33,6 +34,8 @@ import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError } from '../../utils/api'
 import { convertToQALPH } from '../../utils/numbers'
 
+type StepIndex = 1 | 2 | 3
+
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
@@ -40,50 +43,37 @@ const SendPage = () => {
   const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
 
+  const initialOnModalClose = useRef(onModalClose)
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
-  const [addressError, setAddressError] = useState('')
-  const [isChecking, setIsChecking] = useState(false)
   const [isSending, setIsSending] = useState(false)
+  const [step, setStep] = useState<StepIndex>(1)
 
-  const onCloseButtonClick = (isChecking: boolean) => {
-    if (!isChecking) {
-      onModalClose()
-    } else {
-      setIsChecking(false)
-      setOnModalClose(() => () => onCloseButtonClick(false))
+  useEffect(() => {
+    if (step === 1) {
       setModalTitle('Send')
+      setOnModalClose(() => initialOnModalClose.current)
+    } else if (step === 2) {
+      setModalTitle('Info Check')
+      setOnModalClose(() => () => setStep(1))
+    } else if (step === 3) {
+      setModalTitle('Password Check')
+      setOnModalClose(() => () => setStep(2))
     }
+  }, [setStep, setModalTitle, setOnModalClose, step])
+
+  const verifyTransactionContent = (address: string, amount: string) => {
+    setAddress(address)
+    setAmount(amount)
+    setStep(2)
   }
 
-  const handleAddressChange = (value: string) => {
-    // Check if format is correct
-
-    setAddress(value)
-    const validValue = checkAddressValidity(value)
-
-    if (validValue) {
-      setAddress(validValue)
-      setAddressError('')
-    } else {
-      setAddressError('Address format is incorrect')
-    }
+  const confirmPassword = () => {
+    setStep(3)
   }
-
-  const handleAmountChange = (value: string) => {
-    // const valueToReturn = Number(value).toString() // Remove 0 in front if needed
-    setAmount(value)
-  }
-
-  const isSendButtonActive = address.length > 0 && addressError.length === 0 && amount.length > 0
 
   const handleSend = async () => {
-    if (!isChecking) {
-      setIsChecking(true)
-      setOnModalClose(() => () => onCloseButtonClick(true))
-      setModalTitle('Info Check')
-    } else if (wallet && client) {
-      // Send it!
+    if (wallet && client) {
       setIsSending(true)
 
       const fullAmount = convertToQALPH(amount).toString()
@@ -130,41 +120,93 @@ const SendPage = () => {
           {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </SendLogo>
       </LogoContent>
-      {!isChecking ? (
-        <Section>
-          <Input
-            placeholder="Recipient's address"
-            value={address}
-            onChange={(e) => handleAddressChange(e.target.value)}
-            error={addressError}
-            isValid={address.length > 0 && !addressError}
-          />
-          <Input
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => handleAmountChange(e.target.value)}
-            type="number"
-            min="0"
-          />
-        </Section>
-      ) : (
-        <CheckTransactionContent address={address} amount={amount} />
+      {step === 1 && <TransactionForm address={address} amount={amount} onSubmit={verifyTransactionContent} />}
+      {step === 2 && <CheckTransactionContent address={address} amount={amount} onSend={confirmPassword} />}
+      {step === 3 && (
+        <PasswordConfirmation
+          text="Enter your password to send the transaction."
+          buttonText="Send"
+          onCorrectPasswordEntered={handleSend}
+        />
       )}
+    </>
+  )
+}
+
+interface TransactionData {
+  address: string
+  amount: string
+}
+
+interface TransactionFormProps extends TransactionData {
+  onSubmit: (address: string, amount: string) => void
+}
+
+const TransactionForm = ({ address, amount, onSubmit }: TransactionFormProps) => {
+  const [addressState, setAddress] = useState(address)
+  const [amountState, setAmount] = useState(amount)
+  const [addressError, setAddressError] = useState('')
+
+  const handleAddressChange = (value: string) => {
+    setAddress(value)
+    const validValue = checkAddressValidity(value)
+
+    if (validValue) {
+      setAddress(validValue)
+      setAddressError('')
+    } else {
+      setAddressError('Address format is incorrect')
+    }
+  }
+
+  const isSubmitButtonActive = addressState.length > 0 && addressError.length === 0 && amountState.length > 0
+
+  return (
+    <>
+      <Section>
+        <Input
+          placeholder="Recipient's address"
+          value={addressState}
+          onChange={(e) => handleAddressChange(e.target.value)}
+          error={addressError}
+          isValid={addressState.length > 0 && !addressError}
+        />
+        <Input
+          placeholder="Amount"
+          value={amountState}
+          onChange={(e) => setAmount(e.target.value)}
+          type="number"
+          min="0"
+        />
+      </Section>
       <Section inList>
-        <Button onClick={handleSend} disabled={!isSendButtonActive}>
-          {isChecking ? 'Send' : 'Check'}
+        <Button onClick={() => onSubmit(addressState, amountState)} disabled={!isSubmitButtonActive}>
+          Check
         </Button>
       </Section>
     </>
   )
 }
 
-const CheckTransactionContent = ({ address, amount }: { address: string; amount: string }) => {
+interface CheckTransactionContentProps extends TransactionData {
+  onSend: () => void
+}
+
+const CheckTransactionContent = ({ address, amount, onSend }: CheckTransactionContentProps) => {
+  const isSendButtonActive = address.length > 0 && amount.length > 0
+
   return (
-    <Section>
-      <InfoBox text={address} label="Recipient's address" wordBreak />
-      <InfoBox text={`${amount} ℵ`} label="Amount" />
-    </Section>
+    <>
+      <Section>
+        <InfoBox text={address} label="Recipient's address" wordBreak />
+        <InfoBox text={`${amount} ℵ`} label="Amount" />
+      </Section>
+      <Section inList>
+        <Button onClick={onSend} disabled={!isSendButtonActive}>
+          Send
+        </Button>
+      </Section>
+    </>
   )
 }
 
