@@ -40,6 +40,7 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
           <NetworkBadge />
           <HeaderDivider />
           {children}
+          <HeaderDivider />
           <Button transparent squared onClick={onSettingsClick} aria-label="Settings">
             <SettingsIcon />
           </Button>

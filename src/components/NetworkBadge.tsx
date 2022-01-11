@@ -35,7 +35,7 @@ const BadgeContainer = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-big);
+  border-radius: calc(var(--badgeHeight) * 2);
   font-weight: var(--fontWeight-semiBold);
 `
 

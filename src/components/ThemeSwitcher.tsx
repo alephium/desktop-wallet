@@ -74,7 +74,7 @@ export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
   width: calc(var(--toggleHeight) * 2);
   height: var(--toggleHeight);
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   background-color: ${({ theme }) => theme.bg.secondary};
   overflow: hidden;
   cursor: pointer;
@@ -107,7 +107,7 @@ const ToggleFloatingIndicator = styled(motion.div)`
   width: 50%;
   height: 100%;
   background-color: ${({ theme }) => theme.font.primary};
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   z-index: 0;
 `
 

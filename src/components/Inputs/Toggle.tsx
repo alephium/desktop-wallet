@@ -66,7 +66,7 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   width: calc(var(--toggleHeight) * 2);
   height: var(--toggleHeight);
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.tertiary)};
   overflow: hidden;
   cursor: pointer;
@@ -81,7 +81,7 @@ const ToggleFloatingIndicator = styled(motion.div)`
   width: 50%;
   height: 100%;
   background-color: var(--color-white);
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   z-index: 0;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
 `
