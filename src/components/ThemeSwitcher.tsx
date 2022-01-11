@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
-import React, { useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
@@ -29,10 +29,6 @@ interface ThemeSwitcherProps {
   className?: string
 }
 
-const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
-  return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
-}
-
 const toggleWidth = 80
 const toggleHeight = toggleWidth / 2
 
@@ -41,7 +37,7 @@ const toggleVariants = {
   dark: { left: '50%', backgroundColor: 'var(--color-purple)' }
 }
 
-const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ small = false, className }) => {
+const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => {
   const {
     settings: {
       general: { theme: currentTheme }
@@ -77,6 +73,10 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ small = false, className 
       />
     </StyledThemeSwitcher>
   )
+}
+
+const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
+  return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
 }
 
 export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -25,12 +25,13 @@ import { ModalContextProvider, useModalContext } from '../contexts/modal'
 import { Button } from './Buttons'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
-export const Modal: FC<{ title: string; onClose: () => void; focusMode?: boolean }> = ({
-  children,
-  title,
-  onClose,
-  focusMode
-}) => (
+interface ModalProps {
+  title: string
+  onClose: () => void
+  focusMode?: boolean
+}
+
+export const Modal: FC<ModalProps> = ({ children, title, onClose, focusMode }) => (
   <ModalContextProvider title={title} onClose={onClose}>
     <ModalContents focusMode={focusMode}>{children}</ModalContents>
   </ModalContextProvider>

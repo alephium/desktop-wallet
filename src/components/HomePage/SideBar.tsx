@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -28,7 +27,7 @@ import { deviceBreakPoints } from '../../style/globalStyles'
 import { PanelContentContainer } from '../PageComponents/PageContainers'
 import PanelTitle from '../PageComponents/PanelTitle'
 
-const SideBar: FC<{ className?: string }> = ({ className }) => {
+const SideBar = () => {
   const theme = useTheme()
 
   return (

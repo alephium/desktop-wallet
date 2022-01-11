@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -34,20 +34,18 @@ const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
   className,
   style,
   ...props
-}) => {
-  return (
-    <StyledParagraph
-      variants={sectionChildrenVariants}
-      className={className}
-      centered={centered}
-      secondary={secondary}
-      style={style}
-      {...props}
-    >
-      {children}
-    </StyledParagraph>
-  )
-}
+}) => (
+  <StyledParagraph
+    variants={sectionChildrenVariants}
+    className={className}
+    centered={centered}
+    secondary={secondary}
+    style={style}
+    {...props}
+  >
+    {children}
+  </StyledParagraph>
+)
 
 const StyledParagraph = styled(motion.p)<ParagraphProps>`
   white-space: pre-wrap;

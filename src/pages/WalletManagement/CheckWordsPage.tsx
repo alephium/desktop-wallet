@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -40,10 +40,6 @@ import { useWalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
-const getAlphabeticallyOrderedList = (arr: string[]) => {
-  return arr.slice().sort()
-}
-
 interface WordKey {
   word: string
   key: string // Used to build layout and ensure anims are working when duplicates exist
@@ -52,6 +48,7 @@ interface WordKey {
 const CheckWordsPage = () => {
   const { mnemonic, plainWallet, password, username } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
+  const { setSnackbarMessage } = useGlobalContext()
 
   const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
@@ -185,7 +182,7 @@ const CheckWordsPage = () => {
 
   const areWordsValid = selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
 
-  const createEncryptedWallet = async () => {
+  const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(username, walletEncrypted)
@@ -194,11 +191,11 @@ const CheckWordsPage = () => {
     }
   }
 
-  const handleButtonNext = async () => {
-    const success = await createEncryptedWallet()
+  const handleButtonNext = () => {
+    const success = createEncryptedWallet()
     if (success) onButtonNext()
     else {
-      console.error('Something went wrong when creating encrypted wallet!')
+      setSnackbarMessage({ text: 'Something went wrong when creating encrypted wallet.', type: 'alert' })
     }
   }
 
@@ -241,6 +238,10 @@ const CheckWordsPage = () => {
       )}
     </FloatingPanel>
   )
+}
+
+const getAlphabeticallyOrderedList = (arr: string[]) => {
+  return arr.slice().sort()
 }
 
 const RemainingWordList = styled.div`

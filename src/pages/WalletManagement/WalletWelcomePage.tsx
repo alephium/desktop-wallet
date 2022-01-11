@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import { FooterActionsContainer, Section } from '../../components/PageComponents
 import Paragraph from '../../components/Paragraph'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
 
-// This is shown when a user create or import a wallet
+// This is shown when a user creates or imports a wallet
 
 const WalletWelcomePage = () => {
   const { width, height } = useWindowSize()

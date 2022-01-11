@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -23,32 +23,33 @@ import styled from 'styled-components'
 
 import { Section } from './PageComponents/PageContainers'
 
-const ExpandableSection: FC<{ sectionTitle: string; open?: boolean; onOpenChange?: (isOpen: boolean) => void }> = ({
-  sectionTitle,
-  open,
-  onOpenChange,
-  children
-}) => {
-  const [expanded, setExpanded] = useState(open)
+interface ExpandableSectionProps {
+  sectionTitle: string
+  open?: boolean
+  onOpenChange?: (isOpen: boolean) => void
+}
+
+const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onOpenChange, children }) => {
+  const [isExpanded, setIsExpanded] = useState(open)
 
   useEffect(() => {
-    setExpanded(open)
+    setIsExpanded(open)
   }, [open])
 
   const handleTitleClick = () => {
-    const newState = !expanded
+    const newState = !isExpanded
     onOpenChange && onOpenChange(newState)
-    setExpanded(newState)
+    setIsExpanded(newState)
   }
 
   return (
     <Container>
       <Title onClick={handleTitleClick}>
-        <Chevron animate={{ rotate: expanded ? 180 : 0 }} />
+        <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{sectionTitle}</TitleText>
         <Divider />
       </Title>
-      <ContentWrapper animate={{ height: expanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
+      <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
         <Content>
           <Section align="stretch">{children}</Section>
         </Content>

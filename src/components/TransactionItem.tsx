@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ import { Input, Output } from 'alephium-js/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import _ from 'lodash'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
 import { deviceBreakPoints } from '../style/globalStyles'
@@ -39,7 +38,7 @@ interface TransactionItemProps {
   amount: string | bigint
 }
 
-const TransactionItem: FC<TransactionItemProps> = ({
+const TransactionItem = ({
   txUrl,
   pending = false, // Transaction that has been sent and waiting to be fetched
   address,
@@ -47,7 +46,7 @@ const TransactionItem: FC<TransactionItemProps> = ({
   inputs,
   outputs,
   timestamp
-}) => {
+}: TransactionItemProps) => {
   const amountIsBigInt = typeof amount === 'bigint'
   const isOut = (amountIsBigInt && amount < 0) || pending
 
@@ -119,19 +118,15 @@ const TransactionItemContainer = styled.div<{ pending: boolean }>`
     `}
 `
 
-const IOList = ({
-  currentAddress,
-  isOut,
-  outputs,
-  inputs,
-  timestamp
-}: {
+interface IOListProps {
   currentAddress: string
   isOut: boolean
   outputs?: Output[]
   inputs?: Input[]
   timestamp: number
-}) => {
+}
+
+const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp }: IOListProps) => {
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
   const genesisTimestamp = 1231006505000
 

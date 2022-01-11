@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, MotionStyle, Variants } from 'framer-motion'
-import React, { FC } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 
 import { deviceBreakPoints } from '../../style/globalStyles'
@@ -62,42 +62,38 @@ export const sectionChildrenVariants: Variants = {
   disabled: { y: 0, opacity: 0.5 }
 }
 
-export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => {
-  return (
-    <StyledFloatingPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
-      {children}
-    </StyledFloatingPanel>
-  )
-}
+export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => (
+  <StyledFloatingPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+    {children}
+  </StyledFloatingPanel>
+)
 
-export const Section: React.FC<SectionProps> = ({
+export const Section: FC<SectionProps> = ({
   children,
   apparitionDelay,
   inList,
   align = 'center',
   style,
   className
-}) => {
-  return (
-    <SectionContainer
-      variants={sectionVariants}
-      initial="hidden"
-      animate="shown"
-      exit="hidden"
-      custom={apparitionDelay}
-      inList={inList}
-      align={align}
-      style={style}
-      className={className}
-    >
-      {children}
-    </SectionContainer>
-  )
-}
+}) => (
+  <SectionContainer
+    variants={sectionVariants}
+    initial="hidden"
+    animate="shown"
+    exit="hidden"
+    custom={apparitionDelay}
+    inList={inList}
+    align={align}
+    style={style}
+    className={className}
+  >
+    {children}
+  </SectionContainer>
+)
 
-export const BoxContainer: FC = ({ children }) => {
-  return <StyledBoxContainer variants={sectionChildrenVariants}>{children}</StyledBoxContainer>
-}
+export const BoxContainer: FC = ({ children }) => (
+  <StyledBoxContainer variants={sectionChildrenVariants}>{children}</StyledBoxContainer>
+)
 
 const StyledFloatingPanel = styled(motion.main)<MainPanelProps>`
   width: 100%;

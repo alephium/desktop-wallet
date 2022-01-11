@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -23,12 +23,8 @@ interface AmountProps {
   className?: string
 }
 
-const Amount = ({ value, className }: AmountProps) => {
-  if (value !== undefined) {
-    return <span className={className}>{abbreviateAmount(value)}א</span>
-  } else {
-    return <span className={className}>- א</span>
-  }
-}
+const Amount = ({ value, className }: AmountProps) => (
+  <span className={className}>{value !== undefined ? abbreviateAmount(value) : '-'} א</span>
+)
 
 export default Amount

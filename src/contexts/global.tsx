@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -88,7 +88,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     return updatedSettings
   }
 
-  const lockWallet = () => setWallet(undefined)
+  const lockWallet = () => {
+    setCurrentUsername('')
+    setWallet(undefined)
+  }
 
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 

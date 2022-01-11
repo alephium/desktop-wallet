@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -28,12 +28,12 @@ import styled from 'styled-components'
 import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
 import { Button } from '../../components/Buttons'
+import FloatingLogo from '../../components/FloatingLogo'
 import { FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
 import { useGlobalContext } from '../../contexts/global'
 import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
-import { ReactComponent as AlephiumLogoSVG } from '../../images/alephium_logo_monochrome.svg'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
@@ -176,7 +176,7 @@ const WalletHomePage = () => {
           <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
           <ActionButton Icon={Lock} label="Lock account" onClick={lockWallet} />
         </WalletActions>
-        <FloatingLogo />
+        <FloatingLogo position="bottom" />
       </WalletSidebar>
       <AnimatePresence>
         {isHeaderCompact && (
@@ -239,10 +239,6 @@ const WalletHomePage = () => {
     </WalletContainer>
   )
 }
-
-// =================
-// ==== STYLING ====
-// =================
 
 const WalletContainer = styled(motion.div)`
   display: flex;
@@ -445,23 +441,6 @@ const NoMoreTransactionMessage = styled.div`
   text-align: center;
   width: 100%;
   margin-top: var(--spacing-3);
-`
-
-const FloatingLogo = styled(AlephiumLogoSVG)`
-  position: absolute;
-  bottom: var(--spacing-5);
-  left: var(--spacing-5);
-  width: 40px;
-  height: 60px;
-
-  path {
-    fill: ${({ theme }) =>
-      theme.name === 'light' ? 'rgba(0, 0, 0, 0.08) !important' : 'rgba(255, 255, 255, 0.03) !important'};
-  }
-
-  @media ${deviceBreakPoints.mobile} {
-    display: none;
-  }
 `
 
 export default WalletHomePage

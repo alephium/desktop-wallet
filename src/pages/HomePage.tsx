@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -82,7 +82,12 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 
 // === Components
 
-const Login = ({ usernames, onLinkClick }: { usernames: string[]; onLinkClick: () => void }) => {
+interface LoginProps {
+  usernames: string[]
+  onLinkClick: () => void
+}
+
+const Login = ({ usernames, onLinkClick }: LoginProps) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const { setWallet, setCurrentUsername, setSnackbarMessage } = useGlobalContext()
   const history = useHistory()
@@ -165,8 +170,6 @@ const InitialActions = ({
     </>
   )
 }
-
-// === Styling
 
 const HomeContainer = styled(motion.div)`
   display: flex;

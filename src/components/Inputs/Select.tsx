@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
-import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from './index'
+import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from './'
 
 interface SelectOption<T> {
   value: T
@@ -146,8 +146,6 @@ function SelectOptionsPopup<T>({
     </Popup>
   )
 }
-
-// === Styling
 
 const InputContainer = styled(motion.div)`
   position: relative;

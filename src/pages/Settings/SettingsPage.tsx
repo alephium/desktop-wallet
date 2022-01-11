@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ const SettingsPage = () => {
 
   return (
     <PanelContentContainer>
-      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab}></TabBar>
+      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {tabs.find((t) => t.value === currentTab.value)?.component}
       <Section>
         <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>

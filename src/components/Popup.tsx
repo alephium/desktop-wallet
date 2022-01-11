@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,34 +19,37 @@ import { motion } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-const Popup: FC<{ onBackgroundClick: () => void; title?: string }> = ({ children, onBackgroundClick, title }) => {
-  return (
-    <PopupContainer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={() => {
-        onBackgroundClick()
-      }}
-    >
-      <PopupContent
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-        initial={{ y: -10 }}
-        animate={{ y: 0 }}
-        exit={{ y: -10 }}
-      >
-        {title && (
-          <PopupHeader>
-            <h2>{title}</h2>
-          </PopupHeader>
-        )}
-        {children}
-      </PopupContent>
-    </PopupContainer>
-  )
+interface PopupProps {
+  onBackgroundClick: () => void
+  title?: string
 }
+
+const Popup: FC<PopupProps> = ({ children, onBackgroundClick, title }) => (
+  <PopupContainer
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    onClick={() => {
+      onBackgroundClick()
+    }}
+  >
+    <PopupContent
+      onClick={(e) => {
+        e.stopPropagation()
+      }}
+      initial={{ y: -10 }}
+      animate={{ y: 0 }}
+      exit={{ y: -10 }}
+    >
+      {title && (
+        <PopupHeader>
+          <h2>{title}</h2>
+        </PopupHeader>
+      )}
+      {children}
+    </PopupContent>
+  </PopupContainer>
+)
 
 const PopupContainer = styled(motion.div)`
   position: fixed;

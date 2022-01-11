@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -23,7 +23,14 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import { inputDefaultStyle, InputErrorMessage, inputPlaceHolderVariants, InputProps } from './index'
+import {
+  inputDefaultStyle,
+  InputErrorMessage,
+  InputLabel,
+  inputPlaceHolderVariants,
+  InputProps,
+  InputValidIconContainer
+} from '.'
 
 const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
@@ -40,9 +47,9 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <Label variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={props.id}>
+      <InputLabel variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={props.id}>
         {placeholder}
-      </Label>
+      </InputLabel>
       <StyledInput
         {...props}
         value={value}
@@ -52,42 +59,20 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
         isValid={isValid}
       />
       {!disabled && isValid && (
-        <ValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+        <InputValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <Check strokeWidth={3} />
-        </ValidIconContainer>
+        </InputValidIconContainer>
       )}
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
     </InputContainer>
   )
 }
 
-// === Styling
-
 const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
   margin: var(--spacing-3) 0;
-`
-
-const Label = styled(motion.label)`
-  position: absolute;
-  top: 16px;
-  left: 13px;
-  font-weight: var(--fontWeight-medium);
-  color: ${({ theme }) => theme.font.secondary};
-  pointer-events: none;
-`
-
-const ValidIconContainer = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: var(--spacing-4);
-  font-weight: var(--fontWeight-medium);
-  display: flex;
-  align-items: center;
-  color: ${({ theme }) => theme.global.valid};
 `
 
 const StyledInput = styled.input<InputProps>`

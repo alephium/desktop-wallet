@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -68,7 +68,6 @@ const InfoBox = ({
   )
 }
 
-// === Styling === //
 const BoxContainer = styled.div<{ small?: boolean }>`
   width: 100%;
   margin: 0 auto var(--spacing-4) auto;

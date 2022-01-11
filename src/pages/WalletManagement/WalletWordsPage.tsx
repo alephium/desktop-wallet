@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,7 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { walletGenerate } from 'alephium-js'
 import { Edit3 } from 'lucide-react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -34,9 +36,16 @@ import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet } = useWalletContext()
+  const { mnemonic, plainWallet, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
+
+  // Init wallet
+  useEffect(() => {
+    const wallet = walletGenerate()
+    setPlainWallet(wallet)
+    setMnemonic(wallet.mnemonic)
+  }, [setMnemonic, setPlainWallet])
 
   const handleAddressClick = () => {
     const address = plainWallet?.address

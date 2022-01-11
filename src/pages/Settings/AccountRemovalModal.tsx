@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -25,15 +25,13 @@ import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 
-const AccountRemovalModal = ({
-  accountName,
-  onAccountRemove,
-  onClose
-}: {
+interface AccountRemovalModalProps {
   accountName: string
   onAccountRemove: () => void
   onClose: () => void
-}) => {
+}
+
+const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountRemovalModalProps) => {
   const theme = useTheme()
 
   return (
@@ -46,7 +44,6 @@ const AccountRemovalModal = ({
           importance="alert"
           text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
         />
-
         <Paragraph secondary centered>
           <b>Not your keys, not your coins.</b>
         </Paragraph>

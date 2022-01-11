@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,33 +20,31 @@ import Tags from '@yaireo/tagify/dist/react.tagify'
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-import { inputDefaultStyle } from './index'
+import { inputDefaultStyle } from '.'
 
-const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => {
-  return (
-    <TextAreaTagsContainer className={props.className}>
-      <StyledTags
-        {...props}
-        settings={{
-          enforceWhitelist: true,
-          delimiters: ' ',
-          maxTags: 24,
-          duplicates: true,
-          dropdown: {
-            enabled: 1, // show suggestion after 1 typed character
-            fuzzySearch: false, // match only suggestions that starts with the typed characters
-            position: 'all',
-            classname: 'tags-dropdown',
-            maxItems: 5,
-            highlightFirst: true
-          },
-          addTagOnBlur: false
-        }}
-      />
-      <div className="tags-dropdown" />
-    </TextAreaTagsContainer>
-  )
-}
+const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => (
+  <TextAreaTagsContainer className={props.className}>
+    <StyledTags
+      {...props}
+      settings={{
+        enforceWhitelist: true,
+        delimiters: ' ',
+        maxTags: 24,
+        duplicates: true,
+        dropdown: {
+          enabled: 1, // show suggestion after 1 typed character
+          fuzzySearch: false, // match only suggestions that starts with the typed characters
+          position: 'all',
+          classname: 'tags-dropdown',
+          maxItems: 5,
+          highlightFirst: true
+        },
+        addTagOnBlur: false
+      }}
+    />
+    <div className="tags-dropdown" />
+  </TextAreaTagsContainer>
+)
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,17 +19,14 @@ import { LucideProps } from 'lucide-react'
 import { useHistory } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
-const ActionButton = ({
-  Icon,
-  label,
-  link,
-  onClick
-}: {
+interface ActionButtonProps {
   Icon: (props: LucideProps) => JSX.Element
   label: string
   link?: string
   onClick?: () => void
-}) => {
+}
+
+const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   const theme = useTheme()
   const history = useHistory()
 

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
+import { getHumanReadableError } from '../../utils/api'
 import { bip39Words } from '../../utils/bip39'
 
 const Storage = getStorage()
@@ -44,7 +45,8 @@ const ImportWordsPage = () => {
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
-  const [customPlaceholder, setCustomPlaceholder] = useState('Type your 24 words')
+  const defaultPlaceholder = 'Type your 24 words'
+  const [customPlaceholder, setCustomPlaceholder] = useState(defaultPlaceholder)
   const tagifyRef = useRef<Tagify<TagData> | undefined>()
 
   const handlePhraseChange = (event: CustomEvent<ChangeEventData<BaseTagData>>) => {
@@ -52,15 +54,9 @@ const ImportWordsPage = () => {
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
     setCustomPlaceholder(
-      newPhrase.length > 0
-        ? newPhrase.length === 24
-          ? ''
-          : `${24 - newPhrase.length} words left`
-        : 'Type your 24 words'
+      newPhrase.length > 0 ? (newPhrase.length === 24 ? '' : `${24 - newPhrase.length} words left`) : defaultPlaceholder
     )
   }
-
-  const isNextButtonActive = phrase.length === 24
 
   useEffect(() => {
     if (tagifyRef.current) {
@@ -84,9 +80,11 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (e) {
-      setSnackbarMessage({ text: (e as Error).toString(), type: 'alert' })
+      setSnackbarMessage({ text: getHumanReadableError(e, 'Error while importing wallet'), type: 'alert' })
     }
   }
+
+  const isNextButtonActive = phrase.length === 24
 
   return (
     <FloatingPanel>

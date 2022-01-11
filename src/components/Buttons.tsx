@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2021 The Alephium Authors
+Copyright 2018 - 2022 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -65,8 +65,6 @@ export const Button = ({ children, disabled, submit, ...props }: ButtonProps) =>
     </StyledButton>
   )
 }
-
-// === Styling
 
 const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
