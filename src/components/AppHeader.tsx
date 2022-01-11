@@ -17,12 +17,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, useTransform, useViewportScroll } from 'framer-motion'
-import { Settings as SettingsIcon } from 'lucide-react'
+import { Eye, EyeOff, Settings as SettingsIcon } from 'lucide-react'
 import { FC } from 'react'
 import styled from 'styled-components'
 
+import { useGlobalContext } from '../contexts/global'
 import { deviceBreakPoints } from '../style/globalStyles'
 import Button from './Button'
+import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
@@ -30,6 +32,12 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
   const { scrollY } = useViewportScroll()
 
   const headerBGColor = useTransform(scrollY, [0, 100], ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'])
+  const {
+    settings: {
+      general: { discreetMode }
+    },
+    updateSettings
+  } = useGlobalContext()
 
   return (
     <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
@@ -37,13 +45,24 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
         <>
           <ThemeSwitcher />
           <HeaderDivider />
-          <NetworkBadge />
-          <HeaderDivider />
-          {children}
+          <CompactToggle
+            toggled={discreetMode}
+            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
+            IconOn={EyeOff}
+            IconOff={Eye}
+          />
           <HeaderDivider />
           <Button transparent squared onClick={onSettingsClick} aria-label="Settings">
             <SettingsIcon />
           </Button>
+          <HeaderDivider />
+          {children && (
+            <>
+              {children}
+              <HeaderDivider />
+            </>
+          )}
+          <NetworkBadge />
         </>
       )}
     </HeaderContainer>
