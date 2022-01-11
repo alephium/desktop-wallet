@@ -29,9 +29,6 @@ interface ThemeSwitcherProps {
   className?: string
 }
 
-const toggleWidth = 80
-const toggleHeight = toggleWidth / 2
-
 const toggleVariants = {
   light: { left: 0, backgroundColor: 'var(--color-orange)' },
   dark: { left: '50%', backgroundColor: 'var(--color-purple)' }
@@ -60,10 +57,10 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => 
     >
       <ToggleContent>
         <ToggleIcon>
-          <Sun onClick={() => switchTheme('light')} color={getButtonColor(currentTheme, 'light')} size={18} />
+          <Sun color={getButtonColor(currentTheme, 'light')} size={18} />
         </ToggleIcon>
         <ToggleIcon>
-          <Moon onClick={() => switchTheme('dark')} color={getButtonColor(currentTheme, 'dark')} size={18} />
+          <Moon color={getButtonColor(currentTheme, 'dark')} size={18} />
         </ToggleIcon>
       </ToggleContent>
       <ToggleFloatingIndicator
@@ -78,6 +75,9 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => 
 const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
   return theme === buttonTheme ? (theme === 'dark' ? 'var(--color-orange)' : 'var(--color-white)') : 'var(--color-grey)'
 }
+
+const toggleWidth = 80
+const toggleHeight = toggleWidth / 2
 
 export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
   position: relative;
