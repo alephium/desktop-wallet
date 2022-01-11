@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import { Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'

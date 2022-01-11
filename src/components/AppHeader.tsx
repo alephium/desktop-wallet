@@ -21,8 +21,8 @@ import { Settings as SettingsIcon } from 'lucide-react'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { Button } from '../components/Buttons'
 import { deviceBreakPoints } from '../style/globalStyles'
+import Button from './Button'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 

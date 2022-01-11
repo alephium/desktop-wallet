@@ -20,7 +20,7 @@ import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { getStorage, walletImport } from 'alephium-js'
 import { useEffect, useRef, useState } from 'react'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import TextAreaTags from '../../components/Inputs/TextAreaTags'
 import {
   FloatingPanel,

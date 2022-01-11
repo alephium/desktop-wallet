@@ -24,7 +24,7 @@ import { useRef, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import {
   FloatingPanel,

@@ -24,7 +24,7 @@ import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
 import AppHeader from '../components/AppHeader'
-import { Button } from '../components/Buttons'
+import Button from '../components/Button'
 import SideBar from '../components/HomePage/SideBar'
 import Input from '../components/Inputs/Input'
 import Select from '../components/Inputs/Select'

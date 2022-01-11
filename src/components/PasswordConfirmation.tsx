@@ -20,7 +20,7 @@ import { getStorage, walletOpen } from 'alephium-js'
 import { ChangeEvent, useState } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
-import { Button } from './Buttons'
+import Button from './Button'
 import Input from './Inputs/Input'
 import { Section } from './PageComponents/PageContainers'
 import Paragraph from './Paragraph'

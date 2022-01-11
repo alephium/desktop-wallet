@@ -21,7 +21,7 @@ import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'

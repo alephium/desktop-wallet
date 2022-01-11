@@ -21,7 +21,7 @@ import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
