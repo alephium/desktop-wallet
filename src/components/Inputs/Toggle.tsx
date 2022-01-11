@@ -25,7 +25,7 @@ interface ToggleProps {
   className?: string
 }
 
-const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, className }) => {
+const Toggle = ({ toggled, onToggle, className }: ToggleProps) => {
   const theme = useTheme()
 
   const toggleBackgroundVariants = {
