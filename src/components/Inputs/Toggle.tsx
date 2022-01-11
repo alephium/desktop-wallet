@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { useRef } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 interface ToggleProps {
@@ -29,15 +28,15 @@ interface ToggleProps {
 const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, className }) => {
   const theme = useTheme()
 
-  const toggleBackgroundVariants = useRef({
+  const toggleBackgroundVariants = {
     off: { backgroundColor: theme.bg.secondary },
     on: { backgroundColor: theme.global.accent }
-  })
+  }
 
-  const floatingIndicatorVariant = useRef({
+  const floatingIndicatorVariant = {
     off: { left: 0 },
     on: { left: '50%' }
-  })
+  }
 
   const toggleState = toggled ? 'on' : 'off'
 
@@ -48,15 +47,11 @@ const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, className }) => {
       onClick={() => onToggle(!toggled)}
       className={className}
       toggled={toggled}
-      variants={toggleBackgroundVariants.current}
+      variants={toggleBackgroundVariants}
       animate={toggleState}
       transition={transition}
     >
-      <ToggleFloatingIndicator
-        variants={floatingIndicatorVariant.current}
-        animate={toggleState}
-        transition={transition}
-      />
+      <ToggleFloatingIndicator variants={floatingIndicatorVariant} animate={toggleState} transition={transition} />
     </StyledToggle>
   )
 }
@@ -70,6 +65,7 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.tertiary)};
   overflow: hidden;
   cursor: pointer;
+  box-sizing: content-box;
 
   svg {
     cursor: pointer;

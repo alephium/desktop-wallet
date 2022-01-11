@@ -38,7 +38,7 @@ import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
-import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
+import { calAmountDelta } from '../../utils/numbers'
 import { loadStoredSettings } from '../../utils/settings'
 
 dayjs.extend(relativeTime)

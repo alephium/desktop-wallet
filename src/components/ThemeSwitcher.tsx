@@ -78,6 +78,7 @@ export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
   background-color: ${({ theme }) => theme.bg.secondary};
   overflow: hidden;
   cursor: pointer;
+  box-sizing: content-box;
 
   svg {
     cursor: pointer;
