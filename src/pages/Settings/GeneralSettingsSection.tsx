@@ -51,17 +51,13 @@ const GeneralSettingsSection = () => {
       <KeyValueInput
         label="Theme"
         description="Select the theme and please your eyes."
-        InputComponent={<ThemeSwitcher small />}
+        InputComponent={<ThemeSwitcher />}
       />
       <KeyValueInput
-        label="Theme"
+        label="Discreet mode"
         description="Toggle discreet mode (hide amounts)."
         InputComponent={
-          <Toggle
-            small
-            toggled={discreetMode}
-            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-          />
+          <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
         }
       />
     </>

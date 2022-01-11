@@ -35,7 +35,7 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
     <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
       {(children || onSettingsClick) && (
         <>
-          <ThemeSwitcher small />
+          <ThemeSwitcher />
           <HeaderDivider />
           <NetworkBadge />
           <HeaderDivider />

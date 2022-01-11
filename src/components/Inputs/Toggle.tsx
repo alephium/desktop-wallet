@@ -16,18 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
+import { motion, Transition } from 'framer-motion'
 import { useRef } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 interface ToggleProps {
   toggled: boolean
   onToggle: (value: boolean) => void
-  small?: boolean
   className?: string
 }
 
-const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, small = false, className }) => {
+const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, className }) => {
   const theme = useTheme()
 
   const toggleBackgroundVariants = useRef({
@@ -42,39 +41,35 @@ const Toggle: React.FC<ToggleProps> = ({ toggled, onToggle, small = false, class
 
   const toggleState = toggled ? 'on' : 'off'
 
-  const animation = { duration: 0.5, type: 'spring' }
+  const transition: Transition = { duration: 0.2, type: 'tween' }
 
   return (
     <StyledToggle
       onClick={() => onToggle(!toggled)}
       className={className}
-      small={small}
       toggled={toggled}
       variants={toggleBackgroundVariants.current}
       animate={toggleState}
-      transition={animation}
+      transition={transition}
     >
       <ToggleFloatingIndicator
         variants={floatingIndicatorVariant.current}
         animate={toggleState}
-        transition={animation}
+        transition={transition}
       />
     </StyledToggle>
   )
 }
 
-const toggleWidth = 80
-const toggleHeight = toggleWidth / 2
-
 export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   position: relative;
-  width: ${({ small }) => (small ? toggleWidth / 1.5 : toggleWidth)}px;
-  height: ${({ small }) => (small ? toggleHeight / 1.5 : toggleHeight)}px;
+  width: calc(var(--toggleHeight) * 2);
+  height: var(--toggleHeight);
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: 60px;
-  background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.contrast)};
+  background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.tertiary)};
+  overflow: hidden;
   cursor: pointer;
-  box-sizing: content-box;
 
   svg {
     cursor: pointer;
@@ -85,9 +80,10 @@ const ToggleFloatingIndicator = styled(motion.div)`
   position: absolute;
   width: 50%;
   height: 100%;
-  background-color: ${({ theme }) => theme.font.primary};
+  background-color: var(--color-white);
   border-radius: 60px;
   z-index: 0;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
 `
 
 export default Toggle

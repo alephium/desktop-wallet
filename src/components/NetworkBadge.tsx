@@ -27,7 +27,11 @@ const NetworkBadge = () => {
 }
 
 const BadgeContainer = styled.div`
-  padding: var(--spacing-1) var(--spacing-2);
+  display: flex;
+  padding: 0 var(--spacing-2);
+  height: var(--badgeHeight);
+  justify-content: center;
+  align-items: center;
   color: ${({ theme }) => theme.font.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
