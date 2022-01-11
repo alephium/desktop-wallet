@@ -33,6 +33,7 @@ const BadgeContainer = styled.div`
   justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.font.secondary};
+  background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
   font-weight: var(--fontWeight-semiBold);

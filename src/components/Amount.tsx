@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useGlobalContext } from '../contexts/global'
 import { abbreviateAmount } from '../utils/numbers'
 
 interface AmountProps {
@@ -23,8 +24,16 @@ interface AmountProps {
   className?: string
 }
 
-const Amount = ({ value, className }: AmountProps) => (
-  <span className={className}>{value !== undefined ? abbreviateAmount(value) : '-'} א</span>
-)
+const Amount = ({ value, className }: AmountProps) => {
+  const {
+    settings: {
+      general: { discreetMode }
+    }
+  } = useGlobalContext()
+
+  return (
+    <span className={className}>{discreetMode ? '•••' : value !== undefined ? abbreviateAmount(value) : '-'} א</span>
+  )
+}
 
 export default Amount

@@ -26,6 +26,7 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
+import Amount from '../../components/Amount'
 import AppHeader from '../../components/AppHeader'
 import { Button } from '../../components/Buttons'
 import FloatingLogo from '../../components/FloatingLogo'
@@ -167,7 +168,7 @@ const WalletHomePage = () => {
         <WalletAmountContainer>
           <WalletAmountHighlightOverlay />
           <WalletAmountContent>
-            <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
+            <WalletAmount value={balance} />
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
             {lockedBalance > 0 && (
               <LockedBalance>
@@ -190,7 +191,7 @@ const WalletHomePage = () => {
           <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <CompactWalletAmountBox>
               <WalletAmountContainer>
-                <WalletAmount style={{ scale: 0.7 }}>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
+                <WalletAmount style={{ scale: 0.7 }} value={balance} />
               </WalletAmountContainer>
             </CompactWalletAmountBox>
           </CompactWalletAmountBoxContainer>
@@ -326,10 +327,6 @@ const WalletAmountContainer = styled.div`
   background-color: ${({ theme }) => theme.bg.contrast};
   overflow: hidden;
 
-  @media ${deviceBreakPoints.mobile} {
-    flex: 1.5;
-  }
-
   &:hover {
     ${WalletAmountHighlightOverlay} {
       opacity: 0.9;
@@ -344,6 +341,7 @@ const CompactWalletAmountBox = styled(motion.div)`
   padding: 0 var(--spacing-5);
   display: flex;
   align-items: center;
+  justify-content: center;
   border-radius: var(--radius);
   box-shadow: 0 10px 10px var(--color-shadow-10);
 
@@ -357,7 +355,7 @@ const CompactWalletAmountBox = styled(motion.div)`
   }
 `
 
-const WalletAmount = styled(motion.div)`
+const WalletAmount = styled(motion(Amount))`
   font-size: 2.5rem;
   color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
