@@ -32,7 +32,9 @@ const Amount = ({ value, className }: AmountProps) => {
   } = useGlobalContext()
 
   return (
-    <span className={className}>{discreetMode ? '•••' : value !== undefined ? abbreviateAmount(value) : '-'} א</span>
+    <span className={className}>{`${
+      discreetMode ? '•••' : value !== undefined ? abbreviateAmount(value) : '-'
+    } ℵ`}</span>
   )
 }
 
