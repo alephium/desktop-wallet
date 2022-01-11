@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
+import { calAmountDelta } from 'alephium-js/dist/lib/numbers'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
@@ -38,7 +39,6 @@ import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
-import { calAmountDelta } from '../../utils/numbers'
 import { loadStoredSettings } from '../../utils/settings'
 
 dayjs.extend(relativeTime)

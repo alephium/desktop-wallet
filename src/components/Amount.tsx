@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { abbreviateAmount } from 'alephium-js/dist/lib/numbers'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
-import { abbreviateAmount } from '../utils/numbers'
 
 interface AmountProps {
   value: bigint | undefined
