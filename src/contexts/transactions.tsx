@@ -22,11 +22,14 @@ import { createContext, FC, useContext, useEffect, useState } from 'react'
 import { NetworkType } from '../utils/settings'
 import { useGlobalContext } from './global'
 
+export type TransactionType = 'transfer' | 'consolidation'
+
 export interface SimpleTx {
   txId: string
   toAddress: string
   amount: string
   timestamp: number
+  type?: TransactionType
 }
 
 interface TransactionsContextType {

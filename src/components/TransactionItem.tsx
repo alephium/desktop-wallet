@@ -21,6 +21,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import _ from 'lodash'
 import styled, { css } from 'styled-components'
 
+import { TransactionType } from '../contexts/transactions'
 import { deviceBreakPoints } from '../style/globalStyles'
 import { openInWebBrowser } from '../utils/misc'
 import Address from './Address'
@@ -36,6 +37,7 @@ interface TransactionItemProps {
   outputs?: Output[]
   timestamp: number
   amount: string | bigint
+  type?: TransactionType
 }
 
 const TransactionItem = ({
@@ -45,7 +47,8 @@ const TransactionItem = ({
   amount,
   inputs,
   outputs,
-  timestamp
+  timestamp,
+  type
 }: TransactionItemProps) => {
   const amountIsBigInt = typeof amount === 'bigint'
   const isOut = (amountIsBigInt && amount < 0) || pending
@@ -61,6 +64,7 @@ const TransactionItem = ({
             <IOList currentAddress={address} isOut={isOut} outputs={outputs} inputs={inputs} timestamp={timestamp} />
           )}
         </AddressListContainer>
+        {pending && type === 'consolidation' && <TXSpecialTypeLabel>Pending UTXO Consolidation TX</TXSpecialTypeLabel>}
         <TxTimestamp>{dayjs(timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
       <TxAmountContainer>

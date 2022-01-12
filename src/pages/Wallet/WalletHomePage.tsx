@@ -150,6 +150,7 @@ const WalletHomePage = () => {
   const pendingTxs = networkPendingTxLists[currentNetwork] || []
   const showSpinner = isLoading || pendingTxs.length > 0
   const transactionsHaveLoaded = loadedTxList && loadedTxList.length > 0
+  const thereArePendingConsilidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -181,7 +182,21 @@ const WalletHomePage = () => {
         <WalletActions>
           <ActionsTitle>Quick actions</ActionsTitle>
           <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
-          <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
+          {!thereArePendingConsilidationTxs ? (
+            <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
+          ) : (
+            <ActionButton
+              Icon={Send}
+              label="Send token"
+              onClick={() =>
+                setSnackbarMessage({
+                  text: 'Please wait until your pending consolidation transactions are confirmed',
+                  type: 'alert'
+                })
+              }
+            />
+          )}
+
           <ActionButton Icon={Lock} label="Lock account" onClick={lockWallet} />
         </WalletActions>
         <FloatingLogo position="bottom" />
@@ -216,6 +231,7 @@ const WalletHomePage = () => {
                     address={t.toAddress}
                     timestamp={t.timestamp}
                     amount={t.amount}
+                    type={t.type}
                   />
                 )
               })}

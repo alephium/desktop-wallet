@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Send } from 'lucide-react'
+import { Codesandbox, Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled, { useTheme } from 'styled-components'
@@ -25,6 +25,7 @@ import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
+import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
@@ -32,7 +33,7 @@ import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
-import { getHumanReadableError } from '../../utils/api'
+import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { abbreviateAmount, convertScientificToFloatString, convertToQALPH } from '../../utils/numbers'
 
@@ -53,6 +54,8 @@ const SendPage = () => {
   })
   const [isSending, setIsSending] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
+  const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
+  const [isConsolidating, setIsConsolidating] = useState(false)
 
   useEffect(() => {
     if (step === 1) {
@@ -97,30 +100,81 @@ const SendPage = () => {
         )
 
         const { txId, unsignedTx } = txCreateResp.data
+        const txSendResp = await signAndSendTransaction(txId, unsignedTx, address, wallet.privateKey)
 
-        const signature = client.clique.transactionSign(txId, wallet.privateKey)
-
-        const txSendResp = await client.clique.transactionSend(wallet.address, unsignedTx, signature)
-
-        addPendingTx({
-          txId: txSendResp.data.txId,
-          toAddress: address,
-          timestamp: new Date().getTime(),
-          amount: fullAmount
-        })
+        if (txSendResp) {
+          addPendingTx({
+            txId: txSendResp.data.txId,
+            toAddress: address,
+            timestamp: new Date().getTime(),
+            amount: fullAmount,
+            type: 'transfer'
+          })
+        }
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
         history.push('/wallet')
       } catch (e) {
-        setSnackbarMessage({
-          text: getHumanReadableError(e, 'Error while sending the transaction'),
-          type: 'alert',
-          duration: 5000
-        })
+        // TODO: When API error codes are available, replace this substring check with a proper error code check
+        if (isHTTPError(e) && e.error?.detail && e.error.detail.includes('consolidating')) {
+          setIsConsolidateUTXOsModalVisible(true)
+        } else {
+          setSnackbarMessage({
+            text: getHumanReadableError(e, 'Error while sending the transaction'),
+            type: 'alert',
+            duration: 5000
+          })
+        }
       }
 
       setIsSending(false)
     }
+  }
+
+  const consolidateUTXOs = async () => {
+    if (client && wallet) {
+      setIsConsolidating(true)
+      try {
+        const txCreateResp = await client.clique.transactionConsolidateUTXOs(
+          wallet.publicKey,
+          wallet.address,
+          wallet.address
+        )
+        for (const { txId, unsignedTx } of txCreateResp.data.unsignedTxs) {
+          const txSendResp = await signAndSendTransaction(txId, unsignedTx, wallet.address, wallet.privateKey)
+          if (txSendResp) {
+            addPendingTx({
+              txId: txSendResp.data.txId,
+              toAddress: wallet.address,
+              timestamp: new Date().getTime(),
+              amount: '',
+              type: 'consolidation'
+            })
+          }
+        }
+
+        setSnackbarMessage({
+          text: 'Consolidation process in progress. You can try to send your transaction again once the pending consolidation transactions have been confirmed.',
+          type: 'info',
+          duration: 15000
+        })
+        setIsConsolidateUTXOsModalVisible(false)
+        initialOnModalClose.current()
+      } catch (e) {
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while consolidating UTXOs'),
+          type: 'alert',
+          duration: 5000
+        })
+      }
+      setIsConsolidating(false)
+    }
+  }
+
+  const signAndSendTransaction = async (txId: string, unsignedTx: string, toAddress: string, privateKey: string) => {
+    if (!client) return
+    const signature = client.clique.transactionSign(txId, privateKey)
+    return await client.clique.transactionSend(toAddress, unsignedTx, signature)
   }
 
   return (
@@ -137,6 +191,13 @@ const SendPage = () => {
           text="Enter your password to send the transaction."
           buttonText="Send"
           onCorrectPasswordEntered={handleSend}
+        />
+      )}
+      {isConsolidateUTXOsModalVisible && (
+        <ConsolidateUTXOsModal
+          onClose={() => setIsConsolidateUTXOsModalVisible(false)}
+          onConsolidateClick={consolidateUTXOs}
+          isConsolidating={isConsolidating}
         />
       )}
     </>
@@ -287,6 +348,40 @@ const CheckTransactionContent = ({ data, onSend }: CheckTransactionContentProps)
         </Button>
       </Section>
     </>
+  )
+}
+
+interface ConsolidateUTXOsModalProps {
+  onConsolidateClick: () => void
+  onClose: () => void
+  isConsolidating: boolean
+}
+
+const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, isConsolidating }: ConsolidateUTXOsModalProps) => {
+  const theme = useTheme()
+
+  return (
+    <Modal title="Consolidate UTXOs" onClose={onClose}>
+      <HeaderContent>
+        <HeaderLogo>
+          {isConsolidating ? (
+            <Spinner size="30%" />
+          ) : (
+            <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
+          )}
+        </HeaderLogo>
+        <Section>
+          <InfoBox
+            importance="accent"
+            text="It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate
+            (merge) your UTXOs first. This will cost a small fee."
+          />
+          <Button onClick={onConsolidateClick} submit>
+            Consolidate
+          </Button>
+        </Section>
+      </HeaderContent>
+    </Modal>
   )
 }
 
