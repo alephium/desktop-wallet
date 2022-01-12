@@ -23,6 +23,7 @@ import styled, { useTheme } from 'styled-components'
 
 import { ModalContextProvider, useModalContext } from '../contexts/modal'
 import Button from './Button'
+import { Section } from './PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalProps {
@@ -80,6 +81,19 @@ const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => 
     </ModalContainer>
   )
 }
+
+export const HeaderContent = styled(Section)`
+  flex: 0;
+  margin-bottom: var(--spacing-4);
+`
+
+export const HeaderLogo = styled.div`
+  height: 10vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
 
 const ModalContainer = styled(motion.div)`
   position: fixed;

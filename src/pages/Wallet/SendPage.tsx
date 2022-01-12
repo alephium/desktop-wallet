@@ -16,16 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Codesandbox, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
-import styled, { useTheme } from 'styled-components'
+import { useTheme } from 'styled-components'
 
 import Button from '../../components/Button'
+import ConsolidateUTXOsModal from '../../components/ConsolidateUTXOsModal'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import Modal from '../../components/Modal'
+import { HeaderContent, HeaderLogo } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
@@ -351,40 +352,6 @@ const CheckTransactionContent = ({ data, onSend }: CheckTransactionContentProps)
   )
 }
 
-interface ConsolidateUTXOsModalProps {
-  onConsolidateClick: () => void
-  onClose: () => void
-  isConsolidating: boolean
-}
-
-const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, isConsolidating }: ConsolidateUTXOsModalProps) => {
-  const theme = useTheme()
-
-  return (
-    <Modal title="Consolidate UTXOs" onClose={onClose}>
-      <HeaderContent>
-        <HeaderLogo>
-          {isConsolidating ? (
-            <Spinner size="30%" />
-          ) : (
-            <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
-          )}
-        </HeaderLogo>
-        <Section>
-          <InfoBox
-            importance="accent"
-            text="It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate
-            (merge) your UTXOs first. This will cost a small fee."
-          />
-          <Button onClick={onConsolidateClick} submit>
-            Consolidate
-          </Button>
-        </Section>
-      </HeaderContent>
-    </Modal>
-  )
-}
-
 const onAmountInputValueChange = ({
   amount,
   minAmount,
@@ -429,18 +396,5 @@ const onAmountInputValueChange = ({
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
   return abbreviateAmount(BigInt(gasAmount) * convertToQALPH(gasPriceInALPH), false, 7)
 }
-
-const HeaderContent = styled(Section)`
-  flex: 0;
-  margin-bottom: var(--spacing-4);
-`
-
-const HeaderLogo = styled.div`
-  height: 10vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`
 
 export default SendPage

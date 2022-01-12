@@ -150,7 +150,7 @@ const WalletHomePage = () => {
   const pendingTxs = networkPendingTxLists[currentNetwork] || []
   const showSpinner = isLoading || pendingTxs.length > 0
   const transactionsHaveLoaded = loadedTxList && loadedTxList.length > 0
-  const thereArePendingConsilidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
+  const somePendingConsolidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -182,7 +182,7 @@ const WalletHomePage = () => {
         <WalletActions>
           <ActionsTitle>Quick actions</ActionsTitle>
           <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
-          {!thereArePendingConsilidationTxs ? (
+          {!somePendingConsolidationTxs ? (
             <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
           ) : (
             <ActionButton
