@@ -2,6 +2,7 @@
   "initialFetch": {
     "details": {
       "balance": "299000000000000000000",
+      "lockedBalance": "0",
       "txNumber": 2
     },
     "transactions": [
@@ -84,6 +85,7 @@
   "refresh": {
     "details": {
       "balance": "300000000000000000000",
+      "lockedBalance": "0",
       "txNumber": 3
     },
     "transactions": [
