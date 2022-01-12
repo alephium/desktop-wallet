@@ -85,7 +85,7 @@ const WalletHomePage = () => {
           if (!addressDetailsResp.data) return
 
           setBalance(BigInt(addressDetailsResp.data.balance))
-          setLockedBalance(BigInt(addressDetailsResp.data.lockedBalance))
+          if (addressDetailsResp.data.lockedBalance) setLockedBalance(BigInt(addressDetailsResp.data.lockedBalance))
           setTotalNumberOfTx(addressDetailsResp.data.txNumber)
           setLoadedTxList(addressTransactionsResp.data)
           setIsLoading(false)
