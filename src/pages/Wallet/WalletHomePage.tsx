@@ -190,8 +190,8 @@ const WalletHomePage = () => {
         {isHeaderCompact && (
           <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <CompactWalletAmountBox>
-              <WalletAmountContainer>
-                <WalletAmount style={{ scale: 0.7 }} value={balance} />
+              <WalletAmountContainer style={{ scale: 0.7 }}>
+                <WalletAmount value={balance} />
               </WalletAmountContainer>
             </CompactWalletAmountBox>
           </CompactWalletAmountBoxContainer>
@@ -335,7 +335,7 @@ const WalletAmountContainer = styled.div`
 `
 
 const CompactWalletAmountBox = styled(motion.div)`
-  background-color: ${({ theme }) => theme.font.primary};
+  background: ${({ theme }) => theme.global.highlightGradient};
   width: 100%;
   height: 60px;
   padding: 0 var(--spacing-5);
@@ -355,7 +355,7 @@ const CompactWalletAmountBox = styled(motion.div)`
   }
 `
 
-const WalletAmount = styled(motion(Amount))`
+const WalletAmount = styled(Amount)`
   font-size: 2.5rem;
   color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;
