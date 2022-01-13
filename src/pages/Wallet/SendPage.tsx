@@ -43,7 +43,14 @@ type StepIndex = 1 | 2 | 3
 const SendPage = () => {
   const history = useHistory()
   const theme = useTheme()
-  const { client, wallet, setSnackbarMessage } = useGlobalContext()
+  const {
+    client,
+    wallet,
+    setSnackbarMessage,
+    settings: {
+      general: { passwordRequirement }
+    }
+  } = useGlobalContext()
   const { addPendingTx } = useTransactionsContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
   const initialOnModalClose = useRef(onModalClose)
@@ -188,6 +195,7 @@ const SendPage = () => {
           type: 'info',
           duration: 15000
         })
+        setIsConsolidateUTXOsModalVisible(false)
         initialOnModalClose.current()
       } catch (e) {
         setSnackbarMessage({
@@ -214,8 +222,13 @@ const SendPage = () => {
         </HeaderLogo>
       </HeaderContent>
       {step === 1 && <TransactionForm data={transactionData} onSubmit={buildTransaction} />}
-      {step === 2 && <CheckTransactionContent data={transactionData} onSend={confirmPassword} />}
-      {step === 3 && (
+      {step === 2 && (
+        <CheckTransactionContent
+          data={transactionData}
+          onSend={passwordRequirement ? confirmPassword : consolidationRequired ? consolidateUTXOs : handleSend}
+        />
+      )}
+      {step === 3 && passwordRequirement && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
           buttonText="Send"
@@ -225,7 +238,7 @@ const SendPage = () => {
       {isConsolidateUTXOsModalVisible && (
         <ConsolidateUTXOsModal
           onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-          onConsolidateClick={confirmPassword}
+          onConsolidateClick={passwordRequirement ? confirmPassword : consolidateUTXOs}
           isConsolidating={isConsolidating}
         />
       )}
