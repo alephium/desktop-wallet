@@ -70,7 +70,7 @@ const SendPage = () => {
       setOnModalClose(() => () => setStep(1))
     } else if (step === 3) {
       setModalTitle('Password Check')
-      setOnModalClose(() => () => setStep(2))
+      setOnModalClose(() => () => setStep(1))
     }
   }, [setStep, setModalTitle, setOnModalClose, step])
 
