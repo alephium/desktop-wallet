@@ -64,7 +64,7 @@ const TransactionItem = ({
             <IOList currentAddress={address} isOut={isOut} outputs={outputs} inputs={inputs} timestamp={timestamp} />
           )}
         </AddressListContainer>
-        {pending && type === 'transfer' && <TXSpecialTypeLabel>Pending UTXO Consolidation TX</TXSpecialTypeLabel>}
+        {pending && type === 'consolidation' && <TXSpecialTypeLabel>Pending UTXO Consolidation TX</TXSpecialTypeLabel>}
         <TxTimestamp>{dayjs(timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
       <TxAmountContainer>
