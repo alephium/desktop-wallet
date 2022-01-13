@@ -25,6 +25,7 @@ export interface Settings {
     theme: ThemeType
     walletLockTimeInMinutes: number | null
     discreetMode: boolean
+    passwordRequirement: boolean
   }
   network: {
     nodeHost: string
@@ -59,7 +60,12 @@ export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['
 }
 
 export const defaultSettings: Settings = {
-  general: { theme: 'light', walletLockTimeInMinutes: 3, discreetMode: false },
+  general: {
+    theme: 'light',
+    walletLockTimeInMinutes: 3,
+    discreetMode: false,
+    passwordRequirement: false
+  },
   network: clone(networkEndpoints.mainnet)
 }
 

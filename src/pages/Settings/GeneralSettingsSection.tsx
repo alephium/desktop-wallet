@@ -25,7 +25,7 @@ import { useGlobalContext } from '../../contexts/global'
 const GeneralSettingsSection = () => {
   const {
     settings: {
-      general: { walletLockTimeInMinutes, discreetMode }
+      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement }
     },
     updateSettings
   } = useGlobalContext()
@@ -58,6 +58,16 @@ const GeneralSettingsSection = () => {
         description="Toggle discreet mode (hide amounts)."
         InputComponent={
           <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
+        }
+      />
+      <KeyValueInput
+        label="Password requirement"
+        description="Require password confirmation before sending each transaction."
+        InputComponent={
+          <Toggle
+            toggled={passwordRequirement}
+            onToggle={() => updateSettings('general', { passwordRequirement: !passwordRequirement })}
+          />
         }
       />
     </>
