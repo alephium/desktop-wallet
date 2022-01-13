@@ -74,17 +74,14 @@ const SendPage = () => {
     }
   }, [setStep, setModalTitle, setOnModalClose, step])
 
-  const verifyTransactionContent = (transactionData: TransactionData) => {
-    setTransactionData(transactionData)
-    setStep(2)
-  }
-
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
     setStep(3)
   }
 
-  const buildTransaction = async () => {
+  const buildTransaction = async (transactionData: TransactionData) => {
+    setTransactionData(transactionData)
+
     const { address, amount, gasAmount, gasPrice } = transactionData
     const isDataComplete = address && amount && gasPrice && gasAmount
 
@@ -105,7 +102,7 @@ const SendPage = () => {
         )
         setBuiltTxId(txCreateResp.data.txId)
         setBuiltUnsignedTx(txCreateResp.data.unsignedTx)
-        setStep(3)
+        setStep(2)
       } catch (e) {
         // TODO: When API error codes are available, replace this substring check with a proper error code check
         if (isHTTPError(e) && e.error?.detail && e.error.detail.includes('consolidating')) {
@@ -216,8 +213,8 @@ const SendPage = () => {
           {isLoading ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </HeaderLogo>
       </HeaderContent>
-      {step === 1 && <TransactionForm data={transactionData} onSubmit={verifyTransactionContent} />}
-      {step === 2 && <CheckTransactionContent data={transactionData} onSend={buildTransaction} />}
+      {step === 1 && <TransactionForm data={transactionData} onSubmit={buildTransaction} />}
+      {step === 2 && <CheckTransactionContent data={transactionData} onSend={confirmPassword} />}
       {step === 3 && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
