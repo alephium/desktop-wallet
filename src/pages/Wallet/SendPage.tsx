@@ -57,8 +57,8 @@ const SendPage = () => {
   const [transactionData, setTransactionData] = useState<TransactionData>({
     address: '',
     amount: '',
-    gasAmount: undefined,
-    gasPrice: undefined
+    gasAmount: '',
+    gasPrice: ''
   })
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -249,8 +249,8 @@ const SendPage = () => {
 interface TransactionData {
   address: string
   amount: string
-  gasAmount: string | undefined
-  gasPrice: string | undefined
+  gasAmount: string
+  gasPrice: string
 }
 
 interface TransactionFormProps {
