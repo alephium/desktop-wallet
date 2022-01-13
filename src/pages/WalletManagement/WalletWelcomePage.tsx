@@ -21,7 +21,7 @@ import Confetti from 'react-confetti'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { useTimeout, useWindowSize } from '../../utils/hooks'

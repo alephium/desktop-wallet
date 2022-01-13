@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import {
   FloatingPanel,
   FooterActionsContainer,

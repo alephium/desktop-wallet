@@ -16,27 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import { LucideProps } from 'lucide-react'
 
-import { useGlobalContext } from '../contexts/global'
+import Button from '../Button'
 
-const NetworkBadge = () => {
-  const { currentNetwork } = useGlobalContext()
-
-  return <BadgeContainer>{currentNetwork}</BadgeContainer>
+interface CompactToggleProps {
+  toggled: boolean
+  onToggle: (value: boolean) => void
+  IconOn: (props: LucideProps) => JSX.Element
+  IconOff: (props: LucideProps) => JSX.Element
 }
 
-const BadgeContainer = styled.div`
-  display: flex;
-  padding: 0 var(--spacing-2);
-  height: var(--badgeHeight);
-  justify-content: center;
-  align-items: center;
-  color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: calc(var(--badgeHeight) * 2);
-  font-weight: var(--fontWeight-semiBold);
-`
+const CompactToggle = ({ toggled, onToggle, IconOn, IconOff }: CompactToggleProps) => (
+  <Button squared transparent onClick={() => onToggle(!toggled)}>
+    {toggled ? <IconOn /> : <IconOff />}
+  </Button>
+)
 
-export default NetworkBadge
+export default CompactToggle

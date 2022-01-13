@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
+import { motion, Transition } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
 import { FC, useCallback } from 'react'
 import styled from 'styled-components'
@@ -25,19 +25,15 @@ import { useGlobalContext } from '../contexts/global'
 import { ThemeType } from '../style/themes'
 
 interface ThemeSwitcherProps {
-  small?: boolean
   className?: string
 }
-
-const toggleWidth = 80
-const toggleHeight = toggleWidth / 2
 
 const toggleVariants = {
   light: { left: 0, backgroundColor: 'var(--color-orange)' },
   dark: { left: '50%', backgroundColor: 'var(--color-purple)' }
 }
 
-const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => {
+const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const {
     settings: {
       general: { theme: currentTheme }
@@ -52,25 +48,19 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ small = false, className }) => 
     [updateSettings]
   )
 
+  const transition: Transition = { duration: 0.2, type: 'tween' }
+
   return (
-    <StyledThemeSwitcher
-      onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')}
-      className={className}
-      small={small}
-    >
+    <StyledThemeSwitcher onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')} className={className}>
       <ToggleContent>
         <ToggleIcon>
-          <Sun onClick={() => switchTheme('light')} color={getButtonColor(currentTheme, 'light')} size={18} />
+          <Sun color={getButtonColor(currentTheme, 'light')} size={18} />
         </ToggleIcon>
         <ToggleIcon>
-          <Moon onClick={() => switchTheme('dark')} color={getButtonColor(currentTheme, 'dark')} size={18} />
+          <Moon color={getButtonColor(currentTheme, 'dark')} size={18} />
         </ToggleIcon>
       </ToggleContent>
-      <ToggleFloatingIndicator
-        variants={toggleVariants}
-        animate={currentTheme}
-        transition={{ duration: 0.5, type: 'spring' }}
-      />
+      <ToggleFloatingIndicator variants={toggleVariants} animate={currentTheme} transition={transition} />
     </StyledThemeSwitcher>
   )
 }
@@ -81,11 +71,12 @@ const getButtonColor = (theme: ThemeType, buttonTheme: string) => {
 
 export const StyledThemeSwitcher = styled.div<ThemeSwitcherProps>`
   position: relative;
-  width: ${({ small }) => (small ? toggleWidth / 1.5 : toggleWidth)}px;
-  height: ${({ small }) => (small ? toggleHeight / 1.5 : toggleHeight)}px;
+  width: calc(var(--toggleHeight) * 2);
+  height: var(--toggleHeight);
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   background-color: ${({ theme }) => theme.bg.secondary};
+  overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
 
@@ -117,7 +108,7 @@ const ToggleFloatingIndicator = styled(motion.div)`
   width: 50%;
   height: 100%;
   background-color: ${({ theme }) => theme.font.primary};
-  border-radius: 60px;
+  border-radius: calc(var(--toggleHeight) * 2);
   z-index: 0;
 `
 

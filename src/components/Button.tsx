@@ -32,7 +32,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   submit?: boolean
 }
 
-export const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
+const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimateds] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -132,3 +132,5 @@ const StyledButton = styled(motion.button)<ButtonProps>`
     box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
   }
 `
+
+export default Button

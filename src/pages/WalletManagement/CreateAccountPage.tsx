@@ -22,7 +22,7 @@ import { ChangeEvent, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
 import {

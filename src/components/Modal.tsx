@@ -22,7 +22,7 @@ import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { ModalContextProvider, useModalContext } from '../contexts/modal'
-import { Button } from './Buttons'
+import Button from './Button'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalProps {

@@ -26,8 +26,9 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
+import Amount from '../../components/Amount'
 import AppHeader from '../../components/AppHeader'
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import FloatingLogo from '../../components/FloatingLogo'
 import { FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
@@ -37,7 +38,7 @@ import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
-import { abbreviateAmount, calAmountDelta } from '../../utils/numbers'
+import { calAmountDelta } from '../../utils/numbers'
 import { loadStoredSettings } from '../../utils/settings'
 
 dayjs.extend(relativeTime)
@@ -167,11 +168,11 @@ const WalletHomePage = () => {
         <WalletAmountContainer>
           <WalletAmountHighlightOverlay />
           <WalletAmountContent>
-            <WalletAmount>{balance ? abbreviateAmount(balance) : 0} ℵ</WalletAmount>
+            <WalletAmount value={balance} />
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
             {lockedBalance > 0 && (
               <LockedBalance>
-                <LockedBalanceIcon /> {abbreviateAmount(lockedBalance)} ℵ
+                <LockedBalanceIcon /> <Amount value={lockedBalance} />
               </LockedBalance>
             )}
             <CurrentAccount>Account: {currentUsername}</CurrentAccount>
@@ -189,8 +190,8 @@ const WalletHomePage = () => {
         {isHeaderCompact && (
           <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <CompactWalletAmountBox>
-              <WalletAmountContainer>
-                <WalletAmount style={{ scale: 0.7 }}>{balance && abbreviateAmount(balance)}ℵ</WalletAmount>
+              <WalletAmountContainer style={{ scale: 0.7 }}>
+                <WalletAmount value={balance} />
               </WalletAmountContainer>
             </CompactWalletAmountBox>
           </CompactWalletAmountBoxContainer>
@@ -326,10 +327,6 @@ const WalletAmountContainer = styled.div`
   background-color: ${({ theme }) => theme.bg.contrast};
   overflow: hidden;
 
-  @media ${deviceBreakPoints.mobile} {
-    flex: 1.5;
-  }
-
   &:hover {
     ${WalletAmountHighlightOverlay} {
       opacity: 0.9;
@@ -338,12 +335,13 @@ const WalletAmountContainer = styled.div`
 `
 
 const CompactWalletAmountBox = styled(motion.div)`
-  background-color: ${({ theme }) => theme.font.primary};
+  background: ${({ theme }) => theme.global.highlightGradient};
   width: 100%;
   height: 60px;
   padding: 0 var(--spacing-5);
   display: flex;
   align-items: center;
+  justify-content: center;
   border-radius: var(--radius);
   box-shadow: 0 10px 10px var(--color-shadow-10);
 
@@ -357,7 +355,7 @@ const CompactWalletAmountBox = styled(motion.div)`
   }
 `
 
-const WalletAmount = styled(motion.div)`
+const WalletAmount = styled(Amount)`
   font-size: 2.5rem;
   color: ${({ theme }) => theme.font.contrastPrimary};
   text-align: center;

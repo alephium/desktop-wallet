@@ -18,13 +18,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
+import Toggle from '../../components/Inputs/Toggle'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
 
 const GeneralSettingsSection = () => {
   const {
     settings: {
-      general: { walletLockTimeInMinutes }
+      general: { walletLockTimeInMinutes, discreetMode }
     },
     updateSettings
   } = useGlobalContext()
@@ -51,6 +52,13 @@ const GeneralSettingsSection = () => {
         label="Theme"
         description="Select the theme and please your eyes."
         InputComponent={<ThemeSwitcher />}
+      />
+      <KeyValueInput
+        label="Discreet mode"
+        description="Toggle discreet mode (hide amounts)."
+        InputComponent={
+          <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
+        }
       />
     </>
   )

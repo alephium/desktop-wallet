@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AlertTriangle } from 'lucide-react'
 import { useTheme } from 'styled-components'
 
-import { Button } from '../../components/Buttons'
+import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import Modal from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
