@@ -53,10 +53,13 @@ const SendPage = () => {
     gasAmount: MINIMAL_GAS_AMOUNT.toString(),
     gasPrice: abbreviateAmount(MINIMAL_GAS_PRICE)
   })
-  const [isSending, setIsSending] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [isConsolidating, setIsConsolidating] = useState(false)
+  const [consolidationRequired, setConsolidationRequired] = useState(false)
+  const [builtTxId, setBuiltTxId] = useState('')
+  const [builtUnsignedTx, setBuiltUnsignedTx] = useState('')
 
   useEffect(() => {
     if (step === 1) {
@@ -77,15 +80,16 @@ const SendPage = () => {
   }
 
   const confirmPassword = () => {
+    if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
     setStep(3)
   }
 
-  const handleSend = async () => {
+  const buildTransaction = async () => {
     const { address, amount, gasAmount, gasPrice } = transactionData
     const isDataComplete = address && amount && gasPrice && gasAmount
 
     if (wallet && client && isDataComplete) {
-      setIsSending(true)
+      setIsLoading(true)
 
       const fullAmount = convertToQALPH(amount).toString()
 
@@ -99,11 +103,39 @@ const SendPage = () => {
           parseInt(gasAmount),
           convertToQALPH(gasPrice).toString()
         )
+        setBuiltTxId(txCreateResp.data.txId)
+        setBuiltUnsignedTx(txCreateResp.data.unsignedTx)
+        setStep(3)
+      } catch (e) {
+        // TODO: When API error codes are available, replace this substring check with a proper error code check
+        if (isHTTPError(e) && e.error?.detail && e.error.detail.includes('consolidating')) {
+          setIsConsolidateUTXOsModalVisible(true)
+          setConsolidationRequired(true)
+        } else {
+          setSnackbarMessage({
+            text: getHumanReadableError(e, 'Error while building the transaction'),
+            type: 'alert',
+            duration: 5000
+          })
+        }
+      }
 
-        const { txId, unsignedTx } = txCreateResp.data
-        const txSendResp = await signAndSendTransaction(txId, unsignedTx, address, wallet.privateKey)
+      setIsLoading(false)
+    }
+  }
+
+  const handleSend = async () => {
+    const { address, amount } = transactionData
+
+    if (builtTxId && builtUnsignedTx && wallet && address) {
+      setIsLoading(true)
+
+      try {
+        const txSendResp = await signAndSendTransaction(builtTxId, builtUnsignedTx, address, wallet.privateKey)
 
         if (txSendResp) {
+          const fullAmount = convertToQALPH(amount).toString()
+
           addPendingTx({
             txId: txSendResp.data.txId,
             toAddress: address,
@@ -128,7 +160,7 @@ const SendPage = () => {
         }
       }
 
-      setIsSending(false)
+      setIsLoading(false)
     }
   }
 
@@ -159,7 +191,6 @@ const SendPage = () => {
           type: 'info',
           duration: 15000
         })
-        setIsConsolidateUTXOsModalVisible(false)
         initialOnModalClose.current()
       } catch (e) {
         setSnackbarMessage({
@@ -182,22 +213,22 @@ const SendPage = () => {
     <>
       <HeaderContent>
         <HeaderLogo>
-          {isSending ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
+          {isLoading ? <Spinner size="30%" /> : <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />}
         </HeaderLogo>
       </HeaderContent>
       {step === 1 && <TransactionForm data={transactionData} onSubmit={verifyTransactionContent} />}
-      {step === 2 && <CheckTransactionContent data={transactionData} onSend={confirmPassword} />}
+      {step === 2 && <CheckTransactionContent data={transactionData} onSend={buildTransaction} />}
       {step === 3 && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
           buttonText="Send"
-          onCorrectPasswordEntered={handleSend}
+          onCorrectPasswordEntered={consolidationRequired ? consolidateUTXOs : handleSend}
         />
       )}
       {isConsolidateUTXOsModalVisible && (
         <ConsolidateUTXOsModal
           onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-          onConsolidateClick={consolidateUTXOs}
+          onConsolidateClick={confirmPassword}
           isConsolidating={isConsolidating}
         />
       )}
