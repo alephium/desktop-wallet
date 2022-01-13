@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Codesandbox } from 'lucide-react'
 import { useTheme } from 'styled-components'
 
-import { Button } from './Buttons'
+import Button from './Button'
 import InfoBox from './InfoBox'
 import { HeaderContent, HeaderLogo } from './Modal'
 import Modal from './Modal'
