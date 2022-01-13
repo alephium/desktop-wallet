@@ -264,10 +264,11 @@ const WalletHomePage = () => {
   )
 }
 
+const walletSidebarWidth = 400
+
 const WalletContainer = styled(motion.div)`
   display: flex;
   flex: 1;
-  overflow: hidden;
 
   @media ${deviceBreakPoints.mobile} {
     flex-direction: column;
@@ -276,19 +277,24 @@ const WalletContainer = styled(motion.div)`
 `
 
 const WalletSidebar = styled(Section)`
+  position: fixed;
+  top: 0;
+  bottom: 0;
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;
-  max-width: 400px;
-  position: relative;
+  max-width: ${walletSidebarWidth}px;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.primary};
   padding-top: ${appHeaderHeight};
+  z-index: 1000;
 
   @media ${deviceBreakPoints.mobile} {
+    position: relative;
     flex: 0;
     max-width: inherit;
     border: none;
+    z-index: 0;
   }
 `
 
@@ -414,16 +420,20 @@ const RefreshButton = styled(Button)``
 // === TRANSACTION === //
 
 const TransactionsContainer = styled.div`
-  flex: 1;
-  overflow: auto;
+  position: absolute;
+  left: ${walletSidebarWidth}px;
+  right: 0;
+  display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: var(--spacing-5);
   padding-top: calc(10px + ${appHeaderHeight});
+  background-color: ${({ theme }) => theme.bg.secondary};
 
   @media ${deviceBreakPoints.mobile} {
+    position: relative;
     overflow: initial;
     padding: 0;
+    left: 0;
   }
 `
 
