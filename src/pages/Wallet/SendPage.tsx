@@ -112,7 +112,11 @@ const SendPage = () => {
         setStep(2)
       } catch (e) {
         // TODO: When API error codes are available, replace this substring check with a proper error code check
-        if (isHTTPError(e) && e.error?.detail && e.error.detail.includes('consolidating')) {
+        if (
+          isHTTPError(e) &&
+          e.error?.detail &&
+          (e.error.detail.includes('consolidating') || e.error.detail.includes('consolidate'))
+        ) {
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
         } else {
@@ -152,16 +156,13 @@ const SendPage = () => {
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
         history.push('/wallet')
       } catch (e) {
+        console.error(e)
         // TODO: When API error codes are available, replace this substring check with a proper error code check
-        if (isHTTPError(e) && e.error?.detail && e.error.detail.includes('consolidating')) {
-          setIsConsolidateUTXOsModalVisible(true)
-        } else {
-          setSnackbarMessage({
-            text: getHumanReadableError(e, 'Error while sending the transaction'),
-            type: 'alert',
-            duration: 5000
-          })
-        }
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while sending the transaction'),
+          type: 'alert',
+          duration: 5000
+        })
       }
 
       setIsLoading(false)
