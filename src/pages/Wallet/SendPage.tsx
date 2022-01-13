@@ -35,7 +35,7 @@ import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
 import { checkAddressValidity } from '../../utils/addresses'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
-import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
+import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE, txTypes } from '../../utils/constants'
 import { abbreviateAmount, convertScientificToFloatString, convertToQALPH } from '../../utils/numbers'
 
 type StepIndex = 1 | 2 | 3
@@ -109,7 +109,7 @@ const SendPage = () => {
             toAddress: address,
             timestamp: new Date().getTime(),
             amount: fullAmount,
-            type: 'transfer'
+            type: txTypes.TRANSFER
           })
         }
 
@@ -149,7 +149,7 @@ const SendPage = () => {
               toAddress: wallet.address,
               timestamp: new Date().getTime(),
               amount: '',
-              type: 'consolidation'
+              type: txTypes.CONSOLIDATION
             })
           }
         }
