@@ -157,7 +157,6 @@ const SendPage = () => {
         history.push('/wallet')
       } catch (e) {
         console.error(e)
-        // TODO: When API error codes are available, replace this substring check with a proper error code check
         setSnackbarMessage({
           text: getHumanReadableError(e, 'Error while sending the transaction'),
           type: 'alert',
