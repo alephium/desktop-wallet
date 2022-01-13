@@ -57,8 +57,8 @@ const SendPage = () => {
   const [transactionData, setTransactionData] = useState<TransactionData>({
     address: '',
     amount: '',
-    gasAmount: MINIMAL_GAS_AMOUNT.toString(),
-    gasPrice: abbreviateAmount(MINIMAL_GAS_PRICE)
+    gasAmount: undefined,
+    gasPrice: undefined
   })
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -90,7 +90,7 @@ const SendPage = () => {
     setTransactionData(transactionData)
 
     const { address, amount, gasAmount, gasPrice } = transactionData
-    const isDataComplete = address && amount && gasPrice && gasAmount
+    const isDataComplete = address && amount
 
     if (wallet && client && isDataComplete) {
       setIsLoading(true)
@@ -104,8 +104,8 @@ const SendPage = () => {
           address,
           fullAmount,
           undefined,
-          parseInt(gasAmount),
-          convertToQALPH(gasPrice).toString()
+          gasAmount ? parseInt(gasAmount) : undefined,
+          gasPrice ? convertToQALPH(gasPrice).toString() : undefined
         )
         setBuiltTxId(txCreateResp.data.txId)
         setBuiltUnsignedTx(txCreateResp.data.unsignedTx)
@@ -249,8 +249,8 @@ const SendPage = () => {
 interface TransactionData {
   address: string
   amount: string
-  gasAmount: string
-  gasPrice: string
+  gasAmount: string | undefined
+  gasPrice: string | undefined
 }
 
 interface TransactionFormProps {
@@ -305,8 +305,7 @@ const TransactionForm = ({ data, onSubmit }: TransactionFormProps) => {
 
   const expectedFeeInALPH = gasAmountState && gasPriceState && getExpectedFee(gasAmountState, gasPriceState)
 
-  const isSubmitButtonActive =
-    addressState && amountState && gasPriceState && gasAmountState && !addressError && !gasPriceError && !gasAmountError
+  const isSubmitButtonActive = addressState && amountState && !addressError && !gasPriceError && !gasAmountError
 
   return (
     <>
@@ -380,9 +379,11 @@ const CheckTransactionContent = ({ data, onSend }: CheckTransactionContentProps)
       <Section>
         <InfoBox text={data.address} label="Recipient's address" wordBreak />
         <InfoBox text={`${data.amount} ℵ`} label="Amount" />
-        <InfoBox text={data.gasAmount} label="Gas amount" />
-        <InfoBox text={`${data.gasPrice} ℵ`} label="Gas price" />
-        <InfoBox text={`${getExpectedFee(data.gasAmount, data.gasPrice)} ℵ`} label="Expected fee" />
+        {data.gasAmount && <InfoBox text={data.gasAmount} label="Gas amount" />}
+        {data.gasPrice && <InfoBox text={`${data.gasPrice} ℵ`} label="Gas price" />}
+        {data.gasAmount && data.gasPrice && (
+          <InfoBox text={`${getExpectedFee(data.gasAmount, data.gasPrice)} ℵ`} label="Expected fee" />
+        )}
       </Section>
       <Section inList>
         <Button onClick={onSend} disabled={!isSendButtonActive}>
@@ -419,7 +420,7 @@ const onAmountInputValueChange = ({
     return
   }
 
-  if (amountNumber < minAmount) {
+  if (amountNumber && amountNumber < minAmount) {
     errorStateSetter(errorMessage)
   } else {
     if (currentErrorState) errorStateSetter('')
