@@ -19,11 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { createContext, FC, useContext, useEffect, useState } from 'react'
 
-import { txTypes } from '../utils/constants'
 import { NetworkType } from '../utils/settings'
 import { useGlobalContext } from './global'
 
-export type TransactionType = typeof txTypes.CONSOLIDATION | typeof txTypes.TRANSFER
+export type TransactionType = 'consolidation' | 'transfer'
 
 export interface SimpleTx {
   txId: string

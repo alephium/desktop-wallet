@@ -37,7 +37,6 @@ import { useGlobalContext } from '../../contexts/global'
 import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
-import { txTypes } from '../../utils/constants'
 import { useInterval } from '../../utils/hooks'
 import { calAmountDelta } from '../../utils/numbers'
 import { loadStoredSettings } from '../../utils/settings'
@@ -151,7 +150,7 @@ const WalletHomePage = () => {
   const pendingTxs = networkPendingTxLists[currentNetwork] || []
   const showSpinner = isLoading || pendingTxs.length > 0
   const transactionsHaveLoaded = loadedTxList && loadedTxList.length > 0
-  const somePendingConsolidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === txTypes.CONSOLIDATION)
+  const somePendingConsolidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>

@@ -23,7 +23,6 @@ import styled, { css } from 'styled-components'
 
 import { TransactionType } from '../contexts/transactions'
 import { deviceBreakPoints } from '../style/globalStyles'
-import { txTypes } from '../utils/constants'
 import { openInWebBrowser } from '../utils/misc'
 import Address from './Address'
 import AmountBadge from './Badge'
@@ -65,9 +64,7 @@ const TransactionItem = ({
             <IOList currentAddress={address} isOut={isOut} outputs={outputs} inputs={inputs} timestamp={timestamp} />
           )}
         </AddressListContainer>
-        {pending && type === txTypes.CONSOLIDATION && (
-          <TXSpecialTypeLabel>Pending UTXO Consolidation TX</TXSpecialTypeLabel>
-        )}
+        {pending && type === 'transfer' && <TXSpecialTypeLabel>Pending UTXO Consolidation TX</TXSpecialTypeLabel>}
         <TxTimestamp>{dayjs(timestamp).format('MM/DD/YYYY HH:mm:ss')}</TxTimestamp>
       </TxDetails>
       <TxAmountContainer>
