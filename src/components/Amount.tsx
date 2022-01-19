@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import styled from 'styled-components'
+
 import { useGlobalContext } from '../contexts/global'
 import { abbreviateAmount } from '../utils/numbers'
 
@@ -30,12 +32,34 @@ const Amount = ({ value, className }: AmountProps) => {
       general: { discreetMode }
     }
   } = useGlobalContext()
+  let integralPart = ''
+  let fractionalPart = ''
+
+  if (!discreetMode && value !== undefined) {
+    const abbreviatedAmountParts = abbreviateAmount(value).split('.')
+    integralPart = abbreviatedAmountParts[0]
+    fractionalPart = abbreviatedAmountParts[1]
+  }
 
   return (
-    <span className={className}>{`${
-      discreetMode ? '•••' : value !== undefined ? abbreviateAmount(value) : '-'
-    } ℵ`}</span>
+    <span className={className}>
+      {discreetMode ? (
+        '•••'
+      ) : value !== undefined ? (
+        <>
+          <span>{integralPart}</span>
+          <Decimals>.{fractionalPart}</Decimals>
+        </>
+      ) : (
+        '-'
+      )}
+      {' ℵ'}
+    </span>
   )
 }
+
+const Decimals = styled.span`
+  /* font-size: 0.85em; */
+`
 
 export default Amount

@@ -68,16 +68,16 @@ it('Button correctly links to wallet settings page', async () => {
 })
 
 it('Loads balance and number of transactions', () => {
-  expect(screen.getByText('299.000 ℵ')).toBeInTheDocument()
+  expect(screen.getByText('299')).toBeInTheDocument()
   expect(screen.getByText('Transactions (2)')).toBeInTheDocument()
 })
 
 it('Refreshes balance and number of transactions', async () => {
-  expect(screen.getByText('299.000 ℵ')).toBeInTheDocument()
+  expect(screen.getByText('299')).toBeInTheDocument()
   const button = screen.getByLabelText('Refresh')
   fireEvent.click(button)
-  await waitForElementToBeRemoved(() => screen.queryByText('299.000 ℵ'))
-  expect(screen.getByText('300.000 ℵ')).toBeInTheDocument()
+  await waitForElementToBeRemoved(() => screen.queryByText('299'))
+  expect(screen.getByText('300')).toBeInTheDocument()
   expect(screen.getByText('Transactions (3)')).toBeInTheDocument()
 })
 
