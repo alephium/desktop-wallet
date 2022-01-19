@@ -59,7 +59,7 @@ const Amount = ({ value, className }: AmountProps) => {
 }
 
 const Decimals = styled.span`
-  font-size: 0.85em;
+  /* font-size: 0.85em; */
 `
 
 export default Amount
