@@ -116,7 +116,7 @@ const Login = ({ usernames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(() => history.push('/wallet'))
+    login(() => history.push('/wallet/overview'))
   }
 
   return (

@@ -58,7 +58,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: 'rgba(61, 64, 74, 0.2)',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: tinycolor('#3482f7').setAlpha(0.3).toString()
+    accent: tinycolor('#6083FF').setAlpha(0.3).toString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
@@ -71,7 +71,7 @@ export const darkTheme: DefaultTheme = {
     secondary: '#27282d'
   },
   global: {
-    accent: '#3482f7',
+    accent: '#6083FF',
     complementary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#4ebf08',

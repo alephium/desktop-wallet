@@ -24,6 +24,8 @@ import tags from './tags'
 
 export const appHeaderHeight = '50px'
 
+export const walletSidebarWidth = 400
+
 const extensionWindowDimensions = `
   height: 600px;
   width: 400px;
