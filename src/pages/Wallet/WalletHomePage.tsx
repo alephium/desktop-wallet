@@ -23,7 +23,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Layers, List, Lock, QrCode, RefreshCw, Send } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Route, Switch, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
@@ -31,6 +31,7 @@ import Amount from '../../components/Amount'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import FloatingLogo from '../../components/FloatingLogo'
+import Modal from '../../components/Modal'
 import { ContainerNextToSidebar, FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
@@ -40,12 +41,14 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import { getHumanReadableError } from '../../utils/api'
 import { useInterval } from '../../utils/hooks'
 import { loadStoredSettings } from '../../utils/settings'
+import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
+import AddressPage from './AddressPage'
+import SendPage from './SendPage'
 
 dayjs.extend(relativeTime)
 
 const WalletHomePage = () => {
-  const history = useHistory()
   const { wallet, setSnackbarMessage, client, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
   const [balance, setBalance] = useState<bigint | undefined>(undefined)
   const [lockedBalance, setLockedBalance] = useState<bigint>(BigInt(0))
@@ -55,6 +58,9 @@ const WalletHomePage = () => {
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const [lastLoadedPage, setLastLoadedPage] = useState(1)
   const location = useLocation()
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const {
     network: { explorerUrl }
@@ -156,7 +162,7 @@ const WalletHomePage = () => {
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader onSettingsClick={() => history.push('/wallet/settings')}>
+      <AppHeader onSettingsClick={() => setIsSettingsModalOpen(true)}>
         <RefreshButton
           transparent
           squared
@@ -184,10 +190,10 @@ const WalletHomePage = () => {
         <WalletActions>
           <ActionsTitle>Quick actions</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
-          <ActionButton Icon={QrCode} label="Show address" link="/wallet/address" />
+          <ActionButton Icon={QrCode} label="Show address" onClick={() => setIsAddressModalOpen(true)} />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
           {!somePendingConsolidationTxs ? (
-            <ActionButton Icon={Send} label="Send token" link="/wallet/send" />
+            <ActionButton Icon={Send} label="Send token" onClick={() => setIsSendModalOpen(true)} />
           ) : (
             <ActionButton
               Icon={Send}
@@ -271,6 +277,23 @@ const WalletHomePage = () => {
           <AddressesPage />
         </Route>
       </Switch>
+      <AnimatePresence exitBeforeEnter initial={true}>
+        {isSendModalOpen && (
+          <Modal title="Send" onClose={() => setIsSendModalOpen(false)}>
+            <SendPage />
+          </Modal>
+        )}
+        {isAddressModalOpen && (
+          <Modal title="Your address" onClose={() => setIsAddressModalOpen(false)}>
+            <AddressPage />
+          </Modal>
+        )}
+        {isSettingsModalOpen && (
+          <Modal title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
+            <SettingsPage />
+          </Modal>
+        )}
+      </AnimatePresence>
     </WalletContainer>
   )
 }
