@@ -24,6 +24,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: string
   isValid?: boolean
   disabled?: boolean
+  className?: string
 }
 
 export interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {

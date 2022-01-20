@@ -35,7 +35,8 @@ export const lightTheme: DefaultTheme = {
     primary: '#000',
     secondary: '#797979',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
-    contrastSecondary: 'rgba(255, 255, 255, 0.8)'
+    contrastSecondary: 'rgba(255, 255, 255, 0.8)',
+    highlight: '#ffb800'
   },
   border: {
     primary: 'rgba(0, 0, 0, 0.05)',
@@ -64,7 +65,8 @@ export const darkTheme: DefaultTheme = {
     primary: 'rgba(255, 255, 255, 0.95)',
     secondary: 'rgba(255, 255, 255, 0.65)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
-    contrastSecondary: 'rgba(0, 0, 0, 0.8)'
+    contrastSecondary: 'rgba(0, 0, 0, 0.8)',
+    highlight: '#ffb800'
   },
   border: {
     primary: '#34353A',

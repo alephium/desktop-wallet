@@ -36,6 +36,7 @@ declare module 'styled-components' {
       secondary: string
       contrastPrimary: string
       contrastSecondary: string
+      highlight: string
     }
     border: {
       primary: string

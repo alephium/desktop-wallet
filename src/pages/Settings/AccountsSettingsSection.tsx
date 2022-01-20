@@ -23,7 +23,7 @@ import styled from 'styled-components'
 
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
-import { HorizontalDivider } from '../../components/PageComponents/HorizontalDivider'
+import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
 import AccountRemovalModal from './AccountRemovalModal'

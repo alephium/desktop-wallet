@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
 import Toggle from '../../components/Inputs/Toggle'
+import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
 
@@ -48,11 +49,13 @@ const GeneralSettingsSection = () => {
           />
         }
       />
+      <HorizontalDivider narrow />
       <KeyValueInput
         label="Theme"
         description="Select the theme and please your eyes."
         InputComponent={<ThemeSwitcher />}
       />
+      <HorizontalDivider narrow />
       <KeyValueInput
         label="Discreet mode"
         description="Toggle discreet mode (hide amounts)."
@@ -60,6 +63,7 @@ const GeneralSettingsSection = () => {
           <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
         }
       />
+      <HorizontalDivider narrow />
       <KeyValueInput
         label="Password requirement"
         description="Require password confirmation before sending each transaction."
@@ -70,6 +74,7 @@ const GeneralSettingsSection = () => {
           />
         }
       />
+      <HorizontalDivider narrow />
     </>
   )
 }

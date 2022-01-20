@@ -171,7 +171,7 @@ const InitialActions = ({
   )
 }
 
-const HomeContainer = styled(motion.div)`
+const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
 

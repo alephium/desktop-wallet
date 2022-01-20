@@ -144,9 +144,26 @@ const CloseButton = styled(Button)`
 `
 
 const ModalContent = styled.div`
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
+`
+
+export const ModalFooterButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+`
+
+export const ModalFooterButton = ({ ...props }) => (
+  <ModalFooterButtonStyled narrow {...props}>
+    {props.children}
+  </ModalFooterButtonStyled>
+)
+
+const ModalFooterButtonStyled = styled(Button)`
+  min-width: 111px;
+  height: 30px;
 `
 
 export default Modal
