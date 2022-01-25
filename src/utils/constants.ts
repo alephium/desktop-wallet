@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BILLION } from './numbers'
+import { BILLION } from 'alephium-js/dist/lib/numbers'
 
 export const MINIMAL_GAS_AMOUNT = 20000
 export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
