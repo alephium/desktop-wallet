@@ -43,6 +43,7 @@ import { useInterval } from '../../utils/hooks'
 import { loadStoredSettings } from '../../utils/settings'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
+import AddressDetailsPage from './AddressDetailsPage'
 import SendPage from './SendPage'
 
 dayjs.extend(relativeTime)
@@ -269,6 +270,9 @@ const WalletHomePage = () => {
               )}
             </FloatingPanel>
           </MainContent>
+        </Route>
+        <Route path="/wallet/addresses/:address" key="address-details">
+          <AddressDetailsPage />
         </Route>
         <Route path="/wallet/addresses" key="addresses">
           <AddressesPage />

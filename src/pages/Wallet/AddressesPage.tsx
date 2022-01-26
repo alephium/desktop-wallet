@@ -21,6 +21,7 @@ import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
 import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
@@ -29,7 +30,7 @@ import Button from '../../components/Button'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
 import { MainContent } from '../../components/PageComponents/PageContainers'
-import PageTitle from '../../components/PageComponents/PageTitle'
+import { PageH1 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { useGlobalContext } from '../../contexts/global'
 import NewAddressPage from './NewAddressPage'
@@ -62,6 +63,7 @@ const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addressesInfo, wallet, client } = useGlobalContext()
   const [addressesTableData, setAddressesTableData] = useState<AddressesTableData[]>([])
+  const history = useHistory()
 
   useEffect(() => {
     if (!wallet?.seed || !client) return
@@ -93,17 +95,25 @@ const AddressesPage = () => {
     fetchAddressesInfo()
   }, [addressesInfo, client, wallet])
 
+  const navigateToAddressDetailsPage = (address: string) => {
+    history.push(`/wallet/addresses/${address}`)
+  }
+
   return (
     <MainContent>
       <PageTitleRow>
-        <PageTitle>Addresses</PageTitle>
+        <PageH1>Addresses</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
           + Generate new address
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
         {addressesTableData.map((row) => (
-          <TableRow key={row.hash} minColumnWidth={minTableColumnWidth}>
+          <TableRowStyled
+            key={row.hash}
+            minColumnWidth={minTableColumnWidth}
+            onClick={() => navigateToAddressDetailsPage(row.hash)}
+          >
             <TableCell>
               <AddressHash>{row.hash}</AddressHash>
               {row.isMain && <MainAddress>Main address</MainAddress>}
@@ -115,7 +125,7 @@ const AddressesPage = () => {
             <TableCell align="end">
               <Amount value={row.amount} fadeDecimals />
             </TableCell>
-          </TableRow>
+          </TableRowStyled>
         ))}
         <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
           <TableCell>
@@ -161,6 +171,13 @@ const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
 
 const Summary = styled(TableCell)`
   color: ${({ theme }) => theme.font.highlight};
+`
+
+const TableRowStyled = styled(TableRow)`
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.bg.hover};
+  }
 `
 
 export default AddressesPage
