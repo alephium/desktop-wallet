@@ -17,8 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { LucideProps } from 'lucide-react'
-import { useHistory } from 'react-router-dom'
-import styled, { useTheme } from 'styled-components'
+import { useHistory, useLocation } from 'react-router-dom'
+import styled, { css, useTheme } from 'styled-components'
 
 interface ActionButtonProps {
   Icon: (props: LucideProps) => JSX.Element
@@ -30,6 +30,7 @@ interface ActionButtonProps {
 const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   const theme = useTheme()
   const history = useHistory()
+  const location = useLocation()
 
   const handleClick = () => {
     if (link) {
@@ -40,7 +41,7 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   }
 
   return (
-    <ActionButtonContainer onClick={handleClick}>
+    <ActionButtonContainer onClick={handleClick} isActive={link !== undefined && location.pathname.startsWith(link)}>
       <ActionContent>
         <ActionIcon>
           <Icon color={theme.font.primary} size={18} />
@@ -74,15 +75,11 @@ const ActionIcon = styled.div`
   transition: all 0.1s ease-out;
 `
 
-const ActionButtonContainer = styled.div`
+const ActionButtonContainer = styled.div<{ isActive: boolean }>`
   display: flex;
   align-items: stretch;
   width: 100%;
   height: 50px;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-  }
 
   &:hover {
     cursor: pointer;
@@ -94,6 +91,18 @@ const ActionButtonContainer = styled.div`
       opacity: 1;
     }
   }
+
+  ${({ isActive }) =>
+    isActive &&
+    css`
+      ${ActionLabel} {
+        color: ${({ theme }) => theme.font.primary};
+      }
+
+      ${ActionIcon} {
+        opacity: 1;
+      }
+    `}
 `
 
 export default ActionButton
