@@ -167,7 +167,7 @@ MainContent = styled(MainContent)`
   @media ${deviceBreakPoints.mobile} {
     position: relative;
     overflow: initial;
-    padding: 0;
+    padding: var(--spacing-5);
     left: 0;
   }
 `
