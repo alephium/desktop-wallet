@@ -64,7 +64,7 @@ const Amount = ({ value, className, fadeDecimals }: AmountProps) => {
 }
 
 const Decimals = styled.span`
-  opacity: 0.6;
+  opacity: 0.7;
 `
 
 export default Amount
