@@ -18,12 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Wallet } from 'alephium-js'
 import { merge } from 'lodash'
-import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
-import { AddressInfo, loadStoredAddressesInfoOfAccount, storeAddressInfoOfAccount } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import {
   getNetworkName,
@@ -48,8 +47,6 @@ export interface GlobalContextProps {
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
-  addressesInfo: AddressInfo[]
-  saveAddressInfo: (info: AddressInfo) => void
 }
 
 type Client = AsyncReturnType<typeof createClient>
@@ -66,9 +63,7 @@ export const initialGlobalContext: GlobalContextProps = {
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
   isClientLoading: false,
-  currentNetwork: 'mainnet',
-  addressesInfo: [],
-  saveAddressInfo: () => null
+  currentNetwork: 'mainnet'
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -82,7 +77,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [settings, setSettings] = useState<Settings>(loadStoredSettings())
-  const [addressesInfo, setAddressInfo] = useState<AddressInfo[]>([])
   const [isClientLoading, setIsClientLoading] = useState(false)
 
   const currentNetwork = getNetworkName(settings.network)
@@ -93,14 +87,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     updatedSettings && setSettings(updatedSettings)
     return updatedSettings
   }
-
-  const saveAddressInfo = useCallback(
-    (info: AddressInfo) => {
-      storeAddressInfoOfAccount(info.index, currentUsername, info.label, info.color, info.isMain)
-      setAddressInfo(loadStoredAddressesInfoOfAccount(currentUsername))
-    },
-    [currentUsername]
-  )
 
   const lockWallet = () => {
     setCurrentUsername('')
@@ -142,22 +128,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     saveStoredSettings(settings)
   }, [settings])
 
-  useEffect(() => {
-    if (!currentUsername) return
-
-    const addressesInfo = loadStoredAddressesInfoOfAccount(currentUsername)
-    if (addressesInfo.length === 0) {
-      saveAddressInfo({
-        index: 0,
-        isMain: true,
-        label: undefined,
-        color: undefined
-      })
-    } else {
-      setAddressInfo(addressesInfo)
-    }
-  }, [currentUsername, saveAddressInfo])
-
   return (
     <GlobalContext.Provider
       value={merge(
@@ -173,9 +143,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           settings,
           updateSettings,
           isClientLoading,
-          currentNetwork,
-          addressesInfo,
-          saveAddressInfo
+          currentNetwork
         },
         overrideContextValue as GlobalContextProps
       )}

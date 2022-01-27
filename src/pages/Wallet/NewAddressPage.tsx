@@ -29,6 +29,7 @@ import Toggle from '../../components/Inputs/Toggle'
 import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { Section } from '../../components/PageComponents/PageContainers'
+import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
 import { getRandomLabelColor } from '../../utils/colors'
@@ -36,20 +37,22 @@ import { getRandomLabelColor } from '../../utils/colors'
 const NewAddressPage = () => {
   const [addressLabel, setAddressLabel] = useState({ title: '', color: getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
-  const [newAddressData, setNewAddressData] = useState<{ address: string; addressIndex: number }>()
+  const [newAddressData, setNewAddressData] =
+    useState<{ address: string; publicKey: string; privateKey: string; addressIndex: number }>() // TODO: Replace with type AddressAndKeys from alephium-js
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { wallet, addressesInfo, saveAddressInfo } = useGlobalContext()
-  const currentAddressIndexes = useRef(addressesInfo.map(({ index }) => index))
-  const currentMainAddressInfo = addressesInfo.find(({ isMain }) => isMain)
+  const { wallet } = useGlobalContext()
+  const { addressesState, saveNewAddress } = useAddressesContext()
+  const addressData = [...addressesState.values()]
+  const currentAddressIndexes = useRef(addressData.map(({ index }) => index))
+  const currentMainAddress = addressData.find(({ settings: { isMain } }) => isMain)
   const { onModalClose } = useModalContext()
 
   const generateNewAddress = useCallback(
     (group?: number) => {
-      if (wallet?.seed) {
-        const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes.current)
-        setNewAddressData(data)
-        setNewAddressGroup(group || addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
-      }
+      if (!wallet?.seed) return
+      const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes.current)
+      setNewAddressData(data)
+      setNewAddressGroup(group || addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
     },
     [wallet]
   )
@@ -59,17 +62,26 @@ const NewAddressPage = () => {
   }, [generateNewAddress])
 
   const onGenerateClick = () => {
-    if (newAddressData) {
-      saveAddressInfo({
+    if (newAddressData && newAddressGroup !== undefined) {
+      saveNewAddress({
+        hash: newAddressData.address,
+        publicKey: newAddressData.publicKey,
+        privateKey: newAddressData.privateKey,
+        group: newAddressGroup,
         index: newAddressData.addressIndex,
-        isMain: isMainAddress,
-        label: addressLabel.title,
-        color: addressLabel.color
+        settings: {
+          isMain: isMainAddress,
+          label: addressLabel.title,
+          color: addressLabel.color
+        }
       })
-      if (isMainAddress && currentMainAddressInfo && currentMainAddressInfo.index !== newAddressData.addressIndex) {
-        saveAddressInfo({
-          ...currentMainAddressInfo,
-          isMain: false
+      if (isMainAddress && currentMainAddress && currentMainAddress.index !== newAddressData.addressIndex) {
+        saveNewAddress({
+          ...currentMainAddress,
+          settings: {
+            ...currentMainAddress.settings,
+            isMain: false
+          }
         })
       }
     }
@@ -78,12 +90,11 @@ const NewAddressPage = () => {
 
   let mainAddressMessage = 'Default address for sending transactions.'
 
-  if (currentMainAddressInfo && wallet?.seed) {
-    const { address: currentMainAddress } = deriveNewAddressData(wallet.seed, undefined, currentMainAddressInfo.index)
+  if (currentMainAddress && wallet?.seed) {
     mainAddressMessage +=
-      currentMainAddressInfo && currentMainAddressInfo.index !== newAddressData?.addressIndex
+      currentMainAddress.index !== newAddressData?.addressIndex
         ? ` Note that if activated, "${
-            currentMainAddressInfo.label || `${currentMainAddress.substring(0, 10)}...`
+            currentMainAddress.settings.label || `${currentMainAddress.hash.substring(0, 10)}...`
           }" will not be the main address anymore.`
         : ''
   }

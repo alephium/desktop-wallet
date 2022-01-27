@@ -16,11 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type AddressInfo = {
-  index: number
+export type AddressSettings = {
   isMain: boolean
   label?: string
   color?: string
+}
+
+type AddressIndexAndSettings = AddressSettings & {
+  index: number
 }
 
 export const checkAddressValidity = (address: string) => {
@@ -31,33 +34,27 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const loadStoredAddressesInfoOfAccount = (username: string): AddressInfo[] => {
-  const storedAddressIndexes = localStorage.getItem(`${username}-address-info`)
+export const loadStoredAddressesIndexAndSettingsOfAccount = (username: string): AddressIndexAndSettings[] => {
+  const data = localStorage.getItem(`${username}-address-indexes-and-settings`)
 
-  if (storedAddressIndexes === null) return []
+  if (data === null) return []
 
-  return JSON.parse(storedAddressIndexes)
+  return JSON.parse(data)
 }
 
-export const storeAddressInfoOfAccount = (
-  addressIndex: number,
-  username: string,
-  label?: string,
-  color?: string,
-  isMain = false
-) => {
-  const addressesInfo = loadStoredAddressesInfoOfAccount(username)
-  const existingAddressInfo = addressesInfo.find((info: AddressInfo) => info.index === addressIndex)
+export const storeAddressIndexAndSettingsOfAccount = (username: string, index: number, settings: AddressSettings) => {
+  const addressesIndexAndSettings = loadStoredAddressesIndexAndSettingsOfAccount(username)
+  const existingAddressIndexAndSettings = addressesIndexAndSettings.find(
+    (data: AddressIndexAndSettings) => data.index === index
+  )
 
-  if (!existingAddressInfo) {
-    addressesInfo.push({
-      index: addressIndex,
-      label,
-      color,
-      isMain
+  if (!existingAddressIndexAndSettings) {
+    addressesIndexAndSettings.push({
+      index,
+      ...settings
     })
   } else {
-    Object.assign(existingAddressInfo, { label, color, isMain })
+    Object.assign(existingAddressIndexAndSettings, settings)
   }
-  localStorage.setItem(`${username}-address-info`, JSON.stringify(addressesInfo))
+  localStorage.setItem(`${username}-address-indexes-and-settings`, JSON.stringify(addressesIndexAndSettings))
 }
