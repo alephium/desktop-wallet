@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import addressToGroup from 'alephium-js/dist/lib/address'
 import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
 import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ExpandableSection from '../../components/ExpandableSection'
 import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
@@ -39,19 +39,18 @@ const NewAddressPage = () => {
   const [newAddressData, setNewAddressData] = useState<{ address: string; addressIndex: number }>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
   const { wallet, addressesInfo, saveAddressInfo } = useGlobalContext()
-  const currentAddressIndexes = addressesInfo.map(({ index }) => index)
+  const currentAddressIndexes = useRef(addressesInfo.map(({ index }) => index))
   const currentMainAddressInfo = addressesInfo.find(({ isMain }) => isMain)
   const { onModalClose } = useModalContext()
 
   const generateNewAddress = useCallback(
     (group?: number) => {
       if (wallet?.seed) {
-        const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes)
+        const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes.current)
         setNewAddressData(data)
         setNewAddressGroup(group || addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [wallet]
   )
 
