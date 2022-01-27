@@ -31,7 +31,7 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const loadStoredAddressesInfoOfAccount = (username: string) => {
+export const loadStoredAddressesInfoOfAccount = (username: string): AddressInfo[] => {
   const storedAddressIndexes = localStorage.getItem(`${username}-address-info`)
 
   if (storedAddressIndexes === null) return []
