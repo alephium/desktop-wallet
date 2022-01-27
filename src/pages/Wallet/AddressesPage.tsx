@@ -30,7 +30,7 @@ import Label from '../../components/Label'
 import Modal from '../../components/Modal'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import PageTitle from '../../components/PageComponents/PageTitle'
-import Table, { AlignType, TableCell, TableFooter, TableRow } from '../../components/Table'
+import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { useGlobalContext } from '../../contexts/global'
 import NewAddressPage from './NewAddressPage'
 
@@ -50,19 +50,20 @@ type AddressesTableData = {
   amount: bigint
 }
 
+const addressesTableHeaders: TableProps['headers'] = [
+  { title: 'Address' },
+  { title: 'Label' },
+  { title: 'Last used' },
+  { title: 'Transactions' },
+  { title: 'Nb. of tokens' },
+  { title: 'Group' },
+  { title: 'ALPH amount', align: 'end' }
+]
+
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addressesInfo, wallet, client } = useGlobalContext()
   const [addressesTableData, setAddressesTableData] = useState<AddressesTableData[]>([])
-  const headers = [
-    { title: 'Address' },
-    { title: 'Label' },
-    { title: 'Last used' },
-    { title: 'Transactions' },
-    { title: 'Nb. of tokens' },
-    { title: 'Group' },
-    { title: 'ALPH amount', align: 'end' as AlignType }
-  ]
 
   useEffect(() => {
     if (!wallet?.seed || !client) return
@@ -103,7 +104,7 @@ const AddressesPage = () => {
           + Generate new address
         </Button>
       </PageTitleRow>
-      <Table headers={headers} minColumnWidth={minTableColumnWidth}>
+      <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
         {addressesTableData.map((row) => (
           <TableRow key={row.hash} minColumnWidth={minTableColumnWidth}>
             <TableCell>
@@ -120,7 +121,7 @@ const AddressesPage = () => {
             </TableCell>
           </TableRow>
         ))}
-        <TableFooterStyled cols={headers.length} minColumnWidth={minTableColumnWidth}>
+        <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ Generate new address</ActionLink>
           </TableCell>

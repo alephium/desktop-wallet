@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
-export type AlignType = 'start' | 'center' | 'end'
+type AlignType = 'start' | 'center' | 'end'
 
-interface TableProps {
+export interface TableProps {
   headers: {
     title: string
     align?: AlignType
