@@ -56,14 +56,8 @@ export const storeAddressInfoOfAccount = (
       color,
       isMain
     })
-  } else if (
-    existingAddressInfo.label !== label ||
-    existingAddressInfo.color !== color ||
-    existingAddressInfo.isMain !== isMain
-  ) {
-    existingAddressInfo.label = label
-    existingAddressInfo.color = color
-    existingAddressInfo.isMain = isMain
+  } else {
+    Object.assign(existingAddressInfo, { label, color, isMain })
   }
   localStorage.setItem(`${username}-address-info`, JSON.stringify(addressesInfo))
 }
