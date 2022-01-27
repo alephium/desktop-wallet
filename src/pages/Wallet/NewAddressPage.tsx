@@ -22,7 +22,7 @@ import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
 import { useCallback, useEffect, useState } from 'react'
 
 import ExpandableSection from '../../components/ExpandableSection'
-import ColoredLabel from '../../components/Inputs/ColoredLabel'
+import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Select from '../../components/Inputs/Select'
 import Toggle from '../../components/Inputs/Toggle'
@@ -92,7 +92,7 @@ const NewAddressPage = () => {
   return (
     <>
       <Section>
-        <ColoredLabel placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
+        <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
           label="Main address"

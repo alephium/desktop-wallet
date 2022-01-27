@@ -23,21 +23,21 @@ import Label from '../Label'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
-type ColoredLabelValue = {
+type ColoredLabelInputValue = {
   title: string
   color: string
 }
 
-interface ColoredLabelProps {
-  value: ColoredLabelValue
+interface ColoredLabelInputProps {
+  value: ColoredLabelInputValue
   className?: string
-  onChange: ({ title, color }: ColoredLabelValue) => void
+  onChange: ({ title, color }: ColoredLabelInputValue) => void
   disabled?: boolean
   placeholder?: string
   id?: string
 }
 
-let ColoredLabel = ({ placeholder, disabled, onChange, value, className, id }: ColoredLabelProps) => {
+let ColoredLabelInput = ({ placeholder, disabled, onChange, value, className, id }: ColoredLabelInputProps) => {
   const [label, setLabel] = useState(value.title)
   const [color, setColor] = useState(value.color)
 
@@ -61,7 +61,7 @@ let ColoredLabel = ({ placeholder, disabled, onChange, value, className, id }: C
   )
 }
 
-ColoredLabel = styled(ColoredLabel)`
+ColoredLabelInput = styled(ColoredLabelInput)`
   display: flex;
   gap: 17px;
   width: 100%;
@@ -78,4 +78,4 @@ const LabelStyled = styled(Label)`
   left: 12px;
 `
 
-export default ColoredLabel
+export default ColoredLabelInput
