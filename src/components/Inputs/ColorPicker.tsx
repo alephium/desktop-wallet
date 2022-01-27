@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
-import { BlockPicker } from 'react-color'
+import { TwitterPicker } from 'react-color'
 import { useDetectClickOutside } from 'react-detect-click-outside'
 import styled from 'styled-components'
 
@@ -43,10 +43,11 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
       <AnimatePresence exitBeforeEnter initial={true}>
         {isPopupOpen && (
           <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <BlockPickerStyled
+            <TwitterPickerStyled
               color={color}
               onChangeComplete={(newColor) => onChange(newColor.hex)}
               colors={labelColorPalette}
+              triangle="top-right"
             />
           </Popup>
         )}
@@ -75,11 +76,10 @@ const Popup = styled(motion.div)`
   z-index: 1;
   position: absolute;
   top: calc(var(--inputHeight) + 10px);
-  left: 50%;
-  transform: translateX(-50%);
+  right: 0;
 `
 
-const BlockPickerStyled = styled(BlockPicker)``
+const TwitterPickerStyled = styled(TwitterPicker)``
 
 const Circle = styled.div<{ color: string }>`
   width: 16px;

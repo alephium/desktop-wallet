@@ -144,8 +144,8 @@ const CloseButton = styled(Button)`
 `
 
 const ModalContent = styled.div`
-  /* overflow-y: auto;
-  overflow-x: hidden; */
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
 `
 
