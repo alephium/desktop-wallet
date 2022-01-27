@@ -148,13 +148,13 @@ export const FooterActionsContainer = styled(Section)`
   width: 100%;
 `
 
-export const MainContent: FC = ({ children, ...props }) => (
-  <StyledMainContent initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+export let MainContent: FC = ({ children, ...props }) => (
+  <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
     {children}
-  </StyledMainContent>
+  </motion.main>
 )
 
-export const StyledMainContent = styled(motion.main)`
+MainContent = styled(MainContent)`
   position: absolute;
   left: ${walletSidebarWidth}px;
   right: 0;
