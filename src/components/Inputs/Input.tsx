@@ -35,7 +35,7 @@ import {
 const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
-  const booleanClassName = classNames({
+  const className = classNames(props.className, {
     error,
     isValid
   })
@@ -54,7 +54,7 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
         {...props}
         value={value}
         onChange={onChange}
-        className={`${booleanClassName} ${props.className}`}
+        className={className}
         disabled={disabled}
         isValid={isValid}
       />
