@@ -30,6 +30,11 @@ interface TableProps {
   className?: string
 }
 
+interface TableCellProps {
+  truncate?: boolean
+  align?: AlignType
+}
+
 let Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0px' }) => (
   <div className={className}>
     <TableHeaderRow minColumnWidth={minColumnWidth}>
@@ -49,11 +54,6 @@ Table = styled(Table)`
   background-color: ${({ theme }) => theme.bg.secondary};
   display: table;
 `
-
-interface TableCellProps {
-  truncate?: boolean
-  align?: AlignType
-}
 
 export const TableCell = styled.div<TableCellProps>`
   font-weight: var(--fontWeight-semiBold);
