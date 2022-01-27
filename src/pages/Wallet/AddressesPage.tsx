@@ -45,7 +45,6 @@ type AddressesTableData = {
   }
   lastUsed: string
   transactions: number
-  tokens: number
   group: number
   amount: bigint
 }
@@ -55,7 +54,6 @@ const addressesTableHeaders: TableProps['headers'] = [
   { title: 'Label' },
   { title: 'Last used' },
   { title: 'Transactions' },
-  { title: 'Nb. of tokens' },
   { title: 'Group' },
   { title: 'ALPH amount', align: 'end' }
 ]
@@ -85,7 +83,6 @@ const AddressesPage = () => {
           },
           lastUsed: '-', // TODO
           transactions: txNumber,
-          tokens: 0, // TODO
           group: addressToGroup(address, TOTAL_NUMBER_OF_GROUPS),
           amount: BigInt(balance)
         })
@@ -114,7 +111,6 @@ const AddressesPage = () => {
             <TableCell>{row.label?.text && <Label color={row.label.color}>{row.label.text}</Label>}</TableCell>
             <TableCell>{row.lastUsed}</TableCell>
             <TableCell>{row.transactions}</TableCell>
-            <TableCell>{row.tokens}</TableCell>
             <TableCell>{row.group}</TableCell>
             <TableCell align="end">
               <Amount value={row.amount} fadeDecimals />
