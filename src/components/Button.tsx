@@ -30,7 +30,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   transparent?: boolean
   squared?: boolean
   submit?: boolean
-  narrow?: boolean
+  short?: boolean
 }
 
 const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
@@ -71,8 +71,8 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, narrow }) => (squared ? '40px' : narrow ? '30px' : 'var(--inputHeight)')};
-  width: ${({ squared, narrow }) => (squared ? '40px' : narrow ? 'auto' : '80%')};
+  height: ${({ squared, short }) => (squared ? '40px' : short ? '30px' : 'var(--inputHeight)')};
+  width: ${({ squared, short }) => (squared ? '40px' : short ? 'auto' : '80%')};
   max-width: 250px;
   border-radius: var(--radius-small);
   border: none;
@@ -98,7 +98,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   font-size: 12px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};
-  padding: ${({ squared, narrow }) => (squared ? 'var(--spacing-2)' : '0 13px')};
+  padding: ${({ squared, short }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 

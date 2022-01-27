@@ -97,7 +97,7 @@ const AddressesPage = () => {
     <MainContent>
       <PageTitleRow>
         <PageTitle>Addresses</PageTitle>
-        <Button narrow onClick={() => setIsGenerateNewAddressModalOpen(true)}>
+        <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
           + Generate new address
         </Button>
       </PageTitleRow>

@@ -156,7 +156,7 @@ export const ModalFooterButtons = styled.div`
 `
 
 export const ModalFooterButton = ({ ...props }) => (
-  <ModalFooterButtonStyled narrow {...props}>
+  <ModalFooterButtonStyled short {...props}>
     {props.children}
   </ModalFooterButtonStyled>
 )
