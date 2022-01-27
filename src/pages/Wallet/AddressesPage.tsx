@@ -28,7 +28,7 @@ import Amount from '../../components/Amount'
 import Button from '../../components/Button'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
-import { ContainerNextToSidebar } from '../../components/PageComponents/PageContainers'
+import { MainContent } from '../../components/PageComponents/PageContainers'
 import PageTitle from '../../components/PageComponents/PageTitle'
 import Table, { AlignType, TableCell, TableFooter, TableRow } from '../../components/Table'
 import { useGlobalContext } from '../../contexts/global'
@@ -96,7 +96,7 @@ const AddressesPage = () => {
   }, [addressesInfo, client, wallet])
 
   return (
-    <ContainerNextToSidebar>
+    <MainContent>
       <PageTitleRow>
         <PageTitle>Addresses</PageTitle>
         <Button narrow onClick={() => setIsGenerateNewAddressModalOpen(true)}>
@@ -136,7 +136,7 @@ const AddressesPage = () => {
           </Modal>
         )}
       </AnimatePresence>
-    </ContainerNextToSidebar>
+    </MainContent>
   )
 }
 

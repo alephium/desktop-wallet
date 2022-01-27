@@ -32,7 +32,7 @@ import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import FloatingLogo from '../../components/FloatingLogo'
 import Modal from '../../components/Modal'
-import { ContainerNextToSidebar, FloatingPanel, Section } from '../../components/PageComponents/PageContainers'
+import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
 import { useGlobalContext } from '../../contexts/global'
@@ -224,7 +224,7 @@ const WalletHomePage = () => {
       </AnimatePresence>
       <Switch location={location} key={location.pathname}>
         <Route path="/wallet/overview" key="overview">
-          <ContainerNextToSidebar>
+          <MainContent>
             <FloatingPanel>
               <LastTransactionListHeader>
                 <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
@@ -271,7 +271,7 @@ const WalletHomePage = () => {
                 <LoadMoreMessage onClick={() => fetchTransactionsByPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
               )}
             </FloatingPanel>
-          </ContainerNextToSidebar>
+          </MainContent>
         </Route>
         <Route path="/wallet/addresses" key="addresses">
           <AddressesPage />

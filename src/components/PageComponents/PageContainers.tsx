@@ -148,18 +148,13 @@ export const FooterActionsContainer = styled(Section)`
   width: 100%;
 `
 
-export const ContainerNextToSidebar: FC = ({ children, ...props }) => (
-  <StyledContainerNextToSidebar
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.3 }}
-    {...props}
-  >
+export const MainContent: FC = ({ children, ...props }) => (
+  <StyledMainContent initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
     {children}
-  </StyledContainerNextToSidebar>
+  </StyledMainContent>
 )
 
-export const StyledContainerNextToSidebar = styled(motion.main)`
+export const StyledMainContent = styled(motion.main)`
   position: absolute;
   left: ${walletSidebarWidth}px;
   right: 0;
