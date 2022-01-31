@@ -22,6 +22,8 @@ import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
+import ClipboardButton from '../../components/Buttons/ClipboardButton'
+import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Modal from '../../components/Modal'
 import { MainContent } from '../../components/PageComponents/PageContainers'
@@ -51,7 +53,9 @@ const AddressDetailsPage = () => {
       <DataList>
         <DataListRow>
           <DataListCell>Address</DataListCell>
-          <DataListCell>{address}</DataListCell>
+          <DataListCell>
+            {address} <ClipboardButton textToCopy={address} /> <QRCodeButton textToEncode={address} />
+          </DataListCell>
         </DataListRow>
         <DataListRow>
           <DataListCell>Label</DataListCell>

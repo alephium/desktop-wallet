@@ -16,27 +16,32 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// TODO: Extract to common shared UI library
+
+import { QrCode } from 'lucide-react'
+import QRCode from 'react-qr-code'
+import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
-const DataList = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+const QRCodeButton = ({ textToEncode }: { textToEncode: string }) => {
+  return (
+    <>
+      <StyledClipboardIcon data-tip data-for="qr-code-tooltip" data-event="click" size={15} />
+      <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click">
+        <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
+      </Tooltip>
+    </>
+  )
+}
+
+const StyledClipboardIcon = styled(QrCode)`
+  margin-left: 10px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
-export const DataListRow = styled.div`
-  display: grid;
-  grid-auto-columns: 1fr;
-  grid-auto-flow: column;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
+const Tooltip = styled(ReactTooltip)`
+  opacity: 1 !important;
 `
 
-export const DataListCell = styled.div`
-  padding: var(--spacing-4);
-  display: flex;
-  align-items: center;
-`
-
-export default DataList
+export default QRCodeButton
