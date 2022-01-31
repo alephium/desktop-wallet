@@ -48,15 +48,13 @@ export const initialAddressesContext: AddressesContextProps = {
 export const AddressesContext = createContext<AddressesContextProps>(initialAddressesContext)
 
 interface AddressState {
-  hash: string // the hash of the address, used for display purposes and as a parameter in API requests
-  publicKey: string // used for creating transactions
-  privateKey: string // used for signing transactions
-  group: number // a memoized value of `addressToGroup(hash, TOTAL_NUMBER_OF_GROUPS)`
+  hash: string
+  publicKey: string
+  privateKey: string
+  group: number
   index: number
-  settings: AddressSettings // isMain, label, color
-  details?: AddressInfo // balance, lockedBalance, txNumber (data coming from API)
-  // lastUsed: string // a computed property based on the date of the last transaction
-  // transactions: TrasactionReactState[] // a list of transactions
+  settings: AddressSettings
+  details?: AddressInfo
 }
 
 export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<AddressesContextProps> }> = ({
