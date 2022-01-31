@@ -26,7 +26,7 @@ import Amount from '../../components/Amount'
 import Button from '../../components/Button'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
-import { MainContent } from '../../components/PageComponents/PageContainers'
+import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { useAddressesContext } from '../../contexts/addresses'
@@ -111,12 +111,6 @@ const AddressesPage = () => {
     </MainContent>
   )
 }
-
-const PageTitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-`
 
 const AddressHash = styled.div`
   white-space: nowrap;

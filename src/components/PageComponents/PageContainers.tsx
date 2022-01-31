@@ -172,3 +172,10 @@ MainContent = styled(MainContent)`
     left: 0;
   }
 `
+
+export const PageTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+`

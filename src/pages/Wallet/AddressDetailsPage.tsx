@@ -23,15 +23,18 @@ import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import Amount from '../../components/Amount'
+import Button from '../../components/Button'
 import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
-import { MainContent } from '../../components/PageComponents/PageContainers'
+import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableProps } from '../../components/Table'
 import { useAddressesContext } from '../../contexts/addresses'
+import { openInWebBrowser } from '../../utils/misc'
+import { loadStoredSettings } from '../../utils/settings'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },
@@ -47,15 +50,34 @@ const AddressDetailsPage = () => {
   const addressData = addressesState.get(address)
   const history = useHistory()
 
+  const handleShowInExplorer = () => {
+    const {
+      network: { explorerUrl }
+    } = loadStoredSettings()
+
+    if (!explorerUrl) return
+
+    const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
+    openInWebBrowser(cleanURL)
+  }
+
   if (!addressData) return null
 
   return (
     <MainContent>
       <PageTitleRow>
-        <PageH1Styled>
+        <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
-          Address details
-        </PageH1Styled>
+          <PageH1Styled>
+            Address details {addressData.settings.isMain && <MainAddress>Main address</MainAddress>}
+          </PageH1Styled>
+          {addressData.settings.label && (
+            <LabelStyled color={addressData.settings.color}>{addressData.settings.label}</LabelStyled>
+          )}
+        </Title>
+        <Button short onClick={handleShowInExplorer}>
+          Show in explorer
+        </Button>
       </PageTitleRow>
       <DataList>
         <DataListRow>
@@ -102,7 +124,7 @@ const AddressDetailsPage = () => {
   )
 }
 
-const PageH1Styled = styled(PageH1)`
+const Title = styled.div`
   display: flex;
   align-items: center;
 `
@@ -115,14 +137,22 @@ const ArrowLeftStyled = styled(ArrowLeft)`
   }
 `
 
-const PageTitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-`
-
 const AmountStyled = styled(Amount)`
   color: ${({ theme }) => theme.font.highlight};
+`
+
+const LabelStyled = styled(Label)`
+  margin-left: var(--spacing-5);
+`
+
+const PageH1Styled = styled(PageH1)`
+  position: relative;
+`
+
+const MainAddress = styled.div`
+  color: ${({ theme }) => theme.font.highlight};
+  font-size: 9px;
+  position: absolute;
 `
 
 export default AddressDetailsPage
