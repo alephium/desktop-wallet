@@ -35,12 +35,14 @@ export interface AddressesContextProps {
   saveNewAddress: (address: AddressState) => void
   addressesState: Map<string, AddressState>
   updateAddressState: (addressState: AddressState) => void
+  refreshAddressesDetails: () => void
 }
 
 export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   addressesState: new Map(),
-  updateAddressState: () => null
+  updateAddressState: () => null,
+  refreshAddressesDetails: () => null
 }
 
 export const AddressesContext = createContext<AddressesContextProps>(initialAddressesContext)
@@ -81,6 +83,17 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     },
     [client]
   )
+
+  const refreshAddressesDetails = async () => {
+    const newAddressesState = new Map(addressesState)
+    for (const [hash, addressState] of addressesState) {
+      const addressDetails = await fetchAddressDetails(hash)
+      if (addressDetails) {
+        newAddressesState.set(hash, { ...addressState, details: addressDetails })
+      }
+    }
+    setAddressesState(newAddressesState)
+  }
 
   const saveNewAddress = useCallback(
     async (newAddress: AddressState) => {
@@ -138,7 +151,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       value={merge(
         {
           addressesState,
-          saveNewAddress
+          saveNewAddress,
+          refreshAddressesDetails
         },
         overrideContextValue as AddressesContextProps
       )}

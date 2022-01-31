@@ -35,6 +35,7 @@ import Modal from '../../components/Modal'
 import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
+import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
@@ -60,6 +61,7 @@ const WalletHomePage = () => {
   const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const { refreshAddressesDetails } = useAddressesContext()
 
   const {
     network: { explorerUrl }
@@ -144,6 +146,11 @@ const WalletHomePage = () => {
     [client, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet]
   )
 
+  const refreshData = async () => {
+    fetchBalanceAndLatestTransactions()
+    refreshAddressesDetails()
+  }
+
   // Make initial calls
   useEffect(() => {
     fetchBalanceAndLatestTransactions()
@@ -162,13 +169,7 @@ const WalletHomePage = () => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader onSettingsClick={() => setIsSettingsModalOpen(true)}>
-        <RefreshButton
-          transparent
-          squared
-          onClick={fetchBalanceAndLatestTransactions}
-          disabled={showSpinner}
-          aria-label="Refresh"
-        >
+        <RefreshButton transparent squared onClick={refreshData} disabled={showSpinner} aria-label="Refresh">
           {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
       </AppHeader>
