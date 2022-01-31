@@ -22,13 +22,16 @@ import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
+import Amount from '../../components/Amount'
 import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
+import Label from '../../components/Label'
 import Modal from '../../components/Modal'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableProps } from '../../components/Table'
+import { useAddressesContext } from '../../contexts/addresses'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },
@@ -39,8 +42,12 @@ const transactionsTableHeaders: TableProps['headers'] = [
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
+  const { addressesState } = useAddressesContext()
   const { address } = useParams<{ address: string }>()
+  const addressData = addressesState.get(address)
   const history = useHistory()
+
+  if (!addressData) return null
 
   return (
     <MainContent>
@@ -59,7 +66,13 @@ const AddressDetailsPage = () => {
         </DataListRow>
         <DataListRow>
           <DataListCell>Label</DataListCell>
-          <DataListCell>-</DataListCell>
+          <DataListCell>
+            {addressData.settings.label ? (
+              <Label color={addressData.settings.color}>{addressData.settings.label}</Label>
+            ) : (
+              '-'
+            )}
+          </DataListCell>
         </DataListRow>
         <DataListRow>
           <DataListCell>Number of transactions</DataListCell>
@@ -67,7 +80,13 @@ const AddressDetailsPage = () => {
         </DataListRow>
         <DataListRow>
           <DataListCell>ALPH balance</DataListCell>
-          <DataListCell>-</DataListCell>
+          <DataListCell>
+            {addressData.details?.balance ? (
+              <AmountStyled value={BigInt(addressData.details.balance)} fadeDecimals />
+            ) : (
+              '-'
+            )}
+          </DataListCell>
         </DataListRow>
       </DataList>
       <PageH2>Transaction history</PageH2>
@@ -100,6 +119,10 @@ const PageTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+`
+
+const AmountStyled = styled(Amount)`
+  color: ${({ theme }) => theme.font.highlight};
 `
 
 export default AddressDetailsPage
