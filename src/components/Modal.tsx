@@ -28,18 +28,19 @@ import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 
 interface ModalProps {
   title: string
+  subtitle?: string
   onClose: () => void
   focusMode?: boolean
 }
 
-export const Modal: FC<ModalProps> = ({ children, title, onClose, focusMode }) => (
-  <ModalContextProvider title={title} onClose={onClose}>
+export const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode }) => (
+  <ModalContextProvider title={title} subtitle={subtitle} onClose={onClose}>
     <ModalContents focusMode={focusMode}>{children}</ModalContents>
   </ModalContextProvider>
 )
 
 const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => {
-  const { modalTitle, onModalClose } = useModalContext()
+  const { modalTitle, modalSubtitle, onModalClose } = useModalContext()
   const theme = useTheme()
 
   return (
@@ -58,6 +59,7 @@ const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => 
         <ModalHeader>
           <PanelTitle smaller useLayoutId={false}>
             {modalTitle}
+            {modalSubtitle && <ModalSubtitle>{modalSubtitle}</ModalSubtitle>}
           </PanelTitle>
           <CloseButton squared transparent onClick={onModalClose}>
             <X />
@@ -164,6 +166,12 @@ export const ModalFooterButton = ({ ...props }) => (
 const ModalFooterButtonStyled = styled(Button)`
   min-width: 111px;
   height: 30px;
+`
+
+const ModalSubtitle = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+  font-size: 14px;
+  margin-top: var(--spacing-1);
 `
 
 export default Modal

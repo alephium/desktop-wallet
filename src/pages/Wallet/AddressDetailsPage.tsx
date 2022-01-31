@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -25,16 +25,15 @@ import styled from 'styled-components'
 import Amount from '../../components/Amount'
 import Button from '../../components/Button'
 import ClipboardButton from '../../components/Buttons/ClipboardButton'
+import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Label from '../../components/Label'
-import Modal from '../../components/Modal'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableProps } from '../../components/Table'
 import { useAddressesContext } from '../../contexts/addresses'
-import { openInWebBrowser } from '../../utils/misc'
-import { loadStoredSettings } from '../../utils/settings'
+import AddressOptionsModal from './AddressOptionsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },
@@ -50,17 +49,6 @@ const AddressDetailsPage = () => {
   const addressData = addressesState.get(address)
   const history = useHistory()
 
-  const handleShowInExplorer = () => {
-    const {
-      network: { explorerUrl }
-    } = loadStoredSettings()
-
-    if (!explorerUrl) return
-
-    const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
-    openInWebBrowser(cleanURL)
-  }
-
   if (!addressData) return null
 
   return (
@@ -74,16 +62,24 @@ const AddressDetailsPage = () => {
           {addressData.settings.label && (
             <LabelStyled color={addressData.settings.color}>{addressData.settings.label}</LabelStyled>
           )}
+          <OptionsButton
+            transparent
+            squared
+            onClick={() => setIsAddressOptionsModalOpen(true)}
+            aria-label="Address options"
+          >
+            <SettingsIcon />
+          </OptionsButton>
         </Title>
-        <Button short onClick={handleShowInExplorer}>
-          Show in explorer
-        </Button>
       </PageTitleRow>
       <DataList>
         <DataListRow>
           <DataListCell>Address</DataListCell>
           <DataListCell>
-            {address} <ClipboardButton textToCopy={address} /> <QRCodeButton textToEncode={address} />
+            {address}
+            <ClipboardButton textToCopy={address} />
+            <QRCodeButton textToEncode={address} />
+            <OpenInExplorerButton address={address} />
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -115,9 +111,7 @@ const AddressDetailsPage = () => {
       <Table headers={transactionsTableHeaders} minColumnWidth={'104px'}></Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
-          <Modal title="Address options" onClose={() => setIsAddressOptionsModalOpen(false)}>
-            {/* <AddressOptionsModal /> */}
-          </Modal>
+          <AddressOptionsModal addressHash={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}
       </AnimatePresence>
     </MainContent>
@@ -143,6 +137,11 @@ const AmountStyled = styled(Amount)`
 
 const LabelStyled = styled(Label)`
   margin-left: var(--spacing-5);
+`
+
+const OptionsButton = styled(Button)`
+  margin-left: var(--spacing-5);
+  color: ${({ theme }) => theme.font.primary};
 `
 
 const PageH1Styled = styled(PageH1)`
