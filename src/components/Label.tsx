@@ -16,13 +16,28 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { FC } from 'react'
 import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
 
-const HorizontalDivider = styled.div<{ narrow?: boolean }>`
-  background-color: ${({ theme }) => theme.border.secondary};
-  margin: ${({ narrow }) => (narrow ? 0 : 'var(--spacing-3)')} var(--spacing-1);
-  height: 1px;
-  width: 100%;
+interface LabelProps {
+  className?: string
+  color?: string
+}
+
+let Label: FC<LabelProps> = ({ className, children }) => {
+  return <span className={className}>{children}</span>
+}
+
+Label = styled(Label)`
+  padding: 3px 6px;
+  color: ${({ color, theme }) => color || theme.font.primary}};
+  border: 1px solid ${({ color, theme }) => color || theme.font.primary}};
+  border-radius: var(--radius-small);
+  background-color: ${({ color, theme }) =>
+    tinycolor(color || theme.font.primary)
+      .setAlpha(0.2)
+      .toString()}};
 `
 
-export default HorizontalDivider
+export default Label

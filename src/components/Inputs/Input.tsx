@@ -35,7 +35,7 @@ import {
 const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
-  const className = classNames({
+  const className = classNames(props.className, {
     error,
     isValid
   })

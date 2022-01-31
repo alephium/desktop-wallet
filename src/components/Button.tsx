@@ -30,6 +30,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   transparent?: boolean
   squared?: boolean
   submit?: boolean
+  short?: boolean
 }
 
 const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
@@ -70,10 +71,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared }) => (squared ? '40px' : 'var(--inputHeight)')};
-  width: ${({ squared }) => (squared ? '40px' : '80%')};
+  height: ${({ squared, short }) => (squared ? '40px' : short ? '30px' : 'var(--inputHeight)')};
+  width: ${({ squared, short }) => (squared ? '40px' : short ? 'auto' : '80%')};
   max-width: 250px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>
     alert && !secondary
@@ -92,12 +93,12 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       ? theme.font.contrastPrimary
       : secondary
       ? theme.global.accent
-      : theme.font.contrastPrimary};
+      : theme.font.primary};
   font-weight: var(--fontWeight-medium);
-  font-size: inherit;
+  font-size: 12px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};
-  padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
+  padding: ${({ squared, short }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 

@@ -16,13 +16,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { FC } from 'react'
 import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
 
-const HorizontalDivider = styled.div<{ narrow?: boolean }>`
-  background-color: ${({ theme }) => theme.border.secondary};
-  margin: ${({ narrow }) => (narrow ? 0 : 'var(--spacing-3)')} var(--spacing-1);
-  height: 1px;
-  width: 100%;
+interface ActionLinkProps {
+  className?: string
+  onClick: () => void
+}
+
+let ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => {
+  return (
+    <a className={className} onClick={onClick}>
+      {children}
+    </a>
+  )
+}
+
+ActionLink = styled(ActionLink)`
+  color: ${({ theme }) => theme.global.accent};
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+  }
 `
 
-export default HorizontalDivider
+export default ActionLink

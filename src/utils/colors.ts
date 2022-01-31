@@ -16,13 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+export const labelColorPalette = ['#F19C1C', '#64F6C2', '#7B61FF', '#FFE600', '#64C9E1', '#AA9191', '#EF5959']
 
-const HorizontalDivider = styled.div<{ narrow?: boolean }>`
-  background-color: ${({ theme }) => theme.border.secondary};
-  margin: ${({ narrow }) => (narrow ? 0 : 'var(--spacing-3)')} var(--spacing-1);
-  height: 1px;
-  width: 100%;
-`
-
-export default HorizontalDivider
+export const getRandomLabelColor = () => labelColorPalette[Math.floor(Math.random() * labelColorPalette.length)]

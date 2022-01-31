@@ -35,7 +35,8 @@ export const lightTheme: DefaultTheme = {
     primary: '#000',
     secondary: '#797979',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
-    contrastSecondary: 'rgba(255, 255, 255, 0.8)'
+    contrastSecondary: 'rgba(255, 255, 255, 0.8)',
+    highlight: '#ffb800'
   },
   border: {
     primary: 'rgba(0, 0, 0, 0.05)',
@@ -58,20 +59,21 @@ export const darkTheme: DefaultTheme = {
     tertiary: 'rgba(61, 64, 74, 0.2)',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: tinycolor('#3482f7').setAlpha(0.3).toString()
+    accent: tinycolor('#6083FF').setAlpha(0.3).toString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
     secondary: 'rgba(255, 255, 255, 0.65)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
-    contrastSecondary: 'rgba(0, 0, 0, 0.8)'
+    contrastSecondary: 'rgba(0, 0, 0, 0.8)',
+    highlight: '#ffb800'
   },
   border: {
     primary: '#34353A',
     secondary: '#27282d'
   },
   global: {
-    accent: '#3482f7',
+    accent: '#6083FF',
     complementary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#4ebf08',

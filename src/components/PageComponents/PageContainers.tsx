@@ -20,7 +20,7 @@ import { motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { deviceBreakPoints } from '../../style/globalStyles'
+import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
@@ -95,7 +95,7 @@ export const BoxContainer: FC = ({ children }) => (
   <StyledBoxContainer variants={sectionChildrenVariants}>{children}</StyledBoxContainer>
 )
 
-const StyledFloatingPanel = styled(motion.main)<MainPanelProps>`
+const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   width: 100%;
   margin: 0 auto;
   max-width: 600px;
@@ -146,4 +146,28 @@ export const FooterActionsContainer = styled(Section)`
   flex: 0;
   margin-top: var(--spacing-5);
   width: 100%;
+`
+
+export let MainContent: FC = ({ children, ...props }) => (
+  <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+    {children}
+  </motion.main>
+)
+
+MainContent = styled(MainContent)`
+  position: absolute;
+  left: ${walletSidebarWidth}px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 56px;
+  padding-top: calc(10px + ${appHeaderHeight});
+  background-color: ${({ theme }) => theme.bg.secondary};
+
+  @media ${deviceBreakPoints.mobile} {
+    position: relative;
+    overflow: initial;
+    padding: 0;
+    left: 0;
+  }
 `

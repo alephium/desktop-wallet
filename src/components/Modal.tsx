@@ -149,4 +149,21 @@ const ModalContent = styled.div`
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
 `
 
+export const ModalFooterButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+`
+
+export const ModalFooterButton = ({ ...props }) => (
+  <ModalFooterButtonStyled short {...props}>
+    {props.children}
+  </ModalFooterButtonStyled>
+)
+
+const ModalFooterButtonStyled = styled(Button)`
+  min-width: 111px;
+  height: 30px;
+`
+
 export default Modal

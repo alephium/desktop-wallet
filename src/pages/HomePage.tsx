@@ -116,7 +116,7 @@ const Login = ({ usernames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(() => history.push('/wallet'))
+    login(() => history.push('/wallet/overview'))
   }
 
   return (
@@ -171,7 +171,7 @@ const InitialActions = ({
   )
 }
 
-const HomeContainer = styled(motion.div)`
+const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
 

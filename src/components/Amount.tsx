@@ -24,9 +24,10 @@ import { useGlobalContext } from '../contexts/global'
 interface AmountProps {
   value: bigint | undefined
   className?: string
+  fadeDecimals?: boolean
 }
 
-const Amount = ({ value, className }: AmountProps) => {
+const Amount = ({ value, className, fadeDecimals }: AmountProps) => {
   const {
     settings: {
       general: { discreetMode }
@@ -46,10 +47,14 @@ const Amount = ({ value, className }: AmountProps) => {
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (
-        <>
-          <span>{integralPart}</span>
-          <Decimals>.{fractionalPart}</Decimals>
-        </>
+        fadeDecimals ? (
+          <>
+            <span>{integralPart}</span>
+            <Decimals>.{fractionalPart}</Decimals>
+          </>
+        ) : (
+          `${integralPart}.${fractionalPart}`
+        )
       ) : (
         '-'
       )}
@@ -59,7 +64,7 @@ const Amount = ({ value, className }: AmountProps) => {
 }
 
 const Decimals = styled.span`
-  /* font-size: 0.85em; */
+  opacity: 0.7;
 `
 
 export default Amount
