@@ -163,6 +163,7 @@ MainContent = styled(MainContent)`
   padding: 56px;
   padding-top: calc(10px + ${appHeaderHeight});
   background-color: ${({ theme }) => theme.bg.secondary};
+  min-height: 100vh;
 
   @media ${deviceBreakPoints.mobile} {
     position: relative;
