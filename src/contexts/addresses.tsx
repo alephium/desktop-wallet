@@ -146,6 +146,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     initializeAddresses()
   }, [currentUsername, saveNewAddress, wallet])
 
+  // Clean state when locking the wallet
+  useEffect(() => {
+    if (wallet === undefined) {
+      setAddressesState(new Map())
+    }
+  }, [wallet])
+
   return (
     <AddressesContext.Provider
       value={merge(
