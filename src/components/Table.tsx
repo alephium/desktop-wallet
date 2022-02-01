@@ -86,13 +86,24 @@ const TableColumns = styled.div<{ minColumnWidth?: string }>`
 
 const TableHeaderRow = styled(TableColumns)``
 
-export const TableRow = styled(TableColumns)`
+export const TableRow = styled(TableColumns)<{ onClick?: () => void }>`
   background-color: ${({ theme }) => theme.bg.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 
   &:last-child {
+    border-bottom: none;
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
   }
+
+  ${({ onClick, theme }) =>
+    onClick &&
+    css`
+      &:hover {
+        cursor: pointer;
+        background-color: ${({ theme }) => theme.bg.hover};
+      }
+    `}
 `
 
 export const TableFooter = styled(TableColumns)``

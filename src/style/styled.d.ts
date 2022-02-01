@@ -49,5 +49,19 @@ declare module 'styled-components' {
       valid: string
       highlightGradient: string
     }
+    badge: {
+      font: {
+        plus: string
+        minus: string
+        neutral: string
+        neutralHighlight: string
+      }
+      bg: {
+        plus: string
+        minus: string
+        neutral: string
+        neutralHighlight: string
+      }
+    }
   }
 }

@@ -16,13 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Input, Output } from 'alephium-js/dist/api/api-explorer'
+import { calAmountDelta } from 'alephium-js/dist/lib/numbers'
+import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
+import _ from 'lodash'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import Amount from '../../components/Amount'
+import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
@@ -31,7 +36,7 @@ import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Label from '../../components/Label'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
-import Table, { TableProps } from '../../components/Table'
+import Table, { TableCell, TableProps, TableRow } from '../../components/Table'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from './AddressOptionsModal'
 
@@ -41,6 +46,16 @@ const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Address(es)' },
   { title: 'Amount', align: 'end' }
 ]
+
+interface IOListProps {
+  currentAddress: string
+  isOut: boolean
+  outputs?: Output[]
+  inputs?: Input[]
+  timestamp: number
+}
+
+const minTableColumnWidth = '104px'
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
@@ -116,7 +131,40 @@ const AddressDetailsPage = () => {
         </DataListRow>
       </DataList>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={'104px'}></Table>
+      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
+        {addressData.transactions?.confirmed.map((transaction) => {
+          const amount = calAmountDelta(transaction, addressHash)
+          const amountIsBigInt = typeof amount === 'bigint'
+          const isOut = amountIsBigInt && amount < 0
+
+          return (
+            <TableRow key={transaction.hash} minColumnWidth={minTableColumnWidth}>
+              <TableCell>
+                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
+              </TableCell>
+              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
+              <TableCell truncate>
+                <DarkLabel>{isOut ? 'To' : 'From'}</DarkLabel>
+                <IOList
+                  currentAddress={addressHash}
+                  isOut={isOut}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                />
+              </TableCell>
+              <TableCell align="end">
+                <Badge
+                  type={isOut ? 'minus' : 'plus'}
+                  prefix={isOut ? '- ' : '+ '}
+                  content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
+                  amount
+                />
+              </TableCell>
+            </TableRow>
+          )
+        })}
+      </Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
           <AddressOptionsModal addressHash={addressHash} onClose={() => setIsAddressOptionsModalOpen(false)} />
@@ -124,6 +172,31 @@ const AddressDetailsPage = () => {
       </AnimatePresence>
     </MainContent>
   )
+}
+
+const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp }: IOListProps) => {
+  const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
+  const genesisTimestamp = 1231006505000
+
+  if (io && io.length > 0) {
+    return io.every((o) => o.address === currentAddress) ? (
+      <span>{currentAddress}</span>
+    ) : (
+      <>
+        {_(io.filter((o) => o.address !== currentAddress))
+          .map((v) => v.address)
+          .uniq()
+          .value()
+          .map((v) => (
+            <span key={v}>{v}</span>
+          ))}
+      </>
+    )
+  } else if (timestamp === genesisTimestamp) {
+    return <DarkLabel>Genesis TX</DarkLabel>
+  } else {
+    return <DarkLabel>Mining Rewards</DarkLabel>
+  }
 }
 
 const Title = styled.div`
@@ -160,6 +233,17 @@ const MainAddress = styled.div`
   color: ${({ theme }) => theme.font.highlight};
   font-size: 9px;
   position: absolute;
+`
+
+const DarkLabel = styled.span`
+  color: ${({ theme }) => theme.font.secondary};
+  background-color: ${({ theme }) => theme.bg.secondary};
+  padding: 3px 10px;
+  border-radius: var(--radius-small);
+  min-width: 50px;
+  display: inline-flex;
+  justify-content: center;
+  margin-right: var(--spacing-4);
 `
 
 export default AddressDetailsPage

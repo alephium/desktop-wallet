@@ -70,7 +70,7 @@ const AddressesPage = () => {
       <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
         {addressesData.map((address) => {
           return (
-            <TableRowStyled
+            <TableRow
               key={address.hash}
               minColumnWidth={minTableColumnWidth}
               onClick={() => navigateToAddressDetailsPage(address.hash)}
@@ -88,7 +88,7 @@ const AddressesPage = () => {
               <TableCell align="end">
                 <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
               </TableCell>
-            </TableRowStyled>
+            </TableRow>
           )
         })}
         <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
@@ -129,13 +129,6 @@ const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
 
 const Summary = styled(TableCell)`
   color: ${({ theme }) => theme.font.highlight};
-`
-
-const TableRowStyled = styled(TableRow)`
-  &:hover {
-    cursor: pointer;
-    background-color: ${({ theme }) => theme.bg.hover};
-  }
 `
 
 export default AddressesPage
