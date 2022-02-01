@@ -94,7 +94,7 @@ const AddressDetailsPage = () => {
         </DataListRow>
         <DataListRow>
           <DataListCell>Number of transactions</DataListCell>
-          <DataListCell>-</DataListCell>
+          <DataListCell>{addressData.details?.txNumber}</DataListCell>
         </DataListRow>
         {addressData.details?.lockedBalance && BigInt(addressData.details.lockedBalance) > 0 && (
           <DataListRow>

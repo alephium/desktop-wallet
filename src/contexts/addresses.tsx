@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressInfo } from 'alephium-js/dist/api/api-explorer'
+import { AddressInfo, Transaction } from 'alephium-js/dist/api/api-explorer'
 import addressToGroup from 'alephium-js/dist/lib/address'
 import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
 import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
@@ -34,13 +34,17 @@ import { useGlobalContext } from './global'
 export type AddressHash = string
 
 type AddressState = {
-  hash: string
+  hash: AddressHash
   publicKey: string
   privateKey: string
   group: number
   index: number
   settings: AddressSettings
   details?: AddressInfo
+  transactions?: {
+    confirmed: Transaction[]
+  }
+  lastUsed?: number
 }
 
 export type AddressesStateMap = Map<AddressHash, AddressState>
@@ -86,14 +90,33 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [client]
   )
 
+  const fetchAddressConfirmedTransactions = useCallback(
+    async (addressHash: string, page = 1) => {
+      if (!client) return []
+      const addressTransactions = await client.explorer.getAddressTransactions(addressHash, page)
+      return addressTransactions.data
+    },
+    [client]
+  )
+
   const refreshAddressesDetails = async () => {
     const newAddressesState = new Map(addressesState)
+
     for (const [hash, addressState] of addressesState) {
       const addressDetails = await fetchAddressDetails(hash)
+      const addressConfirmedTransactions = await fetchAddressConfirmedTransactions(hash)
+
       if (addressDetails) {
-        newAddressesState.set(hash, { ...addressState, details: addressDetails })
+        newAddressesState.set(hash, {
+          ...addressState,
+          details: addressDetails,
+          transactions: {
+            confirmed: addressConfirmedTransactions
+          }
+        })
       }
     }
+
     setAddressesState(newAddressesState)
   }
 
@@ -101,14 +124,27 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     async (newAddress: AddressState) => {
       storeAddressMetadataOfAccount(currentUsername, newAddress.index, newAddress.settings)
 
+      let details: AddressInfo | undefined
+      let confirmedTransactions: Transaction[] = []
+      let lastUsed: number | undefined
+
       if (!newAddress.details) {
-        const addressDetails = await fetchAddressDetails(newAddress.hash)
-        updateAddressState({ ...newAddress, details: addressDetails })
-      } else {
-        updateAddressState(newAddress)
+        details = await fetchAddressDetails(newAddress.hash)
       }
+      if (!newAddress.transactions?.confirmed) {
+        confirmedTransactions = await fetchAddressConfirmedTransactions(newAddress.hash)
+        lastUsed = confirmedTransactions.length > 0 ? confirmedTransactions[0].timestamp : undefined
+      }
+      updateAddressState({
+        ...newAddress,
+        lastUsed,
+        details,
+        transactions: {
+          confirmed: confirmedTransactions
+        }
+      })
     },
-    [currentUsername, fetchAddressDetails, updateAddressState]
+    [currentUsername, fetchAddressDetails, fetchAddressConfirmedTransactions, updateAddressState]
   )
 
   useEffect(() => {

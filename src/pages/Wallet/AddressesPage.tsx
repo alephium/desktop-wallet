@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -81,7 +82,7 @@ const AddressesPage = () => {
               <TableCell>
                 {address.settings.label && <Label color={address.settings.color}>{address.settings.label}</Label>}
               </TableCell>
-              <TableCell>-</TableCell>
+              <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               {address.details && <TableCell>{address.details.txNumber}</TableCell>}
               <TableCell>{address.group}</TableCell>
               {address.details && (
