@@ -80,16 +80,14 @@ const AddressesPage = () => {
                 {address.settings.isMain && <MainAddress>Main address</MainAddress>}
               </TableCell>
               <TableCell>
-                {address.settings.label && <Label color={address.settings.color}>{address.settings.label}</Label>}
+                {address.settings.label ? <Label color={address.settings.color}>{address.settings.label}</Label> : '-'}
               </TableCell>
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
-              {address.details && <TableCell>{address.details.txNumber}</TableCell>}
+              <TableCell>{address.details?.txNumber ?? 0}</TableCell>
               <TableCell>{address.group}</TableCell>
-              {address.details && (
-                <TableCell align="end">
-                  <Amount value={BigInt(address.details.balance)} fadeDecimals />
-                </TableCell>
-              )}
+              <TableCell align="end">
+                <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
+              </TableCell>
             </TableRowStyled>
           )
         })}
