@@ -16,13 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
+
 export type AddressSettings = {
   isMain: boolean
   label?: string
   color?: string
 }
 
-type AddressIndexAndSettings = AddressSettings & {
+type AddressMetadata = AddressSettings & {
   index: number
 }
 
@@ -34,27 +36,25 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const loadStoredAddressesIndexAndSettingsOfAccount = (username: string): AddressIndexAndSettings[] => {
-  const data = localStorage.getItem(`${username}-address-indexes-and-settings`)
+export const loadStoredAddressesMetadataOfAccount = (username: string): AddressMetadata[] => {
+  const data = localStorage.getItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`)
 
   if (data === null) return []
 
   return JSON.parse(data)
 }
 
-export const storeAddressIndexAndSettingsOfAccount = (username: string, index: number, settings: AddressSettings) => {
-  const addressesIndexAndSettings = loadStoredAddressesIndexAndSettingsOfAccount(username)
-  const existingAddressIndexAndSettings = addressesIndexAndSettings.find(
-    (data: AddressIndexAndSettings) => data.index === index
-  )
+export const storeAddressMetadataOfAccount = (username: string, index: number, settings: AddressSettings) => {
+  const addressesMetadata = loadStoredAddressesMetadataOfAccount(username)
+  const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
-  if (!existingAddressIndexAndSettings) {
-    addressesIndexAndSettings.push({
+  if (!existingAddressMetadata) {
+    addressesMetadata.push({
       index,
       ...settings
     })
   } else {
-    Object.assign(existingAddressIndexAndSettings, settings)
+    Object.assign(existingAddressMetadata, settings)
   }
-  localStorage.setItem(`${username}-address-indexes-and-settings`, JSON.stringify(addressesIndexAndSettings))
+  localStorage.setItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
 }

@@ -26,8 +26,8 @@ import { PartialDeep } from 'type-fest'
 
 import {
   AddressSettings,
-  loadStoredAddressesIndexAndSettingsOfAccount,
-  storeAddressIndexAndSettingsOfAccount
+  loadStoredAddressesMetadataOfAccount,
+  storeAddressMetadataOfAccount
 } from '../utils/addresses'
 import { useGlobalContext } from './global'
 
@@ -99,7 +99,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     async (newAddress: AddressState) => {
-      storeAddressIndexAndSettingsOfAccount(currentUsername, newAddress.index, newAddress.settings)
+      storeAddressMetadataOfAccount(currentUsername, newAddress.index, newAddress.settings)
 
       if (!newAddress.details) {
         const addressDetails = await fetchAddressDetails(newAddress.hash)
@@ -115,9 +115,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     const initializeAddresses = async () => {
       if (!currentUsername || !wallet) return
 
-      const addressesIndexAndSettings = loadStoredAddressesIndexAndSettingsOfAccount(currentUsername)
+      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentUsername)
 
-      if (addressesIndexAndSettings.length === 0) {
+      if (addressesMetadata.length === 0) {
         await saveNewAddress({
           hash: wallet.address,
           publicKey: wallet.publicKey,
@@ -131,7 +131,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           }
         })
       } else {
-        for (const { index, ...settings } of addressesIndexAndSettings) {
+        for (const { index, ...settings } of addressesMetadata) {
           const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
           await saveNewAddress({
             hash: address,
