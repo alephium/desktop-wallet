@@ -272,7 +272,7 @@ const WalletHomePage = () => {
             </FloatingPanel>
           </MainContent>
         </Route>
-        <Route path="/wallet/addresses/:address" key="address-details">
+        <Route path="/wallet/addresses/:addressHash" key="address-details">
           <AddressDetailsPage />
         </Route>
         <Route path="/wallet/addresses" key="addresses">

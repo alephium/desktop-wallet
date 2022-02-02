@@ -29,7 +29,7 @@ import Modal from '../../components/Modal'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import { useAddressesContext } from '../../contexts/addresses'
+import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import NewAddressPage from './NewAddressPage'
 
 const minTableColumnWidth = '105px'
@@ -49,8 +49,8 @@ const AddressesPage = () => {
   const addressesData = [...addressesState.values()]
   const history = useHistory()
 
-  const navigateToAddressDetailsPage = (address: string) => {
-    history.push(`/wallet/addresses/${address}`)
+  const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
+    history.push(`/wallet/addresses/${addressHash}`)
   }
 
   const balanceSummary = addressesData.reduce(
@@ -75,7 +75,7 @@ const AddressesPage = () => {
               onClick={() => navigateToAddressDetailsPage(address.hash)}
             >
               <TableCell>
-                <AddressHash>{address.hash}</AddressHash>
+                <Hash>{address.hash}</Hash>
                 {address.settings.isMain && <MainAddress>Main address</MainAddress>}
               </TableCell>
               <TableCell>
@@ -112,7 +112,7 @@ const AddressesPage = () => {
   )
 }
 
-const AddressHash = styled.div`
+const Hash = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

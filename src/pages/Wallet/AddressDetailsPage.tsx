@@ -32,7 +32,7 @@ import Label from '../../components/Label'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableProps } from '../../components/Table'
-import { useAddressesContext } from '../../contexts/addresses'
+import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from './AddressOptionsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
@@ -45,8 +45,8 @@ const transactionsTableHeaders: TableProps['headers'] = [
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const { addressesState } = useAddressesContext()
-  const { address } = useParams<{ address: string }>()
-  const addressData = addressesState.get(address)
+  const { addressHash } = useParams<{ addressHash: AddressHash }>()
+  const addressData = addressesState.get(addressHash)
   const history = useHistory()
 
   if (!addressData) return null
@@ -76,10 +76,10 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Address</DataListCell>
           <DataListCell>
-            {address}
-            <ClipboardButton textToCopy={address} />
-            <QRCodeButton textToEncode={address} />
-            <OpenInExplorerButton address={address} />
+            {addressHash}
+            <ClipboardButton textToCopy={addressHash} />
+            <QRCodeButton textToEncode={addressHash} />
+            <OpenInExplorerButton address={addressHash} />
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -111,7 +111,7 @@ const AddressDetailsPage = () => {
       <Table headers={transactionsTableHeaders} minColumnWidth={'104px'}></Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
-          <AddressOptionsModal addressHash={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
+          <AddressOptionsModal addressHash={addressHash} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}
       </AnimatePresence>
     </MainContent>

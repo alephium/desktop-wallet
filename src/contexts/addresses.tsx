@@ -31,9 +31,23 @@ import {
 } from '../utils/addresses'
 import { useGlobalContext } from './global'
 
+export type AddressHash = string
+
+type AddressState = {
+  hash: string
+  publicKey: string
+  privateKey: string
+  group: number
+  index: number
+  settings: AddressSettings
+  details?: AddressInfo
+}
+
+export type AddressesStateMap = Map<AddressHash, AddressState>
+
 export interface AddressesContextProps {
   saveNewAddress: (address: AddressState) => void
-  addressesState: Map<string, AddressState>
+  addressesState: AddressesStateMap
   updateAddressState: (addressState: AddressState) => void
   refreshAddressesDetails: () => void
 }
@@ -47,21 +61,11 @@ export const initialAddressesContext: AddressesContextProps = {
 
 export const AddressesContext = createContext<AddressesContextProps>(initialAddressesContext)
 
-interface AddressState {
-  hash: string
-  publicKey: string
-  privateKey: string
-  group: number
-  index: number
-  settings: AddressSettings
-  details?: AddressInfo
-}
-
 export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<AddressesContextProps> }> = ({
   children,
   overrideContextValue
 }) => {
-  const [addressesState, setAddressesState] = useState<Map<string, AddressState>>(new Map())
+  const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const { currentUsername, wallet, client } = useGlobalContext()
 
   const updateAddressState = useCallback((newAddressState: AddressState) => {
@@ -74,7 +78,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }, [])
 
   const fetchAddressDetails = useCallback(
-    async (addressHash: string) => {
+    async (addressHash: AddressHash) => {
       if (!client) return
       const addressDetails = await client.explorer.getAddressDetails(addressHash)
       return addressDetails.data
