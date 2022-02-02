@@ -61,7 +61,7 @@ const WalletHomePage = () => {
   const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { refreshAddressesState } = useAddressesContext()
+  const { refreshAddressesData } = useAddressesContext()
 
   const {
     network: { explorerUrl }
@@ -148,7 +148,7 @@ const WalletHomePage = () => {
 
   const refreshData = () => {
     fetchBalanceAndLatestTransactions()
-    refreshAddressesState()
+    refreshAddressesData()
   }
 
   // Make initial calls

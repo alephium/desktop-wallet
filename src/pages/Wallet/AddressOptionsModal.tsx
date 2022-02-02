@@ -35,36 +35,27 @@ interface AddressOptionsModal {
 }
 
 const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModal) => {
-  const { addressesState, saveNewAddress, getAddressState } = useAddressesContext()
-  const currentMainAddress = [...addressesState.values()].find(({ settings: { isMain } }) => isMain)
-  const addressData = getAddressState(addressHash)
+  const { addresses, getAddress, updateAddressSettings } = useAddressesContext()
+  const currentMainAddress = addresses.find(({ settings: { isMain } }) => isMain)
+  const address = getAddress(addressHash)
   const disableMainAddressToggle = currentMainAddress?.hash === addressHash
   const [addressLabel, setAddressLabel] = useState({
-    title: addressData?.settings.label ?? '',
-    color: addressData?.settings.color ?? getRandomLabelColor()
+    title: address?.settings.label ?? '',
+    color: address?.settings.color ?? getRandomLabelColor()
   })
-  const [isMainAddress, setIsMainAddress] = useState(addressData?.settings.isMain ?? false)
+  const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
   const { wallet } = useGlobalContext()
 
   const onGenerateClick = () => {
-    if (!addressData) return
+    if (!address) return
 
-    saveNewAddress({
-      ...addressData,
-      settings: {
-        isMain: disableMainAddressToggle ? addressData.settings.isMain : isMainAddress,
-        label: addressLabel.title,
-        color: addressLabel.color
-      }
+    updateAddressSettings(address, {
+      isMain: disableMainAddressToggle ? address.settings.isMain : isMainAddress,
+      label: addressLabel.title,
+      color: addressLabel.color
     })
     if (isMainAddress && currentMainAddress && !disableMainAddressToggle) {
-      saveNewAddress({
-        ...currentMainAddress,
-        settings: {
-          ...currentMainAddress.settings,
-          isMain: false
-        }
-      })
+      updateAddressSettings(currentMainAddress, { ...currentMainAddress.settings, isMain: false })
     }
     onClose()
   }
@@ -80,7 +71,7 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModal) => {
   }
 
   return (
-    <Modal title="Address options" subtitle={addressData?.settings.label ?? addressHash} onClose={onClose}>
+    <Modal title="Address options" subtitle={address?.settings.label ?? addressHash} onClose={onClose}>
       <Section>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />

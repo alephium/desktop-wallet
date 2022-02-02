@@ -56,5 +56,6 @@ export const storeAddressMetadataOfAccount = (username: string, index: number, s
   } else {
     Object.assign(existingAddressMetadata, settings)
   }
+  console.log(`🟠 Storing address index ${index} metadata locally`)
   localStorage.setItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
 }

@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// TODO: Delete file after re-implementing overview page
+
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import { createContext, FC, useContext, useEffect, useState } from 'react'
 

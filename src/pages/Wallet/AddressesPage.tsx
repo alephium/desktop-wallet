@@ -46,18 +46,21 @@ const addressesTableHeaders: TableProps['headers'] = [
 
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addressesState } = useAddressesContext()
-  const addressesData = [...addressesState.values()]
+  const { addresses } = useAddressesContext()
   const history = useHistory()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
     history.push(`/wallet/addresses/${addressHash}`)
   }
 
-  const balanceSummary = addressesData.reduce(
-    (acc, row) => acc + BigInt(row.details ? row.details.balance : 0),
-    BigInt(0)
-  )
+  const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
+
+  const sortedAddressList = addresses.sort((a, b) => {
+    // Always keep main address to the top of the list
+    if (a.settings.isMain) return -1
+    if (b.settings.isMain) return 1
+    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
+  })
 
   return (
     <MainContent>
@@ -68,7 +71,7 @@ const AddressesPage = () => {
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
-        {addressesData.map((address) => {
+        {sortedAddressList.map((address) => {
           return (
             <TableRow
               key={address.hash}
