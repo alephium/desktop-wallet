@@ -76,7 +76,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     setAddressesState((prevState) => {
       const newAddressesState = new Map(prevState)
       newAddressesState.set(newAddressState.hash, newAddressState)
-      console.log('Updating state of address: ', newAddressState.hash)
       return newAddressesState
     })
   }, [])
