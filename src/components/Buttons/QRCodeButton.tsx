@@ -23,18 +23,21 @@ import QRCode from 'react-qr-code'
 import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
-const QRCodeButton = ({ textToEncode }: { textToEncode: string }) => {
-  return (
-    <>
-      <StyledClipboardIcon data-tip data-for="qr-code-tooltip" data-event="click" size={15} />
-      <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click">
-        <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
-      </Tooltip>
-    </>
-  )
+interface QRCodeButtonProps {
+  textToEncode: string
+  className?: string
 }
 
-const StyledClipboardIcon = styled(QrCode)`
+const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => (
+  <>
+    <QRCodeIcon className={className} data-tip data-for="qr-code-tooltip" data-event="click" size={15} />
+    <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click">
+      <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
+    </Tooltip>
+  </>
+)
+
+const QRCodeIcon = styled(QrCode)`
   margin-left: 10px;
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};

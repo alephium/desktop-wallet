@@ -25,7 +25,12 @@ import styled from 'styled-components'
 
 import { useGlobalContext } from '../../contexts/global'
 
-const ClipboardButton = ({ textToCopy }: { textToCopy: string }) => {
+interface ClipboardButtonProps {
+  textToCopy: string
+  className?: string
+}
+
+const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
@@ -53,21 +58,23 @@ const ClipboardButton = ({ textToCopy }: { textToCopy: string }) => {
   }, [hasBeenCopied, setSnackbarMessage])
 
   if (!hasBeenCopied) {
-    return <StyledClipboardIcon size={15} data-tip={'Copy to clipboard'} onClick={handleClick} />
+    return (
+      <Clipboard className={`${className} clipboard`} size={15} data-tip={'Copy to clipboard'} onClick={handleClick} />
+    )
   } else {
-    return <StyledCheckIcon size={15} />
+    return <Check className={`${className} check`} size={15} />
   }
 }
 
-const StyledClipboardIcon = styled(Clipboard)`
+export default styled(ClipboardButton)`
   margin-left: 10px;
-  cursor: pointer;
-  color: ${({ theme }) => theme.font.secondary};
-`
 
-const StyledCheckIcon = styled(Check)`
-  margin-left: 10px;
-  color: ${({ theme }) => theme.font.primary};
-`
+  &.clipboard {
+    cursor: pointer;
+    color: ${({ theme }) => theme.font.secondary};
+  }
 
-export default ClipboardButton
+  &.check {
+    color: ${({ theme }) => theme.font.primary};
+  }
+`

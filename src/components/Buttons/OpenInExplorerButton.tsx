@@ -22,7 +22,12 @@ import styled from 'styled-components'
 import { openInWebBrowser } from '../../utils/misc'
 import { loadStoredSettings } from '../../utils/settings'
 
-const OpenInExplorerButton = ({ address }: { address: string }) => {
+interface OpenInExplorerButtonProps {
+  address: string
+  className?: string
+}
+
+const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps) => {
   const handleShowInExplorer = () => {
     const {
       network: { explorerUrl }
@@ -30,17 +35,16 @@ const OpenInExplorerButton = ({ address }: { address: string }) => {
 
     if (!explorerUrl) return
 
-    const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1') // Remove forward slashes duplicates if needed
+    // Remove forward slashes duplicates if needed
+    const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1')
     openInWebBrowser(cleanURL)
   }
 
-  return <StyledExternalLink data-tip={'Open in explorer'} size={15} onClick={handleShowInExplorer} />
+  return <ExternalLink className={className} data-tip={'Open in explorer'} size={15} onClick={handleShowInExplorer} />
 }
 
-const StyledExternalLink = styled(ExternalLink)`
+export default styled(OpenInExplorerButton)`
   margin-left: 10px;
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};
 `
-
-export default OpenInExplorerButton
