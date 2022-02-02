@@ -73,7 +73,8 @@ const NewAddressPage = () => {
           isMain: isMainAddress,
           label: addressLabel.title,
           color: addressLabel.color
-        }
+        },
+        transactions: {}
       })
       if (isMainAddress && currentMainAddress && currentMainAddress.index !== newAddressData.addressIndex) {
         saveNewAddress({

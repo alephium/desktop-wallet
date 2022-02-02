@@ -49,7 +49,7 @@ export interface GlobalContextProps {
   currentNetwork: NetworkType | 'custom'
 }
 
-type Client = AsyncReturnType<typeof createClient>
+export type Client = AsyncReturnType<typeof createClient>
 
 export const initialGlobalContext: GlobalContextProps = {
   currentUsername: '',

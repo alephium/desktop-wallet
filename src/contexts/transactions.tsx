@@ -30,6 +30,7 @@ export interface SimpleTx {
   amount: string
   timestamp: number
   type?: TransactionType
+  network?: NetworkType
 }
 
 interface TransactionsContextType {

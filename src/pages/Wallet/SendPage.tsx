@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { abbreviateAmount, convertScientificToFloatString, convertToQALPH } from 'alephium-js/dist/lib/numbers'
 import { Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { useHistory } from 'react-router'
 import { useTheme } from 'styled-components'
 
 import Button from '../../components/Button'
@@ -31,6 +30,7 @@ import { HeaderContent, HeaderLogo } from '../../components/Modal'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
+import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
 import { useTransactionsContext } from '../../contexts/transactions'
@@ -41,7 +41,6 @@ import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 type StepIndex = 1 | 2 | 3
 
 const SendPage = () => {
-  const history = useHistory()
   const theme = useTheme()
   const {
     client,
@@ -49,9 +48,11 @@ const SendPage = () => {
     setSnackbarMessage,
     settings: {
       general: { passwordRequirement }
-    }
+    },
+    currentNetwork
   } = useGlobalContext()
   const { addPendingTx } = useTransactionsContext()
+  const { addPendingTransaction } = useAddressesContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
   const initialOnModalClose = useRef(onModalClose)
   const [transactionData, setTransactionData] = useState<TransactionData>({
@@ -151,10 +152,19 @@ const SendPage = () => {
             amount: fullAmount,
             type: 'transfer'
           })
+          addPendingTransaction({
+            txId: txSendResp.data.txId,
+            fromAddress: wallet.address,
+            toAddress: address,
+            timestamp: new Date().getTime(),
+            amount: fullAmount,
+            type: 'transfer',
+            network: currentNetwork
+          })
         }
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
-        history.push('/wallet')
+        initialOnModalClose.current()
       } catch (e) {
         console.error(e)
         setSnackbarMessage({
@@ -186,6 +196,15 @@ const SendPage = () => {
               timestamp: new Date().getTime(),
               amount: '',
               type: 'consolidation'
+            })
+            addPendingTransaction({
+              txId: txSendResp.data.txId,
+              fromAddress: wallet.address,
+              toAddress: wallet.address,
+              timestamp: new Date().getTime(),
+              amount: '',
+              type: 'consolidation',
+              network: currentNetwork
             })
           }
         }

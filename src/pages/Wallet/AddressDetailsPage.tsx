@@ -59,9 +59,9 @@ const minTableColumnWidth = '104px'
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-  const { addressesState } = useAddressesContext()
+  const { getAddressState } = useAddressesContext()
   const { addressHash } = useParams<{ addressHash: AddressHash }>()
-  const addressData = addressesState.get(addressHash)
+  const addressData = getAddressState(addressHash)
   const history = useHistory()
 
   if (!addressData) return null
@@ -132,38 +132,68 @@ const AddressDetailsPage = () => {
       </DataList>
       <PageH2>Transaction history</PageH2>
       <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
-        {addressData.transactions?.confirmed.map((transaction) => {
-          const amount = calAmountDelta(transaction, addressHash)
-          const amountIsBigInt = typeof amount === 'bigint'
-          const isOut = amountIsBigInt && amount < 0
+        {addressData.transactions.pending &&
+          addressData.transactions.pending
+            .slice(0)
+            .reverse()
+            .map((transaction) => {
+              const amount = transaction.amount
+              const amountIsBigInt = typeof amount === 'bigint'
 
-          return (
-            <TableRow key={transaction.hash} minColumnWidth={minTableColumnWidth}>
-              <TableCell>
-                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
-              </TableCell>
-              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
-                <DarkLabel>{isOut ? 'To' : 'From'}</DarkLabel>
-                <IOList
-                  currentAddress={addressHash}
-                  isOut={isOut}
-                  outputs={transaction.outputs}
-                  inputs={transaction.inputs}
-                  timestamp={transaction.timestamp}
-                />
-              </TableCell>
-              <TableCell align="end">
-                <Badge
-                  type={isOut ? 'minus' : 'plus'}
-                  prefix={isOut ? '- ' : '+ '}
-                  content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                  amount
-                />
-              </TableCell>
-            </TableRow>
-          )
-        })}
+              return (
+                <TableRow key={transaction.txId} minColumnWidth={minTableColumnWidth} blinking>
+                  <TableCell>
+                    <Badge content="Pending" type="neutral" />
+                  </TableCell>
+                  <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
+                  <TableCell truncate>
+                    <DarkLabel>To</DarkLabel>
+                    <span>{transaction.toAddress}</span>
+                  </TableCell>
+                  <TableCell align="end">
+                    <Badge
+                      type="minus"
+                      prefix="-"
+                      content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
+                      amount
+                    />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+        {addressData.transactions.confirmed &&
+          addressData.transactions.confirmed.map((transaction) => {
+            const amount = calAmountDelta(transaction, addressHash)
+            const amountIsBigInt = typeof amount === 'bigint'
+            const isOut = amountIsBigInt && amount < 0
+
+            return (
+              <TableRow key={transaction.hash} minColumnWidth={minTableColumnWidth}>
+                <TableCell>
+                  <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
+                </TableCell>
+                <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
+                <TableCell truncate>
+                  <DarkLabel>{isOut ? 'To' : 'From'}</DarkLabel>
+                  <IOList
+                    currentAddress={addressHash}
+                    isOut={isOut}
+                    outputs={transaction.outputs}
+                    inputs={transaction.inputs}
+                    timestamp={transaction.timestamp}
+                  />
+                </TableCell>
+                <TableCell align="end">
+                  <Badge
+                    type={isOut ? 'minus' : 'plus'}
+                    prefix={isOut ? '- ' : '+ '}
+                    content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
+                    amount
+                  />
+                </TableCell>
+              </TableRow>
+            )
+          })}
       </Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
