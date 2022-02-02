@@ -146,7 +146,7 @@ const WalletHomePage = () => {
     [client, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet]
   )
 
-  const refreshData = async () => {
+  const refreshData = () => {
     fetchBalanceAndLatestTransactions()
     refreshAddressesDetails()
   }
