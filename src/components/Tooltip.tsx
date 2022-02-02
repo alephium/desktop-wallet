@@ -16,11 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+// TODO: Extract to common shared UI library
 
-const PageTitle = styled.h1`
-  font-size: 18px;
-  font-weight: var(--fontWeight-medium);
-`
+import { FC } from 'react'
+import ReactTooltip from 'react-tooltip'
+import { useTheme } from 'styled-components'
 
-export default PageTitle
+interface TooltipProps {
+  id?: string
+}
+
+const Tooltip: FC<TooltipProps> = ({ id, children }) => {
+  const theme = useTheme()
+
+  return (
+    <ReactTooltip backgroundColor={theme.bg.primary} id={id}>
+      {children}
+    </ReactTooltip>
+  )
+}
+
+export default Tooltip

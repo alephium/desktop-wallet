@@ -16,11 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import addressToGroup from 'alephium-js/dist/lib/address'
-import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
-import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
 import { AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
@@ -28,26 +26,13 @@ import Amount from '../../components/Amount'
 import Button from '../../components/Button'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
-import { MainContent } from '../../components/PageComponents/PageContainers'
-import PageTitle from '../../components/PageComponents/PageTitle'
+import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
+import { PageH1 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import { useGlobalContext } from '../../contexts/global'
+import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import NewAddressPage from './NewAddressPage'
 
 const minTableColumnWidth = '105px'
-
-type AddressesTableData = {
-  hash: string
-  isMain: boolean
-  label?: {
-    text?: string
-    color?: string
-  }
-  lastUsed: string
-  transactions: number
-  group: number
-  amount: bigint
-}
 
 const addressesTableHeaders: TableProps['headers'] = [
   { title: 'Address' },
@@ -60,69 +45,59 @@ const addressesTableHeaders: TableProps['headers'] = [
 
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addressesInfo, wallet, client } = useGlobalContext()
-  const [addressesTableData, setAddressesTableData] = useState<AddressesTableData[]>([])
+  const { addressesState } = useAddressesContext()
+  const addressesData = [...addressesState.values()]
+  const history = useHistory()
 
-  useEffect(() => {
-    if (!wallet?.seed || !client) return
+  const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
+    history.push(`/wallet/addresses/${addressHash}`)
+  }
 
-    const fetchAddressesInfo = async () => {
-      const tableData = []
-      for (const { index, label, color, isMain } of addressesInfo) {
-        const { address } = deriveNewAddressData(wallet.seed, undefined, index)
-        const {
-          data: { txNumber, balance }
-        } = await client.explorer.getAddressDetails(address)
-
-        tableData.push({
-          hash: address,
-          isMain,
-          label: {
-            text: label,
-            color
-          },
-          lastUsed: '-', // TODO
-          transactions: txNumber,
-          group: addressToGroup(address, TOTAL_NUMBER_OF_GROUPS),
-          amount: BigInt(balance)
-        })
-      }
-      setAddressesTableData(tableData)
-    }
-
-    fetchAddressesInfo()
-  }, [addressesInfo, client, wallet])
+  const balanceSummary = addressesData.reduce(
+    (acc, row) => acc + BigInt(row.details ? row.details.balance : 0),
+    BigInt(0)
+  )
 
   return (
     <MainContent>
       <PageTitleRow>
-        <PageTitle>Addresses</PageTitle>
+        <PageH1>Addresses</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
           + Generate new address
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
-        {addressesTableData.map((row) => (
-          <TableRow key={row.hash} minColumnWidth={minTableColumnWidth}>
-            <TableCell>
-              <AddressHash>{row.hash}</AddressHash>
-              {row.isMain && <MainAddress>Main address</MainAddress>}
-            </TableCell>
-            <TableCell>{row.label?.text && <Label color={row.label.color}>{row.label.text}</Label>}</TableCell>
-            <TableCell>{row.lastUsed}</TableCell>
-            <TableCell>{row.transactions}</TableCell>
-            <TableCell>{row.group}</TableCell>
-            <TableCell align="end">
-              <Amount value={row.amount} fadeDecimals />
-            </TableCell>
-          </TableRow>
-        ))}
+        {addressesData.map((address) => {
+          return (
+            <TableRowStyled
+              key={address.hash}
+              minColumnWidth={minTableColumnWidth}
+              onClick={() => navigateToAddressDetailsPage(address.hash)}
+            >
+              <TableCell>
+                <Hash>{address.hash}</Hash>
+                {address.settings.isMain && <MainAddress>Main address</MainAddress>}
+              </TableCell>
+              <TableCell>
+                {address.settings.label && <Label color={address.settings.color}>{address.settings.label}</Label>}
+              </TableCell>
+              <TableCell>-</TableCell>
+              {address.details && <TableCell>{address.details.txNumber}</TableCell>}
+              <TableCell>{address.group}</TableCell>
+              {address.details && (
+                <TableCell align="end">
+                  <Amount value={BigInt(address.details.balance)} fadeDecimals />
+                </TableCell>
+              )}
+            </TableRowStyled>
+          )
+        })}
         <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ Generate new address</ActionLink>
           </TableCell>
           <Summary align="end">
-            <Amount value={addressesTableData.reduce((acc, row) => acc + row.amount, BigInt(0))} fadeDecimals />
+            <Amount value={balanceSummary} fadeDecimals />
           </Summary>
         </TableFooterStyled>
       </Table>
@@ -137,13 +112,7 @@ const AddressesPage = () => {
   )
 }
 
-const PageTitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-`
-
-const AddressHash = styled.div`
+const Hash = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -161,6 +130,13 @@ const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
 
 const Summary = styled(TableCell)`
   color: ${({ theme }) => theme.font.highlight};
+`
+
+const TableRowStyled = styled(TableRow)`
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.bg.hover};
+  }
 `
 
 export default AddressesPage

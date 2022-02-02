@@ -21,7 +21,7 @@ import { calAmountDelta } from 'alephium-js/dist/lib/numbers'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
-import { Layers, List, Lock, QrCode, RefreshCw, Send } from 'lucide-react'
+import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -35,6 +35,7 @@ import Modal from '../../components/Modal'
 import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import TransactionItem from '../../components/TransactionItem'
+import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
@@ -43,7 +44,7 @@ import { useInterval } from '../../utils/hooks'
 import { loadStoredSettings } from '../../utils/settings'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
-import AddressPage from './AddressPage'
+import AddressDetailsPage from './AddressDetailsPage'
 import SendPage from './SendPage'
 
 dayjs.extend(relativeTime)
@@ -59,8 +60,8 @@ const WalletHomePage = () => {
   const [lastLoadedPage, setLastLoadedPage] = useState(1)
   const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const { refreshAddressesDetails } = useAddressesContext()
 
   const {
     network: { explorerUrl }
@@ -145,6 +146,11 @@ const WalletHomePage = () => {
     [client, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet]
   )
 
+  const refreshData = () => {
+    fetchBalanceAndLatestTransactions()
+    refreshAddressesDetails()
+  }
+
   // Make initial calls
   useEffect(() => {
     fetchBalanceAndLatestTransactions()
@@ -163,13 +169,7 @@ const WalletHomePage = () => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader onSettingsClick={() => setIsSettingsModalOpen(true)}>
-        <RefreshButton
-          transparent
-          squared
-          onClick={fetchBalanceAndLatestTransactions}
-          disabled={showSpinner}
-          aria-label="Refresh"
-        >
+        <RefreshButton transparent squared onClick={refreshData} disabled={showSpinner} aria-label="Refresh">
           {showSpinner ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
       </AppHeader>
@@ -188,16 +188,15 @@ const WalletHomePage = () => {
           </WalletAmountContent>
         </WalletAmountContainer>
         <WalletActions>
-          <ActionsTitle>Quick actions</ActionsTitle>
+          <ActionsTitle>Menu</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
-          <ActionButton Icon={QrCode} label="Show address" onClick={() => setIsAddressModalOpen(true)} />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
           {!somePendingConsolidationTxs ? (
-            <ActionButton Icon={Send} label="Send token" onClick={() => setIsSendModalOpen(true)} />
+            <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
           ) : (
             <ActionButton
               Icon={Send}
-              label="Send token"
+              label="Send"
               onClick={() =>
                 setSnackbarMessage({
                   text: 'Please wait until your pending consolidation transactions are confirmed',
@@ -207,7 +206,7 @@ const WalletHomePage = () => {
             />
           )}
 
-          <ActionButton Icon={Lock} label="Lock account" onClick={lockWallet} />
+          <ActionButton Icon={Lock} label="Lock" onClick={lockWallet} />
         </WalletActions>
         <FloatingLogo position="bottom" />
       </WalletSidebar>
@@ -273,6 +272,9 @@ const WalletHomePage = () => {
             </FloatingPanel>
           </MainContent>
         </Route>
+        <Route path="/wallet/addresses/:addressHash" key="address-details">
+          <AddressDetailsPage />
+        </Route>
         <Route path="/wallet/addresses" key="addresses">
           <AddressesPage />
         </Route>
@@ -281,11 +283,6 @@ const WalletHomePage = () => {
         {isSendModalOpen && (
           <Modal title="Send" onClose={() => setIsSendModalOpen(false)}>
             <SendPage />
-          </Modal>
-        )}
-        {isAddressModalOpen && (
-          <Modal title="Your address" onClose={() => setIsAddressModalOpen(false)}>
-            <AddressPage />
           </Modal>
         )}
         {isSettingsModalOpen && (
@@ -447,6 +444,7 @@ const WalletActions = styled.div`
 
 const ActionsTitle = styled.h3`
   width: 100%;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const RefreshButton = styled(Button)``

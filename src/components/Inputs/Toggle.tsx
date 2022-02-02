@@ -17,15 +17,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import styled, { useTheme } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 interface ToggleProps {
   toggled: boolean
   onToggle: (value: boolean) => void
   className?: string
+  disabled?: boolean
 }
 
-const Toggle = ({ toggled, onToggle, className }: ToggleProps) => {
+const Toggle = ({ toggled, onToggle, className, disabled }: ToggleProps) => {
   const theme = useTheme()
 
   const toggleBackgroundVariants = {
@@ -42,14 +43,21 @@ const Toggle = ({ toggled, onToggle, className }: ToggleProps) => {
 
   const transition: Transition = { duration: 0.2, type: 'tween' }
 
+  const onClick = () => {
+    if (!disabled) {
+      onToggle(!toggled)
+    }
+  }
+
   return (
     <StyledToggle
-      onClick={() => onToggle(!toggled)}
+      onClick={onClick}
       className={className}
       toggled={toggled}
       variants={toggleBackgroundVariants}
       animate={toggleState}
       transition={transition}
+      disabled={disabled}
     >
       <ToggleFloatingIndicator variants={floatingIndicatorVariant} animate={toggleState} transition={transition} />
     </StyledToggle>
@@ -70,6 +78,13 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   svg {
     cursor: pointer;
   }
+
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      cursor: not-allowed;
+      opacity: 0.5;
+    `}
 `
 
 const ToggleFloatingIndicator = styled(motion.div)`

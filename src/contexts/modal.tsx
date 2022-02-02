@@ -21,6 +21,8 @@ import { createContext, FC, useCallback, useContext, useEffect, useState } from 
 interface ModalContext {
   modalTitle: string
   setModalTitle: (newTitle: string) => void
+  modalSubtitle?: string
+  setModalSubtitle?: (newSubtitle: string) => void
   onModalClose: () => void
   setOnModalClose: (newFn: () => void) => void
 }
@@ -28,17 +30,21 @@ interface ModalContext {
 export const ModalContext = createContext<ModalContext>({
   modalTitle: '',
   setModalTitle: () => null,
+  modalSubtitle: '',
+  setModalSubtitle: () => null,
   onModalClose: () => null,
   setOnModalClose: () => null
 })
 
 interface ModalContextProviderProps {
   title: string
+  subtitle?: string
   onClose: () => void
 }
 
-export const ModalContextProvider: FC<ModalContextProviderProps> = ({ children, title, onClose }) => {
+export const ModalContextProvider: FC<ModalContextProviderProps> = ({ children, title, subtitle, onClose }) => {
   const [modalTitle, setModalTitle] = useState(title)
+  const [modalSubtitle, setModalSubtitle] = useState(subtitle)
   const [onModalClose, setOnModalClose] = useState(() => onClose)
 
   // Prevent body scroll on mount
@@ -68,7 +74,9 @@ export const ModalContextProvider: FC<ModalContextProviderProps> = ({ children, 
   }, [handleEscapeKeyPress, onModalClose])
 
   return (
-    <ModalContext.Provider value={{ modalTitle, setModalTitle, onModalClose, setOnModalClose }}>
+    <ModalContext.Provider
+      value={{ modalTitle, setModalTitle, modalSubtitle, setModalSubtitle, onModalClose, setOnModalClose }}
+    >
       {children}
     </ModalContext.Provider>
   )

@@ -21,6 +21,7 @@ import { FC } from 'react'
 import styled from 'styled-components'
 
 import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
+import Tooltip from '../Tooltip'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
@@ -150,6 +151,7 @@ export const FooterActionsContainer = styled(Section)`
 
 export let MainContent: FC = ({ children, ...props }) => (
   <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+    <Tooltip />
     {children}
   </motion.main>
 )
@@ -163,11 +165,19 @@ MainContent = styled(MainContent)`
   padding: 56px;
   padding-top: calc(10px + ${appHeaderHeight});
   background-color: ${({ theme }) => theme.bg.secondary};
+  min-height: 100vh;
 
   @media ${deviceBreakPoints.mobile} {
     position: relative;
     overflow: initial;
-    padding: 0;
+    padding: var(--spacing-5);
     left: 0;
   }
+`
+
+export const PageTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
 `

@@ -25,6 +25,7 @@ import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
 import App from './App'
+import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
 import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
@@ -34,10 +35,12 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
       <GlobalContextProvider>
-        <ThemeProvider theme={lightTheme}>
-          <GlobalStyle />
-          <App />
-        </ThemeProvider>
+        <AddressesContextProvider>
+          <ThemeProvider theme={lightTheme}>
+            <GlobalStyle />
+            <App />
+          </ThemeProvider>
+        </AddressesContextProvider>
       </GlobalContextProvider>
     </Router>
   </React.StrictMode>,

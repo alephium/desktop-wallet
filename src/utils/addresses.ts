@@ -16,11 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type AddressInfo = {
-  index: number
+const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
+
+export type AddressSettings = {
   isMain: boolean
   label?: string
   color?: string
+}
+
+type AddressMetadata = AddressSettings & {
+  index: number
 }
 
 export const checkAddressValidity = (address: string) => {
@@ -31,33 +36,25 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const loadStoredAddressesInfoOfAccount = (username: string): AddressInfo[] => {
-  const storedAddressIndexes = localStorage.getItem(`${username}-address-info`)
+export const loadStoredAddressesMetadataOfAccount = (username: string): AddressMetadata[] => {
+  const data = localStorage.getItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`)
 
-  if (storedAddressIndexes === null) return []
+  if (data === null) return []
 
-  return JSON.parse(storedAddressIndexes)
+  return JSON.parse(data)
 }
 
-export const storeAddressInfoOfAccount = (
-  addressIndex: number,
-  username: string,
-  label?: string,
-  color?: string,
-  isMain = false
-) => {
-  const addressesInfo = loadStoredAddressesInfoOfAccount(username)
-  const existingAddressInfo = addressesInfo.find((info: AddressInfo) => info.index === addressIndex)
+export const storeAddressMetadataOfAccount = (username: string, index: number, settings: AddressSettings) => {
+  const addressesMetadata = loadStoredAddressesMetadataOfAccount(username)
+  const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
-  if (!existingAddressInfo) {
-    addressesInfo.push({
-      index: addressIndex,
-      label,
-      color,
-      isMain
+  if (!existingAddressMetadata) {
+    addressesMetadata.push({
+      index,
+      ...settings
     })
   } else {
-    Object.assign(existingAddressInfo, { label, color, isMain })
+    Object.assign(existingAddressMetadata, settings)
   }
-  localStorage.setItem(`${username}-address-info`, JSON.stringify(addressesInfo))
+  localStorage.setItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
 }
