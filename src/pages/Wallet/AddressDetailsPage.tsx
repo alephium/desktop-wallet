@@ -96,8 +96,16 @@ const AddressDetailsPage = () => {
           <DataListCell>Number of transactions</DataListCell>
           <DataListCell>-</DataListCell>
         </DataListRow>
+        {addressData.details?.lockedBalance && BigInt(addressData.details.lockedBalance) > 0 && (
+          <DataListRow>
+            <DataListCell>Locked ALPH balance</DataListCell>
+            <DataListCell>
+              <Amount value={BigInt(addressData.details.lockedBalance)} fadeDecimals />
+            </DataListCell>
+          </DataListRow>
+        )}
         <DataListRow>
-          <DataListCell>ALPH balance</DataListCell>
+          <DataListCell>Total ALPH balance</DataListCell>
           <DataListCell>
             {addressData.details?.balance ? (
               <AmountStyled value={BigInt(addressData.details.balance)} fadeDecimals />
