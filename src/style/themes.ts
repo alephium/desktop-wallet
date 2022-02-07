@@ -97,7 +97,7 @@ export const darkTheme: DefaultTheme = {
     font: {
       plus: '#37c461',
       minus: 'rgba(243, 113, 93, 1)',
-      neutral: 'rgba(255, 255, 255, 0.8)',
+      neutral: 'rgba(255, 255, 255, 0.65)',
       neutralHighlight: 'rgba(255, 255, 255, 1)'
     },
     bg: {

@@ -28,14 +28,14 @@ interface BadgeProps {
   prefix?: string
 }
 
-let Badge = ({ content, className, amount, prefix }: BadgeProps) => (
+const Badge = ({ content, className, amount, prefix }: BadgeProps) => (
   <div className={className}>
     {prefix && <span>{prefix}</span>}
     {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
   </div>
 )
 
-Badge = styled(Badge)`
+export default styled(Badge)`
   color: ${({ type, theme }) => theme.badge.font[type]};
   text-align: center;
   border-radius: 3px;
@@ -43,5 +43,3 @@ Badge = styled(Badge)`
   float: left;
   white-space: nowrap;
 `
-
-export default Badge

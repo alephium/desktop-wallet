@@ -147,7 +147,7 @@ const AddressDetailsPage = () => {
                   </TableCell>
                   <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
                   <TableCell truncate>
-                    <DarkLabel>To</DarkLabel>
+                    <DarkLabel type="neutral" content="To" />
                     <span>{transaction.toAddress}</span>
                   </TableCell>
                   <TableCell align="end">
@@ -174,7 +174,7 @@ const AddressDetailsPage = () => {
                 </TableCell>
                 <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
                 <TableCell truncate>
-                  <DarkLabel>{isOut ? 'To' : 'From'}</DarkLabel>
+                  <DarkLabel type="neutral" content={isOut ? 'To' : 'From'} />
                   <IOList
                     currentAddress={addressHash}
                     isOut={isOut}
@@ -223,9 +223,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp }: IOListPro
       </>
     )
   } else if (timestamp === genesisTimestamp) {
-    return <DarkLabel>Genesis TX</DarkLabel>
+    return <DarkLabel type="neutral" content="Genesis TX" />
   } else {
-    return <DarkLabel>Mining Rewards</DarkLabel>
+    return <DarkLabel type="neutral" content="Mining Rewards" />
   }
 }
 
@@ -265,8 +265,7 @@ const MainAddress = styled.div`
   position: absolute;
 `
 
-const DarkLabel = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
+const DarkLabel = styled(Badge)`
   background-color: ${({ theme }) => theme.bg.secondary};
   padding: 3px 10px;
   border-radius: var(--radius-small);
@@ -274,6 +273,7 @@ const DarkLabel = styled.span`
   display: inline-flex;
   justify-content: center;
   margin-right: var(--spacing-4);
+  float: none;
 `
 
 export default AddressDetailsPage
