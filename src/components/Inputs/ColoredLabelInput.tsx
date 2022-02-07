@@ -71,6 +71,11 @@ ColoredLabelInput = styled(ColoredLabelInput)`
 
 const InputStyled = styled(Input)`
   color: transparent;
+  caret-color: ${({ color }) => color};
+
+  &:not([value='']) {
+    padding-left: 19px;
+  }
 `
 
 const LabelStyled = styled(Label)`

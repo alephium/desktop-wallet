@@ -46,14 +46,20 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
   }
 
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval>
     // Reset icon after copy
     if (hasBeenCopied) {
       ReactTooltip.rebuild()
       setSnackbarMessage({ text: 'Copied to clipboard!', type: 'info' })
 
-      setInterval(() => {
+      interval = setInterval(() => {
         setHasBeenCopied(false)
       }, 3000)
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
     }
   }, [hasBeenCopied, setSnackbarMessage])
 

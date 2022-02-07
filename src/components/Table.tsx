@@ -86,13 +86,49 @@ const TableColumns = styled.div<{ minColumnWidth?: string }>`
 
 const TableHeaderRow = styled(TableColumns)``
 
-export const TableRow = styled(TableColumns)`
+export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
   background-color: ${({ theme }) => theme.bg.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 
   &:last-child {
+    border-bottom: none;
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
   }
+
+  ${({ onClick }) =>
+    onClick &&
+    css`
+      &:hover {
+        cursor: pointer;
+        background-color: ${({ theme }) => theme.bg.hover};
+      }
+    `}
+
+  ${({ blinking }) =>
+    blinking &&
+    css`
+      opacity: 0.5;
+
+      background: linear-gradient(90deg, rgba(200, 200, 200, 0.4), rgba(200, 200, 200, 0.05));
+      background-size: 400% 400%;
+      animation: gradient 2s ease infinite;
+
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        25% {
+          background-position: 100% 50%;
+        }
+        75% {
+          background-position: 25% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    `}
 `
 
 export const TableFooter = styled(TableColumns)``

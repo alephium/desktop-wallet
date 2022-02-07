@@ -20,57 +20,26 @@ import styled, { DefaultTheme } from 'styled-components'
 
 import Amount from './Amount'
 
-type BadgeType = 'plus' | 'minus' | 'neutral' | 'neutralHighlight'
-
 interface BadgeProps {
-  type: BadgeType
+  type: keyof DefaultTheme['badge']['font']
   content: string | number | undefined
   className?: string
   amount?: boolean
   prefix?: string
 }
 
-let Badge = ({ content, className, amount, prefix }: BadgeProps) => (
+const Badge = ({ content, className, amount, prefix }: BadgeProps) => (
   <div className={className}>
     {prefix && <span>{prefix}</span>}
-    {amount && content ? <Amount value={BigInt(content)} /> : content}
+    {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
   </div>
 )
 
-const getBadgeColor = (badgeType: BadgeType, theme: DefaultTheme) => {
-  let backgroundColor
-  let color
-
-  switch (badgeType) {
-    case 'plus':
-      backgroundColor = 'rgba(48, 167, 84, 0.12)'
-      color = '#37c461'
-      break
-    case 'minus':
-      backgroundColor = 'rgba(243, 113, 93, 0.1)'
-      color = 'rgba(243, 113, 93, 1)'
-      break
-    case 'neutral':
-      backgroundColor = theme.name === 'dark' ? 'rgba(58, 58, 58, 0.28)' : 'rgba(90, 90, 90, 0.6)'
-      color = theme.name === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 1)'
-      break
-    case 'neutralHighlight':
-      backgroundColor = 'rgba(101, 16, 247, 1)'
-      color = 'rgba(255, 255, 255, 1)'
-  }
-
-  return { backgroundColor, color }
-}
-
-Badge = styled(Badge)`
-  background-color: ${({ type, theme }) => getBadgeColor(type, theme).backgroundColor};
-  color: ${({ type, theme }) => getBadgeColor(type, theme).color};
+export default styled(Badge)`
+  color: ${({ type, theme }) => theme.badge.font[type]};
   text-align: center;
-  padding: var(--spacing-1) var(--spacing-2);
   border-radius: 3px;
   font-weight: var(--fontWeight-semiBold);
   float: left;
   white-space: nowrap;
 `
-
-export default Badge

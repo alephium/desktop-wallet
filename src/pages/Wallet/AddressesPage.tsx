@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -69,7 +70,7 @@ const AddressesPage = () => {
       <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
         {addressesData.map((address) => {
           return (
-            <TableRowStyled
+            <TableRow
               key={address.hash}
               minColumnWidth={minTableColumnWidth}
               onClick={() => navigateToAddressDetailsPage(address.hash)}
@@ -79,17 +80,15 @@ const AddressesPage = () => {
                 {address.settings.isMain && <MainAddress>Main address</MainAddress>}
               </TableCell>
               <TableCell>
-                {address.settings.label && <Label color={address.settings.color}>{address.settings.label}</Label>}
+                {address.settings.label ? <Label color={address.settings.color}>{address.settings.label}</Label> : '-'}
               </TableCell>
-              <TableCell>-</TableCell>
-              {address.details && <TableCell>{address.details.txNumber}</TableCell>}
+              <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
+              <TableCell>{address.details?.txNumber ?? 0}</TableCell>
               <TableCell>{address.group}</TableCell>
-              {address.details && (
-                <TableCell align="end">
-                  <Amount value={BigInt(address.details.balance)} fadeDecimals />
-                </TableCell>
-              )}
-            </TableRowStyled>
+              <TableCell align="end">
+                <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
+              </TableCell>
+            </TableRow>
           )
         })}
         <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
@@ -130,13 +129,6 @@ const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
 
 const Summary = styled(TableCell)`
   color: ${({ theme }) => theme.font.highlight};
-`
-
-const TableRowStyled = styled(TableRow)`
-  &:hover {
-    cursor: pointer;
-    background-color: ${({ theme }) => theme.bg.hover};
-  }
 `
 
 export default AddressesPage

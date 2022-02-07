@@ -35,9 +35,9 @@ interface AddressOptionsModal {
 }
 
 const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModal) => {
-  const { addressesState, saveNewAddress } = useAddressesContext()
+  const { addressesState, saveNewAddress, getAddressState } = useAddressesContext()
   const currentMainAddress = [...addressesState.values()].find(({ settings: { isMain } }) => isMain)
-  const addressData = addressesState.get(addressHash)
+  const addressData = getAddressState(addressHash)
   const disableMainAddressToggle = currentMainAddress?.hash === addressHash
   const [addressLabel, setAddressLabel] = useState({
     title: addressData?.settings.label ?? '',
