@@ -33,6 +33,7 @@ import { NetworkType } from '../utils/settings'
 import { Client, useGlobalContext } from './global'
 
 export type AddressHash = string
+export type TimeInMs = number
 
 type AddressState = {
   network?: NetworkType
@@ -47,7 +48,7 @@ type AddressState = {
     confirmed?: Transaction[]
     pending?: SimpleTx[]
   }
-  lastUsed?: number
+  lastUsed?: TimeInMs
 }
 
 export type AddressesStateMap = Map<AddressHash, AddressState>
@@ -220,7 +221,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       let details: AddressInfo | undefined
       let confirmedTransactions = newAddress.transactions.confirmed
       let pendingTransactions = newAddress.transactions.pending
-      let lastUsed: number | undefined
+      let lastUsed: TimeInMs | undefined
 
       if (!newAddress.details) {
         details = await fetchAddressDetails(newAddress.hash)
