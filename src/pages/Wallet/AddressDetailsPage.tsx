@@ -190,7 +190,7 @@ const AddressDetailsPage = () => {
       </Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
-          <AddressOptionsModal addressHash={addressHash} onClose={() => setIsAddressOptionsModalOpen(false)} />
+          <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}
       </AnimatePresence>
     </MainContent>

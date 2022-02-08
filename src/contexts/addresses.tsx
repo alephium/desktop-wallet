@@ -80,6 +80,14 @@ export class Address {
     }
   }
 
+  displayName() {
+    return this.settings.label || this.shortHash()
+  }
+
+  shortHash() {
+    return `${this.hash.substring(0, 10)}...`
+  }
+
   async fetchDetails(client: Client) {
     if (!client) return
     console.log('⬇️ Fetching address details: ', this.hash)
@@ -120,6 +128,7 @@ export type AddressesStateMap = Map<AddressHash, Address>
 
 export interface AddressesContextProps {
   addresses: Address[]
+  mainAddress?: Address
   getAddress: (hash: AddressHash) => Address | undefined
   setAddress: (address: Address) => void
   saveNewAddress: (address: Address) => void
@@ -129,6 +138,7 @@ export interface AddressesContextProps {
 
 export const initialAddressesContext: AddressesContextProps = {
   addresses: [],
+  mainAddress: undefined,
   getAddress: () => undefined,
   setAddress: () => undefined,
   saveNewAddress: () => null,
@@ -145,6 +155,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const { currentUsername, wallet, client, currentNetwork } = useGlobalContext()
   const previousClient = useRef<Client>()
+  const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
+    (addressState) => addressState.network === currentNetwork
+  )
 
   const constructMapKey = useCallback(
     (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
@@ -329,7 +342,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     <AddressesContext.Provider
       value={merge(
         {
-          addresses: getAddressesStateForCurrentNetwork(),
+          addresses: addressesOfCurrentNetwork,
+          mainAddress: addressesOfCurrentNetwork.find((address) => address.settings.isMain),
           getAddress,
           setAddress,
           saveNewAddress,

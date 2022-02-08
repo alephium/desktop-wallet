@@ -16,63 +16,63 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import styled from 'styled-components'
 
+import Amount from '../../components/Amount'
 import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Toggle from '../../components/Inputs/Toggle'
 import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
 import Modal from '../../components/Modal'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { Section } from '../../components/PageComponents/PageContainers'
-import { useAddressesContext } from '../../contexts/addresses'
+import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
+import AddressSweepModal from './AddressSweepModal'
 
 interface AddressOptionsModal {
-  addressHash: string
+  address: Address
   onClose: () => void
 }
 
-const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModal) => {
-  const { addresses, getAddress, updateAddressSettings } = useAddressesContext()
-  const currentMainAddress = addresses.find(({ settings: { isMain } }) => isMain)
-  const address = getAddress(addressHash)
-  const disableMainAddressToggle = currentMainAddress?.hash === addressHash
+const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
+  const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
     color: address?.settings.color ?? getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
   const { wallet } = useGlobalContext()
+  const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
+
+  if (!address || !wallet || !mainAddress) return null
+
+  const isMainAddressToggleEnabled = mainAddress.hash !== address.hash
+  const isSweepButtonEnabled =
+    addresses.length > 1 && BigInt(address.details.balance) - BigInt(address.details.lockedBalance) > 0
 
   const onGenerateClick = () => {
-    if (!address) return
-
     updateAddressSettings(address, {
-      isMain: disableMainAddressToggle ? address.settings.isMain : isMainAddress,
+      isMain: isMainAddressToggleEnabled ? isMainAddress : address.settings.isMain,
       label: addressLabel.title,
       color: addressLabel.color
     })
-    if (isMainAddress && currentMainAddress && !disableMainAddressToggle) {
-      updateAddressSettings(currentMainAddress, { ...currentMainAddress.settings, isMain: false })
+    if (isMainAddress && isMainAddressToggleEnabled) {
+      updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
     }
     onClose()
   }
 
   let mainAddressMessage = 'Default address for sending transactions.'
-
-  if (currentMainAddress && wallet?.seed) {
-    mainAddressMessage += !disableMainAddressToggle
-      ? ` Note that if activated, "${
-          currentMainAddress.settings.label || `${currentMainAddress.hash.substring(0, 10)}...`
-        }" will not be the main address anymore.`
-      : ' To remove this address from being the main address, you must set another one as main first.'
-  }
+  mainAddressMessage += isMainAddressToggleEnabled
+    ? ` Note that if activated, "${mainAddress.displayName()}" will not be the main address anymore.`
+    : ' To remove this address from being the main address, you must set another one as main first.'
 
   return (
-    <Modal title="Address options" subtitle={address?.settings.label ?? addressHash} onClose={onClose}>
-      <Section>
+    <>
+      <Modal title="Address options" subtitle={address.displayName()} onClose={onClose}>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
@@ -82,19 +82,54 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModal) => {
             <Toggle
               toggled={isMainAddress}
               onToggle={() => setIsMainAddress(!isMainAddress)}
-              disabled={disableMainAddressToggle}
+              disabled={!isMainAddressToggleEnabled}
             />
           }
         />
-      </Section>
-      <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onClose}>
-          Cancel
-        </ModalFooterButton>
-        <ModalFooterButton onClick={onGenerateClick}>Save</ModalFooterButton>
-      </ModalFooterButtons>
-    </Modal>
+        <HorizontalDivider narrow />
+        <KeyValueInput
+          label="Sweep address"
+          description="Sweep all the unlocked funds of this address to another address."
+          InputComponent={
+            <SweepButton>
+              <ModalFooterButton
+                alert
+                onClick={() => isSweepButtonEnabled && setIsAddressSweepModalOpen(true)}
+                disabled={!isSweepButtonEnabled}
+              >
+                Sweep
+              </ModalFooterButton>
+              <AvailableAmount>
+                Available: <Amount value={BigInt(address.details.balance) - BigInt(address.details.lockedBalance)} />
+              </AvailableAmount>
+            </SweepButton>
+          }
+        />
+        <HorizontalDivider narrow />
+        <ModalFooterButtons>
+          <ModalFooterButton secondary onClick={onClose}>
+            Cancel
+          </ModalFooterButton>
+          <ModalFooterButton onClick={onGenerateClick}>Save</ModalFooterButton>
+        </ModalFooterButtons>
+      </Modal>
+      <AnimatePresence exitBeforeEnter initial={true}>
+        {isAddressSweepModalOpen && (
+          <AddressSweepModal
+            sweepAddress={address}
+            onClose={() => setIsAddressSweepModalOpen(false)}
+            onSuccessfulSweep={onClose}
+          />
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 
+const SweepButton = styled.div``
+
+const AvailableAmount = styled.div`
+  font-size: 10px;
+  color: ${({ theme }) => theme.font.secondary};
+`
 export default AddressOptionsModal
