@@ -66,18 +66,21 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           sweepAddresses.to.hash
         )
         setUnsignedTxs(txCreateResp.data.unsignedTxs)
-        // setFee(
-        //   txCreateResp.data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
-        // )
-        setFee(BigInt(9000000000000000)) // TODO: remove hardcoded fee when API supports above fields
+        setFee(
+          txCreateResp.data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
+        )
       } catch (e) {
-        console.error(e)
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while building transaction'),
+          type: 'alert',
+          duration: 5000
+        })
       }
       setIsLoading(false)
     }
 
     buildTransactions()
-  }, [client, sweepAddresses.from, sweepAddresses.to])
+  }, [client, setSnackbarMessage, sweepAddresses.from, sweepAddresses.to])
 
   const onSweepClick = async () => {
     if (!client || !sweepAddresses.from || !sweepAddresses.to) return
