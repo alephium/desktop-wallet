@@ -76,7 +76,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
-          label="Main address"
+          label="★ Main address"
           description={mainAddressMessage}
           InputComponent={
             <Toggle

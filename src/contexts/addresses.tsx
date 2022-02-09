@@ -88,6 +88,10 @@ export class Address {
     return `${this.hash.substring(0, 10)}...`
   }
 
+  labelDisplay() {
+    return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
+  }
+
   async fetchDetails(client: Client) {
     if (!client) return
     console.log('⬇️ Fetching address details: ', this.hash)

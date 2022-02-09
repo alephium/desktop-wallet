@@ -34,6 +34,7 @@ import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Label from '../../components/Label'
+import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableProps, TableRow } from '../../components/Table'
@@ -71,10 +72,8 @@ const AddressDetailsPage = () => {
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
-          <PageH1Styled>
-            Address details {address.settings.isMain && <MainAddress>Main address</MainAddress>}
-          </PageH1Styled>
-          {address.settings.label && <LabelStyled color={address.settings.color}>{address.settings.label}</LabelStyled>}
+          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
+          {address.settings.label && <LabelStyled color={address.settings.color}>{address.labelDisplay()}</LabelStyled>}
           <OptionsButton
             transparent
             squared
@@ -98,7 +97,7 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {address.settings.label ? <Label color={address.settings.color}>{address.settings.label}</Label> : '-'}
+            {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -250,12 +249,6 @@ const OptionsButton = styled(Button)`
 
 const PageH1Styled = styled(PageH1)`
   position: relative;
-`
-
-const MainAddress = styled.div`
-  color: ${({ theme }) => theme.font.highlight};
-  font-size: 9px;
-  position: absolute;
 `
 
 const DarkLabel = styled(Badge)`

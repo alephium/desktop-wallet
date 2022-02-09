@@ -22,16 +22,19 @@ import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { deviceBreakPoints } from '../style/globalStyles'
 import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
+import Label from './Label'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
 const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsClick }) => {
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
+  const { mainAddress } = useAddressesContext()
 
   const headerBGColor = useTransform(
     scrollY,
@@ -61,6 +64,8 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
           <Button transparent squared onClick={onSettingsClick} aria-label="Settings">
             <SettingsIcon />
           </Button>
+          <HeaderDivider />
+          <Label color={mainAddress?.settings.color}>{mainAddress?.labelDisplay()}</Label>
           <HeaderDivider />
           {children && (
             <>

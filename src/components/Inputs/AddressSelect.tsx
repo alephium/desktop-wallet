@@ -86,7 +86,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           {address?.settings.label && (
-            <LabelStyled color={address?.settings.color}>{address?.settings.label}</LabelStyled>
+            <LabelStyled color={address?.settings.color}>{address?.labelDisplay()}</LabelStyled>
           )}
           {address?.hash}
         </ClickableInput>
@@ -134,7 +134,7 @@ const AddressSelectModal = ({
         {options.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && <Label color={address?.settings.color}>{address?.settings.label}</Label>}
+            {address?.settings.label && <Label color={address?.settings.color}>{address?.labelDisplay()}</Label>}
             {address.shortHash()}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>

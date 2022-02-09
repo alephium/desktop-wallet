@@ -26,6 +26,7 @@ import ActionLink from '../../components/ActionLink'
 import Amount from '../../components/Amount'
 import Button from '../../components/Button'
 import Label from '../../components/Label'
+import MainAddressLabel from '../../components/MainAddressLabel'
 import Modal from '../../components/Modal'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1 } from '../../components/PageComponents/PageHeadings'
@@ -80,10 +81,10 @@ const AddressesPage = () => {
             >
               <TableCell>
                 <Hash>{address.hash}</Hash>
-                {address.settings.isMain && <MainAddress>Main address</MainAddress>}
+                {address.settings.isMain && <MainAddressLabel />}
               </TableCell>
               <TableCell>
-                {address.settings.label ? <Label color={address.settings.color}>{address.settings.label}</Label> : '-'}
+                {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
               </TableCell>
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               <TableCell>{address.details?.txNumber ?? 0}</TableCell>
@@ -119,12 +120,6 @@ const Hash = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
 `
-
-const MainAddress = styled.div`
-  color: ${({ theme }) => theme.font.highlight};
-  font-size: 9px;
-`
-
 const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
   grid-template-columns: ${({ cols }) =>
     `minmax(calc(${cols - 1} * ${minTableColumnWidth}), ${cols - 1}fr) minmax(${minTableColumnWidth}, 1fr)`};
