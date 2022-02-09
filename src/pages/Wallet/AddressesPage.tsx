@@ -18,20 +18,26 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
+import { Codesandbox, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import Amount from '../../components/Amount'
 import Button from '../../components/Button'
+import ExpandableSection from '../../components/ExpandableSection'
 import Label from '../../components/Label'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import Modal from '../../components/Modal'
+import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
-import { PageH1 } from '../../components/PageComponents/PageHeadings'
+import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
+import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import { openInWebBrowser } from '../../utils/misc'
+import AddressSweepModal from './AddressSweepModal'
 import NewAddressPage from './NewAddressPage'
 
 const minTableColumnWidth = '105px'
@@ -49,6 +55,9 @@ const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addresses } = useAddressesContext()
   const history = useHistory()
+  const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
+  const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
+  const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
     history.push(`/wallet/addresses/${addressHash}`)
@@ -89,9 +98,10 @@ const AddressesPage = () => {
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               <TableCell>{address.details?.txNumber ?? 0}</TableCell>
               <TableCell>{address.group}</TableCell>
-              <TableCell align="end">
+              <TableCellAmount align="end">
+                {address.transactions.pending.length > 0 && <Spinner size="12px" />}
                 <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
-              </TableCell>
+              </TableCellAmount>
             </TableRow>
           )
         })}
@@ -104,12 +114,43 @@ const AddressesPage = () => {
           </Summary>
         </TableFooterStyled>
       </Table>
+      <PageH2>Advanced management</PageH2>
+      <Description>
+        Advanced operations reserved to more experienced users. A “normal” user should not need to use them very often,
+        if not at all.
+      </Description>
+      <ExpandableSection
+        sectionTitleClosed="Show operations"
+        sectionTitleOpen="Hide operations"
+        open={isAdvancedSectionOpen}
+        onOpenChange={(isOpen) => setIsAdvancedSectionOpen(isOpen)}
+      >
+        <AdvancedOperations>
+          <OperationBox
+            title="Consolidate UTXOs"
+            Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
+            description="Consolidate (merge) your UTXOs into one."
+            buttonText="Start"
+            onButtonClick={() => setIsConsolidationModalOpen(true)}
+            infoLink="https://wiki.alephium.org/"
+          />
+          <OperationBox
+            placeholder
+            title="More to come..."
+            Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
+            description="You have great ideas you want to share?"
+            buttonText="Tell us!"
+            onButtonClick={() => openInWebBrowser('https://discord.com/channels/747741246667227157/930164826418860032')}
+          />
+        </AdvancedOperations>
+      </ExpandableSection>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isGenerateNewAddressModalOpen && (
           <Modal title="New address" onClose={() => setIsGenerateNewAddressModalOpen(false)}>
             <NewAddressPage />
           </Modal>
         )}
+        {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
       </AnimatePresence>
     </MainContent>
   )
@@ -127,6 +168,26 @@ const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
 
 const Summary = styled(TableCell)`
   color: ${({ theme }) => theme.font.highlight};
+`
+
+const Description = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const AdvancedOperations = styled.div`
+  border-radius: var(--radius);
+  background-color: ${({ theme }) => theme.bg.accent};
+  padding: 26px 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  width: max-content;
+`
+
+const TableCellAmount = styled(TableCell)`
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
 `
 
 export default AddressesPage

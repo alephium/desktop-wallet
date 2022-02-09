@@ -103,7 +103,7 @@ const NewAddressPage = () => {
           InputComponent={<Toggle toggled={isMainAddress} onToggle={() => setIsMainAddress(!isMainAddress)} />}
         />
       </Section>
-      <ExpandableSection sectionTitle="Advanced options">
+      <ExpandableSection sectionTitleClosed="Advanced options">
         <Select
           placeholder="Group"
           controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}

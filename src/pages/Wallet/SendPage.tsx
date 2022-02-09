@@ -350,7 +350,7 @@ const TransactionForm = ({ data, onSubmit }: TransactionFormProps) => {
         />
         {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
       </Section>
-      <ExpandableSection sectionTitle="Advanced settings">
+      <ExpandableSection sectionTitleClosed="Advanced settings">
         <Input
           id="gas-amount"
           placeholder="Gas amount"

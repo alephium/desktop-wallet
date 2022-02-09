@@ -35,7 +35,7 @@ type SweepAddress = Address | undefined
 interface AddressSweepModal {
   sweepAddress?: SweepAddress
   onClose: () => void
-  onSuccessfulSweep: () => void
+  onSuccessfulSweep?: () => void
 }
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
@@ -107,7 +107,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         }
       }
       onClose()
-      onSuccessfulSweep()
+      onSuccessfulSweep && onSuccessfulSweep()
     } catch (e) {
       setSnackbarMessage({
         text: getHumanReadableError(e, `Error while sweeping address ${sweepAddresses.from}`),
