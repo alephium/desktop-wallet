@@ -138,6 +138,7 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
+  isLoadingData: boolean
 }
 
 export const initialAddressesContext: AddressesContextProps = {
@@ -147,7 +148,8 @@ export const initialAddressesContext: AddressesContextProps = {
   setAddress: () => undefined,
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
-  refreshAddressesData: () => null
+  refreshAddressesData: () => null,
+  isLoadingData: false
 }
 
 export const AddressesContext = createContext<AddressesContextProps>(initialAddressesContext)
@@ -157,10 +159,14 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   overrideContextValue
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
+  const [isLoadingData, setIsLoadingData] = useState(false)
   const { currentUsername, wallet, client, currentNetwork } = useGlobalContext()
   const previousClient = useRef<Client>()
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
+  )
+  const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
+    (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
   )
 
   const constructMapKey = useCallback(
@@ -202,18 +208,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     setAddress(address)
   }
 
-  const getAddressesStateForCurrentNetwork = useCallback(() => {
-    return Array.from(addressesState.values()).filter((addressState) => addressState.network === currentNetwork)
-  }, [addressesState, currentNetwork])
-
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
       if (!client) return
+      setIsLoadingData(true)
 
       const addressesToUpdate: Address[] = []
 
       // Refresh state for only the specified addresses, otherwise refresh all addresses of the current network
-      const addressesStateToRefresh = addresses.length > 0 ? addresses : getAddressesStateForCurrentNetwork()
+      const addressesStateToRefresh = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
       console.log('🌈 Fetching addresses data from API: ', addressesStateToRefresh)
 
       // The state should always update when clicking the "refresh" button, but when checking for pending transactions
@@ -244,8 +247,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (shouldUpdate) {
         updateAddressesState(addressesToUpdate)
       }
+      setIsLoadingData(false)
     },
-    [client, getAddressesStateForCurrentNetwork, updateAddressesState]
+    [client, addressesOfCurrentNetwork, updateAddressesState]
   )
 
   const saveNewAddress = useCallback(
@@ -285,7 +289,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
     if (
       wallet &&
-      (addressesState.size === 0 || getAddressesStateForCurrentNetwork().length === 0) &&
+      (addressesState.size === 0 || addressesOfCurrentNetwork.length === 0) &&
       previousClient.current !== client
     ) {
       previousClient.current = client
@@ -295,7 +299,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     addressesState.size,
     client,
     currentUsername,
-    getAddressesStateForCurrentNetwork,
+    addressesOfCurrentNetwork,
     fetchAndStoreAddressesData,
     saveNewAddress,
     wallet
@@ -312,21 +316,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
   useEffect(() => {
-    const addresses = getAddressesStateForCurrentNetwork()
-
-    const addressesWithPendingSentTransactions = addresses.filter(
-      (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
-    )
-
     // In case the "to" address of a pending transaction is an address of this wallet, we need to query the API for this
     // one as well
-    const addressesWithPendingReceivingTransactions = addresses.filter((address) =>
-      addressesWithPendingSentTransactions.some((addressWithPendingTx) =>
+    const addressesWithPendingReceivingTxs = addressesOfCurrentNetwork.filter((address) =>
+      addressesWithPendingSentTxs.some((addressWithPendingTx) =>
         addressWithPendingTx.transactions.pending.some((pendingTx) => pendingTx.toAddress === address.hash)
       )
     )
 
-    const addressesToRefresh = [...addressesWithPendingSentTransactions, ...addressesWithPendingReceivingTransactions]
+    const addressesToRefresh = [...addressesWithPendingSentTxs, ...addressesWithPendingReceivingTxs]
 
     const interval = setInterval(() => {
       if (addressesToRefresh.length > 0) {
@@ -340,7 +338,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     return () => {
       clearInterval(interval)
     }
-  }, [addressesState, currentNetwork, fetchAndStoreAddressesData, getAddressesStateForCurrentNetwork])
+  }, [
+    addressesState,
+    currentNetwork,
+    fetchAndStoreAddressesData,
+    addressesOfCurrentNetwork,
+    addressesWithPendingSentTxs
+  ])
 
   return (
     <AddressesContext.Provider
@@ -352,7 +356,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           setAddress,
           saveNewAddress,
           updateAddressSettings,
-          refreshAddressesData: fetchAndStoreAddressesData
+          refreshAddressesData: fetchAndStoreAddressesData,
+          isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps
       )}
