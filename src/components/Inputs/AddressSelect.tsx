@@ -30,13 +30,13 @@ import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } f
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
 
 interface AddressSelectProps {
+  id: string
+  title: string
+  options: Address[]
+  onAddressChange: (address: Address) => void
+  defaultAddress?: Address
   placeholder?: string
   disabled?: boolean
-  defaultAddress?: Address
-  options: Address[]
-  title: string
-  id: string
-  onAddressChange: (address: Address) => void
   className?: string
 }
 
