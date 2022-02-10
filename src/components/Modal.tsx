@@ -71,7 +71,7 @@ const ModalContents: FC<{ focusMode?: boolean; isLoading?: boolean }> = ({ child
         <ModalContent>{children}</ModalContent>
         {isLoading && (
           <>
-            <ModalBackdrop></ModalBackdrop>
+            <ModalBackdrop />
             <ModalLoadingSpinner>
               <Spinner />
             </ModalLoadingSpinner>
