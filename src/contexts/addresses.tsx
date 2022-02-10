@@ -58,6 +58,7 @@ export class Address {
   transactions: {
     confirmed: Transaction[]
     pending: SimpleTx[]
+    loadedPage: number
   }
   lastUsed?: TimeInMs
   network?: NetworkType
@@ -76,7 +77,8 @@ export class Address {
     }
     this.transactions = {
       confirmed: [],
-      pending: []
+      pending: [],
+      loadedPage: 0
     }
   }
 
@@ -104,13 +106,41 @@ export class Address {
 
   async fetchConfirmedTransactions(client: Client, page = 1) {
     if (!client) return []
-    console.log('⬇️ Fetching address confirmed transactions: ', this.hash)
+    console.log(`⬇️ Fetching page ${page} of address confirmed transactions: `, this.hash)
 
     const { data } = await client.explorer.getAddressTransactions(this.hash, page)
-    this.transactions.confirmed = data
-    this.lastUsed = this.transactions.confirmed.length > 0 ? this.transactions.confirmed[0].timestamp : undefined
+
+    const isInitialData = page === 1 && data.length > 0 && this.transactions.confirmed.length === 0
+    const latestTxHashIsNew =
+      page === 1 &&
+      data.length > 0 &&
+      this.transactions.confirmed.length > 0 &&
+      data[0].hash !== this.transactions.confirmed[0].hash
+
+    if (isInitialData) {
+      this.transactions.confirmed = data
+      this.transactions.loadedPage = 1
+    } else if (latestTxHashIsNew || page > 1) {
+      const newTransactions = data.filter(
+        (tx) => !this.transactions.confirmed.find((confirmedTx) => confirmedTx.hash === tx.hash)
+      )
+      this.transactions.confirmed =
+        page > 1
+          ? this.transactions.confirmed.concat(newTransactions)
+          : newTransactions.concat(this.transactions.confirmed)
+      if (page > 1) {
+        this.transactions.loadedPage = page
+      }
+    }
+
+    this.lastUsed = this.transactions.confirmed.length > 0 ? this.transactions.confirmed[0].timestamp : this.lastUsed
 
     return data
+  }
+
+  async fetchConfirmedTransactionsNextPage(client: Client) {
+    if (!client) return []
+    await this.fetchConfirmedTransactions(client, this.transactions.loadedPage + 1)
   }
 
   addPendingTransaction(transaction: SimpleTx) {
@@ -138,6 +168,7 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
+  fetchAddressTransactionsNextPage: (address: Address) => void
   isLoadingData: boolean
 }
 
@@ -149,6 +180,7 @@ export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
+  fetchAddressTransactionsNextPage: () => null,
   isLoadingData: false
 }
 
@@ -251,6 +283,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     },
     [client, addressesOfCurrentNetwork, updateAddressesState]
   )
+
+  const fetchAddressTransactionsNextPage = async (address: Address) => {
+    if (!client) return
+    setIsLoadingData(true)
+    await address.fetchConfirmedTransactionsNextPage(client)
+    setIsLoadingData(false)
+  }
 
   const saveNewAddress = useCallback(
     async (newAddress: Address) => {
@@ -357,6 +396,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           saveNewAddress,
           updateAddressSettings,
           refreshAddressesData: fetchAndStoreAddressesData,
+          fetchAddressTransactionsNextPage,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

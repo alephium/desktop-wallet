@@ -26,6 +26,7 @@ import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
+import ActionLink from '../../components/ActionLink'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -60,12 +61,16 @@ const minTableColumnWidth = '104px'
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-  const { getAddress } = useAddressesContext()
+  const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
   const { addressHash } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const history = useHistory()
 
   if (!address) return null
+
+  const loadNextTransactionsPage = () => {
+    fetchAddressTransactionsNextPage(address)
+  }
 
   return (
     <MainContent>
@@ -181,9 +186,16 @@ const AddressDetailsPage = () => {
             </TableRow>
           )
         })}
+        {address.transactions.confirmed.length !== address.details.txNumber && (
+          <TableRow>
+            <TableCell align="center">
+              <ActionLink onClick={loadNextTransactionsPage}>Show more</ActionLink>
+            </TableCell>
+          </TableRow>
+        )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
           <TableRow>
-            <TableCellPlaceholder>No transactions to display</TableCellPlaceholder>
+            <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
@@ -263,7 +275,6 @@ const DarkLabel = styled(Badge)`
 `
 
 const TableCellPlaceholder = styled(TableCell)`
-  text-align: center;
   color: ${({ theme }) => theme.font.secondary};
 `
 
