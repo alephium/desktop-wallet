@@ -41,7 +41,7 @@ interface AddressSweepModal {
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { addresses, mainAddress } = useAddressesContext()
   const fromAddress = sweepAddress || mainAddress
-  const toAddressOptions = addresses.filter(({ hash }) => hash !== fromAddress?.hash)
+  const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
   const [sweepAddresses, setSweepAddresses] = useState<{
     from: SweepAddress
     to: SweepAddress
@@ -52,7 +52,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   const [fee, setFee] = useState(BigInt(0))
   const { client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const { setAddress } = useAddressesContext()
-  const [unsignedTxs, setUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -60,15 +60,9 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       if (!client || !sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
-        const txCreateResp = await client.clique.transactionConsolidateUTXOs(
-          sweepAddresses.from.publicKey,
-          sweepAddresses.from.hash,
-          sweepAddresses.to.hash
-        )
-        setUnsignedTxs(txCreateResp.data.unsignedTxs)
-        setFee(
-          txCreateResp.data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
-        )
+        const { unsignedTxs, fees } = await sweepAddresses.from.buildSweepTransactions(client, sweepAddresses.to.hash)
+        setBuiltUnsignedTxs(unsignedTxs)
+        setFee(fees)
       } catch (e) {
         setSnackbarMessage({
           text: getHumanReadableError(e, 'Error while building transaction'),
@@ -86,7 +80,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     if (!client || !sweepAddresses.from || !sweepAddresses.to) return
     setIsLoading(true)
     try {
-      for (const { txId, unsignedTx } of unsignedTxs) {
+      for (const { txId, unsignedTx } of builtUnsignedTxs) {
         const txSendResp = await signAndSendTransaction(
           txId,
           unsignedTx,
@@ -166,7 +160,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         <ModalFooterButton secondary onClick={onClose}>
           Cancel
         </ModalFooterButton>
-        <ModalFooterButton onClick={onSweepClick} disabled={unsignedTxs.length === 0}>
+        <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>
           {sweepAddress ? 'Sweep' : 'Consolidate'}
         </ModalFooterButton>
       </ModalFooterButtons>

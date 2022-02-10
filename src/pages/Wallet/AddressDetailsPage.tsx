@@ -129,27 +129,19 @@ const AddressDetailsPage = () => {
         {address.transactions.pending
           .slice(0)
           .reverse()
-          .map((transaction) => {
-            const amount = transaction.amount
-            const amountIsBigInt = typeof amount === 'bigint'
-
+          .map(({ txId, timestamp, toAddress, amount, type }) => {
             return (
-              <TableRow key={transaction.txId} minColumnWidth={minTableColumnWidth} blinking>
+              <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
                 <TableCell>
                   <Badge content="Pending" type="neutral" />
                 </TableCell>
-                <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
+                <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
                 <TableCell truncate>
                   <DarkLabel type="neutral" content="To" />
-                  <span>{transaction.toAddress}</span>
+                  <span>{toAddress}</span>
                 </TableCell>
                 <TableCell align="end">
-                  <Badge
-                    type="minus"
-                    prefix="-"
-                    content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                    amount
-                  />
+                  <Badge type="minus" prefix="-" content={amount} amount={type === 'transfer'} />
                 </TableCell>
               </TableRow>
             )

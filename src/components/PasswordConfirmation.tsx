@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage, walletOpen } from 'alephium-js'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
 import Button from './Button'
@@ -52,12 +52,7 @@ const PasswordConfirmation = ({ text, buttonText, onCorrectPasswordEntered }: Pa
   return (
     <>
       <Section>
-        <Input
-          value={password}
-          placeholder="Password"
-          type="password"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-        />
+        <Input value={password} placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
         <Paragraph secondary centered>
           {text || 'Type your password'}
         </Paragraph>

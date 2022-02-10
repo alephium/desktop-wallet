@@ -17,3 +17,4 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 export type TimeInMs = number
+export type AmountInSet = string

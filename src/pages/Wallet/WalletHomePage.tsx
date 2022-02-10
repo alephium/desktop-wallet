@@ -38,7 +38,7 @@ import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
 import AddressDetailsPage from './AddressDetailsPage'
-import SendPage from './SendPage'
+import SendModal from './SendModal'
 
 dayjs.extend(relativeTime)
 
@@ -133,11 +133,7 @@ const WalletHomePage = () => {
         </Route>
       </Switch>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && (
-          <Modal title="Send" onClose={() => setIsSendModalOpen(false)}>
-            <SendPage />
-          </Modal>
-        )}
+        {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && (
           <Modal title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
             <SettingsPage />

@@ -1,0 +1,263 @@
+/*
+Copyright 2018 - 2022 The Alephium Authors
+This file is part of the alephium project.
+
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+import { SweepAddressTransaction } from 'alephium-js/dist/api/api-alephium'
+import { convertAlphToSet } from 'alephium-js/dist/lib/numbers'
+import { AnimatePresence } from 'framer-motion'
+import { Send } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTheme } from 'styled-components'
+
+import Modal, { HeaderContent, HeaderLogo } from '../../components/Modal'
+import PasswordConfirmation from '../../components/PasswordConfirmation'
+import { Address, useAddressesContext } from '../../contexts/addresses'
+import { useGlobalContext } from '../../contexts/global'
+import { useModalContext } from '../../contexts/modal'
+import { getHumanReadableError, isHTTPError } from '../../utils/api'
+import { isAmountValid } from '../../utils/transactions'
+import ConsolidateUTXOsModal from './ConsolidateUTXOsModal'
+import SendModalCheckTransaction from './SendModalCheckTransaction'
+import SendModalTransactionForm from './SendModalTransactionForm'
+
+type StepIndex = 1 | 2 | 3
+
+export type SendTransactionData = {
+  fromAddress: Address
+  toAddress: string
+  amount: string
+  gasAmount?: string
+  gasPrice?: string
+}
+
+interface SendModalProps {
+  title: string
+  onClose: () => void
+}
+
+const SendModal = ({ title, onClose }: SendModalProps) => {
+  const theme = useTheme()
+  const {
+    client,
+    wallet,
+    setSnackbarMessage,
+    settings: {
+      general: { passwordRequirement }
+    },
+    currentNetwork
+  } = useGlobalContext()
+  const { setAddress } = useAddressesContext()
+  const { setModalTitle } = useModalContext()
+  const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [step, setStep] = useState<StepIndex>(1)
+  const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
+  const [consolidationRequired, setConsolidationRequired] = useState(false)
+  const [isSweeping, setIsSweeping] = useState(false)
+  const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [unsignedTxId, setUnsignedTxId] = useState('')
+  const [unsignedTransaction, setUnsignedTransaction] = useState('')
+  const [fees, setFees] = useState<bigint>()
+
+  useEffect(() => {
+    if (step === 1) {
+      setModalTitle('Send')
+    } else if (step === 2) {
+      setModalTitle('Info Check')
+    } else if (step === 3) {
+      setModalTitle('Password Check')
+    }
+  }, [setStep, setModalTitle, step])
+
+  const confirmPassword = () => {
+    if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
+    setStep(3)
+  }
+
+  const buildTransaction = async (transactionData: SendTransactionData) => {
+    setTransactionData(transactionData)
+
+    const { fromAddress, toAddress, amount, gasAmount, gasPrice } = transactionData
+    const amountInSet = convertAlphToSet(amount)
+    const isDataComplete = fromAddress && toAddress && isAmountValid(amountInSet, fromAddress.availableBalance)
+
+    if (wallet && client && isDataComplete) {
+      setIsLoading(true)
+
+      const sweep = amountInSet === fromAddress.availableBalance
+      setIsSweeping(sweep)
+
+      try {
+        if (sweep) {
+          const { unsignedTxs, fees } = await fromAddress.buildSweepTransactions(client, toAddress)
+          setSweepUnsignedTxs(unsignedTxs)
+          setFees(fees)
+        } else {
+          const { data } = await client.clique.transactionCreate(
+            fromAddress.hash,
+            fromAddress.publicKey,
+            toAddress,
+            amountInSet,
+            undefined,
+            gasAmount ? parseInt(gasAmount) : undefined,
+            gasPrice ? convertAlphToSet(gasPrice) : undefined
+          )
+          setUnsignedTransaction(data.unsignedTx)
+          setUnsignedTxId(data.txId)
+          setFees(BigInt(data.gasAmount) * BigInt(data.gasPrice))
+        }
+        if (!isConsolidateUTXOsModalVisible) {
+          setStep(2)
+        }
+      } catch (e) {
+        // TODO: When API error codes are available, replace this substring check with a proper error code check
+        if (
+          isHTTPError(e) &&
+          e.error?.detail &&
+          (e.error.detail.includes('consolidating') || e.error.detail.includes('consolidate'))
+        ) {
+          setIsConsolidateUTXOsModalVisible(true)
+          setConsolidationRequired(true)
+        } else {
+          setSnackbarMessage({
+            text: getHumanReadableError(e, 'Error while building the transaction'),
+            type: 'alert',
+            duration: 5000
+          })
+        }
+      }
+
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!consolidationRequired || !transactionData || !client) return
+
+    const buildConsolidationTransactions = async () => {
+      setIsSweeping(true)
+
+      setIsLoading(true)
+      const { fromAddress } = transactionData
+      const { unsignedTxs, fees } = await fromAddress.buildSweepTransactions(client, fromAddress.hash)
+      setSweepUnsignedTxs(unsignedTxs)
+      setFees(fees)
+      setIsLoading(false)
+    }
+
+    buildConsolidationTransactions()
+  }, [client, consolidationRequired, transactionData])
+
+  const handleSend = async () => {
+    if (!transactionData || !client) return
+
+    const { fromAddress, toAddress, amount } = transactionData
+
+    if (toAddress && fromAddress) {
+      setIsLoading(true)
+
+      try {
+        if (isSweeping) {
+          const sendToAddress = consolidationRequired ? fromAddress.hash : toAddress
+          const transactionType = consolidationRequired ? 'consolidation' : 'sweep'
+
+          for (const { txId, unsignedTx } of sweepUnsignedTxs) {
+            const data = await fromAddress.signAndSendTransaction(
+              client,
+              txId,
+              unsignedTx,
+              sendToAddress,
+              '-',
+              transactionType,
+              currentNetwork
+            )
+
+            if (data) {
+              setAddress(fromAddress)
+            }
+          }
+        } else {
+          const data = await fromAddress.signAndSendTransaction(
+            client,
+            unsignedTxId,
+            unsignedTransaction,
+            toAddress,
+            convertAlphToSet(amount),
+            'transfer',
+            currentNetwork
+          )
+
+          if (data) {
+            setAddress(fromAddress)
+          }
+        }
+
+        setSnackbarMessage({
+          text: isSweeping && sweepUnsignedTxs.length > 1 ? 'Transactions sent!' : 'Transaction sent!',
+          type: 'success'
+        })
+        onClose()
+      } catch (e) {
+        console.error(e)
+        setSnackbarMessage({
+          text: getHumanReadableError(e, 'Error while sending the transaction'),
+          type: 'alert',
+          duration: 5000
+        })
+      }
+
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Modal title={title} onClose={onClose} isLoading={isLoading}>
+      <HeaderContent>
+        <HeaderLogo>
+          <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
+        </HeaderLogo>
+      </HeaderContent>
+      {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
+      {step === 2 && transactionData && fees && (
+        <SendModalCheckTransaction
+          data={transactionData}
+          fees={fees}
+          onSend={passwordRequirement ? confirmPassword : handleSend}
+          onCancel={() => setStep(1)}
+        />
+      )}
+      {step === 3 && passwordRequirement && (
+        <PasswordConfirmation
+          text="Enter your password to send the transaction."
+          buttonText="Send"
+          onCorrectPasswordEntered={handleSend}
+        />
+      )}
+      <AnimatePresence>
+        {isConsolidateUTXOsModalVisible && (
+          <ConsolidateUTXOsModal
+            onClose={() => setIsConsolidateUTXOsModalVisible(false)}
+            onConsolidateClick={passwordRequirement ? confirmPassword : handleSend}
+            fee={fees}
+          />
+        )}
+      </AnimatePresence>
+    </Modal>
+  )
+}
+
+export default SendModal

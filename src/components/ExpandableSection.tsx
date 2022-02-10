@@ -28,6 +28,7 @@ interface ExpandableSectionProps {
   sectionTitleOpen?: string
   open?: boolean
   onOpenChange?: (isOpen: boolean) => void
+  className?: string
 }
 
 const ExpandableSection: FC<ExpandableSectionProps> = ({
@@ -35,7 +36,8 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   sectionTitleOpen,
   open,
   onOpenChange,
-  children
+  children,
+  className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
 
@@ -50,7 +52,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   }
 
   return (
-    <Container>
+    <div className={className}>
       <Title onClick={handleTitleClick}>
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
@@ -61,11 +63,11 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
           <Section align="stretch">{children}</Section>
         </Content>
       </ContentWrapper>
-    </Container>
+    </div>
   )
 }
 
-const Container = styled.div`
+export default styled(ExpandableSection)`
   display: flex;
   flex-direction: column;
   margin: var(--spacing-2) 0;
@@ -103,5 +105,3 @@ const Content = styled.div`
   margin-top: var(--spacing-2);
   padding: var(--spacing-2);
 `
-
-export default ExpandableSection

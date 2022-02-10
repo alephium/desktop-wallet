@@ -17,33 +17,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Codesandbox } from 'lucide-react'
-import { useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
-import Button from './Button'
-import InfoBox from './InfoBox'
-import { HeaderContent, HeaderLogo } from './Modal'
-import Modal from './Modal'
-import { Section } from './PageComponents/PageContainers'
-import Spinner from './Spinner'
+import Amount from '../../components/Amount'
+import Button from '../../components/Button'
+import InfoBox from '../../components/InfoBox'
+import { HeaderContent, HeaderLogo } from '../../components/Modal'
+import Modal from '../../components/Modal'
+import { Section } from '../../components/PageComponents/PageContainers'
+import Spinner from '../../components/Spinner'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void
   onClose: () => void
-  isConsolidating: boolean
+  fee: bigint | undefined
 }
 
-const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, isConsolidating }: ConsolidateUTXOsModalProps) => {
+const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: ConsolidateUTXOsModalProps) => {
   const theme = useTheme()
 
   return (
     <Modal title="Consolidate UTXOs" onClose={onClose}>
       <HeaderContent>
         <HeaderLogo>
-          {isConsolidating ? (
-            <Spinner size="30%" />
-          ) : (
-            <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
-          )}
+          <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
         </HeaderLogo>
         <Section>
           <InfoBox
@@ -51,7 +48,11 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, isConsolidating }:
             text="It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate
             (merge) your UTXOs first. This will cost a small fee."
           />
-          <Button onClick={onConsolidateClick} submit>
+          <Fee>
+            Fee
+            {fee ? <Amount value={fee} fadeDecimals /> : <Spinner size="12px" />}
+          </Fee>
+          <Button onClick={onConsolidateClick} submit disabled={!fee}>
             Consolidate
           </Button>
         </Section>
@@ -59,5 +60,12 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, isConsolidating }:
     </Modal>
   )
 }
+
+const Fee = styled.div`
+  padding: 12px;
+  display: flex;
+  gap: 80px;
+  width: 100%;
+`
 
 export default ConsolidateUTXOsModal

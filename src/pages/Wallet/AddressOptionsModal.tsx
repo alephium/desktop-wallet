@@ -50,8 +50,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   if (!address || !wallet || !mainAddress) return null
 
   const isMainAddressToggleEnabled = mainAddress.hash !== address.hash
-  const isSweepButtonEnabled =
-    addresses.length > 1 && BigInt(address.details.balance) - BigInt(address.details.lockedBalance) > 0
+  const isSweepButtonEnabled = addresses.length > 1 && BigInt(address.availableBalance) > 0
 
   const onGenerateClick = () => {
     updateAddressSettings(address, {
@@ -100,7 +99,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
                 Sweep
               </ModalFooterButton>
               <AvailableAmount>
-                Available: <Amount value={BigInt(address.details.balance) - BigInt(address.details.lockedBalance)} />
+                Available: <Amount value={BigInt(address.availableBalance)} />
               </AvailableAmount>
             </SweepButton>
           }
