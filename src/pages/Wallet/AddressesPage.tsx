@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { Codesandbox, Lightbulb } from 'lucide-react'
+import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
@@ -29,7 +29,6 @@ import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import Label from '../../components/Label'
 import MainAddressLabel from '../../components/MainAddressLabel'
-import Modal from '../../components/Modal'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
@@ -38,7 +37,7 @@ import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../compo
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { openInWebBrowser } from '../../utils/misc'
 import AddressSweepModal from './AddressSweepModal'
-import NewAddressPage from './NewAddressPage'
+import NewAddressModal from './NewAddressModal'
 
 const minTableColumnWidth = '105px'
 
@@ -57,6 +56,7 @@ const AddressesPage = () => {
   const history = useHistory()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
+  const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
   const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
@@ -135,6 +135,14 @@ const AddressesPage = () => {
             infoLink="https://wiki.alephium.org/"
           />
           <OperationBox
+            title="Generate one address per group"
+            Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
+            description="Useful for miners or DeFi use."
+            buttonText="Start"
+            onButtonClick={() => setIsAddressesGenerationModalOpen(true)}
+            infoLink="https://wiki.alephium.org/"
+          />
+          <OperationBox
             placeholder
             title="More to come..."
             Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
@@ -146,11 +154,15 @@ const AddressesPage = () => {
       </ExpandableSection>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isGenerateNewAddressModalOpen && (
-          <Modal title="New address" onClose={() => setIsGenerateNewAddressModalOpen(false)}>
-            <NewAddressPage />
-          </Modal>
+          <NewAddressModal singleAddress title="New address" onClose={() => setIsGenerateNewAddressModalOpen(false)} />
         )}
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
+        {isAddressesGenerationModalOpen && (
+          <NewAddressModal
+            title="Generate one address per group"
+            onClose={() => setIsAddressesGenerationModalOpen(false)}
+          />
+        )}
       </AnimatePresence>
     </MainContent>
   )

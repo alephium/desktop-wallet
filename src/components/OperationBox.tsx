@@ -47,10 +47,10 @@ const OperationBox = ({
 }: OperationBoxProps) => {
   return (
     <div className={className}>
-      <Header>
+      <div>
         <Title>{title}</Title>
         <IconWrapper>{Icon}</IconWrapper>
-      </Header>
+      </div>
       <Description>{description}</Description>
       <Footer>
         {placeholder ? (
@@ -87,8 +87,6 @@ const Description = styled.div`
 const InfoIcon = styled(Info)`
   margin-right: var(--spacing-1);
 `
-
-const Header = styled.div``
 
 const Footer = styled.div`
   display: flex;
