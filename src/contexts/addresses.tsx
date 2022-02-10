@@ -24,6 +24,7 @@ import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'
 
+import { TimeInMs } from '../types/numbers'
 import {
   AddressSettings,
   loadStoredAddressesMetadataOfAccount,
@@ -45,7 +46,6 @@ type SimpleTx = {
 }
 
 export type AddressHash = string
-export type TimeInMs = number
 
 export class Address {
   readonly hash: AddressHash
