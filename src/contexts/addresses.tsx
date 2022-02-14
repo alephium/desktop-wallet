@@ -30,6 +30,7 @@ import {
   loadStoredAddressesMetadataOfAccount,
   storeAddressMetadataOfAccount
 } from '../utils/addresses'
+import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
 import { Client, useGlobalContext } from './global'
 
@@ -192,7 +193,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentUsername, wallet, client, currentNetwork } = useGlobalContext()
+  const { currentUsername, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const previousClient = useRef<Client>()
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -257,23 +258,30 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       let shouldUpdate = !checkingForPendingTransactions
 
       for (const address of addressesStateToRefresh) {
-        await address.fetchDetails(client)
-        await address.fetchConfirmedTransactions(client)
+        try {
+          await address.fetchDetails(client)
+          await address.fetchConfirmedTransactions(client)
 
-        const initialNumberOfPendingTransactions = address.transactions.pending.length
+          const initialNumberOfPendingTransactions = address.transactions.pending.length
 
-        // Filter pending addresses and remove the ones that are now confirmed
-        address.updatePendingTransactions()
+          // Filter pending addresses and remove the ones that are now confirmed
+          address.updatePendingTransactions()
 
-        if (
-          checkingForPendingTransactions &&
-          address.transactions.pending.length !== initialNumberOfPendingTransactions
-        ) {
-          shouldUpdate = true
-        }
+          if (
+            checkingForPendingTransactions &&
+            address.transactions.pending.length !== initialNumberOfPendingTransactions
+          ) {
+            shouldUpdate = true
+          }
 
-        if (shouldUpdate) {
-          addressesToUpdate.push(address)
+          if (shouldUpdate) {
+            addressesToUpdate.push(address)
+          }
+        } catch (e) {
+          setSnackbarMessage({
+            text: getHumanReadableError(e, `Error while fetching data for address ${address.hash}`),
+            type: 'alert'
+          })
         }
       }
 
@@ -282,7 +290,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, updateAddressesState]
+    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
