@@ -213,6 +213,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const updateAddressesState = useCallback(
     (newAddresses: Address[]) => {
+      if (newAddresses.length === 0) return
       setAddressesState((prevState) => {
         const newAddressesState = new Map(prevState)
         for (const newAddress of newAddresses) {
