@@ -127,6 +127,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
         : tinycolor(theme.global.accent).lighten(3).toString()};
   }
 
+  &:disabled {
+    opacity: 0.5;
+  }
+
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {

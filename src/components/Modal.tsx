@@ -19,29 +19,32 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { FC } from 'react'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import { ModalContextProvider, useModalContext } from '../contexts/modal'
 import Button from './Button'
 import { Section } from './PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
+import Spinner from './Spinner'
 
 interface ModalProps {
   title: string
   subtitle?: string
   onClose: () => void
   focusMode?: boolean
+  isLoading?: boolean
 }
 
-export const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode }) => (
+export const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode, isLoading }) => (
   <ModalContextProvider title={title} subtitle={subtitle} onClose={onClose}>
-    <ModalContents focusMode={focusMode}>{children}</ModalContents>
+    <ModalContents focusMode={focusMode} isLoading={isLoading}>
+      {children}
+    </ModalContents>
   </ModalContextProvider>
 )
 
-const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => {
+const ModalContents: FC<{ focusMode?: boolean; isLoading?: boolean }> = ({ children, focusMode, isLoading }) => {
   const { modalTitle, modalSubtitle, onModalClose } = useModalContext()
-  const theme = useTheme()
 
   return (
     <ModalContainer
@@ -66,20 +69,16 @@ const ModalContents: FC<{ focusMode?: boolean }> = ({ children, focusMode }) => 
           </CloseButton>
         </ModalHeader>
         <ModalContent>{children}</ModalContent>
+        {isLoading && (
+          <>
+            <ModalBackdrop />
+            <ModalLoadingSpinner>
+              <Spinner />
+            </ModalLoadingSpinner>
+          </>
+        )}
       </StyledModal>
-      <ModalBackdrop
-        style={{
-          backgroundColor:
-            theme.name === 'light'
-              ? focusMode
-                ? 'rgba(0, 0, 0, 0.8)'
-                : 'rgba(0, 0, 0, 0.15)'
-              : focusMode
-              ? 'rgba(0, 0, 0, 0.9)'
-              : 'rgba(0, 0, 0, 0.6)'
-        }}
-        onClick={onModalClose}
-      />
+      <ModalBackdrop onClick={onModalClose} focusMode={focusMode} />
     </ModalContainer>
   )
 }
@@ -108,12 +107,20 @@ const ModalContainer = styled(motion.div)`
   z-index: 1000;
 `
 
-const ModalBackdrop = styled.div`
+const ModalBackdrop = styled.div<{ focusMode?: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
   bottom: 0;
+  background-color: ${({ theme, focusMode }) =>
+    theme.name === 'light'
+      ? focusMode
+        ? 'rgba(0, 0, 0, 0.8)'
+        : 'rgba(0, 0, 0, 0.15)'
+      : focusMode
+      ? 'rgba(0, 0, 0, 0.9)'
+      : 'rgba(0, 0, 0, 0.6)'};
 `
 
 const StyledModal = styled(motion.div)`
@@ -127,6 +134,7 @@ const StyledModal = styled(motion.div)`
   border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.primary};
   z-index: 1;
+  position: relative;
 
   ${TitleContainer} {
     flex: 1;
@@ -155,6 +163,7 @@ export const ModalFooterButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 18px;
+  padding: var(--spacing-3) var(--spacing-3) 0;
 `
 
 export const ModalFooterButton = ({ ...props }) => (
@@ -172,6 +181,15 @@ const ModalSubtitle = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 14px;
   margin-top: var(--spacing-1);
+`
+
+const ModalLoadingSpinner = styled.div`
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
 `
 
 export default Modal

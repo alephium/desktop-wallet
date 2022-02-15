@@ -34,6 +34,7 @@ import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import Label from '../../components/Label'
+import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableProps, TableRow } from '../../components/Table'
@@ -59,24 +60,20 @@ const minTableColumnWidth = '104px'
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-  const { getAddressState } = useAddressesContext()
+  const { getAddress } = useAddressesContext()
   const { addressHash } = useParams<{ addressHash: AddressHash }>()
-  const addressData = getAddressState(addressHash)
+  const address = getAddress(addressHash)
   const history = useHistory()
 
-  if (!addressData) return null
+  if (!address) return null
 
   return (
     <MainContent>
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
-          <PageH1Styled>
-            Address details {addressData.settings.isMain && <MainAddress>Main address</MainAddress>}
-          </PageH1Styled>
-          {addressData.settings.label && (
-            <LabelStyled color={addressData.settings.color}>{addressData.settings.label}</LabelStyled>
-          )}
+          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
+          {address.settings.label && <LabelStyled color={address.settings.color}>{address.labelDisplay()}</LabelStyled>}
           <OptionsButton
             transparent
             squared
@@ -100,93 +97,51 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {addressData.settings.label ? (
-              <Label color={addressData.settings.color}>{addressData.settings.label}</Label>
-            ) : (
-              '-'
-            )}
+            {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow>
           <DataListCell>Number of transactions</DataListCell>
-          <DataListCell>{addressData.details?.txNumber}</DataListCell>
+          <DataListCell>{address.details?.txNumber}</DataListCell>
         </DataListRow>
-        {addressData.details?.lockedBalance && BigInt(addressData.details.lockedBalance) > 0 && (
+        {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
           <DataListRow>
             <DataListCell>Locked ALPH balance</DataListCell>
             <DataListCell>
-              <Amount value={BigInt(addressData.details.lockedBalance)} fadeDecimals />
+              <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
             </DataListCell>
           </DataListRow>
         )}
         <DataListRow>
           <DataListCell>Total ALPH balance</DataListCell>
           <DataListCell>
-            {addressData.details?.balance ? (
-              <AmountStyled value={BigInt(addressData.details.balance)} fadeDecimals />
-            ) : (
-              '-'
-            )}
+            {address.details?.balance ? <AmountStyled value={BigInt(address.details.balance)} fadeDecimals /> : '-'}
           </DataListCell>
         </DataListRow>
       </DataList>
       <PageH2>Transaction history</PageH2>
       <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
-        {addressData.transactions.pending &&
-          addressData.transactions.pending
-            .slice(0)
-            .reverse()
-            .map((transaction) => {
-              const amount = transaction.amount
-              const amountIsBigInt = typeof amount === 'bigint'
-
-              return (
-                <TableRow key={transaction.txId} minColumnWidth={minTableColumnWidth} blinking>
-                  <TableCell>
-                    <Badge content="Pending" type="neutral" />
-                  </TableCell>
-                  <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-                  <TableCell truncate>
-                    <DarkLabel type="neutral" content="To" />
-                    <span>{transaction.toAddress}</span>
-                  </TableCell>
-                  <TableCell align="end">
-                    <Badge
-                      type="minus"
-                      prefix="-"
-                      content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                      amount
-                    />
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-        {addressData.transactions.confirmed &&
-          addressData.transactions.confirmed.map((transaction) => {
-            const amount = calAmountDelta(transaction, addressHash)
+        {address.transactions.pending
+          .slice(0)
+          .reverse()
+          .map((transaction) => {
+            const amount = transaction.amount
             const amountIsBigInt = typeof amount === 'bigint'
-            const isOut = amountIsBigInt && amount < 0
 
             return (
-              <TableRow key={transaction.hash} minColumnWidth={minTableColumnWidth}>
+              <TableRow key={transaction.txId} minColumnWidth={minTableColumnWidth} blinking>
                 <TableCell>
-                  <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
+                  <Badge content="Pending" type="neutral" />
                 </TableCell>
                 <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
                 <TableCell truncate>
-                  <DarkLabel type="neutral" content={isOut ? 'To' : 'From'} />
-                  <IOList
-                    currentAddress={addressHash}
-                    isOut={isOut}
-                    outputs={transaction.outputs}
-                    inputs={transaction.inputs}
-                    timestamp={transaction.timestamp}
-                  />
+                  <DarkLabel type="neutral" content="To" />
+                  <span>{transaction.toAddress}</span>
                 </TableCell>
                 <TableCell align="end">
                   <Badge
-                    type={isOut ? 'minus' : 'plus'}
-                    prefix={isOut ? '- ' : '+ '}
+                    type="minus"
+                    prefix="-"
                     content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
                     amount
                   />
@@ -194,10 +149,47 @@ const AddressDetailsPage = () => {
               </TableRow>
             )
           })}
+        {address.transactions.confirmed.map((transaction) => {
+          const amount = calAmountDelta(transaction, addressHash)
+          const amountIsBigInt = typeof amount === 'bigint'
+          const isOut = amountIsBigInt && amount < 0
+
+          return (
+            <TableRow key={transaction.hash} minColumnWidth={minTableColumnWidth}>
+              <TableCell>
+                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
+              </TableCell>
+              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
+              <TableCell truncate>
+                <DarkLabel type="neutral" content={isOut ? 'To' : 'From'} />
+                <IOList
+                  currentAddress={addressHash}
+                  isOut={isOut}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                />
+              </TableCell>
+              <TableCell align="end">
+                <Badge
+                  type={isOut ? 'minus' : 'plus'}
+                  prefix={isOut ? '- ' : '+ '}
+                  content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
+                  amount
+                />
+              </TableCell>
+            </TableRow>
+          )
+        })}
+        {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
+          <TableRow>
+            <TableCellPlaceholder>No transactions to display</TableCellPlaceholder>
+          </TableRow>
+        )}
       </Table>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressOptionsModalOpen && (
-          <AddressOptionsModal addressHash={addressHash} onClose={() => setIsAddressOptionsModalOpen(false)} />
+          <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}
       </AnimatePresence>
     </MainContent>
@@ -259,12 +251,6 @@ const PageH1Styled = styled(PageH1)`
   position: relative;
 `
 
-const MainAddress = styled.div`
-  color: ${({ theme }) => theme.font.highlight};
-  font-size: 9px;
-  position: absolute;
-`
-
 const DarkLabel = styled(Badge)`
   background-color: ${({ theme }) => theme.bg.secondary};
   padding: 3px 10px;
@@ -274,6 +260,11 @@ const DarkLabel = styled(Badge)`
   justify-content: center;
   margin-right: var(--spacing-4);
   float: none;
+`
+
+const TableCellPlaceholder = styled(TableCell)`
+  text-align: center;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 export default AddressDetailsPage

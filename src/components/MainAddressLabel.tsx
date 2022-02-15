@@ -16,28 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
-interface LabelProps {
-  className?: string
-  color?: string
+const MainAddressLabel = ({ className }: { className?: string }) => {
+  return <div className={className}>★ Main address</div>
 }
 
-let Label: FC<LabelProps> = ({ className, children }) => {
-  return <span className={className}>{children}</span>
-}
-
-Label = styled(Label)`
-  display: inline-block;
-  padding: 5px 8px;
-  color: ${({ color, theme }) => color || theme.font.primary}};
-  border-radius: 20px;
-  background-color: ${({ color, theme }) =>
-    tinycolor(color || theme.font.primary)
-      .setAlpha(0.2)
-      .toString()};
+export default styled(MainAddressLabel)`
+  color: ${({ theme }) => theme.font.highlight};
+  font-size: 9px;
+  position: absolute;
 `
-
-export default Label

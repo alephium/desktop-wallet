@@ -29,7 +29,7 @@ import Toggle from '../../components/Inputs/Toggle'
 import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { Section } from '../../components/PageComponents/PageContainers'
-import { useAddressesContext } from '../../contexts/addresses'
+import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
 import { getRandomLabelColor } from '../../utils/colors'
@@ -41,10 +41,8 @@ const NewAddressPage = () => {
     useState<{ address: string; publicKey: string; privateKey: string; addressIndex: number }>() // TODO: Replace with type AddressAndKeys from alephium-js
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
   const { wallet } = useGlobalContext()
-  const { addressesState, saveNewAddress } = useAddressesContext()
-  const addressData = [...addressesState.values()]
-  const currentAddressIndexes = useRef(addressData.map(({ index }) => index))
-  const currentMainAddress = addressData.find(({ settings: { isMain } }) => isMain)
+  const { addresses, updateAddressSettings, saveNewAddress, mainAddress } = useAddressesContext()
+  const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
   const { onModalClose } = useModalContext()
 
   const generateNewAddress = useCallback(
@@ -63,27 +61,21 @@ const NewAddressPage = () => {
 
   const onGenerateClick = () => {
     if (newAddressData && newAddressGroup !== undefined) {
-      saveNewAddress({
-        hash: newAddressData.address,
-        publicKey: newAddressData.publicKey,
-        privateKey: newAddressData.privateKey,
-        group: newAddressGroup,
-        index: newAddressData.addressIndex,
-        settings: {
-          isMain: isMainAddress,
-          label: addressLabel.title,
-          color: addressLabel.color
-        },
-        transactions: {}
-      })
-      if (isMainAddress && currentMainAddress && currentMainAddress.index !== newAddressData.addressIndex) {
-        saveNewAddress({
-          ...currentMainAddress,
-          settings: {
-            ...currentMainAddress.settings,
-            isMain: false
+      saveNewAddress(
+        new Address(
+          newAddressData.address,
+          newAddressData.publicKey,
+          newAddressData.privateKey,
+          newAddressData.addressIndex,
+          {
+            isMain: isMainAddress,
+            label: addressLabel.title,
+            color: addressLabel.color
           }
-        })
+        )
+      )
+      if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.addressIndex) {
+        updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
       }
     }
     onModalClose()
@@ -91,11 +83,11 @@ const NewAddressPage = () => {
 
   let mainAddressMessage = 'Default address for sending transactions.'
 
-  if (currentMainAddress && wallet?.seed) {
+  if (mainAddress && wallet?.seed) {
     mainAddressMessage +=
-      currentMainAddress.index !== newAddressData?.addressIndex
+      mainAddress.index !== newAddressData?.addressIndex
         ? ` Note that if activated, "${
-            currentMainAddress.settings.label || `${currentMainAddress.hash.substring(0, 10)}...`
+            mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
           }" will not be the main address anymore.`
         : ''
   }
@@ -106,7 +98,7 @@ const NewAddressPage = () => {
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
-          label="Main address"
+          label="★ Main address"
           description={mainAddressMessage}
           InputComponent={<Toggle toggled={isMainAddress} onToggle={() => setIsMainAddress(!isMainAddress)} />}
         />

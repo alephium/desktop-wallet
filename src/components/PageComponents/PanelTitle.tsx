@@ -61,7 +61,6 @@ export const TitleContainer = styled(motion.div)`
   margin-bottom: var(--spacing-3);
   position: sticky;
   top: 0;
-  z-index: 1;
 `
 
 const BackArrow = styled(ArrowLeft)`

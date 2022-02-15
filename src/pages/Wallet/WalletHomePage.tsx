@@ -16,13 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from 'alephium-js/dist/api/api-explorer'
-import { calAmountDelta } from 'alephium-js/dist/lib/numbers'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Switch, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -34,14 +32,10 @@ import FloatingLogo from '../../components/FloatingLogo'
 import Modal from '../../components/Modal'
 import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
-import TransactionItem from '../../components/TransactionItem'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
-import { getHumanReadableError } from '../../utils/api'
-import { useInterval } from '../../utils/hooks'
-import { loadStoredSettings } from '../../utils/settings'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
 import AddressDetailsPage from './AddressDetailsPage'
@@ -50,22 +44,17 @@ import SendPage from './SendPage'
 dayjs.extend(relativeTime)
 
 const WalletHomePage = () => {
-  const { wallet, setSnackbarMessage, client, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
-  const [balance, setBalance] = useState<bigint | undefined>(undefined)
-  const [lockedBalance, setLockedBalance] = useState<bigint>(BigInt(0))
-  const { networkPendingTxLists, loadedTxList, setLoadedTxList } = useTransactionsContext()
-  const [totalNumberOfTx, setTotalNumberOfTx] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
+  const { wallet, setSnackbarMessage, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
+  const { networkPendingTxLists } = useTransactionsContext()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
-  const [lastLoadedPage, setLastLoadedPage] = useState(1)
   const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { refreshAddressesState } = useAddressesContext()
-
-  const {
-    network: { explorerUrl }
-  } = loadStoredSettings()
+  const { refreshAddressesData, isLoadingData } = useAddressesContext()
+  const { addresses } = useAddressesContext()
+  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
+  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
+  const totalNumberOfTx = addresses.reduce((acc, address) => acc + address.transactions.confirmed.length, 0)
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()
@@ -80,90 +69,14 @@ const WalletHomePage = () => {
     })
   }, [isHeaderCompact, scrollY])
 
-  // Fetching data
-  const fetchBalanceAndLatestTransactions = useCallback(() => {
-    const page = 1
-    setLastLoadedPage(page) // Reload only most recent page
-
-    const getTransactionsAndBalance = async () => {
-      if (wallet && client) {
-        setIsLoading(true)
-        try {
-          const addressDetailsResp = await client.explorer.getAddressDetails(wallet.address)
-          const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, page)
-
-          if (!addressDetailsResp.data) return
-
-          setBalance(BigInt(addressDetailsResp.data.balance))
-          if (addressDetailsResp.data.lockedBalance) setLockedBalance(BigInt(addressDetailsResp.data.lockedBalance))
-          setTotalNumberOfTx(addressDetailsResp.data.txNumber)
-          setLoadedTxList(addressTransactionsResp.data)
-          setIsLoading(false)
-        } catch (e) {
-          setIsLoading(false)
-
-          setSnackbarMessage({
-            text: getHumanReadableError(e, 'Error while fetching transactions and balance'),
-            type: 'alert'
-          })
-        }
-      }
-    }
-
-    getTransactionsAndBalance()
-  }, [client, setLoadedTxList, setSnackbarMessage, wallet])
-
-  const fetchTransactionsByPage = useCallback(
-    (pageToLoad: number) => {
-      setLastLoadedPage(pageToLoad)
-
-      const fetchNewPage = async () => {
-        try {
-          if (wallet && client) {
-            const addressTransactionsResp = await client.explorer.getAddressTransactions(wallet.address, pageToLoad)
-
-            if (
-              loadedTxList.length > 0 &&
-              addressTransactionsResp.data.length > 0 &&
-              loadedTxList[loadedTxList.length - 1].hash !==
-                addressTransactionsResp.data[addressTransactionsResp.data.length - 1].hash
-            ) {
-              setLoadedTxList([...loadedTxList, ...addressTransactionsResp.data])
-            }
-          }
-        } catch (e) {
-          console.log(e)
-
-          setSnackbarMessage({
-            text: getHumanReadableError(e, `Error while fetching transactions of page ${pageToLoad}`),
-            type: 'alert'
-          })
-        }
-      }
-
-      fetchNewPage()
-    },
-    [client, loadedTxList, setLoadedTxList, setSnackbarMessage, wallet]
-  )
-
   const refreshData = () => {
-    fetchBalanceAndLatestTransactions()
-    refreshAddressesState()
+    refreshAddressesData()
   }
-
-  // Make initial calls
-  useEffect(() => {
-    fetchBalanceAndLatestTransactions()
-  }, [fetchBalanceAndLatestTransactions])
-
-  // Polling (when pending tx)
-  useInterval(fetchBalanceAndLatestTransactions, 2000, networkPendingTxLists[currentNetwork]?.length === 0)
 
   if (!wallet) return null
 
   const pendingTxs = networkPendingTxLists[currentNetwork] || []
-  const showSpinner = isLoading || pendingTxs.length > 0
-  const transactionsHaveLoaded = loadedTxList && loadedTxList.length > 0
+  const showSpinner = isLoadingData || pendingTxs.length > 0
   const somePendingConsolidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
 
   return (
@@ -177,11 +90,11 @@ const WalletHomePage = () => {
         <WalletAmountContainer>
           <WalletAmountHighlightOverlay />
           <WalletAmountContent>
-            <WalletAmount value={balance} />
+            <WalletAmount value={totalBalance} />
             <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
-            {lockedBalance > 0 && (
+            {totalLockedBalance > 0 && (
               <LockedBalance>
-                <LockedBalanceIcon /> <Amount value={lockedBalance} />
+                <LockedBalanceIcon /> <Amount value={totalLockedBalance} />
               </LockedBalance>
             )}
             <CurrentAccount>Account: {currentUsername}</CurrentAccount>
@@ -215,7 +128,7 @@ const WalletHomePage = () => {
           <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <CompactWalletAmountBox>
               <WalletAmountContainer style={{ scale: 0.7 }}>
-                <WalletAmount value={balance} />
+                <WalletAmount value={totalBalance} />
               </WalletAmountContainer>
             </CompactWalletAmountBox>
           </CompactWalletAmountBoxContainer>
@@ -229,46 +142,6 @@ const WalletHomePage = () => {
                 <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
                 {showSpinner && <Spinner size={'16px'} />}
               </LastTransactionListHeader>
-              <LastTransactionList>
-                {pendingTxs
-                  .slice(0)
-                  .reverse()
-                  .map((t: SimpleTx) => {
-                    return (
-                      <TransactionItem
-                        pending
-                        key={t.txId}
-                        txUrl={`${explorerUrl}/#/transactions/${t.txId}`}
-                        address={t.toAddress}
-                        timestamp={t.timestamp}
-                        amount={t.amount}
-                        type={t.type}
-                      />
-                    )
-                  })}
-                {transactionsHaveLoaded &&
-                  loadedTxList.map((t: Transaction) => {
-                    const amountDelta = calAmountDelta(t, wallet.address)
-                    return (
-                      <TransactionItem
-                        key={t.hash}
-                        txUrl={`${explorerUrl}/#/transactions/${t.hash}`}
-                        address={wallet.address}
-                        amount={amountDelta}
-                        inputs={t.inputs}
-                        outputs={t.outputs}
-                        timestamp={t.timestamp}
-                      />
-                    )
-                  })}
-              </LastTransactionList>
-              {transactionsHaveLoaded && loadedTxList.length === totalNumberOfTx ? (
-                <NoMoreTransactionMessage>No more transactions</NoMoreTransactionMessage>
-              ) : loadedTxList.length === 0 ? (
-                <NoMoreTransactionMessage>No transactions yet!</NoMoreTransactionMessage>
-              ) : (
-                <LoadMoreMessage onClick={() => fetchTransactionsByPage(lastLoadedPage + 1)}>Load more</LoadMoreMessage>
-              )}
             </FloatingPanel>
           </MainContent>
         </Route>
@@ -463,27 +336,6 @@ const LastTransactionListTitle = styled.h2`
   @media ${deviceBreakPoints.mobile} {
     margin-left: 0;
   }
-`
-
-const LastTransactionList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`
-
-const LoadMoreMessage = styled.div`
-  color: ${({ theme }) => theme.global.accent};
-  cursor: pointer;
-  align-self: center;
-  margin-top: var(--spacing-3);
-  margin-bottom: var(--spacing-3);
-`
-
-const NoMoreTransactionMessage = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-  text-align: center;
-  width: 100%;
-  margin-top: var(--spacing-3);
 `
 
 const LockedBalance = styled.div`

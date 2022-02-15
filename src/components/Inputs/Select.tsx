@@ -154,18 +154,18 @@ const InputContainer = styled(motion.div)`
   margin: var(--spacing-3) 0;
 `
 
-const MoreIcon = styled.div`
+export const MoreIcon = styled.div`
   position: absolute;
   top: 12px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const SelectContainer = styled(InputContainer)`
+export const SelectContainer = styled(InputContainer)`
   cursor: pointer;
 `
 
-const OptionItem = styled.div`
+export const OptionItem = styled.div`
   padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};

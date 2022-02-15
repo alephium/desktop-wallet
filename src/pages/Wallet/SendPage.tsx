@@ -52,7 +52,7 @@ const SendPage = () => {
     currentNetwork
   } = useGlobalContext()
   const { addPendingTx } = useTransactionsContext()
-  const { addPendingTransaction } = useAddressesContext()
+  const { getAddress, setAddress } = useAddressesContext()
   const { setModalTitle, onModalClose, setOnModalClose } = useModalContext()
   const initialOnModalClose = useRef(onModalClose)
   const [transactionData, setTransactionData] = useState<TransactionData>({
@@ -135,8 +135,9 @@ const SendPage = () => {
 
   const handleSend = async () => {
     const { address, amount } = transactionData
+    const addressState = wallet && getAddress(wallet.address)
 
-    if (builtTxId && builtUnsignedTx && wallet && address) {
+    if (builtTxId && builtUnsignedTx && wallet && address && addressState) {
       setIsLoading(true)
 
       try {
@@ -152,7 +153,7 @@ const SendPage = () => {
             amount: fullAmount,
             type: 'transfer'
           })
-          addPendingTransaction({
+          addressState.addPendingTransaction({
             txId: txSendResp.data.txId,
             fromAddress: wallet.address,
             toAddress: address,
@@ -161,6 +162,7 @@ const SendPage = () => {
             type: 'transfer',
             network: currentNetwork
           })
+          setAddress(addressState)
         }
 
         setSnackbarMessage({ text: 'Transaction sent!', type: 'success' })
@@ -179,7 +181,9 @@ const SendPage = () => {
   }
 
   const consolidateUTXOs = async () => {
-    if (client && wallet) {
+    const addressState = wallet && getAddress(wallet.address)
+
+    if (client && wallet && addressState) {
       setIsConsolidating(true)
       try {
         const txCreateResp = await client.clique.transactionConsolidateUTXOs(
@@ -197,7 +201,7 @@ const SendPage = () => {
               amount: '',
               type: 'consolidation'
             })
-            addPendingTransaction({
+            addressState.addPendingTransaction({
               txId: txSendResp.data.txId,
               fromAddress: wallet.address,
               toAddress: wallet.address,
@@ -206,6 +210,7 @@ const SendPage = () => {
               type: 'consolidation',
               network: currentNetwork
             })
+            setAddress(addressState)
           }
         }
 

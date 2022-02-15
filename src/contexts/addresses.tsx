@@ -20,10 +20,11 @@ import { AddressInfo, Transaction } from 'alephium-js/dist/api/api-explorer'
 import addressToGroup from 'alephium-js/dist/lib/address'
 import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
 import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
-import { cloneDeep, merge } from 'lodash'
+import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'
 
+import { TimeInMs } from '../types/numbers'
 import {
   AddressSettings,
   loadStoredAddressesMetadataOfAccount,
@@ -32,55 +33,123 @@ import {
 import { NetworkType } from '../utils/settings'
 import { Client, useGlobalContext } from './global'
 
-export type AddressHash = string
-export type TimeInMs = number
+type TransactionType = 'consolidation' | 'transfer'
 
-type AddressState = {
-  network?: NetworkType
-  hash: AddressHash
-  publicKey: string
-  privateKey: string
-  group: number
-  index: number
-  settings: AddressSettings
-  details?: AddressInfo
-  transactions: {
-    confirmed?: Transaction[]
-    pending?: SimpleTx[]
-  }
-  lastUsed?: TimeInMs
-}
-
-export type AddressesStateMap = Map<AddressHash, AddressState>
-
-export interface AddressesContextProps {
-  saveNewAddress: (address: AddressState) => void
-  addressesState: AddressesStateMap
-  updateAddressState: (addressState: AddressState) => void
-  refreshAddressesState: () => void
-  addPendingTransaction: (tx: SimpleTx) => void
-  getAddressState: (hash: AddressHash) => AddressState | undefined
-}
-
-export const initialAddressesContext: AddressesContextProps = {
-  saveNewAddress: () => null,
-  addressesState: new Map(),
-  updateAddressState: () => null,
-  refreshAddressesState: () => null,
-  addPendingTransaction: () => null,
-  getAddressState: () => undefined
-}
-
-export type TransactionType = 'consolidation' | 'transfer'
-
-export interface SimpleTx {
+type SimpleTx = {
   txId: string
   fromAddress: string
   toAddress: string
   amount: string
   timestamp: number
-  type?: TransactionType
+  type: TransactionType
+  network: NetworkType
+}
+
+export type AddressHash = string
+
+export class Address {
+  readonly hash: AddressHash
+  readonly publicKey: string
+  readonly privateKey: string
+  readonly group: number
+  readonly index: number
+  settings: AddressSettings
+  details: AddressInfo
+  transactions: {
+    confirmed: Transaction[]
+    pending: SimpleTx[]
+  }
+  lastUsed?: TimeInMs
   network?: NetworkType
+
+  constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
+    this.hash = hash
+    this.publicKey = publicKey
+    this.privateKey = privateKey
+    this.group = addressToGroup(hash, TOTAL_NUMBER_OF_GROUPS)
+    this.index = index
+    this.settings = settings
+    this.details = {
+      balance: '',
+      lockedBalance: '',
+      txNumber: 0
+    }
+    this.transactions = {
+      confirmed: [],
+      pending: []
+    }
+  }
+
+  displayName() {
+    return this.settings.label || this.shortHash()
+  }
+
+  shortHash() {
+    return `${this.hash.substring(0, 10)}...`
+  }
+
+  labelDisplay() {
+    return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
+  }
+
+  async fetchDetails(client: Client) {
+    if (!client) return
+    console.log('⬇️ Fetching address details: ', this.hash)
+
+    const { data } = await client.explorer.getAddressDetails(this.hash)
+    this.details = data
+
+    return data
+  }
+
+  async fetchConfirmedTransactions(client: Client, page = 1) {
+    if (!client) return []
+    console.log('⬇️ Fetching address confirmed transactions: ', this.hash)
+
+    const { data } = await client.explorer.getAddressTransactions(this.hash, page)
+    this.transactions.confirmed = data
+    this.lastUsed = this.transactions.confirmed.length > 0 ? this.transactions.confirmed[0].timestamp : undefined
+
+    return data
+  }
+
+  addPendingTransaction(transaction: SimpleTx) {
+    console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
+
+    this.transactions.pending.push(transaction)
+  }
+
+  updatePendingTransactions() {
+    const newPendingTransactions = this.transactions.pending.filter(
+      (pendingTx) => !this.transactions.confirmed.find((confirmedTx) => confirmedTx.hash === pendingTx.txId)
+    )
+
+    this.transactions.pending = newPendingTransactions
+  }
+}
+
+export type AddressesStateMap = Map<AddressHash, Address>
+
+export interface AddressesContextProps {
+  addresses: Address[]
+  mainAddress?: Address
+  getAddress: (hash: AddressHash) => Address | undefined
+  setAddress: (address: Address) => void
+  saveNewAddress: (address: Address) => void
+  updateAddressSettings: (address: Address, settings: AddressSettings) => void
+  refreshAddressesData: () => void
+  isLoadingData: boolean
+}
+
+export const initialAddressesContext: AddressesContextProps = {
+  addresses: [],
+  mainAddress: undefined,
+  getAddress: () => undefined,
+  setAddress: () => undefined,
+  saveNewAddress: () => null,
+  updateAddressSettings: () => null,
+  refreshAddressesData: () => null,
+  isLoadingData: false
 }
 
 export const AddressesContext = createContext<AddressesContextProps>(initialAddressesContext)
@@ -90,161 +159,105 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   overrideContextValue
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
+  const [isLoadingData, setIsLoadingData] = useState(false)
   const { currentUsername, wallet, client, currentNetwork } = useGlobalContext()
   const previousClient = useRef<Client>()
+  const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
+    (addressState) => addressState.network === currentNetwork
+  )
+  const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
+    (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
+  )
 
   const constructMapKey = useCallback(
     (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
     [currentNetwork]
   )
 
-  const getAddressState = useCallback(
+  const getAddress = useCallback(
     (addressHash: AddressHash) => addressesState.get(constructMapKey(addressHash)),
     [addressesState, constructMapKey]
   )
 
-  const updateAddressState = useCallback(
-    (newAddressState: AddressState) => {
+  const updateAddressesState = useCallback(
+    (newAddresses: Address[]) => {
       setAddressesState((prevState) => {
         const newAddressesState = new Map(prevState)
-        newAddressesState.set(constructMapKey(newAddressState.hash), { ...newAddressState, network: currentNetwork })
+        for (const newAddress of newAddresses) {
+          newAddress.network = currentNetwork
+          newAddressesState.set(constructMapKey(newAddress.hash), newAddress)
+        }
         return newAddressesState
       })
-      console.log('✅ Updated address state: ', newAddressState.hash)
+
+      console.log('✅ Updated addresses state: ', newAddresses)
     },
     [constructMapKey, currentNetwork]
   )
 
-  const fetchAddressDetails = useCallback(
-    async (addressHash: AddressHash) => {
-      console.log('⬇️ Fetching address details: ', addressHash)
-      if (!client) return
-      const addressDetails = await client.explorer.getAddressDetails(addressHash)
-      return addressDetails.data
+  const setAddress = useCallback(
+    (address: Address) => {
+      updateAddressesState([address])
     },
-    [client]
+    [updateAddressesState]
   )
 
-  const fetchAddressConfirmedTransactions = useCallback(
-    async (addressHash: string, page = 1) => {
-      console.log('⬇️ Fetching address confirmed transactions: ', addressHash)
-      if (!client) return []
-      const addressTransactions = await client.explorer.getAddressTransactions(addressHash, page)
-      return addressTransactions.data
-    },
-    [client]
-  )
-
-  const addPendingTransaction = (transaction: SimpleTx) => {
-    console.log('🔵 Adding pending transaction from address: ', transaction.fromAddress)
-    const newAddressState = cloneDeep(getAddressState(transaction.fromAddress))
-    if (!newAddressState) return
-
-    !newAddressState.transactions.pending
-      ? (newAddressState.transactions.pending = [transaction])
-      : newAddressState.transactions.pending.push(transaction)
-
-    updateAddressState(newAddressState)
+  const updateAddressSettings = (address: Address, settings: AddressSettings) => {
+    storeAddressMetadataOfAccount(currentUsername, address.index, settings)
+    address.settings = settings
+    setAddress(address)
   }
 
-  const getAddressesStateOfCurrentNetwork = useCallback(() => {
-    return Array.from(addressesState.values()).filter((addressState) => addressState.network === currentNetwork)
-  }, [addressesState, currentNetwork])
+  const fetchAndStoreAddressesData = useCallback(
+    async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
+      if (!client) return
+      setIsLoadingData(true)
 
-  const refreshAddressesState = useCallback(
-    async (addresses: AddressState[] = [], checkingForPendingTransactions = false) => {
-      const newAddressesState = new Map(addressesState)
+      const addressesToUpdate: Address[] = []
 
       // Refresh state for only the specified addresses, otherwise refresh all addresses of the current network
-      const addressesStateToRefresh = addresses.length > 0 ? addresses : getAddressesStateOfCurrentNetwork()
-      console.log('🌈 Refreshing addresses state: ', addressesStateToRefresh)
+      const addressesStateToRefresh = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
+      console.log('🌈 Fetching addresses data from API: ', addressesStateToRefresh)
 
       // The state should always update when clicking the "refresh" button, but when checking for pending transactions
       // it should only update when at least one pending transaction has been confirmed.
       let shouldUpdate = !checkingForPendingTransactions
 
-      for (const currentAddressState of addressesStateToRefresh) {
-        if (currentAddressState) {
-          const currentNumberOfPendingTx = currentAddressState.transactions.pending
-            ? currentAddressState.transactions.pending.length
-            : 0
+      for (const address of addressesStateToRefresh) {
+        await address.fetchDetails(client)
+        await address.fetchConfirmedTransactions(client)
 
-          const addressDetails = await fetchAddressDetails(currentAddressState.hash)
-          const addressConfirmedTransactions = await fetchAddressConfirmedTransactions(currentAddressState.hash)
+        const initialNumberOfPendingTransactions = address.transactions.pending.length
 
-          // Filter pending addresses and remove the ones that are now confirmed
-          const addressPendingTransactions = currentAddressState.transactions.pending
-            ? currentAddressState.transactions.pending.filter(
-                (pendingTx) => !addressConfirmedTransactions.find((confirmedTx) => confirmedTx.hash === pendingTx.txId)
-              )
-            : currentAddressState.transactions.pending
+        // Filter pending addresses and remove the ones that are now confirmed
+        address.updatePendingTransactions()
 
-          const newNumberOfPendingTx = addressPendingTransactions ? addressPendingTransactions.length : 0
+        if (
+          checkingForPendingTransactions &&
+          address.transactions.pending.length !== initialNumberOfPendingTransactions
+        ) {
+          shouldUpdate = true
+        }
 
-          if (checkingForPendingTransactions && newNumberOfPendingTx !== currentNumberOfPendingTx) {
-            shouldUpdate = true
-          }
-
-          if (addressDetails) {
-            newAddressesState.set(constructMapKey(currentAddressState.hash), {
-              ...currentAddressState,
-              details: addressDetails,
-              transactions: {
-                pending: addressPendingTransactions,
-                confirmed: addressConfirmedTransactions
-              },
-              lastUsed: addressConfirmedTransactions.length > 0 ? addressConfirmedTransactions[0].timestamp : undefined
-            })
-          }
+        if (shouldUpdate) {
+          addressesToUpdate.push(address)
         }
       }
 
       if (shouldUpdate) {
-        setAddressesState(newAddressesState)
-        console.log('✅ Updated addresses state: ', newAddressesState)
+        updateAddressesState(addressesToUpdate)
       }
+      setIsLoadingData(false)
     },
-    [
-      addressesState,
-      constructMapKey,
-      fetchAddressConfirmedTransactions,
-      fetchAddressDetails,
-      getAddressesStateOfCurrentNetwork
-    ]
+    [client, addressesOfCurrentNetwork, updateAddressesState]
   )
 
   const saveNewAddress = useCallback(
-    async (newAddress: AddressState) => {
-      console.log('🟠 Saving new address: ', newAddress.hash)
+    async (newAddress: Address) => {
       storeAddressMetadataOfAccount(currentUsername, newAddress.index, newAddress.settings)
-
-      let details: AddressInfo | undefined
-      let confirmedTransactions = newAddress.transactions.confirmed
-      let pendingTransactions = newAddress.transactions.pending
-      let lastUsed: TimeInMs | undefined
-
-      if (!newAddress.details) {
-        details = await fetchAddressDetails(newAddress.hash)
-      }
-      if (!newAddress.transactions.confirmed) {
-        confirmedTransactions = await fetchAddressConfirmedTransactions(newAddress.hash)
-        lastUsed = confirmedTransactions.length > 0 ? confirmedTransactions[0].timestamp : undefined
-      }
-      if (!newAddress.transactions.pending) {
-        pendingTransactions = []
-      }
-
-      updateAddressState({
-        ...newAddress,
-        lastUsed,
-        details,
-        transactions: {
-          pending: pendingTransactions,
-          confirmed: confirmedTransactions
-        }
-      })
+      await fetchAndStoreAddressesData([newAddress])
     },
-    [currentUsername, fetchAddressDetails, fetchAddressConfirmedTransactions, updateAddressState]
+    [currentUsername, fetchAndStoreAddressesData]
   )
 
   // Initialize addresses state using the locally stored address metadata
@@ -256,49 +269,38 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentUsername)
 
       if (addressesMetadata.length === 0) {
-        await saveNewAddress({
-          hash: wallet.address,
-          publicKey: wallet.publicKey,
-          privateKey: wallet.privateKey,
-          group: addressToGroup(wallet.address, TOTAL_NUMBER_OF_GROUPS),
-          index: 0,
-          settings: {
+        await saveNewAddress(
+          new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
             isMain: true,
             label: undefined,
             color: undefined
-          },
-          transactions: {}
-        })
-      } else {
-        for (const { index, ...settings } of addressesMetadata) {
-          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
-          await saveNewAddress({
-            hash: address,
-            publicKey,
-            privateKey,
-            group: addressToGroup(address, TOTAL_NUMBER_OF_GROUPS),
-            index,
-            settings: settings,
-            transactions: {}
           })
-        }
+        )
+      } else {
+        console.log('👀 Found addresses metadata in local storage')
+
+        const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
+          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
+          return new Address(address, publicKey, privateKey, index, settings)
+        })
+        fetchAndStoreAddressesData(addressesToFetchData)
       }
     }
 
     if (
       wallet &&
-      (addressesState.size === 0 || getAddressesStateOfCurrentNetwork().length === 0) &&
+      (addressesState.size === 0 || addressesOfCurrentNetwork.length === 0) &&
       previousClient.current !== client
     ) {
       previousClient.current = client
       initializeCurrentNetworkAddresses()
     }
   }, [
-    addressesState,
+    addressesState.size,
     client,
-    currentNetwork,
     currentUsername,
-    getAddressesStateOfCurrentNetwork,
+    addressesOfCurrentNetwork,
+    fetchAndStoreAddressesData,
     saveNewAddress,
     wallet
   ])
@@ -314,30 +316,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
   useEffect(() => {
-    const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
-      (addressState) => addressState.network === currentNetwork
-    )
-
-    const addressesWithPendingSentTransactions = addressesOfCurrentNetwork.filter(
-      (addressState) =>
-        addressState.transactions.pending &&
-        addressState.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
-    )
-
     // In case the "to" address of a pending transaction is an address of this wallet, we need to query the API for this
     // one as well
-    const addressesWithPendingReceivingTransactions = addressesOfCurrentNetwork.filter((addressState) =>
-      addressesWithPendingSentTransactions.some((addressWithPendingTx) =>
-        addressWithPendingTx.transactions.pending?.some((pendingTx) => pendingTx.toAddress === addressState.hash)
+    const addressesWithPendingReceivingTxs = addressesOfCurrentNetwork.filter((address) =>
+      addressesWithPendingSentTxs.some((addressWithPendingTx) =>
+        addressWithPendingTx.transactions.pending.some((pendingTx) => pendingTx.toAddress === address.hash)
       )
     )
 
-    const addressesToRefresh = [...addressesWithPendingSentTransactions, ...addressesWithPendingReceivingTransactions]
+    const addressesToRefresh = [...addressesWithPendingSentTxs, ...addressesWithPendingReceivingTxs]
 
     const interval = setInterval(() => {
       if (addressesToRefresh.length > 0) {
         console.log('❓ Checking if pending transactions are confirmed: ', addressesToRefresh)
-        refreshAddressesState(addressesToRefresh, true)
+        fetchAndStoreAddressesData(addressesToRefresh, true)
       } else {
         clearInterval(interval)
       }
@@ -346,17 +338,26 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     return () => {
       clearInterval(interval)
     }
-  }, [addressesState, currentNetwork, refreshAddressesState])
+  }, [
+    addressesState,
+    currentNetwork,
+    fetchAndStoreAddressesData,
+    addressesOfCurrentNetwork,
+    addressesWithPendingSentTxs
+  ])
 
   return (
     <AddressesContext.Provider
       value={merge(
         {
-          addressesState: getAddressesStateOfCurrentNetwork(),
+          addresses: addressesOfCurrentNetwork,
+          mainAddress: addressesOfCurrentNetwork.find((address) => address.settings.isMain),
+          getAddress,
+          setAddress,
           saveNewAddress,
-          refreshAddressesState,
-          addPendingTransaction,
-          getAddressState
+          updateAddressSettings,
+          refreshAddressesData: fetchAndStoreAddressesData,
+          isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps
       )}
