@@ -81,22 +81,15 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(true)
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
-        const txSendResp = await signAndSendTransaction(
+        const txSendResp = await sweepAddresses.from.signAndSendTransaction(
+          client,
           txId,
           unsignedTx,
           sweepAddresses.from.hash,
-          sweepAddresses.from.privateKey
+          'sweep',
+          currentNetwork
         )
         if (txSendResp) {
-          sweepAddresses.from.addPendingTransaction({
-            txId: txSendResp.data.txId,
-            fromAddress: sweepAddresses.from.hash,
-            toAddress: sweepAddresses.to.hash,
-            timestamp: new Date().getTime(),
-            amount: '',
-            type: 'consolidation',
-            network: currentNetwork
-          })
           setAddress(sweepAddresses.from)
         }
       }
@@ -110,12 +103,6 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       })
     }
     setIsLoading(false)
-  }
-
-  const signAndSendTransaction = async (txId: string, unsignedTx: string, toAddress: string, privateKey: string) => {
-    if (!client) return
-    const signature = client.clique.transactionSign(txId, privateKey)
-    return await client.clique.transactionSend(toAddress, unsignedTx, signature)
   }
 
   const onAddressChange = (type: 'from' | 'to', address: Address) => {
@@ -135,6 +122,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           onAddressChange={(newAddress) => onAddressChange('from', newAddress)}
           disabled={sweepAddress !== undefined}
           id="from-address"
+          hideEmptyAvailableBalance
         />
         <AddressSelect
           placeholder="To address"

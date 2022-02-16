@@ -39,10 +39,10 @@ type SimpleTx = {
   txId: string
   fromAddress: string
   toAddress: string
-  amount: string
   timestamp: number
   type: TransactionType
   network: NetworkType
+  amount?: bigint
 }
 
 export type AddressHash = string
@@ -63,7 +63,7 @@ export class Address {
   }
   lastUsed?: TimeInMs
   network?: NetworkType
-  availableBalance: string
+  availableBalance: bigint
 
   constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
     this.hash = hash
@@ -82,7 +82,7 @@ export class Address {
       pending: [],
       loadedPage: 0
     }
-    this.availableBalance = ''
+    this.availableBalance = 0n
   }
 
   displayName() {
@@ -103,7 +103,7 @@ export class Address {
 
     const { data } = await client.explorer.getAddressDetails(this.hash)
     this.details = data
-    this.availableBalance = (BigInt(data.balance) - BigInt(data.lockedBalance)).toString()
+    this.availableBalance = BigInt(data.balance) - BigInt(data.lockedBalance)
 
     return data
   }
@@ -161,12 +161,11 @@ export class Address {
     this.transactions.pending = newPendingTransactions
 
     // Reduce the available balance of the address based on the total amount of pending transactions
-    const availableBalance = BigInt(this.availableBalance)
     const pendingSweep = this.transactions.pending.find((tx) => tx.type === 'sweep' || tx.type === 'consolidation')
     const totalAmountOfPendingTxs = pendingSweep
-      ? availableBalance
-      : this.transactions.pending.reduce((acc, tx) => acc + BigInt(tx.amount), BigInt(0))
-    this.availableBalance = (availableBalance - totalAmountOfPendingTxs).toString()
+      ? this.availableBalance
+      : this.transactions.pending.reduce((acc, tx) => (tx.amount ? acc + BigInt(tx.amount) : acc), BigInt(0))
+    this.availableBalance = this.availableBalance - totalAmountOfPendingTxs
   }
 
   async buildSweepTransactions(
@@ -192,9 +191,9 @@ export class Address {
     txId: string,
     unsignedTx: string,
     toHash: AddressHash,
-    amount: string,
     type: TransactionType,
-    network: NetworkType
+    network: NetworkType,
+    amount?: bigint
   ) {
     if (!client) throw new Error('No client provided')
 

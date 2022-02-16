@@ -129,7 +129,7 @@ const AddressSelectModal = ({
 }) => {
   const [selectedAddress, setSelectedAddress] = useState(selectedOption)
   const displayedOptions = hideEmptyAvailableBalance
-    ? options.filter((address) => BigInt(address.availableBalance) > 0)
+    ? options.filter((address) => address.availableBalance > 0)
     : options
   const noAddressesWithAvailableBalance = hideEmptyAvailableBalance && displayedOptions.length === 0
 

@@ -29,7 +29,7 @@ import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
 import { useAddressesContext } from '../../contexts/addresses'
 import { checkAddressValidity } from '../../utils/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
-import { isAmountValid } from '../../utils/transactions'
+import { isAmountWithinRange } from '../../utils/transactions'
 import { SendTransactionData } from './SendModal'
 
 interface TransactionFormProps {
@@ -81,7 +81,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       errorMessage: `Gas price must be greater than ${abbreviateAmount(MINIMAL_GAS_PRICE, true)} ℵ.`,
       currentErrorState: gasPriceError,
       errorStateSetter: setGasPriceError,
-      shouldConvertToQALPH: true
+      shouldConvertToSet: true
     })
   }
 
@@ -94,7 +94,8 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
     !addressError &&
     !gasPriceError &&
     !gasAmountError &&
-    isAmountValid(convertAlphToSet(amount), fromAddress.availableBalance)
+    amount &&
+    isAmountWithinRange(convertAlphToSet(amount), fromAddress.availableBalance)
 
   return (
     <>
@@ -168,7 +169,7 @@ const ModalContent = styled.div`
 `
 
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return abbreviateAmount(BigInt(gasAmount) * BigInt(convertAlphToSet(gasPriceInALPH)), false, 7)
+  return abbreviateAmount(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), false, 7)
 }
 
 const onAmountInputValueChange = ({
@@ -178,7 +179,7 @@ const onAmountInputValueChange = ({
   errorMessage,
   currentErrorState,
   errorStateSetter,
-  shouldConvertToQALPH
+  shouldConvertToSet
 }: {
   amount: string
   minAmount: bigint
@@ -186,12 +187,12 @@ const onAmountInputValueChange = ({
   stateSetter: (v: string) => void
   currentErrorState: string
   errorStateSetter: (v: string) => void
-  shouldConvertToQALPH?: boolean
+  shouldConvertToSet?: boolean
 }) => {
   let amountNumber
 
   try {
-    amountNumber = shouldConvertToQALPH ? BigInt(convertAlphToSet(amount)) : BigInt(amount)
+    amountNumber = shouldConvertToSet ? convertAlphToSet(amount) : BigInt(amount)
   } catch (e) {
     console.log(e)
     return

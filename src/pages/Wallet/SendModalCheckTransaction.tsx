@@ -32,10 +32,10 @@ interface SendModalCheckTransactionProps {
 
 const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCheckTransactionProps) => {
   const isSendButtonActive = data.toAddress.length > 0 && data.amount.length > 0
-  const amountInQALPH = BigInt(convertAlphToSet(data.amount))
-  const amountIncludingFees = amountInQALPH + fees
-  const exceededBy = amountIncludingFees - BigInt(data.fromAddress.availableBalance)
-  const expectedAmount = exceededBy > 0 ? BigInt(data.fromAddress.availableBalance) - exceededBy : amountInQALPH
+  const amountInSet = convertAlphToSet(data.amount)
+  const amountIncludingFees = amountInSet + fees
+  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
+  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
 
   return (
     <>

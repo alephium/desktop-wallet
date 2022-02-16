@@ -18,12 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { MIN_UTXO_SET_AMOUNT } from 'alephium-js'
 
-import { AmountInSet } from '../types/numbers'
-
-export const isAmountValid = (amount: AmountInSet, maxAmount: AmountInSet): boolean => {
-  const amountInBigInt = BigInt(amount)
-  const availableAmount = BigInt(maxAmount)
-  const minAmount = BigInt(MIN_UTXO_SET_AMOUNT)
-
-  return amountInBigInt >= minAmount && amountInBigInt <= availableAmount
+export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
+  return amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 }

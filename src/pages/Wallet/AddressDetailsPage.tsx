@@ -129,23 +129,21 @@ const AddressDetailsPage = () => {
         {address.transactions.pending
           .slice(0)
           .reverse()
-          .map(({ txId, timestamp, toAddress, amount, type }) => {
-            return (
-              <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
-                <TableCell>
-                  <Badge content="Pending" type="neutral" />
-                </TableCell>
-                <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-                <TableCell truncate>
-                  <DarkLabel type="neutral" content="To" />
-                  <span>{toAddress}</span>
-                </TableCell>
-                <TableCell align="end">
-                  <Badge type="minus" prefix="-" content={amount} amount={type === 'transfer'} />
-                </TableCell>
-              </TableRow>
-            )
-          })}
+          .map(({ txId, timestamp, toAddress, amount, type }) => (
+            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+              <TableCell>
+                <Badge content="Pending" type="neutral" />
+              </TableCell>
+              <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
+              <TableCell truncate>
+                <DarkLabel type="neutral" content="To" />
+                <span>{toAddress}</span>
+              </TableCell>
+              <TableCell align="end">
+                {type === 'transfer' && amount && <Badge type="minus" prefix="-" content={amount} amount />}
+              </TableCell>
+            </TableRow>
+          ))}
         {address.transactions.confirmed.map((transaction) => {
           const amount = calAmountDelta(transaction, addressHash)
           const amountIsBigInt = typeof amount === 'bigint'

@@ -22,7 +22,7 @@ import Amount from './Amount'
 
 interface BadgeProps {
   type: keyof DefaultTheme['badge']['font']
-  content: string | number | undefined
+  content: string | bigint
   className?: string
   amount?: boolean
   prefix?: string

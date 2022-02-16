@@ -29,7 +29,7 @@ import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
-import { isAmountValid } from '../../utils/transactions'
+import { isAmountWithinRange } from '../../utils/transactions'
 import ConsolidateUTXOsModal from './ConsolidateUTXOsModal'
 import SendModalCheckTransaction from './SendModalCheckTransaction'
 import SendModalTransactionForm from './SendModalTransactionForm'
@@ -93,7 +93,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
 
     const { fromAddress, toAddress, amount, gasAmount, gasPrice } = transactionData
     const amountInSet = convertAlphToSet(amount)
-    const isDataComplete = fromAddress && toAddress && isAmountValid(amountInSet, fromAddress.availableBalance)
+    const isDataComplete = fromAddress && toAddress && isAmountWithinRange(amountInSet, fromAddress.availableBalance)
 
     if (wallet && client && isDataComplete) {
       setIsLoading(true)
@@ -111,10 +111,10 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
             fromAddress.hash,
             fromAddress.publicKey,
             toAddress,
-            amountInSet,
+            amountInSet.toString(),
             undefined,
             gasAmount ? parseInt(gasAmount) : undefined,
-            gasPrice ? convertAlphToSet(gasPrice) : undefined
+            gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
           )
           setUnsignedTransaction(data.unsignedTx)
           setUnsignedTxId(data.txId)
@@ -181,7 +181,6 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
               txId,
               unsignedTx,
               sendToAddress,
-              '-',
               transactionType,
               currentNetwork
             )
@@ -196,9 +195,9 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
             unsignedTxId,
             unsignedTransaction,
             toAddress,
-            convertAlphToSet(amount),
             'transfer',
-            currentNetwork
+            currentNetwork,
+            convertAlphToSet(amount)
           )
 
           if (data) {

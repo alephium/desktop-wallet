@@ -26,7 +26,7 @@ import { InputProps } from '.'
 import Input from './Input'
 
 interface AmountInputProps extends Omit<InputProps, 'onChange'> {
-  availableAmount: string
+  availableAmount: bigint
   onChange: (newAmount: string) => void
 }
 
