@@ -317,6 +317,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     if (wallet === undefined) {
       console.log('🧽 Cleaning state.')
       setAddressesState(new Map())
+      previousClient.current = undefined
     }
   }, [wallet])
 
