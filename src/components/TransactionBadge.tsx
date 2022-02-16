@@ -16,34 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
-import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
+import styled from 'styled-components'
 
-interface LabelProps {
-  className?: string
-  color?: string
-  border?: boolean
-}
+import Badge from './Badge'
 
-let Label: FC<LabelProps> = ({ className, children }) => {
-  return <span className={className}>{children}</span>
-}
-
-Label = styled(Label)`
-  display: inline-block;
-  padding: 5px 8px;
-  color: ${({ color, theme }) => color || theme.font.primary}};
-  border-radius: 20px;
-  background-color: ${({ color, theme }) =>
-    tinycolor(color || theme.font.primary)
-      .setAlpha(0.2)
-      .toString()};
-  ${({ border, color }) =>
-    border &&
-    css`
-      border: 1px solid ${color};
-    `};
+const TransactionBadge = styled(Badge)`
+  background-color: ${({ theme }) => theme.bg.secondary};
+  padding: 3px 10px;
+  border-radius: var(--radius-small);
+  min-width: 50px;
+  display: inline-flex;
+  justify-content: center;
+  margin-right: var(--spacing-4);
+  float: none;
 `
 
-export default Label
+export default TransactionBadge
