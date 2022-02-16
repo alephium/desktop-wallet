@@ -31,7 +31,7 @@ export const isElectron = () => {
 
 export const openInWebBrowser = (url: string) => {
   if (url) {
-    const newWindow = window.open(`${url}`, '_blank', 'noopener,noreferrer')
+    const newWindow = window.open(`${url.replace(/([^:]\/)\/+/g, '$1')}`, '_blank', 'noopener,noreferrer')
     if (newWindow) {
       newWindow.opener = null
       newWindow.focus()

@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ExternalLink } from 'lucide-react'
 import styled from 'styled-components'
 
+import { useGlobalContext } from '../../contexts/global'
 import { openInWebBrowser } from '../../utils/misc'
-import { loadStoredSettings } from '../../utils/settings'
 
 interface OpenInExplorerButtonProps {
   address: string
@@ -28,16 +28,16 @@ interface OpenInExplorerButtonProps {
 }
 
 const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps) => {
-  const handleShowInExplorer = () => {
-    const {
+  const {
+    settings: {
       network: { explorerUrl }
-    } = loadStoredSettings()
+    }
+  } = useGlobalContext()
 
+  const handleShowInExplorer = () => {
     if (!explorerUrl) return
 
-    // Remove forward slashes duplicates if needed
-    const cleanURL = `${explorerUrl}/#/addresses/${address}`.replace(/([^:]\/)\/+/g, '$1')
-    openInWebBrowser(cleanURL)
+    openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
   return <ExternalLink className={className} data-tip={'Open in explorer'} size={15} onClick={handleShowInExplorer} />
