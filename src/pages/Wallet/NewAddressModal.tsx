@@ -16,9 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import addressToGroup from 'alephium-js/dist/lib/address'
-import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
-import { AddressAndKeys, deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
+import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 

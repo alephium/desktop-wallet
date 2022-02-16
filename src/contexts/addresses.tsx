@@ -16,11 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
 import { SweepAddressTransaction } from 'alephium-js/dist/api/api-alephium'
 import { AddressInfo, Transaction } from 'alephium-js/dist/api/api-explorer'
-import addressToGroup from 'alephium-js/dist/lib/address'
-import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
-import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'

@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MIN_UTXO_SET_AMOUNT } from 'alephium-js/dist/lib/constants'
-import { convertSetToAlph } from 'alephium-js/dist/lib/numbers'
+import { convertSetToAlph, MIN_UTXO_SET_AMOUNT } from 'alephium-js'
 import { ChangeEvent, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
