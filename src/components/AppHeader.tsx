@@ -64,8 +64,12 @@ const AppHeader: FC<{ onSettingsClick?: () => void }> = ({ children, onSettingsC
           <Button transparent squared onClick={onSettingsClick} aria-label="Settings">
             <SettingsIcon />
           </Button>
-          <HeaderDivider />
-          <Label color={mainAddress?.settings.color}>{mainAddress?.labelDisplay()}</Label>
+          {mainAddress && (
+            <>
+              <HeaderDivider />
+              <Label color={mainAddress?.settings.color}>{mainAddress?.labelDisplay()}</Label>
+            </>
+          )}
           <HeaderDivider />
           {children && (
             <>
