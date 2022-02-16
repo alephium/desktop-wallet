@@ -20,7 +20,7 @@ import { getStorage } from 'alephium-js'
 import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 
-import { Modal } from '../components/Modal'
+import ModalCentered from '../components/ModalCentered'
 import HomePage from '../pages/HomePage'
 import SettingsPage from '../pages/Settings/SettingsPage'
 import CreateWalletRoutes from './CreateWalletRoutes'
@@ -58,9 +58,12 @@ const Routes = () => {
       <AnimatePresence exitBeforeEnter initial={false}>
         <Switch>
           <Route path="/settings">
-            <Modal title="Settings" onClose={() => history.push(history.location.pathname.replace('/settings', ''))}>
+            <ModalCentered
+              title="Settings"
+              onClose={() => history.push(history.location.pathname.replace('/settings', ''))}
+            >
               <SettingsPage />
-            </Modal>
+            </ModalCentered>
           </Route>
         </Switch>
       </AnimatePresence>

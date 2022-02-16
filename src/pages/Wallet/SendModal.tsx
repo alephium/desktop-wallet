@@ -23,7 +23,7 @@ import { Send } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'
 
-import Modal, { HeaderContent, HeaderLogo } from '../../components/Modal'
+import ModalCentered, { HeaderContent, HeaderLogo } from '../../components/ModalCentered'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
@@ -224,7 +224,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
   }
 
   return (
-    <Modal title={title} onClose={onClose} isLoading={isLoading}>
+    <ModalCentered title={title} onClose={onClose} isLoading={isLoading}>
       <HeaderContent>
         <HeaderLogo>
           <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
@@ -255,7 +255,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
           />
         )}
       </AnimatePresence>
-    </Modal>
+    </ModalCentered>
   )
 }
 

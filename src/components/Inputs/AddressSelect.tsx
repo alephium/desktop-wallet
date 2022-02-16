@@ -25,7 +25,7 @@ import { Address } from '../../contexts/addresses'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
 import Label from '../Label'
-import Modal, { ModalFooterButton, ModalFooterButtons } from '../Modal'
+import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../ModalCentered'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
@@ -139,7 +139,7 @@ const AddressSelectModal = ({
   }
 
   return (
-    <Modal title="Addresses" onClose={onClose}>
+    <ModalCentered title="Addresses" onClose={onClose}>
       <Description>{title}</Description>
       <div>
         {displayedOptions.map((address) => (
@@ -168,7 +168,7 @@ const AddressSelectModal = ({
           Select
         </ModalFooterButton>
       </ModalFooterButtons>
-    </Modal>
+    </ModalCentered>
   )
 }
 

@@ -29,7 +29,7 @@ import Amount from '../../components/Amount'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import FloatingLogo from '../../components/FloatingLogo'
-import Modal from '../../components/Modal'
+import ModalCentered from '../../components/ModalCentered'
 import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
@@ -135,9 +135,9 @@ const WalletHomePage = () => {
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && (
-          <Modal title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
+          <ModalCentered title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
             <SettingsPage />
-          </Modal>
+          </ModalCentered>
         )}
       </AnimatePresence>
     </WalletContainer>

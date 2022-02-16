@@ -24,8 +24,7 @@ import Amount from '../../components/Amount'
 import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Toggle from '../../components/Inputs/Toggle'
-import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
-import Modal from '../../components/Modal'
+import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from '../../components/ModalCentered'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
@@ -71,7 +70,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
 
   return (
     <>
-      <Modal title="Address options" subtitle={address.displayName()} onClose={onClose}>
+      <ModalCenteded title="Address options" subtitle={address.displayName()} onClose={onClose}>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
@@ -111,7 +110,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           </ModalFooterButton>
           <ModalFooterButton onClick={onGenerateClick}>Save</ModalFooterButton>
         </ModalFooterButtons>
-      </Modal>
+      </ModalCenteded>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressSweepModalOpen && (
           <AddressSweepModal

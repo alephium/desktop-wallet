@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
 interface ModalContext {
-  modalTitle: string
+  modalTitle?: string
   setModalTitle: (newTitle: string) => void
   modalSubtitle?: string
   setModalSubtitle?: (newSubtitle: string) => void
@@ -37,7 +37,7 @@ export const ModalContext = createContext<ModalContext>({
 })
 
 interface ModalContextProviderProps {
-  title: string
+  title?: string
   subtitle?: string
   onClose: () => void
 }

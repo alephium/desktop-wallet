@@ -26,7 +26,7 @@ import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Select from '../../components/Inputs/Select'
 import Toggle from '../../components/Inputs/Toggle'
-import Modal, { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
+import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../../components/ModalCentered'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '../../contexts/addresses'
@@ -116,7 +116,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   }
 
   return (
-    <Modal title={title} onClose={onClose}>
+    <ModalCentered title={title} onClose={onClose}>
       <Section>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         {singleAddress && (
@@ -155,7 +155,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         </ModalFooterButton>
         <ModalFooterButton onClick={onGenerateClick}>Generate</ModalFooterButton>
       </ModalFooterButtons>
-    </Modal>
+    </ModalCentered>
   )
 }
 

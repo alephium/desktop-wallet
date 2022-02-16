@@ -21,7 +21,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import InfoBox from '../../components/InfoBox'
-import Modal from '../../components/Modal'
+import ModalCentered from '../../components/ModalCentered'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { useGlobalContext } from '../../contexts/global'
@@ -31,7 +31,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
   return (
-    <Modal title="Secret phrase" onClose={onClose} focusMode>
+    <ModalCentered title="Secret phrase" onClose={onClose} focusMode>
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
@@ -50,7 +50,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
           <PhraseBox>{wallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
         </Section>
       )}
-    </Modal>
+    </ModalCentered>
   )
 }
 
