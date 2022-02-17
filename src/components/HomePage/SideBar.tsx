@@ -42,7 +42,6 @@ const SideBar = () => {
         <HeaderText>
           <PanelTitle
             color={theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary}
-            backgroundColor="transparent"
             useLayoutId={false}
           >
             Alephium

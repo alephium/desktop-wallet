@@ -29,6 +29,7 @@ import ExpandableSection from '../../components/ExpandableSection'
 import IOList from '../../components/IOList'
 import Label from '../../components/Label'
 import Modal from '../../components/Modal'
+import { ModalHeader } from '../../components/ModalCentered'
 import { Address, AddressHash } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { openInWebBrowser } from '../../utils/misc'
@@ -66,7 +67,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         exit={{ x: '100%' }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
-        <Header>
+        <Header contrast>
           <AmountWrapper type={isOutgoingTx ? 'minus' : 'plus'}>
             <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
           </AmountWrapper>
@@ -178,13 +179,11 @@ const AmountWrapper = styled.div<{ type: keyof DefaultTheme['badge']['font'] }>`
   font-weight: var(--fontWeight-semiBold);
 `
 
-const Header = styled.div`
+const Header = styled(ModalHeader)`
   padding: 35px;
-  background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
   align-items: center;
   flex-direction: column;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 const HeaderInfo = styled.div`

@@ -19,15 +19,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from 'alephium-js'
 import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AnimatePresence } from 'framer-motion'
-import { Send } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useTheme } from 'styled-components'
 
-import ModalCentered, { HeaderContent, HeaderLogo } from '../../components/ModalCentered'
+import ModalCentered from '../../components/ModalCentered'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useModalContext } from '../../contexts/modal'
+import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
 import ConsolidateUTXOsModal from './ConsolidateUTXOsModal'
@@ -50,7 +49,6 @@ interface SendModalProps {
 }
 
 const SendModal = ({ title, onClose }: SendModalProps) => {
-  const theme = useTheme()
   const {
     client,
     wallet,
@@ -224,12 +222,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
   }
 
   return (
-    <ModalCentered title={title} onClose={onClose} isLoading={isLoading}>
-      <HeaderContent>
-        <HeaderLogo>
-          <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
-        </HeaderLogo>
-      </HeaderContent>
+    <ModalCentered title={title} onClose={onClose} isLoading={isLoading} header={<PaperPlaneSVG />}>
       {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
       {step === 2 && transactionData && fees && (
         <SendModalCheckTransaction

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { FC } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import Button from './Button'
 import Modal, { ModalBackdrop, ModalProps } from './Modal'
@@ -27,7 +27,7 @@ import { Section } from './PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 import Spinner from './Spinner'
 
-const ModalCentered: FC<ModalProps> = ({ title, subtitle, onClose, focusMode, isLoading, children }) => (
+const ModalCentered: FC<ModalProps> = ({ title, subtitle, onClose, focusMode, isLoading, header, children }) => (
   <Modal title={title} subtitle={subtitle} onClose={onClose} focusMode={focusMode}>
     <StyledModal
       initial={{ opacity: 0, y: 20 }}
@@ -35,14 +35,17 @@ const ModalCentered: FC<ModalProps> = ({ title, subtitle, onClose, focusMode, is
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ModalHeader>
-        <PanelTitle smaller useLayoutId={false}>
-          {title}
-          {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
-        </PanelTitle>
-        <CloseButton squared transparent onClick={onClose}>
-          <X />
-        </CloseButton>
+      <ModalHeader contrast={!!header}>
+        <TitleRow>
+          <PanelTitle smaller useLayoutId={false}>
+            {title}
+            {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
+          </PanelTitle>
+          <CloseButton squared transparent onClick={onClose}>
+            <X />
+          </CloseButton>
+        </TitleRow>
+        {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
       </ModalHeader>
       <ModalContent>{children}</ModalContent>
       {isLoading && (
@@ -89,10 +92,26 @@ const StyledModal = styled(motion.div)`
   }
 `
 
-const ModalHeader = styled.header`
+export const ModalHeader = styled.header<{ contrast?: boolean }>`
+  margin-bottom: var(--spacing-3);
+
+  ${({ contrast }) =>
+    contrast &&
+    css`
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+    `}
+`
+
+const ModalHeaderContent = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+`
+
+const TitleRow = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-3);
 `
 
 const CloseButton = styled(Button)`

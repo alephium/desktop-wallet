@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import styled, { css } from 'styled-components'
 
 import { ModalContextProvider } from '../contexts/modal'
@@ -29,6 +29,7 @@ export interface ModalProps {
   focusMode?: boolean
   isLoading?: boolean
   hasPadding?: boolean
+  header?: ReactElement
 }
 
 const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode, hasPadding = true }) => (
