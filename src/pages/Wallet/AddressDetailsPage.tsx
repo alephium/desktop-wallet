@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta } from 'alephium-js'
-import { Input, Output } from 'alephium-js/dist/api/api-explorer'
+import { Input, Output } from 'alephium-js/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import _ from 'lodash'

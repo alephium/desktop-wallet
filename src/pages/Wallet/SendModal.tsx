@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from 'alephium-js'
-import { SweepAddressTransaction } from 'alephium-js/dist/api/api-alephium'
+import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { Send } from 'lucide-react'
 import { useEffect, useState } from 'react'

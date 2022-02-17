@@ -17,8 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
-import { SweepAddressTransaction } from 'alephium-js/dist/api/api-alephium'
-import { AddressInfo, Transaction } from 'alephium-js/dist/api/api-explorer'
+import { SweepAddressTransaction } from 'alephium-js/api/alephium'
+import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'
