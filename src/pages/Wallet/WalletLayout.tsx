@@ -20,8 +20,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Route, Switch, useLocation } from 'react-router-dom'
+import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
@@ -30,28 +29,24 @@ import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import FloatingLogo from '../../components/FloatingLogo'
 import ModalCentered from '../../components/ModalCentered'
-import { FloatingPanel, MainContent, Section } from '../../components/PageComponents/PageContainers'
+import { Section } from '../../components/PageComponents/PageContainers'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import SettingsPage from '../Settings/SettingsPage'
-import AddressesPage from '../Wallet/AddressesPage'
-import AddressDetailsPage from './AddressDetailsPage'
 import SendModal from './SendModal'
 
 dayjs.extend(relativeTime)
 
-const WalletHomePage = () => {
+const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, currentUsername } = useGlobalContext()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
-  const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const { addresses, refreshAddressesData, isLoadingData } = useAddressesContext()
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
-  const totalNumberOfTx = addresses.reduce((acc, address) => acc + address.transactions.confirmed.length, 0)
 
   // Animation related to scroll
   const { scrollY } = useViewportScroll()
@@ -114,24 +109,6 @@ const WalletHomePage = () => {
           </CompactWalletAmountBoxContainer>
         )}
       </AnimatePresence>
-      <Switch location={location} key={location.pathname}>
-        <Route path="/wallet/overview" key="overview">
-          <MainContent>
-            <FloatingPanel>
-              <LastTransactionListHeader>
-                <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-                {isLoadingData && <Spinner size={'16px'} />}
-              </LastTransactionListHeader>
-            </FloatingPanel>
-          </MainContent>
-        </Route>
-        <Route path="/wallet/addresses/:addressHash" key="address-details">
-          <AddressDetailsPage />
-        </Route>
-        <Route path="/wallet/addresses" key="addresses">
-          <AddressesPage />
-        </Route>
-      </Switch>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && (
@@ -140,6 +117,7 @@ const WalletHomePage = () => {
           </ModalCentered>
         )}
       </AnimatePresence>
+      {children}
     </WalletContainer>
   )
 }
@@ -298,22 +276,6 @@ const ActionsTitle = styled.h3`
 
 const RefreshButton = styled(Button)``
 
-// === TRANSACTION === //
-
-const LastTransactionListHeader = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-3);
-`
-
-const LastTransactionListTitle = styled.h2`
-  margin: 0 var(--spacing-3) 0 0;
-
-  @media ${deviceBreakPoints.mobile} {
-    margin-left: 0;
-  }
-`
-
 const LockedBalance = styled.div`
   display: flex;
   align-items: center;
@@ -328,4 +290,4 @@ const LockedBalanceIcon = styled(Lock)`
   height: 1rem;
 `
 
-export default WalletHomePage
+export default WalletLayout

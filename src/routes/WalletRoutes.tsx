@@ -17,14 +17,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useEffect } from 'react'
-import { Route, useHistory } from 'react-router-dom'
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
 import { useGlobalContext } from '../contexts/global'
-import WalletHomePage from '../pages/Wallet/WalletHomePage'
+import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
+import AddressesPage from '../pages/Wallet/AddressesPage'
+import OverviewPage from '../pages/Wallet/OverviewPage'
+import WalletLayout from '../pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
   const { wallet } = useGlobalContext()
   const history = useHistory()
+  const location = useLocation()
 
   // Redirect if wallet is not set
   useEffect(() => {
@@ -35,7 +39,19 @@ const WalletRoutes = () => {
 
   return (
     <Route path="/wallet">
-      <WalletHomePage />
+      <WalletLayout>
+        <Switch location={location} key={location.pathname}>
+          <Route path="/wallet/overview" key="overview">
+            <OverviewPage />
+          </Route>
+          <Route path="/wallet/addresses/:addressHash" key="address-details">
+            <AddressDetailsPage />
+          </Route>
+          <Route path="/wallet/addresses" key="addresses">
+            <AddressesPage />
+          </Route>
+        </Switch>
+      </WalletLayout>
     </Route>
   )
 }
