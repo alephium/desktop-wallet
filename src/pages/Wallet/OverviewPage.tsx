@@ -77,8 +77,6 @@ const OverviewPage: FC = () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
-  console.log(NightskyImage)
-
   return (
     <MainContent>
       <Header>
@@ -183,7 +181,7 @@ const Header = styled.header`
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImage : DayskyImage)});
   background-position: bottom;
   background-size: cover;
-  margin-top: calc((10px + ${appHeaderHeight}) * -1);
+  margin-top: -${appHeaderHeight};
   margin-left: -56px;
   margin-right: -56px;
   padding: 56px;

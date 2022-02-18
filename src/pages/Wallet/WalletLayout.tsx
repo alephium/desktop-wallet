@@ -16,53 +16,73 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getStorage } from 'alephium-js'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { AnimatePresence, motion, useViewportScroll } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
-import Amount from '../../components/Amount'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
-import FloatingLogo from '../../components/FloatingLogo'
+import Select from '../../components/Inputs/Select'
 import ModalCentered from '../../components/ModalCentered'
 import { Section } from '../../components/PageComponents/PageContainers'
+import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
+import LogoSrc from '../../images/alephium_logo.svg'
+import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
 import SettingsPage from '../Settings/SettingsPage'
 import SendModal from './SendModal'
 
+interface UsernameSelectOptions {
+  label: string
+  value: string
+}
+
 dayjs.extend(relativeTime)
 
+const Storage = getStorage()
+
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentUsername } = useGlobalContext()
-  const [isHeaderCompact, setIsHeaderCompact] = useState(false)
+  const { wallet, lockWallet, currentUsername, login } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { addresses, refreshAddressesData, isLoadingData } = useAddressesContext()
-  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
-  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
-
-  // Animation related to scroll
-  const { scrollY } = useViewportScroll()
-
-  useEffect(() => {
-    return scrollY.onChange((y) => {
-      if (y >= 200 && !isHeaderCompact) {
-        setIsHeaderCompact(true)
-      } else if (y < 200 && isHeaderCompact) {
-        setIsHeaderCompact(false)
-      }
-    })
-  }, [isHeaderCompact, scrollY])
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const { refreshAddressesData, isLoadingData } = useAddressesContext()
+  const history = useHistory()
+  const location = useLocation()
+  const usernames = Storage.list()
+  const [switchToUsername, setSwitchToUsername] = useState(currentUsername)
+  const usernameSelectOptions = usernames
+    .filter((username) => username !== currentUsername)
+    .map((username) => ({
+      label: username,
+      value: username
+    }))
 
   const refreshData = () => {
     refreshAddressesData()
+  }
+
+  const handleUsernameChange = (option: UsernameSelectOptions | undefined) => {
+    if (option && option.value !== switchToUsername && option.value !== currentUsername) {
+      setSwitchToUsername(option.value)
+      setIsPasswordModalOpen(true)
+    }
+  }
+
+  const onLoginClick = (password: string) => {
+    setIsPasswordModalOpen(false)
+    login(switchToUsername, password, () => {
+      const nextPageLocation = '/wallet/overview'
+      if (location.pathname !== nextPageLocation) history.push(nextPageLocation)
+    })
   }
 
   if (!wallet) return null
@@ -75,40 +95,32 @@ const WalletLayout: FC = ({ children }) => {
         </RefreshButton>
       </AppHeader>
       <WalletSidebar>
-        <WalletAmountContainer>
-          <WalletAmountHighlightOverlay />
-          <WalletAmountContent>
-            <WalletAmount value={totalBalance} />
-            <WalletAmountSubtitle>Total balance</WalletAmountSubtitle>
-            {totalLockedBalance > 0 && (
-              <LockedBalance>
-                <LockedBalanceIcon /> <Amount value={totalLockedBalance} />
-              </LockedBalance>
-            )}
-            <CurrentAccount>Account: {currentUsername}</CurrentAccount>
-          </WalletAmountContent>
-        </WalletAmountContainer>
+        <LogoContainer>
+          <Logo src={LogoSrc} alt="Alephium Logo" />
+          <Texts>
+            <AlephiumText>Alephium</AlephiumText>
+            <WalletText>Wallet</WalletText>
+          </Texts>
+        </LogoContainer>
+        <Select
+          placeholder="ACCOUNT"
+          options={usernameSelectOptions}
+          controlledValue={{
+            label: currentUsername,
+            value: currentUsername
+          }}
+          onValueChange={handleUsernameChange}
+          title="Select an account"
+          id="account"
+        />
         <WalletActions>
           <ActionsTitle>Menu</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
           <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
-
           <ActionButton Icon={Lock} label="Lock" onClick={lockWallet} />
         </WalletActions>
-        <FloatingLogo position="bottom" />
       </WalletSidebar>
-      <AnimatePresence>
-        {isHeaderCompact && (
-          <CompactWalletAmountBoxContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <CompactWalletAmountBox>
-              <WalletAmountContainer style={{ scale: 0.7 }}>
-                <WalletAmount value={totalBalance} />
-              </WalletAmountContainer>
-            </CompactWalletAmountBox>
-          </CompactWalletAmountBoxContainer>
-        )}
-      </AnimatePresence>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && (
@@ -116,13 +128,21 @@ const WalletLayout: FC = ({ children }) => {
             <SettingsPage />
           </ModalCentered>
         )}
+        {isPasswordModalOpen && (
+          <ModalCentered title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
+            <PasswordConfirmation
+              text={`Enter password for "${switchToUsername}"`}
+              buttonText="Login"
+              onCorrectPasswordEntered={onLoginClick}
+              username={switchToUsername}
+            />
+          </ModalCentered>
+        )}
       </AnimatePresence>
       {children}
     </WalletContainer>
   )
 }
-
-const walletSidebarWidth = 400
 
 const WalletContainer = styled(motion.div)`
   display: flex;
@@ -132,6 +152,31 @@ const WalletContainer = styled(motion.div)`
     flex-direction: column;
     overflow: initial;
   }
+`
+
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 45px;
+`
+
+const Logo = styled.img`
+  width: 30px;
+`
+
+const Texts = styled.div``
+
+const AlephiumText = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+  font-size: 20px;
+  margin-bottom: 3px;
+`
+
+const WalletText = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+  font-size: 16px;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const WalletSidebar = styled(Section)`
@@ -144,7 +189,7 @@ const WalletSidebar = styled(Section)`
   max-width: ${walletSidebarWidth}px;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.primary};
-  padding-top: ${appHeaderHeight};
+  padding: ${appHeaderHeight} var(--spacing-5) 0;
   z-index: 1000;
 
   @media ${deviceBreakPoints.mobile} {
@@ -156,113 +201,11 @@ const WalletSidebar = styled(Section)`
   }
 `
 
-const CompactWalletAmountBoxContainer = styled(motion.div)`
-  align-items: flex-start;
-  justify-content: flex-start;
-  margin: var(--spacing-1) !important;
-  margin-top: calc(${appHeaderHeight} + var(--spacing-1)) !important;
-  flex: 0;
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1000;
-  display: none;
-
-  @media ${deviceBreakPoints.mobile} {
-    display: block;
-  }
-`
-
-const WalletAmountContent = styled.div`
-  position: relative;
-  height: 100%;
-  padding: var(--spacing-5);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  z-index: 1;
-`
-
-const WalletAmountHighlightOverlay = styled.div`
-  background: ${({ theme }) => theme.global.highlightGradient};
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  z-index: 0;
-
-  opacity: 0.7;
-
-  transition: all 0.15s ease-out;
-`
-
-const WalletAmountContainer = styled.div`
-  position: relative;
-  min-height: 150px;
-  margin: var(--spacing-5);
-  margin-top: var(--spacing-2);
-  border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.contrast};
-  overflow: hidden;
-
-  &:hover {
-    ${WalletAmountHighlightOverlay} {
-      opacity: 0.9;
-    }
-  }
-`
-
-const CompactWalletAmountBox = styled(motion.div)`
-  background: ${({ theme }) => theme.global.highlightGradient};
-  width: 100%;
-  height: 60px;
-  padding: 0 var(--spacing-5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
-  box-shadow: 0 10px 10px var(--color-shadow-10);
-
-  ${WalletAmountContainer} {
-    margin: 0;
-    background: transparent;
-
-    @media ${deviceBreakPoints.mobile} {
-      min-height: initial;
-    }
-  }
-`
-
-const WalletAmount = styled(Amount)`
-  font-size: 2.5rem;
-  color: ${({ theme }) => theme.font.contrastPrimary};
-  text-align: center;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const WalletAmountSubtitle = styled.div`
-  margin: 0 auto;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.font.contrastSecondary};
-  text-align: center;
-  font-weight: var(--fontWeight-medium);
-`
-
-const CurrentAccount = styled.span`
-  text-align: center;
-  color: ${({ theme }) => theme.font.contrastSecondary};
-  margin-top: var(--spacing-2);
-  font-size: 0.95em;
-`
-
 const WalletActions = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 0 var(--spacing-5);
-  border-top: 1px solid ${({ theme }) => theme.border.secondary};
+  margin-top: 35px;
 
   @media ${deviceBreakPoints.mobile} {
     border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
@@ -272,22 +215,9 @@ const WalletActions = styled.div`
 const ActionsTitle = styled.h3`
   width: 100%;
   color: ${({ theme }) => theme.font.secondary};
+  margin-top: 0;
 `
 
 const RefreshButton = styled(Button)``
-
-const LockedBalance = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.font.contrastSecondary};
-  margin-top: var(--spacing-2);
-  font-weight: var(--fontWeight-medium);
-  font-size: 1rem;
-`
-
-const LockedBalanceIcon = styled(Lock)`
-  height: 1rem;
-`
 
 export default WalletLayout

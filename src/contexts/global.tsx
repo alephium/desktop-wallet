@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Wallet } from 'alephium-js'
+import { getStorage, Wallet, walletOpen } from 'alephium-js'
 import { merge } from 'lodash'
 import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
@@ -40,6 +40,7 @@ export interface GlobalContextProps {
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
+  login: (username: string, password: string, callback: () => void) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -57,6 +58,7 @@ export const initialGlobalContext: GlobalContextProps = {
   wallet: undefined,
   setWallet: () => null,
   lockWallet: () => null,
+  login: () => null,
   client: undefined,
   settings: loadStoredSettings(),
   updateSettings: () => null,
@@ -67,6 +69,8 @@ export const initialGlobalContext: GlobalContextProps = {
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
+
+const Storage = getStorage()
 
 export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<GlobalContextProps> }> = ({
   children,
@@ -91,6 +95,23 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const lockWallet = () => {
     setCurrentUsername('')
     setWallet(undefined)
+  }
+
+  const login = async (username: string, password: string, callback: () => void) => {
+    const walletEncrypted = Storage.load(username)
+    if (!walletEncrypted) {
+      setSnackbarMessage({ text: 'Unknown account name', type: 'alert' })
+      return
+    }
+    try {
+      const wallet = walletOpen(password, walletEncrypted)
+      if (!wallet) return
+      setWallet(wallet)
+      setCurrentUsername(username)
+      callback()
+    } catch (e) {
+      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+    }
   }
 
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
@@ -137,6 +158,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           wallet,
           setWallet,
           lockWallet,
+          login,
           client,
           snackbarMessage,
           setSnackbarMessage,

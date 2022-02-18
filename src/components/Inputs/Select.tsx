@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence, motion } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
@@ -55,19 +55,12 @@ function Select<T>({
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
       if (!value || !isEqual(option, value)) {
-        onValueChange && onValueChange(option)
-
+        onValueChange(option)
         setValue(option)
-
-        // Set value in input
-        if (inputRef.current && option) {
-          inputRef.current.value = option.label
-        }
       }
     },
     [onValueChange, value]
@@ -102,7 +95,7 @@ function Select<T>({
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>
-        <ClickableInput type="button" className={className} ref={inputRef} disabled={disabled} id={id} />
+        <ClickableInput type="button" className={className} disabled={disabled} id={id} value={value?.label ?? ''} />
       </SelectContainer>
       <AnimatePresence>
         {showPopup && (

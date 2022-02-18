@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
+import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS, Wallet } from 'alephium-js'
 import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -154,6 +154,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const [isLoadingData, setIsLoadingData] = useState(false)
   const { currentUsername, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const previousClient = useRef<Client>()
+  const previousWallet = useRef<Wallet | undefined>(wallet)
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
@@ -297,9 +298,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     if (
       wallet &&
       (addressesState.size === 0 || addressesOfCurrentNetwork.length === 0) &&
-      previousClient.current !== client
+      (previousClient.current !== client || previousWallet.current !== wallet)
     ) {
       previousClient.current = client
+      previousWallet.current = wallet
       initializeCurrentNetworkAddresses()
     }
   }, [
@@ -312,12 +314,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     wallet
   ])
 
-  // Clean state when locking the wallet
+  // Clean state when locking the wallet or changing accounts
   useEffect(() => {
-    if (wallet === undefined) {
+    if (wallet === undefined || wallet !== previousWallet.current) {
       console.log('🧽 Cleaning state.')
       setAddressesState(new Map())
       previousClient.current = undefined
+      previousWallet.current = wallet
     }
   }, [wallet])
 

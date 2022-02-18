@@ -130,7 +130,7 @@ export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignm
   display: flex;
   align-items: ${({ align }) => align};
   flex-direction: column;
-  min-width: 400px;
+  min-width: 280px;
 
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
@@ -163,7 +163,7 @@ MainContent = styled(MainContent)`
   display: flex;
   flex-direction: column;
   padding: 56px;
-  padding-top: calc(10px + ${appHeaderHeight});
+  padding-top: ${appHeaderHeight};
   background-color: ${({ theme }) => theme.bg.secondary};
   min-height: 100vh;
 
