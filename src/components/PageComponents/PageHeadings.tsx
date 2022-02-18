@@ -28,5 +28,5 @@ export const PageH2 = styled.h2`
   font-size: 14px;
   font-weight: var(--fontWeight-medium);
   margin-top: 32px;
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--spacing-5);
 `

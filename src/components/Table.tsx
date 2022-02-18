@@ -136,4 +136,8 @@ export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: 
 
 export const TableFooter = styled(TableColumns)``
 
+export const TableCellPlaceholder = styled(TableCell)`
+  color: ${({ theme }) => theme.font.secondary};
+`
+
 export default Table

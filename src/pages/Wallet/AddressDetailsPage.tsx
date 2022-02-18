@@ -38,7 +38,7 @@ import Label from '../../components/Label'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
-import Table, { TableCell, TableProps, TableRow } from '../../components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionBadge from '../../components/TransactionBadge'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from './AddressOptionsModal'
@@ -155,7 +155,7 @@ const AddressDetailsPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'minus' : 'plus'} />
+                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
@@ -170,7 +170,7 @@ const AddressDetailsPage = () => {
               </TableCell>
               <TableCell align="end">
                 <Badge
-                  type={isOut ? 'minus' : 'plus'}
+                  type={isOut ? 'neutral' : 'plus'}
                   prefix={isOut ? '- ' : '+ '}
                   content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
                   amount
@@ -238,10 +238,6 @@ const OptionsButton = styled(Button)`
 
 const PageH1Styled = styled(PageH1)`
   position: relative;
-`
-
-const TableCellPlaceholder = styled(TableCell)`
-  color: ${({ theme }) => theme.font.secondary};
 `
 
 export default AddressDetailsPage
