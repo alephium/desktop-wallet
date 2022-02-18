@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, convertAlphToSet } from 'alephium-js'
+import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
 import styled from 'styled-components'
 
 import InfoBox from '../../components/InfoBox'
@@ -42,8 +42,8 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
       <ModalContent>
         <InfoBox text={data.fromAddress.hash} label="From address" wordBreak />
         <InfoBox text={data.toAddress} label="To address" wordBreak />
-        <InfoBox text={`${abbreviateAmount(expectedAmount, false, 7)} ℵ`} label="Amount" />
-        {fees && <InfoBox text={`${abbreviateAmount(fees, false, 7)} ℵ`} label="Expected fee" />}
+        <InfoBox text={`${formatAmountForDisplay(expectedAmount, false, 7)} ℵ`} label="Amount" />
+        {fees && <InfoBox text={`${formatAmountForDisplay(fees, false, 7)} ℵ`} label="Expected fee" />}
       </ModalContent>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>

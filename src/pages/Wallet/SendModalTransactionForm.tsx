@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount, convertAlphToSet } from 'alephium-js'
+import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
 import { useState } from 'react'
 import styled from 'styled-components'
 
@@ -47,7 +47,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   const [gasPrice, setGasPrice] = useState(data?.gasPrice ?? '')
   const [addressError, setToAddressError] = useState('')
   const [gasAmountError, setGasAmountError] = useState('')
-  const minimalGasPriceInALPH = abbreviateAmount(MINIMAL_GAS_PRICE)
+  const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE)
   const [gasPriceError, setGasPriceError] = useState('')
 
   const handleAddressChange = (value: string) => {
@@ -78,7 +78,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       amount: newPrice,
       minAmount: MINIMAL_GAS_PRICE,
       stateSetter: setGasPrice,
-      errorMessage: `Gas price must be greater than ${abbreviateAmount(MINIMAL_GAS_PRICE, true)} ℵ.`,
+      errorMessage: `Gas price must be greater than ${formatAmountForDisplay(MINIMAL_GAS_PRICE, true)} ℵ.`,
       currentErrorState: gasPriceError,
       errorStateSetter: setGasPriceError,
       shouldConvertToSet: true
@@ -169,7 +169,7 @@ const ModalContent = styled.div`
 `
 
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return abbreviateAmount(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), false, 7)
+  return formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), false, 7)
 }
 
 const onAmountInputValueChange = ({
