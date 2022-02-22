@@ -102,7 +102,9 @@ export class Address {
 
     const { data } = await client.explorer.getAddressDetails(this.hash)
     this.details = data
-    this.availableBalance = BigInt(data.balance) - BigInt(data.lockedBalance)
+
+    if (data.balance) this.availableBalance = BigInt(data.balance)
+    if (data.lockedBalance) this.availableBalance -= BigInt(data.lockedBalance)
 
     return data
   }
