@@ -61,9 +61,9 @@ export class Address {
     pending: SimpleTx[]
     loadedPage: number
   }
+  availableBalance: bigint
   lastUsed?: TimeInMs
   network?: NetworkType
-  availableBalance: bigint
 
   constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
     this.hash = hash
