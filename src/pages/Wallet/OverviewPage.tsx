@@ -20,19 +20,20 @@ import { calAmountDelta } from 'alephium-js'
 import { Transaction } from 'alephium-js/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { Check, Lock } from 'lucide-react'
-import { FC, useState } from 'react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { useState } from 'react'
 import styled from 'styled-components'
 
+import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
-import Amount from '../../components/Amount'
+import AddressSummaryCard from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
+import Button from '../../components/Button'
 import Label from '../../components/Label'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
 import DayskyImage from '../../images/daysky.jpeg'
 import NightskyImage from '../../images/nightsky.png'
 import { appHeaderHeight } from '../../style/globalStyles'
@@ -49,14 +50,10 @@ const minTableColumnWidth = '104px'
 
 type TransactionAndAddress = Transaction & { address: Address }
 
-const OverviewPage: FC = () => {
+const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionAndAddress>()
+  const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, fetchAddressTransactionsNextPage } = useAddressesContext()
-  const { currentUsername } = useGlobalContext()
-
-  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
-  const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
-  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
 
   const allConfirmedTxs = addresses
@@ -80,28 +77,27 @@ const OverviewPage: FC = () => {
   return (
     <MainContent>
       <Header>
-        <SummaryCard>
-          <AmountContainer>
-            <AmountStyled value={totalBalance} />
-            Total balance
-          </AmountContainer>
-          <Divider />
-          <Balances>
-            <Balance>
-              <Check size="12px" />
-              <span>
-                Available: <Amount value={totalAvailableBalance} />
-              </span>
-            </Balance>
-            <BalanceLocked>
-              <Lock size="12px" />
-              <span>
-                Locked: <Amount value={totalLockedBalance} />
-              </span>
-            </BalanceLocked>
-          </Balances>
-          <AccountName>{currentUsername}</AccountName>
-        </SummaryCard>
+        <Summaries>
+          <AccountSummaryCardStyled />
+          <AddressSummaryCards collapsed={!areAddressSummariesExpanded} totalAddresses={addresses.length}>
+            <AnimatePresence>
+              {addresses.map((address, index) => (
+                <AddressSummaryCardStyled
+                  key={address.hash}
+                  address={address}
+                  index={index}
+                  clickable={areAddressSummariesExpanded}
+                  totalAddresses={addresses.length}
+                />
+              ))}
+            </AnimatePresence>
+          </AddressSummaryCards>
+          <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
+            {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
+            {areAddressSummariesExpanded ? 'Reduce' : 'Show addresses'}
+            {!areAddressSummariesExpanded && <ArrowRight size="12px" />}
+          </ExpandButton>
+        </Summaries>
       </Header>
       <PageH2>Transaction history</PageH2>
       <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
@@ -188,57 +184,48 @@ const Header = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
-const SummaryCard = styled.div`
-  border-radius: 9px;
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: var(--spacing-4);
-  width: 300px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-`
-
-const AmountStyled = styled(Amount)`
-  font-size: 32px;
-  font-weight: var(--fontWeight-medium);
-  display: block;
-  color: ${({ theme }) => theme.font.primary};
-  margin-bottom: 3px;
-`
-
-const AmountContainer = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
-const Divider = styled.div`
-  width: 24px;
-  height: 1px;
-  background-color: ${({ theme }) => theme.border.primary};
-  margin: var(--spacing-3) 0;
-`
-
-const Balance = styled.div`
+const Summaries = styled.div`
   display: flex;
   align-items: center;
-  font-weight: var(--fontWeight-medium);
-  gap: var(--spacing-1);
 `
 
-const Balances = styled.div`
+const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--spacing-3);
+  overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
+  margin-left: calc(var(--spacing-2) * -1);
+  padding-left: var(--spacing-4);
+  align-items: center;
+  padding-bottom: 56px;
+  margin-bottom: -56px;
+  padding-top: 56px;
+  margin-top: -56px;
+  width: ${({ collapsed, totalAddresses }) => (collapsed ? `${totalAddresses * 8}px` : '100%')};
+  transition: width 0.2s ease-out;
 `
 
-const BalanceLocked = styled(Balance)`
-  color: ${({ theme }) => theme.font.secondary};
+const AccountSummaryCardStyled = styled(AccountSummaryCard)`
+  flex-shrink: 0;
+  z-index: 1;
 `
 
-const AccountName = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 10px;
-  margin-bottom: -8px;
-  text-transform: uppercase;
-  text-align: right;
+const AddressSummaryCardStyled = styled(AddressSummaryCard)<{
+  index: number
+  clickable: boolean
+  totalAddresses: number
+}>`
+  transform: translateX(
+    ${({ index, clickable, totalAddresses }) => (!clickable ? (totalAddresses - index) * -109 + 5 : 0)}px
+  );
+  order: ${({ index, clickable }) => (!clickable ? index * -1 : index)};
+  transition: transform 0.2s ease-out;
+`
+
+const ExpandButton = styled(Button)`
+  flex-shrink: 0;
+  background-color: ${({ theme }) => theme.bg.accent};
+  margin-left: 20px;
+  gap: var(--spacing-1);
 `
 
 export default OverviewPage

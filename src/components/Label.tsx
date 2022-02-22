@@ -24,6 +24,7 @@ interface LabelProps {
   className?: string
   color?: string
   border?: boolean
+  truncate?: boolean
 }
 
 let Label: FC<LabelProps> = ({ className, children }) => {
@@ -44,6 +45,13 @@ Label = styled(Label)`
     css`
       border: 1px solid ${color};
     `};
+  ${({ truncate }) =>
+    truncate &&
+    css`
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `}
 `
 
 export default Label

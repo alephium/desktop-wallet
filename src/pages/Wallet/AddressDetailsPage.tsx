@@ -93,9 +93,11 @@ const AddressDetailsPage = () => {
           <DataListCell>Address</DataListCell>
           <DataListCell>
             {addressHash}
-            <ClipboardButton textToCopy={addressHash} />
-            <QRCodeButton textToEncode={addressHash} />
-            <OpenInExplorerButton address={addressHash} />
+            <IconButtons>
+              <ClipboardButton textToCopy={addressHash} />
+              <QRCodeButton textToEncode={addressHash} />
+              <OpenInExplorerButton address={addressHash} />
+            </IconButtons>
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -238,6 +240,12 @@ const OptionsButton = styled(Button)`
 
 const PageH1Styled = styled(PageH1)`
   position: relative;
+`
+
+const IconButtons = styled.div`
+  > svg {
+    margin-left: 10px;
+  }
 `
 
 export default AddressDetailsPage

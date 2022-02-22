@@ -73,8 +73,6 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
 }
 
 export default styled(ClipboardButton)`
-  margin-left: 10px;
-
   &.clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};

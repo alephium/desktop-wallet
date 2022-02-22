@@ -38,7 +38,6 @@ const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => (
 )
 
 const QRCodeIcon = styled(QrCode)`
-  margin-left: 10px;
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};
 `

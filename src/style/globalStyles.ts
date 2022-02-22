@@ -58,6 +58,7 @@ export const GlobalStyle = createGlobalStyle`
 
     --radius-small: 4px;
     --radius: 7px;
+    --radius-medium: 9px;
     --radius-big: 14px;
     --radius-full: 100%;
 

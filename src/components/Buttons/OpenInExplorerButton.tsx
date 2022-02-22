@@ -44,7 +44,6 @@ const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps)
 }
 
 export default styled(OpenInExplorerButton)`
-  margin-left: 10px;
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};
 `
