@@ -103,7 +103,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
 
       try {
         if (sweep) {
-          const { unsignedTxs, fees } = await fromAddress.buildSweepTransactions(client, toAddress)
+          const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, toAddress)
           setSweepUnsignedTxs(unsignedTxs)
           setFees(fees)
         } else {
@@ -153,7 +153,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
 
       setIsLoading(true)
       const { fromAddress } = transactionData
-      const { unsignedTxs, fees } = await fromAddress.buildSweepTransactions(client, fromAddress.hash)
+      const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, fromAddress.hash)
       setSweepUnsignedTxs(unsignedTxs)
       setFees(fees)
       setIsLoading(false)
@@ -176,8 +176,8 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
           const transactionType = consolidationRequired ? 'consolidation' : 'sweep'
 
           for (const { txId, unsignedTx } of sweepUnsignedTxs) {
-            const data = await fromAddress.signAndSendTransaction(
-              client,
+            const data = await client.signAndSendTransaction(
+              fromAddress,
               txId,
               unsignedTx,
               sendToAddress,
@@ -190,8 +190,8 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
             }
           }
         } else {
-          const data = await fromAddress.signAndSendTransaction(
-            client,
+          const data = await client.signAndSendTransaction(
+            fromAddress,
             unsignedTxId,
             unsignedTransaction,
             toAddress,

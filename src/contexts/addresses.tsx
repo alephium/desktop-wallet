@@ -32,7 +32,7 @@ import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
 import { Client, useGlobalContext } from './global'
 
-type TransactionType = 'consolidation' | 'transfer' | 'sweep'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
 type SimpleTx = {
   txId: string
@@ -96,58 +96,6 @@ export class Address {
     return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
   }
 
-  async fetchDetails(client: Client) {
-    if (!client) throw new Error('No client provided')
-    console.log('⬇️ Fetching address details: ', this.hash)
-
-    const { data } = await client.explorer.getAddressDetails(this.hash)
-    this.details = data
-
-    if (data.balance) this.availableBalance = BigInt(data.balance)
-    if (data.lockedBalance) this.availableBalance -= BigInt(data.lockedBalance)
-
-    return data
-  }
-
-  async fetchConfirmedTransactions(client: Client, page = 1) {
-    if (!client) throw new Error('No client provided')
-    console.log(`⬇️ Fetching page ${page} of address confirmed transactions: `, this.hash)
-
-    const { data } = await client.explorer.getAddressTransactions(this.hash, page)
-
-    const isInitialData = page === 1 && data.length > 0 && this.transactions.confirmed.length === 0
-    const latestTxHashIsNew =
-      page === 1 &&
-      data.length > 0 &&
-      this.transactions.confirmed.length > 0 &&
-      data[0].hash !== this.transactions.confirmed[0].hash
-
-    if (isInitialData) {
-      this.transactions.confirmed = data
-      this.transactions.loadedPage = 1
-    } else if (latestTxHashIsNew || page > 1) {
-      const newTransactions = data.filter(
-        (tx) => !this.transactions.confirmed.find((confirmedTx) => confirmedTx.hash === tx.hash)
-      )
-      this.transactions.confirmed =
-        page > 1
-          ? this.transactions.confirmed.concat(newTransactions)
-          : newTransactions.concat(this.transactions.confirmed)
-      if (page > 1) {
-        this.transactions.loadedPage = page
-      }
-    }
-
-    this.lastUsed = this.transactions.confirmed.length > 0 ? this.transactions.confirmed[0].timestamp : this.lastUsed
-
-    return data
-  }
-
-  async fetchConfirmedTransactionsNextPage(client: Client) {
-    if (!client) throw new Error('No client provided')
-    await this.fetchConfirmedTransactions(client, this.transactions.loadedPage + 1)
-  }
-
   addPendingTransaction(transaction: SimpleTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
@@ -167,47 +115,6 @@ export class Address {
       ? this.availableBalance
       : this.transactions.pending.reduce((acc, tx) => (tx.amount ? acc + BigInt(tx.amount) : acc), BigInt(0))
     this.availableBalance = this.availableBalance - totalAmountOfPendingTxs
-  }
-
-  async buildSweepTransactions(client: Client, toHash: AddressHash) {
-    if (!client) throw new Error('No client provided')
-
-    const { data } = await client.clique.transactionConsolidateUTXOs(this.publicKey, this.hash, toHash)
-    const fees = data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
-
-    return {
-      unsignedTxs: data.unsignedTxs,
-      fees
-    }
-  }
-
-  async signAndSendTransaction(
-    client: Client,
-    txId: string,
-    unsignedTx: string,
-    toHash: AddressHash,
-    type: TransactionType,
-    network: NetworkType,
-    amount?: bigint
-  ) {
-    if (!client) throw new Error('No client provided')
-
-    const signature = client.clique.transactionSign(txId, this.privateKey)
-    const response = await client.clique.transactionSend(toHash, unsignedTx, signature)
-
-    if (response.data) {
-      this.addPendingTransaction({
-        txId: response.data.txId,
-        fromAddress: this.hash,
-        toAddress: toHash,
-        timestamp: new Date().getTime(),
-        amount,
-        type,
-        network
-      })
-    }
-
-    return response.data
   }
 }
 
@@ -311,8 +218,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       for (const address of addressesStateToRefresh) {
         try {
-          await address.fetchDetails(client)
-          await address.fetchConfirmedTransactions(client)
+          await client.fetchAddressDetails(address)
+          await client.fetchAddressConfirmedTransactions(address)
 
           const initialNumberOfPendingTransactions = address.transactions.pending.length
 
@@ -348,7 +255,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const fetchAddressTransactionsNextPage = async (address: Address) => {
     if (!client) return
     setIsLoadingData(true)
-    await address.fetchConfirmedTransactionsNextPage(client)
+    await client.fetchAddressConfirmedTransactionsNextPage(address)
     setIsLoadingData(false)
   }
 

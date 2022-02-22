@@ -60,7 +60,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       if (!client || !sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
-        const { unsignedTxs, fees } = await sweepAddresses.from.buildSweepTransactions(client, sweepAddresses.to.hash)
+        const { unsignedTxs, fees } = await client.buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
         setBuiltUnsignedTxs(unsignedTxs)
         setFee(fees)
       } catch (e) {
@@ -81,8 +81,8 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(true)
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
-        const txSendResp = await sweepAddresses.from.signAndSendTransaction(
-          client,
+        const txSendResp = await client.signAndSendTransaction(
+          sweepAddresses.from,
           txId,
           unsignedTx,
           sweepAddresses.from.hash,
