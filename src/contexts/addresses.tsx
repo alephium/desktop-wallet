@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
-import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -168,13 +167,7 @@ export class Address {
     this.availableBalance = this.availableBalance - totalAmountOfPendingTxs
   }
 
-  async buildSweepTransactions(
-    client: Client,
-    toHash: AddressHash
-  ): Promise<{
-    unsignedTxs: SweepAddressTransaction[]
-    fees: bigint
-  }> {
+  async buildSweepTransactions(client: Client, toHash: AddressHash) {
     if (!client) throw new Error('No client provided')
 
     const { data } = await client.clique.transactionConsolidateUTXOs(this.publicKey, this.hash, toHash)
