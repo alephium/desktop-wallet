@@ -98,21 +98,17 @@ export const loadStoredSettings = (): Settings => {
   const deprecatedThemeSetting = window.localStorage.getItem('theme')
 
   // Migrate values if needed
-  const migratedNetworkSettings = !storedSettings.network
-    ? { network: storedSettings as unknown as DeprecatedNetworkSettings }
-    : {}
-  const migratedGeneralSettings = deprecatedThemeSetting
-    ? {
-        general: {
-          theme: deprecatedThemeSetting as ThemeType
-        }
-      }
-    : {}
+  const migratedSettings = {
+    network: storedSettings.network ?? (storedSettings as unknown as DeprecatedNetworkSettings),
+    general: deprecatedThemeSetting
+      ? { ...storedSettings.general, theme: deprecatedThemeSetting as ThemeType }
+      : storedSettings.general
+  }
 
   // Clean old values up if needed
   deprecatedThemeSetting && window.localStorage.removeItem('theme')
 
-  return merge(defaultSettings, storedSettings, migratedNetworkSettings, migratedGeneralSettings)
+  return merge({}, defaultSettings, migratedSettings)
 }
 
 export const saveStoredSettings = (settings: Settings) => {

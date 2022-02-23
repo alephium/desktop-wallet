@@ -82,9 +82,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [settings, setSettings] = useState<Settings>(loadStoredSettings())
   const [isClientLoading, setIsClientLoading] = useState(false)
+  const previousNodeHost = useRef('')
+  const previousExplorerAPIHost = useRef('')
 
   const currentNetwork = getNetworkName(settings.network)
-  const previousNetwork = useRef<NetworkType>()
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -118,8 +119,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useEffect(() => {
     const getClient = async () => {
-      if (previousNetwork.current === currentNetwork) return
-
       setIsClientLoading(true)
 
       const clientResp = await createClient(settings.network)
@@ -133,15 +132,20 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           type: 'info',
           duration: 4000
         })
-
-        previousNetwork.current = currentNetwork
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
       }
       setIsClientLoading(false)
     }
 
-    getClient()
+    if (
+      previousNodeHost.current !== settings.network.nodeHost ||
+      previousExplorerAPIHost.current !== settings.network.explorerApiHost
+    ) {
+      getClient()
+      previousNodeHost.current = settings.network.nodeHost
+      previousExplorerAPIHost.current = settings.network.explorerApiHost
+    }
   }, [currentNetwork, setSnackbarMessage, settings.network])
 
   // Save settings to local storage
