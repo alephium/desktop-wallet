@@ -40,12 +40,12 @@ const AddressSummaryCard = ({ address, clickable, className }: AddressSummaryCar
         onClick={() => clickable && history.push(`/wallet/addresses/${address.hash}`)}
         clickable={clickable}
       >
-        <Section>
+        <AddressNameSection>
           <Label color={address.settings.color} truncate>
             {address.labelDisplay()}
           </Label>
           <Hash>{address.hash}</Hash>
-        </Section>
+        </AddressNameSection>
         <AmountsSection>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
         </AmountsSection>
@@ -65,8 +65,11 @@ export default styled(AddressSummaryCard)`
   border-radius: var(--radius-medium);
 `
 
-const Section = styled.div`
+const PaddedSection = styled.div`
   padding: 11px 17px;
+`
+
+const AddressNameSection = styled(PaddedSection)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -98,8 +101,8 @@ const AmountHighlighted = styled(Amount)`
   color: ${({ theme }) => theme.font.highlight};
 `
 
-const ButtonsSection = styled(Section)`
-  flex-direction: row;
+const ButtonsSection = styled(PaddedSection)`
+  display: flex;
   gap: var(--spacing-4);
   justify-content: center;
 `

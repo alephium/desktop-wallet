@@ -207,10 +207,10 @@ const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: num
   margin-left: calc(var(--spacing-2) * -1);
   padding-left: var(--spacing-4);
   align-items: center;
-  padding-bottom: 56px;
-  margin-bottom: -56px;
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-bottom: 71px;
+  margin-bottom: -71px;
+  padding-top: 71px;
+  margin-top: -71px;
   width: ${({ collapsed, totalAddresses }) => (collapsed ? `${totalAddresses * 8}px` : '100%')};
   transition: width 0.2s ease-out;
 `
