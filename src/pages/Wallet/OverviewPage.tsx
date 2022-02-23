@@ -77,7 +77,7 @@ const OverviewPage = () => {
 
   useEffect(() => {
     if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
-      addressSummaryCardsRef.current.scrollTo({ left: 0 })
+      addressSummaryCardsRef.current.scrollLeft = 0
     }
   }, [areAddressSummariesExpanded])
 
