@@ -19,12 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Codesandbox } from 'lucide-react'
 import styled, { useTheme } from 'styled-components'
 
-import Amount from '../../components/Amount'
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
-import ModalCentered, { HeaderContent, HeaderLogo } from '../../components/ModalCentered'
-import { Section } from '../../components/PageComponents/PageContainers'
-import Spinner from '../../components/Spinner'
+import Amount from '../components/Amount'
+import Button from '../components/Button'
+import InfoBox from '../components/InfoBox'
+import ModalCentered, { HeaderContent, HeaderLogo } from '../components/ModalCentered'
+import { Section } from '../components/PageComponents/PageContainers'
+import Spinner from '../components/Spinner'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void

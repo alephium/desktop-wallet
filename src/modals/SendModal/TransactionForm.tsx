@@ -30,7 +30,7 @@ import { useAddressesContext } from '../../contexts/addresses'
 import { checkAddressValidity } from '../../utils/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { isAmountWithinRange } from '../../utils/transactions'
-import { SendTransactionData } from './SendModal'
+import { SendTransactionData } from '.'
 
 interface TransactionFormProps {
   data: SendTransactionData | undefined

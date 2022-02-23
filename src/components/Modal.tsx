@@ -17,23 +17,43 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC, ReactElement } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import styled, { css } from 'styled-components'
 
-import { ModalContextProvider } from '../contexts/modal'
-
 export interface ModalProps {
-  title?: string
-  subtitle?: string
   onClose: () => void
   focusMode?: boolean
-  isLoading?: boolean
   hasPadding?: boolean
-  header?: ReactElement
 }
 
-const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode, hasPadding = true }) => (
-  <ModalContextProvider title={title} subtitle={subtitle} onClose={onClose}>
+const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true }) => {
+  // Prevent body scroll on mount
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
+
+  // Handle escape key press
+  const handleEscapeKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    },
+    [onClose]
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscapeKeyPress, false)
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKeyPress, false)
+    }
+  }, [handleEscapeKeyPress, onClose])
+
+  return (
     <ModalContainer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -44,8 +64,8 @@ const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode, 
       {children}
       <ModalBackdrop onClick={onClose} focusMode={focusMode} />
     </ModalContainer>
-  </ModalContextProvider>
-)
+  )
+}
 
 const ModalContainer = styled(motion.div)<{ hasPadding?: boolean }>`
   position: fixed;

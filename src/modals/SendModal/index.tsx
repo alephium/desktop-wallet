@@ -25,13 +25,12 @@ import ModalCentered from '../../components/ModalCentered'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { useModalContext } from '../../contexts/modal'
 import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
-import ConsolidateUTXOsModal from './ConsolidateUTXOsModal'
-import SendModalCheckTransaction from './SendModalCheckTransaction'
-import SendModalTransactionForm from './SendModalTransactionForm'
+import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
+import SendModalCheckTransaction from './CheckTransaction'
+import SendModalTransactionForm from './TransactionForm'
 
 type StepIndex = 1 | 2 | 3
 
@@ -44,11 +43,10 @@ export type SendTransactionData = {
 }
 
 interface SendModalProps {
-  title: string
   onClose: () => void
 }
 
-const SendModal = ({ title, onClose }: SendModalProps) => {
+const SendModal = ({ onClose }: SendModalProps) => {
   const {
     client,
     wallet,
@@ -59,7 +57,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
     currentNetwork
   } = useGlobalContext()
   const { setAddress } = useAddressesContext()
-  const { setModalTitle } = useModalContext()
+  const [title, setTitle] = useState('')
   const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -73,13 +71,13 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
 
   useEffect(() => {
     if (step === 1) {
-      setModalTitle('Send')
+      setTitle('Send')
     } else if (step === 2) {
-      setModalTitle('Info Check')
+      setTitle('Info Check')
     } else if (step === 3) {
-      setModalTitle('Password Check')
+      setTitle('Password Check')
     }
-  }, [setStep, setModalTitle, step])
+  }, [setStep, setTitle, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)

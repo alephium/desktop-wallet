@@ -36,8 +36,8 @@ import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '..
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import DayskyImage from '../../images/daysky.jpeg'
 import NightskyImage from '../../images/nightsky.png'
+import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 import { appHeaderHeight } from '../../style/globalStyles'
-import TransactionDetailsModal from './TransactionDetailsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },

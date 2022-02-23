@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import ModalCentered from '../../components/ModalCentered'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
 import AccountsSettingsSection from './AccountsSettingsSection'
@@ -31,17 +32,23 @@ const tabs = [
   { value: 'accounts', label: 'Accounts', component: <AccountsSettingsSection /> }
 ]
 
-const SettingsPage = () => {
+interface SettingsModalProps {
+  onClose: () => void
+}
+
+const SettingsModal = ({ onClose }: SettingsModalProps) => {
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
-    <PanelContentContainer>
-      <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-      {tabs.find((t) => t.value === currentTab.value)?.component}
-      <Section>
-        <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
-      </Section>
-    </PanelContentContainer>
+    <ModalCentered title="Settings" onClose={onClose}>
+      <PanelContentContainer>
+        <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+        {tabs.find((t) => t.value === currentTab.value)?.component}
+        <Section>
+          <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
+        </Section>
+      </PanelContentContainer>
+    </ModalCentered>
   )
 }
 
@@ -50,4 +57,4 @@ const VersionNumber = styled.span`
   margin-top: var(--spacing-3);
 `
 
-export default SettingsPage
+export default SettingsModal

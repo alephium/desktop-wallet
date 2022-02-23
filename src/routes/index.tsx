@@ -17,12 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage } from 'alephium-js'
-import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
+import { AnimateSharedLayout } from 'framer-motion'
+import { Redirect, Route, Switch } from 'react-router-dom'
 
-import ModalCentered from '../components/ModalCentered'
 import HomePage from '../pages/HomePage'
-import SettingsPage from '../pages/Settings/SettingsPage'
 import CreateWalletRoutes from './CreateWalletRoutes'
 import ImportWalletRoutes from './ImportWalletRoutes'
 import WalletRoutes from './WalletRoutes'
@@ -30,8 +28,6 @@ import WalletRoutes from './WalletRoutes'
 const Storage = getStorage()
 
 const Routes = () => {
-  const history = useHistory()
-
   const usernames = Storage.list()
   const hasWallet = usernames.length > 0
 
@@ -55,18 +51,6 @@ const Routes = () => {
           </Route>
         </Switch>
       </AnimateSharedLayout>
-      <AnimatePresence exitBeforeEnter initial={false}>
-        <Switch>
-          <Route path="/settings">
-            <ModalCentered
-              title="Settings"
-              onClose={() => history.push(history.location.pathname.replace('/settings', ''))}
-            >
-              <SettingsPage />
-            </ModalCentered>
-          </Route>
-        </Switch>
-      </AnimatePresence>
     </>
   )
 }

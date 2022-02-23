@@ -35,9 +35,9 @@ import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import AddressSweepModal from '../../modals/AddressSweepModal'
+import NewAddressModal from '../../modals/NewAddressModal'
 import { openInWebBrowser } from '../../utils/misc'
-import AddressSweepModal from './AddressSweepModal'
-import NewAddressModal from './NewAddressModal'
 
 const minTableColumnWidth = '105px'
 

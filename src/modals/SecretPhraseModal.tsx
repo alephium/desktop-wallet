@@ -20,11 +20,11 @@ import { Edit3 } from 'lucide-react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import InfoBox from '../../components/InfoBox'
-import ModalCentered from '../../components/ModalCentered'
-import { Section } from '../../components/PageComponents/PageContainers'
-import PasswordConfirmation from '../../components/PasswordConfirmation'
-import { useGlobalContext } from '../../contexts/global'
+import InfoBox from '../components/InfoBox'
+import ModalCentered from '../components/ModalCentered'
+import { Section } from '../components/PageComponents/PageContainers'
+import PasswordConfirmation from '../components/PasswordConfirmation'
+import { useGlobalContext } from '../contexts/global'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const { wallet } = useGlobalContext()

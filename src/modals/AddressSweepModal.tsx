@@ -21,14 +21,14 @@ import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import Amount from '../../components/Amount'
-import InfoBox from '../../components/InfoBox'
-import AddressSelect from '../../components/Inputs/AddressSelect'
-import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../../components/ModalCentered'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-import { getHumanReadableError } from '../../utils/api'
+import Amount from '../components/Amount'
+import InfoBox from '../components/InfoBox'
+import AddressSelect from '../components/Inputs/AddressSelect'
+import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../components/ModalCentered'
+import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
+import { Address, useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
+import { getHumanReadableError } from '../utils/api'
 
 type SweepAddress = Address | undefined
 

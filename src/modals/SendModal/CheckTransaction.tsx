@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 import InfoBox from '../../components/InfoBox'
 import { ModalFooterButton, ModalFooterButtons } from '../../components/ModalCentered'
-import { SendTransactionData } from './SendModal'
+import { SendTransactionData } from '.'
 
 interface SendModalCheckTransactionProps {
   data: SendTransactionData

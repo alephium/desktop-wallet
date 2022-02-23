@@ -39,14 +39,13 @@ interface HomeProps {
 }
 
 const HomePage = ({ hasWallet, usernames }: HomeProps) => {
-  const history = useHistory()
   const [showInitialActions, setShowInitialActions] = useState(false)
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader onSettingsClick={() => history.push('/settings')} />
+      <AppHeader />
       <SideBar />
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">

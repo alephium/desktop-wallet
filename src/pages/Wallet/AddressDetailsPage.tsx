@@ -41,8 +41,8 @@ import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionBadge from '../../components/TransactionBadge'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
-import AddressOptionsModal from './AddressOptionsModal'
-import TransactionDetailsModal from './TransactionDetailsModal'
+import AddressOptionsModal from '../../modals/AddressOptionsModal'
+import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },

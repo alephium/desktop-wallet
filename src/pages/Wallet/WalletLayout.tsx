@@ -36,9 +36,8 @@ import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import LogoSrc from '../../images/alephium_logo.svg'
+import SendModal from '../../modals/SendModal'
 import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
-import SettingsPage from '../Settings/SettingsPage'
-import SendModal from './SendModal'
 
 interface UsernameSelectOptions {
   label: string
@@ -52,7 +51,6 @@ const Storage = getStorage()
 const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, currentUsername, login } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const history = useHistory()
@@ -89,7 +87,7 @@ const WalletLayout: FC = ({ children }) => {
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader onSettingsClick={() => setIsSettingsModalOpen(true)}>
+      <AppHeader>
         <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
           {isLoadingData ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
@@ -122,12 +120,7 @@ const WalletLayout: FC = ({ children }) => {
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
-        {isSettingsModalOpen && (
-          <ModalCentered title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
-            <SettingsPage />
-          </ModalCentered>
-        )}
+        {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
         {isPasswordModalOpen && (
           <ModalCentered title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation

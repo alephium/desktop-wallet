@@ -19,11 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AlertTriangle } from 'lucide-react'
 import { useTheme } from 'styled-components'
 
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
-import ModalCentered from '../../components/ModalCentered'
-import { Section } from '../../components/PageComponents/PageContainers'
-import Paragraph from '../../components/Paragraph'
+import Button from '../components/Button'
+import InfoBox from '../components/InfoBox'
+import ModalCentered from '../components/ModalCentered'
+import { Section } from '../components/PageComponents/PageContainers'
+import Paragraph from '../components/Paragraph'
 
 interface AccountRemovalModalProps {
   accountName: string

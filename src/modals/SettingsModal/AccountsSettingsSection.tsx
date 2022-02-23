@@ -26,8 +26,8 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
-import AccountRemovalModal from './AccountRemovalModal'
-import SecretPhraseModal from './SecretPhraseModal'
+import AccountRemovalModal from '../AccountRemovalModal'
+import SecretPhraseModal from '../SecretPhraseModal'
 
 const Storage = getStorage()
 

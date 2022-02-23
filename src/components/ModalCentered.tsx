@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 
 import Button from './Button'
@@ -27,8 +27,23 @@ import { Section } from './PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
 import Spinner from './Spinner'
 
-const ModalCentered: FC<ModalProps> = ({ title, subtitle, onClose, focusMode, isLoading, header, children }) => (
-  <Modal title={title} subtitle={subtitle} onClose={onClose} focusMode={focusMode}>
+interface ModalCenteredProps extends ModalProps {
+  title?: string
+  subtitle?: string
+  isLoading?: boolean
+  header?: ReactNode
+}
+
+const ModalCentered: FC<ModalCenteredProps> = ({
+  title,
+  subtitle,
+  onClose,
+  focusMode,
+  isLoading,
+  header,
+  children
+}) => (
+  <Modal onClose={onClose} focusMode={focusMode}>
     <StyledModal
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
