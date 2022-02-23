@@ -23,6 +23,7 @@ import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
 import Amount from '../Amount'
+import InfoBox from '../InfoBox'
 import Label from '../Label'
 import Modal, { ModalFooterButton, ModalFooterButtons } from '../Modal'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
@@ -38,6 +39,7 @@ interface AddressSelectProps {
   placeholder?: string
   disabled?: boolean
   className?: string
+  hideEmptyAvailableBalance?: boolean
 }
 
 function AddressSelect({
@@ -48,7 +50,8 @@ function AddressSelect({
   defaultAddress,
   className,
   id,
-  onAddressChange
+  onAddressChange,
+  hideEmptyAvailableBalance
 }: AddressSelectProps) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [address, setAddress] = useState(defaultAddress)
@@ -98,6 +101,7 @@ function AddressSelect({
             selectedOption={address}
             setAddress={setAddress}
             title={title}
+            hideEmptyAvailableBalance={hideEmptyAvailableBalance}
             onClose={() => {
               setIsAddressSelectModalOpen(false)
             }}
@@ -113,15 +117,22 @@ const AddressSelectModal = ({
   selectedOption,
   setAddress,
   onClose,
-  title
+  title,
+  hideEmptyAvailableBalance
 }: {
   options: Address[]
   selectedOption?: Address
   setAddress: (address: Address) => void | undefined
   onClose: () => void
   title: string
+  hideEmptyAvailableBalance?: boolean
 }) => {
   const [selectedAddress, setSelectedAddress] = useState(selectedOption)
+  const displayedOptions = hideEmptyAvailableBalance
+    ? options.filter((address) => address.availableBalance > 0)
+    : options
+  const noAddressesWithAvailableBalance = hideEmptyAvailableBalance && displayedOptions.length === 0
+
   const onOptionAddressSelect = (address: Address) => {
     setAddress(address)
     onClose()
@@ -131,7 +142,7 @@ const AddressSelectModal = ({
     <Modal title="Addresses" onClose={onClose}>
       <Description>{title}</Description>
       <div>
-        {options.map((address) => (
+        {displayedOptions.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
             {address?.settings.label && <Label color={address?.settings.color}>{address?.labelDisplay()}</Label>}
@@ -139,6 +150,12 @@ const AddressSelectModal = ({
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
         ))}
+        {noAddressesWithAvailableBalance && (
+          <InfoBox
+            importance="accent"
+            text="There are no addresses with available balance. Please, send some funds to one of your addresses, and try again."
+          />
+        )}
       </div>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onClose}>
@@ -146,7 +163,7 @@ const AddressSelectModal = ({
         </ModalFooterButton>
         <ModalFooterButton
           onClick={() => selectedAddress && onOptionAddressSelect(selectedAddress)}
-          disabled={!selectedAddress}
+          disabled={!selectedAddress || noAddressesWithAvailableBalance}
         >
           Select
         </ModalFooterButton>

@@ -36,6 +36,8 @@ let ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => {
 ActionLink = styled(ActionLink)`
   color: ${({ theme }) => theme.global.accent};
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};

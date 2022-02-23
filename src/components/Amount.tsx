@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { abbreviateAmount } from 'alephium-js/dist/lib/numbers'
+import { formatAmountForDisplay } from 'alephium-js'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
@@ -37,9 +37,9 @@ const Amount = ({ value, className, fadeDecimals }: AmountProps) => {
   let fractionalPart = ''
 
   if (!discreetMode && value !== undefined) {
-    const abbreviatedAmountParts = abbreviateAmount(value).split('.')
-    integralPart = abbreviatedAmountParts[0]
-    fractionalPart = abbreviatedAmountParts[1]
+    const amountParts = formatAmountForDisplay(value).split('.')
+    integralPart = amountParts[0]
+    fractionalPart = amountParts[1]
   }
 
   return (

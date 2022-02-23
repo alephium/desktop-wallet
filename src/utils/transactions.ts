@@ -16,28 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useEffect } from 'react'
-import { Route, useHistory } from 'react-router-dom'
+import { MIN_UTXO_SET_AMOUNT } from 'alephium-js'
 
-import { useGlobalContext } from '../contexts/global'
-import WalletHomePage from '../pages/Wallet/WalletHomePage'
-
-const WalletRoutes = () => {
-  const { wallet } = useGlobalContext()
-  const history = useHistory()
-
-  // Redirect if wallet is not set
-  useEffect(() => {
-    if (!wallet) {
-      history.push('/')
-    }
-  }, [history, wallet])
-
-  return (
-    <Route path="/wallet">
-      <WalletHomePage />
-    </Route>
-  )
+export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
+  return amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 }
-
-export default WalletRoutes

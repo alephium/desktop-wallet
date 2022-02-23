@@ -71,7 +71,7 @@ const ModalContents: FC<{ focusMode?: boolean; isLoading?: boolean }> = ({ child
         <ModalContent>{children}</ModalContent>
         {isLoading && (
           <>
-            <ModalBackdrop />
+            <ModalBackdrop light />
             <ModalLoadingSpinner>
               <Spinner />
             </ModalLoadingSpinner>
@@ -107,19 +107,21 @@ const ModalContainer = styled(motion.div)`
   z-index: 1000;
 `
 
-const ModalBackdrop = styled.div<{ focusMode?: boolean }>`
+const ModalBackdrop = styled.div<{ focusMode?: boolean; light?: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
   bottom: 0;
-  background-color: ${({ theme, focusMode }) =>
+  background-color: ${({ theme, focusMode, light }) =>
     theme.name === 'light'
       ? focusMode
         ? 'rgba(0, 0, 0, 0.8)'
         : 'rgba(0, 0, 0, 0.15)'
       : focusMode
       ? 'rgba(0, 0, 0, 0.9)'
+      : light
+      ? 'rgba(0, 0, 0, 0.15)'
       : 'rgba(0, 0, 0, 0.6)'};
 `
 

@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Input, Output } from 'alephium-js/dist/api/api-explorer'
-import { calAmountDelta } from 'alephium-js/dist/lib/numbers'
+import { calAmountDelta } from 'alephium-js'
+import { Input, Output } from 'alephium-js/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import _ from 'lodash'
@@ -26,6 +26,7 @@ import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
+import ActionLink from '../../components/ActionLink'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -60,12 +61,16 @@ const minTableColumnWidth = '104px'
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-  const { getAddress } = useAddressesContext()
+  const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
   const { addressHash } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const history = useHistory()
 
   if (!address) return null
+
+  const loadNextTransactionsPage = () => {
+    fetchAddressTransactionsNextPage(address)
+  }
 
   return (
     <MainContent>
@@ -124,31 +129,21 @@ const AddressDetailsPage = () => {
         {address.transactions.pending
           .slice(0)
           .reverse()
-          .map((transaction) => {
-            const amount = transaction.amount
-            const amountIsBigInt = typeof amount === 'bigint'
-
-            return (
-              <TableRow key={transaction.txId} minColumnWidth={minTableColumnWidth} blinking>
-                <TableCell>
-                  <Badge content="Pending" type="neutral" />
-                </TableCell>
-                <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-                <TableCell truncate>
-                  <DarkLabel type="neutral" content="To" />
-                  <span>{transaction.toAddress}</span>
-                </TableCell>
-                <TableCell align="end">
-                  <Badge
-                    type="minus"
-                    prefix="-"
-                    content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                    amount
-                  />
-                </TableCell>
-              </TableRow>
-            )
-          })}
+          .map(({ txId, timestamp, toAddress, amount, type }) => (
+            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+              <TableCell>
+                <Badge content="Pending" type="neutral" />
+              </TableCell>
+              <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
+              <TableCell truncate>
+                <DarkLabel type="neutral" content="To" />
+                <span>{toAddress}</span>
+              </TableCell>
+              <TableCell align="end">
+                {type === 'transfer' && amount && <Badge type="minus" prefix="-" content={amount} amount />}
+              </TableCell>
+            </TableRow>
+          ))}
         {address.transactions.confirmed.map((transaction) => {
           const amount = calAmountDelta(transaction, addressHash)
           const amountIsBigInt = typeof amount === 'bigint'
@@ -181,9 +176,16 @@ const AddressDetailsPage = () => {
             </TableRow>
           )
         })}
+        {address.transactions.confirmed.length !== address.details.txNumber && (
+          <TableRow>
+            <TableCell align="center">
+              <ActionLink onClick={loadNextTransactionsPage}>Show more</ActionLink>
+            </TableCell>
+          </TableRow>
+        )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
           <TableRow>
-            <TableCellPlaceholder>No transactions to display</TableCellPlaceholder>
+            <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
@@ -263,7 +265,6 @@ const DarkLabel = styled(Badge)`
 `
 
 const TableCellPlaceholder = styled(TableCell)`
-  text-align: center;
   color: ${({ theme }) => theme.font.secondary};
 `
 

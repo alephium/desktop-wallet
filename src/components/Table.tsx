@@ -84,10 +84,13 @@ const TableColumns = styled.div<{ minColumnWidth?: string }>`
   align-items: center;
 `
 
-const TableHeaderRow = styled(TableColumns)``
+const TableHeaderRow = styled(TableColumns)`
+  background-color: ${({ theme }) => theme.bg.primary};
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+`
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
-  background-color: ${({ theme }) => theme.bg.primary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 
   &:last-child {

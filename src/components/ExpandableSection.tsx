@@ -24,12 +24,21 @@ import styled from 'styled-components'
 import { Section } from './PageComponents/PageContainers'
 
 interface ExpandableSectionProps {
-  sectionTitle: string
+  sectionTitleClosed: string
+  sectionTitleOpen?: string
   open?: boolean
   onOpenChange?: (isOpen: boolean) => void
+  className?: string
 }
 
-const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onOpenChange, children }) => {
+const ExpandableSection: FC<ExpandableSectionProps> = ({
+  sectionTitleClosed,
+  sectionTitleOpen,
+  open,
+  onOpenChange,
+  children,
+  className
+}) => {
   const [isExpanded, setIsExpanded] = useState(open)
 
   useEffect(() => {
@@ -43,10 +52,10 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onO
   }
 
   return (
-    <Container>
+    <div className={className}>
       <Title onClick={handleTitleClick}>
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
-        <TitleText>{sectionTitle}</TitleText>
+        <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
         <Divider />
       </Title>
       <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
@@ -54,11 +63,11 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({ sectionTitle, open, onO
           <Section align="stretch">{children}</Section>
         </Content>
       </ContentWrapper>
-    </Container>
+    </div>
   )
 }
 
-const Container = styled.div`
+export default styled(ExpandableSection)`
   display: flex;
   flex-direction: column;
   margin: var(--spacing-2) 0;
@@ -68,6 +77,7 @@ const Title = styled.div`
   display: flex;
   cursor: pointer;
   align-items: center;
+  color: ${({ theme }) => theme.global.accent};
 `
 
 const Chevron = styled(motion(ChevronDown))`
@@ -94,7 +104,4 @@ const ContentWrapper = styled(motion.div)`
 const Content = styled.div`
   margin-top: var(--spacing-2);
   padding: var(--spacing-2);
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
-
-export default ExpandableSection

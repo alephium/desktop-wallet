@@ -113,7 +113,7 @@ const NetworkSettingsSection = () => {
         id="network"
       />
       <ExpandableSection
-        sectionTitle="Advanced settings"
+        sectionTitleClosed="Advanced settings"
         open={advancedSectionOpen}
         onOpenChange={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >

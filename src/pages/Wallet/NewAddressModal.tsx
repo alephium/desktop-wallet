@@ -16,34 +16,38 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import addressToGroup from 'alephium-js/dist/lib/address'
-import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
-import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
+import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
+import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ExpandableSection from '../../components/ExpandableSection'
+import InfoBox from '../../components/InfoBox'
 import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Select from '../../components/Inputs/Select'
 import Toggle from '../../components/Inputs/Toggle'
-import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
+import Modal, { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { useModalContext } from '../../contexts/modal'
 import { getRandomLabelColor } from '../../utils/colors'
 
-const NewAddressPage = () => {
+interface NewAddressModalProps {
+  title: string
+  onClose: () => void
+  singleAddress?: boolean
+}
+
+const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
   const [addressLabel, setAddressLabel] = useState({ title: '', color: getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
-  const [newAddressData, setNewAddressData] =
-    useState<{ address: string; publicKey: string; privateKey: string; addressIndex: number }>() // TODO: Replace with type AddressAndKeys from alephium-js
+  const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
   const { wallet } = useGlobalContext()
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress } = useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-  const { onModalClose } = useModalContext()
+  const [addressesPerGroup, setAddressesPerGroup] = useState<AddressAndKeys[]>([])
 
   const generateNewAddress = useCallback(
     (group?: number) => {
@@ -55,12 +59,21 @@ const NewAddressPage = () => {
     [wallet]
   )
 
+  const generateOneAddressPerGroup = useCallback(() => {
+    if (!wallet?.seed) return
+    setAddressesPerGroup(
+      Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, i) =>
+        deriveNewAddressData(wallet.seed, i, undefined, currentAddressIndexes.current)
+      )
+    )
+  }, [wallet])
+
   useEffect(() => {
-    generateNewAddress()
-  }, [generateNewAddress])
+    singleAddress ? generateNewAddress() : generateOneAddressPerGroup()
+  }, [generateNewAddress, generateOneAddressPerGroup, singleAddress])
 
   const onGenerateClick = () => {
-    if (newAddressData && newAddressGroup !== undefined) {
+    if (newAddressData) {
       saveNewAddress(
         new Address(
           newAddressData.address,
@@ -77,8 +90,18 @@ const NewAddressPage = () => {
       if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.addressIndex) {
         updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
       }
+    } else if (addressesPerGroup.length > 0) {
+      addressesPerGroup.forEach((address, index) => {
+        saveNewAddress(
+          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+            isMain: false,
+            label: `${addressLabel.title} ${index}`,
+            color: addressLabel.color
+          })
+        )
+      })
     }
-    onModalClose()
+    onClose()
   }
 
   let mainAddressMessage = 'Default address for sending transactions.'
@@ -93,38 +116,49 @@ const NewAddressPage = () => {
   }
 
   return (
-    <>
+    <Modal title={title} onClose={onClose}>
       <Section>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
-        <HorizontalDivider narrow />
-        <KeyValueInput
-          label="★ Main address"
-          description={mainAddressMessage}
-          InputComponent={<Toggle toggled={isMainAddress} onToggle={() => setIsMainAddress(!isMainAddress)} />}
-        />
+        {singleAddress && (
+          <>
+            <HorizontalDivider narrow />
+            <KeyValueInput
+              label="★ Main address"
+              description={mainAddressMessage}
+              InputComponent={<Toggle toggled={isMainAddress} onToggle={() => setIsMainAddress(!isMainAddress)} />}
+            />
+          </>
+        )}
+        {!singleAddress && (
+          <InfoBox Icon={Info} contrast noBorders>
+            The group number will be automatically be appended to the addresses’ label.
+          </InfoBox>
+        )}
       </Section>
-      <ExpandableSection sectionTitle="Advanced options">
-        <Select
-          placeholder="Group"
-          controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
-          options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-          onValueChange={(newValue) => {
-            newValue && generateNewAddress(newValue.value)
-          }}
-          title="Select group"
-          id="group"
-        />
-      </ExpandableSection>
+      {singleAddress && (
+        <ExpandableSection sectionTitleClosed="Advanced options">
+          <Select
+            placeholder="Group"
+            controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
+            options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
+            onValueChange={(newValue) => {
+              newValue && generateNewAddress(newValue.value)
+            }}
+            title="Select group"
+            id="group"
+          />
+        </ExpandableSection>
+      )}
       <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onModalClose}>
+        <ModalFooterButton secondary onClick={onClose}>
           Cancel
         </ModalFooterButton>
         <ModalFooterButton onClick={onGenerateClick}>Generate</ModalFooterButton>
       </ModalFooterButtons>
-    </>
+    </Modal>
   )
 }
 
 const generateGroupSelectOption = (groupNumber: number) => ({ value: groupNumber, label: `Group ${groupNumber}` })
 
-export default NewAddressPage
+export default NewAddressModal

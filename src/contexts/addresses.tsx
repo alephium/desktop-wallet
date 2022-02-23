@@ -16,10 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressInfo, Transaction } from 'alephium-js/dist/api/api-explorer'
-import addressToGroup from 'alephium-js/dist/lib/address'
-import { TOTAL_NUMBER_OF_GROUPS } from 'alephium-js/dist/lib/constants'
-import { deriveNewAddressData } from 'alephium-js/dist/lib/wallet'
+import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
+import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'
@@ -30,19 +28,20 @@ import {
   loadStoredAddressesMetadataOfAccount,
   storeAddressMetadataOfAccount
 } from '../utils/addresses'
+import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
 import { Client, useGlobalContext } from './global'
 
-type TransactionType = 'consolidation' | 'transfer'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
 type SimpleTx = {
   txId: string
   fromAddress: string
   toAddress: string
-  amount: string
   timestamp: number
   type: TransactionType
   network: NetworkType
+  amount?: bigint
 }
 
 export type AddressHash = string
@@ -53,12 +52,15 @@ export class Address {
   readonly privateKey: string
   readonly group: number
   readonly index: number
+
   settings: AddressSettings
   details: AddressInfo
   transactions: {
     confirmed: Transaction[]
     pending: SimpleTx[]
+    loadedPage: number
   }
+  availableBalance: bigint
   lastUsed?: TimeInMs
   network?: NetworkType
 
@@ -76,8 +78,10 @@ export class Address {
     }
     this.transactions = {
       confirmed: [],
-      pending: []
+      pending: [],
+      loadedPage: 0
     }
+    this.availableBalance = 0n
   }
 
   displayName() {
@@ -92,27 +96,6 @@ export class Address {
     return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
   }
 
-  async fetchDetails(client: Client) {
-    if (!client) return
-    console.log('⬇️ Fetching address details: ', this.hash)
-
-    const { data } = await client.explorer.getAddressDetails(this.hash)
-    this.details = data
-
-    return data
-  }
-
-  async fetchConfirmedTransactions(client: Client, page = 1) {
-    if (!client) return []
-    console.log('⬇️ Fetching address confirmed transactions: ', this.hash)
-
-    const { data } = await client.explorer.getAddressTransactions(this.hash, page)
-    this.transactions.confirmed = data
-    this.lastUsed = this.transactions.confirmed.length > 0 ? this.transactions.confirmed[0].timestamp : undefined
-
-    return data
-  }
-
   addPendingTransaction(transaction: SimpleTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
@@ -125,6 +108,13 @@ export class Address {
     )
 
     this.transactions.pending = newPendingTransactions
+
+    // Reduce the available balance of the address based on the total amount of pending transactions
+    const pendingSweep = this.transactions.pending.find((tx) => tx.type === 'sweep' || tx.type === 'consolidation')
+    const totalAmountOfPendingTxs = pendingSweep
+      ? this.availableBalance
+      : this.transactions.pending.reduce((acc, tx) => (tx.amount ? acc + BigInt(tx.amount) : acc), BigInt(0))
+    this.availableBalance = this.availableBalance - totalAmountOfPendingTxs
   }
 }
 
@@ -138,6 +128,7 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
+  fetchAddressTransactionsNextPage: (address: Address) => void
   isLoadingData: boolean
 }
 
@@ -149,6 +140,7 @@ export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
+  fetchAddressTransactionsNextPage: () => null,
   isLoadingData: false
 }
 
@@ -160,7 +152,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentUsername, wallet, client, currentNetwork } = useGlobalContext()
+  const { currentUsername, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const previousClient = useRef<Client>()
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -181,6 +173,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const updateAddressesState = useCallback(
     (newAddresses: Address[]) => {
+      if (newAddresses.length === 0) return
       setAddressesState((prevState) => {
         const newAddressesState = new Map(prevState)
         for (const newAddress of newAddresses) {
@@ -224,23 +217,30 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       let shouldUpdate = !checkingForPendingTransactions
 
       for (const address of addressesStateToRefresh) {
-        await address.fetchDetails(client)
-        await address.fetchConfirmedTransactions(client)
+        try {
+          await client.fetchAddressDetails(address)
+          await client.fetchAddressConfirmedTransactions(address)
 
-        const initialNumberOfPendingTransactions = address.transactions.pending.length
+          const initialNumberOfPendingTransactions = address.transactions.pending.length
 
-        // Filter pending addresses and remove the ones that are now confirmed
-        address.updatePendingTransactions()
+          // Filter pending addresses and remove the ones that are now confirmed
+          address.updatePendingTransactions()
 
-        if (
-          checkingForPendingTransactions &&
-          address.transactions.pending.length !== initialNumberOfPendingTransactions
-        ) {
-          shouldUpdate = true
-        }
+          if (
+            checkingForPendingTransactions &&
+            address.transactions.pending.length !== initialNumberOfPendingTransactions
+          ) {
+            shouldUpdate = true
+          }
 
-        if (shouldUpdate) {
-          addressesToUpdate.push(address)
+          if (shouldUpdate) {
+            addressesToUpdate.push(address)
+          }
+        } catch (e) {
+          setSnackbarMessage({
+            text: getHumanReadableError(e, `Error while fetching data for address ${address.hash}`),
+            type: 'alert'
+          })
         }
       }
 
@@ -249,8 +249,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, updateAddressesState]
+    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState]
   )
+
+  const fetchAddressTransactionsNextPage = async (address: Address) => {
+    if (!client) return
+    setIsLoadingData(true)
+    await client.fetchAddressConfirmedTransactionsNextPage(address)
+    setIsLoadingData(false)
+  }
 
   const saveNewAddress = useCallback(
     async (newAddress: Address) => {
@@ -357,6 +364,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           saveNewAddress,
           updateAddressSettings,
           refreshAddressesData: fetchAndStoreAddressesData,
+          fetchAddressTransactionsNextPage,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

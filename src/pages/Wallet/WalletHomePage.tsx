@@ -34,24 +34,21 @@ import { FloatingPanel, MainContent, Section } from '../../components/PageCompon
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { SimpleTx, useTransactionsContext } from '../../contexts/transactions'
 import { appHeaderHeight, deviceBreakPoints } from '../../style/globalStyles'
 import SettingsPage from '../Settings/SettingsPage'
 import AddressesPage from '../Wallet/AddressesPage'
 import AddressDetailsPage from './AddressDetailsPage'
-import SendPage from './SendPage'
+import SendModal from './SendModal'
 
 dayjs.extend(relativeTime)
 
 const WalletHomePage = () => {
-  const { wallet, setSnackbarMessage, lockWallet, currentUsername, currentNetwork } = useGlobalContext()
-  const { networkPendingTxLists } = useTransactionsContext()
+  const { wallet, lockWallet, currentUsername } = useGlobalContext()
   const [isHeaderCompact, setIsHeaderCompact] = useState(false)
   const location = useLocation()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { refreshAddressesData, isLoadingData } = useAddressesContext()
-  const { addresses } = useAddressesContext()
+  const { addresses, refreshAddressesData, isLoadingData } = useAddressesContext()
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
   const totalNumberOfTx = addresses.reduce((acc, address) => acc + address.transactions.confirmed.length, 0)
@@ -75,15 +72,11 @@ const WalletHomePage = () => {
 
   if (!wallet) return null
 
-  const pendingTxs = networkPendingTxLists[currentNetwork] || []
-  const showSpinner = isLoadingData || pendingTxs.length > 0
-  const somePendingConsolidationTxs = pendingTxs.some((tx: SimpleTx) => tx.type === 'consolidation')
-
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader onSettingsClick={() => setIsSettingsModalOpen(true)}>
-        <RefreshButton transparent squared onClick={refreshData} disabled={showSpinner} aria-label="Refresh">
-          {showSpinner ? <Spinner /> : <RefreshCw />}
+        <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
+          {isLoadingData ? <Spinner /> : <RefreshCw />}
         </RefreshButton>
       </AppHeader>
       <WalletSidebar>
@@ -104,20 +97,7 @@ const WalletHomePage = () => {
           <ActionsTitle>Menu</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
-          {!somePendingConsolidationTxs ? (
-            <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
-          ) : (
-            <ActionButton
-              Icon={Send}
-              label="Send"
-              onClick={() =>
-                setSnackbarMessage({
-                  text: 'Please wait until your pending consolidation transactions are confirmed',
-                  type: 'alert'
-                })
-              }
-            />
-          )}
+          <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
 
           <ActionButton Icon={Lock} label="Lock" onClick={lockWallet} />
         </WalletActions>
@@ -140,7 +120,7 @@ const WalletHomePage = () => {
             <FloatingPanel>
               <LastTransactionListHeader>
                 <LastTransactionListTitle>Transactions ({totalNumberOfTx})</LastTransactionListTitle>
-                {showSpinner && <Spinner size={'16px'} />}
+                {isLoadingData && <Spinner size={'16px'} />}
               </LastTransactionListHeader>
             </FloatingPanel>
           </MainContent>
@@ -153,11 +133,7 @@ const WalletHomePage = () => {
         </Route>
       </Switch>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && (
-          <Modal title="Send" onClose={() => setIsSendModalOpen(false)}>
-            <SendPage />
-          </Modal>
-        )}
+        {isSendModalOpen && <SendModal title="Send" onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && (
           <Modal title="Settings" onClose={() => setIsSettingsModalOpen(false)}>
             <SettingsPage />

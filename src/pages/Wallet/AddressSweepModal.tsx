@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { SweepAddressTransaction } from 'alephium-js/dist/api/api-alephium'
+import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -35,13 +35,13 @@ type SweepAddress = Address | undefined
 interface AddressSweepModal {
   sweepAddress?: SweepAddress
   onClose: () => void
-  onSuccessfulSweep: () => void
+  onSuccessfulSweep?: () => void
 }
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { addresses, mainAddress } = useAddressesContext()
   const fromAddress = sweepAddress || mainAddress
-  const toAddressOptions = addresses.filter(({ hash }) => hash !== fromAddress?.hash)
+  const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
   const [sweepAddresses, setSweepAddresses] = useState<{
     from: SweepAddress
     to: SweepAddress
@@ -52,7 +52,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   const [fee, setFee] = useState(BigInt(0))
   const { client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const { setAddress } = useAddressesContext()
-  const [unsignedTxs, setUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -60,15 +60,9 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       if (!client || !sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
-        const txCreateResp = await client.clique.transactionConsolidateUTXOs(
-          sweepAddresses.from.publicKey,
-          sweepAddresses.from.hash,
-          sweepAddresses.to.hash
-        )
-        setUnsignedTxs(txCreateResp.data.unsignedTxs)
-        setFee(
-          txCreateResp.data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
-        )
+        const { unsignedTxs, fees } = await client.buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
+        setBuiltUnsignedTxs(unsignedTxs)
+        setFee(fees)
       } catch (e) {
         setSnackbarMessage({
           text: getHumanReadableError(e, 'Error while building transaction'),
@@ -86,28 +80,21 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     if (!client || !sweepAddresses.from || !sweepAddresses.to) return
     setIsLoading(true)
     try {
-      for (const { txId, unsignedTx } of unsignedTxs) {
-        const txSendResp = await signAndSendTransaction(
+      for (const { txId, unsignedTx } of builtUnsignedTxs) {
+        const txSendResp = await client.signAndSendTransaction(
+          sweepAddresses.from,
           txId,
           unsignedTx,
           sweepAddresses.from.hash,
-          sweepAddresses.from.privateKey
+          'sweep',
+          currentNetwork
         )
         if (txSendResp) {
-          sweepAddresses.from.addPendingTransaction({
-            txId: txSendResp.data.txId,
-            fromAddress: sweepAddresses.from.hash,
-            toAddress: sweepAddresses.to.hash,
-            timestamp: new Date().getTime(),
-            amount: '',
-            type: 'consolidation',
-            network: currentNetwork
-          })
           setAddress(sweepAddresses.from)
         }
       }
       onClose()
-      onSuccessfulSweep()
+      onSuccessfulSweep && onSuccessfulSweep()
     } catch (e) {
       setSnackbarMessage({
         text: getHumanReadableError(e, `Error while sweeping address ${sweepAddresses.from}`),
@@ -116,12 +103,6 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       })
     }
     setIsLoading(false)
-  }
-
-  const signAndSendTransaction = async (txId: string, unsignedTx: string, toAddress: string, privateKey: string) => {
-    if (!client) return
-    const signature = client.clique.transactionSign(txId, privateKey)
-    return await client.clique.transactionSend(toAddress, unsignedTx, signature)
   }
 
   const onAddressChange = (type: 'from' | 'to', address: Address) => {
@@ -141,6 +122,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           onAddressChange={(newAddress) => onAddressChange('from', newAddress)}
           disabled={sweepAddress !== undefined}
           id="from-address"
+          hideEmptyAvailableBalance
         />
         <AddressSelect
           placeholder="To address"
@@ -166,7 +148,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         <ModalFooterButton secondary onClick={onClose}>
           Cancel
         </ModalFooterButton>
-        <ModalFooterButton onClick={onSweepClick} disabled={unsignedTxs.length === 0}>
+        <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>
           {sweepAddress ? 'Sweep' : 'Consolidate'}
         </ModalFooterButton>
       </ModalFooterButtons>
