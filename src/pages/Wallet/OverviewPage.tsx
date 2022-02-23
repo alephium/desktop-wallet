@@ -21,7 +21,7 @@ import { Transaction } from 'alephium-js/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import AccountSummaryCard from '../../components/AccountSummaryCard'
@@ -55,6 +55,7 @@ const OverviewPage = () => {
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, fetchAddressTransactionsNextPage } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
+  const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
 
   const allConfirmedTxs = addresses
     .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
@@ -74,12 +75,22 @@ const OverviewPage = () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
+  useEffect(() => {
+    if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
+      addressSummaryCardsRef.current.scrollTo({ left: 0 })
+    }
+  }, [areAddressSummariesExpanded])
+
   return (
     <MainContent>
       <Header>
         <Summaries>
           <AccountSummaryCardStyled />
-          <AddressSummaryCards collapsed={!areAddressSummariesExpanded} totalAddresses={addresses.length}>
+          <AddressSummaryCards
+            collapsed={!areAddressSummariesExpanded}
+            totalAddresses={addresses.length}
+            ref={addressSummaryCardsRef}
+          >
             <AnimatePresence>
               {addresses.map((address, index) => (
                 <AddressSummaryCardStyled
