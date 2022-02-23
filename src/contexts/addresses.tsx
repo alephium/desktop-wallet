@@ -268,6 +268,16 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [currentUsername, fetchAndStoreAddressesData]
   )
 
+  // Clean state when locking the wallet or changing accounts
+  useEffect(() => {
+    if (wallet === undefined || wallet !== previousWallet.current) {
+      console.log('🧽 Cleaning state.')
+      setAddressesState(new Map())
+      previousClient.current = undefined
+      previousWallet.current = wallet
+    }
+  }, [wallet])
+
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
@@ -295,11 +305,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
     }
 
-    if (
-      wallet &&
-      (addressesState.size === 0 || addressesOfCurrentNetwork.length === 0) &&
-      (previousClient.current !== client || previousWallet.current !== wallet)
-    ) {
+    if (wallet && (previousClient.current !== client || previousWallet.current !== wallet)) {
       previousClient.current = client
       previousWallet.current = wallet
       initializeCurrentNetworkAddresses()
@@ -313,16 +319,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     saveNewAddress,
     wallet
   ])
-
-  // Clean state when locking the wallet or changing accounts
-  useEffect(() => {
-    if (wallet === undefined || wallet !== previousWallet.current) {
-      console.log('🧽 Cleaning state.')
-      setAddressesState(new Map())
-      previousClient.current = undefined
-      previousWallet.current = wallet
-    }
-  }, [wallet])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
