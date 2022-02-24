@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { addApostrophe, calAmountDelta } from 'alephium-js'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import dayjs from 'dayjs'
-import { motion } from 'framer-motion'
 import { FC } from 'react'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
@@ -32,7 +31,7 @@ import { Address, AddressHash } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
-import ModalContainer from './ModalContainer'
+import SideModal from './SideModal'
 
 interface TransactionDetailsModalProps {
   transaction: Transaction
@@ -65,92 +64,85 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   }
 
   return (
-    <ModalContainer onClose={onClose} hasPadding={false}>
-      <Sidebar
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
-        <Header contrast>
-          <AmountWrapper type={isOutgoingTx ? 'minus' : 'plus'}>
-            <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
-          </AmountWrapper>
-          <HeaderInfo>
-            {isOutgoingTx ? '↑ Sent' : '↓ Received'}
-            <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
+    <SideModal onClose={onClose}>
+      <Header contrast>
+        <AmountWrapper type={isOutgoingTx ? 'minus' : 'plus'}>
+          <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
+        </AmountWrapper>
+        <HeaderInfo>
+          {isOutgoingTx ? '↑ Sent' : '↓ Received'}
+          <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
+          <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+        </HeaderInfo>
+        <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
+      </Header>
+      <Details>
+        <DetailsRow label="From">
+          {isOutgoingTx ? (
             <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
-          </HeaderInfo>
-          <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
-        </Header>
-        <Details>
-          <DetailsRow label="From">
-            {isOutgoingTx ? (
-              <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
-            ) : (
-              <IOList
-                currentAddress={address.hash}
-                isOut={isOutgoingTx}
-                outputs={transaction.outputs}
-                inputs={transaction.inputs}
-                timestamp={transaction.timestamp}
-                linkToExplorer
-              />
-            )}
+          ) : (
+            <IOList
+              currentAddress={address.hash}
+              isOut={isOutgoingTx}
+              outputs={transaction.outputs}
+              inputs={transaction.inputs}
+              timestamp={transaction.timestamp}
+              linkToExplorer
+            />
+          )}
+        </DetailsRow>
+        <DetailsRow label="To">
+          {!isOutgoingTx ? (
+            <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+          ) : (
+            <IOList
+              currentAddress={address.hash}
+              isOut={isOutgoingTx}
+              outputs={transaction.outputs}
+              inputs={transaction.inputs}
+              timestamp={transaction.timestamp}
+              linkToExplorer
+            />
+          )}
+        </DetailsRow>
+        <DetailsRow label="Status">
+          <Badge color={theme.txInfo.font.plus} border>
+            Confirmed
+          </Badge>
+        </DetailsRow>
+        <DetailsRow label="Timestamp">
+          {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+        </DetailsRow>
+        <DetailsRow label="Fee">
+          {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+        </DetailsRow>
+        <DetailsRow label="Total value">{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+        <ExpandableSectionStyled sectionTitleClosed="Click to see more" sectionTitleOpen="Click to see less">
+          <DetailsRow label="Gas amount">{addApostrophe(transaction.gasAmount.toString())}</DetailsRow>
+          <DetailsRow label="Gas price">
+            <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>
-          <DetailsRow label="To">
-            {!isOutgoingTx ? (
-              <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
-            ) : (
-              <IOList
-                currentAddress={address.hash}
-                isOut={isOutgoingTx}
-                outputs={transaction.outputs}
-                inputs={transaction.inputs}
-                timestamp={transaction.timestamp}
-                linkToExplorer
-              />
-            )}
+          <DetailsRow label="Inputs">
+            <IOs>
+              {transaction.inputs?.map((input) => (
+                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddressInExplorer(input.address)}>
+                  {input.address}
+                </ActionLink>
+              ))}
+            </IOs>
           </DetailsRow>
-          <DetailsRow label="Status">
-            <Badge color={theme.txInfo.font.plus} border>
-              Confirmed
-            </Badge>
+          <DetailsRow label="Outputs">
+            <IOs>
+              {transaction.outputs?.map((output) => (
+                <ActionLink key={`${output.key}`} onClick={() => handleShowAddressInExplorer(output.address)}>
+                  {output.address}
+                </ActionLink>
+              ))}
+            </IOs>
           </DetailsRow>
-          <DetailsRow label="Timestamp">
-            {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
-          </DetailsRow>
-          <DetailsRow label="Fee">
-            {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
-          </DetailsRow>
-          <DetailsRow label="Total value">{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
-          <ExpandableSectionStyled sectionTitleClosed="Click to see more" sectionTitleOpen="Click to see less">
-            <DetailsRow label="Gas amount">{addApostrophe(transaction.gasAmount.toString())}</DetailsRow>
-            <DetailsRow label="Gas price">
-              <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
-            </DetailsRow>
-            <DetailsRow label="Inputs">
-              <IOs>
-                {transaction.inputs?.map((input) => (
-                  <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddressInExplorer(input.address)}>
-                    {input.address}
-                  </ActionLink>
-                ))}
-              </IOs>
-            </DetailsRow>
-            <DetailsRow label="Outputs">
-              <IOs>
-                {transaction.outputs?.map((output) => (
-                  <ActionLink key={`${output.key}`} onClick={() => handleShowAddressInExplorer(output.address)}>
-                    {output.address}
-                  </ActionLink>
-                ))}
-              </IOs>
-            </DetailsRow>
-          </ExpandableSectionStyled>
-        </Details>
-      </Sidebar>
-    </ModalContainer>
+        </ExpandableSectionStyled>
+      </Details>
+    </SideModal>
   )
 }
 
@@ -207,19 +199,6 @@ const Details = styled.div`
 
 const DetailsRowLabel = styled.div`
   font-weight: var(--fontWeight-medium);
-`
-
-const Sidebar = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  margin-left: auto;
-  width: 100%;
-  max-width: 476px;
-  height: 100vh;
-  background-color: ${({ theme }) => theme.bg.primary};
-  z-index: 1;
-  position: relative;
-  overflow: auto;
 `
 
 const ExpandableSectionStyled = styled(ExpandableSection)`
