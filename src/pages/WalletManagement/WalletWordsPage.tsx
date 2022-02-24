@@ -100,6 +100,8 @@ const WalletWordsPage = () => {
   )
 }
 
+export default WalletWordsPage
+
 const Label = styled.label`
   width: 100%;
   padding-left: var(--spacing-3);
@@ -155,5 +157,3 @@ const MnemonicWord = styled.div`
   padding: var(--spacing-1) 8px;
   font-weight: var(--fontWeight-semiBold);
 `
-
-export default WalletWordsPage

@@ -186,6 +186,8 @@ const OverviewPage = () => {
   )
 }
 
+export default OverviewPage
+
 const Header = styled.header`
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImage : DayskyImage)});
   background-position: bottom;
@@ -232,5 +234,3 @@ const ExpandButton = styled(Button)`
   margin-left: 20px;
   gap: var(--spacing-1);
 `
-
-export default OverviewPage

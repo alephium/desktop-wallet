@@ -159,6 +159,6 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   )
 }
 
-const generateGroupSelectOption = (groupNumber: number) => ({ value: groupNumber, label: `Group ${groupNumber}` })
-
 export default NewAddressModal
+
+const generateGroupSelectOption = (groupNumber: number) => ({ value: groupNumber, label: `Group ${groupNumber}` })

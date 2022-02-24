@@ -125,6 +125,8 @@ const AccountItem = ({ accountName, isCurrent, onAccountDelete }: AccountItemPro
   )
 }
 
+export default AccountsSettingsSection
+
 const AccountItemContainer = styled.div`
   display: flex;
   align-items: center;
@@ -145,5 +147,3 @@ const CurrentAccountLabel = styled.span`
 `
 
 const AccountDeleteButton = styled(Button)``
-
-export default AccountsSettingsSection

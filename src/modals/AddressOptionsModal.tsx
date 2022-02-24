@@ -124,10 +124,11 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   )
 }
 
+export default AddressOptionsModal
+
 const SweepButton = styled.div``
 
 const AvailableAmount = styled.div`
   font-size: 10px;
   color: ${({ theme }) => theme.font.secondary};
 `
-export default AddressOptionsModal
