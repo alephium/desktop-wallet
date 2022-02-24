@@ -18,15 +18,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { FC, useCallback, useEffect } from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 export interface ModalProps {
   onClose: () => void
   focusMode?: boolean
   hasPadding?: boolean
+  className?: string
 }
 
-const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true }) => {
+const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true, className }) => {
   // Prevent body scroll on mount
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -54,31 +55,32 @@ const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true
   }, [handleEscapeKeyPress, onClose])
 
   return (
-    <ModalContainer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      hasPadding={hasPadding}
-    >
+    <div className={className}>
       {children}
-      <ModalBackdrop onClick={onClose} focusMode={focusMode} />
-    </ModalContainer>
+      <ModalBackdrop
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        onClick={onClose}
+        focusMode={focusMode}
+      />
+    </div>
   )
 }
 
-const ModalContainer = styled(motion.div)<{ hasPadding?: boolean }>`
+export default styled(Modal)<{ hasPadding?: boolean }>`
   position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
   display: flex;
-  padding: ${({ hasPadding }) => hasPadding && css`var(--spacing-4)`};
+  padding: ${({ hasPadding }) => hasPadding && 'var(--spacing-4)'};
   z-index: 1000;
 `
 
-export const ModalBackdrop = styled.div<{ focusMode?: boolean; light?: boolean }>`
+export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
@@ -95,5 +97,3 @@ export const ModalBackdrop = styled.div<{ focusMode?: boolean; light?: boolean }
       ? 'rgba(0, 0, 0, 0.15)'
       : 'rgba(0, 0, 0, 0.6)'};
 `
-
-export default Modal

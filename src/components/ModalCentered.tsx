@@ -44,7 +44,7 @@ const ModalCentered: FC<ModalCenteredProps> = ({
   children
 }) => (
   <Modal onClose={onClose} focusMode={focusMode}>
-    <StyledModal
+    <CenteredBox
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
@@ -71,7 +71,7 @@ const ModalCentered: FC<ModalCenteredProps> = ({
           </ModalLoadingSpinner>
         </>
       )}
-    </StyledModal>
+    </CenteredBox>
   </Modal>
 )
 
@@ -88,7 +88,7 @@ export const HeaderLogo = styled.div`
   width: 100%;
 `
 
-const StyledModal = styled(motion.div)`
+const CenteredBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
   margin: auto;
