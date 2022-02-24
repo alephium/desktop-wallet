@@ -65,12 +65,12 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
 
   let mainAddressMessage = 'Default address for sending transactions.'
   mainAddressMessage += isMainAddressToggleEnabled
-    ? ` Note that if activated, "${mainAddress.displayName()}" will not be the main address anymore.`
+    ? ` Note that if activated, "${mainAddress.getName()}" will not be the main address anymore.`
     : ' To remove this address from being the main address, you must set another one as main first.'
 
   return (
     <>
-      <ModalCenteded title="Address options" subtitle={address.displayName()} onClose={onClose}>
+      <ModalCenteded title="Address options" subtitle={address.getName()} onClose={onClose}>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput

@@ -74,14 +74,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <HeaderInfo>
             {isOutgoingTx ? '↑ Sent' : '↓ Received'}
             <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
-            <Label color={address.settings.color}>{address.labelDisplay()}</Label>
+            <Label color={address.settings.color}>{address.getLabelName()}</Label>
           </HeaderInfo>
           <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
         </Header>
         <Details>
           <DetailsRow label="From">
             {isOutgoingTx ? (
-              <Label color={address.settings.color}>{address.labelDisplay()}</Label>
+              <Label color={address.settings.color}>{address.getLabelName()}</Label>
             ) : (
               <IOList
                 currentAddress={address.hash}
@@ -95,7 +95,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
           <DetailsRow label="To">
             {!isOutgoingTx ? (
-              <Label color={address.settings.color}>{address.labelDisplay()}</Label>
+              <Label color={address.settings.color}>{address.getLabelName()}</Label>
             ) : (
               <IOList
                 currentAddress={address.hash}

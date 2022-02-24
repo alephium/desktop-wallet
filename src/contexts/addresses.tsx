@@ -48,6 +48,7 @@ export type AddressHash = string
 
 export class Address {
   readonly hash: AddressHash
+  readonly shortHash: string
   readonly publicKey: string
   readonly privateKey: string
   readonly group: number
@@ -66,6 +67,7 @@ export class Address {
 
   constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
     this.hash = hash
+    this.shortHash = `${this.hash.substring(0, 10)}...`
     this.publicKey = publicKey
     this.privateKey = privateKey
     this.group = addressToGroup(hash, TOTAL_NUMBER_OF_GROUPS)
@@ -84,16 +86,12 @@ export class Address {
     this.availableBalance = 0n
   }
 
-  displayName() {
-    return this.settings.label || this.shortHash()
+  getName() {
+    return this.settings.label || this.shortHash
   }
 
-  shortHash() {
-    return `${this.hash.substring(0, 10)}...`
-  }
-
-  labelDisplay() {
-    return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
+  getLabelName() {
+    return `${this.settings.isMain ? '★ ' : ''}${this.getName()}`
   }
 
   addPendingTransaction(transaction: SimpleTx) {

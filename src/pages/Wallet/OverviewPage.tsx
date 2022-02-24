@@ -122,7 +122,7 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Label color={address.settings.color}>{address.labelDisplay()}</Label>
+                <Label color={address.settings.color}>{address.getLabelName()}</Label>
               </TableCell>
               <TableCell align="end">
                 {type === 'transfer' && amount && <Badge type="neutral" prefix="-" content={amount} amount />}
@@ -145,7 +145,7 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Label color={transaction.address.settings.color}>{transaction.address.labelDisplay()}</Label>
+                <Label color={transaction.address.settings.color}>{transaction.address.getLabelName()}</Label>
               </TableCell>
               <TableCell align="end">
                 <Badge

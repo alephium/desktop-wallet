@@ -77,7 +77,7 @@ const AddressDetailsPage = () => {
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
           <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
-          {address.settings.label && <LabelStyled color={address.settings.color}>{address.labelDisplay()}</LabelStyled>}
+          {address.settings.label && <LabelStyled color={address.settings.color}>{address.getLabelName()}</LabelStyled>}
           <OptionsButton
             transparent
             squared
@@ -103,7 +103,7 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
+            {address.settings.label ? <Label color={address.settings.color}>{address.getLabelName()}</Label> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow>

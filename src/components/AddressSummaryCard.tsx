@@ -53,7 +53,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       >
         <AddressNameSection>
           <Label color={address.settings.color} truncate>
-            {address.labelDisplay()}
+            {address.getLabelName()}
           </Label>
           <Hash>{address.hash}</Hash>
         </AddressNameSection>

@@ -134,9 +134,9 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         />
         <InfoBox Icon={Info} contrast noBorders>
           This operation will sweep all funds from{' '}
-          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.displayName()}</ColoredWord> and
+          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord> and
           transfer them to{' '}
-          <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.displayName()}</ColoredWord>.
+          <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.getName()}</ColoredWord>.
         </InfoBox>
         <Fee>
           Fee

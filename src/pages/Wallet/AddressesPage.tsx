@@ -93,7 +93,7 @@ const AddressesPage = () => {
                 {address.settings.isMain && <MainAddressLabel />}
               </TableCell>
               <TableCell>
-                {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
+                {address.settings.label ? <Label color={address.settings.color}>{address.getLabelName()}</Label> : '-'}
               </TableCell>
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               <TableCell>{address.details?.txNumber ?? 0}</TableCell>

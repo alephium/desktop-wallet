@@ -67,7 +67,7 @@ const AppHeader: FC = ({ children }) => {
       {mainAddress && (
         <>
           <HeaderDivider />
-          <Label color={mainAddress?.settings.color}>{mainAddress?.labelDisplay()}</Label>
+          <Label color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Label>
         </>
       )}
       <HeaderDivider />
