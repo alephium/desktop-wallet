@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import classNames from 'classnames'
 import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
@@ -28,6 +29,7 @@ export interface TableProps {
   }[]
   minColumnWidth?: string
   className?: string
+  isLoading?: boolean
 }
 
 interface TableCellProps {
@@ -35,8 +37,8 @@ interface TableCellProps {
   align?: AlignType
 }
 
-let Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0px' }) => (
-  <div className={className}>
+const Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0px', isLoading }) => (
+  <div className={classNames(className, { 'skeleton-loader': isLoading })}>
     <TableHeaderRow minColumnWidth={minColumnWidth}>
       {headers.map(({ title, align }) => (
         <TableHeaderCell key={title} align={align}>
@@ -48,11 +50,18 @@ let Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0
   </div>
 )
 
-Table = styled(Table)`
+export default styled(Table)`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.secondary};
   display: table;
+
+  ${({ isLoading }) =>
+    isLoading &&
+    css`
+      min-height: 300px;
+      width: 100%;
+    `}
 `
 
 export const TableCell = styled.div<TableCellProps>`
@@ -139,5 +148,3 @@ export const TableFooter = styled(TableColumns)``
 export const TableCellPlaceholder = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
-
-export default Table
