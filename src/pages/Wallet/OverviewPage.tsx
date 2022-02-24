@@ -98,7 +98,7 @@ const OverviewPage = () => {
                   address={address}
                   index={index}
                   clickable={areAddressSummariesExpanded}
-                  totalAddresses={addresses.length}
+                  totalCards={addresses.length}
                 />
               ))}
             </AnimatePresence>
@@ -223,13 +223,8 @@ const AccountSummaryCardStyled = styled(AccountSummaryCard)`
 const AddressSummaryCardStyled = styled(AddressSummaryCard)<{
   index: number
   clickable: boolean
-  totalAddresses: number
 }>`
-  transform: translateX(
-    ${({ index, clickable, totalAddresses }) => (!clickable ? (totalAddresses - index) * -109 + 5 : 0)}px
-  );
   order: ${({ index, clickable }) => (!clickable ? index * -1 : index)};
-  transition: transform 0.2s ease-out;
 `
 
 const ExpandButton = styled(Button)`

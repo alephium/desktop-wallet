@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -27,15 +28,25 @@ import Label from './Label'
 
 interface AddressSummaryCardProps {
   address: Address
+  totalCards: number
+  index: number
   clickable?: boolean
   className?: string
+  position?: number
 }
 
-const AddressSummaryCard = ({ address, clickable, className }: AddressSummaryCardProps) => {
+const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const history = useHistory()
 
+  const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
+
   return (
-    <div className={className}>
+    <motion.div
+      className={className}
+      initial={{ x: collapsedPosition - 20 }}
+      animate={{ x: collapsedPosition }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
       <ClickableArea
         onClick={() => clickable && history.push(`/wallet/addresses/${address.hash}`)}
         clickable={clickable}
@@ -54,7 +65,7 @@ const AddressSummaryCard = ({ address, clickable, className }: AddressSummaryCar
         <ClipboardButton textToCopy={address.hash} />
         <QRCodeButton textToEncode={address.hash} />
       </ButtonsSection>
-    </div>
+    </motion.div>
   )
 }
 
