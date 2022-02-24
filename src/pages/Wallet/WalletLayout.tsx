@@ -37,7 +37,7 @@ import { useGlobalContext } from '../../contexts/global'
 import LogoSrc from '../../images/alephium_logo.svg'
 import CenteredModal from '../../modals/CenteredModal'
 import SendModal from '../../modals/SendModal'
-import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
+import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
 
 interface AccountNameSelectOptions {
   label: string
@@ -179,10 +179,10 @@ const WalletSidebar = styled(Section)`
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;
-  max-width: ${walletSidebarWidth}px;
+  max-width: ${walletSidebarWidthPx}px;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.primary};
-  padding: ${appHeaderHeight} var(--spacing-5) 0;
+  padding: ${appHeaderHeightPx}px var(--spacing-5) 0;
   z-index: 1000;
 
   @media ${deviceBreakPoints.mobile} {

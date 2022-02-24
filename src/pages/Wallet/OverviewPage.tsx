@@ -37,7 +37,7 @@ import { Address, useAddressesContext } from '../../contexts/addresses'
 import DayskyImageSrc from '../../images/daysky.jpeg'
 import NightskyImageSrc from '../../images/nightsky.png'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
-import { appHeaderHeight } from '../../style/globalStyles'
+import { appHeaderHeightPx } from '../../style/globalStyles'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction' },
@@ -192,7 +192,7 @@ const Header = styled.header`
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
   background-position: bottom;
   background-size: cover;
-  margin-top: -${appHeaderHeight};
+  margin-top: -${appHeaderHeightPx}px;
   margin-left: -56px;
   margin-right: -56px;
   padding: 56px;

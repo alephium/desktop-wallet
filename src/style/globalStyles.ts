@@ -22,9 +22,9 @@ import { isElectron } from '../utils/misc'
 import resets from './resets'
 import tags from './tags'
 
-export const appHeaderHeight = '60px'
+export const appHeaderHeightPx = 60
 
-export const walletSidebarWidth = 280
+export const walletSidebarWidthPx = 280
 
 const extensionWindowDimensions = `
   height: 600px;
