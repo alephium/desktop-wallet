@@ -152,7 +152,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentUsername, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
+  const { currentAccountName, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const previousClient = useRef<Client>()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
@@ -197,7 +197,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const updateAddressSettings = (address: Address, settings: AddressSettings) => {
-    storeAddressMetadataOfAccount(currentUsername, address.index, settings)
+    storeAddressMetadataOfAccount(currentAccountName, address.index, settings)
     address.settings = settings
     setAddress(address)
   }
@@ -262,10 +262,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     async (newAddress: Address) => {
-      storeAddressMetadataOfAccount(currentUsername, newAddress.index, newAddress.settings)
+      storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
       await fetchAndStoreAddressesData([newAddress])
     },
-    [currentUsername, fetchAndStoreAddressesData]
+    [currentAccountName, fetchAndStoreAddressesData]
   )
 
   // Clean state when locking the wallet or changing accounts
@@ -282,9 +282,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
       console.log('🥇 Initializing current network addresses')
-      if (!currentUsername || !wallet) return
+      if (!currentAccountName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentUsername)
+      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
 
       if (addressesMetadata.length === 0) {
         await saveNewAddress(
@@ -313,7 +313,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }, [
     addressesState.size,
     client,
-    currentUsername,
+    currentAccountName,
     addressesOfCurrentNetwork,
     fetchAndStoreAddressesData,
     saveNewAddress,

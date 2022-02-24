@@ -35,10 +35,10 @@ import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean
-  usernames: string[]
+  accountNames: string[]
 }
 
-const HomePage = ({ hasWallet, usernames }: HomeProps) => {
+const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
@@ -61,7 +61,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
               <Paragraph centered secondary>
                 Please choose an account and enter your password to continue.
               </Paragraph>
-              <Login onLinkClick={displayInitialActions} usernames={usernames} />
+              <Login onLinkClick={displayInitialActions} accountNames={accountNames} />
             </>
           )}
           {showInitialActions && (
@@ -79,22 +79,22 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 // === Components
 
 interface LoginProps {
-  usernames: string[]
+  accountNames: string[]
   onLinkClick: () => void
 }
 
-const Login = ({ usernames, onLinkClick }: LoginProps) => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' })
+const Login = ({ accountNames, onLinkClick }: LoginProps) => {
+  const [credentials, setCredentials] = useState({ accountName: '', password: '' })
   const { login } = useGlobalContext()
   const history = useHistory()
 
-  const handleCredentialsChange = useCallback((type: 'username' | 'password', value: string) => {
+  const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.username, credentials.password, () => history.push('/wallet/overview'))
+    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'))
   }
 
   return (
@@ -102,8 +102,8 @@ const Login = ({ usernames, onLinkClick }: LoginProps) => {
       <SectionStyled inList>
         <Select
           placeholder="Account"
-          options={usernames.map((u) => ({ label: u, value: u }))}
-          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+          options={accountNames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
           title="Select an account"
           id="account"
         />
@@ -117,7 +117,7 @@ const Login = ({ usernames, onLinkClick }: LoginProps) => {
         />
       </SectionStyled>
       <SectionStyled inList>
-        <Button onClick={handleLogin} submit disabled={!credentials.username || !credentials.password}>
+        <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
           Login
         </Button>
       </SectionStyled>

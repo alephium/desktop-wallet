@@ -24,7 +24,7 @@ import { useGlobalContext } from '../contexts/global'
 import Amount from './Amount'
 
 const AccountSummaryCard = ({ className }: { className?: string }) => {
-  const { currentUsername } = useGlobalContext()
+  const { currentAccountName } = useGlobalContext()
   const { addresses } = useAddressesContext()
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
@@ -52,7 +52,7 @@ const AccountSummaryCard = ({ className }: { className?: string }) => {
           </span>
         </BalanceLocked>
       </Balances>
-      <AccountName>{currentUsername}</AccountName>
+      <AccountName>{currentAccountName}</AccountName>
     </div>
   )
 }

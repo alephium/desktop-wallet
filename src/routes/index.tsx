@@ -28,8 +28,8 @@ import WalletRoutes from './WalletRoutes'
 const Storage = getStorage()
 
 const Routes = () => {
-  const usernames = Storage.list()
-  const hasWallet = usernames.length > 0
+  const accountNames = Storage.list()
+  const hasWallet = accountNames.length > 0
 
   return (
     <>
@@ -47,7 +47,7 @@ const Routes = () => {
             <WalletRoutes />
           </Route>
           <Route path="">
-            <HomePage hasWallet={hasWallet} usernames={usernames} />
+            <HomePage hasWallet={hasWallet} accountNames={accountNames} />
           </Route>
         </Switch>
       </AnimateSharedLayout>

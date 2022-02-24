@@ -35,12 +35,12 @@ import {
 } from '../utils/settings'
 
 export interface GlobalContextProps {
-  currentUsername: string
-  setCurrentUsername: (username: string) => void
+  currentAccountName: string
+  setCurrentAccountName: (accountName: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
-  login: (username: string, password: string, callback: () => void) => void
+  login: (accountName: string, password: string, callback: () => void) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -53,8 +53,8 @@ export interface GlobalContextProps {
 export type Client = AsyncReturnType<typeof createClient>
 
 export const initialGlobalContext: GlobalContextProps = {
-  currentUsername: '',
-  setCurrentUsername: () => null,
+  currentAccountName: '',
+  setCurrentAccountName: () => null,
   wallet: undefined,
   setWallet: () => null,
   lockWallet: () => null,
@@ -77,7 +77,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   overrideContextValue
 }) => {
   const [wallet, setWallet] = useState<Wallet>()
-  const [currentUsername, setCurrentUsername] = useState('')
+  const [currentAccountName, setCurrentAccountName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [settings, setSettings] = useState<Settings>(loadStoredSettings())
@@ -94,12 +94,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }
 
   const lockWallet = () => {
-    setCurrentUsername('')
+    setCurrentAccountName('')
     setWallet(undefined)
   }
 
-  const login = async (username: string, password: string, callback: () => void) => {
-    const walletEncrypted = Storage.load(username)
+  const login = async (accountName: string, password: string, callback: () => void) => {
+    const walletEncrypted = Storage.load(accountName)
     if (!walletEncrypted) {
       setSnackbarMessage({ text: 'Unknown account name', type: 'alert' })
       return
@@ -108,7 +108,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       const wallet = walletOpen(password, walletEncrypted)
       if (!wallet) return
       setWallet(wallet)
-      setCurrentUsername(username)
+      setCurrentAccountName(accountName)
       callback()
     } catch (e) {
       setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
@@ -157,8 +157,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
-          currentUsername,
-          setCurrentUsername,
+          currentAccountName,
+          setCurrentAccountName,
           wallet,
           setWallet,
           lockWallet,

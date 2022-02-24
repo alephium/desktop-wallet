@@ -39,7 +39,7 @@ import LogoSrc from '../../images/alephium_logo.svg'
 import SendModal from '../../modals/SendModal'
 import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
 
-interface UsernameSelectOptions {
+interface AccountNameSelectOptions {
   label: string
   value: string
 }
@@ -49,35 +49,35 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentUsername, login } = useGlobalContext()
+  const { wallet, lockWallet, currentAccountName, login } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const history = useHistory()
   const location = useLocation()
-  const usernames = Storage.list()
-  const [switchToUsername, setSwitchToUsername] = useState(currentUsername)
-  const usernameSelectOptions = usernames
-    .filter((username) => username !== currentUsername)
-    .map((username) => ({
-      label: username,
-      value: username
+  const accountNames = Storage.list()
+  const [switchToAccountName, setSwitchToAccountName] = useState(currentAccountName)
+  const accountNameSelectOptions = accountNames
+    .filter((accountName) => accountName !== currentAccountName)
+    .map((accountName) => ({
+      label: accountName,
+      value: accountName
     }))
 
   const refreshData = () => {
     refreshAddressesData()
   }
 
-  const handleUsernameChange = (option: UsernameSelectOptions | undefined) => {
-    if (option && option.value !== switchToUsername && option.value !== currentUsername) {
-      setSwitchToUsername(option.value)
+  const handleAccountNameChange = (option: AccountNameSelectOptions | undefined) => {
+    if (option && option.value !== switchToAccountName && option.value !== currentAccountName) {
+      setSwitchToAccountName(option.value)
       setIsPasswordModalOpen(true)
     }
   }
 
   const onLoginClick = (password: string) => {
     setIsPasswordModalOpen(false)
-    login(switchToUsername, password, () => {
+    login(switchToAccountName, password, () => {
       const nextPageLocation = '/wallet/overview'
       if (location.pathname !== nextPageLocation) history.push(nextPageLocation)
     })
@@ -102,12 +102,12 @@ const WalletLayout: FC = ({ children }) => {
         </LogoContainer>
         <Select
           placeholder="ACCOUNT"
-          options={usernameSelectOptions}
+          options={accountNameSelectOptions}
           controlledValue={{
-            label: currentUsername,
-            value: currentUsername
+            label: currentAccountName,
+            value: currentAccountName
           }}
-          onValueChange={handleUsernameChange}
+          onValueChange={handleAccountNameChange}
           title="Select an account"
           id="account"
         />
@@ -124,10 +124,10 @@ const WalletLayout: FC = ({ children }) => {
         {isPasswordModalOpen && (
           <ModalCentered title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
-              text={`Enter password for "${switchToUsername}"`}
+              text={`Enter password for "${switchToAccountName}"`}
               buttonText="Login"
               onCorrectPasswordEntered={onLoginClick}
-              username={switchToUsername}
+              accountName={switchToAccountName}
             />
           </ModalCentered>
         )}

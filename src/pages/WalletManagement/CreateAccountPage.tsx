@@ -40,16 +40,21 @@ import { useWalletContext } from '../../contexts/wallet'
 const Storage = getStorage()
 
 const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
-  const { setCurrentUsername } = useGlobalContext()
-  const { setUsername, setPassword, username: existingUsername, password: existingPassword } = useWalletContext()
+  const { setCurrentAccountName } = useGlobalContext()
+  const {
+    setAccountName,
+    setPassword,
+    accountName: existingAccountName,
+    password: existingPassword
+  } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const [username, setUsernameState] = useState(existingUsername)
-  const [usernameError, setUsernameError] = useState('')
+  const [accountName, setAccountNameState] = useState(existingAccountName)
+  const [accountNameError, setAccountNameError] = useState('')
   const [password, setPasswordState] = useState(existingPassword)
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState(existingPassword)
 
-  const usernames = Storage.list()
+  const accountNames = Storage.list()
 
   const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
     const password = e.target.value
@@ -67,31 +72,31 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     setPasswordError(passwordError)
   }
 
-  const onUpdateUsername = (e: ChangeEvent<HTMLInputElement>) => {
-    const username = e.target.value
-    let usernameError = ''
+  const onUpdateAccountName = (e: ChangeEvent<HTMLInputElement>) => {
+    const accountName = e.target.value
+    let accountNameError = ''
 
-    if (username.length < 3) {
-      usernameError = 'Account name is too short'
-    } else if (usernames?.includes(username)) {
-      usernameError = 'Account name already taken'
+    if (accountName.length < 3) {
+      accountNameError = 'Account name is too short'
+    } else if (accountNames?.includes(accountName)) {
+      accountNameError = 'Account name already taken'
     }
 
-    setUsernameState(username)
-    setUsernameError(usernameError)
+    setAccountNameState(accountName)
+    setAccountNameError(accountNameError)
   }
 
   const isNextButtonActive =
     password.length > 0 &&
     passwordError.length === 0 &&
     password === passwordCheck &&
-    username.length > 0 &&
-    usernameError.length === 0
+    accountName.length > 0 &&
+    accountNameError.length === 0
 
   const handleNextButtonClick = () => {
-    setUsername(username)
+    setAccountName(accountName)
     setPassword(password)
-    setCurrentUsername(username)
+    setCurrentAccountName(accountName)
     onButtonNext()
   }
 
@@ -101,11 +106,11 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
       <PanelContentContainer>
         <Section inList>
           <Input
-            value={username}
+            value={accountName}
             placeholder={isRestoring ? 'New account name' : 'Account name'}
-            onChange={onUpdateUsername}
-            error={usernameError}
-            isValid={username.length > 0 && usernameError.length === 0}
+            onChange={onUpdateAccountName}
+            error={accountNameError}
+            isValid={accountName.length > 0 && accountNameError.length === 0}
           />
           <Input
             value={password}
