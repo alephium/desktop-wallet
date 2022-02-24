@@ -51,37 +51,39 @@ const AppHeader: FC = ({ children }) => {
   } = useGlobalContext()
 
   return (
-    <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
-      <ThemeSwitcher />
-      <HeaderDivider />
-      <CompactToggle
-        toggled={discreetMode}
-        onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-        IconOn={EyeOff}
-        IconOff={Eye}
-      />
-      <HeaderDivider />
-      <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label="Settings">
-        <SettingsIcon />
-      </Button>
-      {mainAddress && (
-        <>
-          <HeaderDivider />
-          <Badge color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Badge>
-        </>
-      )}
-      <HeaderDivider />
-      {children && (
-        <>
-          {children}
-          <HeaderDivider />
-        </>
-      )}
-      <NetworkBadge />
+    <>
+      <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
+        <ThemeSwitcher />
+        <HeaderDivider />
+        <CompactToggle
+          toggled={discreetMode}
+          onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
+          IconOn={EyeOff}
+          IconOff={Eye}
+        />
+        <HeaderDivider />
+        <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label="Settings">
+          <SettingsIcon />
+        </Button>
+        {mainAddress && (
+          <>
+            <HeaderDivider />
+            <Badge color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Badge>
+          </>
+        )}
+        <HeaderDivider />
+        {children && (
+          <>
+            {children}
+            <HeaderDivider />
+          </>
+        )}
+        <NetworkBadge />
+      </HeaderContainer>
       <AnimatePresence>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </AnimatePresence>
-    </HeaderContainer>
+    </>
   )
 }
 
