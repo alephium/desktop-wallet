@@ -16,20 +16,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import styled, { DefaultTheme } from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import Badge from './Badge'
+import Amount from './Amount'
 
-const NetworkBadge = ({ className }: { className?: string }) => {
-  const { currentNetwork } = useGlobalContext()
-
-  return <Badge className={className}>{currentNetwork}</Badge>
+interface TransactionalInfoProps {
+  type: keyof DefaultTheme['txInfo']['font']
+  content: string | bigint
+  className?: string
+  amount?: boolean
+  prefix?: string
 }
 
-export default styled(NetworkBadge)`
-  color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
+const TransactionalInfo = ({ content, className, amount, prefix }: TransactionalInfoProps) => (
+  <div className={className}>
+    {prefix && <span>{prefix}</span>}
+    {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
+  </div>
+)
+
+export default styled(TransactionalInfo)`
+  color: ${({ type, theme }) => theme.txInfo.font[type]};
+  text-align: center;
+  border-radius: 3px;
   font-weight: var(--fontWeight-semiBold);
+  float: left;
+  white-space: nowrap;
 `

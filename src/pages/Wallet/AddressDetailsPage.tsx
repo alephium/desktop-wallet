@@ -34,12 +34,11 @@ import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
 import IOList from '../../components/IOList'
-import Label from '../../components/Label'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
-import TransactionBadge from '../../components/TransactionBadge'
+import TransactionalInfo from '../../components/TransactionalInfo'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
@@ -77,7 +76,7 @@ const AddressDetailsPage = () => {
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
           <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
-          {address.settings.label && <LabelStyled color={address.settings.color}>{address.getLabelName()}</LabelStyled>}
+          {address.settings.label && <BadgeStyled color={address.settings.color}>{address.getLabelName()}</BadgeStyled>}
           <OptionsButton
             transparent
             squared
@@ -103,7 +102,7 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {address.settings.label ? <Label color={address.settings.color}>{address.getLabelName()}</Label> : '-'}
+            {address.settings.label ? <Badge color={address.settings.color}>{address.getLabelName()}</Badge> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -133,15 +132,15 @@ const AddressDetailsPage = () => {
           .map(({ txId, timestamp, toAddress, amount, type }) => (
             <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
               <TableCell>
-                <Badge content="Pending" type="neutral" />
+                <TransactionalInfo content="Pending" type="neutral" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <TransactionBadge type="neutral" content="To" />
+                <DirectionBadge>To</DirectionBadge>
                 <span>{toAddress}</span>
               </TableCell>
               <TableCell align="end">
-                {type === 'transfer' && amount && <Badge type="minus" prefix="-" content={amount} amount />}
+                {type === 'transfer' && amount && <TransactionalInfo type="minus" prefix="-" content={amount} amount />}
               </TableCell>
             </TableRow>
           ))}
@@ -157,11 +156,11 @@ const AddressDetailsPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
+                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <TransactionBadge type="neutral" content={isOut ? 'To' : 'From'} />
+                <DirectionBadge>{isOut ? 'To' : 'From'}</DirectionBadge>
                 <IOList
                   currentAddress={addressHash}
                   isOut={isOut}
@@ -171,7 +170,7 @@ const AddressDetailsPage = () => {
                 />
               </TableCell>
               <TableCell align="end">
-                <Badge
+                <TransactionalInfo
                   type={isOut ? 'neutral' : 'plus'}
                   prefix={isOut ? '- ' : '+ '}
                   content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
@@ -212,6 +211,8 @@ const AddressDetailsPage = () => {
   )
 }
 
+export default AddressDetailsPage
+
 const Title = styled.div`
   display: flex;
   align-items: center;
@@ -229,7 +230,7 @@ const AmountStyled = styled(Amount)`
   color: ${({ theme }) => theme.font.highlight};
 `
 
-const LabelStyled = styled(Label)`
+const BadgeStyled = styled(Badge)`
   margin-left: var(--spacing-5);
 `
 
@@ -248,4 +249,10 @@ const IconButtons = styled.div`
   }
 `
 
-export default AddressDetailsPage
+const DirectionBadge = styled(Badge)`
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-radius: var(--radius-small);
+  min-width: 50px;
+  margin-right: var(--spacing-4);
+  text-align: center;
+`

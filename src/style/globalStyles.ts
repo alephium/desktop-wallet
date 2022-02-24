@@ -68,7 +68,6 @@ export const GlobalStyle = createGlobalStyle`
 
     --inputHeight: 46px;
     --toggleHeight: 30px;
-    --badgeHeight: 30px;
   }
 
   html {

@@ -29,10 +29,10 @@ import ActionLink from '../../components/ActionLink'
 import AddressSummaryCard from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
-import Label from '../../components/Label'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import DayskyImage from '../../images/daysky.jpeg'
 import NightskyImage from '../../images/nightsky.png'
@@ -118,14 +118,16 @@ const OverviewPage = () => {
           .map(({ txId, timestamp, address, amount, type }) => (
             <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
               <TableCell>
-                <Badge content="Pending" type="neutral" />
+                <TransactionalInfo content="Pending" type="neutral" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Label color={address.settings.color}>{address.getLabelName()}</Label>
+                <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
               </TableCell>
               <TableCell align="end">
-                {type === 'transfer' && amount && <Badge type="neutral" prefix="-" content={amount} amount />}
+                {type === 'transfer' && amount && (
+                  <TransactionalInfo type="neutral" prefix="-" content={amount} amount />
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -141,14 +143,14 @@ const OverviewPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <Badge content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
+                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Label color={transaction.address.settings.color}>{transaction.address.getLabelName()}</Label>
+                <Badge color={transaction.address.settings.color}>{transaction.address.getLabelName()}</Badge>
               </TableCell>
               <TableCell align="end">
-                <Badge
+                <TransactionalInfo
                   type={isOut ? 'neutral' : 'plus'}
                   prefix={isOut ? '- ' : '+ '}
                   content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
@@ -220,10 +222,7 @@ const AccountSummaryCardStyled = styled(AccountSummaryCard)`
   z-index: 1;
 `
 
-const AddressSummaryCardStyled = styled(AddressSummaryCard)<{
-  index: number
-  clickable: boolean
-}>`
+const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; clickable: boolean }>`
   order: ${({ index, clickable }) => (!clickable ? index * -1 : index)};
 `
 

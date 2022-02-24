@@ -49,7 +49,7 @@ declare module 'styled-components' {
       valid: string
       highlightGradient: string
     }
-    badge: {
+    txInfo: {
       font: {
         plus: string
         minus: string

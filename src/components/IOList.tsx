@@ -23,7 +23,7 @@ import { AddressHash } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
 import ActionLink from './ActionLink'
-import TransactionBadge from './TransactionBadge'
+import Badge from './Badge'
 
 interface IOListProps {
   currentAddress: string
@@ -72,9 +72,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </>
     )
   } else if (timestamp === genesisTimestamp) {
-    return <TransactionBadge type="neutral" content="Genesis TX" />
+    return <Badge>Genesis TX</Badge>
   } else {
-    return <TransactionBadge type="neutral" content="Mining Rewards" />
+    return <Badge>Mining Rewards</Badge>
   }
 }
 

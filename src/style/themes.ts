@@ -49,7 +49,7 @@ export const lightTheme: DefaultTheme = {
     valid: '#4ebf08',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   },
-  badge: {
+  txInfo: {
     font: {
       plus: '#37c461',
       minus: 'rgba(243, 113, 93, 1)',
@@ -93,7 +93,7 @@ export const darkTheme: DefaultTheme = {
     valid: '#4ebf08',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   },
-  badge: {
+  txInfo: {
     font: {
       plus: '#37c461',
       minus: 'rgba(243, 113, 93, 1)',

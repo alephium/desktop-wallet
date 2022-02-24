@@ -26,9 +26,9 @@ import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import SettingsModal from '../modals/SettingsModal'
 import { deviceBreakPoints } from '../style/globalStyles'
+import Badge from './Badge'
 import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
-import Label from './Label'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
@@ -67,7 +67,7 @@ const AppHeader: FC = ({ children }) => {
       {mainAddress && (
         <>
           <HeaderDivider />
-          <Label color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Label>
+          <Badge color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Badge>
         </>
       )}
       <HeaderDivider />

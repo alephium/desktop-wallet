@@ -22,9 +22,9 @@ import styled from 'styled-components'
 
 import { Address } from '../contexts/addresses'
 import Amount from './Amount'
+import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
-import Label from './Label'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -52,9 +52,9 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         clickable={clickable}
       >
         <AddressNameSection>
-          <Label color={address.settings.color} truncate>
+          <Badge color={address.settings.color} truncate>
             {address.getLabelName()}
-          </Label>
+          </Badge>
           <Hash>{address.hash}</Hash>
         </AddressNameSection>
         <AmountsSection>

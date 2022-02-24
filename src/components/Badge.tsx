@@ -16,30 +16,40 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled, { DefaultTheme } from 'styled-components'
-
-import Amount from './Amount'
+import { FC } from 'react'
+import styled, { css } from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 interface BadgeProps {
-  type: keyof DefaultTheme['badge']['font']
-  content: string | bigint
   className?: string
-  amount?: boolean
-  prefix?: string
+  color?: string
+  border?: boolean
+  truncate?: boolean
 }
 
-const Badge = ({ content, className, amount, prefix }: BadgeProps) => (
-  <div className={className}>
-    {prefix && <span>{prefix}</span>}
-    {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
-  </div>
-)
+const Badge: FC<BadgeProps> = ({ className, children }) => {
+  return <span className={className}>{children}</span>
+}
 
 export default styled(Badge)`
-  color: ${({ type, theme }) => theme.badge.font[type]};
-  text-align: center;
-  border-radius: 3px;
-  font-weight: var(--fontWeight-semiBold);
-  float: left;
-  white-space: nowrap;
+  display: inline-block;
+  padding: 5px 8px;
+  color: ${({ color, theme }) => color || theme.font.primary}};
+  border-radius: 20px;
+  background-color: ${({ color, theme }) =>
+    tinycolor(color || theme.font.primary)
+      .setAlpha(0.2)
+      .toString()};
+  ${({ border, color }) =>
+    border &&
+    css`
+      border: 1px solid ${color};
+    `};
+  ${({ truncate }) =>
+    truncate &&
+    css`
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `}
 `

@@ -25,9 +25,9 @@ import styled, { DefaultTheme, useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
 import Amount from '../components/Amount'
+import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
-import Label from '../components/Label'
 import { Address, AddressHash } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
@@ -38,6 +38,11 @@ interface TransactionDetailsModalProps {
   transaction: Transaction
   address: Address
   onClose: () => void
+}
+
+interface DetailsRowProps {
+  label: string
+  className?: string
 }
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
@@ -74,14 +79,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <HeaderInfo>
             {isOutgoingTx ? '↑ Sent' : '↓ Received'}
             <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
-            <Label color={address.settings.color}>{address.getLabelName()}</Label>
+            <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
           </HeaderInfo>
           <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
         </Header>
         <Details>
           <DetailsRow label="From">
             {isOutgoingTx ? (
-              <Label color={address.settings.color}>{address.getLabelName()}</Label>
+              <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
             ) : (
               <IOList
                 currentAddress={address.hash}
@@ -95,7 +100,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
           <DetailsRow label="To">
             {!isOutgoingTx ? (
-              <Label color={address.settings.color}>{address.getLabelName()}</Label>
+              <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
             ) : (
               <IOList
                 currentAddress={address.hash}
@@ -108,9 +113,9 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             )}
           </DetailsRow>
           <DetailsRow label="Status">
-            <Label color={theme.badge.font.plus} border>
+            <Badge color={theme.txInfo.font.plus} border>
               Confirmed
-            </Label>
+            </Badge>
           </DetailsRow>
           <DetailsRow label="Timestamp">
             {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
@@ -149,10 +154,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   )
 }
 
-interface DetailsRowProps {
-  label: string
-  className?: string
-}
+export default TransactionDetailsModal
 
 let DetailsRow: FC<DetailsRowProps> = ({ children, label, className }) => (
   <div className={className}>
@@ -173,8 +175,8 @@ DetailsRow = styled(DetailsRow)`
   }
 `
 
-const AmountWrapper = styled.div<{ type: keyof DefaultTheme['badge']['font'] }>`
-  color: ${({ type, theme }) => theme.badge.font[type]};
+const AmountWrapper = styled.div<{ type: keyof DefaultTheme['txInfo']['font'] }>`
+  color: ${({ type, theme }) => theme.txInfo.font[type]};
   font-size: 26px;
   font-weight: var(--fontWeight-semiBold);
 `
@@ -227,5 +229,3 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
 const IOs = styled.div`
   text-align: right;
 `
-
-export default TransactionDetailsModal

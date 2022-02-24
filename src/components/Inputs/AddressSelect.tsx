@@ -24,8 +24,8 @@ import styled, { css } from 'styled-components'
 import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import Amount from '../Amount'
+import Badge from '../Badge'
 import InfoBox from '../InfoBox'
-import Label from '../Label'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
@@ -89,7 +89,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           {address?.settings.label && (
-            <LabelStyled color={address?.settings.color}>{address?.getLabelName()}</LabelStyled>
+            <BadgeStyled color={address?.settings.color}>{address?.getLabelName()}</BadgeStyled>
           )}
           {address?.hash}
         </ClickableInput>
@@ -145,7 +145,7 @@ const AddressSelectModal = ({
         {displayedOptions.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && <Label color={address?.settings.color}>{address?.getLabelName()}</Label>}
+            {address?.settings.label && <Badge color={address?.settings.color}>{address?.getLabelName()}</Badge>}
             {address.shortHash}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
@@ -221,7 +221,7 @@ const ClickableInput = styled.div<InputProps>`
   align-items: center;
 `
 
-const LabelStyled = styled(Label)`
+const BadgeStyled = styled(Badge)`
   margin-right: var(--spacing-2);
 `
 
