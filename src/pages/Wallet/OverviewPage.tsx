@@ -34,8 +34,8 @@ import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import DayskyImage from '../../images/daysky.jpeg'
-import NightskyImage from '../../images/nightsky.png'
+import DayskyImageSrc from '../../images/daysky.jpeg'
+import NightskyImageSrc from '../../images/nightsky.png'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 import { appHeaderHeight } from '../../style/globalStyles'
 
@@ -189,7 +189,7 @@ const OverviewPage = () => {
 export default OverviewPage
 
 const Header = styled.header`
-  background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImage : DayskyImage)});
+  background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
   background-position: bottom;
   background-size: cover;
   margin-top: -${appHeaderHeight};
