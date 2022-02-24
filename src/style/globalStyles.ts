@@ -80,6 +80,21 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   ${tags}
+
+  .skeleton-loader {
+    background-image: linear-gradient(-90deg, rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+    background-size: 400% 400%;
+    animation: gradientAnimation 1.5s ease-in-out infinite;
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 0%;
+      }
+      100% {
+        background-position: -135% 0%;
+      }
+    }
+  }
 `
 
 // Breakpoints

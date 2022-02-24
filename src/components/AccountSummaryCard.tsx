@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import classNames from 'classnames'
 import { Check, Lock } from 'lucide-react'
 import styled from 'styled-components'
 
@@ -23,7 +24,12 @@ import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import Amount from './Amount'
 
-const AccountSummaryCard = ({ className }: { className?: string }) => {
+interface AccountSummaryCardProps {
+  isLoading?: boolean
+  className?: string
+}
+
+const AccountSummaryCard = ({ className, isLoading }: AccountSummaryCardProps) => {
   const { currentAccountName } = useGlobalContext()
   const { addresses } = useAddressesContext()
 
@@ -32,7 +38,7 @@ const AccountSummaryCard = ({ className }: { className?: string }) => {
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
 
   return (
-    <div className={className}>
+    <div className={classNames(className, { 'skeleton-loader': isLoading })}>
       <AmountContainer>
         <AmountStyled value={totalBalance} />
         Total balance

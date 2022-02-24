@@ -53,7 +53,7 @@ type TransactionAndAddress = Transaction & { address: Address }
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionAndAddress>()
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
-  const { addresses, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
   const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
 
@@ -75,6 +75,8 @@ const OverviewPage = () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
+  const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+
   useEffect(() => {
     if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
       addressSummaryCardsRef.current.scrollLeft = 0
@@ -85,7 +87,7 @@ const OverviewPage = () => {
     <MainContent>
       <Header>
         <Summaries>
-          <AccountSummaryCardStyled />
+          <AccountSummaryCardStyled isLoading={showSkeletonLoading} />
           <AddressSummaryCards
             collapsed={!areAddressSummariesExpanded}
             totalAddresses={addresses.length}
@@ -111,7 +113,7 @@ const OverviewPage = () => {
         </Summaries>
       </Header>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
+      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth} isLoading={showSkeletonLoading}>
         {allPendingTxs
           .slice(0)
           .reverse()
@@ -165,7 +167,7 @@ const OverviewPage = () => {
             </TableCell>
           </TableRow>
         )}
-        {allPendingTxs.length === 0 && allConfirmedTxs.length === 0 && (
+        {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
           <TableRow>
             <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
           </TableRow>
