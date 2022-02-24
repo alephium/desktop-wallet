@@ -25,11 +25,11 @@ import InfoBox from '../../components/InfoBox'
 import AddressSelect from '../../components/Inputs/AddressSelect'
 import AmountInput from '../../components/Inputs/AmountInput'
 import Input from '../../components/Inputs/Input'
-import { ModalFooterButton, ModalFooterButtons } from '../../components/ModalCentered'
 import { useAddressesContext } from '../../contexts/addresses'
 import { checkAddressValidity } from '../../utils/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { isAmountWithinRange } from '../../utils/transactions'
+import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
 import { SendTransactionData } from '.'
 
 interface TransactionFormProps {

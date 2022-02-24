@@ -22,9 +22,9 @@ import styled, { useTheme } from 'styled-components'
 import Amount from '../components/Amount'
 import Button from '../components/Button'
 import InfoBox from '../components/InfoBox'
-import ModalCentered, { HeaderContent, HeaderLogo } from '../components/ModalCentered'
 import { Section } from '../components/PageComponents/PageContainers'
 import Spinner from '../components/Spinner'
+import CenteredModal, { HeaderContent, HeaderLogo } from './CenteredModal'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void
@@ -36,7 +36,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
   const theme = useTheme()
 
   return (
-    <ModalCentered title="Consolidate UTXOs" onClose={onClose}>
+    <CenteredModal title="Consolidate UTXOs" onClose={onClose}>
       <HeaderContent>
         <HeaderLogo>
           <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
@@ -56,7 +56,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
           </Button>
         </Section>
       </HeaderContent>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

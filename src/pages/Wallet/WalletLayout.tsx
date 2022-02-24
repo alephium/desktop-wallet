@@ -29,13 +29,13 @@ import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import Select from '../../components/Inputs/Select'
-import ModalCentered from '../../components/ModalCentered'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import LogoSrc from '../../images/alephium_logo.svg'
+import CenteredModal from '../../modals/CenteredModal'
 import SendModal from '../../modals/SendModal'
 import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
 
@@ -122,14 +122,14 @@ const WalletLayout: FC = ({ children }) => {
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
         {isPasswordModalOpen && (
-          <ModalCentered title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
               text={`Enter password for "${switchToAccountName}"`}
               buttonText="Login"
               onCorrectPasswordEntered={onLoginClick}
               accountName={switchToAccountName}
             />
-          </ModalCentered>
+          </CenteredModal>
         )}
       </AnimatePresence>
       {children}

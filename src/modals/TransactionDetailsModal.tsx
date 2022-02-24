@@ -28,11 +28,11 @@ import Amount from '../components/Amount'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Label from '../components/Label'
-import Modal from '../components/Modal'
-import { ModalHeader } from '../components/ModalCentered'
 import { Address, AddressHash } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
+import { ModalHeader } from './CenteredModal'
+import ModalContainer from './ModalContainer'
 
 interface TransactionDetailsModalProps {
   transaction: Transaction
@@ -60,7 +60,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   }
 
   return (
-    <Modal onClose={onClose} hasPadding={false}>
+    <ModalContainer onClose={onClose} hasPadding={false}>
       <Sidebar
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
@@ -145,7 +145,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </ExpandableSectionStyled>
         </Details>
       </Sidebar>
-    </Modal>
+    </ModalContainer>
   )
 }
 

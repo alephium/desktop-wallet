@@ -21,13 +21,13 @@ import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
-import ModalCentered from '../../components/ModalCentered'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
+import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
 import SendModalCheckTransaction from './CheckTransaction'
 import SendModalTransactionForm from './TransactionForm'
@@ -220,7 +220,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   }
 
   return (
-    <ModalCentered title={title} onClose={onClose} isLoading={isLoading} header={<PaperPlaneSVG />}>
+    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={<PaperPlaneSVG />}>
       {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
       {step === 2 && transactionData && fees && (
         <SendModalCheckTransaction
@@ -246,7 +246,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
           />
         )}
       </AnimatePresence>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

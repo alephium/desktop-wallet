@@ -24,11 +24,11 @@ import styled from 'styled-components'
 import Amount from '../components/Amount'
 import InfoBox from '../components/InfoBox'
 import AddressSelect from '../components/Inputs/AddressSelect'
-import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../components/ModalCentered'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { getHumanReadableError } from '../utils/api'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type SweepAddress = Address | undefined
 
@@ -112,7 +112,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   if (!sweepAddresses.from || !sweepAddresses.to) return null
 
   return (
-    <ModalCentered title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
+    <CenteredModal title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
       <Content>
         <AddressSelect
           placeholder="From address"
@@ -152,7 +152,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           {sweepAddress ? 'Sweep' : 'Consolidate'}
         </ModalFooterButton>
       </ModalFooterButtons>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

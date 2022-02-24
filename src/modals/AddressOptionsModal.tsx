@@ -24,12 +24,12 @@ import Amount from '../components/Amount'
 import ColoredLabelInput from '../components/Inputs/ColoredLabelInput'
 import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
 import Toggle from '../components/Inputs/Toggle'
-import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from '../components/ModalCentered'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
+import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface AddressOptionsModal {
   address: Address

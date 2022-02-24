@@ -22,10 +22,10 @@ import { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
 import Label from '../Label'
-import ModalCentered, { ModalFooterButton, ModalFooterButtons } from '../ModalCentered'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
@@ -139,7 +139,7 @@ const AddressSelectModal = ({
   }
 
   return (
-    <ModalCentered title="Addresses" onClose={onClose}>
+    <CenteredModal title="Addresses" onClose={onClose}>
       <Description>{title}</Description>
       <div>
         {displayedOptions.map((address) => (
@@ -168,7 +168,7 @@ const AddressSelectModal = ({
           Select
         </ModalFooterButton>
       </ModalFooterButtons>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

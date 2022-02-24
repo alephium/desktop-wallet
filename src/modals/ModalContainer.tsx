@@ -20,14 +20,14 @@ import { motion } from 'framer-motion'
 import { FC, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 
-export interface ModalProps {
+export interface ModalContainerProps {
   onClose: () => void
   focusMode?: boolean
   hasPadding?: boolean
   className?: string
 }
 
-const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true, className }) => {
+const ModalContainer: FC<ModalContainerProps> = ({ children, onClose, focusMode, className }) => {
   // Prevent body scroll on mount
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -69,7 +69,7 @@ const Modal: FC<ModalProps> = ({ children, onClose, focusMode, hasPadding = true
   )
 }
 
-export default styled(Modal)<{ hasPadding?: boolean }>`
+export default styled(ModalContainer)<{ hasPadding?: boolean }>`
   position: fixed;
   top: 0;
   bottom: 0;

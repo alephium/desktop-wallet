@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import ModalCentered from '../../components/ModalCentered'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
+import CenteredModal from '../CenteredModal'
 import AccountsSettingsSection from './AccountsSettingsSection'
 import GeneralSettingsSection from './GeneralSettingsSection'
 import NetworkSettingsSection from './NetworkSettingsSection'
@@ -40,7 +40,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
-    <ModalCentered title="Settings" onClose={onClose}>
+    <CenteredModal title="Settings" onClose={onClose}>
       <PanelContentContainer>
         <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
         {tabs.find((t) => t.value === currentTab.value)?.component}
@@ -48,7 +48,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
           <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
         </Section>
       </PanelContentContainer>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

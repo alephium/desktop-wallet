@@ -21,9 +21,9 @@ import { useTheme } from 'styled-components'
 
 import Button from '../components/Button'
 import InfoBox from '../components/InfoBox'
-import ModalCentered from '../components/ModalCentered'
 import { Section } from '../components/PageComponents/PageContainers'
 import Paragraph from '../components/Paragraph'
+import CenteredModal from './CenteredModal'
 
 interface AccountRemovalModalProps {
   accountName: string
@@ -35,7 +35,7 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
   const theme = useTheme()
 
   return (
-    <ModalCentered title={`Remove account "${accountName}"`} onClose={onClose} focusMode>
+    <CenteredModal title={`Remove account "${accountName}"`} onClose={onClose} focusMode>
       <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
       </Section>
@@ -53,7 +53,7 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
           CONFIRM REMOVAL
         </Button>
       </Section>
-    </ModalCentered>
+    </CenteredModal>
   )
 }
 

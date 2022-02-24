@@ -21,20 +21,20 @@ import { X } from 'lucide-react'
 import { FC, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 
-import Button from './Button'
-import Modal, { ModalBackdrop, ModalProps } from './Modal'
-import { Section } from './PageComponents/PageContainers'
-import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
-import Spinner from './Spinner'
+import Button from '../components/Button'
+import { Section } from '../components/PageComponents/PageContainers'
+import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
+import Spinner from '../components/Spinner'
+import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
-interface ModalCenteredProps extends ModalProps {
+interface CenteredModalProps extends ModalContainerProps {
   title?: string
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode
 }
 
-const ModalCentered: FC<ModalCenteredProps> = ({
+const CenteredModal: FC<CenteredModalProps> = ({
   title,
   subtitle,
   onClose,
@@ -43,7 +43,7 @@ const ModalCentered: FC<ModalCenteredProps> = ({
   header,
   children
 }) => (
-  <Modal onClose={onClose} focusMode={focusMode}>
+  <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
     <CenteredBox
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -72,8 +72,10 @@ const ModalCentered: FC<ModalCenteredProps> = ({
         </>
       )}
     </CenteredBox>
-  </Modal>
+  </ModalContainer>
 )
+
+export default CenteredModal
 
 export const HeaderContent = styled(Section)`
   flex: 0;
@@ -172,5 +174,3 @@ const ModalLoadingSpinner = styled.div`
   justify-content: center;
   align-items: center;
 `
-
-export default ModalCentered
