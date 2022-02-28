@@ -42,7 +42,7 @@ jobs:
       version: ${{ needs.bump-npm-version.outputs.version }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu_amd64-latest, ubuntu_arm64-latest]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -72,25 +72,37 @@ jobs:
         with:
           name: macos-binary
           path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}-universal.dmg
-      - name: Upload artifact (linux .deb)
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Upload artifact (linux amd64 .deb)
+        if: startsWith(matrix.os, 'ubuntu_amd64')
         uses: actions/upload-artifact@v2
         with:
-          name: deb-binary
+          name: deb-amd64-binary
           path: dist/alephium-wallet_${{ needs.bump-npm-version.outputs.version }}_amd64.deb
-      - name: Upload artifact (linux .AppImage)
-        if: startsWith(matrix.os, 'ubuntu')
+      - name: Upload artifact (linux amd64 .AppImage)
+        if: startsWith(matrix.os, 'ubuntu_amd64')
         uses: actions/upload-artifact@v2
         with:
-          name: appimage-binary
-          path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}.AppImage
+          name: appimage-amd64-binary
+          path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}_amd64.AppImage
+      - name: Upload artifact (linux arm64 .deb)
+        if: startsWith(matrix.os, 'ubuntu:arm64')
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb-arm64-binary
+          path: dist/alephium-wallet_${{ needs.bump-npm-version.outputs.version }}_arm64.deb
+      - name: Upload artifact (linux arm64 .AppImage)
+        if: startsWith(matrix.os, 'ubuntu:arm64')
+        uses: actions/upload-artifact@v2
+        with:
+          name: appimage-arm64-binary
+          path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}_arm64.AppImage
       - name: Upload artifact (windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v2
         with:
           name: windows-binary
           path: dist\Alephium Setup ${{ needs.bump-npm-version.outputs.version }}.exe
-          
+
   release:
     runs-on: ubuntu-latest
     needs: build-artifacts
@@ -99,30 +111,42 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: macos-binary
-      - name: Get .deb artifact
+      - name: Get .deb amd64 artifact
         uses: actions/download-artifact@v2
         with:
-          name: deb-binary
-      - name: Get .appimage artifact
+          name: deb-amd64-binary
+      - name: Get .appimage amd64 artifact
         uses: actions/download-artifact@v2
         with:
-          name: appimage-binary
+          name: appimage-amd64-binary
+      - name: Get .deb arm64 artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: deb-arm64-binary
+      - name: Get .appimage arm64 artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: appimage-arm64-binary
       - name: Get windows artifact
         uses: actions/download-artifact@v2
         with:
           name: windows-binary
       - name: Generate wallet checksums (Release prep)
         run: |
-             mv "Alephium-${{ needs.build-artifacts.outputs.version }}-universal.dmg" "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg"
-             mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_amd64.deb" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb"
-             mv "Alephium-${{ needs.build-artifacts.outputs.version }}.AppImage" "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage"
-             mv "Alephium Setup ${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
-             
-             sha256sum "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg" > "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum"
-             sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
-             sha256sum "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage" > "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum"
-             sha256sum "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe" > "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum"
-              
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}-universal.dmg" "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg"
+          mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_amd64.deb" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb"
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}_amd64.AppImage" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.AppImage"
+          mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_arm64.deb" "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.deb"
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}_arm64.AppImage" "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.AppImage"
+          mv "Alephium Setup ${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
+
+          sha256sum "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg" > "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum"
+          sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
+          sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.AppImage" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum"
+          sha256sum "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
+          sha256sum "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.AppImage" > "alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum"
+          sha256sum "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe" > "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum"
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -131,8 +155,11 @@ jobs:
             alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum
             alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb
             alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum
-            alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage
-            alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum
+            alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.AppImage
+            alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum
+            alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.deb
+            alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.deb.checksum
+            alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.AppImage
+            alephium-wallet-linux-arm64-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum
             alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe
             alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum
-    
