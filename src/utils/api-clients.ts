@@ -19,18 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { CliqueClient, ExplorerClient } from 'alephium-js'
 
 import { Address, AddressHash, TransactionType } from '../contexts/addresses'
-import { loadStoredSettings, NetworkType, Settings } from './settings'
+import { NetworkType, Settings } from './settings'
 
-export async function createClient(settings?: Settings['network']) {
-  const loadedSettings = settings || loadStoredSettings().network
-
+export async function createClient(settings: Settings['network']) {
   try {
     const cliqueClient = new CliqueClient({
-      baseUrl: loadedSettings.nodeHost
+      baseUrl: settings.nodeHost
     })
 
     const explorerClient = new ExplorerClient({
-      baseUrl: loadedSettings.explorerApiHost
+      baseUrl: settings.explorerApiHost
     })
 
     //TODO: Support multi-node clique

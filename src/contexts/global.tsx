@@ -25,14 +25,22 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import { createClient } from '../utils/api-clients'
 import {
+  deprecatedSettingsExist,
   getNetworkName,
-  loadStoredSettings,
+  loadSettings,
+  migrateDeprecatedSettings,
   NetworkType,
-  saveStoredSettings,
   Settings,
+  storeSettings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings
 } from '../utils/settings'
+
+let localStorageSettings = loadSettings()
+
+if (deprecatedSettingsExist()) {
+  localStorageSettings = migrateDeprecatedSettings()
+}
 
 export interface GlobalContextProps {
   currentAccountName: string
@@ -60,7 +68,7 @@ export const initialGlobalContext: GlobalContextProps = {
   lockWallet: () => null,
   login: () => null,
   client: undefined,
-  settings: loadStoredSettings(),
+  settings: localStorageSettings,
   updateSettings: () => null,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
@@ -80,7 +88,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [currentAccountName, setCurrentAccountName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
-  const [settings, setSettings] = useState<Settings>(loadStoredSettings())
+  const [settings, setSettings] = useState<Settings>(localStorageSettings)
   const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef('')
   const previousExplorerAPIHost = useRef('')
@@ -139,8 +147,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     }
 
     if (
-      previousNodeHost.current !== settings.network.nodeHost ||
-      previousExplorerAPIHost.current !== settings.network.explorerApiHost
+      settings.network &&
+      (previousNodeHost.current !== settings.network.nodeHost ||
+        previousExplorerAPIHost.current !== settings.network.explorerApiHost)
     ) {
       getClient()
       previousNodeHost.current = settings.network.nodeHost
@@ -150,7 +159,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   // Save settings to local storage
   useEffect(() => {
-    saveStoredSettings(settings)
+    storeSettings(settings)
   }, [settings])
 
   return (

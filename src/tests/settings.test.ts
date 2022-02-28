@@ -19,11 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ThemeType } from '../style/themes'
 import {
   defaultSettings,
+  deprecatedSettingsExist,
   getNetworkName,
-  getStoredSettings,
-  loadStoredSettings,
+  loadSettings,
+  migrateDeprecatedSettings,
   networkEndpoints,
-  saveStoredSettings,
+  storeSettings,
   updateStoredSettings
 } from '../utils/settings'
 
@@ -55,25 +56,23 @@ it('Should return the network name if all settings match exactly', () => {
 })
 
 it('Should load settings from local storage', () => {
-  expect(loadStoredSettings()).toEqual(defaultSettings)
-
-  localStorage.setItem('theme', 'pink')
-  expect(localStorage.getItem('theme')).toEqual('pink')
-  expect(loadStoredSettings().general.theme).toEqual('pink')
-  expect(localStorage.getItem('theme')).toBeNull()
+  expect(loadSettings()).toEqual(defaultSettings)
 
   localStorage.setItem('settings', JSON.stringify(mockSettings))
-  expect(loadStoredSettings()).toEqual(mockSettings)
+  expect(loadSettings()).toEqual(mockSettings)
+})
+
+it('Should migrate deprecated settings', () => {
+  localStorage.setItem('theme', 'pink')
+  expect(localStorage.getItem('theme')).toEqual('pink')
+  expect(migrateDeprecatedSettings().general.theme).toEqual('pink')
+  expect(loadSettings().general.theme).toEqual('pink')
+  expect(localStorage.getItem('theme')).toBeNull()
 })
 
 it('Should save settings in local storage', () => {
-  saveStoredSettings(mockSettings)
+  storeSettings(mockSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify(mockSettings))
-})
-
-it('Should get stored setting', () => {
-  localStorage.setItem('settings', JSON.stringify(mockSettings))
-  expect(getStoredSettings('general')).toEqual(mockSettings.general)
 })
 
 it('Should update stored settings', () => {
@@ -84,4 +83,10 @@ it('Should update stored settings', () => {
   }
   updateStoredSettings('network', newNetworkSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify({ ...mockSettings, network: newNetworkSettings }))
+})
+
+it('Should indicate that there are deprecated settings stored in local storage', () => {
+  expect(deprecatedSettingsExist()).toBeFalsy()
+  localStorage.setItem('theme', 'pink')
+  expect(deprecatedSettingsExist()).toBeTruthy()
 })

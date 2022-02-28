@@ -79,7 +79,7 @@ export const getNetworkName = (settings: Settings['network']) => {
   })?.[0] || 'custom') as NetworkType | 'custom'
 }
 
-const returnSettingsObject = () => {
+export const loadSettings = (): Settings => {
   const rawSettings = window.localStorage.getItem('settings')
 
   if (!rawSettings) return defaultSettings
@@ -92,32 +92,30 @@ const returnSettingsObject = () => {
   }
 }
 
-export const loadStoredSettings = (): Settings => {
-  const storedSettings = returnSettingsObject()
+export const deprecatedSettingsExist = (): boolean => {
+  return !!window.localStorage.getItem('theme')
+}
+
+export const migrateDeprecatedSettings = (): Settings => {
+  const settings = loadSettings()
 
   const deprecatedThemeSetting = window.localStorage.getItem('theme')
-
-  // Migrate values if needed
-  const migratedSettings = {
-    network: storedSettings.network ?? (storedSettings as unknown as DeprecatedNetworkSettings),
-    general: deprecatedThemeSetting
-      ? { ...storedSettings.general, theme: deprecatedThemeSetting as ThemeType }
-      : storedSettings.general
-  }
-
-  // Clean old values up if needed
   deprecatedThemeSetting && window.localStorage.removeItem('theme')
 
-  return merge({}, defaultSettings, migratedSettings)
+  const migratedSettings = {
+    network: settings.network ?? (settings as unknown as DeprecatedNetworkSettings),
+    general: deprecatedThemeSetting
+      ? { ...settings.general, theme: deprecatedThemeSetting as ThemeType }
+      : settings.general
+  }
+  const newSettings = merge({}, defaultSettings, migratedSettings)
+  storeSettings(newSettings)
+
+  return newSettings
 }
 
-export const saveStoredSettings = (settings: Settings) => {
-  const str = JSON.stringify(settings)
-  window.localStorage.setItem('settings', str)
-}
-
-export const getStoredSettings = <T extends keyof Settings>(key: T): Settings[T] => {
-  return returnSettingsObject()[key]
+export const storeSettings = (settings: Settings) => {
+  window.localStorage.setItem('settings', JSON.stringify(settings))
 }
 
 export const updateStoredSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, settings) => {
