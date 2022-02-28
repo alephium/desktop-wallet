@@ -63,10 +63,7 @@ it('Should load settings from local storage', () => {
   expect(localStorage.getItem('theme')).toBeNull()
 
   localStorage.setItem('settings', JSON.stringify(mockSettings))
-  expect(loadStoredSettings().general.walletLockTimeInMinutes).toEqual(999)
-  expect(loadStoredSettings().network.nodeHost).toEqual('https://node')
-  expect(loadStoredSettings().network.explorerApiHost).toEqual('https://explorer-backend')
-  expect(loadStoredSettings().network.explorerUrl).toEqual('https://explorer')
+  expect(loadStoredSettings()).toEqual(mockSettings)
 })
 
 it('Should save settings in local storage', () => {
