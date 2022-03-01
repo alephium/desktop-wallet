@@ -18,8 +18,16 @@ npm run extension-pack
 
 ### Desktop app
 
+The command below will detect your OS and build the corresponding package.
+
 ```shell
 npm run electron-pack
+```
+
+To build for ARM64 Linux, run:
+
+```shell
+npm run electron-pack-linux:arm64
 ```
 
 ## Development
