@@ -132,7 +132,7 @@ const AddressDetailsPage = () => {
           .map(({ txId, timestamp, toAddress, amount, type }) => (
             <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
               <TableCell>
-                <TransactionalInfo content="Pending" type="neutral" />
+                <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
@@ -140,7 +140,7 @@ const AddressDetailsPage = () => {
                 <span>{toAddress}</span>
               </TableCell>
               <TableCell align="end">
-                {type === 'transfer' && amount && <TransactionalInfo type="minus" prefix="-" content={amount} amount />}
+                {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
               </TableCell>
             </TableRow>
           ))}
@@ -156,7 +156,7 @@ const AddressDetailsPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
+                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
@@ -171,7 +171,7 @@ const AddressDetailsPage = () => {
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
-                  type={isOut ? 'neutral' : 'plus'}
+                  type={isOut ? 'out' : 'in'}
                   prefix={isOut ? '- ' : '+ '}
                   content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
                   amount

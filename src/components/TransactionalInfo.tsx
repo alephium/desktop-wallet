@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled, { DefaultTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import Amount from './Amount'
 
 interface TransactionalInfoProps {
-  type: keyof DefaultTheme['txInfo']['font']
+  type: 'out' | 'in' | 'pending'
   content: string | bigint
   className?: string
   amount?: boolean
@@ -36,7 +36,7 @@ const TransactionalInfo = ({ content, className, amount, prefix }: Transactional
 )
 
 export default styled(TransactionalInfo)`
-  color: ${({ type, theme }) => theme.txInfo.font[type]};
+  color: ${({ type, theme }) => (type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid)};
   text-align: center;
   border-radius: 3px;
   font-weight: var(--fontWeight-semiBold);

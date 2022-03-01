@@ -20,7 +20,7 @@ import { addApostrophe, calAmountDelta } from 'alephium-js'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import { FC } from 'react'
-import styled, { DefaultTheme, useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
 import Amount from '../components/Amount'
@@ -66,7 +66,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   return (
     <SideModal onClose={onClose}>
       <Header contrast>
-        <AmountWrapper type={isOutgoingTx ? 'minus' : 'plus'}>
+        <AmountWrapper color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
           <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
         </AmountWrapper>
         <HeaderInfo>
@@ -106,7 +106,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           )}
         </DetailsRow>
         <DetailsRow label="Status">
-          <Badge color={theme.txInfo.font.plus} border>
+          <Badge color={theme.global.valid} border>
             Confirmed
           </Badge>
         </DetailsRow>
@@ -167,8 +167,8 @@ DetailsRow = styled(DetailsRow)`
   }
 `
 
-const AmountWrapper = styled.div<{ type: keyof DefaultTheme['txInfo']['font'] }>`
-  color: ${({ type, theme }) => theme.txInfo.font[type]};
+const AmountWrapper = styled.div<{ color: string }>`
+  color: ${({ color }) => color};
   font-size: 26px;
   font-weight: var(--fontWeight-semiBold);
 `

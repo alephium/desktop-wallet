@@ -48,20 +48,6 @@ export const lightTheme: DefaultTheme = {
     alert: '#ed4a34',
     valid: '#4ebf08',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
-  },
-  txInfo: {
-    font: {
-      plus: '#37c461',
-      minus: 'rgba(243, 113, 93, 1)',
-      neutral: 'rgba(255, 255, 255, 1)',
-      neutralHighlight: 'rgba(255, 255, 255, 1)'
-    },
-    bg: {
-      plus: 'rgba(48, 167, 84, 0.12)',
-      minus: 'rgba(243, 113, 93, 0.1)',
-      neutral: 'rgba(90, 90, 90, 0.6)',
-      neutralHighlight: 'rgba(101, 16, 247, 1)'
-    }
   }
 }
 
@@ -92,19 +78,5 @@ export const darkTheme: DefaultTheme = {
     alert: '#ed4a34',
     valid: '#4ebf08',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
-  },
-  txInfo: {
-    font: {
-      plus: '#37c461',
-      minus: 'rgba(243, 113, 93, 1)',
-      neutral: 'rgba(255, 255, 255, 0.65)',
-      neutralHighlight: 'rgba(255, 255, 255, 1)'
-    },
-    bg: {
-      plus: 'rgba(48, 167, 84, 0.12)',
-      minus: 'rgba(243, 113, 93, 0.1)',
-      neutral: 'rgba(58, 58, 58, 0.28)',
-      neutralHighlight: 'rgba(101, 16, 247, 1)'
-    }
   }
 }

@@ -118,16 +118,14 @@ const OverviewPage = () => {
           .map(({ txId, timestamp, address, amount, type }) => (
             <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
               <TableCell>
-                <TransactionalInfo content="Pending" type="neutral" />
+                <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
                 <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
               </TableCell>
               <TableCell align="end">
-                {type === 'transfer' && amount && (
-                  <TransactionalInfo type="neutral" prefix="-" content={amount} amount />
-                )}
+                {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
               </TableCell>
             </TableRow>
           ))}
@@ -143,7 +141,7 @@ const OverviewPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'neutral' : 'plus'} />
+                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell truncate>
@@ -151,7 +149,7 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
-                  type={isOut ? 'neutral' : 'plus'}
+                  type={isOut ? 'out' : 'in'}
                   prefix={isOut ? '- ' : '+ '}
                   content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
                   amount
