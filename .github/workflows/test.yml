@@ -25,7 +25,7 @@ jobs:
       - run: npm test
 
   electron-tests:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu_amd64-latest, ubuntu_arm64-latest]
