@@ -35,6 +35,8 @@ interface AddressSummaryCardProps {
   position?: number
 }
 
+export const addressSummaryCardWidthPx = 100
+
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const history = useHistory()
 
@@ -70,7 +72,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
 }
 
 export default styled(AddressSummaryCard)`
-  width: 100px;
+  width: ${addressSummaryCardWidthPx}px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.secondary};
   border-radius: var(--radius-medium);
