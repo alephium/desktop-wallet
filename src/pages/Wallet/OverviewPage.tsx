@@ -26,7 +26,7 @@ import styled from 'styled-components'
 
 import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
-import AddressSummaryCard from '../../components/AddressSummaryCard'
+import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import { MainContent } from '../../components/PageComponents/PageContainers'
@@ -188,6 +188,11 @@ const OverviewPage = () => {
 
 export default OverviewPage
 
+const addressSummaryCardsGapPx = 15
+const expandButtonLeftMarginPx = 20
+const collapsedaddressSummaryCardWidthPx = 8
+const scrollableCardsSectionPaddingPx = 71
+
 const Header = styled.header`
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
   background-position: bottom;
@@ -206,16 +211,22 @@ const Summaries = styled.div`
 
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
-  gap: var(--spacing-3);
+  gap: ${addressSummaryCardsGapPx}px;
   overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
   margin-left: calc(var(--spacing-2) * -1);
   padding-left: var(--spacing-4);
   align-items: center;
-  padding-bottom: 71px;
-  margin-bottom: -71px;
-  padding-top: 71px;
-  margin-top: -71px;
-  width: ${({ collapsed, totalAddresses }) => (collapsed ? `${totalAddresses * 8}px` : '100%')};
+  padding-bottom: ${scrollableCardsSectionPaddingPx}px;
+  margin-bottom: -${scrollableCardsSectionPaddingPx}px;
+  padding-top: ${scrollableCardsSectionPaddingPx}px;
+  margin-top: -${scrollableCardsSectionPaddingPx}px;
+  width: ${({ collapsed, totalAddresses }) =>
+    collapsed
+      ? `${totalAddresses * collapsedaddressSummaryCardWidthPx}px`
+      : `${
+          totalAddresses * (addressSummaryCardWidthPx + addressSummaryCardsGapPx) +
+          (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
+        }px`};
   transition: width 0.2s ease-out;
 `
 
@@ -231,6 +242,6 @@ const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; cli
 const ExpandButton = styled(Button)`
   flex-shrink: 0;
   background-color: ${({ theme }) => theme.bg.accent};
-  margin-left: 20px;
+  margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
 `
