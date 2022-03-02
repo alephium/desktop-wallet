@@ -92,7 +92,7 @@ const IconContainer = styled.div`
   }
 `
 
-const TextContainer = styled.p<{ wordBreak?: boolean; ellipsis?: boolean }>`
+const TextContainer = styled.div<{ wordBreak?: boolean; ellipsis?: boolean }>`
   padding: 0 var(--spacing-4);
   flex: 2;
   font-weight: var(--fontWeight-medium);
