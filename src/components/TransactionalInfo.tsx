@@ -16,28 +16,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
-interface LabelProps {
+import Amount from './Amount'
+
+interface TransactionalInfoProps {
+  type: 'out' | 'in' | 'pending'
+  content: string | bigint
   className?: string
-  color?: string
+  amount?: boolean
+  prefix?: string
 }
 
-let Label: FC<LabelProps> = ({ className, children }) => {
-  return <span className={className}>{children}</span>
-}
+const TransactionalInfo = ({ content, className, amount, prefix }: TransactionalInfoProps) => (
+  <div className={className}>
+    {prefix && <span>{prefix}</span>}
+    {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
+  </div>
+)
 
-Label = styled(Label)`
-  display: inline-block;
-  padding: 5px 8px;
-  color: ${({ color, theme }) => color || theme.font.primary}};
-  border-radius: 20px;
-  background-color: ${({ color, theme }) =>
-    tinycolor(color || theme.font.primary)
-      .setAlpha(0.2)
-      .toString()};
+export default styled(TransactionalInfo)`
+  color: ${({ type, theme }) => (type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid)};
+  text-align: center;
+  border-radius: 3px;
+  font-weight: var(--fontWeight-semiBold);
+  float: left;
+  white-space: nowrap;
 `
-
-export default Label

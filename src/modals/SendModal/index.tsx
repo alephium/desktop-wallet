@@ -19,20 +19,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from 'alephium-js'
 import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AnimatePresence } from 'framer-motion'
-import { Send } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useTheme } from 'styled-components'
 
-import Modal, { HeaderContent, HeaderLogo } from '../../components/Modal'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { useModalContext } from '../../contexts/modal'
+import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
-import ConsolidateUTXOsModal from './ConsolidateUTXOsModal'
-import SendModalCheckTransaction from './SendModalCheckTransaction'
-import SendModalTransactionForm from './SendModalTransactionForm'
+import CenteredModal from '../CenteredModal'
+import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
+import SendModalCheckTransaction from './CheckTransaction'
+import SendModalTransactionForm from './TransactionForm'
 
 type StepIndex = 1 | 2 | 3
 
@@ -45,12 +43,10 @@ export type SendTransactionData = {
 }
 
 interface SendModalProps {
-  title: string
   onClose: () => void
 }
 
-const SendModal = ({ title, onClose }: SendModalProps) => {
-  const theme = useTheme()
+const SendModal = ({ onClose }: SendModalProps) => {
   const {
     client,
     wallet,
@@ -61,7 +57,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
     currentNetwork
   } = useGlobalContext()
   const { setAddress } = useAddressesContext()
-  const { setModalTitle } = useModalContext()
+  const [title, setTitle] = useState('')
   const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<StepIndex>(1)
@@ -75,13 +71,13 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
 
   useEffect(() => {
     if (step === 1) {
-      setModalTitle('Send')
+      setTitle('Send')
     } else if (step === 2) {
-      setModalTitle('Info Check')
+      setTitle('Info Check')
     } else if (step === 3) {
-      setModalTitle('Password Check')
+      setTitle('Password Check')
     }
-  }, [setStep, setModalTitle, step])
+  }, [setStep, setTitle, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
@@ -224,12 +220,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
   }
 
   return (
-    <Modal title={title} onClose={onClose} isLoading={isLoading}>
-      <HeaderContent>
-        <HeaderLogo>
-          <Send color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
-        </HeaderLogo>
-      </HeaderContent>
+    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={<PaperPlaneSVG />}>
       {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
       {step === 2 && transactionData && fees && (
         <SendModalCheckTransaction
@@ -255,7 +246,7 @@ const SendModal = ({ title, onClose }: SendModalProps) => {
           />
         )}
       </AnimatePresence>
-    </Modal>
+    </CenteredModal>
   )
 }
 

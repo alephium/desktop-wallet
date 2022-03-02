@@ -26,13 +26,13 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
-import AccountRemovalModal from './AccountRemovalModal'
-import SecretPhraseModal from './SecretPhraseModal'
+import AccountRemovalModal from '../AccountRemovalModal'
+import SecretPhraseModal from '../SecretPhraseModal'
 
 const Storage = getStorage()
 
 const AccountsSettingsSection = () => {
-  const { currentUsername, wallet, lockWallet } = useGlobalContext()
+  const { currentAccountName, wallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [accountToRemove, setAccountToRemove] = useState<string>('')
 
@@ -43,10 +43,10 @@ const AccountsSettingsSection = () => {
   const handleRemoveAccount = (accountName: string) => {
     Storage.remove(accountName)
 
-    accountName === currentUsername ? lockWallet() : setAccountToRemove('')
+    accountName === currentAccountName ? lockWallet() : setAccountToRemove('')
   }
 
-  const usernames = Storage.list()
+  const accountNames = Storage.list()
 
   return (
     <>
@@ -60,14 +60,14 @@ const AccountsSettingsSection = () => {
         />
       )}
       <Section align="flex-start">
-        <h2>Account list ({usernames.length})</h2>
+        <h2>Account list ({accountNames.length})</h2>
         <BoxContainer>
-          {usernames.map((n) => {
+          {accountNames.map((n) => {
             return (
               <AccountItem
                 key={n}
                 accountName={n}
-                isCurrent={n === currentUsername}
+                isCurrent={n === currentAccountName}
                 onAccountDelete={(name) => setAccountToRemove(name)}
               />
             )
@@ -79,7 +79,7 @@ const AccountsSettingsSection = () => {
           <HorizontalDivider />
           <Section align="flex-start">
             <h2>Current account</h2>
-            <InfoBox label="Account name" text={currentUsername} />
+            <InfoBox label="Account name" text={currentAccountName} />
           </Section>
           <Section>
             <Button secondary onClick={lockWallet}>
@@ -88,7 +88,7 @@ const AccountsSettingsSection = () => {
             <Button secondary alert onClick={openSecretPhraseModal}>
               Show your secret phrase
             </Button>
-            <Button alert onClick={() => openRemoveAccountModal(currentUsername)}>
+            <Button alert onClick={() => openRemoveAccountModal(currentAccountName)}>
               Remove current account
             </Button>
           </Section>
@@ -125,6 +125,8 @@ const AccountItem = ({ accountName, isCurrent, onAccountDelete }: AccountItemPro
   )
 }
 
+export default AccountsSettingsSection
+
 const AccountItemContainer = styled.div`
   display: flex;
   align-items: center;
@@ -145,5 +147,3 @@ const CurrentAccountLabel = styled.span`
 `
 
 const AccountDeleteButton = styled(Button)``
-
-export default AccountsSettingsSection

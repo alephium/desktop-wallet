@@ -20,18 +20,18 @@ import { Edit3 } from 'lucide-react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import InfoBox from '../../components/InfoBox'
-import Modal from '../../components/Modal'
-import { Section } from '../../components/PageComponents/PageContainers'
-import PasswordConfirmation from '../../components/PasswordConfirmation'
-import { useGlobalContext } from '../../contexts/global'
+import InfoBox from '../components/InfoBox'
+import { Section } from '../components/PageComponents/PageContainers'
+import PasswordConfirmation from '../components/PasswordConfirmation'
+import { useGlobalContext } from '../contexts/global'
+import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const { wallet } = useGlobalContext()
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
   return (
-    <Modal title="Secret phrase" onClose={onClose} focusMode>
+    <CenteredModal title="Secret phrase" onClose={onClose} focusMode>
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
@@ -50,7 +50,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
           <PhraseBox>{wallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
         </Section>
       )}
-    </Modal>
+    </CenteredModal>
   )
 }
 

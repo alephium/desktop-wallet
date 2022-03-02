@@ -19,13 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Codesandbox } from 'lucide-react'
 import styled, { useTheme } from 'styled-components'
 
-import Amount from '../../components/Amount'
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
-import { HeaderContent, HeaderLogo } from '../../components/Modal'
-import Modal from '../../components/Modal'
-import { Section } from '../../components/PageComponents/PageContainers'
-import Spinner from '../../components/Spinner'
+import Amount from '../components/Amount'
+import Button from '../components/Button'
+import InfoBox from '../components/InfoBox'
+import { Section } from '../components/PageComponents/PageContainers'
+import Spinner from '../components/Spinner'
+import CenteredModal, { HeaderContent, HeaderLogo } from './CenteredModal'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void
@@ -37,7 +36,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
   const theme = useTheme()
 
   return (
-    <Modal title="Consolidate UTXOs" onClose={onClose}>
+    <CenteredModal title="Consolidate UTXOs" onClose={onClose}>
       <HeaderContent>
         <HeaderLogo>
           <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
@@ -57,7 +56,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
           </Button>
         </Section>
       </HeaderContent>
-    </Modal>
+    </CenteredModal>
   )
 }
 

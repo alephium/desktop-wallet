@@ -20,18 +20,18 @@ import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_G
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import ExpandableSection from '../../components/ExpandableSection'
-import InfoBox from '../../components/InfoBox'
-import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
-import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
-import Select from '../../components/Inputs/Select'
-import Toggle from '../../components/Inputs/Toggle'
-import Modal, { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { Section } from '../../components/PageComponents/PageContainers'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-import { getRandomLabelColor } from '../../utils/colors'
+import ExpandableSection from '../components/ExpandableSection'
+import InfoBox from '../components/InfoBox'
+import ColoredLabelInput from '../components/Inputs/ColoredLabelInput'
+import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
+import Select from '../components/Inputs/Select'
+import Toggle from '../components/Inputs/Toggle'
+import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
+import { Section } from '../components/PageComponents/PageContainers'
+import { Address, useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
+import { getRandomLabelColor } from '../utils/colors'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface NewAddressModalProps {
   title: string
@@ -116,7 +116,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   }
 
   return (
-    <Modal title={title} onClose={onClose}>
+    <CenteredModal title={title} onClose={onClose}>
       <Section>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         {singleAddress && (
@@ -155,10 +155,10 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         </ModalFooterButton>
         <ModalFooterButton onClick={onGenerateClick}>Generate</ModalFooterButton>
       </ModalFooterButtons>
-    </Modal>
+    </CenteredModal>
   )
 }
 
-const generateGroupSelectOption = (groupNumber: number) => ({ value: groupNumber, label: `Group ${groupNumber}` })
-
 export default NewAddressModal
+
+const generateGroupSelectOption = (groupNumber: number) => ({ value: groupNumber, label: `Group ${groupNumber}` })

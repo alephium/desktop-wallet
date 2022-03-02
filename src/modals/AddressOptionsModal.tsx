@@ -20,17 +20,16 @@ import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import Amount from '../../components/Amount'
-import ColoredLabelInput from '../../components/Inputs/ColoredLabelInput'
-import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
-import Toggle from '../../components/Inputs/Toggle'
-import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
-import Modal from '../../components/Modal'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-import { getRandomLabelColor } from '../../utils/colors'
+import Amount from '../components/Amount'
+import ColoredLabelInput from '../components/Inputs/ColoredLabelInput'
+import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
+import Toggle from '../components/Inputs/Toggle'
+import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
+import { Address, useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
+import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
+import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface AddressOptionsModal {
   address: Address
@@ -66,12 +65,12 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
 
   let mainAddressMessage = 'Default address for sending transactions.'
   mainAddressMessage += isMainAddressToggleEnabled
-    ? ` Note that if activated, "${mainAddress.displayName()}" will not be the main address anymore.`
+    ? ` Note that if activated, "${mainAddress.getName()}" will not be the main address anymore.`
     : ' To remove this address from being the main address, you must set another one as main first.'
 
   return (
     <>
-      <Modal title="Address options" subtitle={address.displayName()} onClose={onClose}>
+      <ModalCenteded title="Address options" subtitle={address.getName()} onClose={onClose}>
         <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
         <HorizontalDivider narrow />
         <KeyValueInput
@@ -111,7 +110,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           </ModalFooterButton>
           <ModalFooterButton onClick={onGenerateClick}>Save</ModalFooterButton>
         </ModalFooterButtons>
-      </Modal>
+      </ModalCenteded>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressSweepModalOpen && (
           <AddressSweepModal
@@ -125,10 +124,11 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   )
 }
 
+export default AddressOptionsModal
+
 const SweepButton = styled.div``
 
 const AvailableAmount = styled.div`
   font-size: 10px;
   color: ${({ theme }) => theme.font.secondary};
 `
-export default AddressOptionsModal

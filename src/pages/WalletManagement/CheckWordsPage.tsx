@@ -46,7 +46,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
-  const { mnemonic, plainWallet, password, username } = useWalletContext()
+  const { mnemonic, plainWallet, password, accountName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
 
@@ -185,7 +185,7 @@ const CheckWordsPage = () => {
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
-      Storage.save(username, walletEncrypted)
+      Storage.save(accountName, walletEncrypted)
       setWallet(plainWallet)
       return true
     }

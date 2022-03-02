@@ -28,21 +28,27 @@ import Paragraph from './Paragraph'
 const Storage = getStorage()
 
 interface PasswordConfirmationProps {
+  onCorrectPasswordEntered: (password: string) => void
   text?: string
   buttonText?: string
-  onCorrectPasswordEntered: () => void
+  accountName?: string
 }
 
-const PasswordConfirmation = ({ text, buttonText, onCorrectPasswordEntered }: PasswordConfirmationProps) => {
-  const { currentUsername, setSnackbarMessage } = useGlobalContext()
+const PasswordConfirmation = ({
+  text,
+  buttonText,
+  onCorrectPasswordEntered,
+  accountName
+}: PasswordConfirmationProps) => {
+  const { currentAccountName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 
   const validatePassword = () => {
-    const walletEncrypted = Storage.load(currentUsername)
+    const walletEncrypted = Storage.load(accountName || currentAccountName)
 
     try {
       if (walletOpen(password, walletEncrypted)) {
-        onCorrectPasswordEntered()
+        onCorrectPasswordEntered(password)
       }
     } catch (e) {
       setSnackbarMessage({ text: 'Invalid password', type: 'alert' })

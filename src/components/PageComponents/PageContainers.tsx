@@ -20,7 +20,7 @@ import { motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { appHeaderHeight, deviceBreakPoints, walletSidebarWidth } from '../../style/globalStyles'
+import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
 import Tooltip from '../Tooltip'
 
 interface MainPanelProps {
@@ -130,7 +130,7 @@ export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignm
   display: flex;
   align-items: ${({ align }) => align};
   flex-direction: column;
-  min-width: 400px;
+  min-width: 280px;
 
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
@@ -158,12 +158,12 @@ export let MainContent: FC = ({ children, ...props }) => (
 
 MainContent = styled(MainContent)`
   position: absolute;
-  left: ${walletSidebarWidth}px;
+  left: ${walletSidebarWidthPx}px;
   right: 0;
   display: flex;
   flex-direction: column;
   padding: 56px;
-  padding-top: calc(10px + ${appHeaderHeight});
+  padding-top: ${appHeaderHeightPx}px;
   background-color: ${({ theme }) => theme.bg.secondary};
   min-height: 100vh;
 

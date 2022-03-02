@@ -21,14 +21,14 @@ import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import Amount from '../../components/Amount'
-import InfoBox from '../../components/InfoBox'
-import AddressSelect from '../../components/Inputs/AddressSelect'
-import Modal, { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-import { getHumanReadableError } from '../../utils/api'
+import Amount from '../components/Amount'
+import InfoBox from '../components/InfoBox'
+import AddressSelect from '../components/Inputs/AddressSelect'
+import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
+import { Address, useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
+import { getHumanReadableError } from '../utils/api'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type SweepAddress = Address | undefined
 
@@ -112,7 +112,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   if (!sweepAddresses.from || !sweepAddresses.to) return null
 
   return (
-    <Modal title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
+    <CenteredModal title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
       <Content>
         <AddressSelect
           placeholder="From address"
@@ -134,9 +134,9 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         />
         <InfoBox Icon={Info} contrast noBorders>
           This operation will sweep all funds from{' '}
-          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.displayName()}</ColoredWord> and
+          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord> and
           transfer them to{' '}
-          <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.displayName()}</ColoredWord>.
+          <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.getName()}</ColoredWord>.
         </InfoBox>
         <Fee>
           Fee
@@ -152,7 +152,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           {sweepAddress ? 'Sweep' : 'Consolidate'}
         </ModalFooterButton>
       </ModalFooterButtons>
-    </Modal>
+    </CenteredModal>
   )
 }
 

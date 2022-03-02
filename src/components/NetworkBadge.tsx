@@ -19,24 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
+import Badge from './Badge'
 
-const NetworkBadge = () => {
+const NetworkBadge = ({ className }: { className?: string }) => {
   const { currentNetwork } = useGlobalContext()
 
-  return <BadgeContainer>{currentNetwork}</BadgeContainer>
+  return <Badge className={className}>{currentNetwork}</Badge>
 }
 
-const BadgeContainer = styled.div`
-  display: flex;
-  padding: 0 var(--spacing-2);
-  height: var(--badgeHeight);
-  justify-content: center;
-  align-items: center;
+export default styled(NetworkBadge)`
   color: ${({ theme }) => theme.font.secondary};
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: calc(var(--badgeHeight) * 2);
   font-weight: var(--fontWeight-semiBold);
 `
-
-export default NetworkBadge

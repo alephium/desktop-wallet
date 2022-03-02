@@ -19,13 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
-import { loadStoredSettings } from '../utils/settings'
 
 const Address = ({ hash }: { hash: string }) => {
   const {
-    network: { explorerUrl }
-  } = loadStoredSettings()
+    settings: {
+      network: { explorerUrl }
+    }
+  } = useGlobalContext()
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()

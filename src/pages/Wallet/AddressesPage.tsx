@@ -25,9 +25,9 @@ import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import Amount from '../../components/Amount'
+import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
-import Label from '../../components/Label'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
@@ -35,9 +35,9 @@ import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import AddressSweepModal from '../../modals/AddressSweepModal'
+import NewAddressModal from '../../modals/NewAddressModal'
 import { openInWebBrowser } from '../../utils/misc'
-import AddressSweepModal from './AddressSweepModal'
-import NewAddressModal from './NewAddressModal'
 
 const minTableColumnWidth = '105px'
 
@@ -93,7 +93,7 @@ const AddressesPage = () => {
                 {address.settings.isMain && <MainAddressLabel />}
               </TableCell>
               <TableCell>
-                {address.settings.label ? <Label color={address.settings.color}>{address.labelDisplay()}</Label> : '-'}
+                {address.settings.label ? <Badge color={address.settings.color}>{address.getLabelName()}</Badge> : '-'}
               </TableCell>
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               <TableCell>{address.details?.txNumber ?? 0}</TableCell>

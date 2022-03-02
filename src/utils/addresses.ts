@@ -36,16 +36,16 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const loadStoredAddressesMetadataOfAccount = (username: string): AddressMetadata[] => {
-  const data = localStorage.getItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`)
+export const loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
+  const data = localStorage.getItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
 
   if (data === null) return []
 
   return JSON.parse(data)
 }
 
-export const storeAddressMetadataOfAccount = (username: string, index: number, settings: AddressSettings) => {
-  const addressesMetadata = loadStoredAddressesMetadataOfAccount(username)
+export const storeAddressMetadataOfAccount = (accountName: string, index: number, settings: AddressSettings) => {
+  const addressesMetadata = loadStoredAddressesMetadataOfAccount(accountName)
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
@@ -57,5 +57,5 @@ export const storeAddressMetadataOfAccount = (username: string, index: number, s
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(`${username}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
+  localStorage.setItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
 }

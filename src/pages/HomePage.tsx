@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, walletOpen } from 'alephium-js'
 import { motion } from 'framer-motion'
 import React, { useCallback, useState } from 'react'
 import { useHistory } from 'react-router'
@@ -36,20 +35,17 @@ import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean
-  usernames: string[]
+  accountNames: string[]
 }
 
-const Storage = getStorage()
-
-const HomePage = ({ hasWallet, usernames }: HomeProps) => {
-  const history = useHistory()
+const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader onSettingsClick={() => history.push('/settings')} />
+      <AppHeader />
       <SideBar />
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
@@ -65,7 +61,7 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
               <Paragraph centered secondary>
                 Please choose an account and enter your password to continue.
               </Paragraph>
-              <Login onLinkClick={displayInitialActions} usernames={usernames} />
+              <Login onLinkClick={displayInitialActions} accountNames={accountNames} />
             </>
           )}
           {showInitialActions && (
@@ -83,49 +79,31 @@ const HomePage = ({ hasWallet, usernames }: HomeProps) => {
 // === Components
 
 interface LoginProps {
-  usernames: string[]
+  accountNames: string[]
   onLinkClick: () => void
 }
 
-const Login = ({ usernames, onLinkClick }: LoginProps) => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const { setWallet, setCurrentUsername, setSnackbarMessage } = useGlobalContext()
+const Login = ({ accountNames, onLinkClick }: LoginProps) => {
+  const [credentials, setCredentials] = useState({ accountName: '', password: '' })
+  const { login } = useGlobalContext()
   const history = useHistory()
 
-  const login = async (callback: () => void) => {
-    const walletEncrypted = Storage.load(credentials.username)
-    if (walletEncrypted === null) {
-      setSnackbarMessage({ text: 'Unknown account name', type: 'info' })
-    } else {
-      try {
-        const wallet = walletOpen(credentials.password, walletEncrypted)
-        if (wallet) {
-          setWallet(wallet)
-          setCurrentUsername(credentials.username)
-          callback()
-        }
-      } catch (e) {
-        setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
-      }
-    }
-  }
-
-  const handleCredentialsChange = useCallback((type: 'username' | 'password', value: string) => {
+  const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(() => history.push('/wallet/overview'))
+    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'))
   }
 
   return (
     <>
-      <Section inList>
+      <SectionStyled inList>
         <Select
           placeholder="Account"
-          options={usernames.map((u) => ({ label: u, value: u }))}
-          onValueChange={(value) => handleCredentialsChange('username', value?.value || '')}
+          options={accountNames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
           title="Select an account"
           id="account"
         />
@@ -137,12 +115,12 @@ const Login = ({ usernames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-      </Section>
-      <Section inList>
-        <Button onClick={handleLogin} submit disabled={!credentials.username || !credentials.password}>
+      </SectionStyled>
+      <SectionStyled inList>
+        <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
           Login
         </Button>
-      </Section>
+      </SectionStyled>
       <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
     </>
   )
@@ -198,6 +176,10 @@ const SwitchLink = styled(Paragraph)`
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
   }
+`
+
+const SectionStyled = styled(Section)`
+  min-width: 400px;
 `
 
 export default HomePage

@@ -18,70 +18,64 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { FC } from 'react'
-import styled from 'styled-components'
+import { FC, ReactNode } from 'react'
+import styled, { css } from 'styled-components'
 
-import { ModalContextProvider, useModalContext } from '../contexts/modal'
-import Button from './Button'
-import { Section } from './PageComponents/PageContainers'
-import PanelTitle, { TitleContainer } from './PageComponents/PanelTitle'
-import Spinner from './Spinner'
+import Button from '../components/Button'
+import { Section } from '../components/PageComponents/PageContainers'
+import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
+import Spinner from '../components/Spinner'
+import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
-interface ModalProps {
-  title: string
+interface CenteredModalProps extends ModalContainerProps {
+  title?: string
   subtitle?: string
-  onClose: () => void
-  focusMode?: boolean
   isLoading?: boolean
+  header?: ReactNode
 }
 
-export const Modal: FC<ModalProps> = ({ children, title, subtitle, onClose, focusMode, isLoading }) => (
-  <ModalContextProvider title={title} subtitle={subtitle} onClose={onClose}>
-    <ModalContents focusMode={focusMode} isLoading={isLoading}>
-      {children}
-    </ModalContents>
-  </ModalContextProvider>
-)
-
-const ModalContents: FC<{ focusMode?: boolean; isLoading?: boolean }> = ({ children, focusMode, isLoading }) => {
-  const { modalTitle, modalSubtitle, onModalClose } = useModalContext()
-
-  return (
-    <ModalContainer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+const CenteredModal: FC<CenteredModalProps> = ({
+  title,
+  subtitle,
+  onClose,
+  focusMode,
+  isLoading,
+  header,
+  children
+}) => (
+  <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
+    <CenteredBox
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <StyledModal
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
-        <ModalHeader>
+      <ModalHeader contrast={!!header}>
+        <TitleRow>
           <PanelTitle smaller useLayoutId={false}>
-            {modalTitle}
-            {modalSubtitle && <ModalSubtitle>{modalSubtitle}</ModalSubtitle>}
+            {title}
+            {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
           </PanelTitle>
-          <CloseButton squared transparent onClick={onModalClose}>
+          <CloseButton squared transparent onClick={onClose}>
             <X />
           </CloseButton>
-        </ModalHeader>
-        <ModalContent>{children}</ModalContent>
-        {isLoading && (
-          <>
-            <ModalBackdrop light />
-            <ModalLoadingSpinner>
-              <Spinner />
-            </ModalLoadingSpinner>
-          </>
-        )}
-      </StyledModal>
-      <ModalBackdrop onClick={onModalClose} focusMode={focusMode} />
-    </ModalContainer>
-  )
-}
+        </TitleRow>
+        {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
+      </ModalHeader>
+      <ModalContent>{children}</ModalContent>
+      {isLoading && (
+        <>
+          <ModalBackdrop light />
+          <ModalLoadingSpinner>
+            <Spinner />
+          </ModalLoadingSpinner>
+        </>
+      )}
+    </CenteredBox>
+  </ModalContainer>
+)
+
+export default CenteredModal
 
 export const HeaderContent = styled(Section)`
   flex: 0;
@@ -96,36 +90,7 @@ export const HeaderLogo = styled.div`
   width: 100%;
 `
 
-const ModalContainer = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  padding: var(--spacing-4);
-  z-index: 1000;
-`
-
-const ModalBackdrop = styled.div<{ focusMode?: boolean; light?: boolean }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background-color: ${({ theme, focusMode, light }) =>
-    theme.name === 'light'
-      ? focusMode
-        ? 'rgba(0, 0, 0, 0.8)'
-        : 'rgba(0, 0, 0, 0.15)'
-      : focusMode
-      ? 'rgba(0, 0, 0, 0.9)'
-      : light
-      ? 'rgba(0, 0, 0, 0.15)'
-      : 'rgba(0, 0, 0, 0.6)'};
-`
-
-const StyledModal = styled(motion.div)`
+const CenteredBox = styled(motion.div)`
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -144,10 +109,26 @@ const StyledModal = styled(motion.div)`
   }
 `
 
-const ModalHeader = styled.header`
+export const ModalHeader = styled.header<{ contrast?: boolean }>`
+  margin-bottom: var(--spacing-3);
+
+  ${({ contrast }) =>
+    contrast &&
+    css`
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+    `}
+`
+
+const ModalHeaderContent = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+`
+
+const TitleRow = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-3);
 `
 
 const CloseButton = styled(Button)`
@@ -193,5 +174,3 @@ const ModalLoadingSpinner = styled.div`
   justify-content: center;
   align-items: center;
 `
-
-export default Modal

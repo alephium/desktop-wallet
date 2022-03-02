@@ -24,8 +24,8 @@ export interface WalletContextType {
   setPlainWallet: Dispatch<SetStateAction<Wallet | undefined>>
   mnemonic: string
   setMnemonic: Dispatch<SetStateAction<string>>
-  username: string
-  setUsername: Dispatch<SetStateAction<string>>
+  accountName: string
+  setAccountName: Dispatch<SetStateAction<string>>
   password: string
   setPassword: Dispatch<SetStateAction<string>>
 }
@@ -33,8 +33,8 @@ export interface WalletContextType {
 export const initialWalletContext: WalletContextType = {
   mnemonic: '',
   setMnemonic: () => null,
-  username: '',
-  setUsername: () => null,
+  accountName: '',
+  setAccountName: () => null,
   password: '',
   setPassword: () => null,
   setPlainWallet: () => null
@@ -43,14 +43,14 @@ export const initialWalletContext: WalletContextType = {
 export const WalletContext = createContext<WalletContextType>(initialWalletContext)
 
 export const WalletContextProvider: FC = ({ children }) => {
-  const [username, setUsername] = useState('')
+  const [accountName, setAccountName] = useState('')
   const [password, setPassword] = useState('')
   const [plainWallet, setPlainWallet] = useState<Wallet>()
   const [mnemonic, setMnemonic] = useState('')
 
   return (
     <WalletContext.Provider
-      value={{ username, setUsername, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
+      value={{ accountName, setAccountName, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
     >
       {children}
     </WalletContext.Provider>

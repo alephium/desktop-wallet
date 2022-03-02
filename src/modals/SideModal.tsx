@@ -16,17 +16,36 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
+import { FC } from 'react'
 import styled from 'styled-components'
 
-export const PageH1 = styled.h1`
-  font-size: 18px;
-  font-weight: var(--fontWeight-medium);
-  margin: 0;
-`
+import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
-export const PageH2 = styled.h2`
-  font-size: 14px;
-  font-weight: var(--fontWeight-medium);
-  margin-top: 32px;
-  margin-bottom: var(--spacing-5);
+const SideModal: FC<ModalContainerProps> = ({ onClose, children }) => (
+  <ModalContainer onClose={onClose}>
+    <Sidebar
+      initial={{ x: '100%' }}
+      animate={{ x: 0 }}
+      exit={{ x: '100%' }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      {children}
+    </Sidebar>
+  </ModalContainer>
+)
+
+export default SideModal
+
+const Sidebar = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  width: 100%;
+  max-width: 476px;
+  height: 100vh;
+  background-color: ${({ theme }) => theme.bg.primary};
+  z-index: 1;
+  position: relative;
+  overflow: auto;
 `

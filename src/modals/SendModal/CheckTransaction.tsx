@@ -20,8 +20,8 @@ import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
 import styled from 'styled-components'
 
 import InfoBox from '../../components/InfoBox'
-import { ModalFooterButton, ModalFooterButtons } from '../../components/Modal'
-import { SendTransactionData } from './SendModal'
+import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
+import { SendTransactionData } from '.'
 
 interface SendModalCheckTransactionProps {
   data: SendTransactionData

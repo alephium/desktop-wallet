@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import Label from '../Label'
+import Badge from '../Badge'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
@@ -55,7 +55,7 @@ let ColoredLabelInput = ({ placeholder, disabled, onChange, value, className, id
         id={id}
         color={color}
       />
-      {label && <LabelStyled color={color}>{label}</LabelStyled>}
+      {label && <BadgeStyled color={color}>{label}</BadgeStyled>}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
@@ -78,7 +78,7 @@ const InputStyled = styled(Input)`
   }
 `
 
-const LabelStyled = styled(Label)`
+const BadgeStyled = styled(Badge)`
   position: absolute;
   left: 12px;
 `

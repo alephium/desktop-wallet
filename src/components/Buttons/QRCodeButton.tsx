@@ -31,14 +31,13 @@ interface QRCodeButtonProps {
 const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => (
   <>
     <QRCodeIcon className={className} data-tip data-for="qr-code-tooltip" data-event="click" size={15} />
-    <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click">
+    <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click" place="right">
       <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
     </Tooltip>
   </>
 )
 
 const QRCodeIcon = styled(QrCode)`
-  margin-left: 10px;
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};
 `

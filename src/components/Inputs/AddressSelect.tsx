@@ -22,10 +22,10 @@ import { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import Amount from '../Amount'
+import Badge from '../Badge'
 import InfoBox from '../InfoBox'
-import Label from '../Label'
-import Modal, { ModalFooterButton, ModalFooterButtons } from '../Modal'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
@@ -89,7 +89,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           {address?.settings.label && (
-            <LabelStyled color={address?.settings.color}>{address?.labelDisplay()}</LabelStyled>
+            <BadgeStyled color={address?.settings.color}>{address?.getLabelName()}</BadgeStyled>
           )}
           {address?.hash}
         </ClickableInput>
@@ -139,14 +139,14 @@ const AddressSelectModal = ({
   }
 
   return (
-    <Modal title="Addresses" onClose={onClose}>
+    <CenteredModal title="Addresses" onClose={onClose}>
       <Description>{title}</Description>
       <div>
         {displayedOptions.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && <Label color={address?.settings.color}>{address?.labelDisplay()}</Label>}
-            {address.shortHash()}
+            {address?.settings.label && <Badge color={address?.settings.color}>{address?.getLabelName()}</Badge>}
+            {address.shortHash}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
         ))}
@@ -168,7 +168,7 @@ const AddressSelectModal = ({
           Select
         </ModalFooterButton>
       </ModalFooterButtons>
-    </Modal>
+    </CenteredModal>
   )
 }
 
@@ -221,7 +221,7 @@ const ClickableInput = styled.div<InputProps>`
   align-items: center;
 `
 
-const LabelStyled = styled(Label)`
+const BadgeStyled = styled(Badge)`
   margin-right: var(--spacing-2);
 `
 

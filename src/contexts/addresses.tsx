@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
+import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS, Wallet } from 'alephium-js'
 import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -48,6 +48,7 @@ export type AddressHash = string
 
 export class Address {
   readonly hash: AddressHash
+  readonly shortHash: string
   readonly publicKey: string
   readonly privateKey: string
   readonly group: number
@@ -66,6 +67,7 @@ export class Address {
 
   constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
     this.hash = hash
+    this.shortHash = `${this.hash.substring(0, 10)}...`
     this.publicKey = publicKey
     this.privateKey = privateKey
     this.group = addressToGroup(hash, TOTAL_NUMBER_OF_GROUPS)
@@ -84,16 +86,12 @@ export class Address {
     this.availableBalance = 0n
   }
 
-  displayName() {
-    return this.settings.label || this.shortHash()
+  getName() {
+    return this.settings.label || this.shortHash
   }
 
-  shortHash() {
-    return `${this.hash.substring(0, 10)}...`
-  }
-
-  labelDisplay() {
-    return `${this.settings.isMain ? '★ ' : ''}${this.displayName()}`
+  getLabelName() {
+    return `${this.settings.isMain ? '★ ' : ''}${this.getName()}`
   }
 
   addPendingTransaction(transaction: SimpleTx) {
@@ -152,8 +150,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentUsername, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
+  const { currentAccountName, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
   const previousClient = useRef<Client>()
+  const previousWallet = useRef<Wallet | undefined>(wallet)
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
@@ -196,7 +195,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const updateAddressSettings = (address: Address, settings: AddressSettings) => {
-    storeAddressMetadataOfAccount(currentUsername, address.index, settings)
+    storeAddressMetadataOfAccount(currentAccountName, address.index, settings)
     address.settings = settings
     setAddress(address)
   }
@@ -261,19 +260,29 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     async (newAddress: Address) => {
-      storeAddressMetadataOfAccount(currentUsername, newAddress.index, newAddress.settings)
+      storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
       await fetchAndStoreAddressesData([newAddress])
     },
-    [currentUsername, fetchAndStoreAddressesData]
+    [currentAccountName, fetchAndStoreAddressesData]
   )
+
+  // Clean state when locking the wallet or changing accounts
+  useEffect(() => {
+    if (wallet === undefined || wallet !== previousWallet.current) {
+      console.log('🧽 Cleaning state.')
+      setAddressesState(new Map())
+      previousClient.current = undefined
+      previousWallet.current = wallet
+    }
+  }, [wallet])
 
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
       console.log('🥇 Initializing current network addresses')
-      if (!currentUsername || !wallet) return
+      if (!currentAccountName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentUsername)
+      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
 
       if (addressesMetadata.length === 0) {
         await saveNewAddress(
@@ -294,31 +303,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
     }
 
-    if (
-      wallet &&
-      (addressesState.size === 0 || addressesOfCurrentNetwork.length === 0) &&
-      previousClient.current !== client
-    ) {
+    if (wallet && (previousClient.current !== client || previousWallet.current !== wallet)) {
       previousClient.current = client
+      previousWallet.current = wallet
       initializeCurrentNetworkAddresses()
     }
   }, [
     addressesState.size,
     client,
-    currentUsername,
+    currentAccountName,
     addressesOfCurrentNetwork,
     fetchAndStoreAddressesData,
     saveNewAddress,
     wallet
   ])
-
-  // Clean state when locking the wallet
-  useEffect(() => {
-    if (wallet === undefined) {
-      console.log('🧽 Cleaning state.')
-      setAddressesState(new Map())
-    }
-  }, [wallet])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

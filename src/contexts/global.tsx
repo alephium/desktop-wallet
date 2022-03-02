@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Wallet } from 'alephium-js'
+import { getStorage, Wallet, walletOpen } from 'alephium-js'
 import { merge } from 'lodash'
 import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
@@ -25,21 +25,30 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import { createClient } from '../utils/api-clients'
 import {
+  deprecatedSettingsExist,
   getNetworkName,
-  loadStoredSettings,
+  loadSettings,
+  migrateDeprecatedSettings,
   NetworkType,
-  saveStoredSettings,
   Settings,
+  storeSettings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings
 } from '../utils/settings'
 
+let localStorageSettings = loadSettings()
+
+if (deprecatedSettingsExist()) {
+  localStorageSettings = migrateDeprecatedSettings()
+}
+
 export interface GlobalContextProps {
-  currentUsername: string
-  setCurrentUsername: (username: string) => void
+  currentAccountName: string
+  setCurrentAccountName: (accountName: string) => void
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
+  login: (accountName: string, password: string, callback: () => void) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -52,13 +61,14 @@ export interface GlobalContextProps {
 export type Client = AsyncReturnType<typeof createClient>
 
 export const initialGlobalContext: GlobalContextProps = {
-  currentUsername: '',
-  setCurrentUsername: () => null,
+  currentAccountName: '',
+  setCurrentAccountName: () => null,
   wallet: undefined,
   setWallet: () => null,
   lockWallet: () => null,
+  login: () => null,
   client: undefined,
-  settings: loadStoredSettings(),
+  settings: localStorageSettings,
   updateSettings: () => null,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
@@ -68,19 +78,22 @@ export const initialGlobalContext: GlobalContextProps = {
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
 
+const Storage = getStorage()
+
 export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<GlobalContextProps> }> = ({
   children,
   overrideContextValue
 }) => {
   const [wallet, setWallet] = useState<Wallet>()
-  const [currentUsername, setCurrentUsername] = useState('')
+  const [currentAccountName, setCurrentAccountName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
-  const [settings, setSettings] = useState<Settings>(loadStoredSettings())
+  const [settings, setSettings] = useState<Settings>(localStorageSettings)
   const [isClientLoading, setIsClientLoading] = useState(false)
+  const previousNodeHost = useRef('')
+  const previousExplorerAPIHost = useRef('')
 
   const currentNetwork = getNetworkName(settings.network)
-  const previousNetwork = useRef<NetworkType>()
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -89,16 +102,31 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }
 
   const lockWallet = () => {
-    setCurrentUsername('')
+    setCurrentAccountName('')
     setWallet(undefined)
+  }
+
+  const login = async (accountName: string, password: string, callback: () => void) => {
+    const walletEncrypted = Storage.load(accountName)
+    if (!walletEncrypted) {
+      setSnackbarMessage({ text: 'Unknown account name', type: 'alert' })
+      return
+    }
+    try {
+      const wallet = walletOpen(password, walletEncrypted)
+      if (!wallet) return
+      setWallet(wallet)
+      setCurrentAccountName(accountName)
+      callback()
+    } catch (e) {
+      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+    }
   }
 
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   useEffect(() => {
     const getClient = async () => {
-      if (previousNetwork.current === currentNetwork) return
-
       setIsClientLoading(true)
 
       const clientResp = await createClient(settings.network)
@@ -112,31 +140,38 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           type: 'info',
           duration: 4000
         })
-
-        previousNetwork.current = currentNetwork
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
       }
       setIsClientLoading(false)
     }
 
-    getClient()
+    if (
+      settings.network &&
+      (previousNodeHost.current !== settings.network.nodeHost ||
+        previousExplorerAPIHost.current !== settings.network.explorerApiHost)
+    ) {
+      getClient()
+      previousNodeHost.current = settings.network.nodeHost
+      previousExplorerAPIHost.current = settings.network.explorerApiHost
+    }
   }, [currentNetwork, setSnackbarMessage, settings.network])
 
   // Save settings to local storage
   useEffect(() => {
-    saveStoredSettings(settings)
+    storeSettings(settings)
   }, [settings])
 
   return (
     <GlobalContext.Provider
       value={merge(
         {
-          currentUsername,
-          setCurrentUsername,
+          currentAccountName,
+          setCurrentAccountName,
           wallet,
           setWallet,
           lockWallet,
+          login,
           client,
           snackbarMessage,
           setSnackbarMessage,

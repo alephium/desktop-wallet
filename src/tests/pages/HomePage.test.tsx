@@ -31,7 +31,7 @@ jest.mock('react-router', () => ({
 }))
 
 it('welcomes the new user and displays initial actions', async () => {
-  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} usernames={[]} />))
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} accountNames={[]} />))
 
   const main = screen.getByRole('main')
   expect(main).toHaveTextContent('Welcome!')
@@ -43,7 +43,7 @@ it('welcomes the new user and displays initial actions', async () => {
 })
 
 it('welcomes the user back and displays the login form', async () => {
-  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} usernames={['John Doe']} />))
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} accountNames={['John Doe']} />))
 
   const main = screen.getByRole('main')
   expect(main).toHaveTextContent('Welcome back!')
@@ -58,7 +58,7 @@ it('welcomes the user back and displays the login form', async () => {
 })
 
 it('navigates correctly between "New account" and login pages', async () => {
-  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} usernames={['John Doe']} />))
+  await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} accountNames={['John Doe']} />))
 
   const main = screen.getByRole('main')
 
@@ -75,7 +75,7 @@ it('navigates correctly between "New account" and login pages', async () => {
 
 describe('Button correctly links to', () => {
   beforeEach(async () => {
-    await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} usernames={[]} />))
+    await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={false} accountNames={[]} />))
   })
 
   it('the new wallet creation page', () => {

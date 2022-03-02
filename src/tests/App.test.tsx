@@ -86,7 +86,7 @@ it('should lock the wallet when idle for too long after successful login', async
   fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
   // 2. Check that we have successfully logged in
-  expect(screen.getByText('Account: Account 1')).toBeInTheDocument()
+  expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
   // 3. Advance time so that the interval that checks if we need to lock out runs
   act(() => {
@@ -99,7 +99,7 @@ it('should lock the wallet when idle for too long after successful login', async
   act(() => {
     jest.runOnlyPendingTimers()
   })
-  expect(screen.getByText('Account: Account 1')).toBeInTheDocument()
+  expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
   // 5. Move the mouse
   act(() => {
@@ -111,7 +111,7 @@ it('should lock the wallet when idle for too long after successful login', async
   act(() => {
     jest.runOnlyPendingTimers()
   })
-  expect(screen.getByText('Account: Account 1')).toBeInTheDocument()
+  expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
   // 8. Finally, advance time without any interaction and expect to be locked out
   jest.setSystemTime(new Date(new Date().getTime() + 4 * 60 * 1000))

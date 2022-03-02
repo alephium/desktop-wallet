@@ -22,9 +22,9 @@ import { isElectron } from '../utils/misc'
 import resets from './resets'
 import tags from './tags'
 
-export const appHeaderHeight = '50px'
+export const appHeaderHeightPx = 60
 
-export const walletSidebarWidth = 400
+export const walletSidebarWidthPx = 280
 
 const extensionWindowDimensions = `
   height: 600px;
@@ -58,6 +58,7 @@ export const GlobalStyle = createGlobalStyle`
 
     --radius-small: 4px;
     --radius: 7px;
+    --radius-medium: 9px;
     --radius-big: 14px;
     --radius-full: 100%;
 
@@ -67,7 +68,6 @@ export const GlobalStyle = createGlobalStyle`
 
     --inputHeight: 46px;
     --toggleHeight: 30px;
-    --badgeHeight: 30px;
   }
 
   html {
