@@ -16,27 +16,71 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
+import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 
 import Button from '../../components/Button'
+import ExpandableSection from '../../components/ExpandableSection'
+import InfoBox from '../../components/InfoBox'
+import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
+import Toggle from '../../components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
+import { Address, useAddressesContext } from '../../contexts/addresses'
+import { useGlobalContext } from '../../contexts/global'
+import { getRandomLabelColor } from '../../utils/colors'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
+import { openInWebBrowser } from '../../utils/misc'
 
 // This is shown when a user creates or imports a wallet
 
 const WalletWelcomePage = () => {
-  const { width, height } = useWindowSize()
+  const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
+  const { wallet } = useGlobalContext()
+  const { width, height } = useWindowSize()
   const history = useHistory()
+  const { mainAddress, setAddress, saveNewAddress } = useAddressesContext()
 
   useTimeout(() => {
     setConfettiRunning(false)
   }, 3000)
 
+  const onButtonClick = () => {
+    if (shouldGenerateOneAddressPerGroup && wallet?.seed && mainAddress) {
+      const newAddresses = []
+      const color = getRandomLabelColor()
+
+      for (let group = 0; group < TOTAL_NUMBER_OF_GROUPS; group++) {
+        if (group !== mainAddress.group) {
+          const newAddressData = deriveNewAddressData(wallet.seed, group)
+          newAddresses.push({ ...newAddressData, group })
+        }
+      }
+
+      newAddresses.forEach((address) => {
+        saveNewAddress(
+          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+            isMain: false,
+            label: `Address ${address.group}`,
+            color
+          })
+        )
+      })
+
+      mainAddress.settings.label = `Address ${mainAddress.group}`
+      mainAddress.settings.color = color
+      setAddress(mainAddress)
+    }
+
+    history.push('/wallet/overview')
+  }
+
+  // TODO: Add correct info link
   return (
     <Container>
       <ConfettiWrapper>
@@ -47,13 +91,42 @@ const WalletWelcomePage = () => {
         <SubParagraph>Welcome to Alephium.</SubParagraph>
       </Section>
       <FooterActionsContainer apparitionDelay={0.3}>
-        <Button onClick={() => history.push('/wallet')} submit>
+        <Button onClick={onButtonClick} submit>
           {"Let's go!"}
         </Button>
+        <div>
+          <AdvancedUserMessage>
+            Advanced user: want to start with{' '}
+            <strong>
+              one address per group for mining or DeFi?{' '}
+              <Info size="12px" onClick={() => openInWebBrowser('https://wiki.alephium.org/Solo-Mining-Guide.html')} />
+            </strong>
+          </AdvancedUserMessage>
+          <ExpandableSectionStyled
+            sectionTitleClosed="Show advanced options"
+            sectionTitleOpen="Hide advanced options"
+            centered
+          >
+            <InfoBox contrast noBorders>
+              <KeyValueInputStyled
+                label="Generate one address per group"
+                description="For mining or DeFi use."
+                InputComponent={
+                  <Toggle
+                    toggled={shouldGenerateOneAddressPerGroup}
+                    onToggle={() => setShouldGenerateOneAddressPerGroup(!shouldGenerateOneAddressPerGroup)}
+                  />
+                }
+              />
+            </InfoBox>
+          </ExpandableSectionStyled>
+        </div>
       </FooterActionsContainer>
     </Container>
   )
 }
+
+export default WalletWelcomePage
 
 const Container = styled.main`
   flex: 1;
@@ -86,4 +159,26 @@ const SubParagraph = styled(Paragraph)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export default WalletWelcomePage
+const AdvancedUserMessage = styled.div`
+  margin-top: 90px;
+  color: ${({ theme }) => theme.font.secondary};
+  text-align: center;
+  flex: 1;
+
+  strong {
+    font-weight: var(--fontWeight-medium);
+    color: ${({ theme }) => theme.font.primary};
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+`
+
+const ExpandableSectionStyled = styled(ExpandableSection)`
+  margin-top: var(--spacing-5);
+  width: 100%;
+`
+
+const KeyValueInputStyled = styled(KeyValueInput)`
+  min-width: auto;
+`
