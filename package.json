@@ -33,6 +33,7 @@
     ]
   },
   "dependencies": {
+    "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
   "devDependencies": {

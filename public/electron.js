@@ -20,6 +20,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 const { app, BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
+const contextMenu = require('electron-context-menu')
+
+contextMenu()
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -122,7 +125,10 @@ function createWindow() {
     height: 800,
     minWidth: 1000,
     minHeight: 700,
-    titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden'
+    titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden',
+    webPreferences: {
+      spellcheck: true
+    }
   })
 
   if (process.platform === 'linux') {
