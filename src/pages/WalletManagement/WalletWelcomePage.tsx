@@ -81,10 +81,10 @@ const WalletWelcomePage = () => {
         <div>
           <AdvancedUserMessage>
             Advanced user: want to start with{' '}
-            <strong>
+            <b>
               one address per group for mining or DeFi?{' '}
               <Info size="12px" onClick={() => openInWebBrowser('https://wiki.alephium.org/Solo-Mining-Guide.html')} />
-            </strong>
+            </b>
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed="Show advanced options"
@@ -149,7 +149,7 @@ const AdvancedUserMessage = styled.div`
   text-align: center;
   flex: 1;
 
-  strong {
+  b {
     font-weight: var(--fontWeight-medium);
     color: ${({ theme }) => theme.font.primary};
     display: inline-flex;
