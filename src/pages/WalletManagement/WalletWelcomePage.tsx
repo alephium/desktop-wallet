@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
@@ -30,7 +29,7 @@ import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Toggle from '../../components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
-import { Address, useAddressesContext } from '../../contexts/addresses'
+import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
@@ -44,7 +43,7 @@ const WalletWelcomePage = () => {
   const { wallet } = useGlobalContext()
   const { width, height } = useWindowSize()
   const history = useHistory()
-  const { mainAddress, setAddress, saveNewAddress } = useAddressesContext()
+  const { mainAddress, setAddress, generateOneAddressPerGroup } = useAddressesContext()
 
   useTimeout(() => {
     setConfettiRunning(false)
@@ -52,28 +51,13 @@ const WalletWelcomePage = () => {
 
   const onButtonClick = () => {
     if (shouldGenerateOneAddressPerGroup && wallet?.seed && mainAddress) {
-      const newAddresses = []
-      const color = getRandomLabelColor()
+      const labelPrefix = 'Address'
+      const labelColor = getRandomLabelColor()
 
-      for (let group = 0; group < TOTAL_NUMBER_OF_GROUPS; group++) {
-        if (group !== mainAddress.group) {
-          const newAddressData = deriveNewAddressData(wallet.seed, group)
-          newAddresses.push({ ...newAddressData, group })
-        }
-      }
+      generateOneAddressPerGroup(labelPrefix, labelColor, [mainAddress.group])
 
-      newAddresses.forEach((address) => {
-        saveNewAddress(
-          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
-            isMain: false,
-            label: `Address ${address.group}`,
-            color
-          })
-        )
-      })
-
-      mainAddress.settings.label = `Address ${mainAddress.group}`
-      mainAddress.settings.color = color
+      mainAddress.settings.label = `${labelPrefix} ${mainAddress.group}`
+      mainAddress.settings.color = labelColor
       setAddress(mainAddress)
     }
 
