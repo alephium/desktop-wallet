@@ -80,14 +80,13 @@ const WalletWelcomePage = () => {
         </Button>
         <div>
           <AdvancedUserMessage>
-            <span>Advanced user: want to start with </span>
-            <b>
-              <span>one address per group for mining or DeFi? </span>
-              <InfoIcon
-                size="12px"
-                onClick={() => openInWebBrowser('https://wiki.alephium.org/Solo-Mining-Guide.html')}
-              />
-            </b>
+            <span>
+              Advanced user: want to start with <b>one address per group for mining or DeFi?</b>
+            </span>
+            <InfoIcon
+              size="16px"
+              onClick={() => openInWebBrowser('https://wiki.alephium.org/Solo-Mining-Guide.html')}
+            />
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed="Show advanced options"
@@ -151,13 +150,13 @@ const AdvancedUserMessage = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   text-align: center;
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
 
   b {
     font-weight: var(--fontWeight-medium);
     color: ${({ theme }) => theme.font.primary};
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-1);
   }
 `
 
@@ -172,4 +171,5 @@ const KeyValueInputStyled = styled(KeyValueInput)`
 
 const InfoIcon = styled(Info)`
   cursor: pointer;
+  color: ${({ theme }) => theme.font.primary};
 `
