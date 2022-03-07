@@ -194,7 +194,6 @@ const AdvancedOperations = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
-  width: max-content;
 `
 
 const TableCellAmount = styled(TableCell)`
