@@ -17,9 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage, walletOpen } from 'alephium-js'
-import { useState } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
+import { useWalletContext } from '../contexts/wallet'
 import Button from './Button'
 import Input from './Inputs/Input'
 import { Section } from './PageComponents/PageContainers'
@@ -41,13 +41,14 @@ const PasswordConfirmation = ({
   accountName
 }: PasswordConfirmationProps) => {
   const { currentAccountName, setSnackbarMessage } = useGlobalContext()
-  const [password, setPassword] = useState('')
+  const { password, setPassword } = useWalletContext()
 
   const validatePassword = () => {
     const walletEncrypted = Storage.load(accountName || currentAccountName)
 
     try {
       if (walletOpen(password, walletEncrypted)) {
+        setPassword('')
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
