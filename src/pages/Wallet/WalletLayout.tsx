@@ -23,7 +23,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { FC, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
@@ -34,7 +34,8 @@ import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import LogoSrc from '../../images/alephium_logo.svg'
+import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
+import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
 import SendModal from '../../modals/SendModal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
@@ -55,6 +56,7 @@ const WalletLayout: FC = ({ children }) => {
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const history = useHistory()
   const location = useLocation()
+  const theme = useTheme()
   const accountNames = Storage.list()
   const [switchToAccountName, setSwitchToAccountName] = useState(currentAccountName)
   const accountNameSelectOptions = accountNames
@@ -94,7 +96,7 @@ const WalletLayout: FC = ({ children }) => {
       </AppHeader>
       <WalletSidebar>
         <LogoContainer>
-          <Logo src={LogoSrc} alt="Alephium Logo" />
+          <Logo src={theme.name === 'light' ? LogoDarkSrc : LogoLightSrc} alt="Alephium Logo" />
           <Texts>
             <AlephiumText>Alephium</AlephiumText>
             <WalletText>Wallet</WalletText>

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-import alephiumLogo from '../images/alephium_logo.svg'
+import alephiumLogo from '../images/alephium_logo_light.svg'
 
 const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => (
   <StyledSplashScreen
