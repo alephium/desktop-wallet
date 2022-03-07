@@ -34,21 +34,22 @@ import { MainContent, PageTitleRow } from '../../components/PageComponents/PageC
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
+import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
 import { openInWebBrowser } from '../../utils/misc'
 
-const minTableColumnWidth = '105px'
-
 const addressesTableHeaders: TableProps['headers'] = [
-  { title: 'Address' },
-  { title: 'Label' },
-  { title: 'Last used' },
-  { title: 'Transactions' },
-  { title: 'Group' },
-  { title: 'ALPH amount', align: 'end' }
+  { title: 'Address', width: '95px' },
+  { title: 'Label', width: '100px' },
+  { title: 'Last used', width: '100px' },
+  { title: 'Transactions', width: '105px' },
+  { title: 'Group', width: '50px' },
+  { title: 'ALPH amount', align: 'end', width: '80px' }
 ]
+
+const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
@@ -80,20 +81,26 @@ const AddressesPage = () => {
           + Generate new address
         </Button>
       </PageTitleRow>
-      <Table headers={addressesTableHeaders} minColumnWidth={minTableColumnWidth}>
+      <Table headers={addressesTableHeaders} minWidth="580px">
         {sortedAddressList.map((address) => {
           return (
             <TableRow
               key={address.hash}
-              minColumnWidth={minTableColumnWidth}
+              columnWidths={tableColumnWidths}
               onClick={() => navigateToAddressDetailsPage(address.hash)}
             >
               <TableCell>
-                <Hash>{address.hash}</Hash>
+                <Truncate>{address.hash}</Truncate>
                 {address.settings.isMain && <MainAddressLabel />}
               </TableCell>
               <TableCell>
-                {address.settings.label ? <Badge color={address.settings.color}>{address.getLabelName()}</Badge> : '-'}
+                {address.settings.label ? (
+                  <Badge color={address.settings.color} truncate>
+                    {address.getLabelName()}
+                  </Badge>
+                ) : (
+                  '-'
+                )}
               </TableCell>
               <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
               <TableCell>{address.details?.txNumber ?? 0}</TableCell>
@@ -105,7 +112,7 @@ const AddressesPage = () => {
             </TableRow>
           )
         })}
-        <TableFooterStyled cols={addressesTableHeaders.length} minColumnWidth={minTableColumnWidth}>
+        <TableFooterStyled>
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ Generate new address</ActionLink>
           </TableCell>
@@ -168,14 +175,8 @@ const AddressesPage = () => {
   )
 }
 
-const Hash = styled.div`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-const TableFooterStyled = styled(TableFooter)<{ cols: number }>`
-  grid-template-columns: ${({ cols }) =>
-    `minmax(calc(${cols - 1} * ${minTableColumnWidth}), ${cols - 1}fr) minmax(${minTableColumnWidth}, 1fr)`};
+const TableFooterStyled = styled(TableFooter)`
+  grid-auto-columns: 1fr;
 `
 
 const Summary = styled(TableCell)`

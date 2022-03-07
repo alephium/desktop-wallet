@@ -39,18 +39,19 @@ import { MainContent, PageTitleRow } from '../../components/PageComponents/PageC
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
+import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction' },
-  { title: 'Timestamp' },
-  { title: 'Address(es)' },
-  { title: 'Amount', align: 'end' }
+  { title: 'Direction', width: '100px' },
+  { title: 'Timestamp', width: '100px' },
+  { title: 'Address(es)', width: '150px' },
+  { title: 'Amount', align: 'end', width: '100px' }
 ]
 
-const minTableColumnWidth = '104px'
+const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
@@ -91,7 +92,7 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Address</DataListCell>
           <DataListCell>
-            {addressHash}
+            <Truncate>{addressHash}</Truncate>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} />
               <QRCodeButton textToEncode={addressHash} />
@@ -125,12 +126,12 @@ const AddressDetailsPage = () => {
         </DataListRow>
       </DataList>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
+      <Table headers={transactionsTableHeaders} minWidth="500px">
         {address.transactions.pending
           .slice(0)
           .reverse()
           .map(({ txId, timestamp, toAddress, amount, type }) => (
-            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
               <TableCell>
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
@@ -152,7 +153,7 @@ const AddressDetailsPage = () => {
           return (
             <TableRow
               key={transaction.hash}
-              minColumnWidth={minTableColumnWidth}
+              columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
@@ -244,6 +245,8 @@ const PageH1Styled = styled(PageH1)`
 `
 
 const IconButtons = styled.div`
+  display: flex;
+
   > svg {
     margin-left: 10px;
   }

@@ -16,27 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { FC } from 'react'
 import styled from 'styled-components'
 
-const DataList = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+const Truncate: FC<{ className?: string }> = ({ className, children }) => {
+  return <div className={className}>{children}</div>
+}
+
+export default styled(Truncate)`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
-
-export const DataListRow = styled.div`
-  display: grid;
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
-`
-
-export const DataListCell = styled.div`
-  padding: var(--spacing-4);
-  display: flex;
-  align-items: center;
-`
-
-export default DataList
