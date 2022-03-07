@@ -20,6 +20,8 @@ import { FC } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import Truncate from './Truncate'
+
 interface BadgeProps {
   className?: string
   color?: string
@@ -27,8 +29,12 @@ interface BadgeProps {
   truncate?: boolean
 }
 
-const Badge: FC<BadgeProps> = ({ className, children }) => {
-  return <span className={className}>{children}</span>
+const Badge: FC<BadgeProps> = ({ className, children, truncate }) => {
+  return truncate ? (
+    <Truncate className={className}>{children}</Truncate>
+  ) : (
+    <span className={className}>{children}</span>
+  )
 }
 
 export default styled(Badge)`
@@ -48,8 +54,6 @@ export default styled(Badge)`
   ${({ truncate }) =>
     truncate &&
     css`
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      max-width: 100%;
     `}
 `

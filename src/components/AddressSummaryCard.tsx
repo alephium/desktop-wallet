@@ -25,6 +25,7 @@ import Amount from './Amount'
 import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
+import Truncate from './Truncate'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -92,13 +93,10 @@ const AddressNameSection = styled(PaddedSection)`
   }
 `
 
-const Hash = styled.div`
+const Hash = styled(Truncate)`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 10px;
   font-weight: var(--fontWeight-medium);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin-top: var(--spacing-1);
 `
 

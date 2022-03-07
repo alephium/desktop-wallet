@@ -26,10 +26,11 @@ export interface TableProps {
   headers: {
     title: string
     align?: AlignType
+    width?: string
   }[]
-  minColumnWidth?: string
   className?: string
   isLoading?: boolean
+  minWidth?: string
 }
 
 interface TableCellProps {
@@ -37,24 +38,28 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0px', isLoading }) => (
-  <div className={classNames(className, { 'skeleton-loader': isLoading })}>
-    <TableHeaderRow minColumnWidth={minColumnWidth}>
-      {headers.map(({ title, align }) => (
-        <TableHeaderCell key={title} align={align}>
-          {title}
-        </TableHeaderCell>
-      ))}
-    </TableHeaderRow>
-    {children}
-  </div>
+const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
+  <ScrollableWrapper>
+    <div className={classNames(className, { 'skeleton-loader': isLoading })}>
+      <TableHeaderRow columnWidths={headers.map(({ width }) => width)}>
+        {headers.map(({ title, align }) => (
+          <TableHeaderCell key={title} align={align}>
+            {title}
+          </TableHeaderCell>
+        ))}
+      </TableHeaderRow>
+      {children}
+    </div>
+  </ScrollableWrapper>
 )
 
 export default styled(Table)`
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.secondary};
-  display: table;
+  ${({ minWidth }) =>
+    minWidth &&
+    css`
+      min-width: ${minWidth};
+    `}
 
   ${({ isLoading }) =>
     isLoading &&
@@ -66,6 +71,7 @@ export default styled(Table)`
 
 export const TableCell = styled.div<TableCellProps>`
   font-weight: var(--fontWeight-semiBold);
+  position: relative;
   ${({ truncate }) =>
     truncate &&
     css`
@@ -84,10 +90,17 @@ const TableHeaderCell = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const TableColumns = styled.div<{ minColumnWidth?: string }>`
+const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
   display: grid;
-  grid-auto-columns: ${({ minColumnWidth }) => `minmax(${minColumnWidth || '0px'}, 1fr)`};
-  grid-auto-flow: column;
+  ${({ columnWidths }) =>
+    columnWidths
+      ? css`
+          grid-template-columns: ${columnWidths.map((columnWidth) => `minmax(${columnWidth || '0px'}, 1fr)`).join(' ')};
+        `
+      : css`
+          grid-auto-columns: minmax(0px, 1fr);
+          grid-auto-flow: column;
+        `};
 
   padding: var(--spacing-3) var(--spacing-5);
   align-items: center;
@@ -147,4 +160,11 @@ export const TableFooter = styled(TableColumns)``
 
 export const TableCellPlaceholder = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const ScrollableWrapper = styled.div`
+  width: 100%;
+  overflow: auto;
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius);
 `

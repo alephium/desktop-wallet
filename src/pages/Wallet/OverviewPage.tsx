@@ -40,13 +40,13 @@ import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 import { appHeaderHeightPx } from '../../style/globalStyles'
 
 const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction' },
-  { title: 'Timestamp' },
-  { title: 'Address' },
-  { title: 'Amount', align: 'end' }
+  { title: 'Direction', width: '100px' },
+  { title: 'Timestamp', width: '100px' },
+  { title: 'Address', width: '100px' },
+  { title: 'Amount', align: 'end', width: '100px' }
 ]
 
-const minTableColumnWidth = '104px'
+const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 type TransactionAndAddress = Transaction & { address: Address }
 
@@ -113,12 +113,12 @@ const OverviewPage = () => {
         </Summaries>
       </Header>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth} isLoading={showSkeletonLoading}>
+      <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading}>
         {allPendingTxs
           .slice(0)
           .reverse()
           .map(({ txId, timestamp, address, amount, type }) => (
-            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
               <TableCell>
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
@@ -139,15 +139,17 @@ const OverviewPage = () => {
           return (
             <TableRow
               key={`${transaction.hash}-${transaction.address.hash}`}
-              minColumnWidth={minTableColumnWidth}
+              columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
                 <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
-                <Badge color={transaction.address.settings.color}>{transaction.address.getLabelName()}</Badge>
+              <TableCell>
+                <Badge color={transaction.address.settings.color} truncate>
+                  {transaction.address.getLabelName()}
+                </Badge>
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
