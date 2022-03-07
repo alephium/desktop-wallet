@@ -54,7 +54,7 @@ const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
 )
 
 export default styled(Table)`
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.primary};
   ${({ minWidth }) =>
     minWidth &&
     css`
@@ -107,7 +107,7 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
 `
 
 const TableHeaderRow = styled(TableColumns)`
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
   border-top-left-radius: var(--radius);
   border-top-right-radius: var(--radius);
 `
