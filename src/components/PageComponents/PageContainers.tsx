@@ -108,7 +108,7 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: var(--radius);
-  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.primary};
+  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.tertiary};
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
