@@ -239,7 +239,7 @@ const BadgeStyled = styled(AddressBadge)`
 `
 
 const MainAddressLabelStyled = styled(MainAddressLabel)`
-  margin-top: var(--spacing-1);
+  margin-top: 2px;
 `
 
 const OptionsButton = styled(Button)`

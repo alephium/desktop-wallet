@@ -201,7 +201,7 @@ const TableCellAmount = styled(TableCell)`
 `
 
 const StyledMainAddressLabel = styled(MainAddressLabel)`
-  margin-top: var(--spacing-1);
+  margin-top: 2px;
 `
 
 export default AddressesPage
