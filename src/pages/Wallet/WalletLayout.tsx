@@ -181,14 +181,14 @@ const WalletText = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const WalletSidebar = styled(Section)`
+const WalletSidebar = styled.div`
   position: fixed;
   top: 0;
   bottom: 0;
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;
-  max-width: ${walletSidebarWidthPx}px;
+  width: ${walletSidebarWidthPx}px;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.tertiary};
   padding: ${appHeaderHeightPx}px var(--spacing-4) 0;
