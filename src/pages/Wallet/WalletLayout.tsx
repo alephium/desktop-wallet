@@ -112,9 +112,10 @@ const WalletLayout: FC = ({ children }) => {
           onValueChange={handleAccountNameChange}
           title="Select an account"
           id="account"
+          raised
         />
         <WalletActions>
-          <ActionsTitle>Menu</ActionsTitle>
+          <ActionsTitle>MENU</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
           <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
@@ -154,6 +155,7 @@ const LogoContainer = styled.div`
   align-items: center;
   gap: 30px;
   margin-bottom: 45px;
+  margin-left: var(--spacing-2);
 `
 
 const Logo = styled.img`
@@ -183,8 +185,8 @@ const WalletSidebar = styled(Section)`
   flex: 1;
   max-width: ${walletSidebarWidthPx}px;
   border-right: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: ${appHeaderHeightPx}px var(--spacing-5) 0;
+  background-color: ${({ theme }) => theme.bg.tertiary};
+  padding: ${appHeaderHeightPx}px var(--spacing-4) 0;
   z-index: 1000;
 
   @media ${deviceBreakPoints.mobile} {

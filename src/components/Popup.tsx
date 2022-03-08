@@ -70,7 +70,7 @@ const PopupContent = styled(motion.div)`
   max-height: 500px;
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-3);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 

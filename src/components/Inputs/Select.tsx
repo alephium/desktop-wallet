@@ -20,7 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
@@ -40,6 +40,7 @@ interface SelectProps<T> {
   id: string
   onValueChange: (value: SelectOption<T> | undefined) => void
   className?: string
+  raised?: boolean
 }
 
 function Select<T>({
@@ -50,7 +51,8 @@ function Select<T>({
   controlledValue,
   className,
   id,
-  onValueChange
+  onValueChange,
+  raised
 }: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
@@ -95,7 +97,14 @@ function Select<T>({
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>
-        <ClickableInput type="button" className={className} disabled={disabled} id={id} value={value?.label ?? ''} />
+        <ClickableInput
+          type="button"
+          className={className}
+          disabled={disabled}
+          id={id}
+          value={value?.label ?? ''}
+          raised={raised ?? false}
+        />
       </SelectContainer>
       <AnimatePresence>
         {showPopup && (
@@ -172,8 +181,16 @@ export const OptionItem = styled.div`
   }
 `
 
-const ClickableInput = styled.input<InputProps>`
+const ClickableInput = styled.input<InputProps & { raised: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
+
+  ${({ raised }) =>
+    raised &&
+    css`
+      background-color: ${({ theme }) => theme.bg.primary};
+      border: 1px solid ${({ theme }) => theme.border.secondary};
+      box-shadow: var(--shadow-2);
+    `}
 `
 
 export default Select
