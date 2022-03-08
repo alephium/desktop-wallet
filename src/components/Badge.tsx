@@ -39,8 +39,8 @@ const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false 
 }
 
 export default styled(Badge)`
-  display: inline-block;
-  padding: 5px 8px;
+  display: inline;
+  padding: 5px 10px;
   color: ${({ color, theme }) => color || theme.font.primary};
   border-radius: ${({ rounded }) => (rounded ? '20px' : 'var(--radius-small)')};
   background-color: ${({ color, theme }) =>

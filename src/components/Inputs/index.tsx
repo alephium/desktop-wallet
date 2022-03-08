@@ -52,6 +52,7 @@ export const inputDefaultStyle = (isValid?: boolean) => {
     font-size: 1em;
     text-align: left;
     font-family: inherit;
+    box-shadow: inset ${({ theme }) => theme.shadow.primary};
 
     transition: 0.2s ease-out;
 
@@ -96,7 +97,7 @@ export const InputErrorMessage = styled(motion.label)<InputProps>`
 
 export const InputLabel = styled(motion.label)`
   position: absolute;
-  top: 16px;
+  top: 15px;
   left: 13px;
   font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};

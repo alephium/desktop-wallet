@@ -188,7 +188,7 @@ const WalletSidebar = styled.div`
   justify-content: flex-start;
   flex: 1;
   width: ${walletSidebarWidthPx}px;
-  border-right: 1px solid ${({ theme }) => theme.border.primary};
+  border-right: 1px solid ${({ theme }) => theme.border.secondary};
   background-color: ${({ theme }) => theme.bg.tertiary};
   padding: ${appHeaderHeightPx}px var(--spacing-4) 0;
   z-index: 1000;

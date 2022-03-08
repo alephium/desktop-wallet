@@ -91,7 +91,7 @@ const AddressesPage = () => {
             >
               <TableCell>
                 <Truncate>{address.hash}</Truncate>
-                {address.settings.isMain && <MainAddressLabel />}
+                {address.settings.isMain && <StyledMainAddressLabel />}
               </TableCell>
               <TableCell>
                 {address.settings.label ? (
@@ -198,6 +198,10 @@ const TableCellAmount = styled(TableCell)`
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+`
+
+const StyledMainAddressLabel = styled(MainAddressLabel)`
+  margin-top: var(--spacing-1);
 `
 
 export default AddressesPage
