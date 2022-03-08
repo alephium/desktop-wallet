@@ -26,6 +26,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
+import AddressBadge from '../../components/AddressBadge'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -76,8 +77,10 @@ const AddressDetailsPage = () => {
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
-          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
-          {address.settings.label && <BadgeStyled color={address.settings.color}>{address.getLabelName()}</BadgeStyled>}
+          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
+          {address.settings.label && (
+            <BadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
+          )}
           <OptionsButton
             transparent
             squared
@@ -231,8 +234,12 @@ const AmountStyled = styled(Amount)`
   color: ${({ theme }) => theme.font.highlight};
 `
 
-const BadgeStyled = styled(Badge)`
+const BadgeStyled = styled(AddressBadge)`
   margin-left: var(--spacing-5);
+`
+
+const MainAddressLabelStyled = styled(MainAddressLabel)`
+  margin-top: var(--spacing-1);
 `
 
 const OptionsButton = styled(Button)`

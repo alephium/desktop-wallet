@@ -158,7 +158,7 @@ const InputContainer = styled(motion.div)`
 
 export const MoreIcon = styled.div`
   position: absolute;
-  top: 12px;
+  top: 11px;
   right: 18px;
   color: ${({ theme }) => theme.font.secondary};
 `

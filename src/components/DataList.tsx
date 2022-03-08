@@ -21,12 +21,15 @@ import styled from 'styled-components'
 const DataList = styled.div`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
+  background-color: ${({ theme }) => theme.bg.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 `
 
 export const DataListRow = styled.div`
   display: grid;
   grid-auto-columns: minmax(0, 1fr);
   grid-auto-flow: column;
+  height: var(--tableCellHeight);
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -34,7 +37,7 @@ export const DataListRow = styled.div`
 `
 
 export const DataListCell = styled.div`
-  padding: var(--spacing-4);
+  padding: 0 var(--spacing-4);
   display: flex;
   align-items: center;
 `

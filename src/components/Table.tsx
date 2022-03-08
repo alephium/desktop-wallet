@@ -103,8 +103,9 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
           grid-auto-flow: column;
         `};
 
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: 0 var(--spacing-5);
   align-items: center;
+  height: var(--tableCellHeight);
 `
 
 const TableHeaderRow = styled(TableColumns)`
