@@ -109,7 +109,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>
       transparent
-        ? 'transparent'
+        ? theme.bg.accent
         : secondary
         ? tinycolor(theme.bg.tertiary).lighten(30).toString()
         : alert
