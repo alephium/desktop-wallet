@@ -55,6 +55,7 @@ const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
 
 export default styled(Table)`
   background-color: ${({ theme }) => theme.bg.primary};
+
   ${({ minWidth }) =>
     minWidth &&
     css`
@@ -167,4 +168,5 @@ const ScrollableWrapper = styled.div`
   overflow: auto;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 `

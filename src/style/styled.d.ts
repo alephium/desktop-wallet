@@ -38,6 +38,11 @@ declare module 'styled-components' {
       contrastSecondary: string
       highlight: string
     }
+    shadow: {
+      primary: string
+      secondary: string
+      tertiary: string
+    }
     border: {
       primary: string
       secondary: string
