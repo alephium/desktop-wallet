@@ -29,6 +29,7 @@ import ActionLink from '../../components/ActionLink'
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
+import GradientCanvas from '../../components/GradientCanvas'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
@@ -86,6 +87,7 @@ const OverviewPage = () => {
   return (
     <MainContent>
       <Header>
+        <GradientCanvas />
         <Summaries>
           <AccountSummaryCardStyled isLoading={showSkeletonLoading} />
           <AddressSummaryCards
@@ -196,6 +198,7 @@ const collapsedaddressSummaryCardWidthPx = 8
 const scrollableCardsSectionPaddingPx = 71
 
 const Header = styled.header`
+  position: relative;
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
   background-position: bottom;
   background-size: cover;
@@ -230,11 +233,12 @@ const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: num
           (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
         }px`};
   transition: width 0.2s ease-out;
+  z-index: 1;
 `
 
 const AccountSummaryCardStyled = styled(AccountSummaryCard)`
   flex-shrink: 0;
-  z-index: 1;
+  z-index: 2;
 `
 
 const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; clickable: boolean }>`
@@ -246,4 +250,5 @@ const ExpandButton = styled(Button)`
   background-color: ${({ theme }) => theme.bg.accent};
   margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
+  z-index: 1;
 `
