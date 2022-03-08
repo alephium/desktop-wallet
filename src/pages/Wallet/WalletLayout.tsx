@@ -28,6 +28,7 @@ import styled, { useTheme } from 'styled-components'
 import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
+import InfoBox from '../../components/InfoBox'
 import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
@@ -102,18 +103,22 @@ const WalletLayout: FC = ({ children }) => {
             <WalletText>Wallet</WalletText>
           </Texts>
         </LogoContainer>
-        <Select
-          placeholder="ACCOUNT"
-          options={accountNameSelectOptions}
-          controlledValue={{
-            label: currentAccountName,
-            value: currentAccountName
-          }}
-          onValueChange={handleAccountNameChange}
-          title="Select an account"
-          id="account"
-          raised
-        />
+        {accountNameSelectOptions.length === 0 ? (
+          <InfoBox text={currentAccountName} label="ACCOUNT" />
+        ) : (
+          <Select
+            placeholder="ACCOUNT"
+            options={accountNameSelectOptions}
+            controlledValue={{
+              label: currentAccountName,
+              value: currentAccountName
+            }}
+            onValueChange={handleAccountNameChange}
+            title="Select an account"
+            id="account"
+            raised
+          />
+        )}
         <WalletActions>
           <ActionsTitle>MENU</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
