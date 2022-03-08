@@ -73,7 +73,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 export default styled(ExpandableSection)`
   display: flex;
   flex-direction: column;
-  margin: var(--spacing-2) 0;
+  margin: var(--spacing-5) 0;
 `
 
 const Title = styled.div`

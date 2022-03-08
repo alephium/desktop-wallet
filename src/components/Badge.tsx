@@ -27,9 +27,10 @@ interface BadgeProps {
   color?: string
   border?: boolean
   truncate?: boolean
+  rounded?: boolean
 }
 
-const Badge: FC<BadgeProps> = ({ className, children, truncate }) => {
+const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false }) => {
   return truncate ? (
     <Truncate className={className}>{children}</Truncate>
   ) : (
@@ -40,8 +41,8 @@ const Badge: FC<BadgeProps> = ({ className, children, truncate }) => {
 export default styled(Badge)`
   display: inline-block;
   padding: 5px 8px;
-  color: ${({ color, theme }) => color || theme.font.primary}};
-  border-radius: 20px;
+  color: ${({ color, theme }) => color || theme.font.primary};
+  border-radius: ${({ rounded }) => (rounded ? '20px' : 'var(--radius-small)')};
   background-color: ${({ color, theme }) =>
     tinycolor(color || theme.font.primary)
       .setAlpha(0.2)

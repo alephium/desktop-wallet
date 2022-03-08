@@ -21,8 +21,8 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { Address } from '../contexts/addresses'
+import AddressBadge from './AddressBadge'
 import Amount from './Amount'
-import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
 import Truncate from './Truncate'
@@ -55,9 +55,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         clickable={clickable}
       >
         <AddressNameSection>
-          <Badge color={address.settings.color} truncate>
-            {address.getLabelName()}
-          </Badge>
+          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
           <Hash>{address.hash}</Hash>
         </AddressNameSection>
         <AmountsSection>

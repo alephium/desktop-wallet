@@ -50,6 +50,9 @@ export const GlobalStyle = createGlobalStyle`
     --spacing-3: 15px;
     --spacing-4: 20px;
     --spacing-5: 25px;
+    --spacing-6: 30px;
+    --spacing-7: 35px;
+    --spacing-8: 40px;
 
     --radius-small: 4px;
     --radius: 7px;
@@ -62,7 +65,7 @@ export const GlobalStyle = createGlobalStyle`
     --fontWeight-bold: 800;
 
     --inputHeight: 46px;
-    --toggleHeight: 30px;
+    --toggleHeight: 28px;
   }
 
   html {

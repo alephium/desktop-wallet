@@ -184,6 +184,8 @@ export const OptionItem = styled.div`
 const ClickableInput = styled.input<InputProps & { raised: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
 
+  cursor: pointer;
+
   ${({ raised }) =>
     raised &&
     css`
