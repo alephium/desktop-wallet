@@ -24,8 +24,8 @@ import { useHistory } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
+import AddressBadge from '../../components/AddressBadge'
 import Amount from '../../components/Amount'
-import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import MainAddressLabel from '../../components/MainAddressLabel'
@@ -95,9 +95,7 @@ const AddressesPage = () => {
               </TableCell>
               <TableCell>
                 {address.settings.label ? (
-                  <Badge color={address.settings.color} truncate>
-                    {address.getLabelName()}
-                  </Badge>
+                  <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
                 ) : (
                   '-'
                 )}

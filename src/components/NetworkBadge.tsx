@@ -29,7 +29,7 @@ const NetworkBadge = ({ className }: { className?: string }) => {
 
 export default styled(NetworkBadge)`
   color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.accent};
   border: 1px solid ${({ theme }) => theme.border.primary};
   font-weight: var(--fontWeight-semiBold);
 `

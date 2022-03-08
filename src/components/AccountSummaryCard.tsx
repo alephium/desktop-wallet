@@ -69,7 +69,7 @@ export default styled(AccountSummaryCard)`
   background-color: ${({ theme }) => theme.bg.primary};
   padding: var(--spacing-4);
   width: 300px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  box-shadow: ${({ theme }) => theme.shadow.tertiary};
 `
 
 const AmountStyled = styled(Amount)`

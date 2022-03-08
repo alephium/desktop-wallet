@@ -23,6 +23,7 @@ import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
+import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
 import Badge from '../Badge'
 import InfoBox from '../InfoBox'
@@ -89,7 +90,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           {address?.settings.label && (
-            <BadgeStyled color={address?.settings.color}>{address?.getLabelName()}</BadgeStyled>
+            <BadgeStyled color={address?.settings.color} addressName={address?.getLabelName()} />
           )}
           {address?.hash}
         </ClickableInput>
@@ -191,7 +192,7 @@ const Circle = styled.div<{ filled: boolean }>`
   justify-content: center;
 
   &::before {
-    ${({ filled, theme }) =>
+    ${({ filled }) =>
       filled &&
       css`
         content: '';
@@ -200,7 +201,7 @@ const Circle = styled.div<{ filled: boolean }>`
         width: 7px;
         background-color: var(--color-white);
         border-radius: var(--radius-full);
-      `})}
+      `}
   }
 `
 
@@ -221,7 +222,7 @@ const ClickableInput = styled.div<InputProps>`
   align-items: center;
 `
 
-const BadgeStyled = styled(Badge)`
+const BadgeStyled = styled(AddressBadge)`
   margin-right: var(--spacing-2);
 `
 
