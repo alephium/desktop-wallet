@@ -189,7 +189,7 @@ const ClickableInput = styled.input<InputProps & { raised: boolean }>`
     css`
       background-color: ${({ theme }) => theme.bg.primary};
       border: 1px solid ${({ theme }) => theme.border.secondary};
-      box-shadow: var(--shadow-2);
+      box-shadow: ${({ theme }) => theme.shadow.secondary};
     `}
 `
 

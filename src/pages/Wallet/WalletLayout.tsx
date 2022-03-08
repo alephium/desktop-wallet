@@ -159,7 +159,7 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 30px;
-  margin-bottom: 45px;
+  margin-bottom: 50px;
   margin-left: var(--spacing-2);
 `
 

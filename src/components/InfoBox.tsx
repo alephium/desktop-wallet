@@ -116,13 +116,13 @@ const StyledBox = styled(motion.div)<{
   contrast?: boolean
   noBorders?: boolean
 }>`
-  padding: var(--spacing-2) var(--spacing-4) var(--spacing-2) 0;
+  padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) 0;
   height: ${({ short }) => (short ? 'var(--inputHeight)' : 'auto')};
   background-color: ${({ theme, contrast }) => (contrast ? theme.bg.secondary : theme.bg.primary)};
 
   display: flex;
   border-radius: var(--radius);
-  box-shadow: 0 2px 2px var(--color-shadow-5);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
   align-items: center;
 
   ${({ theme, importance, noBorders }) =>

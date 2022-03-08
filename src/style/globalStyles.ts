@@ -43,13 +43,6 @@ export const GlobalStyle = createGlobalStyle`
     --color-orange: #F6C76A;
     --color-grey: #646775;
     --color-purple: #3A0595;
-    --color-shadow-15: rgba(0, 0, 0, 0.15);
-    --color-shadow-10: rgba(0, 0, 0, 0.1);
-    --color-shadow-5: rgba(0, 0, 0, 0.05);
-
-    --shadow-1: 0 5px 5px var(--color-shadow-5);
-    --shadow-2: 0 10px 10px var(--color-shadow-10);
-    --shadow-3: 0 15px 15px var(--color-shadow-15);
 
     /* spacial system of 5px linear scale */
     --spacing-1: 5px;
