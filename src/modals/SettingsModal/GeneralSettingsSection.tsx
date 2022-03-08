@@ -26,7 +26,7 @@ import { useGlobalContext } from '../../contexts/global'
 const GeneralSettingsSection = () => {
   const {
     settings: {
-      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement }
+      general: { walletLockTimeInMinutes, discreetMode, passwordReconfirmationTimeInMillis }
     },
     updateSettings
   } = useGlobalContext()
@@ -66,11 +66,19 @@ const GeneralSettingsSection = () => {
       <HorizontalDivider narrow />
       <KeyValueInput
         label="Password requirement"
-        description="Require password confirmation before sending each transaction."
+        description="Require password confirmation again after some minutes."
         InputComponent={
-          <Toggle
-            toggled={passwordRequirement}
-            onToggle={() => updateSettings('general', { passwordRequirement: !passwordRequirement })}
+          <Input
+            value={Math.floor(passwordReconfirmationTimeInMillis / 1000 / 60) || ''}
+            onChange={(v) =>
+              updateSettings('general', {
+                passwordReconfirmationTimeInMillis: v.target.value ? parseInt(v.target.value) * 1000 * 60 : 0
+              })
+            }
+            placeholder={passwordReconfirmationTimeInMillis ? 'Minutes' : 'Every time'}
+            type="number"
+            step={1}
+            min={1}
           />
         }
       />

@@ -25,7 +25,7 @@ export interface Settings {
     theme: ThemeType
     walletLockTimeInMinutes: number | null
     discreetMode: boolean
-    passwordRequirement: boolean
+    passwordReconfirmationTimeInMillis: number
   }
   network: {
     nodeHost: string
@@ -64,7 +64,7 @@ export const defaultSettings: Settings = {
     theme: 'light',
     walletLockTimeInMinutes: 3,
     discreetMode: false,
-    passwordRequirement: false
+    passwordReconfirmationTimeInMillis: 10
   },
   network: clone(networkEndpoints.mainnet)
 }

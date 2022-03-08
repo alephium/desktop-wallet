@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
+import { Timer, useGlobalTimer } from '../../hooks/timers'
 import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
@@ -51,12 +52,13 @@ const SendModal = ({ onClose }: SendModalProps) => {
     client,
     wallet,
     setSnackbarMessage,
+    currentNetwork,
     settings: {
-      general: { passwordRequirement }
-    },
-    currentNetwork
+      general: { passwordReconfirmationTimeInMillis }
+    }
   } = useGlobalContext()
   const { setAddress } = useAddressesContext()
+  const [timeToAuth, resetTimeToAuth] = useGlobalTimer(Timer.PasswordReconfirmation, passwordReconfirmationTimeInMillis)
   const [title, setTitle] = useState('')
   const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>()
   const [isLoading, setIsLoading] = useState(false)
@@ -78,6 +80,8 @@ const SendModal = ({ onClose }: SendModalProps) => {
       setTitle('Password Check')
     }
   }, [setStep, setTitle, step])
+
+  const passwordRequirement = timeToAuth <= 0
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
@@ -162,6 +166,12 @@ const SendModal = ({ onClose }: SendModalProps) => {
     if (!transactionData || !client) return
 
     const { fromAddress, toAddress, amount } = transactionData
+
+    //
+    // On any successful transaction, we reset the need for a password, to avoid
+    // users needing to re-input the password many times consequently.
+    //
+    resetTimeToAuth()
 
     if (toAddress && fromAddress) {
       setIsLoading(true)

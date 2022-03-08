@@ -33,7 +33,7 @@ const mockSettings = {
     theme: 'light' as ThemeType,
     walletLockTimeInMinutes: 999,
     discreetMode: false,
-    passwordRequirement: false
+    passwordReconfirmationTimeInMillis: 1000 * 60 * 10
   },
   network: {
     nodeHost: 'https://node',
