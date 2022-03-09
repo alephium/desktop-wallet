@@ -39,22 +39,23 @@ const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false 
 }
 
 export default styled(Badge)`
-  display: inline;
-  padding: 5px 10px;
-  color: ${({ color, theme }) => color || theme.font.primary};
-  border-radius: ${({ rounded }) => (rounded ? '20px' : 'var(--radius-small)')};
-  background-color: ${({ color, theme }) =>
-    tinycolor(color || theme.font.primary)
-      .setAlpha(0.2)
-      .toString()};
-  ${({ border, color }) =>
-    border &&
-    css`
-      border: 1px solid ${color};
-    `};
-  ${({ truncate }) =>
-    truncate &&
-    css`
-      max-width: 100%;
-    `}
+  ${({ color, theme, rounded, border, truncate }) => {
+    const usedColor = color || theme.font.primary
+
+    return css`
+      display: inline;
+      padding: 5px 10px;
+      color: ${usedColor};
+      border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
+      background-color: ${tinycolor(usedColor).setAlpha(0.08).toString()};
+      ${border &&
+      css`
+        border: 1px solid ${tinycolor(usedColor).setAlpha(0.2).toString()};
+      `};
+      ${truncate &&
+      css`
+        max-width: 100%;
+      `}
+    `
+  }}
 `

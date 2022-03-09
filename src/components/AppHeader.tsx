@@ -90,7 +90,7 @@ const AppHeader: FC = ({ children }) => {
 export const HeaderDivider = styled.div`
   width: 1px;
   height: var(--spacing-2);
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
 `
 
 const HeaderContainer = styled(motion.header)`
