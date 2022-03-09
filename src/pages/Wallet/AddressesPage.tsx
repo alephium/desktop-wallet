@@ -26,6 +26,7 @@ import styled, { useTheme } from 'styled-components'
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
 import Amount from '../../components/Amount'
+import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import MainAddressLabel from '../../components/MainAddressLabel'
@@ -115,7 +116,9 @@ const AddressesPage = () => {
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ Generate new address</ActionLink>
           </TableCell>
           <Summary align="end">
-            <Amount value={balanceSummary} fadeDecimals />
+            <Badge border>
+              <Amount value={balanceSummary} fadeDecimals />
+            </Badge>
           </Summary>
         </TableFooterStyled>
       </Table>

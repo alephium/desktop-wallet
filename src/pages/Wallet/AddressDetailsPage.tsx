@@ -106,7 +106,11 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {address.settings.label ? <Badge color={address.settings.color}>{address.getLabelName()}</Badge> : '-'}
+            {address.settings.label ? (
+              <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
+            ) : (
+              '-'
+            )}
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -117,14 +121,22 @@ const AddressDetailsPage = () => {
           <DataListRow>
             <DataListCell>Locked ALPH balance</DataListCell>
             <DataListCell>
-              <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
+              <Badge>
+                <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
+              </Badge>
             </DataListCell>
           </DataListRow>
         )}
         <DataListRow>
           <DataListCell>Total ALPH balance</DataListCell>
           <DataListCell>
-            {address.details?.balance ? <AmountStyled value={BigInt(address.details.balance)} fadeDecimals /> : '-'}
+            {address.details?.balance ? (
+              <Badge border>
+                <Amount value={BigInt(address.details.balance)} fadeDecimals />
+              </Badge>
+            ) : (
+              '-'
+            )}
           </DataListCell>
         </DataListRow>
       </DataList>
@@ -228,10 +240,6 @@ const ArrowLeftStyled = styled(ArrowLeft)`
   &:hover {
     cursor: pointer;
   }
-`
-
-const AmountStyled = styled(Amount)`
-  color: ${({ theme }) => theme.font.highlight};
 `
 
 const BadgeStyled = styled(AddressBadge)`
