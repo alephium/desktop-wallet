@@ -29,7 +29,11 @@ const AccountSummaryCard = ({ className }: { className?: string }) => {
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
-  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
+  const totalLockedBalance = addresses.reduce((acc: bigint | undefined, { details: { lockedBalance } }) => {
+    if (acc === undefined) return acc
+    if (lockedBalance === undefined) return undefined
+    return acc + BigInt(lockedBalance)
+  }, BigInt(0))
 
   return (
     <div className={className}>
