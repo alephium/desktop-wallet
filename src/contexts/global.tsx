@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage, Wallet, walletOpen } from 'alephium-js'
 import { merge } from 'lodash'
 import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
+import ReactTooltip from 'react-tooltip'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
@@ -56,6 +57,7 @@ export interface GlobalContextProps {
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
+  isOffline: boolean
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -73,7 +75,8 @@ export const initialGlobalContext: GlobalContextProps = {
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
   isClientLoading: false,
-  currentNetwork: 'mainnet'
+  currentNetwork: 'mainnet',
+  isOffline: false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -92,6 +95,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef('')
   const previousExplorerAPIHost = useRef('')
+  const [isOffline, setIsOffline] = useState(false)
 
   const currentNetwork = getNetworkName(settings.network)
 
@@ -140,8 +144,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           type: 'info',
           duration: 4000
         })
+        if (isOffline) setIsOffline(false)
       } else {
         setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
+        setIsOffline(true)
       }
       setIsClientLoading(false)
     }
@@ -155,7 +161,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       previousNodeHost.current = settings.network.nodeHost
       previousExplorerAPIHost.current = settings.network.explorerApiHost
     }
-  }, [currentNetwork, setSnackbarMessage, settings.network])
+  }, [currentNetwork, isOffline, setSnackbarMessage, settings.network])
 
   // Save settings to local storage
   useEffect(() => {
@@ -178,7 +184,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           settings,
           updateSettings,
           isClientLoading,
-          currentNetwork
+          currentNetwork,
+          isOffline
         },
         overrideContextValue as GlobalContextProps
       )}

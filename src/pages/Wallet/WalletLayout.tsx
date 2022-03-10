@@ -20,9 +20,10 @@ import { getStorage } from 'alephium-js'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { FC, useState } from 'react'
+import { Layers, List, Lock, RefreshCw, Send, WifiOff } from 'lucide-react'
+import { FC, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
@@ -50,7 +51,7 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentAccountName, login } = useGlobalContext()
+  const { wallet, lockWallet, currentAccountName, login, isOffline } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
@@ -85,14 +86,24 @@ const WalletLayout: FC = ({ children }) => {
     })
   }
 
+  useEffect(() => {
+    if (isOffline) ReactTooltip.rebuild()
+  }, [isOffline])
+
   if (!wallet) return null
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
-        <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
-          {isLoadingData ? <Spinner /> : <RefreshCw />}
-        </RefreshButton>
+        {isOffline ? (
+          <OfflineIcon data-tip={'The wallet is offline'}>
+            <WifiOff />
+          </OfflineIcon>
+        ) : (
+          <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
+            {isLoadingData ? <Spinner /> : <RefreshCw />}
+          </RefreshButton>
+        )}
       </AppHeader>
       <WalletSidebar>
         <LogoContainer>
@@ -220,5 +231,14 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
+
+const OfflineIcon = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+  padding: 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+`
 
 export default WalletLayout
