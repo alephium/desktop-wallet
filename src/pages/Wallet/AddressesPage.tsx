@@ -140,7 +140,7 @@ const AddressesPage = () => {
             description="Consolidate (merge) your UTXOs into one."
             buttonText="Start"
             onButtonClick={() => setIsConsolidationModalOpen(true)}
-            infoLink="https://wiki.alephium.org/"
+            infoLink="https://wiki.alephium.org/Desktop-Wallet-Guide.html#utxo-consolidation"
           />
           <OperationBox
             title="Generate one address per group"
@@ -148,7 +148,7 @@ const AddressesPage = () => {
             description="Useful for miners or DeFi use."
             buttonText="Start"
             onButtonClick={() => setIsAddressesGenerationModalOpen(true)}
-            infoLink="https://wiki.alephium.org/"
+            infoLink="https://wiki.alephium.org/Desktop-Wallet-Guide.html#creating-a-mining-wallet-with-4-addresses"
           />
           <OperationBox
             placeholder

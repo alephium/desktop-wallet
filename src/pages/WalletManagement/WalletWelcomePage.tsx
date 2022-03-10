@@ -64,7 +64,6 @@ const WalletWelcomePage = () => {
     history.push('/wallet/overview')
   }
 
-  // TODO: Add correct info link
   return (
     <Container>
       <ConfettiWrapper>
@@ -85,7 +84,11 @@ const WalletWelcomePage = () => {
             </span>
             <InfoIcon
               size="16px"
-              onClick={() => openInWebBrowser('https://wiki.alephium.org/Solo-Mining-Guide.html')}
+              onClick={() =>
+                openInWebBrowser(
+                  'https://wiki.alephium.org/Desktop-Wallet-Guide.html#creating-a-mining-wallet-with-4-addresses'
+                )
+              }
             />
           </AdvancedUserMessage>
           <ExpandableSectionStyled
