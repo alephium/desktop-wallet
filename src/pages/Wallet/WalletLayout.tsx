@@ -20,7 +20,7 @@ import { getStorage } from 'alephium-js'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Layers, List, Lock, RefreshCw, Send, WifiOff } from 'lucide-react'
+import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
@@ -96,8 +96,8 @@ const WalletLayout: FC = ({ children }) => {
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         {isOffline ? (
-          <OfflineIcon data-tip={'The wallet is offline'}>
-            <WifiOff />
+          <OfflineIcon data-tip={'The wallet is offline. Trying to reconnect...'}>
+            <Spinner />
           </OfflineIcon>
         ) : (
           <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
