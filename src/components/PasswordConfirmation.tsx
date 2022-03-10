@@ -48,7 +48,6 @@ const PasswordConfirmation = ({
 
     try {
       if (walletOpen(password, walletEncrypted)) {
-        setPassword('')
         onCorrectPasswordEntered(password)
       }
     } catch (e) {

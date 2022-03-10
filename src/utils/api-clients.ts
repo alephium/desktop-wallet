@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from 'alephium-js'
+import { decrypt } from 'alephium-js/dist/lib/password-crypto'
 
 import { Address, AddressHash, TransactionType } from '../contexts/addresses'
 import { NetworkType, Settings } from './settings'
@@ -102,6 +103,7 @@ export async function createClient(settings: Settings['network']) {
     }
 
     const signAndSendTransaction = async (
+      password: string,
       address: Address,
       txId: string,
       unsignedTx: string,
@@ -110,7 +112,8 @@ export async function createClient(settings: Settings['network']) {
       network: NetworkType,
       amount?: bigint
     ) => {
-      const signature = cliqueClient.transactionSign(txId, address.privateKey)
+      const privateKey = decrypt(password, address.privateKeyEncrypted)
+      const signature = cliqueClient.transactionSign(txId, privateKey)
       const response = await cliqueClient.transactionSend(toHash, unsignedTx, signature)
 
       if (response.data) {

@@ -84,18 +84,18 @@ interface LoginProps {
 }
 
 const Login = ({ accountNames, onLinkClick }: LoginProps) => {
-  const [credentials, setCredentials] = useState({ accountName: '', password: '' })
   const { login } = useGlobalContext()
+  const [password, setPassword] = useState('')
+  const [accountName, setAccountName] = useState('')
   const history = useHistory()
 
-  const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
-    setCredentials((prev) => ({ ...prev, [type]: value }))
-  }, [])
-
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault()
-    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'))
-  }
+  const handleLogin = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault()
+      login(accountName, password, () => history.push('/wallet/overview'))
+    },
+    [accountName, password, history, login]
+  )
 
   return (
     <>
@@ -103,7 +103,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
         <Select
           placeholder="Account"
           options={accountNames.map((u) => ({ label: u, value: u }))}
-          onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
+          onValueChange={(value) => setAccountName(value?.value || '')}
           title="Select an account"
           id="account"
         />
@@ -111,13 +111,13 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           placeholder="Password"
           type="password"
           autoComplete="off"
-          onChange={(e) => handleCredentialsChange('password', e.target.value)}
-          value={credentials.password}
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
           id="password"
         />
       </SectionStyled>
       <SectionStyled inList>
-        <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
+        <Button onClick={handleLogin} submit disabled={!accountName || !password}>
           Login
         </Button>
       </SectionStyled>

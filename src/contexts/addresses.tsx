@@ -16,8 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS, Wallet } from 'alephium-js'
+import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from 'alephium-js'
 import { AddressInfo, Transaction } from 'alephium-js/api/explorer'
+import { encrypt } from 'alephium-js/dist/lib/password-crypto'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { PartialDeep } from 'type-fest'
@@ -30,7 +31,9 @@ import {
 } from '../utils/addresses'
 import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
+import { WalletSecureSecrets } from '../utils/wallet'
 import { Client, useGlobalContext } from './global'
+import { useWalletContext } from './wallet'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
@@ -50,7 +53,7 @@ export class Address {
   readonly hash: AddressHash
   readonly shortHash: string
   readonly publicKey: string
-  readonly privateKey: string
+  readonly privateKeyEncrypted: string
   readonly group: number
   readonly index: number
 
@@ -65,11 +68,11 @@ export class Address {
   lastUsed?: TimeInMs
   network?: NetworkType
 
-  constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
+  constructor(hash: string, publicKey: string, privateKeyEncrypted: string, index: number, settings: AddressSettings) {
     this.hash = hash
     this.shortHash = `${this.hash.substring(0, 10)}...`
     this.publicKey = publicKey
-    this.privateKey = privateKey
+    this.privateKeyEncrypted = privateKeyEncrypted
     this.group = addressToGroup(hash, TOTAL_NUMBER_OF_GROUPS)
     this.index = index
     this.settings = settings
@@ -151,8 +154,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
   const { currentAccountName, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
+  const { accountName, password, setPassword } = useWalletContext()
   const previousClient = useRef<Client>()
-  const previousWallet = useRef<Wallet | undefined>(wallet)
+  const previousWallet = useRef<WalletSecureSecrets | undefined>(wallet)
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
@@ -286,7 +290,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       if (addressesMetadata.length === 0) {
         await saveNewAddress(
-          new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
+          new Address(wallet.address, wallet.publicKey, wallet.privateKeyEncrypted, 0, {
             isMain: true,
             label: undefined,
             color: undefined
@@ -295,10 +299,19 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       } else {
         console.log('👀 Found addresses metadata in local storage')
 
+        console.log(accountName, password)
         const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
           const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
-          return new Address(address, publicKey, privateKey, index, settings)
+          const privateKeyEncrypted = encrypt(password, privateKey)
+          return new Address(address, publicKey, privateKeyEncrypted, index, settings)
         })
+
+        //
+        // It is precisely at this moment that the user's password is no longer needed.
+        // It would be much sooner if the above stored the addresses' secrets
+        // encrypted by default.
+        //
+        // setPassword('')
         fetchAndStoreAddressesData(addressesToFetchData)
       }
     }
@@ -315,7 +328,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     addressesOfCurrentNetwork,
     fetchAndStoreAddressesData,
     saveNewAddress,
-    wallet
+    wallet,
+    password,
+    setPassword,
+    accountName
   ])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,

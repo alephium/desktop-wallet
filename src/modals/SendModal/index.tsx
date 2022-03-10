@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
+import { useWalletContext } from '../../contexts/wallet'
 import { Timer, useGlobalTimer } from '../../hooks/timers'
 import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
@@ -58,6 +59,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
     }
   } = useGlobalContext()
   const { setAddress } = useAddressesContext()
+  const { password, setPassword } = useWalletContext()
   const [timeToAuth, resetTimeToAuth] = useGlobalTimer(Timer.PasswordReconfirmation, passwordReconfirmationTimeInMillis)
   const [title, setTitle] = useState('')
   const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>()
@@ -162,6 +164,11 @@ const SendModal = ({ onClose }: SendModalProps) => {
     buildConsolidationTransactions()
   }, [client, consolidationRequired, transactionData])
 
+  const onCorrectPasswordEntered = (password: string) => {
+    setPassword(password)
+    handleSend()
+  }
+
   const handleSend = async () => {
     if (!transactionData || !client) return
 
@@ -183,6 +190,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
 
           for (const { txId, unsignedTx } of sweepUnsignedTxs) {
             const data = await client.signAndSendTransaction(
+              password,
               fromAddress,
               txId,
               unsignedTx,
@@ -197,6 +205,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
           }
         } else {
           const data = await client.signAndSendTransaction(
+            password,
             fromAddress,
             unsignedTxId,
             unsignedTransaction,
@@ -244,7 +253,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
         <PasswordConfirmation
           text="Enter your password to send the transaction."
           buttonText="Send"
-          onCorrectPasswordEntered={handleSend}
+          onCorrectPasswordEntered={onCorrectPasswordEntered}
         />
       )}
       <AnimatePresence>

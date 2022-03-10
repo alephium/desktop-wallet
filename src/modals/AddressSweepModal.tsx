@@ -24,9 +24,12 @@ import styled from 'styled-components'
 import Amount from '../components/Amount'
 import InfoBox from '../components/InfoBox'
 import AddressSelect from '../components/Inputs/AddressSelect'
+import Input from '../components/Inputs/Input'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import { useWalletContext } from '../contexts/wallet'
+import { Timer, useGlobalTimer } from '../hooks/timers'
 import { getHumanReadableError } from '../utils/api'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
@@ -39,7 +42,17 @@ interface AddressSweepModal {
 }
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
-  const { addresses, mainAddress } = useAddressesContext()
+  const {
+    client,
+    currentNetwork,
+    setSnackbarMessage,
+    settings: {
+      general: { passwordReconfirmationTimeInMillis }
+    }
+  } = useGlobalContext()
+  const { addresses, mainAddress, setAddress } = useAddressesContext()
+  const { password, setPassword } = useWalletContext()
+  const [timeToAuth, resetTimeToAuth] = useGlobalTimer(Timer.PasswordReconfirmation, passwordReconfirmationTimeInMillis)
   const fromAddress = sweepAddress || mainAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
   const [sweepAddresses, setSweepAddresses] = useState<{
@@ -50,8 +63,6 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     to: toAddressOptions.length > 0 ? toAddressOptions[0] : fromAddress
   })
   const [fee, setFee] = useState(BigInt(0))
-  const { client, currentNetwork, setSnackbarMessage } = useGlobalContext()
-  const { setAddress } = useAddressesContext()
   const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -79,9 +90,13 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   const onSweepClick = async () => {
     if (!client || !sweepAddresses.from || !sweepAddresses.to) return
     setIsLoading(true)
+
+    resetTimeToAuth()
+
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
         const txSendResp = await client.signAndSendTransaction(
+          password,
           sweepAddresses.from,
           txId,
           unsignedTx,
@@ -144,6 +159,16 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         </Fee>
       </Content>
       <HorizontalDivider narrow />
+      {timeToAuth <= 0 && (
+        <Input
+          placeholder="Password to perform the action."
+          type="password"
+          autoComplete="off"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          id="password"
+        />
+      )}
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onClose}>
           Cancel

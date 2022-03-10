@@ -27,6 +27,7 @@ import { ThemeProvider } from 'styled-components'
 import App from './App'
 import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
+import { WalletContextProvider } from './contexts/wallet'
 import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
@@ -35,12 +36,14 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
       <GlobalContextProvider>
-        <AddressesContextProvider>
-          <ThemeProvider theme={lightTheme}>
-            <GlobalStyle />
-            <App />
-          </ThemeProvider>
-        </AddressesContextProvider>
+        <WalletContextProvider>
+          <AddressesContextProvider>
+            <ThemeProvider theme={lightTheme}>
+              <GlobalStyle />
+              <App />
+            </ThemeProvider>
+          </AddressesContextProvider>
+        </WalletContextProvider>
       </GlobalContextProvider>
     </Router>
   </React.StrictMode>,

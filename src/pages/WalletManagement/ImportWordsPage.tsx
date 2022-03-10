@@ -35,6 +35,7 @@ import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 import { getHumanReadableError } from '../../utils/api'
 import { bip39Words } from '../../utils/bip39'
+import { scrubWallet, toWalletSecureSecrets } from '../../utils/wallet'
 
 const Storage = getStorage()
 
@@ -71,12 +72,12 @@ const ImportWordsPage = () => {
       .replace(/,/g, ' ')
 
     try {
-      const wallet = walletImport(formatedPhrase)
-
-      setWallet(wallet)
-
-      const encryptedWallet = wallet.encrypt(password)
+      const plainWallet = walletImport(formatedPhrase)
+      const encryptedWallet = plainWallet.encrypt(password)
       Storage.save(accountName, encryptedWallet)
+
+      scrubWallet(plainWallet)
+      setWallet(toWalletSecureSecrets(password, plainWallet))
 
       onButtonNext()
     } catch (e) {

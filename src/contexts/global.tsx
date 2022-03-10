@@ -16,12 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, Wallet, walletOpen } from 'alephium-js'
+import { getStorage, walletOpen } from 'alephium-js'
 import { merge } from 'lodash'
 import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
+import { useWalletContext } from '../contexts/wallet'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import { createClient } from '../utils/api-clients'
 import {
@@ -35,6 +36,7 @@ import {
   UpdateSettingsFunctionSignature,
   updateStoredSettings
 } from '../utils/settings'
+import { scrubWallet, scrubWalletSecureSecrets, toWalletSecureSecrets, WalletSecureSecrets } from '../utils/wallet'
 
 let localStorageSettings = loadSettings()
 
@@ -45,8 +47,8 @@ if (deprecatedSettingsExist()) {
 export interface GlobalContextProps {
   currentAccountName: string
   setCurrentAccountName: (accountName: string) => void
-  wallet?: Wallet
-  setWallet: (w: Wallet | undefined) => void
+  wallet?: WalletSecureSecrets
+  setWallet: (w: WalletSecureSecrets | undefined) => void
   lockWallet: () => void
   login: (accountName: string, password: string, callback: () => void) => void
   client: Client | undefined
@@ -84,7 +86,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   children,
   overrideContextValue
 }) => {
-  const [wallet, setWallet] = useState<Wallet>()
+  const { setPassword, setAccountName } = useWalletContext()
+  const [wallet, setWallet] = useState<WalletSecureSecrets>()
   const [currentAccountName, setCurrentAccountName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
@@ -103,6 +106,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const lockWallet = () => {
     setCurrentAccountName('')
+    if (wallet) scrubWalletSecureSecrets(wallet)
     setWallet(undefined)
   }
 
@@ -113,9 +117,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       return
     }
     try {
-      const wallet = walletOpen(password, walletEncrypted)
-      if (!wallet) return
+      const plainWallet = walletOpen(password, walletEncrypted)
+      if (!plainWallet) return
+      const wallet = toWalletSecureSecrets(password, plainWallet)
       setWallet(wallet)
+      scrubWallet(plainWallet)
+      setAccountName(accountName)
+      setPassword(password)
       setCurrentAccountName(accountName)
       callback()
     } catch (e) {

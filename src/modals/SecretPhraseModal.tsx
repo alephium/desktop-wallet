@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { decrypt } from 'alephium-js/dist/lib/password-crypto'
 import { Edit3 } from 'lucide-react'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -24,11 +25,19 @@ import InfoBox from '../components/InfoBox'
 import { Section } from '../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../components/PasswordConfirmation'
 import { useGlobalContext } from '../contexts/global'
+import { useWalletContext } from '../contexts/wallet'
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const { wallet } = useGlobalContext()
+  const { password, setPassword } = useWalletContext()
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
+
+  let mnemonic
+  if (password && wallet) {
+    mnemonic = decrypt(password, wallet.mnemonicEncrypted)
+    setPassword('')
+  }
 
   return (
     <CenteredModal title="Secret phrase" onClose={onClose} focusMode>
@@ -47,7 +56,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
+          <PhraseBox>{mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
         </Section>
       )}
     </CenteredModal>

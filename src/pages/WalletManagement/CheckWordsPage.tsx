@@ -37,6 +37,7 @@ import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
+import { scrubWallet, toWalletSecureSecrets } from '../../utils/wallet'
 
 const Storage = getStorage()
 
@@ -46,7 +47,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
-  const { mnemonic, plainWallet, password, accountName, setMnemonic, setPassword } = useWalletContext()
+  const { mnemonic, plainWallet, password, accountName, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
 
@@ -186,9 +187,13 @@ const CheckWordsPage = () => {
     if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(accountName, walletEncrypted)
-      setPassword('')
+
+      // setPassword('') happens a bit later in the process.
+
       setMnemonic('')
-      setWallet(plainWallet)
+      const secureWallet = toWalletSecureSecrets(password, plainWallet)
+      scrubWallet(plainWallet)
+      setWallet(secureWallet)
       return true
     }
   }
