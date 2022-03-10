@@ -18,8 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, Wallet, walletOpen } from 'alephium-js'
 import { merge } from 'lodash'
-import { createContext, FC, useContext, useEffect, useRef, useState } from 'react'
-import ReactTooltip from 'react-tooltip'
+import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
@@ -129,29 +128,28 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
-  useEffect(() => {
-    const getClient = async () => {
-      setIsClientLoading(true)
+  const getClient = useCallback(async () => {
+    setIsClientLoading(true)
 
-      const clientResp = await createClient(settings.network)
-      if (clientResp) {
-        setClient(clientResp)
+    const clientResp = await createClient(settings.network)
+    setClient(clientResp)
 
-        console.log('Clients initialized.')
+    if (!clientResp || !settings.network.explorerApiHost || !settings.network.nodeHost) {
+      setIsOffline(true)
+    } else if (clientResp) {
+      console.log('Clients initialized.')
 
-        setSnackbarMessage({
-          text: `Current network: ${currentNetwork}.`,
-          type: 'info',
-          duration: 4000
-        })
-        if (isOffline) setIsOffline(false)
-      } else {
-        setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert' })
-        setIsOffline(true)
-      }
-      setIsClientLoading(false)
+      setSnackbarMessage({
+        text: `Current network: ${currentNetwork}.`,
+        type: 'info',
+        duration: 4000
+      })
+      if (isOffline) setIsOffline(false)
     }
+    setIsClientLoading(false)
+  }, [currentNetwork, isOffline, settings.network])
 
+  useEffect(() => {
     if (
       settings.network &&
       (previousNodeHost.current !== settings.network.nodeHost ||
@@ -161,7 +159,21 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       previousNodeHost.current = settings.network.nodeHost
       previousExplorerAPIHost.current = settings.network.explorerApiHost
     }
-  }, [currentNetwork, isOffline, setSnackbarMessage, settings.network])
+  }, [currentNetwork, getClient, isOffline, setSnackbarMessage, settings.network])
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>
+    if (isOffline) {
+      interval = setInterval(getClient, 2000)
+    }
+    return () => clearInterval(interval)
+  })
+
+  useEffect(() => {
+    if (isOffline) {
+      setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert', duration: 5000 })
+    }
+  }, [currentNetwork, isOffline])
 
   // Save settings to local storage
   useEffect(() => {
