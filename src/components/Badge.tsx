@@ -45,9 +45,17 @@ export default styled(Badge)`
     return css`
       display: inline;
       padding: 5px 10px;
-      color: ${usedColor};
+      color: ${({ theme }) =>
+        theme.name === 'dark'
+          ? usedColor
+          : tinycolor(usedColor).isLight()
+          ? theme.font.primary
+          : theme.font.contrastPrimary};
       border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
-      background-color: ${tinycolor(usedColor).setAlpha(0.08).toString()};
+      background-color: ${({ theme }) =>
+        theme.name === 'dark'
+          ? tinycolor(usedColor).setAlpha(0.08).toString()
+          : tinycolor(usedColor).setAlpha(0.8).toString()};
       ${border &&
       css`
         border: 1px solid ${tinycolor(usedColor).setAlpha(0.2).toString()};
