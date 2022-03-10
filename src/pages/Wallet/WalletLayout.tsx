@@ -23,18 +23,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { FC, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
 import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
+import InfoBox from '../../components/InfoBox'
 import Select from '../../components/Inputs/Select'
-import { Section } from '../../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import LogoSrc from '../../images/alephium_logo.svg'
+import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
+import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
 import SendModal from '../../modals/SendModal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
@@ -55,6 +56,7 @@ const WalletLayout: FC = ({ children }) => {
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const history = useHistory()
   const location = useLocation()
+  const theme = useTheme()
   const accountNames = Storage.list()
   const [switchToAccountName, setSwitchToAccountName] = useState(currentAccountName)
   const accountNameSelectOptions = accountNames
@@ -94,25 +96,30 @@ const WalletLayout: FC = ({ children }) => {
       </AppHeader>
       <WalletSidebar>
         <LogoContainer>
-          <Logo src={LogoSrc} alt="Alephium Logo" />
+          <Logo src={theme.name === 'light' ? LogoDarkSrc : LogoLightSrc} alt="Alephium Logo" />
           <Texts>
             <AlephiumText>Alephium</AlephiumText>
             <WalletText>Wallet</WalletText>
           </Texts>
         </LogoContainer>
-        <Select
-          placeholder="ACCOUNT"
-          options={accountNameSelectOptions}
-          controlledValue={{
-            label: currentAccountName,
-            value: currentAccountName
-          }}
-          onValueChange={handleAccountNameChange}
-          title="Select an account"
-          id="account"
-        />
+        {accountNameSelectOptions.length === 0 ? (
+          <InfoBox text={currentAccountName} label="ACCOUNT" />
+        ) : (
+          <Select
+            placeholder="ACCOUNT"
+            options={accountNameSelectOptions}
+            controlledValue={{
+              label: currentAccountName,
+              value: currentAccountName
+            }}
+            onValueChange={handleAccountNameChange}
+            title="Select an account"
+            id="account"
+            raised
+          />
+        )}
         <WalletActions>
-          <ActionsTitle>Menu</ActionsTitle>
+          <ActionsTitle>MENU</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
           <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
@@ -151,7 +158,8 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 30px;
-  margin-bottom: 45px;
+  margin-bottom: 50px;
+  margin-left: var(--spacing-2);
 `
 
 const Logo = styled.img`
@@ -172,17 +180,17 @@ const WalletText = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const WalletSidebar = styled(Section)`
+const WalletSidebar = styled.div`
   position: fixed;
   top: 0;
   bottom: 0;
   align-items: stretch;
   justify-content: flex-start;
   flex: 1;
-  max-width: ${walletSidebarWidthPx}px;
-  border-right: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: ${appHeaderHeightPx}px var(--spacing-5) 0;
+  width: ${walletSidebarWidthPx}px;
+  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
+  padding: ${appHeaderHeightPx}px var(--spacing-4) 0;
   z-index: 1000;
 
   @media ${deviceBreakPoints.mobile} {

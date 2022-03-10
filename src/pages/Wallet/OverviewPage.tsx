@@ -26,9 +26,10 @@ import styled from 'styled-components'
 
 import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
-import AddressSummaryCard from '../../components/AddressSummaryCard'
+import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
+import GradientCanvas from '../../components/GradientCanvas'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
@@ -40,20 +41,20 @@ import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 import { appHeaderHeightPx } from '../../style/globalStyles'
 
 const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction' },
-  { title: 'Timestamp' },
-  { title: 'Address' },
-  { title: 'Amount', align: 'end' }
+  { title: 'Direction', width: '100px' },
+  { title: 'Timestamp', width: '100px' },
+  { title: 'Address', width: '100px' },
+  { title: 'Amount', align: 'end', width: '100px' }
 ]
 
-const minTableColumnWidth = '104px'
+const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 type TransactionAndAddress = Transaction & { address: Address }
 
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionAndAddress>()
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
-  const { addresses, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
   const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
 
@@ -75,6 +76,8 @@ const OverviewPage = () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
+  const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+
   useEffect(() => {
     if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
       addressSummaryCardsRef.current.scrollLeft = 0
@@ -84,8 +87,9 @@ const OverviewPage = () => {
   return (
     <MainContent>
       <Header>
+        <GradientCanvas />
         <Summaries>
-          <AccountSummaryCardStyled />
+          <AccountSummaryCardStyled isLoading={showSkeletonLoading} />
           <AddressSummaryCards
             collapsed={!areAddressSummariesExpanded}
             totalAddresses={addresses.length}
@@ -111,12 +115,12 @@ const OverviewPage = () => {
         </Summaries>
       </Header>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
+      <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading}>
         {allPendingTxs
           .slice(0)
           .reverse()
           .map(({ txId, timestamp, address, amount, type }) => (
-            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
               <TableCell>
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
@@ -137,15 +141,17 @@ const OverviewPage = () => {
           return (
             <TableRow
               key={`${transaction.hash}-${transaction.address.hash}`}
-              minColumnWidth={minTableColumnWidth}
+              columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
                 <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
-                <Badge color={transaction.address.settings.color}>{transaction.address.getLabelName()}</Badge>
+              <TableCell>
+                <Badge color={transaction.address.settings.color} truncate>
+                  {transaction.address.getLabelName()}
+                </Badge>
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
@@ -165,7 +171,7 @@ const OverviewPage = () => {
             </TableCell>
           </TableRow>
         )}
-        {allPendingTxs.length === 0 && allConfirmedTxs.length === 0 && (
+        {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
           <TableRow>
             <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
           </TableRow>
@@ -186,7 +192,13 @@ const OverviewPage = () => {
 
 export default OverviewPage
 
+const addressSummaryCardsGapPx = 15
+const expandButtonLeftMarginPx = 20
+const collapsedaddressSummaryCardWidthPx = 8
+const scrollableCardsSectionPaddingPx = 71
+
 const Header = styled.header`
+  position: relative;
   background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
   background-position: bottom;
   background-size: cover;
@@ -204,22 +216,29 @@ const Summaries = styled.div`
 
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
-  gap: var(--spacing-3);
+  gap: ${addressSummaryCardsGapPx}px;
   overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
   margin-left: calc(var(--spacing-2) * -1);
   padding-left: var(--spacing-4);
   align-items: center;
-  padding-bottom: 71px;
-  margin-bottom: -71px;
-  padding-top: 71px;
-  margin-top: -71px;
-  width: ${({ collapsed, totalAddresses }) => (collapsed ? `${totalAddresses * 8}px` : '100%')};
+  padding-bottom: ${scrollableCardsSectionPaddingPx}px;
+  margin-bottom: -${scrollableCardsSectionPaddingPx}px;
+  padding-top: ${scrollableCardsSectionPaddingPx}px;
+  margin-top: -${scrollableCardsSectionPaddingPx}px;
+  width: ${({ collapsed, totalAddresses }) =>
+    collapsed
+      ? `${totalAddresses * collapsedaddressSummaryCardWidthPx}px`
+      : `${
+          totalAddresses * (addressSummaryCardWidthPx + addressSummaryCardsGapPx) +
+          (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
+        }px`};
   transition: width 0.2s ease-out;
+  z-index: 1;
 `
 
 const AccountSummaryCardStyled = styled(AccountSummaryCard)`
   flex-shrink: 0;
-  z-index: 1;
+  z-index: 2;
 `
 
 const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; clickable: boolean }>`
@@ -229,6 +248,7 @@ const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; cli
 const ExpandButton = styled(Button)`
   flex-shrink: 0;
   background-color: ${({ theme }) => theme.bg.accent};
-  margin-left: 20px;
+  margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
+  z-index: 1;
 `

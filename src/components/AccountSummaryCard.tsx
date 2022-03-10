@@ -16,15 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Check, Lock } from 'lucide-react'
+import classNames from 'classnames'
 import styled from 'styled-components'
 
 import { useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
 import Amount from './Amount'
 
-const AccountSummaryCard = ({ className }: { className?: string }) => {
-  const { currentAccountName } = useGlobalContext()
+interface AccountSummaryCardProps {
+  isLoading?: boolean
+  className?: string
+}
+
+const AccountSummaryCard = ({ className, isLoading }: AccountSummaryCardProps) => {
   const { addresses } = useAddressesContext()
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
@@ -32,27 +35,22 @@ const AccountSummaryCard = ({ className }: { className?: string }) => {
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
 
   return (
-    <div className={className}>
-      <AmountContainer>
+    <div className={classNames(className, { 'skeleton-loader': isLoading })}>
+      <div>
         <AmountStyled value={totalBalance} />
-        Total balance
-      </AmountContainer>
+        <BalanceLabel>TOTAL BALANCE</BalanceLabel>
+      </div>
       <Divider />
       <Balances>
         <Balance>
-          <Check size="12px" />
-          <span>
-            Available: <Amount value={totalAvailableBalance} />
-          </span>
+          <Amount value={totalAvailableBalance} />
+          <BalanceLabel>AVAILABLE</BalanceLabel>
         </Balance>
-        <BalanceLocked>
-          <Lock size="12px" />
-          <span>
-            Locked: <Amount value={totalLockedBalance} />
-          </span>
-        </BalanceLocked>
+        <Balance>
+          <Amount value={totalLockedBalance} />
+          <BalanceLabel>LOCKED</BalanceLabel>
+        </Balance>
       </Balances>
-      <AccountName>{currentAccountName}</AccountName>
     </div>
   )
 }
@@ -63,7 +61,7 @@ export default styled(AccountSummaryCard)`
   background-color: ${({ theme }) => theme.bg.primary};
   padding: var(--spacing-4);
   width: 300px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  box-shadow: ${({ theme }) => theme.shadow.tertiary};
 `
 
 const AmountStyled = styled(Amount)`
@@ -74,38 +72,27 @@ const AmountStyled = styled(Amount)`
   margin-bottom: 3px;
 `
 
-const AmountContainer = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
 const Divider = styled.div`
   width: 24px;
-  height: 1px;
+  height: 2px;
   background-color: ${({ theme }) => theme.border.primary};
   margin: var(--spacing-3) 0;
 `
 
 const Balance = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
   font-weight: var(--fontWeight-medium);
+  font-size: large;
   gap: var(--spacing-1);
 `
 
 const Balances = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--spacing-5);
 `
 
-const BalanceLocked = styled(Balance)`
+const BalanceLabel = styled.label`
   color: ${({ theme }) => theme.font.secondary};
-`
-
-const AccountName = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 10px;
-  margin-bottom: -8px;
-  text-transform: uppercase;
-  text-align: right;
+  font-size: 11px;
 `

@@ -25,11 +25,11 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: 'rgba(61, 64, 74, 0.04)',
-    tertiary: 'rgba(61, 64, 74, 0.15)',
+    secondary: '#fbfbfb',
+    tertiary: '#f7f7f7',
     hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#212126',
-    accent: tinycolor('#5981f3').setAlpha(0.2).toString()
+    accent: tinycolor('#000').setAlpha(0.04).toString()
   },
   font: {
     primary: '#000',
@@ -39,8 +39,13 @@ export const lightTheme: DefaultTheme = {
     highlight: '#ffb800'
   },
   border: {
-    primary: 'rgba(0, 0, 0, 0.05)',
-    secondary: 'rgba(0, 0, 0, 0.02)'
+    primary: '#ebebeb',
+    secondary: '#f1f1f1'
+  },
+  shadow: {
+    primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.04)',
+    tertiary: '0 20px 20px rgba(0, 0, 0, 0.05)'
   },
   global: {
     accent: '#5981f3',
@@ -54,9 +59,9 @@ export const lightTheme: DefaultTheme = {
 export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
-    primary: '#1b1b1f',
+    primary: '#19191E',
     secondary: '#141417',
-    tertiary: 'rgba(61, 64, 74, 0.2)',
+    tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
     accent: tinycolor('#000').setAlpha(0.3).toString()
@@ -69,8 +74,13 @@ export const darkTheme: DefaultTheme = {
     highlight: '#ffb800'
   },
   border: {
-    primary: '#34353A',
-    secondary: '#27282d'
+    primary: 'rgb(43, 43, 48)',
+    secondary: 'rgb(34, 34, 38)'
+  },
+  shadow: {
+    primary: '0 2px 2px rgba(0, 0, 0, 0.25)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.3)',
+    tertiary: '0 25px 25px rgba(0, 0, 0, 0.2)'
   },
   global: {
     accent: '#6083FF',

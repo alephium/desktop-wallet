@@ -24,7 +24,7 @@ import tags from './tags'
 
 export const appHeaderHeightPx = 60
 
-export const walletSidebarWidthPx = 280
+export const walletSidebarWidthPx = 250
 
 const extensionWindowDimensions = `
   height: 600px;
@@ -43,11 +43,6 @@ export const GlobalStyle = createGlobalStyle`
     --color-orange: #F6C76A;
     --color-grey: #646775;
     --color-purple: #3A0595;
-    --color-shadow-15: rgba(0, 0, 0, 0.15);
-    --color-shadow-10: rgba(0, 0, 0, 0.1);
-    --color-shadow-5: rgba(0, 0, 0, 0.05);
-
-    --shadow: 0 15px 15px var(--color-shadow-15);
 
     /* spacial system of 5px linear scale */
     --spacing-1: 5px;
@@ -55,6 +50,9 @@ export const GlobalStyle = createGlobalStyle`
     --spacing-3: 15px;
     --spacing-4: 20px;
     --spacing-5: 25px;
+    --spacing-6: 30px;
+    --spacing-7: 35px;
+    --spacing-8: 40px;
 
     --radius-small: 4px;
     --radius: 7px;
@@ -66,8 +64,9 @@ export const GlobalStyle = createGlobalStyle`
     --fontWeight-semiBold: 600;
     --fontWeight-bold: 800;
 
-    --inputHeight: 46px;
-    --toggleHeight: 30px;
+    --inputHeight: 45px;
+    --tableCellHeight: 47px;
+    --toggleHeight: 28px;
   }
 
   html {
@@ -80,6 +79,21 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   ${tags}
+
+  .skeleton-loader {
+    background-image: linear-gradient(-90deg, rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+    background-size: 400% 400%;
+    animation: gradientAnimation 1.5s ease-in-out infinite;
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 0%;
+      }
+      100% {
+        background-position: -135% 0%;
+      }
+    }
+  }
 `
 
 // Breakpoints

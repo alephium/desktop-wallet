@@ -20,36 +20,42 @@ import { FC } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import Truncate from './Truncate'
+
 interface BadgeProps {
   className?: string
   color?: string
   border?: boolean
   truncate?: boolean
+  rounded?: boolean
 }
 
-const Badge: FC<BadgeProps> = ({ className, children }) => {
-  return <span className={className}>{children}</span>
+const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false }) => {
+  return truncate ? (
+    <Truncate className={className}>{children}</Truncate>
+  ) : (
+    <span className={className}>{children}</span>
+  )
 }
 
 export default styled(Badge)`
-  display: inline-block;
-  padding: 5px 8px;
-  color: ${({ color, theme }) => color || theme.font.primary}};
-  border-radius: 20px;
-  background-color: ${({ color, theme }) =>
-    tinycolor(color || theme.font.primary)
-      .setAlpha(0.2)
-      .toString()};
-  ${({ border, color }) =>
-    border &&
-    css`
-      border: 1px solid ${color};
-    `};
-  ${({ truncate }) =>
-    truncate &&
-    css`
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    `}
+  ${({ color, theme, rounded, border, truncate }) => {
+    const usedColor = color || theme.font.primary
+
+    return css`
+      display: inline;
+      padding: 5px 10px;
+      color: ${usedColor};
+      border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
+      background-color: ${tinycolor(usedColor).setAlpha(0.08).toString()};
+      ${border &&
+      css`
+        border: 1px solid ${tinycolor(usedColor).setAlpha(0.2).toString()};
+      `};
+      ${truncate &&
+      css`
+        max-width: 100%;
+      `}
+    `
+  }}
 `

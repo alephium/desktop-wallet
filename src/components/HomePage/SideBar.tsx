@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import alephiumLogo from '../../images/alephium_logo.svg'
+import alephiumLogo from '../../images/alephium_logo_light.svg'
 import { ReactComponent as AtmosphericGlow } from '../../images/athmospheric_glow.svg'
 import { ReactComponent as MountainSVG } from '../../images/mountain.svg'
 import { deviceBreakPoints } from '../../style/globalStyles'

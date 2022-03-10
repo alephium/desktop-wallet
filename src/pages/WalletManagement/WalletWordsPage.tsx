@@ -136,7 +136,7 @@ const MnemonicWordContainer = styled.div`
   margin: 6px;
   border-radius: var(--radius-small);
   overflow: hidden;
-  box-shadow: 0 5px 5px var(--color-shadow-10);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 `
 
 const MnemonicNumber = styled.div`

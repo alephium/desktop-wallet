@@ -77,7 +77,7 @@ export default styled(ModalContainer)<{ hasPadding?: boolean }>`
   left: 0;
   display: flex;
   padding: ${({ hasPadding }) => hasPadding && 'var(--spacing-4)'};
-  z-index: 1000;
+  z-index: 1001;
 `
 
 export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: boolean }>`

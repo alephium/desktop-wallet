@@ -16,17 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import { ComponentPropsWithoutRef } from 'react'
 
-export const PageH1 = styled.h1`
-  font-size: 18px;
-  font-weight: var(--fontWeight-medium);
-  margin: 0;
-`
+import Badge from './Badge'
 
-export const PageH2 = styled.h2`
-  font-size: 16px;
-  font-weight: var(--fontWeight-medium);
-  margin-top: var(--spacing-8);
-  margin-bottom: var(--spacing-5);
-`
+type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & { addressName: string }
+
+const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
+  <Badge className={className} rounded {...props}>
+    {addressName}
+  </Badge>
+)
+
+export default AddressBadge

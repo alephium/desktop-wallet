@@ -30,7 +30,7 @@ const FloatingLogo = styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
 
   path {
     fill: ${({ theme }) =>
-      theme.name === 'light' ? 'var(--color-shadow-5) !important' : 'rgba(255, 255, 255, 0.03) !important'};
+      (theme.name === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.03)') + ' !important'};
   }
 
   @media ${deviceBreakPoints.mobile} {

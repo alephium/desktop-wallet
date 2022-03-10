@@ -71,7 +71,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (squared ? '40px' : short ? '30px' : 'var(--inputHeight)')};
+  height: ${({ squared, short }) => (squared ? '40px' : short ? '34px' : 'var(--inputHeight)')};
   width: ${({ squared, short }) => (squared ? '40px' : short ? 'auto' : '80%')};
   max-width: 250px;
   border-radius: var(--radius-small);
@@ -93,12 +93,14 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       ? theme.font.contrastPrimary
       : secondary
       ? theme.global.accent
+      : theme.name === 'light'
+      ? theme.font.contrastPrimary
       : theme.font.primary};
   font-weight: var(--fontWeight-medium);
   font-size: 12px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};
-  padding: ${({ squared, short }) => (squared ? 'var(--spacing-2)' : '0 13px')};
+  padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
 
@@ -107,7 +109,7 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>
       transparent
-        ? 'transparent'
+        ? theme.bg.accent
         : secondary
         ? tinycolor(theme.bg.tertiary).lighten(30).toString()
         : alert

@@ -26,6 +26,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
+import AddressBadge from '../../components/AddressBadge'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -39,18 +40,19 @@ import { MainContent, PageTitleRow } from '../../components/PageComponents/PageC
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
+import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 
 const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction' },
-  { title: 'Timestamp' },
-  { title: 'Address(es)' },
-  { title: 'Amount', align: 'end' }
+  { title: 'Direction', width: '100px' },
+  { title: 'Timestamp', width: '100px' },
+  { title: 'Address(es)', width: '150px' },
+  { title: 'Amount', align: 'end', width: '100px' }
 ]
 
-const minTableColumnWidth = '104px'
+const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
@@ -75,8 +77,10 @@ const AddressDetailsPage = () => {
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => history.goBack()} />
-          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabel />}</PageH1Styled>
-          {address.settings.label && <BadgeStyled color={address.settings.color}>{address.getLabelName()}</BadgeStyled>}
+          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
+          {address.settings.label && (
+            <BadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
+          )}
           <OptionsButton
             transparent
             squared
@@ -91,7 +95,7 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Address</DataListCell>
           <DataListCell>
-            {addressHash}
+            <Truncate>{addressHash}</Truncate>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} />
               <QRCodeButton textToEncode={addressHash} />
@@ -102,7 +106,11 @@ const AddressDetailsPage = () => {
         <DataListRow>
           <DataListCell>Label</DataListCell>
           <DataListCell>
-            {address.settings.label ? <Badge color={address.settings.color}>{address.getLabelName()}</Badge> : '-'}
+            {address.settings.label ? (
+              <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
+            ) : (
+              '-'
+            )}
           </DataListCell>
         </DataListRow>
         <DataListRow>
@@ -113,24 +121,32 @@ const AddressDetailsPage = () => {
           <DataListRow>
             <DataListCell>Locked ALPH balance</DataListCell>
             <DataListCell>
-              <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
+              <Badge>
+                <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
+              </Badge>
             </DataListCell>
           </DataListRow>
         )}
         <DataListRow>
           <DataListCell>Total ALPH balance</DataListCell>
           <DataListCell>
-            {address.details?.balance ? <AmountStyled value={BigInt(address.details.balance)} fadeDecimals /> : '-'}
+            {address.details?.balance ? (
+              <Badge border>
+                <Amount value={BigInt(address.details.balance)} fadeDecimals />
+              </Badge>
+            ) : (
+              '-'
+            )}
           </DataListCell>
         </DataListRow>
       </DataList>
       <PageH2>Transaction history</PageH2>
-      <Table headers={transactionsTableHeaders} minColumnWidth={minTableColumnWidth}>
+      <Table headers={transactionsTableHeaders} minWidth="500px">
         {address.transactions.pending
           .slice(0)
           .reverse()
           .map(({ txId, timestamp, toAddress, amount, type }) => (
-            <TableRow key={txId} minColumnWidth={minTableColumnWidth} blinking>
+            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
               <TableCell>
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
@@ -152,7 +168,7 @@ const AddressDetailsPage = () => {
           return (
             <TableRow
               key={transaction.hash}
-              minColumnWidth={minTableColumnWidth}
+              columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
@@ -226,12 +242,12 @@ const ArrowLeftStyled = styled(ArrowLeft)`
   }
 `
 
-const AmountStyled = styled(Amount)`
-  color: ${({ theme }) => theme.font.highlight};
+const BadgeStyled = styled(AddressBadge)`
+  margin-left: var(--spacing-5);
 `
 
-const BadgeStyled = styled(Badge)`
-  margin-left: var(--spacing-5);
+const MainAddressLabelStyled = styled(MainAddressLabel)`
+  margin-top: 2px;
 `
 
 const OptionsButton = styled(Button)`
@@ -244,6 +260,8 @@ const PageH1Styled = styled(PageH1)`
 `
 
 const IconButtons = styled.div`
+  display: flex;
+
   > svg {
     margin-left: 10px;
   }

@@ -24,12 +24,15 @@ import Badge from './Badge'
 const NetworkBadge = ({ className }: { className?: string }) => {
   const { currentNetwork } = useGlobalContext()
 
-  return <Badge className={className}>{currentNetwork}</Badge>
+  return (
+    <Badge className={className} border>
+      {currentNetwork}
+    </Badge>
+  )
 }
 
 export default styled(NetworkBadge)`
-  color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
+  color: ${({ theme }) => theme.font.primary};
+  background-color: ${({ theme }) => theme.bg.accent};
   font-weight: var(--fontWeight-semiBold);
 `

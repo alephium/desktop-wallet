@@ -26,7 +26,7 @@ import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import SettingsModal from '../modals/SettingsModal'
 import { deviceBreakPoints } from '../style/globalStyles'
-import Badge from './Badge'
+import AddressBadge from './AddressBadge'
 import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
@@ -55,30 +55,30 @@ const AppHeader: FC = ({ children }) => {
       <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
         <ThemeSwitcher />
         <HeaderDivider />
-        <CompactToggle
-          toggled={discreetMode}
-          onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-          IconOn={EyeOff}
-          IconOff={Eye}
-        />
-        <HeaderDivider />
-        <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label="Settings">
-          <SettingsIcon />
-        </Button>
-        {mainAddress && (
-          <>
-            <HeaderDivider />
-            <Badge color={mainAddress?.settings.color}>{mainAddress?.getLabelName()}</Badge>
-          </>
-        )}
-        <HeaderDivider />
         {children && (
           <>
             {children}
             <HeaderDivider />
           </>
         )}
+        <CompactToggle
+          toggled={discreetMode}
+          onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
+          IconOn={EyeOff}
+          IconOff={Eye}
+        />
+        {mainAddress && (
+          <>
+            <HeaderDivider />
+            <AddressBadge color={mainAddress?.settings.color} addressName={mainAddress?.getLabelName()} />
+          </>
+        )}
+        <HeaderDivider />
         <NetworkBadge />
+        <HeaderDivider />
+        <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label="Settings">
+          <SettingsIcon />
+        </Button>
       </HeaderContainer>
       <AnimatePresence>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
@@ -90,7 +90,7 @@ const AppHeader: FC = ({ children }) => {
 export const HeaderDivider = styled.div`
   width: 1px;
   height: var(--spacing-2);
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
 `
 
 const HeaderContainer = styled(motion.header)`

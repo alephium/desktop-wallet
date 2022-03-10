@@ -28,6 +28,7 @@ interface ExpandableSectionProps {
   sectionTitleOpen?: string
   open?: boolean
   onOpenChange?: (isOpen: boolean) => void
+  centered?: boolean
   className?: string
 }
 
@@ -37,6 +38,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   open,
   onOpenChange,
   children,
+  centered,
   className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
@@ -54,6 +56,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   return (
     <div className={className}>
       <Title onClick={handleTitleClick}>
+        {centered && <LeftDivider />}
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
         <Divider />
@@ -70,7 +73,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 export default styled(ExpandableSection)`
   display: flex;
   flex-direction: column;
-  margin: var(--spacing-2) 0;
+  margin: var(--spacing-5) 0;
 `
 
 const Title = styled.div`
@@ -86,14 +89,18 @@ const Chevron = styled(motion(ChevronDown))`
 `
 
 const TitleText = styled.span`
-  margin-left: var(--spacing-2);
-  margin-right: var(--spacing-3);
+  margin-left: 6px;
+  margin-right: 6px;
 `
 
 const Divider = styled.div`
   height: 1px;
   background-color: ${({ theme }) => theme.border.secondary};
   flex: 1;
+`
+
+const LeftDivider = styled(Divider)`
+  margin-right: 6px;
 `
 
 const ContentWrapper = styled(motion.div)`

@@ -21,10 +21,11 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { Address } from '../contexts/addresses'
+import AddressBadge from './AddressBadge'
 import Amount from './Amount'
-import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
+import Truncate from './Truncate'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -34,6 +35,8 @@ interface AddressSummaryCardProps {
   className?: string
   position?: number
 }
+
+export const addressSummaryCardWidthPx = 100
 
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const history = useHistory()
@@ -52,9 +55,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         clickable={clickable}
       >
         <AddressNameSection>
-          <Badge color={address.settings.color} truncate>
-            {address.getLabelName()}
-          </Badge>
+          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
           <Hash>{address.hash}</Hash>
         </AddressNameSection>
         <AmountsSection>
@@ -70,7 +71,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
 }
 
 export default styled(AddressSummaryCard)`
-  width: 100px;
+  width: ${addressSummaryCardWidthPx}px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.secondary};
   border-radius: var(--radius-medium);
@@ -90,13 +91,10 @@ const AddressNameSection = styled(PaddedSection)`
   }
 `
 
-const Hash = styled.div`
+const Hash = styled(Truncate)`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 10px;
   font-weight: var(--fontWeight-medium);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin-top: var(--spacing-1);
 `
 

@@ -108,7 +108,8 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: var(--radius);
-  box-shadow: ${({ transparentBg }) => !transparentBg && '0 2px 2px var(--color-shadow-10)'};
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.secondary};
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
@@ -179,5 +180,5 @@ export const PageTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-3);
 `

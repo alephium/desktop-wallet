@@ -127,6 +127,7 @@ export interface AddressesContextProps {
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
+  generateOneAddressPerGroup: (labelPrefix: string, color: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
 
@@ -139,6 +140,7 @@ export const initialAddressesContext: AddressesContextProps = {
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
   fetchAddressTransactionsNextPage: () => null,
+  generateOneAddressPerGroup: () => null,
   isLoadingData: false
 }
 
@@ -266,6 +268,24 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [currentAccountName, fetchAndStoreAddressesData]
   )
 
+  const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
+    if (!wallet?.seed) return
+
+    const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
+    Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
+      .filter((group) => !skipGroups.includes(group))
+      .map((group) => ({ ...deriveNewAddressData(wallet.seed, group, undefined, skipAddressIndexes), group }))
+      .forEach((address) => {
+        saveNewAddress(
+          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+            isMain: false,
+            label: `${labelPrefix} ${address.group}`,
+            color: labelColor
+          })
+        )
+      })
+  }
+
   // Clean state when locking the wallet or changing accounts
   useEffect(() => {
     if (wallet === undefined || wallet !== previousWallet.current) {
@@ -363,6 +383,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           updateAddressSettings,
           refreshAddressesData: fetchAndStoreAddressesData,
           fetchAddressTransactionsNextPage,
+          generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import classNames from 'classnames'
 import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
@@ -25,9 +26,11 @@ export interface TableProps {
   headers: {
     title: string
     align?: AlignType
+    width?: string
   }[]
-  minColumnWidth?: string
   className?: string
+  isLoading?: boolean
+  minWidth?: string
 }
 
 interface TableCellProps {
@@ -35,28 +38,41 @@ interface TableCellProps {
   align?: AlignType
 }
 
-let Table: FC<TableProps> = ({ className, children, headers, minColumnWidth = '0px' }) => (
-  <div className={className}>
-    <TableHeaderRow minColumnWidth={minColumnWidth}>
-      {headers.map(({ title, align }) => (
-        <TableHeaderCell key={title} align={align}>
-          {title}
-        </TableHeaderCell>
-      ))}
-    </TableHeaderRow>
-    {children}
-  </div>
+const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
+  <ScrollableWrapper>
+    <div className={classNames(className, { 'skeleton-loader': isLoading })}>
+      <TableHeaderRow columnWidths={headers.map(({ width }) => width)}>
+        {headers.map(({ title, align }) => (
+          <TableHeaderCell key={title} align={align}>
+            {title}
+          </TableHeaderCell>
+        ))}
+      </TableHeaderRow>
+      {children}
+    </div>
+  </ScrollableWrapper>
 )
 
-Table = styled(Table)`
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.secondary};
-  display: table;
+export default styled(Table)`
+  background-color: ${({ theme }) => theme.bg.primary};
+
+  ${({ minWidth }) =>
+    minWidth &&
+    css`
+      min-width: ${minWidth};
+    `}
+
+  ${({ isLoading }) =>
+    isLoading &&
+    css`
+      min-height: 300px;
+      width: 100%;
+    `}
 `
 
 export const TableCell = styled.div<TableCellProps>`
   font-weight: var(--fontWeight-semiBold);
+  position: relative;
   ${({ truncate }) =>
     truncate &&
     css`
@@ -75,17 +91,25 @@ const TableHeaderCell = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const TableColumns = styled.div<{ minColumnWidth?: string }>`
+const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
   display: grid;
-  grid-auto-columns: ${({ minColumnWidth }) => `minmax(${minColumnWidth || '0px'}, 1fr)`};
-  grid-auto-flow: column;
+  ${({ columnWidths }) =>
+    columnWidths
+      ? css`
+          grid-template-columns: ${columnWidths.map((columnWidth) => `minmax(${columnWidth || '0px'}, 1fr)`).join(' ')};
+        `
+      : css`
+          grid-auto-columns: minmax(0px, 1fr);
+          grid-auto-flow: column;
+        `};
 
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: 0 var(--spacing-5);
   align-items: center;
+  height: var(--tableCellHeight);
 `
 
 const TableHeaderRow = styled(TableColumns)`
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
   border-top-left-radius: var(--radius);
   border-top-right-radius: var(--radius);
 `
@@ -140,4 +164,10 @@ export const TableCellPlaceholder = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export default Table
+const ScrollableWrapper = styled.div`
+  width: 100%;
+  overflow: auto;
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+`

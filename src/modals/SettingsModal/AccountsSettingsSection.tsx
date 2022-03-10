@@ -26,6 +26,7 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
+import { deleteStoredAddressMetadataOfAccount } from '../../utils/addresses'
 import AccountRemovalModal from '../AccountRemovalModal'
 import SecretPhraseModal from '../SecretPhraseModal'
 
@@ -42,6 +43,7 @@ const AccountsSettingsSection = () => {
 
   const handleRemoveAccount = (accountName: string) => {
     Storage.remove(accountName)
+    deleteStoredAddressMetadataOfAccount(accountName)
 
     accountName === currentAccountName ? lockWallet() : setAccountToRemove('')
   }

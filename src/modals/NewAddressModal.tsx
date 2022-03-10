@@ -45,9 +45,9 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
   const { wallet } = useGlobalContext()
-  const { addresses, updateAddressSettings, saveNewAddress, mainAddress } = useAddressesContext()
+  const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
+    useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-  const [addressesPerGroup, setAddressesPerGroup] = useState<AddressAndKeys[]>([])
 
   const generateNewAddress = useCallback(
     (group?: number) => {
@@ -59,18 +59,9 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     [wallet]
   )
 
-  const generateOneAddressPerGroup = useCallback(() => {
-    if (!wallet?.seed) return
-    setAddressesPerGroup(
-      Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, i) =>
-        deriveNewAddressData(wallet.seed, i, undefined, currentAddressIndexes.current)
-      )
-    )
-  }, [wallet])
-
   useEffect(() => {
-    singleAddress ? generateNewAddress() : generateOneAddressPerGroup()
-  }, [generateNewAddress, generateOneAddressPerGroup, singleAddress])
+    singleAddress && generateNewAddress()
+  }, [generateNewAddress, singleAddress])
 
   const onGenerateClick = () => {
     if (newAddressData) {
@@ -90,16 +81,8 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.addressIndex) {
         updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
       }
-    } else if (addressesPerGroup.length > 0) {
-      addressesPerGroup.forEach((address, index) => {
-        saveNewAddress(
-          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
-            isMain: false,
-            label: `${addressLabel.title} ${index}`,
-            color: addressLabel.color
-          })
-        )
-      })
+    } else {
+      generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
     }
     onClose()
   }

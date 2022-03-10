@@ -59,3 +59,7 @@ export const storeAddressMetadataOfAccount = (accountName: string, index: number
   console.log(`🟠 Storing address index ${index} metadata locally`)
   localStorage.setItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
 }
+
+export const deleteStoredAddressMetadataOfAccount = (accountName: string) => {
+  localStorage.removeItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+}
