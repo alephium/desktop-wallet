@@ -23,6 +23,7 @@ import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
+import AddressBadge from '../components/AddressBadge'
 import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
@@ -72,14 +73,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <HeaderInfo>
           {isOutgoingTx ? '↑ Sent' : '↓ Received'}
           <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
-          <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
       </Header>
       <Details>
         <DetailsRow label="From">
           {isOutgoingTx ? (
-            <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+            <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -93,7 +94,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label="To">
           {!isOutgoingTx ? (
-            <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+            <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
           ) : (
             <IOList
               currentAddress={address.hash}

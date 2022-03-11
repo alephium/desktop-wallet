@@ -25,7 +25,6 @@ import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
-import Badge from '../Badge'
 import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
@@ -146,7 +145,9 @@ const AddressSelectModal = ({
         {displayedOptions.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && <Badge color={address?.settings.color}>{address?.getLabelName()}</Badge>}
+            {address?.settings.label && (
+              <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
+            )}
             {address.shortHash}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>

@@ -71,7 +71,10 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
 }
 
 export default styled(AddressSummaryCard)`
+  display: flex;
+  flex-direction: column;
   width: ${addressSummaryCardWidthPx}px;
+  height: 95%;
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.secondary};
   border-radius: var(--radius-medium);
@@ -99,6 +102,10 @@ const Hash = styled(Truncate)`
 `
 
 const AmountsSection = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: ${({ theme }) => theme.bg.primary};
   border-top: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -107,7 +114,7 @@ const AmountsSection = styled.div`
 `
 
 const AmountHighlighted = styled(Amount)`
-  color: ${({ theme }) => theme.font.highlight};
+  font-size: 1.2em;
 `
 
 const ButtonsSection = styled(PaddedSection)`
@@ -117,5 +124,8 @@ const ButtonsSection = styled(PaddedSection)`
 `
 
 const ClickableArea = styled.div<{ clickable?: boolean }>`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   cursor: ${({ clickable }) => (clickable ? 'pointer' : 'default')};
 `

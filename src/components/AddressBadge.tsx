@@ -17,6 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ComponentPropsWithoutRef } from 'react'
+import styled, { css } from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 import Badge from './Badge'
 
@@ -28,4 +30,22 @@ const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) =
   </Badge>
 )
 
-export default AddressBadge
+export default styled(AddressBadge)`
+  ${({ color, theme }) => {
+    const usedColor = color || theme.font.secondary
+
+    return css`
+      color: ${({ theme }) =>
+        theme.name === 'dark'
+          ? usedColor
+          : tinycolor(usedColor).isLight()
+          ? theme.font.primary
+          : theme.font.contrastPrimary};
+      background-color: ${({ theme }) =>
+        theme.name === 'dark'
+          ? tinycolor(usedColor).setAlpha(0.08).toString()
+          : tinycolor(usedColor).setAlpha(0.8).toString()};
+      padding: 7px 10px;
+    `
+  }}
+`

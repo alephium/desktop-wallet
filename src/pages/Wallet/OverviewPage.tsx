@@ -26,8 +26,8 @@ import styled from 'styled-components'
 
 import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
+import AddressBadge from '../../components/AddressBadge'
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
-import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import GradientCanvas from '../../components/GradientCanvas'
 import { MainContent } from '../../components/PageComponents/PageContainers'
@@ -126,7 +126,7 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+                <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
               </TableCell>
               <TableCell align="end">
                 {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
@@ -149,9 +149,11 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell>
-                <Badge color={transaction.address.settings.color} truncate>
-                  {transaction.address.getLabelName()}
-                </Badge>
+                <AddressBadge
+                  color={transaction.address.settings.color}
+                  truncate
+                  addressName={transaction.address.getLabelName()}
+                />
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
@@ -194,8 +196,7 @@ export default OverviewPage
 
 const addressSummaryCardsGapPx = 15
 const expandButtonLeftMarginPx = 20
-const collapsedaddressSummaryCardWidthPx = 8
-const scrollableCardsSectionPaddingPx = 71
+const collapsedaddressSummaryCardWidthPx = 10
 
 const Header = styled.header`
   position: relative;
@@ -211,7 +212,6 @@ const Header = styled.header`
 
 const Summaries = styled.div`
   display: flex;
-  align-items: center;
 `
 
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
@@ -221,13 +221,9 @@ const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: num
   margin-left: calc(var(--spacing-2) * -1);
   padding-left: var(--spacing-4);
   align-items: center;
-  padding-bottom: ${scrollableCardsSectionPaddingPx}px;
-  margin-bottom: -${scrollableCardsSectionPaddingPx}px;
-  padding-top: ${scrollableCardsSectionPaddingPx}px;
-  margin-top: -${scrollableCardsSectionPaddingPx}px;
   width: ${({ collapsed, totalAddresses }) =>
     collapsed
-      ? `${totalAddresses * collapsedaddressSummaryCardWidthPx}px`
+      ? `${totalAddresses * collapsedaddressSummaryCardWidthPx + addressSummaryCardsGapPx}px`
       : `${
           totalAddresses * (addressSummaryCardWidthPx + addressSummaryCardsGapPx) +
           (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
@@ -251,4 +247,5 @@ const ExpandButton = styled(Button)`
   margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
   z-index: 1;
+  align-self: center;
 `
