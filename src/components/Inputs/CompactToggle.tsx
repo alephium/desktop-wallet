@@ -27,8 +27,8 @@ interface CompactToggleProps {
   IconOff: (props: LucideProps) => JSX.Element
 }
 
-const CompactToggle = ({ toggled, onToggle, IconOn, IconOff }: CompactToggleProps) => (
-  <Button squared transparent onClick={() => onToggle(!toggled)}>
+const CompactToggle = ({ toggled, onToggle, IconOn, IconOff, ...props }: CompactToggleProps) => (
+  <Button squared transparent onClick={() => onToggle(!toggled)} {...props}>
     {toggled ? <IconOn /> : <IconOff />}
   </Button>
 )

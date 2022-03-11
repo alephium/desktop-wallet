@@ -18,7 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence, motion, useTransform, useViewportScroll } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon } from 'lucide-react'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
+import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -31,12 +32,14 @@ import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
+import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
+  const { isOffline } = useGlobalContext()
 
   const headerBGColor = useTransform(
     scrollY,
@@ -49,6 +52,10 @@ const AppHeader: FC = ({ children }) => {
     },
     updateSettings
   } = useGlobalContext()
+
+  useEffect(() => {
+    if (isOffline || mainAddress) ReactTooltip.rebuild()
+  }, [isOffline, mainAddress])
 
   return (
     <>
@@ -66,23 +73,35 @@ const AppHeader: FC = ({ children }) => {
           onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
           IconOn={EyeOff}
           IconOff={Eye}
+          data-tip="Discreet mode"
         />
         {mainAddress && (
           <>
             <HeaderDivider />
-            <AddressBadge color={mainAddress?.settings.color} addressName={mainAddress?.getLabelName()} />
+            <AddressBadge
+              color={mainAddress?.settings.color}
+              addressName={mainAddress?.getLabelName()}
+              data-tip="Main address"
+            />
           </>
         )}
         <HeaderDivider />
         <NetworkBadge />
         <HeaderDivider />
-        <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label="Settings">
+        <Button
+          transparent
+          squared
+          onClick={() => setIsSettingsModalOpen(true)}
+          aria-label="Settings"
+          data-tip="Settings"
+        >
           <SettingsIcon />
         </Button>
       </HeaderContainer>
       <AnimatePresence>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </AnimatePresence>
+      <Tooltip />
     </>
   )
 }

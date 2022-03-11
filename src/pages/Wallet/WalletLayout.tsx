@@ -21,9 +21,8 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
@@ -86,21 +85,24 @@ const WalletLayout: FC = ({ children }) => {
     })
   }
 
-  useEffect(() => {
-    if (isOffline) ReactTooltip.rebuild()
-  }, [isOffline])
-
   if (!wallet) return null
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
         {isOffline ? (
-          <OfflineIcon data-tip={'The wallet is offline. Trying to reconnect...'}>
+          <OfflineIcon data-tip="The wallet is offline. Trying to reconnect...">
             <Spinner />
           </OfflineIcon>
         ) : (
-          <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
+          <RefreshButton
+            transparent
+            squared
+            onClick={refreshData}
+            disabled={isLoadingData}
+            aria-label="Refresh"
+            data-tip="Refresh data"
+          >
             {isLoadingData ? <Spinner /> : <RefreshCw />}
           </RefreshButton>
         )}

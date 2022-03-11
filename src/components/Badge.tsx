@@ -30,11 +30,13 @@ interface BadgeProps {
   rounded?: boolean
 }
 
-const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false }) => {
+const Badge: FC<BadgeProps> = ({ className, children, truncate, rounded = false, ...props }) => {
   return truncate ? (
     <Truncate className={className}>{children}</Truncate>
   ) : (
-    <span className={className}>{children}</span>
+    <span className={className} {...props}>
+      {children}
+    </span>
   )
 }
 
