@@ -26,6 +26,7 @@ import styled from 'styled-components'
 
 import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
+import AddressBadge from '../../components/AddressBadge'
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -126,7 +127,7 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell truncate>
-                <Badge color={address.settings.color}>{address.getLabelName()}</Badge>
+                <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
               </TableCell>
               <TableCell align="end">
                 {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
@@ -149,9 +150,11 @@ const OverviewPage = () => {
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell>
-                <Badge color={transaction.address.settings.color} truncate>
-                  {transaction.address.getLabelName()}
-                </Badge>
+                <AddressBadge
+                  color={transaction.address.settings.color}
+                  truncate
+                  addressName={transaction.address.getLabelName()}
+                />
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo

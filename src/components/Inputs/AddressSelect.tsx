@@ -146,7 +146,9 @@ const AddressSelectModal = ({
         {displayedOptions.map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && <Badge color={address?.settings.color}>{address?.getLabelName()}</Badge>}
+            {address?.settings.label && (
+              <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
+            )}
             {address.shortHash}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
