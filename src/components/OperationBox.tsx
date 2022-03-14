@@ -108,7 +108,7 @@ export default styled(OperationBox)`
   justify-content: space-between;
 
   &:hover {
-    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: ${({ theme }) => theme.shadow.secondary};
   }
 
   ${({ placeholder }) =>
