@@ -204,7 +204,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
-      if (!client) return
+      if (!client) {
+        setSnackbarMessage({
+          text: 'Could not fetch data because the wallet is offline',
+          type: 'alert',
+          duration: 5000
+        })
+        updateAddressesState(addresses)
+        return
+      }
       setIsLoadingData(true)
 
       const addressesToUpdate: Address[] = []
@@ -323,20 +331,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
     }
 
-    if (wallet && (previousClient.current !== client || previousWallet.current !== wallet)) {
+    if (wallet && (previousClient.current !== client || client === undefined || previousWallet.current !== wallet)) {
       previousClient.current = client
       previousWallet.current = wallet
       initializeCurrentNetworkAddresses()
     }
-  }, [
-    addressesState.size,
-    client,
-    currentAccountName,
-    addressesOfCurrentNetwork,
-    fetchAndStoreAddressesData,
-    saveNewAddress,
-    wallet
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client, currentAccountName, wallet])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

@@ -34,7 +34,6 @@ const App = () => {
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
-
       <AppContainer>
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Routes />

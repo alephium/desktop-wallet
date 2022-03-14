@@ -21,8 +21,6 @@ import { FC } from 'react'
 import styled from 'styled-components'
 
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
-import Tooltip from '../Tooltip'
-
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
   horizontalAlign?: 'center' | 'stretch'
@@ -152,7 +150,6 @@ export const FooterActionsContainer = styled(Section)`
 
 export let MainContent: FC = ({ children, ...props }) => (
   <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
-    <Tooltip />
     {children}
   </motion.main>
 )

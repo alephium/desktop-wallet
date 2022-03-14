@@ -25,7 +25,7 @@ const NetworkBadge = ({ className }: { className?: string }) => {
   const { currentNetwork } = useGlobalContext()
 
   return (
-    <Badge className={className} border>
+    <Badge className={className} border data-tip="Current network">
       {currentNetwork}
     </Badge>
   )

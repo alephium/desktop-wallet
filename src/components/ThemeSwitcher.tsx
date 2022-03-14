@@ -51,7 +51,11 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const transition: Transition = { duration: 0.2, type: 'tween' }
 
   return (
-    <StyledThemeSwitcher onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')} className={className}>
+    <StyledThemeSwitcher
+      onClick={() => switchTheme(currentTheme === 'light' ? 'dark' : 'light')}
+      className={className}
+      data-tip="Theme"
+    >
       <ToggleContent>
         <ToggleIcon>
           <Sun color={getButtonColor(currentTheme, 'light')} size={18} />

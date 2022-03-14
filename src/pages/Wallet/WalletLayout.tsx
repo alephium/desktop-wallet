@@ -50,7 +50,7 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentAccountName, login } = useGlobalContext()
+  const { wallet, lockWallet, currentAccountName, login, isOffline } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
@@ -90,9 +90,22 @@ const WalletLayout: FC = ({ children }) => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
-        <RefreshButton transparent squared onClick={refreshData} disabled={isLoadingData} aria-label="Refresh">
-          {isLoadingData ? <Spinner /> : <RefreshCw />}
-        </RefreshButton>
+        {isOffline ? (
+          <OfflineIcon data-tip="The wallet is offline. Trying to reconnect...">
+            <Spinner />
+          </OfflineIcon>
+        ) : (
+          <RefreshButton
+            transparent
+            squared
+            onClick={refreshData}
+            disabled={isLoadingData}
+            aria-label="Refresh"
+            data-tip="Refresh data"
+          >
+            {isLoadingData ? <Spinner /> : <RefreshCw />}
+          </RefreshButton>
+        )}
       </AppHeader>
       <WalletSidebar>
         <LogoContainer>
@@ -220,5 +233,14 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
+
+const OfflineIcon = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+  padding: 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+`
 
 export default WalletLayout

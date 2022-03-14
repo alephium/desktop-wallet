@@ -65,7 +65,7 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
 
   if (!hasBeenCopied) {
     return (
-      <Clipboard className={`${className} clipboard`} size={15} data-tip={'Copy to clipboard'} onClick={handleClick} />
+      <Clipboard className={`${className} clipboard`} size={15} data-tip="Copy to clipboard" onClick={handleClick} />
     )
   } else {
     return <Check className={`${className} check`} size={15} />
