@@ -57,6 +57,7 @@ export default styled(Badge)`
       ${truncate &&
       css`
         max-width: 100%;
+        display: inline-block;
       `}
     `
   }}

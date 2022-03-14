@@ -71,6 +71,7 @@ export default styled(Table)`
 `
 
 export const TableCell = styled.div<TableCellProps>`
+  display: inline-flex;
   font-weight: var(--fontWeight-semiBold);
   position: relative;
   ${({ truncate }) =>

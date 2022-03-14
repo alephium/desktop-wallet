@@ -107,7 +107,7 @@ const AddressDetailsPage = () => {
           <DataListCell>Label</DataListCell>
           <DataListCell>
             {address.settings.label ? (
-              <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
+              <AddressBadge truncate color={address.settings.color} addressName={address.getLabelName()} />
             ) : (
               '-'
             )}
@@ -151,9 +151,11 @@ const AddressDetailsPage = () => {
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
-                <DirectionBadge>To</DirectionBadge>
-                <span>{toAddress}</span>
+              <TableCell>
+                <DirectionalAddress>
+                  <DirectionBadge>To</DirectionBadge>
+                  <Truncate>{toAddress}</Truncate>
+                </DirectionalAddress>
               </TableCell>
               <TableCell align="end">
                 {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
@@ -175,15 +177,18 @@ const AddressDetailsPage = () => {
                 <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
-                <DirectionBadge>{isOut ? 'To' : 'From'}</DirectionBadge>
-                <IOList
-                  currentAddress={addressHash}
-                  isOut={isOut}
-                  outputs={transaction.outputs}
-                  inputs={transaction.inputs}
-                  timestamp={transaction.timestamp}
-                />
+              <TableCell>
+                <DirectionalAddress>
+                  <DirectionBadge>{isOut ? 'To' : 'From'}</DirectionBadge>
+                  <IOList
+                    currentAddress={addressHash}
+                    isOut={isOut}
+                    outputs={transaction.outputs}
+                    inputs={transaction.inputs}
+                    timestamp={transaction.timestamp}
+                    truncate
+                  />
+                </DirectionalAddress>
               </TableCell>
               <TableCell align="end">
                 <TransactionalInfo
@@ -269,8 +274,13 @@ const IconButtons = styled.div`
 
 const DirectionBadge = styled(Badge)`
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: var(--radius-small);
   min-width: 50px;
-  margin-right: var(--spacing-4);
   text-align: center;
+`
+
+const DirectionalAddress = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-4);
+  max-width: 100%;
 `
