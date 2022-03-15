@@ -72,7 +72,7 @@ const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
-  margin: var(--spacing-3) 0;
+  margin: 16px 0;
 `
 
 const StyledInput = styled.input<InputProps>`
