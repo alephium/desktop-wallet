@@ -20,11 +20,13 @@ import { convertAlphToSet } from 'alephium-js'
 import { SweepAddressTransaction } from 'alephium-js/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTheme } from 'styled-components'
 
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { ReactComponent as PaperPlaneSVG } from '../../images/paper-plane.svg'
+import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
+import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
 import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
 import CenteredModal from '../CenteredModal'
@@ -68,6 +70,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState('')
   const [fees, setFees] = useState<bigint>()
+  const theme = useTheme()
 
   useEffect(() => {
     if (step === 1) {
@@ -219,8 +222,10 @@ const SendModal = ({ onClose }: SendModalProps) => {
     }
   }
 
+  const modalHeader = theme.name === 'dark' ? <PaperPlaneDarkSVG width="315px" /> : <PaperPlaneLightSVG width="315px" />
+
   return (
-    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={<PaperPlaneSVG />}>
+    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={modalHeader}>
       {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
       {step === 2 && transactionData && fees && (
         <SendModalCheckTransaction
