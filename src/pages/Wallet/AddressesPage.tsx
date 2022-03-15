@@ -42,7 +42,7 @@ import NewAddressModal from '../../modals/NewAddressModal'
 import { openInWebBrowser } from '../../utils/misc'
 
 const addressesTableHeaders: TableProps['headers'] = [
-  { title: 'Address', width: '95px' },
+  { title: 'Address', width: '96px' },
   { title: 'Label', width: '100px' },
   { title: 'Last used', width: '100px' },
   { title: 'Transactions', width: '105px' },
@@ -91,8 +91,14 @@ const AddressesPage = () => {
               onClick={() => navigateToAddressDetailsPage(address.hash)}
             >
               <TableCell>
-                <Truncate>{address.hash}</Truncate>
-                {address.settings.isMain && <StyledMainAddressLabel />}
+                {address.settings.isMain ? (
+                  <MainAddressWrapper>
+                    <Truncate>{address.hash}</Truncate>
+                    <StyledMainAddressLabel />
+                  </MainAddressWrapper>
+                ) : (
+                  <Truncate>{address.hash}</Truncate>
+                )}
               </TableCell>
               <TableCell>
                 {address.settings.label ? (
@@ -205,6 +211,10 @@ const TableCellAmount = styled(TableCell)`
 
 const StyledMainAddressLabel = styled(MainAddressLabel)`
   margin-top: 2px;
+`
+
+const MainAddressWrapper = styled.div`
+  max-width: 100%;
 `
 
 export default AddressesPage

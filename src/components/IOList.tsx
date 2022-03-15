@@ -24,6 +24,7 @@ import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
 import ActionLink from './ActionLink'
 import Badge from './Badge'
+import Truncate from './Truncate'
 
 interface IOListProps {
   currentAddress: string
@@ -32,9 +33,10 @@ interface IOListProps {
   outputs?: Output[]
   inputs?: Input[]
   linkToExplorer?: boolean
+  truncate?: boolean
 }
 
-const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer }: IOListProps) => {
+const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer, truncate }: IOListProps) => {
   const {
     settings: {
       network: { explorerUrl }
@@ -51,6 +53,8 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
     return io.every((o) => o.address === currentAddress) ? (
       linkToExplorer ? (
         <ActionLink onClick={() => handleShowAddressInExplorer(currentAddress)}>{currentAddress}</ActionLink>
+      ) : truncate ? (
+        <Truncate>{currentAddress}</Truncate>
       ) : (
         <span>{currentAddress}</span>
       )
@@ -65,6 +69,8 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
               <ActionLink onClick={() => handleShowAddressInExplorer(address)} key={address}>
                 {address}
               </ActionLink>
+            ) : truncate ? (
+              <Truncate key={address}>{address}</Truncate>
             ) : (
               <span key={address}>{address}</span>
             )
@@ -72,9 +78,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </>
     )
   } else if (timestamp === genesisTimestamp) {
-    return <Badge>Genesis TX</Badge>
+    return <Badge truncate={truncate}>Genesis TX</Badge>
   } else {
-    return <Badge>Mining Rewards</Badge>
+    return <Badge truncate={truncate}>Mining Rewards</Badge>
   }
 }
 

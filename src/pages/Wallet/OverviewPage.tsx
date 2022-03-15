@@ -125,7 +125,7 @@ const OverviewPage = () => {
                 <TransactionalInfo content="Pending" type="pending" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-              <TableCell truncate>
+              <TableCell>
                 <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
               </TableCell>
               <TableCell align="end">
