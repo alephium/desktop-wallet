@@ -79,7 +79,7 @@ const AddressDetailsPage = () => {
           <ArrowLeftStyled onClick={() => history.goBack()} />
           <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
           {address.settings.label && (
-            <BadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
+            <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
           )}
           <OptionsButton
             transparent
@@ -247,7 +247,7 @@ const ArrowLeftStyled = styled(ArrowLeft)`
   }
 `
 
-const BadgeStyled = styled(AddressBadge)`
+const AddressBadgeStyled = styled(AddressBadge)`
   margin-left: var(--spacing-5);
 `
 

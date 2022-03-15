@@ -18,8 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import tinycolor from 'tinycolor2'
 
-import Badge from '../Badge'
+import AddressBadge from '../AddressBadge'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
@@ -37,7 +38,7 @@ interface ColoredLabelInputProps {
   id?: string
 }
 
-let ColoredLabelInput = ({ placeholder, disabled, onChange, value, className, id }: ColoredLabelInputProps) => {
+let ColoredLabelInput = ({ placeholder, onChange, value, className, id }: ColoredLabelInputProps) => {
   const [label, setLabel] = useState(value.title)
   const [color, setColor] = useState(value.color)
 
@@ -55,7 +56,7 @@ let ColoredLabelInput = ({ placeholder, disabled, onChange, value, className, id
         id={id}
         color={color}
       />
-      {label && <BadgeStyled color={color}>{label}</BadgeStyled>}
+      {label && <AddressBadgeStyled color={color} rounded addressName={label} />}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
@@ -71,14 +72,15 @@ ColoredLabelInput = styled(ColoredLabelInput)`
 
 const InputStyled = styled(Input)`
   color: transparent;
-  caret-color: ${({ color }) => color};
+  caret-color: ${({ color, theme }) =>
+    theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
 
   &:not([value='']) {
     padding-left: 19px;
   }
 `
 
-const BadgeStyled = styled(Badge)`
+const AddressBadgeStyled = styled(AddressBadge)`
   position: absolute;
   left: 12px;
 `
