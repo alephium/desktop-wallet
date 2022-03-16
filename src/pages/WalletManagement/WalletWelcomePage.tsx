@@ -43,7 +43,7 @@ const WalletWelcomePage = () => {
   const { wallet } = useGlobalContext()
   const { width, height } = useWindowSize()
   const history = useHistory()
-  const { mainAddress, setAddress, generateOneAddressPerGroup } = useAddressesContext()
+  const { mainAddress, updateAddressSettings, generateOneAddressPerGroup } = useAddressesContext()
 
   useTimeout(() => {
     setConfettiRunning(false)
@@ -56,9 +56,11 @@ const WalletWelcomePage = () => {
 
       generateOneAddressPerGroup(labelPrefix, labelColor, [mainAddress.group])
 
-      mainAddress.settings.label = `${labelPrefix} ${mainAddress.group}`
-      mainAddress.settings.color = labelColor
-      setAddress(mainAddress)
+      updateAddressSettings(mainAddress, {
+        ...mainAddress.settings,
+        label: `${labelPrefix} ${mainAddress.group}`,
+        color: labelColor
+      })
     }
 
     history.push('/wallet/overview')
