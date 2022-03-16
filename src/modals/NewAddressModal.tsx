@@ -20,13 +20,10 @@ import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_G
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import AddressMetadataForm from '../components/AddressMetadataForm'
 import ExpandableSection from '../components/ExpandableSection'
 import InfoBox from '../components/InfoBox'
-import ColoredLabelInput from '../components/Inputs/ColoredLabelInput'
-import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
 import Select from '../components/Inputs/Select'
-import Toggle from '../components/Inputs/Toggle'
-import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Section } from '../components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
@@ -101,17 +98,15 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   return (
     <CenteredModal title={title} onClose={onClose}>
       <Section>
-        <ColoredLabelInput placeholder="Address label" onChange={setAddressLabel} value={addressLabel} id="label" />
-        {singleAddress && (
-          <>
-            <HorizontalDivider narrow />
-            <KeyValueInput
-              label="★ Main address"
-              description={mainAddressMessage}
-              InputComponent={<Toggle toggled={isMainAddress} onToggle={() => setIsMainAddress(!isMainAddress)} />}
-            />
-          </>
-        )}
+        <AddressMetadataForm
+          label={addressLabel}
+          setLabel={setAddressLabel}
+          mainAddressMessage={mainAddressMessage}
+          isMain={isMainAddress}
+          setIsMain={setIsMainAddress}
+          isMainAddressToggleEnabled
+          singleAddress={singleAddress}
+        />
         {!singleAddress && (
           <InfoBox Icon={Info} contrast noBorders>
             The group number will be automatically be appended to the addresses’ label.
