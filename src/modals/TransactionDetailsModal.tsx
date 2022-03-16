@@ -71,16 +71,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
         </AmountWrapper>
         <HeaderInfo>
-          {isOutgoingTx ? '↑ Sent' : '↓ Received'}
+          <Direction>{isOutgoingTx ? '↑ Sent' : '↓ Received'}</Direction>
           <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
-          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
+          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
       </Header>
       <Details>
         <DetailsRow label="From">
           {isOutgoingTx ? (
-            <AddressBadge color={address.settings.color} addressName={address.getLabelName()} />
+            <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -160,12 +160,17 @@ DetailsRow = styled(DetailsRow)`
   padding: 12px var(--spacing-3);
   display: flex;
   align-items: center;
+  gap: var(--spacing-3);
   justify-content: space-between;
   min-height: 52px;
 
   &:not(:first-child) {
     border-top: 1px solid ${({ theme }) => theme.border.secondary};
   }
+`
+
+const Direction = styled.span`
+  flex-shrink: 0;
 `
 
 const AmountWrapper = styled.div<{ color: string }>`
@@ -188,6 +193,7 @@ const HeaderInfo = styled.div`
   align-items: center;
   margin-top: var(--spacing-3);
   margin-bottom: var(--spacing-5);
+  max-width: 100%;
 `
 
 const FromIn = styled.span`
