@@ -30,7 +30,7 @@ import {
 } from '../utils/addresses'
 import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
-import { Client, useGlobalContext } from './global'
+import { useGlobalContext } from './global'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
@@ -162,7 +162,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       network: { nodeHost, explorerApiHost }
     }
   } = useGlobalContext()
-  const previousClient = useRef<Client>()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
@@ -280,9 +279,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }
 
   const saveNewAddress = useCallback(
-    async (newAddress: Address) => {
+    (newAddress: Address) => {
       storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
-      await fetchAndStoreAddressesData([newAddress])
+      fetchAndStoreAddressesData([newAddress])
     },
     [currentAccountName, fetchAndStoreAddressesData]
   )
@@ -305,16 +304,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       })
   }
 
-  // Clean state when locking the wallet or changing accounts
-  useEffect(() => {
-    if (wallet === undefined || wallet !== previousWallet.current) {
-      console.log('🧽 Cleaning state.')
-      setAddressesState(new Map())
-      previousClient.current = undefined
-      previousWallet.current = wallet
-    }
-  }, [wallet])
-
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
@@ -324,7 +313,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
 
       if (addressesMetadata.length === 0) {
-        await saveNewAddress(
+        saveNewAddress(
           new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
             isMain: true,
             label: undefined,
@@ -345,6 +334,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     const walletHasChanged = previousWallet.current !== wallet
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+
+    // Clean state when locking the wallet or changing accounts
+    if (wallet === undefined || wallet !== previousWallet.current) {
+      console.log('🧽 Cleaning state.')
+      setAddressesState(new Map())
+      previousWallet.current = wallet
+    }
 
     if (wallet && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
       previousWallet.current = wallet
