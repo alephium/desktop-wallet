@@ -117,7 +117,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           isValid={toAddress.length > 0 && !addressError}
         />
         <AmountInput value={amount} onChange={setAmount} availableAmount={fromAddress.availableBalance} />
-        {expectedFeeInALPH && <InfoBox short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
+        {expectedFeeInALPH && <InfoBoxStyled short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
       </ModalContent>
       <ExpandableSectionStyled sectionTitleClosed="Advanced settings">
         <Input
@@ -209,6 +209,10 @@ const onAmountInputValueChange = ({
 
 const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 38px;
+`
+
+const InfoBoxStyled = styled(InfoBox)`
+  margin-top: var(--spacing-5);
 `
 
 export default SendModalTransactionForm

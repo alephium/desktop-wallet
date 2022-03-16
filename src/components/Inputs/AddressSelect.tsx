@@ -27,6 +27,7 @@ import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
+import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
 
@@ -89,9 +90,9 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           {address?.settings.label && (
-            <BadgeStyled color={address?.settings.color} addressName={address?.getLabelName()} />
+            <BadgeStyled color={address?.settings.color} addressName={address?.getLabelName()} truncate />
           )}
-          {address?.hash}
+          <Truncate>{address?.hash}</Truncate>
         </ClickableInput>
       </AddressSelectContainer>
       <AnimatePresence>
@@ -221,6 +222,7 @@ const ClickableInput = styled.div<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
   display: flex;
   align-items: center;
+  padding-right: 50px;
 `
 
 const BadgeStyled = styled(AddressBadge)`

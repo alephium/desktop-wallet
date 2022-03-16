@@ -30,7 +30,7 @@ import {
 } from '../utils/addresses'
 import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
-import { Client, useGlobalContext } from './global'
+import { useGlobalContext } from './global'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
@@ -152,9 +152,19 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentAccountName, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
-  const previousClient = useRef<Client>()
+  const {
+    currentAccountName,
+    wallet,
+    client,
+    currentNetwork,
+    setSnackbarMessage,
+    settings: {
+      network: { nodeHost, explorerApiHost }
+    }
+  } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
+  const previousNodeApiHost = useRef<string>()
+  const previousExplorerApiHost = useRef<string>()
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
@@ -269,9 +279,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }
 
   const saveNewAddress = useCallback(
-    async (newAddress: Address) => {
+    (newAddress: Address) => {
       storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
-      await fetchAndStoreAddressesData([newAddress])
+      fetchAndStoreAddressesData([newAddress])
     },
     [currentAccountName, fetchAndStoreAddressesData]
   )
@@ -294,16 +304,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       })
   }
 
-  // Clean state when locking the wallet or changing accounts
-  useEffect(() => {
-    if (wallet === undefined || wallet !== previousWallet.current) {
-      console.log('🧽 Cleaning state.')
-      setAddressesState(new Map())
-      previousClient.current = undefined
-      previousWallet.current = wallet
-    }
-  }, [wallet])
-
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
@@ -313,7 +313,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
 
       if (addressesMetadata.length === 0) {
-        await saveNewAddress(
+        saveNewAddress(
           new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
             isMain: true,
             label: undefined,
@@ -331,13 +331,25 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
     }
 
-    if (wallet && (previousClient.current !== client || client === undefined || previousWallet.current !== wallet)) {
-      previousClient.current = client
+    const walletHasChanged = previousWallet.current !== wallet
+    const networkSettingsHaveChanged =
+      previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+
+    // Clean state when locking the wallet or changing accounts
+    if (wallet === undefined || wallet !== previousWallet.current) {
+      console.log('🧽 Cleaning state.')
+      setAddressesState(new Map())
       previousWallet.current = wallet
+    }
+
+    if (wallet && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
+      previousWallet.current = wallet
+      previousNodeApiHost.current = nodeHost
+      previousExplorerApiHost.current = explorerApiHost
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, currentAccountName, wallet])
+  }, [client, currentAccountName, wallet, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

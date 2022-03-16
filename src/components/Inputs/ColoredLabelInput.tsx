@@ -24,7 +24,7 @@ import AddressBadge from '../AddressBadge'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
-type ColoredLabelInputValue = {
+export type ColoredLabelInputValue = {
   title: string
   color: string
 }
@@ -36,9 +36,10 @@ interface ColoredLabelInputProps {
   disabled?: boolean
   placeholder?: string
   id?: string
+  maxLength?: number
 }
 
-let ColoredLabelInput = ({ placeholder, onChange, value, className, id }: ColoredLabelInputProps) => {
+let ColoredLabelInput = ({ placeholder, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
   const [label, setLabel] = useState(value.title)
   const [color, setColor] = useState(value.color)
 
@@ -55,6 +56,7 @@ let ColoredLabelInput = ({ placeholder, onChange, value, className, id }: Colore
         value={label}
         id={id}
         color={color}
+        maxLength={maxLength}
       />
       {label && <AddressBadgeStyled color={color} rounded addressName={label} />}
       <ColorPicker onChange={setColor} value={color} />
@@ -76,7 +78,7 @@ const InputStyled = styled(Input)`
     theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
 
   &:not([value='']) {
-    padding-left: 19px;
+    padding-left: 20px;
   }
 `
 
