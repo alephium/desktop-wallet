@@ -66,7 +66,6 @@ const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
   right: 0;
-  left: 0;
   display: flex;
   justify-content: flex-end;
   z-index: 10001;
