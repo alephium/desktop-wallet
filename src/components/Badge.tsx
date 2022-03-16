@@ -20,6 +20,7 @@ import { FC } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import { HasTooltip } from './Tooltip'
 import Truncate from './Truncate'
 
 interface BadgeProps {
@@ -30,11 +31,15 @@ interface BadgeProps {
   rounded?: boolean
 }
 
-const Badge: FC<BadgeProps> = ({ className, children, truncate }) => {
+const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'data-tip': dataTip }) => {
   return truncate ? (
-    <Truncate className={className}>{children}</Truncate>
+    <Truncate className={className} data-tip={dataTip}>
+      {children}
+    </Truncate>
   ) : (
-    <span className={className}>{children}</span>
+    <span className={className} data-tip={dataTip}>
+      {children}
+    </span>
   )
 }
 

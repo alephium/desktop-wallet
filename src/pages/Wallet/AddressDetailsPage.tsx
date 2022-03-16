@@ -39,6 +39,7 @@ import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import Tooltip from '../../components/Tooltip'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
@@ -228,6 +229,7 @@ const AddressDetailsPage = () => {
           />
         )}
       </AnimatePresence>
+      <Tooltip />
     </MainContent>
   )
 }

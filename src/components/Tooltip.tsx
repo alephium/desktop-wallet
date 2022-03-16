@@ -26,6 +26,8 @@ interface TooltipProps {
   id?: string
 }
 
+export type HasTooltip<T> = T & { 'data-tip'?: string }
+
 const Tooltip: FC<TooltipProps> = ({ id, children }) => {
   const theme = useTheme()
 
