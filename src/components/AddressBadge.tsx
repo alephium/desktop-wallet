@@ -25,7 +25,7 @@ import Badge from './Badge'
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & { addressName: string }
 
 const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
-  <Badge className={className} rounded data-tip={props['data-tip']}>
+  <Badge className={className} rounded {...props}>
     {addressName}
   </Badge>
 )
