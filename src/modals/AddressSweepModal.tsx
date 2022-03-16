@@ -85,7 +85,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           sweepAddresses.from,
           txId,
           unsignedTx,
-          sweepAddresses.from.hash,
+          sweepAddresses.to.hash,
           'sweep',
           currentNetwork
         )
