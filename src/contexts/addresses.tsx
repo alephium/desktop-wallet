@@ -152,9 +152,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const { currentAccountName, wallet, client, currentNetwork, setSnackbarMessage } = useGlobalContext()
+  const {
+    currentAccountName,
+    wallet,
+    client,
+    currentNetwork,
+    setSnackbarMessage,
+    settings: {
+      network: { nodeHost, explorerApiHost }
+    }
+  } = useGlobalContext()
   const previousClient = useRef<Client>()
   const previousWallet = useRef<Wallet | undefined>(wallet)
+  const previousNodeApiHost = useRef<string>()
+  const previousExplorerApiHost = useRef<string>()
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
@@ -331,13 +342,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
     }
 
-    if (wallet && (previousClient.current !== client || client === undefined || previousWallet.current !== wallet)) {
-      previousClient.current = client
+    const walletHasChanged = previousWallet.current !== wallet
+    const networkSettingsHaveChanged =
+      previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+
+    if (wallet && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
       previousWallet.current = wallet
+      previousNodeApiHost.current = nodeHost
+      previousExplorerApiHost.current = explorerApiHost
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, currentAccountName, wallet])
+  }, [client, currentAccountName, wallet, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

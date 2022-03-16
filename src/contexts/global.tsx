@@ -92,10 +92,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [settings, setSettings] = useState<Settings>(localStorageSettings)
   const [isClientLoading, setIsClientLoading] = useState(false)
-  const previousNodeHost = useRef('')
-  const previousExplorerAPIHost = useRef('')
+  const previousNodeHost = useRef<string>()
+  const previousExplorerAPIHost = useRef<string>()
   const [isOffline, setIsOffline] = useState(false)
-
   const currentNetwork = getNetworkName(settings.network)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
@@ -150,11 +149,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }, [currentNetwork, isOffline, settings.network])
 
   useEffect(() => {
-    if (
-      settings.network &&
-      (previousNodeHost.current !== settings.network.nodeHost ||
-        previousExplorerAPIHost.current !== settings.network.explorerApiHost)
-    ) {
+    const networkSettingsHaveChanged =
+      previousNodeHost.current !== settings.network.nodeHost ||
+      previousExplorerAPIHost.current !== settings.network.explorerApiHost
+
+    if (networkSettingsHaveChanged) {
       getClient()
       previousNodeHost.current = settings.network.nodeHost
       previousExplorerAPIHost.current = settings.network.explorerApiHost
