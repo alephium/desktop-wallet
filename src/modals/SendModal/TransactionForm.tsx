@@ -192,7 +192,7 @@ const onAmountInputValueChange = ({
   let amountNumber
 
   try {
-    amountNumber = shouldConvertToSet ? convertAlphToSet(amount) : BigInt(amount)
+    amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
   } catch (e) {
     console.log(e)
     return
