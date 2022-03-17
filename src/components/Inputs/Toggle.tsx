@@ -70,7 +70,7 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   height: var(--toggleHeight);
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: calc(var(--toggleHeight) * 2);
-  background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.tertiary)};
+  background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.accent)};
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
