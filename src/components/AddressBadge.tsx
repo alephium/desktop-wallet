@@ -45,7 +45,7 @@ export default styled(AddressBadge)`
         theme.name === 'dark'
           ? tinycolor(usedColor).setAlpha(0.08).toString()
           : tinycolor(usedColor).setAlpha(0.8).toString()};
-      padding: 7px 10px;
+      padding: 6px 10px;
     `
   }}
 `
