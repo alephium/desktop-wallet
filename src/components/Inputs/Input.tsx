@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
+import { WheelEvent } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
@@ -40,6 +41,10 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
     isValid
   })
 
+  const handleScroll = (e: WheelEvent<HTMLElement>) => {
+    e.currentTarget.blur() // prevent changing number value by scrolling
+  }
+
   return (
     <InputContainer
       variants={sectionChildrenVariants}
@@ -57,6 +62,7 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
         className={className}
         disabled={disabled}
         isValid={isValid}
+        onWheel={handleScroll}
       />
       {!disabled && isValid && (
         <InputValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
