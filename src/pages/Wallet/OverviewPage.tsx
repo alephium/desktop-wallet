@@ -207,6 +207,7 @@ const Header = styled.header`
   margin-left: -56px;
   margin-right: -56px;
   padding: 56px;
+  padding-top: 70px;
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
