@@ -26,17 +26,20 @@ interface ToggleProps {
   disabled?: boolean
 }
 
+const toggleMarginInPx = 2
+
 const Toggle = ({ toggled, onToggle, className, disabled }: ToggleProps) => {
   const theme = useTheme()
+  const toggleWidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toggleWidth'))
 
   const toggleBackgroundVariants = {
-    off: { backgroundColor: theme.bg.secondary },
+    off: { backgroundColor: theme.bg.tertiary },
     on: { backgroundColor: theme.global.accent }
   }
 
   const floatingIndicatorVariant = {
     off: { left: 0 },
-    on: { left: '50%' }
+    on: { left: toggleWidth / 2 - toggleMarginInPx * 2 }
   }
 
   const toggleState = toggled ? 'on' : 'off'
@@ -59,18 +62,22 @@ const Toggle = ({ toggled, onToggle, className, disabled }: ToggleProps) => {
       transition={transition}
       disabled={disabled}
     >
-      <ToggleFloatingIndicator variants={floatingIndicatorVariant} animate={toggleState} transition={transition} />
+      <ToggleFloatingIndicatorContainer
+        variants={floatingIndicatorVariant}
+        animate={toggleState}
+        transition={transition}
+      >
+        <ToggleFloatingIndicator />
+      </ToggleFloatingIndicatorContainer>
     </StyledToggle>
   )
 }
 
 export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   position: relative;
-  width: calc(var(--toggleHeight) * 2);
+  width: var(--toggleWidth);
   height: var(--toggleHeight);
-  border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: calc(var(--toggleHeight) * 2);
-  background-color: ${({ theme, toggled }) => (toggled ? theme.global.accent : theme.bg.accent)};
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
@@ -87,14 +94,23 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
     `}
 `
 
-const ToggleFloatingIndicator = styled(motion.div)`
+const ToggleFloatingIndicatorContainer = styled(motion.div)`
   position: absolute;
-  width: 50%;
-  height: 100%;
+  width: var(--toggleHeight);
+  height: var(--toggleHeight);
+  z-index: 0;
+`
+
+const ToggleFloatingIndicator = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin: ${toggleMarginInPx}px;
   background-color: var(--color-white);
   border-radius: calc(var(--toggleHeight) * 2);
-  z-index: 0;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 `
 
 export default Toggle
