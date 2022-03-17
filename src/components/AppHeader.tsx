@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence, motion, useTransform, useViewportScroll } from 'framer-motion'
-import { Eye, EyeOff, Settings as SettingsIcon } from 'lucide-react'
+import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
@@ -62,6 +62,14 @@ const AppHeader: FC = ({ children }) => {
       <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
         <ThemeSwitcher />
         <HeaderDivider />
+        {isOffline && (
+          <>
+            <div data-tip="The wallet is offline.">
+              <OfflineIcon size={20} />
+            </div>
+            <HeaderDivider />
+          </>
+        )}
         {children && (
           <>
             {children}
@@ -132,6 +140,11 @@ const HeaderContainer = styled(motion.header)`
   @media ${deviceBreakPoints.mobile} {
     background-color: ${({ theme }) => theme.bg.primary};
   }
+`
+
+const OfflineIcon = styled(WifiOff)`
+  color: ${({ theme }) => theme.font.secondary};
+  margin: 0 10px !important;
 `
 
 export default AppHeader

@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { WifiOff } from 'lucide-react'
 import React, { useCallback, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
@@ -41,20 +40,13 @@ interface HomeProps {
 
 const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const { isOffline } = useGlobalContext()
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader>
-        {isOffline && (
-          <div data-tip="The wallet is offline.">
-            <OfflineIcon size={20} />
-          </div>
-        )}
-      </AppHeader>
+      <AppHeader />
       <SideBar />
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
@@ -189,11 +181,6 @@ const SwitchLink = styled(Paragraph)`
 
 const SectionStyled = styled(Section)`
   min-width: 400px;
-`
-
-const OfflineIcon = styled(WifiOff)`
-  color: ${({ theme }) => theme.font.secondary};
-  margin: 0 10px !important;
 `
 
 export default HomePage
