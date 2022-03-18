@@ -34,6 +34,7 @@ declare module 'styled-components' {
     font: {
       primary: string
       secondary: string
+      tertiary: string
       contrastPrimary: string
       contrastSecondary: string
       highlight: string

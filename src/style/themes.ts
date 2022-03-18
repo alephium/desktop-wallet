@@ -26,7 +26,7 @@ export const lightTheme: DefaultTheme = {
   bg: {
     primary: '#ffffff',
     secondary: '#fbfbfb',
-    tertiary: '#f7f7f7',
+    tertiary: '#ededed',
     hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#212126',
     accent: tinycolor('#000').setAlpha(0.04).toString()
@@ -34,6 +34,7 @@ export const lightTheme: DefaultTheme = {
   font: {
     primary: '#000',
     secondary: '#797979',
+    tertiary: '#adadad',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
     highlight: '#ffb800'
@@ -69,6 +70,7 @@ export const darkTheme: DefaultTheme = {
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
     secondary: 'rgba(255, 255, 255, 0.65)',
+    tertiary: 'rgba(255, 255, 255, 0.40)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
     highlight: '#ffb800'

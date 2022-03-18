@@ -16,12 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { LucideProps } from 'lucide-react'
 import { useHistory, useLocation } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
 
 interface ActionButtonProps {
-  Icon: (props: LucideProps) => JSX.Element
+  Icon: LucideIconType
   label: string
   link?: string
   onClick?: () => void

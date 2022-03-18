@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { LucideProps } from 'lucide-react'
 import { FC } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -27,7 +26,7 @@ type InfoBoxImportance = 'accent' | 'alert'
 
 interface InfoBoxProps {
   text?: string
-  Icon?: (props: LucideProps) => JSX.Element
+  Icon?: LucideIconType
   label?: string
   importance?: InfoBoxImportance
   className?: string

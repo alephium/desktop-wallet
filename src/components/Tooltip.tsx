@@ -20,7 +20,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { FC } from 'react'
 import ReactTooltip from 'react-tooltip'
-import { useTheme } from 'styled-components'
 
 interface TooltipProps {
   id?: string
@@ -29,10 +28,8 @@ interface TooltipProps {
 export type HasTooltip<T> = T & { 'data-tip'?: string }
 
 const Tooltip: FC<TooltipProps> = ({ id, children }) => {
-  const theme = useTheme()
-
   return (
-    <ReactTooltip backgroundColor={theme.bg.primary} textColor={theme.font.primary} id={id}>
+    <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" id={id}>
       {children}
     </ReactTooltip>
   )

@@ -16,19 +16,4 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import Button from '../Button'
-
-interface CompactToggleProps {
-  toggled: boolean
-  onToggle: (value: boolean) => void
-  IconOn: LucideIconType
-  IconOff: LucideIconType
-}
-
-const CompactToggle = ({ toggled, onToggle, IconOn, IconOff, ...props }: CompactToggleProps) => (
-  <Button squared transparent onClick={() => onToggle(!toggled)} {...props}>
-    {toggled ? <IconOn /> : <IconOff />}
-  </Button>
-)
-
-export default CompactToggle
+type LucideIconType = (props: LucideProps) => JSX.Element

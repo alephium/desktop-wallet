@@ -67,6 +67,7 @@ export const GlobalStyle = createGlobalStyle`
     --inputHeight: 45px;
     --tableCellHeight: 47px;
     --toggleHeight: 28px;
+    --toggleWidth: 50px;
   }
 
   html {

@@ -90,11 +90,7 @@ const WalletLayout: FC = ({ children }) => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
-        {isOffline ? (
-          <OfflineIcon data-tip="The wallet is offline. Trying to reconnect...">
-            <Spinner />
-          </OfflineIcon>
-        ) : (
+        {!isOffline && (
           <RefreshButton
             transparent
             squared
@@ -233,14 +229,5 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
-
-const OfflineIcon = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-  padding: 10px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-`
 
 export default WalletLayout
