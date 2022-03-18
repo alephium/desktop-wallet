@@ -144,7 +144,7 @@ const HeaderContainer = styled(motion.header)`
 
 const OfflineIcon = styled(WifiOff)`
   color: ${({ theme }) => theme.font.secondary};
-  margin: 0 10px !important;
+  margin: 0 10px;
 `
 
 export default AppHeader
