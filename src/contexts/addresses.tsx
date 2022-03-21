@@ -281,9 +281,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
       storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
+      setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [currentAccountName, fetchAndStoreAddressesData]
+    [currentAccountName, fetchAndStoreAddressesData, setAddress]
   )
 
   const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
@@ -327,6 +328,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
           return new Address(address, publicKey, privateKey, index, settings)
         })
+        updateAddressesState(addressesToFetchData)
         fetchAndStoreAddressesData(addressesToFetchData)
       }
     }
