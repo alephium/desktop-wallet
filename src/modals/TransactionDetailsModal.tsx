@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophe, calAmountDelta } from 'alephium-js'
+import { addApostrophes, calAmountDelta } from 'alephium-js'
 import { Transaction } from 'alephium-js/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import { FC } from 'react'
@@ -119,7 +119,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label="Total value">{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
         <ExpandableSectionStyled sectionTitleClosed="Click to see more" sectionTitleOpen="Click to see less">
-          <DetailsRow label="Gas amount">{addApostrophe(transaction.gasAmount.toString())}</DetailsRow>
+          <DetailsRow label="Gas amount">{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
           <DetailsRow label="Gas price">
             <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>
