@@ -1,6 +1,6 @@
-# Alephium Wallet
+# Alephium desktop wallet
 
-The official Alephium wallet.
+The official Alephium desktop wallet.
 
 ## Install
 
