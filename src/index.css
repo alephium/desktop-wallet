@@ -11,6 +11,7 @@ body {
   width: 100%;
   font-weight: 500;
   font-size: 12px;
+  font-feature-settings: 'calt' off;
 }
 
 #root {
