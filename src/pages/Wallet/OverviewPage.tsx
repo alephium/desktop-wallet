@@ -84,6 +84,24 @@ const OverviewPage = () => {
     }
   }, [areAddressSummariesExpanded])
 
+  useEffect(() => {
+    const cards = addressSummaryCardsRef.current
+    if (!cards) return
+
+    const onWheel = (event: WheelEvent) => {
+      const delta = event.deltaY
+      if (delta > 3 || delta < -3) {
+        event.preventDefault()
+        cards.scrollLeft += delta
+      }
+    }
+    cards.addEventListener('wheel', onWheel)
+
+    return () => {
+      cards.removeEventListener('wheel', onWheel)
+    }
+  })
+
   return (
     <MainContent>
       <Header>
