@@ -35,7 +35,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text="Type your password above to show your 24 words phrase."
+            text="Type your password above to show your secret phrase."
             buttonText="Show"
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />
@@ -43,11 +43,11 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
       ) : (
         <Section>
           <InfoBox
-            text={'Carefully note down the 24 words. They are the keys to your wallet.'}
+            text={'Carefully note down the words! They are the secret keys to your wallet.'}
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || 'No mnemonic was stored along with this wallet'}</PhraseBox>
+          <PhraseBox>{wallet?.mnemonic || 'No secret phrase was stored along with this wallet'}</PhraseBox>
         </Section>
       )}
     </CenteredModal>
