@@ -45,7 +45,7 @@ const ImportWordsPage = () => {
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
-  const defaultPlaceholder = 'Type your 24 words'
+  const defaultPlaceholder = 'Type your secret phrase'
   const [customPlaceholder, setCustomPlaceholder] = useState(defaultPlaceholder)
   const tagifyRef = useRef<Tagify<TagData> | undefined>()
 
@@ -53,9 +53,7 @@ const ImportWordsPage = () => {
     // Split words where spaces are
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
-    setCustomPlaceholder(
-      newPhrase.length > 0 ? (newPhrase.length === 24 ? '' : `${24 - newPhrase.length} words left`) : defaultPlaceholder
-    )
+    setCustomPlaceholder(newPhrase.length > 0 ? `${newPhrase.length} words entered` : defaultPlaceholder)
   }
 
   useEffect(() => {
@@ -84,7 +82,8 @@ const ImportWordsPage = () => {
     }
   }
 
-  const isNextButtonActive = phrase.length === 24
+  // Alephium's node code uses 12 as the minimal mnemomic length.
+  const isNextButtonActive = phrase.length >= 12
 
   return (
     <FloatingPanel>
@@ -100,7 +99,7 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? 'Make sure to properly write down the 24 words from your secret phrase. They are the key to your wallet.'
+            ? 'Make sure to properly write down the words in a secure location! They are the secret key to your wallet.'
             : "All good? Let's continue!"}
         </Paragraph>
       </PanelContentContainer>

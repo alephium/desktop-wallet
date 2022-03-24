@@ -42,7 +42,7 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
       <Section>
         <InfoBox
           importance="alert"
-          text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the 24 words, your wallet will be unrecoverable and permanently lost."
+          text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost."
         />
         <Paragraph secondary centered>
           <b>Not your keys, not your coins.</b>
