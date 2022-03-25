@@ -43,13 +43,17 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   const { addresses, mainAddress } = useAddressesContext()
   const [fromAddress, setFromAddress] = useState(data?.fromAddress ?? mainAddress)
   const [toAddress, setToAddress] = useState(data?.toAddress ?? '')
+  const [addressError, setToAddressError] = useState('')
   const [amount, setAmount] = useState(data?.amount ?? '')
   const [gasAmount, setGasAmount] = useState(data?.gasAmount ?? '')
-  const [gasPrice, setGasPrice] = useState(data?.gasPrice ?? '')
-  const [addressError, setToAddressError] = useState('')
   const [gasAmountError, setGasAmountError] = useState<ReactNode>()
-  const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE)
+  const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+  const [gasPrice, setGasPrice] = useState(data?.contractCode && (data?.gasPrice ?? minimalGasPriceInALPH))
   const [gasPriceError, setGasPriceError] = useState<ReactNode>()
+  const [contractCode, setContractCode] = useState(data?.contractCode ?? '')
+  const [contractState, setContractState] = useState(data?.contractState ?? '')
+  const [script, setScript] = useState(data?.script ?? '')
+  const [issueTokenAmount, setIssueTokenAmount] = useState(data?.issueTokenAmount ?? 0)
   const theme = useTheme()
 
   const handleAddressChange = (value: string) => {
@@ -96,13 +100,17 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
 
   if (!fromAddress) return null
 
+  const isContractTx = contractCode !== ''
+  const isScriptTx = script !== ''
+
   const isSubmitButtonActive =
-    toAddress &&
+    (isContractTx || isScriptTx || toAddress) &&
     !addressError &&
     !gasPriceError &&
     !gasAmountError &&
-    amount &&
-    isAmountWithinRange(convertAlphToSet(amount), fromAddress.availableBalance)
+    (isContractTx ||
+      isScriptTx ||
+      (amount && isAmountWithinRange(convertAlphToSet(amount), fromAddress.availableBalance)))
 
   return (
     <>
@@ -131,7 +139,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           </InfoBoxStyled>
         )}
       </ModalContent>
-      <ExpandableSectionStyled sectionTitleClosed="Advanced settings">
+      <ExpandableSectionStyled sectionTitleClosed="Gas">
         <Input
           id="gas-amount"
           label="Gas amount"
@@ -156,6 +164,25 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           error={gasPriceError}
         />
       </ExpandableSectionStyled>
+      <ExpandableSectionStyled sectionTitleClosed="Script">
+        <Input id="state" placeholder="Code" value={script} onChange={(e) => setScript(e.target.value)} />
+      </ExpandableSectionStyled>
+      <ExpandableSectionStyled sectionTitleClosed="Contract">
+        <Input id="code" placeholder="Code" value={contractCode} onChange={(e) => setContractCode(e.target.value)} />
+        <Input
+          id="state"
+          placeholder="Initial state"
+          value={contractState}
+          onChange={(e) => setContractState(e.target.value)}
+        />
+        <Input
+          id="issue-token-amount"
+          placeholder="Tokens to issue"
+          value={issueTokenAmount}
+          type="number"
+          onChange={(e) => setIssueTokenAmount(e.target.value)}
+        />
+      </ExpandableSectionStyled>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
           Cancel
@@ -167,7 +194,11 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
               amount,
               gasAmount,
               gasPrice,
-              fromAddress
+              fromAddress,
+              script,
+              contractCode,
+              contractState,
+              issueTokenAmount: issueTokenAmount?.toString() || '0'
             })
           }
           disabled={!isSubmitButtonActive}
