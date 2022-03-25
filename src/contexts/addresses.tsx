@@ -37,12 +37,12 @@ import {
 import { NetworkType } from '../utils/settings'
 import { useGlobalContext } from './global'
 
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
 
 type SimpleTx = {
   txId: string
   fromAddress: string
-  toAddress: string
+  toAddress?: string
   timestamp: number
   type: TransactionType
   network: NetworkType

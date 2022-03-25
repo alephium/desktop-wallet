@@ -7,7 +7,7 @@
   "main": "public/electron.js",
   "scripts": {
     "build": "cross-env REACT_APP_VERSION=$npm_package_version INLINE_RUNTIME_CHUNK=false REACT_APP_CSP=\"script-src 'self'\" react-scripts build",
-    "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3030 && electron .\"",
     "electron-pack": "npm run build && npx electron-builder",
     "electron-pack-windows": "npm run build && npx electron-builder -w",
     "electron-pack-macos": "npm run build && npx electron-builder --mac --universal",
@@ -34,6 +34,9 @@
     ]
   },
   "dependencies": {
+    "@json-rpc-tools/utils": "^1.7.6",
+    "@walletconnect/client": "^2.0.0-beta.26",
+    "@walletconnect/utils": "^2.0.0-beta.26",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },

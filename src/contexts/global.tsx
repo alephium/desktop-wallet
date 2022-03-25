@@ -59,6 +59,8 @@ export interface GlobalContextProps {
   currentNetwork: NetworkType | 'custom'
   isOffline: boolean
   newLatestVersion: string
+  isSendModalOpen: boolean
+  setIsSendModalOpen: (a: boolean) => void
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -78,7 +80,9 @@ export const initialGlobalContext: GlobalContextProps = {
   isClientLoading: false,
   currentNetwork: 'mainnet',
   isOffline: false,
-  newLatestVersion: ''
+  newLatestVersion: '',
+  isSendModalOpen: false,
+  setIsSendModalOpen: () => false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -100,6 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isOffline, setIsOffline] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -201,7 +206,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           isClientLoading,
           currentNetwork,
           isOffline,
-          newLatestVersion
+          newLatestVersion,
+          isSendModalOpen,
+          setIsSendModalOpen
         },
         overrideContextValue as GlobalContextProps
       )}

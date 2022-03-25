@@ -128,6 +128,32 @@ export async function createClient(settings: Settings['network']) {
       return response.data
     }
 
+    const signAndSendContractOrScript = async (
+      address: Address,
+      txId: string,
+      unsignedTx: string,
+      network: NetworkType
+    ) => {
+      const clientIndex = cliqueClient.getClientIndex(address.hash)
+      const signature = cliqueClient.transactionSign(txId, address.privateKey)
+      const response = await cliqueClient.clients[clientIndex].transactions.postTransactionsSubmit({
+        unsignedTx,
+        signature
+      })
+
+      if (response.data) {
+        address.addPendingTransaction({
+          txId: response.data.txId,
+          fromAddress: address.hash,
+          timestamp: new Date().getTime(),
+          type: 'contract',
+          network
+        })
+      }
+
+      return response.data
+    }
+
     return {
       clique: cliqueClient,
       explorer: explorerClient,
@@ -135,7 +161,8 @@ export async function createClient(settings: Settings['network']) {
       fetchAddressConfirmedTransactions,
       fetchAddressConfirmedTransactionsNextPage,
       buildSweepTransactions,
-      signAndSendTransaction
+      signAndSendTransaction,
+      signAndSendContractOrScript
     }
   } catch (error) {
     console.error(error)

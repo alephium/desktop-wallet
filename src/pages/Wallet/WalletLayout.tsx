@@ -50,8 +50,8 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentAccountName, login, isOffline } = useGlobalContext()
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const { wallet, lockWallet, currentAccountName, login, isOffline, isSendModalOpen, setIsSendModalOpen } =
+    useGlobalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const history = useHistory()

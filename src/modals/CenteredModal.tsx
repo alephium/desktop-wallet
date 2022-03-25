@@ -28,7 +28,7 @@ import Spinner from '../components/Spinner'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
-  title?: string
+  title?: ReactNode
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode

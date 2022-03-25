@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell } = require('electron')
+const { app, ipcRenderer, BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
@@ -127,7 +127,9 @@ function createWindow() {
     minHeight: 700,
     titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden',
     webPreferences: {
-      spellcheck: true
+      spellcheck: true,
+      nodeIntegration: true,
+      contextIsolation: false
     }
   })
 
@@ -135,7 +137,7 @@ function createWindow() {
     mainWindow.setIcon(path.join(__dirname, 'icons/logo-48.png'))
   }
 
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+  mainWindow.loadURL(isDev ? 'http://localhost:3030' : `file://${path.join(__dirname, '../build/index.html')}`)
   if (isDev) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
