@@ -32,8 +32,7 @@ interface SendModalCheckTransactionProps {
 }
 
 const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCheckTransactionProps) => {
-  const isSendButtonActive = data.toAddress.length > 0 && data.amount.length > 0
-  const amountInSet = convertAlphToSet(data.amount)
+  const amountInSet = data.amount ? convertAlphToSet(data.amount) : 0n
   const amountIncludingFees = amountInSet + fees
   const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
   const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
@@ -42,23 +41,21 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
     <>
       <ModalContent>
         <InfoBox text={data.fromAddress.hash} label="From address" wordBreak />
-        <InfoBox text={data.toAddress} label="To address" wordBreak />
-        <InfoBox label="Amount">
-          {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
-        </InfoBox>
-        {fees && (
-          <InfoBox label="Expected fee">
-            {formatAmountForDisplay(fees, true)} <AlefSymbol />
+        {data.toAddress && <InfoBox text={data.toAddress} label="To address" wordBreak />}
+        {amountInSet > 0 && (
+          <InfoBox label="Amount">
+            {formatAmountForDisplay(expectedAmount, true, 7)} <AlefSymbol />
           </InfoBox>
         )}
+        <InfoBox label="Expected fee">
+          {formatAmountForDisplay(fees, true)} <AlefSymbol />
+        </InfoBox>
       </ModalContent>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
           Cancel
         </ModalFooterButton>
-        <ModalFooterButton onClick={onSend} disabled={!isSendButtonActive}>
-          Send
-        </ModalFooterButton>
+        <ModalFooterButton onClick={onSend}>Send</ModalFooterButton>
       </ModalFooterButtons>
     </>
   )

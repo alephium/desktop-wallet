@@ -16,8 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BILLION } from '@alephium/sdk'
+import { NetworkType } from '../utils/settings'
 
-export const MINIMAL_GAS_AMOUNT = 20000
-export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
-export const TX_SMALLEST_ALPH_AMOUNT_STR = '0.000001'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
+
+export type BaseTx = {
+  txId: string
+  fromAddress: string
+  timestamp: number
+  type: TransactionType
+  network: NetworkType
+}
+
+export type PendingTx = BaseTx & { toAddress?: string; amount?: bigint }

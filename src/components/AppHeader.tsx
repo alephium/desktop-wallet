@@ -25,7 +25,10 @@ import tinycolor from 'tinycolor2'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import { useWalletConnectContext } from '../contexts/walletconnect'
+import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
+import WalletConnectModal from '../modals/WalletConnectModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 import AddressBadge from './AddressBadge'
 import Button from './Button'
@@ -36,6 +39,7 @@ import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const { isWalletConnectModalOpen, setIsWalletConnectModalOpen } = useWalletConnectContext()
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
@@ -101,6 +105,16 @@ const AppHeader: FC = ({ children }) => {
         <Button
           transparent
           squared
+          onClick={() => setIsWalletConnectModalOpen(true)}
+          aria-label="WalletConnect"
+          data-tip="Connect wallet to dApp"
+        >
+          <img src={walletConnectIcon} style={{ width: '100%' }} />
+        </Button>
+        <HeaderDivider />
+        <Button
+          transparent
+          squared
           onClick={() => setIsSettingsModalOpen(true)}
           aria-label="Settings"
           data-tip="Settings"
@@ -110,6 +124,9 @@ const AppHeader: FC = ({ children }) => {
       </HeaderContainer>
       <AnimatePresence>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isWalletConnectModalOpen && <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />}
       </AnimatePresence>
       <Tooltip />
     </>

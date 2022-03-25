@@ -29,6 +29,7 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
+import { PendingTx } from '../types/transactions'
 import {
   AddressSettings,
   loadStoredAddressesMetadataOfAccount,
@@ -36,18 +37,6 @@ import {
 } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
-
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
-
-type SimpleTx = {
-  txId: string
-  fromAddress: string
-  toAddress: string
-  timestamp: number
-  type: TransactionType
-  network: NetworkName
-  amount?: bigint
-}
 
 export type AddressHash = string
 
@@ -63,7 +52,7 @@ export class Address {
   details: AddressInfo
   transactions: {
     confirmed: Transaction[]
-    pending: SimpleTx[]
+    pending: PendingTx[]
     loadedPage: number
   }
   availableBalance: bigint
@@ -99,7 +88,7 @@ export class Address {
     return `${this.settings.isMain ? '★ ' : ''}${this.getName()}`
   }
 
-  addPendingTransaction(transaction: SimpleTx) {
+  addPendingTransaction(transaction: PendingTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
     this.transactions.pending.push(transaction)
