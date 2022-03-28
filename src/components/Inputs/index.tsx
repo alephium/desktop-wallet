@@ -20,11 +20,12 @@ import { motion, Variants } from 'framer-motion'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  error?: string
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+  error?: React.ReactNode
   isValid?: boolean
   disabled?: boolean
   className?: string
+  placeholder?: React.ReactNode
 }
 
 export interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {

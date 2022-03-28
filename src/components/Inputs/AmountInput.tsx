@@ -18,9 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertSetToAlph, MIN_UTXO_SET_AMOUNT } from 'alephium-js'
 import { ChangeEvent, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../ActionLink'
+import AlefSymbol from '../AlefSymbol'
 import Amount from '../Amount'
 import { InputProps } from '.'
 import Input from './Input'
@@ -36,6 +37,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
   const availableAmountInAlph = convertSetToAlph(availableAmount)
   const minAmountInAlph = convertSetToAlph(MIN_UTXO_SET_AMOUNT)
   const [error, setError] = useState('')
+  const theme = useTheme()
 
   const onAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
@@ -69,7 +71,11 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         type="number"
         min={minAmountInAlph}
         max={availableAmountInAlph}
-        placeholder="Amount (ℵ)"
+        placeholder={
+          <>
+            Amount (<AlefSymbol color={theme.font.secondary} />)
+          </>
+        }
         {...restProps}
         error={error}
       />

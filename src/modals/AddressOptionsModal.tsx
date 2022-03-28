@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import AddressMetadataForm from '../components/AddressMetadataForm'
 import Amount from '../components/Amount'
@@ -44,6 +44,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
   const { wallet } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
+  const theme = useTheme()
 
   if (!address || !wallet || !mainAddress) return null
 
@@ -93,7 +94,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
                 Sweep
               </ModalFooterButton>
               <AvailableAmount>
-                Available: <Amount value={address.availableBalance} />
+                Available: <Amount value={address.availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
             </SweepButton>
           }
