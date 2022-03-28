@@ -47,5 +47,5 @@ const AlefSymbolSVG = styled.span<{ color?: string }>`
   mask: url(${alefSymbol}) no-repeat 100% 100%;
   -webkit-mask-size: cover;
   mask-size: cover;
-  background-color: ${({ color, theme }) => color || theme.font.primary};} ;
+  background-color: ${({ color, theme }) => color || theme.font.primary};
 `
