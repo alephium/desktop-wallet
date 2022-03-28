@@ -25,14 +25,12 @@ interface AlefSymbolProps {
   className?: string
 }
 
-const AlefSymbol = ({ className, color }: AlefSymbolProps) => {
-  return (
-    <span className={className}>
-      <HiddenForCopying>&nbsp;ALPH</HiddenForCopying>
-      <AlefSymbolSVG color={color} />
-    </span>
-  )
-}
+const AlefSymbol = ({ className, color }: AlefSymbolProps) => (
+  <span className={className}>
+    <HiddenForCopying>&nbsp;ALPH</HiddenForCopying>
+    <AlefSymbolSVG color={color} />
+  </span>
+)
 
 export default AlefSymbol
 
