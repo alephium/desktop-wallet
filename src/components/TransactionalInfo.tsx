@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import Amount from './Amount'
 
@@ -28,12 +28,17 @@ interface TransactionalInfoProps {
   prefix?: string
 }
 
-const TransactionalInfo = ({ content, className, amount, prefix }: TransactionalInfoProps) => (
-  <div className={className}>
-    {prefix && <span>{prefix}</span>}
-    {amount && content ? <Amount value={BigInt(content)} fadeDecimals /> : content}
-  </div>
-)
+const TransactionalInfo = ({ content, className, amount, prefix, type }: TransactionalInfoProps) => {
+  const theme = useTheme()
+  const color = type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid
+
+  return (
+    <div className={className} color={color}>
+      {prefix && <span>{prefix}</span>}
+      {amount && content ? <Amount value={BigInt(content)} fadeDecimals color={color} /> : content}
+    </div>
+  )
+}
 
 export default styled(TransactionalInfo)`
   color: ${({ type, theme }) => (type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid)};

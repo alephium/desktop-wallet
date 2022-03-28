@@ -68,7 +68,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     <SideModal onClose={onClose}>
       <Header contrast>
         <AmountWrapper color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span> <Amount value={amount} fadeDecimals />
+          <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
+          <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
         <HeaderInfo>
           <Direction>{isOutgoingTx ? '↑ Sent' : '↓ Received'}</Direction>

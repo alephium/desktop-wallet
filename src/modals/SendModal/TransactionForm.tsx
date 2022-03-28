@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
-import { useState } from 'react'
-import styled from 'styled-components'
+import { ReactNode, useState } from 'react'
+import styled, { useTheme } from 'styled-components'
 
+import AlefSymbol from '../../components/AlefSymbol'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import AddressSelect from '../../components/Inputs/AddressSelect'
@@ -46,9 +47,10 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   const [gasAmount, setGasAmount] = useState(data?.gasAmount ?? '')
   const [gasPrice, setGasPrice] = useState(data?.gasPrice ?? '')
   const [addressError, setToAddressError] = useState('')
-  const [gasAmountError, setGasAmountError] = useState('')
+  const [gasAmountError, setGasAmountError] = useState<ReactNode>()
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE)
-  const [gasPriceError, setGasPriceError] = useState('')
+  const [gasPriceError, setGasPriceError] = useState<ReactNode>()
+  const theme = useTheme()
 
   const handleAddressChange = (value: string) => {
     setToAddress(value)
@@ -78,7 +80,12 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       amount: newPrice,
       minAmount: MINIMAL_GAS_PRICE,
       stateSetter: setGasPrice,
-      errorMessage: `Gas price must be greater than ${formatAmountForDisplay(MINIMAL_GAS_PRICE, true)} ℵ.`,
+      errorMessage: (
+        <>
+          Gas price must be greater than {formatAmountForDisplay(MINIMAL_GAS_PRICE, true)}
+          <AlefSymbol color={theme.global.alert} />.
+        </>
+      ),
       currentErrorState: gasPriceError,
       errorStateSetter: setGasPriceError,
       shouldConvertToSet: true
@@ -117,7 +124,12 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           isValid={toAddress.length > 0 && !addressError}
         />
         <AmountInput value={amount} onChange={setAmount} availableAmount={fromAddress.availableBalance} />
-        {expectedFeeInALPH && <InfoBoxStyled short label="Expected fee" text={`${expectedFeeInALPH} ℵ`} />}
+        {expectedFeeInALPH && (
+          <InfoBoxStyled short label="Expected fee">
+            {expectedFeeInALPH}
+            <AlefSymbol />
+          </InfoBoxStyled>
+        )}
       </ModalContent>
       <ExpandableSectionStyled sectionTitleClosed="Advanced settings">
         <Input
@@ -131,7 +143,11 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
         />
         <Input
           id="gas-price"
-          placeholder="Gas price (ℵ)"
+          placeholder={
+            <>
+              Gas price (<AlefSymbol color={theme.font.secondary} />)
+            </>
+          }
           value={gasPrice}
           type="number"
           min={minimalGasPriceInALPH}
@@ -183,10 +199,10 @@ const onAmountInputValueChange = ({
 }: {
   amount: string
   minAmount: bigint
-  errorMessage: string
+  errorMessage: ReactNode
   stateSetter: (v: string) => void
-  currentErrorState: string
-  errorStateSetter: (v: string) => void
+  currentErrorState: ReactNode
+  errorStateSetter: (v: ReactNode) => void
   shouldConvertToSet?: boolean
 }) => {
   let amountNumber

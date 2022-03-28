@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
 import styled from 'styled-components'
 
+import AlefSymbol from '../../components/AlefSymbol'
 import InfoBox from '../../components/InfoBox'
 import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
 import { SendTransactionData } from '.'
@@ -42,8 +43,14 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
       <ModalContent>
         <InfoBox text={data.fromAddress.hash} label="From address" wordBreak />
         <InfoBox text={data.toAddress} label="To address" wordBreak />
-        <InfoBox text={`${formatAmountForDisplay(expectedAmount, false, 7)} ℵ`} label="Amount" />
-        {fees && <InfoBox text={`${formatAmountForDisplay(fees, false, 7)} ℵ`} label="Expected fee" />}
+        <InfoBox label="Amount">
+          {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
+        </InfoBox>
+        {fees && (
+          <InfoBox label="Expected fee">
+            {formatAmountForDisplay(fees, false, 7)} <AlefSymbol />
+          </InfoBox>
+        )}
       </ModalContent>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>

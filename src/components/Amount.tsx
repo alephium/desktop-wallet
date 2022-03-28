@@ -20,15 +20,17 @@ import { formatAmountForDisplay } from 'alephium-js'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
+import AlefSymbol from './AlefSymbol'
 
 interface AmountProps {
   value: bigint | undefined
   className?: string
   fadeDecimals?: boolean
   fullPrecision?: boolean
+  color?: string
 }
 
-const Amount = ({ value, className, fadeDecimals, fullPrecision = false }: AmountProps) => {
+const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }: AmountProps) => {
   const {
     settings: {
       general: { discreetMode }
@@ -59,7 +61,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false }: Amoun
       ) : (
         '-'
       )}
-      {' ℵ'}
+      <AlefSymbol color={color} />
     </span>
   )
 }
