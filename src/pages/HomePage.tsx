@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -31,7 +31,11 @@ import { FloatingPanel, Section } from '../components/PageComponents/PageContain
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
 import { useGlobalContext } from '../contexts/global'
+import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
+
+const currentVersion = process.env.REACT_APP_VERSION
+const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 
 interface HomeProps {
   hasWallet: boolean
@@ -40,9 +44,29 @@ interface HomeProps {
 
 const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(false)
+  const [latestVersion, setLatestVersion] = useState('')
+  const { currentNetwork } = useGlobalContext()
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
+
+  useEffect(() => {
+    if (currentNetwork !== 'mainnet') return
+
+    const fetchLatestVersion = async () => {
+      const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
+      const data = await response.json()
+      const latestVersion = data.tag_name.replace('v', '')
+
+      if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
+        setLatestVersion(latestVersion)
+        setUpdateWalletModalVisible(true)
+      }
+    }
+
+    fetchLatestVersion()
+  }, [currentNetwork])
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -73,6 +97,9 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
           )}
         </FloatingPanel>
       </InteractionArea>
+      {isUpdateWalletModalVisible && (
+        <UpdateWalletModal newVersion={latestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
+      )}
     </HomeContainer>
   )
 }
