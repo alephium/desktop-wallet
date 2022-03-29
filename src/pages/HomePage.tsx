@@ -34,9 +34,6 @@ import { useGlobalContext } from '../contexts/global'
 import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-const currentVersion = process.env.REACT_APP_VERSION
-const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
-
 interface HomeProps {
   hasWallet: boolean
   accountNames: string[]
@@ -44,29 +41,15 @@ interface HomeProps {
 
 const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(false)
-  const [latestVersion, setLatestVersion] = useState('')
-  const { currentNetwork } = useGlobalContext()
+  const { newLatestVersion } = useGlobalContext()
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
 
   useEffect(() => {
-    if (currentNetwork !== 'mainnet') return
-
-    const fetchLatestVersion = async () => {
-      const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
-      const data = await response.json()
-      const latestVersion = data.tag_name.replace('v', '')
-
-      if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
-        setLatestVersion(latestVersion)
-        setUpdateWalletModalVisible(true)
-      }
-    }
-
-    fetchLatestVersion()
-  }, [currentNetwork])
+    if (newLatestVersion) setUpdateWalletModalVisible(true)
+  }, [newLatestVersion])
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -98,7 +81,7 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
         </FloatingPanel>
       </InteractionArea>
       {isUpdateWalletModalVisible && (
-        <UpdateWalletModal newVersion={latestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
+        <UpdateWalletModal newVersion={newLatestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
       )}
     </HomeContainer>
   )

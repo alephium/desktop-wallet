@@ -36,6 +36,9 @@ import {
   updateStoredSettings
 } from '../utils/settings'
 
+const currentVersion = process.env.REACT_APP_VERSION
+const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
+
 let localStorageSettings = loadSettings()
 
 if (deprecatedSettingsExist()) {
@@ -57,6 +60,7 @@ export interface GlobalContextProps {
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
   isOffline: boolean
+  newLatestVersion: string
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -75,7 +79,8 @@ export const initialGlobalContext: GlobalContextProps = {
   setSnackbarMessage: () => null,
   isClientLoading: false,
   currentNetwork: 'mainnet',
-  isOffline: false
+  isOffline: false,
+  newLatestVersion: ''
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -96,6 +101,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousExplorerAPIHost = useRef<string>()
   const [isOffline, setIsOffline] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
+  const [newLatestVersion, setNewLatestVersion] = useState('')
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -179,6 +185,22 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     storeSettings(settings)
   }, [settings])
 
+  useEffect(() => {
+    if (currentNetwork !== 'mainnet') return
+
+    const fetchLatestVersion = async () => {
+      const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
+      const data = await response.json()
+      const latestVersion = data.tag_name.replace('v', '')
+
+      if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
+        setNewLatestVersion(latestVersion)
+      }
+    }
+
+    fetchLatestVersion()
+  }, [currentNetwork])
+
   return (
     <GlobalContext.Provider
       value={merge(
@@ -196,7 +218,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           updateSettings,
           isClientLoading,
           currentNetwork,
-          isOffline
+          isOffline,
+          newLatestVersion
         },
         overrideContextValue as GlobalContextProps
       )}

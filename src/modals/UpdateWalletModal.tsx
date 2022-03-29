@@ -33,7 +33,7 @@ const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => {
     <CenteredModal title="New version" onClose={onClose} focusMode>
       <Section>
         <InfoBox Icon={BellPlus}>
-          Version {newVersion} is available. Please, download it and install it to avoid any misbehavior of the wallet.
+          Version {newVersion} is available. Please, download it and install it to avoid any issues with wallet.
         </InfoBox>
       </Section>
       <ModalFooterButtons>
