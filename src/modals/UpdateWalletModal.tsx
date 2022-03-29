@@ -28,23 +28,19 @@ interface UpdateWalletModalProps {
   newVersion: string
 }
 
-const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => {
-  return (
-    <CenteredModal title="New version" onClose={onClose} focusMode>
-      <Section>
-        <InfoBox Icon={BellPlus}>
-          Version {newVersion} is available. Please, download it and install it to avoid any issues with wallet.
-        </InfoBox>
-      </Section>
-      <ModalFooterButtons>
-        <ModalFooterButton
-          onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}
-        >
-          Download
-        </ModalFooterButton>
-      </ModalFooterButtons>
-    </CenteredModal>
-  )
-}
+const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => (
+  <CenteredModal title="New version" onClose={onClose} focusMode>
+    <Section>
+      <InfoBox Icon={BellPlus}>
+        Version {newVersion} is available. Please, download it and install it to avoid any issues with wallet.
+      </InfoBox>
+    </Section>
+    <ModalFooterButtons>
+      <ModalFooterButton onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}>
+        Download
+      </ModalFooterButton>
+    </ModalFooterButtons>
+  </CenteredModal>
+)
 
 export default UpdateWalletModal
