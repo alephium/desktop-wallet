@@ -23,6 +23,7 @@ import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
+import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { createClient } from '../utils/api-clients'
 import {
   deprecatedSettingsExist,
@@ -35,9 +36,6 @@ import {
   UpdateSettingsFunctionSignature,
   updateStoredSettings
 } from '../utils/settings'
-
-const currentVersion = process.env.REACT_APP_VERSION
-const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 
 let localStorageSettings = loadSettings()
 
@@ -101,7 +99,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousExplorerAPIHost = useRef<string>()
   const [isOffline, setIsOffline] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
-  const [newLatestVersion, setNewLatestVersion] = useState('')
+  const newLatestVersion = useLatestGitHubRelease()
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -184,22 +182,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   useEffect(() => {
     storeSettings(settings)
   }, [settings])
-
-  useEffect(() => {
-    if (currentNetwork !== 'mainnet') return
-
-    const fetchLatestVersion = async () => {
-      const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
-      const data = await response.json()
-      const latestVersion = data.tag_name.replace('v', '')
-
-      if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
-        setNewLatestVersion(latestVersion)
-      }
-    }
-
-    fetchLatestVersion()
-  }, [currentNetwork])
 
   return (
     <GlobalContext.Provider
