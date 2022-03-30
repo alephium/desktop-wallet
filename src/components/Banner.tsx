@@ -19,15 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import styled from 'styled-components'
 
 export default styled.div`
-  background-color: ${({ theme }) => theme.global.accent};
-  color: var(--color-white);
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  background-color: ${({ theme }) => theme.global.accent};
+  z-index: 1001;
 `
