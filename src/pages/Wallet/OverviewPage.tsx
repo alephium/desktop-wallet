@@ -86,7 +86,7 @@ const OverviewPage = () => {
 
   useEffect(() => {
     const cards = addressSummaryCardsRef.current
-    if (!cards) return
+    if (!cards || !areAddressSummariesExpanded) return
 
     const onWheel = (event: WheelEvent) => {
       const delta = event.deltaY
