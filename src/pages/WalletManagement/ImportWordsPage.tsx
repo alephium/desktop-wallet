@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
-import { getStorage, walletImport } from 'alephium-js'
+import { getStorage, walletImport } from '@alephium/sdk'
 import { useEffect, useRef, useState } from 'react'
 
 import Button from '../../components/Button'

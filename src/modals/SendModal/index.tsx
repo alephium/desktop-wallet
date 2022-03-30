@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from 'alephium-js'
-import { SweepAddressTransaction } from 'alephium-js/api/alephium'
+import { convertAlphToSet } from '@alephium/sdk'
+import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'

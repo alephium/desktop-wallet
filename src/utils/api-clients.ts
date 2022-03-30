@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CliqueClient, ExplorerClient } from 'alephium-js'
+import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 
 import { Address, AddressHash, TransactionType } from '../contexts/addresses'
 import { NetworkType, Settings } from './settings'

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from 'alephium-js'
+import { getStorage } from '@alephium/sdk'
 import { AnimateSharedLayout } from 'framer-motion'
 import { Redirect, Route, Switch } from 'react-router-dom'
 

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { SweepAddressTransaction } from 'alephium-js/api/alephium'
+import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
