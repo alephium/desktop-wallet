@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -31,6 +31,7 @@ import { FloatingPanel, Section } from '../components/PageComponents/PageContain
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
 import { useGlobalContext } from '../contexts/global'
+import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
@@ -40,9 +41,15 @@ interface HomeProps {
 
 const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
+  const { newLatestVersion } = useGlobalContext()
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
+
+  useEffect(() => {
+    if (newLatestVersion) setUpdateWalletModalVisible(true)
+  }, [newLatestVersion])
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -73,6 +80,9 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
           )}
         </FloatingPanel>
       </InteractionArea>
+      {isUpdateWalletModalVisible && (
+        <UpdateWalletModal newVersion={newLatestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
+      )}
     </HomeContainer>
   )
 }

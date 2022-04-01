@@ -20,6 +20,8 @@ import { getStorage } from 'alephium-js'
 import { AnimateSharedLayout } from 'framer-motion'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
+import UpdateWalletBanner from '../components/UpdateWalletBanner'
+import { useGlobalContext } from '../contexts/global'
 import HomePage from '../pages/HomePage'
 import CreateWalletRoutes from './CreateWalletRoutes'
 import ImportWalletRoutes from './ImportWalletRoutes'
@@ -28,12 +30,14 @@ import WalletRoutes from './WalletRoutes'
 const Storage = getStorage()
 
 const Routes = () => {
+  const { newLatestVersion } = useGlobalContext()
   const accountNames = Storage.list()
   const hasWallet = accountNames.length > 0
 
   return (
     <>
       <AnimateSharedLayout type="crossfade">
+        {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
         <Switch>
           <Route exact path="/create/:step?">
             <CreateWalletRoutes />

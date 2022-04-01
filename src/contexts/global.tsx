@@ -23,6 +23,7 @@ import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
+import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { createClient } from '../utils/api-clients'
 import {
   deprecatedSettingsExist,
@@ -57,6 +58,7 @@ export interface GlobalContextProps {
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
   isOffline: boolean
+  newLatestVersion: string
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -75,7 +77,8 @@ export const initialGlobalContext: GlobalContextProps = {
   setSnackbarMessage: () => null,
   isClientLoading: false,
   currentNetwork: 'mainnet',
-  isOffline: false
+  isOffline: false,
+  newLatestVersion: ''
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -96,6 +99,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousExplorerAPIHost = useRef<string>()
   const [isOffline, setIsOffline] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
+  const newLatestVersion = useLatestGitHubRelease()
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -196,7 +200,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           updateSettings,
           isClientLoading,
           currentNetwork,
-          isOffline
+          isOffline,
+          newLatestVersion
         },
         overrideContextValue as GlobalContextProps
       )}
