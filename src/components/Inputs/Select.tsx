@@ -57,7 +57,6 @@ function Select<T>({
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
-  const [focused, setFocused] = useState(false)
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
@@ -85,7 +84,6 @@ function Select<T>({
 
   const onSelectContainerClick = () => {
     setShowPopup(true)
-    setFocused(true)
   }
 
   return (
@@ -106,11 +104,11 @@ function Select<T>({
         <ClickableInput
           type="text"
           className={className}
-          disabled
+          disabled={disabled}
           id={id}
           value={value?.label ?? ''}
           raised={raised ?? false}
-          focused={focused}
+          readOnly
         />
       </SelectContainer>
       <AnimatePresence>
@@ -121,7 +119,6 @@ function Select<T>({
             title={title}
             onBackgroundClick={() => {
               setShowPopup(false)
-              setFocused(false)
             }}
           />
         )}
@@ -189,7 +186,7 @@ export const OptionItem = styled.div`
   }
 `
 
-const ClickableInput = styled.input<InputProps & { raised: boolean; focused: boolean }>`
+const ClickableInput = styled.input<InputProps & { raised: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
   padding-right: 50px;
 
@@ -202,10 +199,6 @@ const ClickableInput = styled.input<InputProps & { raised: boolean; focused: boo
       border: 1px solid ${({ theme }) => theme.border.secondary};
       box-shadow: ${({ theme }) => theme.shadow.secondary};
     `}
-
-  &:disabled {
-    ${({ focused, theme }) => focused && `border: 1px solid ${theme.global.accent}`}
-  }
 `
 
 export default Select
