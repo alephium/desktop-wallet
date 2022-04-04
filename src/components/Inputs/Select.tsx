@@ -57,6 +57,7 @@ function Select<T>({
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
+  const [focused, setFocused] = useState(false)
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
@@ -82,6 +83,11 @@ function Select<T>({
     }
   }, [options, setInputValue, value])
 
+  const onSelectContainerClick = () => {
+    setShowPopup(true)
+    setFocused(true)
+  }
+
   return (
     <>
       <SelectContainer
@@ -89,7 +95,7 @@ function Select<T>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={() => setShowPopup(true)}
+        onClick={onSelectContainerClick}
       >
         <InputLabel variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={id}>
           {placeholder}
@@ -98,12 +104,13 @@ function Select<T>({
           <MoreVertical />
         </MoreIcon>
         <ClickableInput
-          type="button"
+          type="text"
           className={className}
-          disabled={disabled}
+          disabled
           id={id}
           value={value?.label ?? ''}
           raised={raised ?? false}
+          focused={focused}
         />
       </SelectContainer>
       <AnimatePresence>
@@ -114,6 +121,7 @@ function Select<T>({
             title={title}
             onBackgroundClick={() => {
               setShowPopup(false)
+              setFocused(false)
             }}
           />
         )}
@@ -181,8 +189,9 @@ export const OptionItem = styled.div`
   }
 `
 
-const ClickableInput = styled.input<InputProps & { raised: boolean }>`
+const ClickableInput = styled.input<InputProps & { raised: boolean; focused: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
+  padding-right: 50px;
 
   cursor: pointer;
 
@@ -193,6 +202,10 @@ const ClickableInput = styled.input<InputProps & { raised: boolean }>`
       border: 1px solid ${({ theme }) => theme.border.secondary};
       box-shadow: ${({ theme }) => theme.shadow.secondary};
     `}
+
+  &:disabled {
+    ${({ focused, theme }) => focused && `border: 1px solid ${theme.global.accent}`}
+  }
 `
 
 export default Select
