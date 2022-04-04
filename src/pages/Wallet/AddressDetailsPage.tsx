@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from 'alephium-js'
-import { Transaction } from 'alephium-js/api/explorer'
+import { calAmountDelta } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'

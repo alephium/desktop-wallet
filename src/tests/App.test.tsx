@@ -23,8 +23,8 @@ import App from '../App'
 import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
 
-jest.mock('alephium-js', () => ({
-  ...jest.requireActual('alephium-js'),
+jest.mock('@alephium/sdk', () => ({
+  ...jest.requireActual('@alephium/sdk'),
   getStorage: jest.fn().mockImplementation(() => ({
     list: () => ['Account 1', 'Account 2'],
     load: () => 'walletEncrypted'

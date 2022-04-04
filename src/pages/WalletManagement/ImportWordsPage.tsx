@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getStorage, walletImport } from '@alephium/sdk'
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
-import { getStorage, walletImport } from 'alephium-js'
 import { useEffect, useRef, useState } from 'react'
 
 import Button from '../../components/Button'

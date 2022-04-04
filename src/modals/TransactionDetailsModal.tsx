@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes, calAmountDelta } from 'alephium-js'
-import { Transaction } from 'alephium-js/dist/api/api-explorer'
+import { addApostrophes, calAmountDelta } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import { FC } from 'react'
 import styled, { useTheme } from 'styled-components'

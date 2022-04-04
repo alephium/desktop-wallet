@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Input, Output } from 'alephium-js/dist/api/api-explorer'
+import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
 
 import { AddressHash } from '../contexts/addresses'

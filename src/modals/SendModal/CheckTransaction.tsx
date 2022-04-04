@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, formatAmountForDisplay } from 'alephium-js'
+import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
