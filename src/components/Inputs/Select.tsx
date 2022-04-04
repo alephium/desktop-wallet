@@ -82,10 +82,6 @@ function Select<T>({
     }
   }, [options, setInputValue, value])
 
-  const onSelectContainerClick = () => {
-    setShowPopup(true)
-  }
-
   return (
     <>
       <SelectContainer
@@ -93,7 +89,7 @@ function Select<T>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={onSelectContainerClick}
+        onClick={() => setShowPopup(true)}
       >
         <InputLabel variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={id}>
           {placeholder}
