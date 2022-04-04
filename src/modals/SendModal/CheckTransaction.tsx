@@ -48,7 +48,7 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
         </InfoBox>
         {fees && (
           <InfoBox label="Expected fee">
-            {formatAmountForDisplay(fees, false, 7)} <AlefSymbol />
+            {formatAmountForDisplay(fees, true)} <AlefSymbol />
           </InfoBox>
         )}
       </ModalContent>
