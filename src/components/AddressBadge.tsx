@@ -22,7 +22,10 @@ import tinycolor from 'tinycolor2'
 
 import Badge from './Badge'
 
-type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & { addressName: string }
+type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
+  addressName: string
+  seeThroughBg?: boolean
+}
 
 const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
   <Badge className={className} rounded {...props}>
@@ -31,7 +34,7 @@ const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) =
 )
 
 export default styled(AddressBadge)`
-  ${({ color, theme }) => {
+  ${({ color, seeThroughBg, theme }) => {
     const usedColor = color || theme.font.secondary
 
     return css`
@@ -42,7 +45,7 @@ export default styled(AddressBadge)`
           ? theme.font.primary
           : theme.font.contrastPrimary};
       background-color: ${({ theme }) =>
-        theme.name === 'dark'
+        theme.name === 'dark' || seeThroughBg
           ? tinycolor(usedColor).setAlpha(0.08).toString()
           : tinycolor(usedColor).setAlpha(0.8).toString()};
       padding: 6px 10px;

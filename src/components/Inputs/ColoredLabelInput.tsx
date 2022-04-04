@@ -42,6 +42,7 @@ interface ColoredLabelInputProps {
 let ColoredLabelInput = ({ placeholder, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
   const [label, setLabel] = useState(value.title)
   const [color, setColor] = useState(value.color)
+  const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
     onChange({ title: label, color })
@@ -57,8 +58,10 @@ let ColoredLabelInput = ({ placeholder, onChange, value, className, id, maxLengt
         id={id}
         color={color}
         maxLength={maxLength}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
-      {label && <AddressBadgeStyled color={color} rounded addressName={label} />}
+      {label && <AddressBadgeStyled color={color} rounded addressName={label} seeThroughBg={isFocused} />}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
