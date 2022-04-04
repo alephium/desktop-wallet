@@ -38,9 +38,15 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
   } = useGlobalContext()
   let integralPart = ''
   let fractionalPart = ''
+  let suffix = ''
 
   if (!discreetMode && value !== undefined) {
-    const amountParts = formatAmountForDisplay(value, fullPrecision).split('.')
+    let amount = formatAmountForDisplay(value, fullPrecision)
+    if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
+      suffix = amount.slice(-1)
+      amount = amount.slice(0, -1)
+    }
+    const amountParts = amount.split('.')
     integralPart = amountParts[0]
     fractionalPart = amountParts[1]
   }
@@ -54,6 +60,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
           <>
             <span>{integralPart}</span>
             <Decimals>.{fractionalPart}</Decimals>
+            {suffix && <span>{suffix}</span>}
           </>
         ) : (
           `${integralPart}.${fractionalPart}`
