@@ -63,7 +63,7 @@ To release a new version:
    npm version preminor --preid=rc # if you want to create a release candidate and bump the minor version
    npm version premajor --preid=rc # if you want to create a release candidate and bump the major version
    ```
-2. Push the tag to GitHub and trigger the publish workflow that will publish it on NPM with:
+2. Push the tag to GitHub and trigger the release workflow that will build the downloadable binaries:
 
    ```shell
    git push [remote] <tag>
