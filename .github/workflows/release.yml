@@ -5,7 +5,7 @@ on:
     tags: ['v[0-9]+.[0-9]+.[0-9]+*']
 
 jobs:
-  bump-npm-version:
+  version:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get-version.outputs.VERSION }}
@@ -20,26 +20,12 @@ jobs:
           version=$(echo ${GITHUB_REF/refs\/tags\//} | cut -c 2-)
           echo ::set-output name=VERSION::$version
         shell: bash
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '16.x'
-      - name: Update NPM version
-        run: |
-          git config --global user.name 'polarker'
-          git config --global user.email 'polarker@users.noreply.github.com'
-          npm --no-git-tag-version version ${{ steps.get-version.outputs.VERSION }}
-      - name: Commit version
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git commit -am "Bump to ${{ steps.get-version.outputs.VERSION }}"
-          git push origin HEAD:master
 
   build-artifacts:
     runs-on: ${{ matrix.os }}
-    needs: bump-npm-version
+    needs: version
     outputs:
-      version: ${{ needs.bump-npm-version.outputs.version }}
+      version: ${{ needs.version.outputs.version }}
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
@@ -71,26 +57,26 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: macos-binary
-          path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}-universal.dmg
+          path: dist/Alephium-${{ needs.version.outputs.version }}-universal.dmg
       - name: Upload artifact (linux .deb)
         if: startsWith(matrix.os, 'ubuntu')
         uses: actions/upload-artifact@v2
         with:
           name: deb-binary
-          path: dist/alephium-wallet_${{ needs.bump-npm-version.outputs.version }}_amd64.deb
+          path: dist/alephium-wallet_${{ needs.version.outputs.version }}_amd64.deb
       - name: Upload artifact (linux .AppImage)
         if: startsWith(matrix.os, 'ubuntu')
         uses: actions/upload-artifact@v2
         with:
           name: appimage-binary
-          path: dist/Alephium-${{ needs.bump-npm-version.outputs.version }}.AppImage
+          path: dist/Alephium-${{ needs.version.outputs.version }}.AppImage
       - name: Upload artifact (windows)
         if: startsWith(matrix.os, 'windows')
         uses: actions/upload-artifact@v2
         with:
           name: windows-binary
-          path: dist\Alephium Setup ${{ needs.bump-npm-version.outputs.version }}.exe
-          
+          path: dist\Alephium Setup ${{ needs.version.outputs.version }}.exe
+
   release:
     runs-on: ubuntu-latest
     needs: build-artifacts
@@ -113,16 +99,16 @@ jobs:
           name: windows-binary
       - name: Generate wallet checksums (Release prep)
         run: |
-             mv "Alephium-${{ needs.build-artifacts.outputs.version }}-universal.dmg" "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg"
-             mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_amd64.deb" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb"
-             mv "Alephium-${{ needs.build-artifacts.outputs.version }}.AppImage" "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage"
-             mv "Alephium Setup ${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
-             
-             sha256sum "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg" > "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum"
-             sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
-             sha256sum "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage" > "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum"
-             sha256sum "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe" > "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum"
-              
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}-universal.dmg" "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg"
+          mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_amd64.deb" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb"
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}.AppImage" "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage"
+          mv "Alephium Setup ${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
+
+          sha256sum "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg" > "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum"
+          sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
+          sha256sum "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage" > "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum"
+          sha256sum "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe" > "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum"
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -135,4 +121,3 @@ jobs:
             alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage.checksum
             alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe
             alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe.checksum
-    
