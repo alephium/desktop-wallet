@@ -2,35 +2,13 @@
 
 The official Alephium desktop wallet.
 
-## Install
+## Development
+
+Install depedencies with:
 
 ```shell
 npm install
 ```
-
-## Packaging
-
-### Web extension
-
-```shell
-npm run extension-pack
-```
-
-### Desktop app
-
-The command below will detect your OS and build the corresponding package.
-
-```shell
-npm run electron-pack
-```
-
-To build for ARM64 Linux, run:
-
-```shell
-npm run electron-pack-linux:arm64
-```
-
-## Development
 
 To launch the app as a web app, run:
 
@@ -48,6 +26,20 @@ npm run electron-dev
 
 ```shell
 npm test
+```
+
+## Packaging
+
+The command below will detect your OS and build the corresponding package:
+
+```shell
+npm run electron-pack
+```
+
+To build for ARM64 Linux, run:
+
+```shell
+npm run electron-pack-linux:arm64
 ```
 
 ## Release
