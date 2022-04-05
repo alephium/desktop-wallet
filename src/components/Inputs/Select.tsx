@@ -98,12 +98,13 @@ function Select<T>({
           <MoreVertical />
         </MoreIcon>
         <ClickableInput
-          type="button"
+          type="text"
           className={className}
           disabled={disabled}
           id={id}
           value={value?.label ?? ''}
           raised={raised ?? false}
+          readOnly
         />
       </SelectContainer>
       <AnimatePresence>
@@ -183,6 +184,7 @@ export const OptionItem = styled.div`
 
 const ClickableInput = styled.input<InputProps & { raised: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
+  padding-right: 50px;
 
   cursor: pointer;
 

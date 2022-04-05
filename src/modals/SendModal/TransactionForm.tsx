@@ -185,7 +185,7 @@ const ModalContent = styled.div`
 `
 
 const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), false, 7)
+  return formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), true)
 }
 
 const onAmountInputValueChange = ({
