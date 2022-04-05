@@ -2,6 +2,8 @@
 
 The official Alephium desktop wallet.
 
+![Wallet preview](https://user-images.githubusercontent.com/1579899/161780937-94cdf21b-6895-407b-83ab-94103d359bce.png)
+
 ## Development
 
 Install depedencies with:
