@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, walletImport } from '@alephium/sdk'
+import { getHumanReadableError, getStorage, walletImport } from '@alephium/sdk'
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { useEffect, useRef, useState } from 'react'
 
@@ -33,7 +33,6 @@ import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
-import { getHumanReadableError } from '../../utils/api'
 import { bip39Words } from '../../utils/bip39'
 
 const Storage = getStorage()
