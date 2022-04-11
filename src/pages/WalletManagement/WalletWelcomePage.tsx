@@ -88,7 +88,7 @@ const WalletWelcomePage = () => {
               size="16px"
               onClick={() =>
                 openInWebBrowser(
-                  'https://wiki.alephium.org/Desktop-Wallet-Guide.html#creating-a-mining-wallet-with-4-addresses'
+                  'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses'
                 )
               }
             />
