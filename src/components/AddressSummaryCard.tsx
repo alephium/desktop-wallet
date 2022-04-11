@@ -18,14 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
-import Truncate from './Truncate'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -54,15 +53,14 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         onClick={() => clickable && history.push(`/wallet/addresses/${address.hash}`)}
         clickable={clickable}
       >
-        <AddressNameSection>
-          <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
-          <Hash>{address.hash}</Hash>
+        <AddressNameSection collapsed={!clickable}>
+          <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} truncate />
         </AddressNameSection>
-        <AmountsSection>
+        <AmountsSection collapsed={!clickable}>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
         </AmountsSection>
       </ClickableArea>
-      <ButtonsSection>
+      <ButtonsSection collapsed={!clickable}>
         <ClipboardButton textToCopy={address.hash} />
         <QRCodeButton textToEncode={address.hash} />
       </ButtonsSection>
@@ -75,52 +73,76 @@ export default styled(AddressSummaryCard)`
   flex-direction: column;
   width: ${addressSummaryCardWidthPx}px;
   height: 95%;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius-medium);
+
+  ${({ clickable }) =>
+    !clickable &&
+    css`
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border-radius: var(--radius-medium);
+      border: 1px solid ${({ theme }) => theme.border.primary};
+    `}
 `
 
-const PaddedSection = styled.div`
-  padding: 11px 17px;
-`
-
-const AddressNameSection = styled(PaddedSection)`
+const AddressNameSection = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: padding 0.2s ease-out;
+  padding: 0 17px;
 
-  > * {
-    max-width: 100%;
-  }
+  ${({ collapsed }) =>
+    !collapsed &&
+    css`
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border-top-left-radius: var(--radius-medium);
+      border-top-right-radius: var(--radius-medium);
+      padding: 0;
+    `}
 `
 
-const Hash = styled(Truncate)`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 10px;
-  font-weight: var(--fontWeight-medium);
-  margin-top: var(--spacing-1);
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: 100%;
+  padding: 11px 17px;
+  border-radius: var(--radius-medium);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  text-align: center;
 `
 
-const AmountsSection = styled.div`
+const AmountsSection = styled.div<{ collapsed: boolean }>`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }) => theme.bg.primary};
-  border-top: 1px solid ${({ theme }) => theme.border.primary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   text-align: center;
   padding: 11px 0;
+
+  ${({ collapsed }) =>
+    !collapsed &&
+    css`
+      border-top: 1px solid ${({ theme }) => theme.border.primary};
+      background-color: ${({ theme }) => theme.bg.primary};
+    `}
 `
 
 const AmountHighlighted = styled(Amount)`
   font-size: 1.2em;
 `
 
-const ButtonsSection = styled(PaddedSection)`
+const ButtonsSection = styled.div<{ collapsed: boolean }>`
   display: flex;
   gap: var(--spacing-4);
   justify-content: center;
+  padding: 11px 17px;
+
+  ${({ collapsed }) =>
+    !collapsed &&
+    css`
+      border: 1px solid ${({ theme }) => theme.border.secondary};
+      background-color: ${({ theme }) => theme.bg.secondary};
+      border-bottom-left-radius: var(--radius-medium);
+      border-bottom-right-radius: var(--radius-medium);
+    `}
 `
 
 const ClickableArea = styled.div<{ clickable?: boolean }>`
