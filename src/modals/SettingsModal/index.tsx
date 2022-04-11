@@ -29,7 +29,7 @@ import NetworkSettingsSection from './NetworkSettingsSection'
 const tabs = [
   { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
   { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
-  { value: 'accounts', label: 'Accounts', component: <AccountsSettingsSection /> }
+  { value: 'accounts', label: 'Wallets', component: <AccountsSettingsSection /> }
 ]
 
 interface SettingsModalProps {

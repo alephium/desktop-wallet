@@ -26,7 +26,7 @@ import { renderWithGlobalContext } from '.'
 jest.mock('@alephium/sdk', () => ({
   ...jest.requireActual('@alephium/sdk'),
   getStorage: jest.fn().mockImplementation(() => ({
-    list: () => ['Account 1', 'Account 2'],
+    list: () => ['Wallet 1', 'Wallet 2'],
     load: () => 'walletEncrypted'
   })),
   walletOpen: () => ({}),
@@ -64,15 +64,15 @@ beforeEach(async () => {
   })
 })
 
-it('should display login form when accounts exist in storage', () => {
-  expect(screen.getByText('Please choose an account and enter your password to continue.')).toBeInTheDocument()
+it('should display login form when wallets exist in storage', () => {
+  expect(screen.getByText('Please choose a wallet and enter your password to continue.')).toBeInTheDocument()
 })
 
-it('should display available accounts to login with when clicking the Account input field', () => {
-  fireEvent.click(screen.getByLabelText('Account'))
+it('should display available wallets to login with when clicking the Wallet input field', () => {
+  fireEvent.click(screen.getByLabelText('Wallet'))
 
-  expect(screen.getByText('Account 1')).toBeInTheDocument()
-  expect(screen.getByText('Account 2')).toBeInTheDocument()
+  expect(screen.getByText('Wallet 1')).toBeInTheDocument()
+  expect(screen.getByText('Wallet 2')).toBeInTheDocument()
 })
 
 it('should lock the wallet when idle for too long after successful login', async () => {
@@ -80,8 +80,8 @@ it('should lock the wallet when idle for too long after successful login', async
   jest.spyOn(global, 'setInterval')
 
   // 1. Login
-  fireEvent.click(screen.getByLabelText('Account'))
-  fireEvent.click(screen.getByText('Account 1'))
+  fireEvent.click(screen.getByLabelText('Wallet'))
+  fireEvent.click(screen.getByText('Wallet 1'))
   fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'fake-password' } })
   fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
@@ -119,7 +119,7 @@ it('should lock the wallet when idle for too long after successful login', async
     jest.runOnlyPendingTimers()
   })
   expect(screen.getByRole('main')).toHaveTextContent('Welcome back!')
-  expect(screen.getByRole('main')).toHaveTextContent('Please choose an account and enter your password to continue')
+  expect(screen.getByRole('main')).toHaveTextContent('Please choose a wallet and enter your password to continue')
 })
 
 afterAll(() => {

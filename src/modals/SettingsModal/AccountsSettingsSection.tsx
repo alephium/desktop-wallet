@@ -62,7 +62,7 @@ const AccountsSettingsSection = () => {
         />
       )}
       <Section align="flex-start">
-        <h2>Account list ({accountNames.length})</h2>
+        <h2>Wallet list ({accountNames.length})</h2>
         <BoxContainer>
           {accountNames.map((n) => {
             return (
@@ -80,18 +80,18 @@ const AccountsSettingsSection = () => {
         <>
           <HorizontalDivider />
           <Section align="flex-start">
-            <h2>Current account</h2>
-            <InfoBox label="Account name" text={currentAccountName} />
+            <h2>Current wallet</h2>
+            <InfoBox label="Wallet name" text={currentAccountName} />
           </Section>
           <Section>
             <Button secondary onClick={lockWallet}>
-              Lock current account
+              Lock current wallet
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
               Show your secret phrase
             </Button>
             <Button alert onClick={() => openRemoveAccountModal(currentAccountName)}>
-              Remove current account
+              Remove current wallet
             </Button>
           </Section>
         </>

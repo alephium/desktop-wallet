@@ -67,14 +67,14 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
             <>
               <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
               <Paragraph centered secondary>
-                Please choose an account and enter your password to continue.
+                Please choose a wallet and enter your password to continue.
               </Paragraph>
               <Login onLinkClick={displayInitialActions} accountNames={accountNames} />
             </>
           )}
           {showInitialActions && (
             <>
-              <PanelTitle useLayoutId={false}>New account</PanelTitle>
+              <PanelTitle useLayoutId={false}>New wallet</PanelTitle>
               <InitialActions showLinkToExistingAccounts onLinkClick={hideInitialActions} />
             </>
           )}
@@ -112,11 +112,11 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
     <>
       <SectionStyled inList>
         <Select
-          placeholder="Account"
+          placeholder="Wallet"
           options={accountNames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
-          title="Select an account"
-          id="account"
+          title="Select a wallet"
+          id="wallet"
         />
         <Input
           placeholder="Password"
@@ -154,7 +154,7 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing account</SwitchLink>}
+        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
       </Section>
     </>
   )

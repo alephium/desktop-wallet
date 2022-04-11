@@ -112,17 +112,17 @@ const WalletLayout: FC = ({ children }) => {
           </Texts>
         </LogoContainer>
         {accountNameSelectOptions.length === 0 ? (
-          <InfoBox text={currentAccountName} label="ACCOUNT" />
+          <InfoBox text={currentAccountName} label="WALLET" />
         ) : (
           <Select
-            placeholder="ACCOUNT"
+            placeholder="WALLET"
             options={accountNameSelectOptions}
             controlledValue={{
               label: currentAccountName,
               value: currentAccountName
             }}
             onValueChange={handleAccountNameChange}
-            title="Select an account"
+            title="Select a wallet"
             id="account"
             raised
           />

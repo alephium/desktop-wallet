@@ -115,7 +115,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const login = async (accountName: string, password: string, callback: () => void) => {
     const walletEncrypted = Storage.load(accountName)
     if (!walletEncrypted) {
-      setSnackbarMessage({ text: 'Unknown account name', type: 'alert' })
+      setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
       return
     }
     try {
