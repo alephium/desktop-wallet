@@ -35,7 +35,7 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
   const theme = useTheme()
 
   return (
-    <CenteredModal title={`Remove account "${accountName}"`} onClose={onClose} focusMode>
+    <CenteredModal title={`Remove wallet "${accountName}"`} onClose={onClose} focusMode>
       <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
       </Section>

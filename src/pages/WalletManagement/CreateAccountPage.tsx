@@ -77,9 +77,9 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     let accountNameError = ''
 
     if (accountName.length < 3) {
-      accountNameError = 'Account name is too short'
+      accountNameError = 'Wallet name is too short'
     } else if (accountNames?.includes(accountName)) {
-      accountNameError = 'Account name already taken'
+      accountNameError = 'Wallet name already taken'
     }
 
     setAccountNameState(accountName)
@@ -102,12 +102,12 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">{isRestoring ? 'Import Account' : 'New Account'}</PanelTitle>
+      <PanelTitle color="primary">{isRestoring ? 'Import Wallet' : 'New Wallet'}</PanelTitle>
       <PanelContentContainer>
         <Section inList>
           <Input
             value={accountName}
-            placeholder={isRestoring ? 'New account name' : 'Account name'}
+            placeholder={isRestoring ? 'New wallet name' : 'Wallet name'}
             onChange={onUpdateAccountName}
             error={accountNameError}
             isValid={accountName.length > 0 && accountNameError.length === 0}
@@ -134,7 +134,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
             importance="alert"
             text={'Make sure to keep your password secured as it cannot be changed in the future.'}
           />
-          <WarningNote>{'Alephium doesn’t have access to your account.\nYou are the only owner.'}</WarningNote>
+          <WarningNote>{"Alephium doesn't have access to your wallet.\nYou are the only owner."}</WarningNote>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>

@@ -47,8 +47,8 @@ it('welcomes the user back and displays the login form', async () => {
 
   const main = screen.getByRole('main')
   expect(main).toHaveTextContent('Welcome back!')
-  expect(main).toHaveTextContent('Please choose an account and enter your password to continue')
-  expect(screen.getByLabelText('Account')).toBeInTheDocument()
+  expect(main).toHaveTextContent('Please choose a wallet and enter your password to continue')
+  expect(screen.getByLabelText('Wallet')).toBeInTheDocument()
   expect(screen.getByLabelText('Password')).toBeInTheDocument()
   expect(main).toHaveTextContent('Create / import a new wallet')
   expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument()
@@ -57,20 +57,20 @@ it('welcomes the user back and displays the login form', async () => {
   expect(screen.getByTestId('sidebar')).toBeInTheDocument()
 })
 
-it('navigates correctly between "New account" and login pages', async () => {
+it('navigates correctly between "New wallet" and login pages', async () => {
   await waitFor(() => renderWithGlobalContext(<HomePage hasWallet={true} accountNames={['John Doe']} />))
 
   const main = screen.getByRole('main')
 
   let link = screen.getByText('Create / import a new wallet')
   fireEvent.click(link)
-  expect(main).toHaveTextContent('New account')
+  expect(main).toHaveTextContent('New wallet')
   expect(main).toHaveTextContent('Please choose whether you want to create a new wallet or import an existing one.')
 
-  link = screen.getByText('Use an existing account')
+  link = screen.getByText('Use an existing wallet')
   fireEvent.click(link)
   expect(main).toHaveTextContent('Welcome back!')
-  expect(main).toHaveTextContent('Please choose an account and enter your password to continue')
+  expect(main).toHaveTextContent('Please choose a wallet and enter your password to continue')
 })
 
 describe('Button correctly links to', () => {
