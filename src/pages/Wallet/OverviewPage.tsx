@@ -39,6 +39,7 @@ import DayskyImageSrc from '../../images/daysky.jpeg'
 import NightskyImageSrc from '../../images/nightsky.png'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 import { appHeaderHeightPx } from '../../style/globalStyles'
+import { sortAddressList } from '../../utils/addresses'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction', width: '100px' },
@@ -114,7 +115,7 @@ const OverviewPage = () => {
             ref={addressSummaryCardsRef}
           >
             <AnimatePresence>
-              {addresses.map((address, index) => (
+              {sortAddressList(addresses).map((address, index) => (
                 <AddressSummaryCardStyled
                   key={address.hash}
                   address={address}
