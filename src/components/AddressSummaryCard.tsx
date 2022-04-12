@@ -94,18 +94,16 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
     !collapsed &&
     css`
       background-color: ${({ theme }) => theme.bg.secondary};
-      border-top-left-radius: var(--radius-medium);
-      border-top-right-radius: var(--radius-medium);
+      border-radius: var(--radius-medium) var(--radius-medium) 0 0;
       padding: 0;
+      overflow: hidden;
     `}
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
   width: 100%;
   padding: 11px 17px;
-  border-radius: var(--radius-medium);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  border-radius: 0;
   text-align: center;
 `
 
@@ -140,8 +138,7 @@ const ButtonsSection = styled.div<{ collapsed: boolean }>`
     css`
       border: 1px solid ${({ theme }) => theme.border.secondary};
       background-color: ${({ theme }) => theme.bg.secondary};
-      border-bottom-left-radius: var(--radius-medium);
-      border-bottom-right-radius: var(--radius-medium);
+      border-radius: 0 0 var(--radius-medium) var(--radius-medium);
     `}
 `
 
