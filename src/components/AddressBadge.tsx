@@ -41,7 +41,7 @@ export default styled(AddressBadge)`
       color: ${({ theme }) =>
         theme.name === 'dark'
           ? usedColor
-          : tinycolor(usedColor).isLight()
+          : tinycolor(usedColor).isLight() || seeThroughBg
           ? theme.font.primary
           : theme.font.contrastPrimary};
       background-color: ${({ theme }) =>
