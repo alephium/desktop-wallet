@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Address } from '../contexts/addresses'
+
 const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
 
 export type AddressSettings = {
@@ -63,3 +65,11 @@ export const storeAddressMetadataOfAccount = (accountName: string, index: number
 export const deleteStoredAddressMetadataOfAccount = (accountName: string) => {
   localStorage.removeItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
 }
+
+export const sortAddressList = (addresses: Address[]): Address[] =>
+  addresses.sort((a, b) => {
+    // Always keep main address to the top of the list
+    if (a.settings.isMain) return -1
+    if (b.settings.isMain) return 1
+    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
+  })

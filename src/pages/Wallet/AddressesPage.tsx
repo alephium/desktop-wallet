@@ -39,6 +39,7 @@ import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
+import { sortAddressList } from '../../utils/addresses'
 import { openInWebBrowser } from '../../utils/misc'
 
 const addressesTableHeaders: TableProps['headers'] = [
@@ -67,13 +68,6 @@ const AddressesPage = () => {
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
 
-  const sortedAddressList = addresses.sort((a, b) => {
-    // Always keep main address to the top of the list
-    if (a.settings.isMain) return -1
-    if (b.settings.isMain) return 1
-    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
-  })
-
   return (
     <MainContent>
       <PageTitleRow>
@@ -83,7 +77,7 @@ const AddressesPage = () => {
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minWidth="580px">
-        {sortedAddressList.map((address) => {
+        {sortAddressList(addresses).map((address) => {
           return (
             <TableRow
               key={address.hash}
