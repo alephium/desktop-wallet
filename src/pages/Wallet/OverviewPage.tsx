@@ -266,6 +266,6 @@ const ExpandButton = styled(Button)`
   background-color: ${({ theme }) => theme.bg.accent};
   margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
-  z-index: 1;
+  z-index: 0;
   align-self: center;
 `
