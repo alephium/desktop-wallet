@@ -20,26 +20,17 @@ import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import { useState } from 'react'
 
-import AccountSummaryCard from '../../components/AccountSummaryCard'
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
-import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
-import Button from '../../components/Button'
-import GradientCanvas from '../../components/GradientCanvas'
+import OverviewPageHeader from '../../components/OverviewPage/Header'
 import { MainContent } from '../../components/PageComponents/PageContainers'
 import { PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import DayskyImageSrc from '../../images/daysky.jpeg'
-import NightskyImageSrc from '../../images/nightsky.png'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
-import { appHeaderHeightPx } from '../../style/globalStyles'
-import { sortAddressList } from '../../utils/addresses'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction', width: '100px' },
@@ -54,10 +45,8 @@ type TransactionAndAddress = Transaction & { address: Address }
 
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionAndAddress>()
-  const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
-  const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
 
   const allConfirmedTxs = addresses
     .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
@@ -79,60 +68,9 @@ const OverviewPage = () => {
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  useEffect(() => {
-    if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
-      addressSummaryCardsRef.current.scrollLeft = 0
-    }
-  }, [areAddressSummariesExpanded])
-
-  useEffect(() => {
-    const cards = addressSummaryCardsRef.current
-    if (!cards || !areAddressSummariesExpanded) return
-
-    const onWheel = (event: WheelEvent) => {
-      const delta = event.deltaY
-      if (delta > 3 || delta < -3) {
-        event.preventDefault()
-        cards.scrollLeft += delta
-      }
-    }
-    cards.addEventListener('wheel', onWheel)
-
-    return () => {
-      cards.removeEventListener('wheel', onWheel)
-    }
-  })
-
   return (
     <MainContent>
-      <Header>
-        <GradientCanvas />
-        <Summaries>
-          <AccountSummaryCardStyled isLoading={showSkeletonLoading} />
-          <AddressSummaryCards
-            collapsed={!areAddressSummariesExpanded}
-            totalAddresses={addresses.length}
-            ref={addressSummaryCardsRef}
-          >
-            <AnimatePresence>
-              {sortAddressList(addresses).map((address, index) => (
-                <AddressSummaryCardStyled
-                  key={address.hash}
-                  address={address}
-                  index={index}
-                  clickable={areAddressSummariesExpanded}
-                  totalCards={addresses.length}
-                />
-              ))}
-            </AnimatePresence>
-          </AddressSummaryCards>
-          <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
-            {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
-            {areAddressSummariesExpanded ? 'Reduce' : 'Show addresses'}
-            {!areAddressSummariesExpanded && <ArrowRight size="12px" />}
-          </ExpandButton>
-        </Summaries>
-      </Header>
+      <OverviewPageHeader />
       <PageH2>Transaction history</PageH2>
       <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading}>
         {allPendingTxs
@@ -212,60 +150,3 @@ const OverviewPage = () => {
 }
 
 export default OverviewPage
-
-const addressSummaryCardsGapPx = 15
-const expandButtonLeftMarginPx = 20
-const collapsedaddressSummaryCardWidthPx = 10
-
-const Header = styled.header`
-  position: relative;
-  background-image: url(${({ theme }) => (theme.name === 'dark' ? NightskyImageSrc : DayskyImageSrc)});
-  background-position: bottom;
-  background-size: cover;
-  margin-top: -${appHeaderHeightPx}px;
-  margin-left: -56px;
-  margin-right: -56px;
-  padding: 56px;
-  padding-top: 70px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-`
-
-const Summaries = styled.div`
-  display: flex;
-`
-
-const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
-  display: flex;
-  gap: ${addressSummaryCardsGapPx}px;
-  overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
-  margin-left: calc(var(--spacing-2) * -1);
-  padding-left: var(--spacing-4);
-  align-items: center;
-  width: ${({ collapsed, totalAddresses }) =>
-    collapsed
-      ? `${totalAddresses * collapsedaddressSummaryCardWidthPx + addressSummaryCardsGapPx}px`
-      : `${
-          totalAddresses * (addressSummaryCardWidthPx + addressSummaryCardsGapPx) +
-          (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
-        }px`};
-  transition: width 0.2s ease-out;
-  z-index: 1;
-`
-
-const AccountSummaryCardStyled = styled(AccountSummaryCard)`
-  flex-shrink: 0;
-  z-index: 2;
-`
-
-const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; clickable: boolean }>`
-  order: ${({ index, clickable }) => (!clickable ? index * -1 : index)};
-`
-
-const ExpandButton = styled(Button)`
-  flex-shrink: 0;
-  background-color: ${({ theme }) => theme.bg.accent};
-  margin-left: ${expandButtonLeftMarginPx}px;
-  gap: var(--spacing-1);
-  z-index: 0;
-  align-self: center;
-`
