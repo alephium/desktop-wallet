@@ -24,7 +24,7 @@ import Badge from './Badge'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   addressName: string
-  seeThroughBg?: boolean
+  opaqueBg?: boolean
 }
 
 const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
@@ -34,20 +34,24 @@ const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) =
 )
 
 export default styled(AddressBadge)`
-  ${({ color, seeThroughBg, theme }) => {
+  ${({ color, opaqueBg, theme }) => {
     const usedColor = color || theme.font.secondary
+    const isBright = tinycolor(usedColor).getBrightness() > 160
 
     return css`
-      color: ${({ theme }) =>
-        theme.name === 'dark'
-          ? usedColor
-          : tinycolor(usedColor).isLight()
+      color: ${opaqueBg
+        ? isBright
           ? theme.font.primary
-          : theme.font.contrastPrimary};
+          : theme.font.contrastPrimary
+        : isBright
+        ? tinycolor(usedColor).darken(5).toString()
+        : usedColor};
       background-color: ${({ theme }) =>
-        theme.name === 'dark' || seeThroughBg
+        opaqueBg
+          ? tinycolor(usedColor).setAlpha(0.8).toString()
+          : theme.name === 'dark'
           ? tinycolor(usedColor).setAlpha(0.08).toString()
-          : tinycolor(usedColor).setAlpha(0.8).toString()};
+          : tinycolor(usedColor).setAlpha(0.1).toString()};
       padding: 6px 10px;
     `
   }}
