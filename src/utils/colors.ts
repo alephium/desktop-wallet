@@ -16,6 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export const labelColorPalette = ['#F19C1C', '#64F6C2', '#7B61FF', '#FFE600', '#64C9E1', '#AA9191', '#EF5959']
+export const labelColorPalette = ['#3DD97E', '#FFC400', '#64C9E1', '#9257FF', '#0D92FF', '#EB3BBC', '#EF5959']
 
 export const getRandomLabelColor = () => labelColorPalette[Math.floor(Math.random() * labelColorPalette.length)]

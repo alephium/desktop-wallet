@@ -24,5 +24,5 @@ const MainAddressLabel = ({ className }: { className?: string }) => {
 
 export default styled(MainAddressLabel)`
   color: ${({ theme }) => theme.font.highlight};
-  font-size: 9px;
+  font-size: 10px;
 `
