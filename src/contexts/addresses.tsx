@@ -16,7 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS, Wallet } from '@alephium/sdk'
+import {
+  addressToGroup,
+  deriveNewAddressData,
+  getHumanReadableError,
+  TOTAL_NUMBER_OF_GROUPS,
+  Wallet
+} from '@alephium/sdk'
 import { AddressInfo, Transaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -28,7 +34,6 @@ import {
   loadStoredAddressesMetadataOfAccount,
   storeAddressMetadataOfAccount
 } from '../utils/addresses'
-import { getHumanReadableError } from '../utils/api'
 import { NetworkType } from '../utils/settings'
 import { useGlobalContext } from './global'
 

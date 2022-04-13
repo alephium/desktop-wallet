@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { APIError, convertAlphToSet, getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -27,7 +27,6 @@ import { Address, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
 import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
-import { getHumanReadableError, isHTTPError } from '../../utils/api'
 import { isAmountWithinRange } from '../../utils/transactions'
 import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
@@ -124,11 +123,8 @@ const SendModal = ({ onClose }: SendModalProps) => {
         }
       } catch (e) {
         // TODO: When API error codes are available, replace this substring check with a proper error code check
-        if (
-          isHTTPError(e) &&
-          e.error?.detail &&
-          (e.error.detail.includes('consolidating') || e.error.detail.includes('consolidate'))
-        ) {
+        const { error } = e as APIError
+        if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
         } else {

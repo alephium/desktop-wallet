@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -27,7 +28,6 @@ import AddressSelect from '../components/Inputs/AddressSelect'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
-import { getHumanReadableError } from '../utils/api'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type SweepAddress = Address | undefined
