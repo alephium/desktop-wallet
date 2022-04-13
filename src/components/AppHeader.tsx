@@ -90,6 +90,7 @@ const AppHeader: FC = ({ children }) => {
               color={mainAddress?.settings.color}
               addressName={mainAddress?.getLabelName()}
               data-tip="Main address"
+              opaqueBg
             />
           </>
         )}

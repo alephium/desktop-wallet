@@ -62,6 +62,7 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
 
   return (
     <Header className={className}>
+      <TopGradient />
       <GradientCanvas />
       <Summaries>
         <AccountSummaryCardStyled isLoading={isLoadingData} />
@@ -109,6 +110,20 @@ const Header = styled.header`
   padding: 56px;
   padding-top: 70px;
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+`
+
+const TopGradient = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 60px;
+  background: linear-gradient(
+    ${({ theme }) =>
+      theme.name === 'light'
+        ? 'rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)'
+        : 'rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)'}
+  );
 `
 
 const Summaries = styled.div`
