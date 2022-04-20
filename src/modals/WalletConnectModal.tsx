@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
+import { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -29,7 +29,7 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './Centered
 
 interface Props {
   onClose: () => void
-  onConnect: (client: WalletConnectClient) => void
+  onConnect?: () => void
 }
 
 enum State {
@@ -44,22 +44,35 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const { walletConnect } = useWalletConnectContext()
   const [uri, setUri] = useState('')
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
-  const [proposal, setProposal] = useState<SessionTypes.Proposal | undefined>(undefined)
+  const [proposal, setProposal] = useState<SessionTypes.Proposal>()
 
-  useEffect(() => {
-    walletConnect?.on(CLIENT_EVENTS.session.proposal, async (proposal: SessionTypes.Proposal) => {
+  const onProposal = useCallback(
+    async (proposal: SessionTypes.Proposal) => {
       setProposal(proposal)
       setState(State.Proposal)
-    })
+    },
+    [setProposal, setState]
+  )
 
+  useEffect(() => {
+    walletConnect?.on(CLIENT_EVENTS.session.proposal, onProposal)
     walletConnect?.on(CLIENT_EVENTS.session.created, onClose)
-  }, [onClose, walletConnect])
+    return () => {
+      walletConnect?.removeListener(CLIENT_EVENTS.session.proposal, onProposal)
+      walletConnect?.removeListener(CLIENT_EVENTS.session.created, onClose)
+    }
+  }, [onClose, onProposal, walletConnect])
 
   const onInitiate = useCallback(async () => {
     walletConnect
       ?.pair({ uri })
-      .then(() => onConnect(walletConnect))
-      .catch(() => setState(State.Error))
+      .then((e) => {
+        onConnect && onConnect()
+      })
+      .catch((e) => {
+        setUri('')
+        setState(State.Error)
+      })
   }, [walletConnect, uri, onConnect])
 
   const onApprove = useCallback(async () => {
@@ -93,7 +106,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         >
           <div>Please try to generate a new session identifier in the dApp.</div>
           <ModalFooterButtons>
-            <ModalFooterButton onClick={onClose}>Close</ModalFooterButton>
+            <ModalFooterButton onClick={() => setState(State.InitiateSession)}>Ok</ModalFooterButton>
           </ModalFooterButtons>
         </CenteredModal>
       )

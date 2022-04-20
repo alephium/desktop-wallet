@@ -18,7 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 
-import { Address, AddressHash, TransactionType } from '../contexts/addresses'
+import { Address, AddressHash } from '../contexts/addresses'
+import { TransactionType } from '../types/transactions'
 import { NetworkType, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {

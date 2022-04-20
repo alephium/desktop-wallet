@@ -39,7 +39,7 @@ import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { isWalletConnectModalOpen, setIsWalletConnectModalOpen, setWalletConnect } = useWalletConnectContext()
+  const { isWalletConnectModalOpen, setIsWalletConnectModalOpen } = useWalletConnectContext()
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
@@ -125,12 +125,7 @@ const AppHeader: FC = ({ children }) => {
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </AnimatePresence>
       <AnimatePresence>
-        {isWalletConnectModalOpen && (
-          <WalletConnectModal
-            onClose={() => setIsWalletConnectModalOpen(false)}
-            onConnect={(walletConnect) => setWalletConnect(walletConnect)}
-          />
-        )}
+        {isWalletConnectModalOpen && <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />}
       </AnimatePresence>
       <Tooltip />
     </>

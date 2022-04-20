@@ -28,23 +28,20 @@ import { useGlobalContext } from '../../contexts/global'
 import { useWalletConnectContext } from '../../contexts/walletconnect'
 import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
 import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
+import { TX_SMALLEST_ALPH_AMOUNT_STR } from '../../utils/constants'
 import { isAmountWithinRange } from '../../utils/transactions'
 import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
 import SendModalCheckTransaction from './CheckTransaction'
 import SendModalTransactionForm from './TransactionForm'
 
-enum StepIndex {
-  Send = 1,
-  InfoCheck = 2,
-  PasswordCheck = 3
-}
+type Step = 'send' | 'info-check' | 'password-check'
 
-const stepToTitle = new Map<StepIndex, string>([
-  [StepIndex.Send, 'Send'],
-  [StepIndex.InfoCheck, 'Review'],
-  [StepIndex.PasswordCheck, 'Password Check']
-])
+const stepToTitle: { [k in Step]: string } = {
+  send: 'Send',
+  'info-check': 'Review',
+  'password-check': 'Password Check'
+}
 
 export type SendTransactionData = {
   fromAddress: Address
@@ -77,7 +74,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const [title, setTitle] = useState('')
   const [transactionData, setTransactionData] = useState<SendTransactionData | undefined>(dappTransactionData)
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState<StepIndex>(StepIndex.Send)
+  const [step, setStep] = useState<Step>('send')
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
@@ -89,12 +86,12 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const theme = useTheme()
 
   useEffect(() => {
-    setTitle(stepToTitle.get(step) || 'Unknown')
+    setTitle(stepToTitle[step])
   }, [setStep, setTitle, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
-    setStep(StepIndex.PasswordCheck)
+    setStep('password-check')
   }
 
   const buildTransaction = async (transactionData: SendTransactionData) => {
@@ -105,15 +102,11 @@ const SendModal = ({ onClose }: SendModalProps) => {
     const isContractTx = contractCode !== ''
     const isScriptTx = script !== ''
 
-    if (isContractTx) {
-      if (transactionData.amount == '') {
-        amount = '0.000001'
-      }
+    if (isContractTx && transactionData.amount == '') {
+      amount = TX_SMALLEST_ALPH_AMOUNT_STR
     }
-    if (isScriptTx) {
-      if (transactionData.amount == '') {
-        amount = '0'
-      }
+    if (isScriptTx && transactionData.amount == '') {
+      amount = '0'
     }
 
     setTransactionData({
@@ -180,7 +173,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
           setFees(BigInt(data.gasAmount) * BigInt(data.gasPrice))
         }
         if (!isConsolidateUTXOsModalVisible) {
-          setStep(StepIndex.InfoCheck)
+          setStep('info-check')
         }
       } catch (e) {
         // TODO: When API error codes are available, replace this substring check with a proper error code check
@@ -330,18 +323,18 @@ const SendModal = ({ onClose }: SendModalProps) => {
 
   return (
     <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={modalHeader}>
-      {step === StepIndex.Send && (
+      {step === 'send' && (
         <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />
       )}
-      {step === StepIndex.InfoCheck && transactionData && fees !== undefined && (
+      {step === 'info-check' && transactionData && fees !== undefined && (
         <SendModalCheckTransaction
           data={transactionData}
           fees={fees}
           onSend={passwordRequirement ? confirmPassword : handleSend}
-          onCancel={() => setStep(StepIndex.Send)}
+          onCancel={() => setStep('send')}
         />
       )}
-      {step === StepIndex.PasswordCheck && passwordRequirement && (
+      {step === 'password-check' && passwordRequirement && (
         <PasswordConfirmation
           text="Enter your password to send the transaction."
           buttonText="Send"

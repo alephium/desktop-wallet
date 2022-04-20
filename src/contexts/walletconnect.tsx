@@ -26,7 +26,7 @@ import { useGlobalContext } from './global'
 
 export interface ContextType {
   isWalletConnectModalOpen: boolean
-  setIsWalletConnectModalOpen: Dispatch<SetStateAction<boolean>>
+  setIsWalletConnectModalOpen: (isOpen: boolean) => void
   walletConnect?: WalletConnectClient
   setWalletConnect: Dispatch<SetStateAction<WalletConnectClient | undefined>>
   dappTransactionData?: SendTransactionData
@@ -35,7 +35,7 @@ export interface ContextType {
 
 export const initialContext: ContextType = {
   isWalletConnectModalOpen: false,
-  setIsWalletConnectModalOpen: () => false,
+  setIsWalletConnectModalOpen: () => undefined,
   walletConnect: undefined,
   setWalletConnect: () => undefined,
   dappTransactionData: undefined,
@@ -48,16 +48,16 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const { setIsSendModalOpen, settings } = useGlobalContext()
   const { addresses } = useAddressesContext()
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
-  const [walletConnect, setWalletConnect] = useState<WalletConnectClient | undefined>(undefined)
-  const [dappTransactionData, setDappTransactionData] = useState<SendTransactionData | undefined>(undefined)
-  const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent | undefined>(undefined)
+  const [walletConnect, setWalletConnect] = useState<WalletConnectClient>()
+  const [dappTransactionData, setDappTransactionData] = useState<SendTransactionData>()
+  const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent>()
 
   useEffect(() => {
     if (walletConnect === undefined) {
       WalletConnectClient.init({
         controller: true,
 
-        // TODO: configurable during building?
+        // TODO: add as an advanced settings option "WalletConnect Project Id"
         projectId: '6e2562e43678dd68a9070a62b6d52207',
         relayUrl: 'wss://relay.walletconnect.com',
         metadata: {
@@ -66,9 +66,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           url: 'https://github.com/alephium/desktop-wallet/releases',
           icons: ['https://alephium.org/favicon-32x32.png']
         }
-      }).then((client) => {
-        setWalletConnect(client)
       })
+        .then((client) => {
+          setWalletConnect(client)
+        })
+        .catch((e) => {
+          console.log('WalletConnect error')
+          console.log(e)
+        })
       return
     }
 
@@ -79,35 +84,31 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       } = event
       setRequestEvent(event)
 
-      switch (method) {
-        case 'alephium_getServices': {
+      if (method === 'alephium_getServices') {
+        await walletConnect.respond({
+          topic,
+          response: {
+            id,
+            jsonrpc: '2.0',
+            result: settings.network
+          }
+        })
+      } else if (method === 'alephium_signTx') {
+        const fromAddress = addresses.find((a) => a.hash === params.fromAddress)
+
+        if (fromAddress === undefined) {
           await walletConnect.respond({
             topic,
             response: {
               id,
               jsonrpc: '2.0',
-              result: settings.network
+              error: {
+                code: -32000,
+                message: 'Wallet is locked or invalid address specified.'
+              }
             }
           })
-          return
-        }
-        case 'alephium_signAndSubmitTx': {
-          const fromAddress = addresses.find((a) => a.hash === params.fromAddress)
-          if (fromAddress === undefined) {
-            await walletConnect.respond({
-              topic,
-              response: {
-                id,
-                jsonrpc: '2.0',
-                error: {
-                  code: -32000,
-                  message: 'Wallet is locked or invalid address specified.'
-                }
-              }
-            })
-            return
-          }
-
+        } else {
           const txData = {
             fromAddress,
             toAddress: '',
@@ -120,11 +121,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           setDappTransactionData(txData)
           setIsSendModalOpen(true)
-          break
         }
-        default:
-          console.warn('Unknown request given')
-          break
+      } else {
+        console.warn('Unknown request given')
       }
     }
 

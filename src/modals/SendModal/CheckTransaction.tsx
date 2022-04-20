@@ -47,11 +47,9 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
             {formatAmountForDisplay(expectedAmount, true, 7)} <AlefSymbol />
           </InfoBox>
         )}
-        {fees !== undefined && (
-          <InfoBox label="Expected fee">
-            {formatAmountForDisplay(fees, true)} <AlefSymbol />
-          </InfoBox>
-        )}
+        <InfoBox label="Expected fee">
+          {formatAmountForDisplay(fees, true)} <AlefSymbol />
+        </InfoBox>
       </ModalContent>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>

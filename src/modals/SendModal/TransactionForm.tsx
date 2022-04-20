@@ -48,7 +48,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   const [gasAmount, setGasAmount] = useState(data?.gasAmount ?? '')
   const [gasAmountError, setGasAmountError] = useState<ReactNode>()
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
-  const [gasPrice, setGasPrice] = useState(data?.gasPrice ?? minimalGasPriceInALPH)
+  const [gasPrice, setGasPrice] = useState(data?.contractCode && (data?.gasPrice ?? minimalGasPriceInALPH))
   const [gasPriceError, setGasPriceError] = useState<ReactNode>()
   const [contractCode, setContractCode] = useState(data?.contractCode ?? '')
   const [contractState, setContractState] = useState(data?.contractState ?? '')
@@ -142,7 +142,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       <ExpandableSectionStyled sectionTitleClosed="Gas">
         <Input
           id="gas-amount"
-          placeholder="Amount"
+          placeholder="Gas amount"
           value={gasAmount}
           onChange={(e) => handleGasAmountChange(e.target.value)}
           type="number"
@@ -153,7 +153,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           id="gas-price"
           placeholder={
             <>
-              Price (<AlefSymbol color={theme.font.secondary} />)
+              Gas price (<AlefSymbol color={theme.font.secondary} />)
             </>
           }
           value={gasPrice}
