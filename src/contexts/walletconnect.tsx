@@ -93,7 +93,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             result: settings.network
           }
         })
-      } else if (method === 'alephium_signTx') {
+      } else if (method === 'alephium_signAndSubmitTx') {
         const fromAddress = addresses.find((a) => a.hash === params.fromAddress)
 
         if (fromAddress === undefined) {
