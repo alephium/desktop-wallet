@@ -135,12 +135,8 @@ export async function createClient(settings: Settings['network']) {
       unsignedTx: string,
       network: NetworkName
     ) => {
-      const clientIndex = cliqueClient.getClientIndex(address.hash)
       const signature = cliqueClient.transactionSign(txId, address.privateKey)
-      const response = await cliqueClient.clients[clientIndex].transactions.postTransactionsSubmit({
-        unsignedTx,
-        signature
-      })
+      const response = await cliqueClient.transactionSend(address.hash, unsignedTx, signature)
 
       if (response.data) {
         address.addPendingTransaction({
