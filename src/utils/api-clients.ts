@@ -102,22 +102,22 @@ export async function createClient(settings: Settings['network']) {
     }
 
     const signAndSendTransaction = async (
-      address: Address,
+      fromAddress: Address,
       txId: string,
       unsignedTx: string,
-      toHash: AddressHash,
+      toAddressHash: AddressHash,
       type: TransactionType,
       network: NetworkType,
       amount?: bigint
     ) => {
-      const signature = cliqueClient.transactionSign(txId, address.privateKey)
-      const response = await cliqueClient.transactionSend(toHash, unsignedTx, signature)
+      const signature = cliqueClient.transactionSign(txId, fromAddress.privateKey)
+      const response = await cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
 
       if (response.data) {
-        address.addPendingTransaction({
+        fromAddress.addPendingTransaction({
           txId: response.data.txId,
-          fromAddress: address.hash,
-          toAddress: toHash,
+          fromAddress: fromAddress.hash,
+          toAddress: toAddressHash,
           timestamp: new Date().getTime(),
           amount,
           type,
