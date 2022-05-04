@@ -55,13 +55,14 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
         setHasBeenCopied(false)
       }, 3000)
     }
+
+    ReactTooltip.rebuild()
+
     return () => {
       if (interval) {
         clearInterval(interval)
       }
     }
-
-    ReactTooltip.rebuild()
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className])
 
   if (!hasBeenCopied) {
