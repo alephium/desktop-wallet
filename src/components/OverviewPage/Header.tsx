@@ -160,6 +160,7 @@ const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; cli
 const ExpandButton = styled(Button)`
   flex-shrink: 0;
   background-color: ${({ theme }) => theme.bg.accent};
+  color: ${({ theme }) => theme.font.primary};
   margin-left: ${expandButtonLeftMarginPx}px;
   gap: var(--spacing-1);
   z-index: 0;
