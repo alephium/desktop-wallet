@@ -16,10 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useCallback, useState } from 'react'
+
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
 import Toggle from '../../components/Inputs/Toggle'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
+import PasswordConfirmation from '../../components/PasswordConfirmation'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
 
@@ -30,6 +33,20 @@ const GeneralSettingsSection = () => {
     },
     updateSettings
   } = useGlobalContext()
+
+  const [requiresPasswordConfirmation, setRequiresPasswordConfirmation] = useState<boolean>(false)
+  const onPasswordRequirementChange = useCallback(() => {
+    if (passwordRequirement) {
+      setRequiresPasswordConfirmation(true)
+    } else {
+      updateSettings('general', { passwordRequirement: true })
+    }
+  }, [passwordRequirement, updateSettings])
+
+  const disablePasswordRequirement = useCallback(() => {
+    updateSettings('general', { passwordRequirement: false })
+    setRequiresPasswordConfirmation(false)
+  }, [updateSettings])
 
   return (
     <>
@@ -67,14 +84,16 @@ const GeneralSettingsSection = () => {
       <KeyValueInput
         label="Password requirement"
         description="Require password confirmation before sending each transaction."
-        InputComponent={
-          <Toggle
-            toggled={passwordRequirement}
-            onToggle={() => updateSettings('general', { passwordRequirement: !passwordRequirement })}
-          />
-        }
+        InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
       />
       <HorizontalDivider narrow />
+      {requiresPasswordConfirmation && (
+        <PasswordConfirmation
+          text="Type your password to change this setting."
+          buttonText="Enter"
+          onCorrectPasswordEntered={disablePasswordRequirement}
+        />
+      )}
     </>
   )
 }
