@@ -28,6 +28,7 @@ export interface Settings {
     passwordRequirement: boolean
   }
   network: {
+    networkId: number
     nodeHost: string
     explorerApiHost: string
     explorerUrl: string
@@ -41,13 +42,16 @@ export type UpdateSettingsFunctionSignature = <T extends keyof Settings>(
 
 type DeprecatedNetworkSettings = Settings['network']
 
-export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['network']> = {
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, PartialBy<Settings['network'], 'networkId'>> = {
   mainnet: {
+    networkId: 0,
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',
     explorerUrl: 'https://explorer.alephium.org'
   },
   testnet: {
+    networkId: 1,
     nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
@@ -66,7 +70,7 @@ export const defaultSettings: Settings = {
     discreetMode: false,
     passwordRequirement: false
   },
-  network: clone(networkEndpoints.mainnet)
+  network: clone(networkEndpoints.mainnet) as Settings['network']
 }
 
 export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const

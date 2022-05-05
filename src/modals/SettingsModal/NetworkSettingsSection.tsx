@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertHttpResponse } from 'alephium-web3'
 import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -39,7 +40,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useGlobalContext()
+  const { client, settings: currentSettings, updateSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
@@ -70,7 +71,7 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    (option: typeof networkSelectOptions[number] | undefined) => {
+    async (option: typeof networkSelectOptions[number] | undefined) => {
       if (option && option.value !== selectedNetwork) {
         setSelectedNetwork(option.value)
 
@@ -79,8 +80,16 @@ const NetworkSettingsSection = () => {
           setAdvancedSectionOpen(true)
         } else {
           const newNetworkSettings = networkEndpoints[option.value]
-          updateSettings('network', newNetworkSettings)
-          setTempAdvancedSettings(newNetworkSettings)
+          let networkId = newNetworkSettings.networkId
+          if (typeof networkId === 'undefined' && typeof client !== 'undefined') {
+            const response = convertHttpResponse(await client.web3.infos.getInfosChainParams())
+            networkId = response.networkId
+          }
+          if (typeof networkId !== 'undefined') {
+            const settings = { ...newNetworkSettings, networkId: networkId }
+            updateSettings('network', settings)
+            setTempAdvancedSettings(settings)
+          }
         }
       }
     },

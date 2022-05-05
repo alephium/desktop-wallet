@@ -20,6 +20,7 @@ import { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { formatAccount, parseChain } from 'alephium-walletconnect-provider'
 
 import Input from '../components/Inputs/Input'
 import { useAddressesContext } from '../contexts/addresses'
@@ -45,9 +46,18 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const [uri, setUri] = useState('')
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
   const [proposal, setProposal] = useState<SessionTypes.Proposal>()
+  const [permittedChain, setPermittedChain] = useState('')
 
   const onProposal = useCallback(
     async (proposal: SessionTypes.Proposal) => {
+      const permittedChain = proposal.permissions.blockchain.chains[0]
+      if (typeof permittedChain === 'undefined') {
+        setState(State.Error)
+        throw new Error('No chain is permitted')
+      }
+      setPermittedChain(permittedChain)
+      const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
+      console.log(`=========== chain: ${permittedNetworkId} ${permittedChainGroup}`)
       setProposal(proposal)
       setState(State.Proposal)
     },
@@ -81,7 +91,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return
     }
 
-    const accounts: string[] = addresses.map((a) => `alephium:${a.network}:${a.hash}`)
+    const accounts: string[] = addresses.map((a) =>
+      formatAccount(permittedChain, { address: a.hash, pubkey: a.publicKey, group: a.group })
+    )
     await walletConnect?.approve({ proposal, response: { state: { accounts } } })
     onClose()
   }, [walletConnect, proposal, addresses, onClose])

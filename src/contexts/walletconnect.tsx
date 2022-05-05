@@ -18,18 +18,25 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
+import { SignContractCreationTxParams, SignScriptTxParams, SignTransferTxParams } from 'alephium-web3'
 import { createContext, Dispatch, FC, SetStateAction, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
-import { SendTransactionData } from '../modals/SendModal'
-import { useGlobalContext } from './global'
+import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
+import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
+import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
+import { TxModalType, useGlobalContext } from './global'
 
 export interface ContextType {
   isWalletConnectModalOpen: boolean
   setIsWalletConnectModalOpen: (isOpen: boolean) => void
   walletConnect?: WalletConnectClient
   setWalletConnect: Dispatch<SetStateAction<WalletConnectClient | undefined>>
-  dappTransactionData?: SendTransactionData
+  dappTransactionData?:
+    | ['transfer', BuildTransferTxData]
+    | ['deploy-contract', BuildDeployContractTxData]
+    | ['script', BuildScriptTxData]
+    | undefined
   requestEvent?: SessionTypes.RequestEvent
 }
 
@@ -45,12 +52,17 @@ export const initialContext: ContextType = {
 export const Context = createContext<ContextType>(initialContext)
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { setIsSendModalOpen, settings } = useGlobalContext()
+  const { setTxModalType, settings } = useGlobalContext()
   const { addresses } = useAddressesContext()
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const [walletConnect, setWalletConnect] = useState<WalletConnectClient>()
-  const [dappTransactionData, setDappTransactionData] = useState<SendTransactionData>()
+  const [dappTransactionData, setDappTransactionData] = useState<ContextType['dappTransactionData']>()
   const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent>()
+
+  const setTxData = (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
+    setDappTransactionData(data)
+    setTxModalType(data[0])
+  }
 
   useEffect(() => {
     if (walletConnect === undefined) {
@@ -77,53 +89,80 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       return
     }
 
+    const extractAddress = (signerAddress: string) => {
+      const address = addresses.find((a) => a.hash === signerAddress)
+      if (typeof address === 'undefined') {
+        throw new Error(`Unknown signer address: ${signerAddress}`)
+      }
+      return address
+    }
+
     const onSessionRequest = async (event: SessionTypes.RequestEvent) => {
       const {
         topic,
-        request: { id, method, params }
+        request: { method, params }
       } = event
       setRequestEvent(event)
 
-      if (method === 'alephium_getServices') {
-        await walletConnect.respond({
-          topic,
-          response: {
-            id,
-            jsonrpc: '2.0',
-            result: settings.network
+      try {
+        console.log(`============= ${method} ${JSON.stringify(params)}`)
+        if (method === 'alph_signTransferTx') {
+          const p = params as SignTransferTxParams
+          const txData: BuildTransferTxData = {
+            fromAddress: extractAddress(p.signerAddress),
+            toAddress: p.destinations[0].address,
+            alphAmount: p.destinations[0].alphAmount,
+            gasAmount: p.gasAmount,
+            gasPrice: p.gasPrice
+          }
+          setTxData(['transfer', txData])
+        } else if (method === 'alph_signContractCreationTx') {
+          const p = params as SignContractCreationTxParams
+          const txData: BuildDeployContractTxData = {
+            fromAddress: extractAddress(p.signerAddress),
+            bytecode: p.bytecode,
+            initialFields: p.initialFields,
+            alphAmount: p.alphAmount,
+            issueTokenAmount: p.issueTokenAmount,
+            gasAmount: p.gasAmount,
+            gasPrice: p.gasPrice
+          }
+          console.log(
+            `========== txData : ${JSON.stringify(dappTransactionData, (key, value) =>
+              typeof value === 'bigint' ? value.toString() : value
+            )}`
+          )
+          setTxData(['deploy-contract', txData])
+        } else if (method === 'alph_signScriptTx') {
+          const p = params as SignScriptTxParams
+          const txData: BuildScriptTxData = {
+            fromAddress: extractAddress(p.signerAddress),
+            bytecode: p.bytecode,
+            alphAmount: p.alphAmount,
+            gasAmount: p.gasAmount,
+            gasPrice: p.gasPrice
+          }
+          setTxData(['script', txData])
+        } else {
+          throw new Error(`Unsupported walletconnect request: ${method}`)
+        }
+      } catch (e) {
+        console.warn(e)
+        let error: string
+        if (typeof e === 'string') {
+          error = e
+        } else if (e instanceof Error) {
+          error = e.message
+        } else {
+          error = 'Unknown internal error'
+        }
+        walletConnect.disconnect({
+          topic: topic,
+          reason: {
+            code: -32000,
+            message: error
           }
         })
-      } else if (method === 'alephium_signAndSubmitTx') {
-        const fromAddress = addresses.find((a) => a.hash === params.fromAddress)
-
-        if (fromAddress === undefined) {
-          await walletConnect.respond({
-            topic,
-            response: {
-              id,
-              jsonrpc: '2.0',
-              error: {
-                code: -32000,
-                message: 'Wallet is locked or invalid address specified.'
-              }
-            }
-          })
-        } else {
-          const txData = {
-            fromAddress,
-            toAddress: '',
-            amount: '',
-            gasAmount: params.gas,
-            script: params.script,
-            contractCode: params?.contract?.trim(),
-            contractState: params.state && JSON.stringify(params.state),
-            issueTokenAmount: params.issueTokenAmount
-          }
-          setDappTransactionData(txData)
-          setIsSendModalOpen(true)
-        }
-      } else {
-        console.warn('Unknown request given')
       }
     }
 
@@ -131,7 +170,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     return () => {
       walletConnect.removeListener(CLIENT_EVENTS.session.request, onSessionRequest)
     }
-  }, [walletConnect, addresses, setIsSendModalOpen, settings])
+  }, [walletConnect, addresses, setTxModalType, settings])
 
   return (
     <Context.Provider

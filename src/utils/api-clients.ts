@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
+import { CliqueClient as Web3Client } from 'alephium-web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
 import { TransactionType } from '../types/transactions'
@@ -25,6 +26,10 @@ import { NetworkType, Settings } from './settings'
 export async function createClient(settings: Settings['network']) {
   try {
     const cliqueClient = new CliqueClient({
+      baseUrl: settings.nodeHost
+    })
+
+    const web3Client = new Web3Client({
       baseUrl: settings.nodeHost
     })
 
@@ -41,6 +46,7 @@ export async function createClient(settings: Settings['network']) {
 
     // Init clients
     await cliqueClient.init(isMultiNodesClique)
+    await web3Client.init(isMultiNodesClique)
 
     const fetchAddressDetails = async (address: Address) => {
       console.log('⬇️ Fetching address details: ', address.hash)
@@ -126,7 +132,7 @@ export async function createClient(settings: Settings['network']) {
         })
       }
 
-      return response.data
+      return { ...response.data, signature: signature }
     }
 
     const signAndSendContractOrScript = async (
@@ -148,11 +154,12 @@ export async function createClient(settings: Settings['network']) {
         })
       }
 
-      return response.data
+      return { ...response.data, signature: signature }
     }
 
     return {
       clique: cliqueClient,
+      web3: web3Client,
       explorer: explorerClient,
       fetchAddressDetails,
       fetchAddressConfirmedTransactions,
@@ -163,6 +170,6 @@ export async function createClient(settings: Settings['network']) {
     }
   } catch (error) {
     console.error(error)
-    return false
+    return undefined
   }
 }
