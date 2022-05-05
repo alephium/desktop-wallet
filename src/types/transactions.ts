@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { NetworkType } from '../utils/settings'
+import { NetworkName } from '../utils/settings'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
 
@@ -25,7 +25,7 @@ export type BaseTx = {
   fromAddress: string
   timestamp: number
   type: TransactionType
-  network: NetworkType
+  network: NetworkName
 }
 
 export type PendingTx = BaseTx & { toAddress?: string; amount?: bigint }
