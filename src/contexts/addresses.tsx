@@ -165,7 +165,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     setSnackbarMessage,
     settings: {
       network: { nodeHost, explorerApiHost }
-    }
+    },
+    isOffline
   } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
@@ -342,6 +343,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
 
+    if (isOffline) return
+
     // Clean state when locking the wallet or changing accounts
     if (wallet === undefined || wallet !== previousWallet.current) {
       console.log('🧽 Cleaning state.')
@@ -356,7 +359,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, currentAccountName, wallet, explorerApiHost, nodeHost])
+  }, [currentNetwork, isOffline, client, currentAccountName, wallet, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

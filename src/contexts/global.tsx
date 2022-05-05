@@ -58,6 +58,7 @@ export interface GlobalContextProps {
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
   isOffline: boolean
+  setIsOffline: (b: boolean) => void
   newLatestVersion: string
 }
 
@@ -78,6 +79,7 @@ export const initialGlobalContext: GlobalContextProps = {
   isClientLoading: false,
   currentNetwork: 'mainnet',
   isOffline: false,
+  setIsOffline: () => null,
   newLatestVersion: ''
 }
 
@@ -97,7 +99,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
-  const [isOffline, setIsOffline] = useState(false)
+  const [isOffline, setIsOffline] = useState(true)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -140,6 +142,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     if (!clientResp || !settings.network.explorerApiHost || !settings.network.nodeHost) {
       setIsOffline(true)
     } else if (clientResp) {
+      setIsOffline(false)
+
       console.log('Clients initialized.')
 
       setSnackbarMessage({
@@ -147,10 +151,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         type: 'info',
         duration: 4000
       })
-      if (isOffline) setIsOffline(false)
     }
     setIsClientLoading(false)
-  }, [currentNetwork, isOffline, settings.network])
+  }, [currentNetwork, settings.network])
 
   useEffect(() => {
     const networkSettingsHaveChanged =
@@ -201,6 +204,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           isClientLoading,
           currentNetwork,
           isOffline,
+          setIsOffline,
           newLatestVersion
         },
         overrideContextValue as GlobalContextProps

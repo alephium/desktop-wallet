@@ -39,7 +39,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, updateSettings, setSnackbarMessage } = useGlobalContext()
+  const { settings: currentSettings, updateSettings, setSnackbarMessage, setIsOffline } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
@@ -72,6 +72,7 @@ const NetworkSettingsSection = () => {
   const handleNetworkPresetChange = useCallback(
     (option: typeof networkSelectOptions[number] | undefined) => {
       if (option && option.value !== selectedNetwork) {
+        setIsOffline(true)
         setSelectedNetwork(option.value)
 
         if (option.value === 'custom') {
@@ -84,7 +85,7 @@ const NetworkSettingsSection = () => {
         }
       }
     },
-    [selectedNetwork, updateSettings]
+    [selectedNetwork, updateSettings, setIsOffline]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
