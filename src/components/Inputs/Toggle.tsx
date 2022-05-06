@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 interface ToggleProps {
@@ -29,11 +28,8 @@ interface ToggleProps {
   handleColors?: [string, string]
 }
 
-const toggleMarginInPx = 2
-
 const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors }: ToggleProps) => {
   const theme = useTheme()
-  const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
 
   const toggleBackgroundVariants = {
@@ -41,19 +37,15 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
     on: { backgroundColor: handleColors ? theme.bg.tertiary : theme.global.accent }
   }
 
-  const handleContainerVariants = {
-    off: { left: 0 },
-    on: { left: toggleWidth / 2 - toggleMarginInPx * 2 }
-  }
-
-  const handleVariants = {
-    off: { backgroundColor: handleColors?.[0] ?? 'var(--color-white)' },
+  const handleVariantsLeft = {
+    off: { backgroundColor: 'transparent' },
     on: { backgroundColor: handleColors?.[1] ?? 'var(--color-white)' }
   }
 
-  useEffect(() => {
-    setToggleWidth(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toggleWidth')))
-  }, [])
+  const handleVariantsRight = {
+    off: { backgroundColor: handleColors?.[0] ?? 'var(--color-white)' },
+    on: { backgroundColor: 'transparent' }
+  }
 
   const toggleState = toggled ? 'on' : 'off'
 
@@ -80,16 +72,17 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
       {ToggleIconRight && ToggleIconLeft && (
         <ToggleContent>
           <ToggleIconContainer>
-            <ToggleIconRight color={getToggleIconColor(!toggled)} size={16} className="toggle-icon" strokeWidth={2} />
+            <ToggleIcon animate={toggleState} transition={transition} variants={handleVariantsRight}>
+              <ToggleIconRight color={getToggleIconColor(!toggled)} size={16} className="toggle-icon" strokeWidth={2} />
+            </ToggleIcon>
           </ToggleIconContainer>
           <ToggleIconContainer>
-            <ToggleIconLeft color={getToggleIconColor(toggled)} size={16} className="toggle-icon" strokeWidth={2} />
+            <ToggleIcon animate={toggleState} transition={transition} variants={handleVariantsLeft}>
+              <ToggleIconLeft color={getToggleIconColor(toggled)} size={16} className="toggle-icon" strokeWidth={2} />
+            </ToggleIcon>
           </ToggleIconContainer>
         </ToggleContent>
       )}
-      <ToggleHandleContainer variants={handleContainerVariants} animate={toggleState} transition={transition}>
-        <ToggleHandle variants={handleVariants} animate={toggleState} transition={transition} />
-      </ToggleHandleContainer>
     </StyledToggle>
   )
 }
@@ -115,42 +108,34 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
     `}
 `
 
-const ToggleHandleContainer = styled(motion.div)`
-  position: absolute;
-  width: var(--toggleHeight);
-  height: var(--toggleHeight);
-  z-index: 0;
-`
-
-const ToggleHandle = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  margin: ${toggleMarginInPx}px;
-  background-color: var(--color-white);
-  border-radius: calc(var(--toggleHeight) * 2);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-`
-
 const ToggleContent = styled.div`
   position: absolute;
   right: 0;
   left: 0;
   top: 0;
   bottom: 0;
-  display: flex;
-  margin: 0 ${toggleMarginInPx * 2}px;
   z-index: 1;
+  display: flex;
 `
 
 const ToggleIconContainer = styled.div`
-  width: 50%;
   display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
 
   .toggle-icon {
-    margin: auto;
   }
 `
+
+const ToggleIcon = styled(motion.div)`
+  background-color: var(--color-white);
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
 export default Toggle
