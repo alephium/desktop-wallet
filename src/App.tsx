@@ -23,7 +23,7 @@ import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
 import { useGlobalContext } from './contexts/global'
-import Routes from './routes'
+import Router from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
@@ -36,7 +36,7 @@ const App = () => {
       <GlobalStyle />
       <AppContainer>
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
-        <Routes />
+        <Router />
       </AppContainer>
       <ClientLoading>{isClientLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />

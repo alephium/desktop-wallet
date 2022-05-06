@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -97,7 +97,7 @@ interface LoginProps {
 const Login = ({ accountNames, onLinkClick }: LoginProps) => {
   const [credentials, setCredentials] = useState({ accountName: '', password: '' })
   const { login } = useGlobalContext()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
@@ -105,7 +105,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'))
+    login(credentials.accountName, credentials.password, () => navigate('/wallet/overview'))
   }
 
   return (
@@ -146,7 +146,7 @@ const InitialActions = ({
   showLinkToExistingAccounts?: boolean
   onLinkClick?: () => void
 }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   return (
     <>
@@ -154,13 +154,9 @@ const InitialActions = ({
         Please choose whether you want to create a new wallet or import an existing one.
       </Paragraph>
       <Section inList>
-        <Button onClick={() => history.push('/create')}>New wallet</Button>
-        <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {showLinkToExistingAccounts && (
-          <SwitchLink onClick={onLinkClick} centered>
-            Use an existing wallet
-          </SwitchLink>
-        )}
+        <Button onClick={() => navigate('/create')}>New wallet</Button>
+        <Button onClick={() => navigate('/import')}>Import wallet</Button>
+        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
       </Section>
     </>
   )

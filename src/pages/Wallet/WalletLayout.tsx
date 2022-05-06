@@ -22,7 +22,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { FC, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
 import ActionButton from '../../components/ActionButton'
@@ -54,7 +54,7 @@ const WalletLayout: FC = ({ children }) => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme()
   const accountNames = Storage.list()
@@ -81,7 +81,7 @@ const WalletLayout: FC = ({ children }) => {
     setIsPasswordModalOpen(false)
     login(switchToAccountName, password, () => {
       const nextPageLocation = '/wallet/overview'
-      if (location.pathname !== nextPageLocation) history.push(nextPageLocation)
+      if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
     })
   }
 

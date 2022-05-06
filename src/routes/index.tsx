@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from '@alephium/sdk'
 import { AnimateSharedLayout } from 'framer-motion'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import UpdateWalletBanner from '../components/UpdateWalletBanner'
 import { useGlobalContext } from '../contexts/global'
@@ -29,7 +29,7 @@ import WalletRoutes from './WalletRoutes'
 
 const Storage = getStorage()
 
-const Routes = () => {
+const Router = () => {
   const { newLatestVersion } = useGlobalContext()
   const accountNames = Storage.list()
   const hasWallet = accountNames.length > 0
@@ -38,25 +38,31 @@ const Routes = () => {
     <>
       <AnimateSharedLayout type="crossfade">
         {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
-        <Switch>
-          <Route exact path="/create/:step?">
-            <CreateWalletRoutes />
-            <Redirect exact from="/create/" to="/create/0" />
-          </Route>
-          <Route exact path="/import/:step?">
-            <ImportWalletRoutes />
-            <Redirect exact from="/import/" to="/import/0" />
-          </Route>
-          <Route path="/wallet">
-            <WalletRoutes />
-          </Route>
-          <Route path="">
-            <HomePage hasWallet={hasWallet} accountNames={accountNames} />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path="create/*"
+            element={
+              <>
+                <CreateWalletRoutes />
+                <Navigate to="/create/0" />
+              </>
+            }
+          />
+          <Route
+            path="import/*"
+            element={
+              <>
+                <ImportWalletRoutes />
+                <Navigate to="/import/0" />
+              </>
+            }
+          />
+          <Route path="/wallet/*" element={<WalletRoutes />} />
+          <Route path="" element={<HomePage hasWallet={hasWallet} accountNames={accountNames} />} />
+        </Routes>
       </AnimateSharedLayout>
     </>
   )
 }
 
-export default Routes
+export default Router

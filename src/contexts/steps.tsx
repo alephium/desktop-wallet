@@ -17,9 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { createContext, FC, useContext } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 
-interface RouteParams {
+type RouteParams = {
   step: string | undefined
 }
 
@@ -40,19 +40,19 @@ interface StepsContextProviderProps {
 }
 
 export const StepsContextProvider: FC<StepsContextProviderProps> = ({ baseUrl, stepElements, children }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { step } = useParams<RouteParams>()
 
   const onButtonNext = () => {
     window.scrollTo(0, 0)
-    history.push(`/${baseUrl}/${stepNumber + 1}`)
+    navigate(`/${baseUrl}/${stepNumber + 1}`)
   }
   const onButtonBack = () => {
     window.scrollTo(0, 0)
     if (stepNumber === 0) {
-      history.push('/')
+      navigate('/')
     } else {
-      history.push(`${stepNumber - 1}`)
+      navigate(`${stepNumber - 1}`)
     }
   }
 
@@ -61,7 +61,7 @@ export const StepsContextProvider: FC<StepsContextProviderProps> = ({ baseUrl, s
 
   // Redirect if step not set properly
   if (stepNumber > stepElements.length) {
-    history.replace(`/${baseUrl}/${stepElements.length - 1}`)
+    navigate(`/${baseUrl}/${stepElements.length - 1}`, { replace: true })
   }
 
   const isStepNumberCorrect = stepNumber >= 0 && stepNumber < stepElements.length

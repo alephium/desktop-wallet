@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useEffect } from 'react'
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { useGlobalContext } from '../contexts/global'
 import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
@@ -27,32 +27,24 @@ import WalletLayout from '../pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
   const { wallet } = useGlobalContext()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
 
   // Redirect if wallet is not set
   useEffect(() => {
     if (!wallet) {
-      history.push('/')
+      navigate('/')
     }
-  }, [history, wallet])
+  }, [navigate, wallet])
 
   return (
-    <Route path="/wallet">
-      <WalletLayout>
-        <Switch location={location} key={location.pathname}>
-          <Route path="/wallet/overview" key="overview">
-            <OverviewPage />
-          </Route>
-          <Route path="/wallet/addresses/:addressHash" key="address-details">
-            <AddressDetailsPage />
-          </Route>
-          <Route path="/wallet/addresses" key="addresses">
-            <AddressesPage />
-          </Route>
-        </Switch>
-      </WalletLayout>
-    </Route>
+    <WalletLayout>
+      <Routes location={location} key={location.pathname}>
+        <Route path="overview" key="overview" element={<OverviewPage />} />
+        <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
+        <Route path="addresses" key="addresses" element={<AddressesPage />} />
+      </Routes>
+    </WalletLayout>
   )
 }
 

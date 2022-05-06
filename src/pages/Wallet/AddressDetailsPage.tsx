@@ -22,7 +22,7 @@ import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
@@ -59,9 +59,9 @@ const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
   const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
-  const { addressHash } = useParams<{ addressHash: AddressHash }>()
+  const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   if (!address) return null
 
@@ -77,7 +77,7 @@ const AddressDetailsPage = () => {
     <MainContent>
       <PageTitleRow>
         <Title>
-          <ArrowLeftStyled onClick={() => history.goBack()} />
+          <ArrowLeftStyled onClick={() => navigate(-1)} />
           <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
           {address.settings.label && (
             <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
