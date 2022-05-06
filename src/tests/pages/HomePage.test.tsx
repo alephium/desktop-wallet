@@ -25,9 +25,7 @@ import { renderWithGlobalContext } from '..'
 const mockedHistoryPush = jest.fn()
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
-  useHistory: () => ({
-    push: mockedHistoryPush
-  })
+  useNavigate: () => mockedHistoryPush
 }))
 
 it('welcomes the new user and displays initial actions', async () => {
