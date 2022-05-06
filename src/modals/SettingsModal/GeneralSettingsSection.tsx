@@ -32,7 +32,8 @@ const GeneralSettingsSection = () => {
     settings: {
       general: { walletLockTimeInMinutes, discreetMode, passwordRequirement }
     },
-    updateSettings
+    updateSettings,
+    wallet
   } = useGlobalContext()
 
   const [requiresPasswordConfirmation, setRequiresPasswordConfirmation] = useState(false)
@@ -82,12 +83,16 @@ const GeneralSettingsSection = () => {
         }
       />
       <HorizontalDivider narrow />
-      <KeyValueInput
-        label="Password requirement"
-        description="Require password confirmation before sending each transaction."
-        InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
-      />
-      <HorizontalDivider narrow />
+      {wallet && (
+        <>
+          <KeyValueInput
+            label="Password requirement"
+            description="Require password confirmation before sending each transaction."
+            InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
+          />
+          <HorizontalDivider narrow />
+        </>
+      )}
       {requiresPasswordConfirmation && (
         <CenteredModal title="Password" onClose={() => setRequiresPasswordConfirmation(false)} focusMode>
           <PasswordConfirmation
