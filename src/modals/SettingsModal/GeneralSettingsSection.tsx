@@ -25,6 +25,7 @@ import HorizontalDivider from '../../components/PageComponents/HorizontalDivider
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
+import CenteredModal from '../CenteredModal'
 
 const GeneralSettingsSection = () => {
   const {
@@ -34,7 +35,7 @@ const GeneralSettingsSection = () => {
     updateSettings
   } = useGlobalContext()
 
-  const [requiresPasswordConfirmation, setRequiresPasswordConfirmation] = useState<boolean>(false)
+  const [requiresPasswordConfirmation, setRequiresPasswordConfirmation] = useState(false)
   const onPasswordRequirementChange = useCallback(() => {
     if (passwordRequirement) {
       setRequiresPasswordConfirmation(true)
@@ -88,11 +89,13 @@ const GeneralSettingsSection = () => {
       />
       <HorizontalDivider narrow />
       {requiresPasswordConfirmation && (
-        <PasswordConfirmation
-          text="Type your password to change this setting."
-          buttonText="Enter"
-          onCorrectPasswordEntered={disablePasswordRequirement}
-        />
+        <CenteredModal title="Password" onClose={() => setRequiresPasswordConfirmation(false)} focusMode>
+          <PasswordConfirmation
+            text="Type your password to change this setting."
+            buttonText="Enter"
+            onCorrectPasswordEntered={disablePasswordRequirement}
+          />
+        </CenteredModal>
       )}
     </>
   )
