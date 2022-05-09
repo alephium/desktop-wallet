@@ -24,14 +24,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import {
-  inputDefaultStyle,
-  InputErrorMessage,
-  InputLabel,
-  inputPlaceHolderVariants,
-  InputProps,
-  InputValidIconContainer
-} from '.'
+import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
 const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
@@ -52,14 +45,7 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <InputLabel
-        variants={inputPlaceHolderVariants}
-        animate={!value ? 'down' : 'up'}
-        transition={{ duration: 0.15 }}
-        htmlFor={props.id}
-      >
-        {placeholder}
-      </InputLabel>
+      <InputLabel inputHasValue={!!value}>{placeholder}</InputLabel>
       <StyledInput
         {...props}
         value={value}

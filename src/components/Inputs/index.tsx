@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, Variants } from 'framer-motion'
+import { HTMLMotionProps, motion, Variants } from 'framer-motion'
+import { FC } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -96,7 +97,17 @@ export const InputErrorMessage = styled(motion.label)<InputProps>`
   color: ${({ theme }) => theme.global.alert};
 `
 
-export const InputLabel = styled(motion.label)`
+export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }> = ({ inputHasValue, ...props }) => (
+  <motion.label
+    {...props}
+    variants={inputPlaceHolderVariants}
+    animate={!inputHasValue ? 'down' : 'up'}
+    transition={{ duration: 0.15 }}
+    htmlFor={props.id}
+  />
+)
+
+InputLabel = styled(InputLabel)`
   position: absolute;
   top: 15px;
   left: 13px;

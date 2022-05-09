@@ -23,7 +23,6 @@ import { useGlobalContext } from '../contexts/global'
 import Button from './Button'
 import Input from './Inputs/Input'
 import { Section } from './PageComponents/PageContainers'
-import Paragraph from './Paragraph'
 
 const Storage = getStorage()
 
@@ -58,7 +57,13 @@ const PasswordConfirmation = ({
   return (
     <>
       <Section>
-        <Input value={password} placeholder={text} type="password" onChange={(e) => setPassword(e.target.value)} />
+        <Input
+          value={password}
+          placeholder={text}
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+          autoFocus
+        />
       </Section>
       <Section>
         <Button onClick={validatePassword} submit wide>

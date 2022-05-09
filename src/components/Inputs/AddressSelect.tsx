@@ -28,7 +28,7 @@ import Amount from '../Amount'
 import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
-import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
+import { inputDefaultStyle, InputLabel, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
 
 interface AddressSelectProps {
@@ -80,9 +80,7 @@ function AddressSelect({
         onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
-        <InputLabel variants={inputPlaceHolderVariants} animate={!address ? 'down' : 'up'} htmlFor={id}>
-          {placeholder}
-        </InputLabel>
+        <InputLabel inputHasValue={!!address}>{placeholder}</InputLabel>
         {!disabled && (
           <MoreIcon>
             <MoreVertical />

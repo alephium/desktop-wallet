@@ -24,7 +24,7 @@ import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
-import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from './'
+import { inputDefaultStyle, InputLabel, InputProps } from './'
 
 interface SelectOption<T> {
   value: T
@@ -91,9 +91,7 @@ function Select<T>({
         custom={disabled}
         onClick={() => setShowPopup(true)}
       >
-        <InputLabel variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={id}>
-          {placeholder}
-        </InputLabel>
+        <InputLabel inputHasValue={!!value}>{placeholder}</InputLabel>
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>
