@@ -206,7 +206,7 @@ const CheckWordsPage = () => {
       </PanelTitle>
       <PanelContentContainer>
         <Section>
-          <Paragraph style={{ width: '100%' }}>Select the words in the right order.</Paragraph>
+          <Paragraph>Select the words in the right order.</Paragraph>
           <SelectedWordList
             className={selectedWords.length === wordList.current.length ? (areWordsValid ? 'valid' : 'error') : ''}
           >

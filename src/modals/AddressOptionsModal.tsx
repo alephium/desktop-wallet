@@ -127,4 +127,5 @@ const SweepButton = styled.div``
 const AvailableAmount = styled.div`
   font-size: 10px;
   color: ${({ theme }) => theme.font.secondary};
+  text-align: right;
 `

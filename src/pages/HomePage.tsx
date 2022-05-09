@@ -132,7 +132,9 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           Login
         </Button>
       </SectionStyled>
-      <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
+      <SwitchLink onClick={onLinkClick} centered>
+        Create / import a new wallet
+      </SwitchLink>
     </>
   )
 }
@@ -154,7 +156,11 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
+        {showLinkToExistingAccounts && (
+          <SwitchLink onClick={onLinkClick} centered>
+            Use an existing wallet
+          </SwitchLink>
+        )}
       </Section>
     </>
   )

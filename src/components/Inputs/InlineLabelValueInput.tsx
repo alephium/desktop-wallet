@@ -29,7 +29,7 @@ interface InlineLabelValueInputProps {
 const InlineLabelValueInput = ({ label, InputComponent, description, className }: InlineLabelValueInputProps) => (
   <KeyValueInputContainer className={className}>
     <KeyContainer>
-      {label}
+      <Label>{label}</Label>
       {description && <DescriptionContainer>{description}</DescriptionContainer>}
     </KeyContainer>
     <InputContainer>{InputComponent}</InputContainer>
@@ -49,6 +49,10 @@ const KeyContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: var(--spacing-1);
+`
+
+const Label = styled.label`
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const DescriptionContainer = styled.div`

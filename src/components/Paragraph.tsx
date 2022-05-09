@@ -50,6 +50,7 @@ const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
 const StyledParagraph = styled(motion.p)<ParagraphProps>`
   white-space: pre-wrap;
   font-weight: var(--fontWeight-medium);
+  width: 100%;
 
   ${({ centered }) =>
     centered &&

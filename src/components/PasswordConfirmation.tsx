@@ -58,10 +58,8 @@ const PasswordConfirmation = ({
   return (
     <>
       <Section>
+        <Paragraph secondary>{text || 'Please type your password'}</Paragraph>
         <Input value={password} placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
-        <Paragraph secondary centered>
-          {text || 'Type your password'}
-        </Paragraph>
       </Section>
       <Section>
         <Button onClick={validatePassword} submit>
