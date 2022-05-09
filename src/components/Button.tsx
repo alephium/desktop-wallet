@@ -31,6 +31,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   squared?: boolean
   submit?: boolean
   short?: boolean
+  wide?: boolean
 }
 
 const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
@@ -72,8 +73,8 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   align-items: center;
   justify-content: center;
   height: ${({ squared, short }) => (squared ? '40px' : short ? '34px' : 'var(--inputHeight)')};
-  width: ${({ squared, short }) => (squared ? '40px' : short ? 'auto' : '80%')};
-  max-width: 250px;
+  width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
+  max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-small);
   border: none;
   background-color: ${({ theme, secondary, transparent, alert }) =>

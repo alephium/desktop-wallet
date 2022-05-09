@@ -48,7 +48,6 @@ const InfoBox: FC<InfoBoxProps> = ({
   ellipsis,
   wordBreak,
   onClick,
-  small,
   short,
   children,
   contrast,
@@ -68,7 +67,12 @@ const InfoBox: FC<InfoBoxProps> = ({
       >
         {Icon && (
           <IconContainer>
-            <Icon color={importance ? theme.global.accent : theme.font.primary} strokeWidth={1.5} />
+            <Icon
+              color={
+                importance ? (importance === 'alert' ? theme.global.alert : theme.global.accent) : theme.font.primary
+              }
+              strokeWidth={1.5}
+            />
           </IconContainer>
         )}
         <TextContainer wordBreak={wordBreak} ellipsis={ellipsis}>

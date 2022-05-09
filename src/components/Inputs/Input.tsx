@@ -52,7 +52,12 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <InputLabel variants={inputPlaceHolderVariants} animate={!value ? 'down' : 'up'} htmlFor={props.id}>
+      <InputLabel
+        variants={inputPlaceHolderVariants}
+        animate={!value ? 'down' : 'up'}
+        transition={{ duration: 0.15 }}
+        htmlFor={props.id}
+      >
         {placeholder}
       </InputLabel>
       <StyledInput

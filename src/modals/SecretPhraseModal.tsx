@@ -31,11 +31,11 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
   return (
-    <CenteredModal title="Secret phrase" onClose={onClose} focusMode>
+    <CenteredModal title="Secret phrase" onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text="Type your password above to show your secret phrase."
+            text="Type your password to show your secret phrase."
             buttonText="Show"
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />

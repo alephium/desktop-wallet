@@ -103,6 +103,7 @@ export const InputLabel = styled(motion.label)`
   font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
+  transform-origin: left;
 `
 
 export const InputValidIconContainer = styled(motion.div)`
