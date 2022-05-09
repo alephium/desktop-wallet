@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AnimatePresence } from 'framer-motion'
 import { useCallback, useState } from 'react'
 
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
@@ -36,10 +37,11 @@ const GeneralSettingsSection = () => {
     wallet
   } = useGlobalContext()
 
-  const [requiresPasswordConfirmation, setRequiresPasswordConfirmation] = useState(false)
+  const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
+
   const onPasswordRequirementChange = useCallback(() => {
     if (passwordRequirement) {
-      setRequiresPasswordConfirmation(true)
+      setIsPasswordModalOpen(true)
     } else {
       updateSettings('general', { passwordRequirement: true })
     }
@@ -47,7 +49,7 @@ const GeneralSettingsSection = () => {
 
   const disablePasswordRequirement = useCallback(() => {
     updateSettings('general', { passwordRequirement: false })
-    setRequiresPasswordConfirmation(false)
+    setIsPasswordModalOpen(false)
   }, [updateSettings])
 
   return (
@@ -93,15 +95,17 @@ const GeneralSettingsSection = () => {
           <HorizontalDivider narrow />
         </>
       )}
-      {requiresPasswordConfirmation && (
-        <CenteredModal title="Password" onClose={() => setRequiresPasswordConfirmation(false)} focusMode>
-          <PasswordConfirmation
-            text="Type your password to change this setting."
-            buttonText="Enter"
-            onCorrectPasswordEntered={disablePasswordRequirement}
-          />
-        </CenteredModal>
-      )}
+      <AnimatePresence>
+        {isPasswordModelOpen && (
+          <CenteredModal title="Password" onClose={() => setIsPasswordModalOpen(false)} focusMode>
+            <PasswordConfirmation
+              text="Type your password to change this setting."
+              buttonText="Enter"
+              onCorrectPasswordEntered={disablePasswordRequirement}
+            />
+          </CenteredModal>
+        )}
+      </AnimatePresence>
     </>
   )
 }
