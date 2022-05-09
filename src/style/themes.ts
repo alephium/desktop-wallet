@@ -29,7 +29,7 @@ export const lightTheme: DefaultTheme = {
     tertiary: '#ededed',
     hover: 'rgba(61, 64, 74, 0.035)',
     contrast: '#212126',
-    accent: tinycolor('#000').setAlpha(0.04).toString()
+    accent: tinycolor('#000').setAlpha(0.08).toString()
   },
   font: {
     primary: '#000',
@@ -65,7 +65,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: tinycolor('#000').setAlpha(0.3).toString()
+    accent: tinycolor('#000').setAlpha(0.2).toString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
