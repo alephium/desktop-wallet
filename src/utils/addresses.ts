@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getStorage } from '@alephium/sdk'
+
 import { Address } from '../contexts/addresses'
 
 const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
@@ -75,3 +77,17 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
+
+export const migrateAddressMetadata = () => {
+  const Storage = getStorage()
+  const walletNames = Storage.list()
+
+  for (const name of walletNames) {
+    const data = localStorage.getItem(`${name}-${addressesMetadataLocalStorageKeyPrefix}`)
+
+    if (data) {
+      localStorage.setItem(constructMetadataKey(name), data)
+      localStorage.removeItem(`${name}-${addressesMetadataLocalStorageKeyPrefix}`)
+    }
+  }
+}
