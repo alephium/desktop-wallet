@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import fs from 'fs/promises'
 import http from 'http'
 import https from 'https'
+import { uniq } from 'lodash'
 import path from 'path'
 
 const pathsToUIRelatedCode = [
@@ -57,16 +58,6 @@ function request(link: string, callback) {
   return client.get(link, httpClientOptions, callback)
 }
 
-function dedup(xs) {
-  const uniques = []
-  for (const x of xs) {
-    if (uniques.indexOf(x) < 0) {
-      uniques.push(x)
-    }
-  }
-  return uniques
-}
-
 it('has all valid links in the UI', async () => {
   const filesInDir = await Promise.all(pathsToUIRelatedCode.map((dir) => getFilesRecursively(dir)))
   const files = filesInDir.flatMap((x) => x)
@@ -76,7 +67,7 @@ it('has all valid links in the UI', async () => {
     .flatMap((x) => x)
     .filter((link) => link !== null)
     .filter((link) => link.match(/localhost/) === null)
-  const linksDedup = dedup(links)
+  const linksDedup = uniq(links)
 
   const sequencedPromises = linksDedup.reduce(
     (promise, link) =>
