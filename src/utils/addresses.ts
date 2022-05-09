@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Address } from '../contexts/addresses'
 
-const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
+const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
 
 export type AddressSettings = {
   isMain: boolean
@@ -38,8 +38,10 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
+const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+
 export const loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-  const data = localStorage.getItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+  const data = localStorage.getItem(constructMetadataKey(accountName))
 
   if (data === null) return []
 
@@ -59,11 +61,11 @@ export const storeAddressMetadataOfAccount = (accountName: string, index: number
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
+  localStorage.setItem(constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
 }
 
 export const deleteStoredAddressMetadataOfAccount = (accountName: string) => {
-  localStorage.removeItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+  localStorage.removeItem(constructMetadataKey(accountName))
 }
 
 export const sortAddressList = (addresses: Address[]): Address[] =>
