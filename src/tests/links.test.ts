@@ -53,11 +53,8 @@ const httpClientOptions = {
 }
 
 function request(link: string, callback) {
-  if (link.match(/^https:\/\//)) {
-    return https.get(link, httpClientOptions, callback)
-  } else {
-    return http.get(link, httpClientOptions, callback)
-  }
+  const client = link.match(/^https:\/\//) ? https : http
+  return client.get(link, httpClientOptions, callback)
 }
 
 function dedup(xs) {
