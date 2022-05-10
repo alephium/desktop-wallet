@@ -78,12 +78,13 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
 
+// See https://github.com/alephium/desktop-wallet/issues/236
 export const migrateAddressMetadata = () => {
   const Storage = getStorage()
   const walletNames = Storage.list()
 
   for (const name of walletNames) {
-    const data = localStorage.getItem(`${name}-${addressesMetadataLocalStorageKeyPrefix}`)
+    const data = localStorage.getItem(`${name}-addresses-metadata`)
 
     if (data) {
       localStorage.setItem(constructMetadataKey(name), data)
