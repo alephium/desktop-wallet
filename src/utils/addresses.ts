@@ -84,11 +84,12 @@ export const migrateAddressMetadata = () => {
   const walletNames = Storage.list()
 
   for (const name of walletNames) {
-    const data = localStorage.getItem(`${name}-addresses-metadata`)
+    const deprecatedKey = `${name}-addresses-metadata`
+    const data = localStorage.getItem(deprecatedKey)
 
     if (data) {
       localStorage.setItem(constructMetadataKey(name), data)
-      localStorage.removeItem(`${name}-${addressesMetadataLocalStorageKeyPrefix}`)
+      localStorage.removeItem(deprecatedKey)
     }
   }
 }
