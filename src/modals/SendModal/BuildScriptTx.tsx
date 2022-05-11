@@ -61,8 +61,8 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
             fromAddress: data.fromAddress,
             bytecode: bytecode,
             alphAmount: alphAmount ? alphAmount : undefined,
-            gasAmount: gasAmount.value,
-            gasPrice: gasPrice.value ? gasPrice.value : undefined
+            gasAmount: gasAmount.parsed,
+            gasPrice: gasPrice.parsed
           })
         }
         onCancel={onCancel}

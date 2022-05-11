@@ -77,8 +77,8 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
             initialFields: fields.fields,
             issueTokenAmount: issueTokenAmount ? issueTokenAmount : undefined,
             alphAmount: alphAmount ? alphAmount : undefined,
-            gasAmount: gasAmount.value,
-            gasPrice: gasPrice.value ? gasPrice.value : undefined
+            gasAmount: gasAmount.parsed,
+            gasPrice: gasPrice.parsed
           })
         }
         onCancel={onCancel}

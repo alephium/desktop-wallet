@@ -76,12 +76,16 @@ export function useStateWithError<T>(initialValue: T) {
   return [value, setValueWithError] as const
 }
 
-export type Parsed<T> = WithError<T> & { rawValue: string }
-export function useParsedState<T>(initialValue: T) {
-  const [value, setValue] = useState({ value: initialValue, rawValue: JSON.stringify(initialValue), error: '' })
+export type WithParsed<T> = { raw: string; parsed: T; error: string }
+export function useStateWithParsed<T>(initialValue: T, stringified: string) {
+  const [value, setValue] = useState<WithParsed<T>>({
+    parsed: initialValue,
+    raw: stringified,
+    error: ''
+  })
 
   const setValueWithError = (newValue: string, parsed: T, newError: string) => {
-    setValue({ value: parsed, rawValue: newValue, error: newError })
+    setValue({ parsed: parsed, raw: newValue, error: newError })
   }
 
   return [value, setValueWithError] as const
@@ -129,49 +133,65 @@ export function useBuildTxCommon(
   const theme = useTheme()
   const [fromAddress, FromAddress] = useFromAddress(initialFromAddress)
   const [alphAmount, setAlphAmount] = useState(initialAlphAmount ?? '')
-  const [gasAmount, setGasAmount] = useParsedState(initialGasAmount)
-  const [gasPrice, setGasPrice] = useStateWithError(initialGasPrice ?? minimalGasPriceInALPH)
+  const [gasAmount, setGasAmount] = useStateWithParsed<number | undefined>(
+    initialGasAmount,
+    typeof initialGasAmount !== 'undefined' ? initialGasAmount.toString() : ''
+  )
+  const [gasPrice, setGasPrice] = useStateWithParsed<string | undefined>(
+    initialGasPrice,
+    typeof initialGasPrice !== 'undefined' ? initialGasPrice : ''
+  )
 
-  console.log('======== useBuildTx')
+  console.log(`======== useBuildTx ${minimalGasPriceInALPH}`)
 
   const handleGasAmountChange = (newGasAmount: string) => {
+    if (newGasAmount === '') {
+      setGasAmount('', undefined, '')
+      return
+    }
     const error = checkAmount(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false)
     if (typeof error !== 'undefined') {
-      setGasAmount(newGasAmount, parseInt(newGasAmount), error)
+      setGasAmount(newGasAmount, undefined, error)
     } else {
-      setGasAmount(newGasAmount, undefined, '')
+      setGasAmount(newGasAmount, parseInt(newGasAmount), '')
     }
   }
 
   const handleGasPriceChange = (newGasPrice: string) => {
+    if (newGasPrice === '') {
+      setGasPrice('', undefined, '')
+      return
+    }
     const error = checkAmount(newGasPrice, MINIMAL_GAS_PRICE, true)
     if (typeof error !== 'undefined') {
-      setGasPrice(newGasPrice, error)
+      setGasPrice(newGasPrice, undefined, error)
     } else {
-      setGasPrice(newGasPrice, '')
+      setGasPrice(newGasPrice, newGasPrice, '')
     }
   }
 
   const expectedFeeInALPH =
-    typeof gasAmount.value !== 'undefined' && gasPrice.error === '' && gasPrice.value !== ''
-      ? formatAmountForDisplay(BigInt(gasAmount.value) * convertAlphToSet(gasPrice.value), true)
+    typeof gasAmount.parsed !== 'undefined' && typeof gasPrice.parsed !== 'undefined'
+      ? formatAmountForDisplay(BigInt(gasAmount.parsed) * convertAlphToSet(gasPrice.parsed), true)
       : ''
 
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount
-      alphAmount={alphAmount}
-      setAlphAmount={setAlphAmount}
-      availableBalance={fromAddress.availableBalance}
-      expectedFeeInALPH={expectedFeeInALPH}
-    />
+    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress.availableBalance} />
   )
 
   const GasSettings = (
     <ExpandableSectionStyled sectionTitleClosed="Gas">
       <GasAmount gasAmount={gasAmount} handleGasAmountChange={handleGasAmountChange} />
       <GasPrice theme={theme} gasPrice={gasPrice} handleGasPriceChange={handleGasPriceChange} />
+      <InfoBoxStyled short label="Expected fee">
+        {expectedFeeInALPH && (
+          <>
+            {expectedFeeInALPH} <AlefSymbol />
+          </>
+        )}
+      </InfoBoxStyled>
     </ExpandableSectionStyled>
   )
 
@@ -221,23 +241,15 @@ export const ToAddress = ({
 export const TxAmount = ({
   alphAmount,
   setAlphAmount,
-  availableBalance,
-  expectedFeeInALPH
+  availableBalance
 }: {
   alphAmount: string
   setAlphAmount: (amount: string) => void
   availableBalance: bigint
-  expectedFeeInALPH: string
 }) => {
   return (
     <>
       <AmountInput value={alphAmount} onChange={setAlphAmount} availableAmount={availableBalance} />
-      {expectedFeeInALPH && (
-        <InfoBoxStyled short label="Expected fee">
-          {expectedFeeInALPH}
-          <AlefSymbol />
-        </InfoBoxStyled>
-      )}
     </>
   )
 }
@@ -246,14 +258,14 @@ export const GasAmount = ({
   gasAmount,
   handleGasAmountChange
 }: {
-  gasAmount: Parsed<number | undefined>
+  gasAmount: WithParsed<number | undefined>
   handleGasAmountChange: (error: string) => void
 }) => {
   return (
     <Input
       id="gas-amount"
-      placeholder="Gas amount"
-      value={gasAmount.rawValue}
+      placeholder={`Gas amount (≥ ${MINIMAL_GAS_AMOUNT})`}
+      value={gasAmount.raw}
       onChange={(e) => handleGasAmountChange(e.target.value)}
       type="number"
       min={MINIMAL_GAS_AMOUNT}
@@ -268,18 +280,19 @@ export const GasPrice = ({
   handleGasPriceChange
 }: {
   theme: DefaultTheme
-  gasPrice: WithError<string>
+  gasPrice: WithParsed<string | undefined>
   handleGasPriceChange: (error: string) => void
 }) => {
+  console.log(`========== gas price: ${gasPrice.raw}`)
   return (
     <Input
       id="gas-price"
       placeholder={
         <>
-          Gas price (<AlefSymbol color={theme.font.secondary} />)
+          Gas price (≥ {minimalGasPriceInALPH} <AlefSymbol color={theme.font.secondary} />)
         </>
       }
-      value={gasPrice.value}
+      value={gasPrice.raw}
       type="number"
       min={minimalGasPriceInALPH}
       onChange={(e) => handleGasPriceChange(e.target.value)}
@@ -431,7 +444,7 @@ export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: 
 export const CheckTxFooter = ({ onSend, onCancel }: { onSend: () => void; onCancel: () => void }) => (
   <ModalFooterButtons>
     <ModalFooterButton secondary onClick={onCancel}>
-      Cancel
+      Back
     </ModalFooterButton>
     <ModalFooterButton onClick={onSend}>Send</ModalFooterButton>
   </ModalFooterButtons>

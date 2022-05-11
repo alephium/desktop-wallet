@@ -151,12 +151,12 @@ export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT
   }, [client, consolidationRequired, transactionData])
 
   const modalHeader = theme.name === 'dark' ? <PaperPlaneDarkSVG width="315px" /> : <PaperPlaneLightSVG width="315px" />
-  const buildTransactionExtended = (data: T) => {
+  const buildTransactionExtended = async (data: T) => {
     setTransactionData(data)
     if (wallet && client) {
       setIsLoading(true)
       try {
-        buildTransaction(client, data, getTxContext())
+        await buildTransaction(client, data, getTxContext())
         if (!isConsolidateUTXOsModalVisible) {
           setStep('info-check')
         }

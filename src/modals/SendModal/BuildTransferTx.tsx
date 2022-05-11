@@ -19,8 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 
 import { Address } from '../../contexts/addresses'
+import { MINIMAL_GAS_AMOUNT } from '../../utils/constants'
 import { isAmountWithinRange } from '../../utils/transactions'
-import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, useBuildTxCommon } from './utils'
+import {
+  minimalGasPriceInALPH,
+  ModalContent,
+  PartialTxData,
+  SubmitOrCancel,
+  ToAddress,
+  useAddress,
+  useBuildTxCommon
+} from './utils'
 
 export interface BuildTransferTxData {
   fromAddress: Address
@@ -48,7 +57,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     alphAmount &&
     isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
 
-  console.log(`========= convert ${gasPrice.value} ${convertAlphToSet(gasPrice.value)}`)
+  console.log(`========= convert ${gasPrice.raw} ${gasPrice.raw}`)
   return (
     <>
       <ModalContent>
@@ -63,8 +72,8 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
             fromAddress: fromAddress,
             toAddress: toAddress.value,
             alphAmount: alphAmount,
-            gasAmount: gasAmount.value,
-            gasPrice: gasPrice.value ? gasPrice.value : undefined
+            gasAmount: gasAmount.parsed,
+            gasPrice: gasPrice.parsed
           })
         }
         onCancel={onCancel}
