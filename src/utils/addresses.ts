@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getStorage } from '@alephium/sdk'
+
 import { Address } from '../contexts/addresses'
 
-const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
+const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
 
 export type AddressSettings = {
   isMain: boolean
@@ -38,8 +40,10 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
+const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+
 export const loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-  const data = localStorage.getItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+  const data = localStorage.getItem(constructMetadataKey(accountName))
 
   if (data === null) return []
 
@@ -59,11 +63,11 @@ export const storeAddressMetadataOfAccount = (accountName: string, index: number
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
+  localStorage.setItem(constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
 }
 
 export const deleteStoredAddressMetadataOfAccount = (accountName: string) => {
-  localStorage.removeItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+  localStorage.removeItem(constructMetadataKey(accountName))
 }
 
 export const sortAddressList = (addresses: Address[]): Address[] =>
@@ -73,3 +77,19 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
+
+// See https://github.com/alephium/desktop-wallet/issues/236
+export const migrateAddressMetadata = () => {
+  const Storage = getStorage()
+  const walletNames = Storage.list()
+
+  for (const name of walletNames) {
+    const deprecatedKey = `${name}-addresses-metadata`
+    const data = localStorage.getItem(deprecatedKey)
+
+    if (data) {
+      localStorage.setItem(constructMetadataKey(name), data)
+      localStorage.removeItem(deprecatedKey)
+    }
+  }
+}
