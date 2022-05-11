@@ -29,8 +29,6 @@ interface ToggleProps {
   handleColors?: [string, string]
 }
 
-const toggleMarginInPx = 2
-
 const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors }: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
@@ -43,7 +41,7 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
 
   const handleContainerVariants = {
     off: { left: 0 },
-    on: { left: toggleWidth / 2 - toggleMarginInPx * 2 }
+    on: { left: toggleWidth / 2 }
   }
 
   const handleVariants = {
@@ -96,9 +94,11 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
 
 export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   position: relative;
+  display: flex;
+  align-items: center;
   width: var(--toggleWidth);
-  height: var(--toggleHeight);
-  border-radius: calc(var(--toggleHeight) * 2);
+  height: calc(var(--toggleWidth) / 2);
+  border-radius: var(--toggleWidth);
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
@@ -117,20 +117,17 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
 
 const ToggleHandleContainer = styled(motion.div)`
   position: absolute;
-  width: var(--toggleHeight);
-  height: var(--toggleHeight);
+  width: calc(var(--toggleWidth) / 2);
+  height: calc(var(--toggleWidth) / 2);
   z-index: 0;
+  padding: 2px;
 `
 
 const ToggleHandle = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  margin: ${toggleMarginInPx}px;
+  height: 100%;
+  width: 100%;
   background-color: var(--color-white);
-  border-radius: calc(var(--toggleHeight) * 2);
+  border-radius: var(--toggleWidth);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 `
 
@@ -141,7 +138,6 @@ const ToggleContent = styled.div`
   top: 0;
   bottom: 0;
   display: flex;
-  margin: 0 ${toggleMarginInPx * 2}px;
   z-index: 1;
 `
 
