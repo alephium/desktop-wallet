@@ -57,7 +57,6 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     alphAmount &&
     isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
 
-  console.log(`========= convert ${gasPrice.raw} ${gasPrice.raw}`)
   return (
     <>
       <ModalContent>

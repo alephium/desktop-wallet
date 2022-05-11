@@ -57,7 +57,6 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       }
       setPermittedChain(permittedChain)
       const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
-      console.log(`=========== chain: ${permittedNetworkId} ${permittedChainGroup}`)
       setProposal(proposal)
       setState(State.Proposal)
     },

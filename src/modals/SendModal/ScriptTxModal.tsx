@@ -44,7 +44,6 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
     )
     ctx.setUnsignedTransaction(response.unsignedTx)
     ctx.setUnsignedTxId(response.txId)
-    console.log(`========== gas ${BigInt(response.gasAmount) * BigInt(response.gasPrice)}`)
     ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 

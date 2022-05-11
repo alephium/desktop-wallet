@@ -146,7 +146,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       setRequestEvent(event)
 
       try {
-        console.log(`============= ${method} ${JSON.stringify(params)}`)
         if (method === 'alph_signTransferTx') {
           const p = params as SignTransferTxParams
           const txData: BuildTransferTxData = {
@@ -168,11 +167,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
-          console.log(
-            `========== txData : ${JSON.stringify(dappTransactionData, (key, value) =>
-              typeof value === 'bigint' ? value.toString() : value
-            )}`
-          )
           setTxData(['deploy-contract', txData])
         } else if (method === 'alph_signScriptTx') {
           const p = params as SignScriptTxParams

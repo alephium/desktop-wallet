@@ -31,8 +31,6 @@ export type TransferTxModalProps = {
 }
 
 const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
-  console.log('============ refresh transfer')
-
   const buildTransaction = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice } = transactionData
     const amountInSet = convertAlphToSet(alphAmount)
@@ -43,7 +41,6 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
       context.setSweepUnsignedTxs(unsignedTxs)
       context.setFees(fees)
     } else {
-      console.log(`======= ${fromAddress.hash} -> ${toAddress}`)
       const { data } = await client.clique.transactionCreate(
         fromAddress.hash,
         fromAddress.publicKey,
@@ -61,7 +58,6 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
 
   const handleSend = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, alphAmount, ...rest } = transactionData
-    console.log(`======= data: ${alphAmount} ${JSON.stringify(rest)}`)
 
     if (toAddress) {
       if (context.isSweeping) {

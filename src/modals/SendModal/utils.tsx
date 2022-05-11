@@ -142,8 +142,6 @@ export function useBuildTxCommon(
     typeof initialGasPrice !== 'undefined' ? initialGasPrice : ''
   )
 
-  console.log(`======== useBuildTx ${minimalGasPriceInALPH}`)
-
   const handleGasAmountChange = (newGasAmount: string) => {
     if (newGasAmount === '') {
       setGasAmount('', undefined, '')
@@ -283,7 +281,6 @@ export const GasPrice = ({
   gasPrice: WithParsed<string | undefined>
   handleGasPriceChange: (error: string) => void
 }) => {
-  console.log(`========== gas price: ${gasPrice.raw}`)
   return (
     <Input
       id="gas-price"

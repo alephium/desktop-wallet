@@ -43,7 +43,6 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
       gas: data.gasAmount,
       gasPrice: data.gasPrice ? convertAlphToSet(data.gasPrice).toString() : undefined
     }
-    console.log(`========= params ${JSON.stringify(params)}`)
     const response = convertHttpResponse(
       await client.web3.contracts.postContractsUnsignedTxBuildContract({
         fromPublicKey: data.fromAddress.publicKey,
@@ -55,11 +54,9 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
         gasPrice: data.gasPrice ? convertAlphToSet(data.gasPrice).toString() : undefined
       })
     )
-    console.log(`====== contract: ${response.contractAddress}`)
     setContractAddress(response.contractAddress)
     context.setUnsignedTransaction(response.unsignedTx)
     context.setUnsignedTxId(response.txId)
-    console.log(`========== gas ${BigInt(response.gasAmount) * BigInt(response.gasPrice)}`)
     context.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 

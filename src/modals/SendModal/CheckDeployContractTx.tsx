@@ -32,7 +32,6 @@ import {
 
 const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) => {
   const { fromAddress, ...rest } = data
-  console.log(`====== check: ${fromAddress.publicKey} ${JSON.stringify(rest)}`)
   return (
     <>
       <ModalContent>
