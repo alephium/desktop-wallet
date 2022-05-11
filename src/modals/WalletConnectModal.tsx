@@ -28,7 +28,7 @@ import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
 import { extractErrorMsg } from '../utils/misc'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
-import { useFromAddress } from './SendModal/utils'
+import { useFromAddress, useSignerAddress } from './SendModal/utils'
 
 interface Props {
   onClose: () => void
@@ -43,7 +43,7 @@ enum State {
 }
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
-  const { addresses, mainAddress } = useAddressesContext()
+  const { addresses } = useAddressesContext()
   const { walletConnect } = useWalletConnectContext()
   const [uri, setUri] = useState('')
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
@@ -54,7 +54,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     permittedGroup: -1
   })
 
-  const [fromAddress, FromAddress] = useFromAddress(mainAddress ?? addresses[0])
+  const [fromAddress, FromAddress] = useSignerAddress(permittedChain.permittedGroup)
   const [error, setError] = useState('')
 
   const onProposal = useCallback(
@@ -133,10 +133,10 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="Initiate a session with a dApp"
+          subtitle="WalletConnect Error"
           onClose={onClose}
         >
-          <div>WalletConnect Error: {error}</div>
+          <div>{error}</div>
           <ModalFooterButtons>
             <ModalFooterButton
               onClick={() => {
@@ -175,6 +175,11 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const name = proposal?.proposer.metadata.name ?? 'No application name'
       const url = proposal?.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.proposer.metadata.description ?? 'No description given'
+
+      if (typeof fromAddress === 'undefined') {
+        setErrorState(`No address with balance for group ${permittedChain.permittedGroup}`)
+        return <></>
+      }
 
       return (
         <CenteredModal

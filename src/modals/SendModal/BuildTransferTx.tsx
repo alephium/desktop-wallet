@@ -41,6 +41,11 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [toAddress, handleAddressChange] = useAddress(data?.toAddress ?? '')
 
+  if (typeof fromAddress === 'undefined') {
+    onCancel()
+    return <></>
+  }
+
   const isSubmitButtonActive =
     isCommonReady &&
     toAddress.value &&

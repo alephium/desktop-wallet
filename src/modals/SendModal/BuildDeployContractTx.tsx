@@ -54,6 +54,11 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   const [fields, Fields] = useContractFields(data.initialFields ?? [])
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
 
+  if (typeof fromAddress === 'undefined') {
+    onCancel()
+    return <></>
+  }
+
   const isSubmitButtonActive =
     isCommonReady &&
     bytecode &&

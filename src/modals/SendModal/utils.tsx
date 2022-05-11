@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { node, toApiVal } from 'alephium-web3'
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
@@ -89,6 +89,37 @@ export function useStateWithParsed<T>(initialValue: T, stringified: string) {
   }
 
   return [value, setValueWithError] as const
+}
+
+const filter = (group: number, address?: Address): Address | undefined => {
+  return group === -1 ? address : address?.group === group ? address : undefined
+}
+
+export function useSignerAddress(group: number) {
+  const { addresses, mainAddress } = useAddressesContext()
+  const [signerAddress, setSignerAddress] = useState<Address>()
+
+  const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
+  useEffect(() => {
+    const defaultAddress = filter(group, mainAddress) ?? addressOptions.at(0)
+    setSignerAddress(defaultAddress)
+  }, [group])
+
+  const SignerAddress = signerAddress ? (
+    <AddressSelect
+      placeholder="From address"
+      title="Select the address to send funds from."
+      options={addressOptions}
+      defaultAddress={signerAddress}
+      onAddressChange={(newAddress) => setSignerAddress(newAddress)}
+      id="from-address"
+      hideEmptyAvailableBalance
+    />
+  ) : (
+    <></>
+  )
+
+  return [signerAddress, SignerAddress] as const
 }
 
 export function useFromAddress(initialAddress: Address) {
@@ -176,7 +207,7 @@ export function useBuildTxCommon(
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress.availableBalance} />
+    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress!.availableBalance} />
   )
 
   const GasSettings = (
@@ -198,10 +229,12 @@ export function useBuildTxCommon(
 
 export const FromAddressSelect = ({
   defaultAddress,
-  setFromAddress
+  setFromAddress,
+  group
 }: {
   defaultAddress: Address
   setFromAddress: (newAddress: Address) => void
+  group?: number
 }) => {
   const { addresses } = useAddressesContext()
 

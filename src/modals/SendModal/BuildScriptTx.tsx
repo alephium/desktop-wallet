@@ -42,6 +42,11 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
     useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
 
+  if (typeof fromAddress === 'undefined') {
+    onCancel()
+    return <></>
+  }
+
   const isSubmitButtonActive =
     isCommonReady &&
     bytecode &&
