@@ -29,6 +29,7 @@ import { Client, TxModalType, useGlobalContext } from '../../contexts/global'
 import { useWalletConnectContext } from '../../contexts/walletconnect'
 import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
 import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
+import { extractErrorMsg } from '../../utils/misc'
 import { NetworkType } from '../../utils/settings'
 import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
@@ -36,7 +37,6 @@ import { Step, stepToTitle } from '.'
 import DeployContractTxModal from './DeployContractTxModal'
 import ScriptTxModal from './ScriptTxModal'
 import TransferTxModal from './TransferTxModal'
-import { extractErrorMsg } from '../../utils/misc'
 
 type ReactSet<T> = Dispatch<SetStateAction<T>>
 

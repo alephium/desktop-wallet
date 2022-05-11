@@ -18,9 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
+import { formatAccount, parseChain } from 'alephium-walletconnect-provider'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { formatAccount, parseChain } from 'alephium-walletconnect-provider'
 
 import Input from '../components/Inputs/Input'
 import { useAddressesContext } from '../contexts/addresses'

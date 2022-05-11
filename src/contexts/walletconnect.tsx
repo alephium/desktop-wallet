@@ -26,7 +26,7 @@ import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContra
 import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
 import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
 import { extractErrorMsg } from '../utils/misc'
-import { TxModalType, useGlobalContext } from './global'
+import { useGlobalContext } from './global'
 
 export interface ContextType {
   isWalletConnectModalOpen: boolean

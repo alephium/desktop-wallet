@@ -20,7 +20,6 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from 'alephium-web3'
 
 import { Client } from '../../contexts/global'
-import { useWalletConnectContext } from '../../contexts/walletconnect'
 import BuildTransferTx, { BuildTransferTxData, BuildTransferTxProps } from './BuildTransferTx'
 import CheckTransferTx from './CheckTransferTx'
 import { TxContext, TxModalFactory } from './TxModal'
