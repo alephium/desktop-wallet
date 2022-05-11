@@ -36,6 +36,7 @@ import { Step, stepToTitle } from '.'
 import DeployContractTxModal from './DeployContractTxModal'
 import ScriptTxModal from './ScriptTxModal'
 import TransferTxModal from './TransferTxModal'
+import { extractErrorMsg } from '../../utils/misc'
 
 type ReactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -99,7 +100,7 @@ export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT
   const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [fees, setFees] = useState<bigint>()
   const theme = useTheme()
-  const { requestEvent, walletConnect } = useWalletConnectContext()
+  const { requestEvent, walletConnect, onError } = useWalletConnectContext()
 
   const { setAddress } = useAddressesContext()
   const [unsignedTxId, setUnsignedTxId] = useState('')
@@ -205,11 +206,13 @@ export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT
         onClose()
       } catch (e) {
         console.error(e)
+        const error = extractErrorMsg(e)
         setSnackbarMessage({
-          text: getHumanReadableError(e, 'Error while sending the transaction'),
+          text: getHumanReadableError(e, `Error while sending the transaction: ${error}`),
           type: 'alert',
           duration: 5000
         })
+        onError(error)
       }
       setIsLoading(false)
     }

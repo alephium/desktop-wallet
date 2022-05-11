@@ -19,12 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { SignContractCreationTxParams, SignScriptTxParams, SignTransferTxParams } from 'alephium-web3'
-import { createContext, Dispatch, FC, SetStateAction, useContext, useEffect, useState } from 'react'
+import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
 import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
 import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
+import { extractErrorMsg } from '../utils/misc'
 import { TxModalType, useGlobalContext } from './global'
 
 export interface ContextType {
@@ -38,6 +39,7 @@ export interface ContextType {
     | ['script', BuildScriptTxData]
     | undefined
   requestEvent?: SessionTypes.RequestEvent
+  onError: (error: string) => void
 }
 
 export const initialContext: ContextType = {
@@ -46,10 +48,25 @@ export const initialContext: ContextType = {
   walletConnect: undefined,
   setWalletConnect: () => undefined,
   dappTransactionData: undefined,
-  requestEvent: undefined
+  requestEvent: undefined,
+  onError: (error: string) => undefined
 }
 
 export const Context = createContext<ContextType>(initialContext)
+
+const respondError = (walletConnect: WalletConnectClient, requestEvent: SessionTypes.RequestEvent, error: string) => {
+  walletConnect.respond({
+    topic: requestEvent.topic,
+    response: {
+      id: requestEvent.request.id,
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: error
+      }
+    }
+  })
+}
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { setTxModalType, settings } = useGlobalContext()
@@ -59,10 +76,22 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [dappTransactionData, setDappTransactionData] = useState<ContextType['dappTransactionData']>()
   const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent>()
 
-  const setTxData = (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
-    setDappTransactionData(data)
-    setTxModalType(data[0])
-  }
+  const setTxData = useCallback(
+    (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
+      setDappTransactionData(data)
+      setTxModalType(data[0])
+    },
+    [setDappTransactionData, setTxModalType]
+  )
+
+  const onError = useCallback(
+    (error: string): void => {
+      if (walletConnect && requestEvent) {
+        respondError(walletConnect, requestEvent, error)
+      }
+    },
+    [walletConnect, requestEvent]
+  )
 
   useEffect(() => {
     if (walletConnect === undefined) {
@@ -95,6 +124,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         throw new Error(`Unknown signer address: ${signerAddress}`)
       }
       return address
+    }
+
+    const disconnectWithError = (topic: string, error: string) => {
+      walletConnect.disconnect({
+        topic: topic,
+        reason: {
+          code: -32000,
+          message: error
+        }
+      })
+      setRequestEvent(undefined)
+      setDappTransactionData(undefined)
     }
 
     const onSessionRequest = async (event: SessionTypes.RequestEvent) => {
@@ -148,21 +189,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       } catch (e) {
         console.warn(e)
-        let error: string
-        if (typeof e === 'string') {
-          error = e
-        } else if (e instanceof Error) {
-          error = e.message
-        } else {
-          error = 'Unknown internal error'
-        }
-        walletConnect.disconnect({
-          topic: topic,
-          reason: {
-            code: -32000,
-            message: error
-          }
-        })
+        const error = extractErrorMsg(e)
+        respondError(walletConnect, event, error)
       }
     }
 
@@ -180,7 +208,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         setIsWalletConnectModalOpen,
         walletConnect,
         setWalletConnect,
-        dappTransactionData
+        dappTransactionData,
+        onError
       }}
     >
       {children}
