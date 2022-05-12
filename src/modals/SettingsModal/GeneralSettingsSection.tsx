@@ -97,7 +97,7 @@ const GeneralSettingsSection = () => {
       )}
       <AnimatePresence>
         {isPasswordModelOpen && (
-          <CenteredModal title="Password" onClose={() => setIsPasswordModalOpen(false)} focusMode>
+          <CenteredModal title="Password" onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
             <PasswordConfirmation
               text="Type your password to change this setting."
               buttonText="Enter"
