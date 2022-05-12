@@ -17,19 +17,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
-import { FC } from 'react'
+import { FC, InputHTMLAttributes, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
-  label?: React.ReactNode
-  error?: React.ReactNode
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+  label?: ReactNode
+  error?: ReactNode
   isValid?: boolean
   disabled?: boolean
   className?: string
 }
 
-export interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
+export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
   error?: string
   isValid?: boolean
   disabled?: boolean
