@@ -57,13 +57,7 @@ const PasswordConfirmation = ({
   return (
     <>
       <Section>
-        <Input
-          value={password}
-          placeholder={text}
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-          autoFocus
-        />
+        <Input value={password} label={text} type="password" onChange={(e) => setPassword(e.target.value)} autoFocus />
       </Section>
       <Section>
         <Button onClick={validatePassword} submit wide>

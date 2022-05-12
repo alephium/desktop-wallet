@@ -115,7 +115,7 @@ const WalletLayout: FC = ({ children }) => {
           <InfoBox text={currentAccountName} label="WALLET" />
         ) : (
           <Select
-            placeholder="WALLET"
+            label="WALLET"
             options={accountNameSelectOptions}
             controlledValue={{
               label: currentAccountName,

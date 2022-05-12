@@ -26,7 +26,7 @@ import styled from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
-const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
+const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -45,7 +45,9 @@ const Input = ({ placeholder, error, isValid, disabled, onChange, value, ...prop
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
     >
-      <InputLabel inputHasValue={!!value}>{placeholder}</InputLabel>
+      <InputLabel inputHasValue={!!value} htmlFor={props.id}>
+        {label}
+      </InputLabel>
       <StyledInput
         {...props}
         value={value}

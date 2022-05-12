@@ -63,7 +63,7 @@ const GeneralSettingsSection = () => {
             onChange={(v) =>
               updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
             }
-            placeholder={walletLockTimeInMinutes ? 'Minutes' : 'Off'}
+            label={walletLockTimeInMinutes ? 'Minutes' : 'Off'}
             type="number"
             step={1}
             min={1}

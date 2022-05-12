@@ -112,14 +112,14 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
     <>
       <SectionStyled inList>
         <Select
-          placeholder="Wallet"
+          label="Wallet"
           options={accountNames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
           title="Select a wallet"
           id="wallet"
         />
         <Input
-          placeholder="Password"
+          label="Password"
           type="password"
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}

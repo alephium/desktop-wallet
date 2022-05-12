@@ -22,11 +22,11 @@ import styled, { css } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+  label?: React.ReactNode
   error?: React.ReactNode
   isValid?: boolean
   disabled?: boolean
   className?: string
-  placeholder?: React.ReactNode
 }
 
 export interface TextAreaProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
@@ -103,7 +103,6 @@ export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }>
     variants={inputPlaceHolderVariants}
     animate={!inputHasValue ? 'down' : 'up'}
     transition={{ duration: 0.15 }}
-    htmlFor={props.id}
   />
 )
 

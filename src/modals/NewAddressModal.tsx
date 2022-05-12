@@ -116,7 +116,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       {singleAddress && (
         <ExpandableSection sectionTitleClosed="Advanced options">
           <Select
-            placeholder="Group"
+            label="Group"
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
             onValueChange={(newValue) => {

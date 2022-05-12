@@ -32,7 +32,7 @@ interface SelectOption<T> {
 }
 
 interface SelectProps<T> {
-  placeholder?: string
+  label?: string
   disabled?: boolean
   controlledValue?: SelectOption<T>
   options: SelectOption<T>[]
@@ -46,7 +46,7 @@ interface SelectProps<T> {
 function Select<T>({
   options,
   title,
-  placeholder,
+  label,
   disabled,
   controlledValue,
   className,
@@ -91,7 +91,9 @@ function Select<T>({
         custom={disabled}
         onClick={() => setShowPopup(true)}
       >
-        <InputLabel inputHasValue={!!value}>{placeholder}</InputLabel>
+        <InputLabel inputHasValue={!!value} htmlFor={id}>
+          {label}
+        </InputLabel>
         <MoreIcon>
           <MoreVertical />
         </MoreIcon>

@@ -51,7 +51,7 @@ let ColoredLabelInput = ({ placeholder, onChange, value, className, id, maxLengt
   return (
     <div className={className}>
       <InputStyled
-        placeholder={placeholder}
+        label={placeholder}
         autoComplete="off"
         onChange={(e) => setLabel(e.target.value)}
         value={label}

@@ -108,7 +108,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
     <>
       <ModalContent>
         <AddressSelect
-          placeholder="From address"
+          label="From address"
           title="Select the address to send funds from."
           options={addresses}
           defaultAddress={fromAddress}
@@ -117,7 +117,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           hideEmptyAvailableBalance
         />
         <Input
-          placeholder="Recipient's address"
+          label="Recipient's address"
           value={toAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           error={addressError}
@@ -134,7 +134,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       <ExpandableSectionStyled sectionTitleClosed="Advanced settings">
         <Input
           id="gas-amount"
-          placeholder="Gas amount"
+          label="Gas amount"
           value={gasAmount}
           onChange={(e) => handleGasAmountChange(e.target.value)}
           type="number"
@@ -143,7 +143,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
         />
         <Input
           id="gas-price"
-          placeholder={
+          label={
             <>
               Gas price (<AlefSymbol color={theme.font.secondary} />)
             </>

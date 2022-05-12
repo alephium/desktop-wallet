@@ -37,7 +37,7 @@ interface AddressSelectProps {
   options: Address[]
   onAddressChange: (address: Address) => void
   defaultAddress?: Address
-  placeholder?: string
+  label?: string
   disabled?: boolean
   className?: string
   hideEmptyAvailableBalance?: boolean
@@ -46,7 +46,7 @@ interface AddressSelectProps {
 function AddressSelect({
   options,
   title,
-  placeholder,
+  label,
   disabled,
   defaultAddress,
   className,
@@ -80,7 +80,9 @@ function AddressSelect({
         onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
-        <InputLabel inputHasValue={!!address}>{placeholder}</InputLabel>
+        <InputLabel inputHasValue={!!address} htmlFor={id}>
+          {label}
+        </InputLabel>
         {!disabled && (
           <MoreIcon>
             <MoreVertical />
