@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 
 import { Address, AddressHash, TransactionType } from '../contexts/addresses'
-import { NetworkType, Settings } from './settings'
+import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {
   try {
@@ -107,7 +107,7 @@ export async function createClient(settings: Settings['network']) {
       unsignedTx: string,
       toAddressHash: AddressHash,
       type: TransactionType,
-      network: NetworkType,
+      network: NetworkName,
       amount?: bigint
     ) => {
       const signature = cliqueClient.transactionSign(txId, fromAddress.privateKey)

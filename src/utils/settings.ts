@@ -41,7 +41,7 @@ export type UpdateSettingsFunctionSignature = <T extends keyof Settings>(
 
 type DeprecatedNetworkSettings = Settings['network']
 
-export const networkEndpoints: Record<Exclude<NetworkType, 'custom'>, Settings['network']> = {
+export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['network']> = {
   mainnet: {
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',
@@ -69,14 +69,14 @@ export const defaultSettings: Settings = {
   network: clone(networkEndpoints.mainnet)
 }
 
-export const networkTypes = ['testnet', 'mainnet', 'localhost', 'custom'] as const
+export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as const
 
-export type NetworkType = typeof networkTypes[number]
+export type NetworkName = typeof networkNames[number]
 
 export const getNetworkName = (settings: Settings['network']) => {
   return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
     return isEqual(presetSettings, settings)
-  })?.[0] || 'custom') as NetworkType | 'custom'
+  })?.[0] || 'custom') as NetworkName | 'custom'
 }
 
 export const loadSettings = (): Settings => {

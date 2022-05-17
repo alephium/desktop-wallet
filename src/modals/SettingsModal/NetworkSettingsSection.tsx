@@ -29,11 +29,11 @@ import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
 import { useMountEffect } from '../../utils/hooks'
-import { getNetworkName, networkEndpoints, NetworkType, networkTypes, Settings } from '../../utils/settings'
+import { getNetworkName, networkEndpoints, NetworkName, networkNames, Settings } from '../../utils/settings'
 
 interface NetworkSelectOption {
   label: string
-  value: NetworkType
+  value: NetworkName
 }
 
 type NetworkSettings = Settings['network']
@@ -41,12 +41,12 @@ type NetworkSettings = Settings['network']
 const NetworkSettingsSection = () => {
   const { settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
-  const [selectedNetwork, setSelectedNetwork] = useState<NetworkType>()
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
-  const networkSelectOptions: NetworkSelectOption[] = networkTypes.map((networkType) => ({
-    label: capitalize(networkType),
-    value: networkType
+  const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
+    label: capitalize(networkName),
+    value: networkName
   }))
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
