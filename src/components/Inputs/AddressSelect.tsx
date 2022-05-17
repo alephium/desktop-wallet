@@ -28,7 +28,7 @@ import Amount from '../Amount'
 import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
-import { inputDefaultStyle, InputLabel, inputPlaceHolderVariants, InputProps } from '.'
+import { inputDefaultStyle, InputLabel, InputProps } from '.'
 import { MoreIcon, OptionItem, SelectContainer } from './Select'
 
 interface AddressSelectProps {
@@ -37,7 +37,7 @@ interface AddressSelectProps {
   options: Address[]
   onAddressChange: (address: Address) => void
   defaultAddress?: Address
-  placeholder?: string
+  label?: string
   disabled?: boolean
   className?: string
   hideEmptyAvailableBalance?: boolean
@@ -46,7 +46,7 @@ interface AddressSelectProps {
 function AddressSelect({
   options,
   title,
-  placeholder,
+  label,
   disabled,
   defaultAddress,
   className,
@@ -80,8 +80,8 @@ function AddressSelect({
         onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
-        <InputLabel variants={inputPlaceHolderVariants} animate={!address ? 'down' : 'up'} htmlFor={id}>
-          {placeholder}
+        <InputLabel inputHasValue={!!address} htmlFor={id}>
+          {label}
         </InputLabel>
         {!disabled && (
           <MoreIcon>

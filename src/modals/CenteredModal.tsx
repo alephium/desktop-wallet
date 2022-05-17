@@ -32,6 +32,7 @@ interface CenteredModalProps extends ModalContainerProps {
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode
+  narrow?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -41,6 +42,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   focusMode,
   isLoading,
   header,
+  narrow = false,
   children
 }) => (
   <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
@@ -49,6 +51,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
+      narrow={narrow}
     >
       <ModalHeader contrast={!!header}>
         <TitleRow>
@@ -90,12 +93,12 @@ export const HeaderLogo = styled.div`
   width: 100%;
 `
 
-const CenteredBox = styled(motion.div)`
+const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   display: flex;
   flex-direction: column;
   margin: auto;
   width: 100%;
-  max-width: 600px;
+  max-width: ${({ narrow }) => (narrow ? '380px' : '600px')};
   max-height: 95vh;
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius);

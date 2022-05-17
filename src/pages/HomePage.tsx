@@ -112,14 +112,14 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
     <>
       <SectionStyled inList>
         <Select
-          placeholder="Wallet"
+          label="Wallet"
           options={accountNames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
           title="Select a wallet"
           id="wallet"
         />
         <Input
-          placeholder="Password"
+          label="Password"
           type="password"
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
@@ -132,7 +132,9 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           Login
         </Button>
       </SectionStyled>
-      <SwitchLink onClick={onLinkClick}>Create / import a new wallet</SwitchLink>
+      <SwitchLink onClick={onLinkClick} centered>
+        Create / import a new wallet
+      </SwitchLink>
     </>
   )
 }
@@ -154,7 +156,11 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => history.push('/create')}>New wallet</Button>
         <Button onClick={() => history.push('/import')}>Import wallet</Button>
-        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
+        {showLinkToExistingAccounts && (
+          <SwitchLink onClick={onLinkClick} centered>
+            Use an existing wallet
+          </SwitchLink>
+        )}
       </Section>
     </>
   )

@@ -41,7 +41,7 @@ const AddressMetadataForm = ({
   isMainAddressToggleEnabled
 }: AddressMetadataFormProps) => (
   <>
-    <ColoredLabelInput placeholder="Address label" onChange={setLabel} value={label} id="label" maxLength={50} />
+    <ColoredLabelInput label="Address label" onChange={setLabel} value={label} id="label" maxLength={50} />
     {singleAddress && (
       <>
         <HorizontalDivider narrow />

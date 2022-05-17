@@ -34,34 +34,34 @@ interface ColoredLabelInputProps {
   className?: string
   onChange: ({ title, color }: ColoredLabelInputValue) => void
   disabled?: boolean
-  placeholder?: string
+  label?: string
   id?: string
   maxLength?: number
 }
 
-let ColoredLabelInput = ({ placeholder, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
-  const [label, setLabel] = useState(value.title)
+let ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
+  const [title, setTitle] = useState(value.title)
   const [color, setColor] = useState(value.color)
   const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
-    onChange({ title: label, color })
-  }, [label, color, onChange])
+    onChange({ title, color })
+  }, [title, color, onChange])
 
   return (
     <div className={className}>
       <InputStyled
-        placeholder={placeholder}
+        label={label}
         autoComplete="off"
-        onChange={(e) => setLabel(e.target.value)}
-        value={label}
+        onChange={(e) => setTitle(e.target.value)}
+        value={title}
         id={id}
         color={color}
         maxLength={maxLength}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
-      {label && <AddressBadgeStyled color={color} rounded addressName={label} seeThroughBg={isFocused} />}
+      {title && <AddressBadgeStyled color={color} rounded addressName={title} seeThroughBg={isFocused} />}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )

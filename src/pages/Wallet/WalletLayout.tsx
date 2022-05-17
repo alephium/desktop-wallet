@@ -115,7 +115,7 @@ const WalletLayout: FC = ({ children }) => {
           <InfoBox text={currentAccountName} label="WALLET" />
         ) : (
           <Select
-            placeholder="WALLET"
+            label="WALLET"
             options={accountNameSelectOptions}
             controlledValue={{
               label: currentAccountName,
@@ -138,7 +138,7 @@ const WalletLayout: FC = ({ children }) => {
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
         {isPasswordModalOpen && (
-          <CenteredModal title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
               text={`Enter password for "${switchToAccountName}"`}
               buttonText="Login"

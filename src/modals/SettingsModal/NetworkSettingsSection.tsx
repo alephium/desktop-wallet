@@ -109,7 +109,7 @@ const NetworkSettingsSection = () => {
         onValueChange={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title="Network"
-        placeholder="Current network"
+        label="Current network"
         id="network"
       />
       <ExpandableSection
@@ -119,17 +119,17 @@ const NetworkSettingsSection = () => {
       >
         <UrlInputs>
           <Input
-            placeholder="Node host"
+            label="Node host"
             value={tempAdvancedSettings.nodeHost}
             onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
           />
           <Input
-            placeholder="Explorer API host"
+            label="Explorer API host"
             value={tempAdvancedSettings.explorerApiHost}
             onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
           />
           <Input
-            placeholder="Explorer URL"
+            label="Explorer URL"
             value={tempAdvancedSettings.explorerUrl}
             onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
           />

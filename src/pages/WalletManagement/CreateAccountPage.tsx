@@ -107,14 +107,14 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
         <Section inList>
           <Input
             value={accountName}
-            placeholder={isRestoring ? 'New wallet name' : 'Wallet name'}
+            label={isRestoring ? 'New wallet name' : 'Wallet name'}
             onChange={onUpdateAccountName}
             error={accountNameError}
             isValid={accountName.length > 0 && accountNameError.length === 0}
           />
           <Input
             value={password}
-            placeholder={isRestoring ? 'New password' : 'Password'}
+            label={isRestoring ? 'New password' : 'Password'}
             type="password"
             onChange={onUpdatePassword}
             error={passwordError}
@@ -122,7 +122,7 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
           />
           <Input
             value={passwordCheck}
-            placeholder="Retype password"
+            label="Retype password"
             type="password"
             onChange={(e) => setPasswordCheck(e.target.value)}
             error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}

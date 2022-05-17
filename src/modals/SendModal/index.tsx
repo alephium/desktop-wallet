@@ -221,7 +221,13 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const modalHeader = theme.name === 'dark' ? <PaperPlaneDarkSVG width="315px" /> : <PaperPlaneLightSVG width="315px" />
 
   return (
-    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={modalHeader}>
+    <CenteredModal
+      title={title}
+      onClose={onClose}
+      isLoading={isLoading}
+      header={step !== 3 && modalHeader}
+      narrow={step === 3}
+    >
       {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
       {step === 2 && transactionData && fees && (
         <SendModalCheckTransaction

@@ -71,7 +71,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         type="number"
         min={minAmountInAlph}
         max={availableAmountInAlph}
-        placeholder={
+        label={
           <>
             Amount (<AlefSymbol color={theme.font.secondary} />)
           </>

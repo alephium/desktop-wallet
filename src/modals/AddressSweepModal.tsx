@@ -115,7 +115,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     <CenteredModal title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
       <Content>
         <AddressSelect
-          placeholder="From address"
+          label="From address"
           title="Select the address to sweep the funds from."
           options={addresses}
           defaultAddress={sweepAddresses.from}
@@ -125,7 +125,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           hideEmptyAvailableBalance
         />
         <AddressSelect
-          placeholder="To address"
+          label="To address"
           title="Select the address to sweep the funds to."
           options={toAddressOptions}
           defaultAddress={sweepAddresses.to}
