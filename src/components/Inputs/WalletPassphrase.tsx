@@ -69,6 +69,7 @@ const SectionStyled = styled(Section)`
   width: 100%;
   align-items: center;
   flex-direction: row;
+  margin-top: 1rem;
 `
 
 const CloseButton = styled(Button)`

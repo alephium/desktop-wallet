@@ -16,14 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { walletGenerate } from '@alephium/sdk'
-import { Edit3 } from 'lucide-react'
-import { useEffect } from 'react'
+import { getWalletFromMnemonic } from '@alephium/sdk'
+import { generateMnemonic } from 'bip39'
+import { AlertTriangle, Edit3 } from 'lucide-react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
+import ActionLink from '../../components/ActionLink'
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
+import WalletPassphrase from '../../components/Inputs/WalletPassphrase'
 import {
   FloatingPanel,
   FooterActionsContainer,
@@ -31,35 +34,35 @@ import {
   Section
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
+import { openInWebBrowser } from '../../utils/misc'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet, setPlainWallet, setMnemonic } = useWalletContext()
+  const { mnemonic, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage } = useGlobalContext()
+  const [passphrase, setPassphraseState] = useState('')
 
-  // Init wallet
   useEffect(() => {
-    const wallet = walletGenerate()
-    setPlainWallet(wallet)
-    setMnemonic(wallet.mnemonic)
-  }, [setMnemonic, setPlainWallet])
+    setMnemonic(generateMnemonic(256))
+  }, [setMnemonic])
 
-  const handleAddressClick = () => {
-    const address = plainWallet?.address
-    if (address) {
-      navigator.clipboard
-        .writeText(address)
-        .catch((e) => {
-          throw e
-        })
-        .then(() => {
-          setSnackbarMessage({ text: 'Address copied to clipboard!', type: 'info' })
-        })
+  const onGenerate = useCallback(() => {
+    let mnemonicFinal = mnemonic
+    if (passphrase) {
+      mnemonicFinal += ' ' + passphrase
     }
-  }
+    const wallet = getWalletFromMnemonic(mnemonicFinal)
+    setPlainWallet(wallet)
+    onButtonNext()
+  }, [setPlainWallet, onButtonNext, passphrase, mnemonic])
+
+  const onUpdatePassphrase = useCallback(
+    (e: ChangeEvent<HTMLInputElement>): void => {
+      setPassphraseState(e.target.value)
+    },
+    [setPassphraseState]
+  )
 
   const renderFormatedMnemonic = (mnemonic: string) => {
     return mnemonic.split(' ').map((w, i) => {
@@ -78,9 +81,6 @@ const WalletWordsPage = () => {
         Your Wallet
       </PanelTitle>
       <PanelContentContainer>
-        <PublicAddressContent>
-          <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
-        </PublicAddressContent>
         <WordsContent inList>
           <Label>Secret phrase</Label>
           <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
@@ -89,10 +89,32 @@ const WalletWordsPage = () => {
             Icon={Edit3}
             importance="alert"
           />
+          <InfoBox Icon={AlertTriangle} importance="accent" label="Advanced feature">
+            <div>
+              At this point a wallet passphrase can be set which plausibly denies the funds belong to you. A more
+              detailed explanation about how this protection works can be
+              <ActionLink
+                onClick={() =>
+                  openInWebBrowser(
+                    'https://blog.trezor.io/passphrase-the-ultimate-protection-for-your-accounts-3a311990925b'
+                  )
+                }
+              >
+                &nbsp;found here
+              </ActionLink>
+              . This is also known as the &quot;25th word&quot;.
+            </div>
+            <WalletPassphrase
+              value={passphrase}
+              label="Enter passphrase"
+              onChange={onUpdatePassphrase}
+              isValid={passphrase.length > 0}
+            />
+          </InfoBox>
         </WordsContent>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
-        <Button onClick={onButtonNext} submit>
+        <Button onClick={onGenerate} submit>
           {"I've copied the words, continue"}
         </Button>
       </FooterActionsContainer>
@@ -108,11 +130,6 @@ const Label = styled.label`
   padding-bottom: var(--spacing-1);
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
-`
-
-const PublicAddressContent = styled(Section)`
-  flex: 0;
-  justify-content: flex-start;
 `
 
 const WordsContent = styled(Section)`
