@@ -39,7 +39,8 @@ const AppHeader: FC = ({ children }) => {
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
-  const { isOffline } = useGlobalContext()
+  const { networkStatus } = useGlobalContext()
+  const isOffline = networkStatus === 'offline'
 
   const headerBGColor = useTransform(
     scrollY,

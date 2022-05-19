@@ -50,7 +50,7 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
-  const { wallet, lockWallet, currentAccountName, login, isOffline } = useGlobalContext()
+  const { wallet, lockWallet, currentAccountName, login, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
@@ -90,7 +90,7 @@ const WalletLayout: FC = ({ children }) => {
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
       <AppHeader>
-        {!isOffline && (
+        {networkStatus === 'online' && (
           <RefreshButton
             transparent
             squared
