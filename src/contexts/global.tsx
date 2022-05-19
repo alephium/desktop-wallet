@@ -57,7 +57,7 @@ export interface GlobalContextProps {
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
-  currentNetwork: NetworkType | 'custom'
+  currentNetwork: NetworkName | 'custom'
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
