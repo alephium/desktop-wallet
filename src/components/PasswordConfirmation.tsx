@@ -17,7 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage, walletOpen } from '@alephium/sdk'
-import { useState } from 'react'
+import { FC, useState } from 'react'
+import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
 import Button from './Button'
@@ -33,12 +34,13 @@ interface PasswordConfirmationProps {
   accountName?: string
 }
 
-const PasswordConfirmation = ({
+const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   text,
   buttonText,
   onCorrectPasswordEntered,
-  accountName
-}: PasswordConfirmationProps) => {
+  accountName,
+  children
+}) => {
   const { currentAccountName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 
@@ -58,6 +60,7 @@ const PasswordConfirmation = ({
     <>
       <Section>
         <Input value={password} label={text} type="password" onChange={(e) => setPassword(e.target.value)} autoFocus />
+        {children && <Children>{children}</Children>}
       </Section>
       <Section>
         <Button onClick={validatePassword} submit wide>
@@ -69,3 +72,7 @@ const PasswordConfirmation = ({
 }
 
 export default PasswordConfirmation
+
+const Children = styled.div`
+  margin-bottom: 1rem;
+`
