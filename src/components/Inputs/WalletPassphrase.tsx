@@ -42,10 +42,12 @@ const WalletPassphrase = ({ value, label, onChange, isValid }: Props) => {
       {!show && <ActionLinkStyled onClick={() => setShow(true)}>{label}</ActionLinkStyled>}
       {show && (
         <InfoBox Icon={AlertTriangle} importance="accent" label="Advanced option">
+          <p>The software will derive or &quot;find&quot; a wallet based on the passphrase entered below.</p>
           <p>
-            The software will derive a new wallet based on this passphrase. Addresses will need to be re-discovered to
-            see funds after unlocking.
+            <strong>An incorrect passphrase could generate a wallet with zero funds.</strong>
+            <span> Do not panic, this is normal! Calmly try again.</span>
           </p>
+          <p>Addresses need to be re-discovered to see all funds after unlocking.</p>
           <SectionStyled>
             <Input
               value={value}
