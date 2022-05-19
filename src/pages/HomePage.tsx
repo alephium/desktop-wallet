@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -27,6 +27,7 @@ import Button from '../components/Button'
 import SideBar from '../components/HomePage/SideBar'
 import Input from '../components/Inputs/Input'
 import Select from '../components/Inputs/Select'
+import WalletPassphrase from '../components/Inputs/WalletPassphrase'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
@@ -98,6 +99,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
   const [credentials, setCredentials] = useState({ accountName: '', password: '' })
   const { login } = useGlobalContext()
   const history = useHistory()
+  const [passphrase, setPassphraseState] = useState('')
 
   const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
@@ -105,8 +107,15 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'))
+    login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'), passphrase)
   }
+
+  const onUpdatePassphrase = useCallback(
+    (e: ChangeEvent<HTMLInputElement>): void => {
+      setPassphraseState(e.target.value)
+    },
+    [setPassphraseState]
+  )
 
   return (
     <>
@@ -125,6 +134,12 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
           value={credentials.password}
           id="password"
+        />
+        <WalletPassphrase
+          value={passphrase}
+          label="Optional passphrase"
+          onChange={onUpdatePassphrase}
+          isValid={passphrase.length > 0}
         />
       </SectionStyled>
       <SectionStyled inList>

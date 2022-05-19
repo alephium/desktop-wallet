@@ -18,15 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getWalletFromMnemonic } from '@alephium/sdk'
 import { generateMnemonic } from 'bip39'
-import { AlertTriangle, Edit3 } from 'lucide-react'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { Edit3 } from 'lucide-react'
+import { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import ActionLink from '../../components/ActionLink'
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
-import WalletPassphrase from '../../components/Inputs/WalletPassphrase'
 import {
   FloatingPanel,
   FooterActionsContainer,
@@ -36,33 +34,20 @@ import {
 import PanelTitle from '../../components/PageComponents/PanelTitle'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
-import { openInWebBrowser } from '../../utils/misc'
 
 const WalletWordsPage = () => {
   const { mnemonic, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const [passphrase, setPassphraseState] = useState('')
 
   useEffect(() => {
     setMnemonic(generateMnemonic(256))
   }, [setMnemonic])
 
   const onGenerate = useCallback(() => {
-    let mnemonicFinal = mnemonic
-    if (passphrase) {
-      mnemonicFinal += ' ' + passphrase
-    }
-    const wallet = getWalletFromMnemonic(mnemonicFinal)
+    const wallet = getWalletFromMnemonic(mnemonic)
     setPlainWallet(wallet)
     onButtonNext()
-  }, [setPlainWallet, onButtonNext, passphrase, mnemonic])
-
-  const onUpdatePassphrase = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      setPassphraseState(e.target.value)
-    },
-    [setPassphraseState]
-  )
+  }, [setPlainWallet, onButtonNext, mnemonic])
 
   const renderFormatedMnemonic = (mnemonic: string) => {
     return mnemonic.split(' ').map((w, i) => {
@@ -89,28 +74,6 @@ const WalletWordsPage = () => {
             Icon={Edit3}
             importance="alert"
           />
-          <InfoBox Icon={AlertTriangle} importance="accent" label="Advanced feature">
-            <div>
-              At this point a wallet passphrase can be set which plausibly denies the funds belong to you. A more
-              detailed explanation about how this protection works can be
-              <ActionLink
-                onClick={() =>
-                  openInWebBrowser(
-                    'https://blog.trezor.io/passphrase-the-ultimate-protection-for-your-accounts-3a311990925b'
-                  )
-                }
-              >
-                &nbsp;found here
-              </ActionLink>
-              . This is also known as the &quot;25th word&quot;.
-            </div>
-            <WalletPassphrase
-              value={passphrase}
-              label="Enter passphrase"
-              onChange={onUpdatePassphrase}
-              isValid={passphrase.length > 0}
-            />
-          </InfoBox>
         </WordsContent>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>

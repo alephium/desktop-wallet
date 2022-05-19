@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, Wallet, walletOpen } from '@alephium/sdk'
+import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
@@ -50,7 +50,7 @@ export interface GlobalContextProps {
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
-  login: (accountName: string, password: string, callback: () => void) => void
+  login: (accountName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -120,14 +120,24 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     setWallet(undefined)
   }
 
-  const login = async (accountName: string, password: string, callback: () => void) => {
+  const login = async (accountName: string, password: string, callback: () => void, passphrase?: string) => {
     const walletEncrypted = Storage.load(accountName)
     if (!walletEncrypted) {
       setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
       return
     }
     try {
-      const wallet = walletOpen(password, walletEncrypted)
+      let wallet
+      if (passphrase) {
+        wallet = walletOpen(password, walletEncrypted)
+        let mnemonicFinal = wallet.mnemonic
+        if (passphrase) {
+          mnemonicFinal += ' ' + passphrase
+        }
+        wallet = getWalletFromMnemonic(mnemonicFinal)
+      } else {
+        wallet = walletOpen(password, walletEncrypted)
+      }
       if (!wallet) return
       setWallet(wallet)
       setCurrentAccountName(accountName)
