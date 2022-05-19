@@ -34,7 +34,7 @@ import {
   loadStoredAddressesMetadataOfAccount,
   storeAddressMetadataOfAccount
 } from '../utils/addresses'
-import { NetworkType } from '../utils/settings'
+import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
@@ -45,7 +45,7 @@ type SimpleTx = {
   toAddress: string
   timestamp: number
   type: TransactionType
-  network: NetworkType
+  network: NetworkName
   amount?: bigint
 }
 
@@ -68,7 +68,7 @@ export class Address {
   }
   availableBalance: bigint
   lastUsed?: TimeInMs
-  network?: NetworkType
+  network?: NetworkName
 
   constructor(hash: string, publicKey: string, privateKey: string, index: number, settings: AddressSettings) {
     this.hash = hash
