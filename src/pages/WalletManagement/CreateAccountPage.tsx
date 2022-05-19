@@ -22,11 +22,9 @@ import { ChangeEvent, useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
-import ActionLink from '../../components/ActionLink'
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import WalletPassphrase from '../../components/Inputs/WalletPassphrase'
 import {
   FloatingPanel,
   FooterActionsContainer,
@@ -38,7 +36,6 @@ import Paragraph from '../../components/Paragraph'
 import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
-import { openInWebBrowser } from '../../utils/misc'
 
 const Storage = getStorage()
 
@@ -56,7 +53,6 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
   const [password, setPasswordState] = useState(existingPassword)
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState(existingPassword)
-  const [passphrase, setPassphrase] = useState('')
 
   const accountNames = Storage.list()
 
@@ -88,10 +84,6 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
 
     setAccountNameState(accountName)
     setAccountNameError(accountNameError)
-  }
-
-  const onUpdatePassphrase = (e: ChangeEvent<HTMLInputElement>): void => {
-    setPassphrase(e.target.value)
   }
 
   const isNextButtonActive =
@@ -137,28 +129,6 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
             isValid={password.length > 0 && password === passwordCheck}
             disabled={!password || passwordError.length > 0}
           />
-          <InfoBox Icon={AlertTriangle} importance="accent">
-            <div>
-              A wallet passphrase can be set which plausibly denies the funds belong to you. A more detailed explanation
-              about how this protection works can be
-              <ActionLink
-                onClick={() =>
-                  openInWebBrowser(
-                    'https://blog.trezor.io/passphrase-the-ultimate-protection-for-your-accounts-3a311990925b'
-                  )
-                }
-              >
-                &nbsp;found here
-              </ActionLink>
-              .
-            </div>
-            <WalletPassphrase
-              value={passphrase}
-              label="Enter passphrase"
-              onChange={onUpdatePassphrase}
-              isValid={passphrase.length > 0}
-            />
-          </InfoBox>
           <InfoBox
             Icon={AlertTriangle}
             importance="alert"
