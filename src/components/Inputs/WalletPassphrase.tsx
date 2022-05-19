@@ -16,10 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { X } from 'lucide-react'
+import { AlertTriangle, X } from 'lucide-react'
 import { ChangeEvent, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
+import InfoBox from '../../components/InfoBox'
 import { Section } from '../../components/PageComponents/PageContainers'
 import ActionLink from '../ActionLink'
 import Button from '../Button'
@@ -40,19 +41,25 @@ const WalletPassphrase = ({ value, label, onChange, isValid }: Props) => {
     <>
       {!show && <ActionLinkStyled onClick={() => setShow(true)}>{label}</ActionLinkStyled>}
       {show && (
-        <SectionStyled>
-          <Input
-            value={value}
-            label="Optional passphrase"
-            type="password"
-            onChange={onChange}
-            isValid={isValid}
-            disabled={false}
-          />
-          <CloseButton onClick={() => setShow(false)} secondary>
-            <X color={theme.font.primary} size={18} />
-          </CloseButton>
-        </SectionStyled>
+        <InfoBox Icon={AlertTriangle} importance="accent" label="Advanced option">
+          <p>
+            The software will derive a new wallet based on this passphrase. Addresses will need to be re-discovered to
+            see funds after unlocking.
+          </p>
+          <SectionStyled>
+            <Input
+              value={value}
+              label="Optional passphrase"
+              type="password"
+              onChange={onChange}
+              isValid={isValid}
+              disabled={false}
+            />
+            <CloseButton onClick={() => setShow(false)} secondary>
+              <X color={theme.font.primary} size={18} />
+            </CloseButton>
+          </SectionStyled>
+        </InfoBox>
       )}
     </>
   )
@@ -69,7 +76,6 @@ const SectionStyled = styled(Section)`
   width: 100%;
   align-items: center;
   flex-direction: row;
-  margin-top: 1rem;
 `
 
 const CloseButton = styled(Button)`
