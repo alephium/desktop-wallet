@@ -52,7 +52,7 @@ export const StepsContextProvider: FC<StepsContextProviderProps> = ({ baseUrl, s
     if (stepNumber === 0) {
       navigate('/')
     } else {
-      navigate(`${stepNumber - 1}`)
+      navigate(`/${baseUrl}/${stepNumber - 1}`)
     }
   }
 

@@ -154,8 +154,8 @@ const InitialActions = ({
         Please choose whether you want to create a new wallet or import an existing one.
       </Paragraph>
       <Section inList>
-        <Button onClick={() => navigate('/create')}>New wallet</Button>
-        <Button onClick={() => navigate('/import')}>Import wallet</Button>
+        <Button onClick={() => navigate('/create/0')}>New wallet</Button>
+        <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
         {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
       </Section>
     </>

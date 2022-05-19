@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from '@alephium/sdk'
 import { AnimateSharedLayout } from 'framer-motion'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import UpdateWalletBanner from '../components/UpdateWalletBanner'
 import { useGlobalContext } from '../contexts/global'
@@ -39,24 +39,8 @@ const Router = () => {
       <AnimateSharedLayout type="crossfade">
         {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
         <Routes>
-          <Route
-            path="create/*"
-            element={
-              <>
-                <CreateWalletRoutes />
-                <Navigate to="/create/0" />
-              </>
-            }
-          />
-          <Route
-            path="import/*"
-            element={
-              <>
-                <ImportWalletRoutes />
-                <Navigate to="/import/0" />
-              </>
-            }
-          />
+          <Route path="/create/:step" element={<CreateWalletRoutes />} />
+          <Route path="/import/:step" element={<ImportWalletRoutes />} />
           <Route path="/wallet/*" element={<WalletRoutes />} />
           <Route path="" element={<HomePage hasWallet={hasWallet} accountNames={accountNames} />} />
         </Routes>
