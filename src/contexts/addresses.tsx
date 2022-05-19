@@ -166,7 +166,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     settings: {
       network: { nodeHost, explorerApiHost }
     },
-    networkStatus
+    networkStatus,
+    usedPassphrase
   } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
@@ -319,7 +320,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
 
-      if (addressesMetadata.length === 0) {
+      if (usedPassphrase || addressesMetadata.length === 0) {
         saveNewAddress(
           new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
             isMain: true,
@@ -359,7 +360,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, currentAccountName, wallet, explorerApiHost, nodeHost])
+  }, [currentNetwork, networkStatus, client, currentAccountName, wallet, explorerApiHost, nodeHost, usedPassphrase])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

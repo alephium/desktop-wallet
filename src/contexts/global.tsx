@@ -61,6 +61,7 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
+  usedPassphrase: boolean
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -81,7 +82,8 @@ export const initialGlobalContext: GlobalContextProps = {
   currentNetwork: 'mainnet',
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
-  newLatestVersion: ''
+  newLatestVersion: '',
+  usedPassphrase: false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -101,6 +103,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
+  const [usedPassphrase, setUsedPassphrase] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -116,6 +119,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }
 
   const lockWallet = () => {
+    setUsedPassphrase(false)
     setCurrentAccountName('')
     setWallet(undefined)
   }
@@ -131,10 +135,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       if (passphrase) {
         wallet = walletOpen(password, walletEncrypted)
         let mnemonicFinal = wallet.mnemonic
-        if (passphrase) {
-          mnemonicFinal += ' ' + passphrase
-        }
+        mnemonicFinal += ' ' + passphrase
         wallet = getWalletFromMnemonic(mnemonicFinal)
+        setUsedPassphrase(true)
       } else {
         wallet = walletOpen(password, walletEncrypted)
       }
@@ -221,7 +224,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           currentNetwork,
           networkStatus,
           updateNetworkSettings,
-          newLatestVersion
+          newLatestVersion,
+          usedPassphrase
         },
         overrideContextValue as GlobalContextProps
       )}
