@@ -21,7 +21,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { FC, useState } from 'react'
+import { ChangeEvent, FC, useCallback, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -30,6 +30,7 @@ import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import Select from '../../components/Inputs/Select'
+import WalletPassphrase from '../../components/Inputs/WalletPassphrase'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
@@ -53,6 +54,7 @@ const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const [passphrase, setPassphraseState] = useState('')
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const navigate = useNavigate()
   const location = useLocation()
@@ -78,11 +80,24 @@ const WalletLayout: FC = ({ children }) => {
 
   const onLoginClick = (password: string) => {
     setIsPasswordModalOpen(false)
-    login(switchToWalletName, password, () => {
-      const nextPageLocation = '/wallet/overview'
-      if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
-    })
+    login(
+      switchToWalletName,
+      password,
+      () => {
+        const nextPageLocation = '/wallet/overview'
+        if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
+      },
+      passphrase
+    )
+    setPassphraseState('')
   }
+
+  const onUpdatePassphrase = useCallback(
+    (e: ChangeEvent<HTMLInputElement>): void => {
+      setPassphraseState(e.target.value)
+    },
+    [setPassphraseState]
+  )
 
   if (!wallet) return null
 
@@ -143,7 +158,14 @@ const WalletLayout: FC = ({ children }) => {
               buttonText="Login"
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
-            />
+            >
+              <WalletPassphrase
+                value={passphrase}
+                label="Optional passphrase"
+                onChange={onUpdatePassphrase}
+                isValid={passphrase.length > 0}
+              />
+            </PasswordConfirmation>
           </CenteredModal>
         )}
       </AnimatePresence>
