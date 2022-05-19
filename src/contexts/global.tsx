@@ -24,6 +24,7 @@ import { AsyncReturnType, PartialDeep } from 'type-fest'
 import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
+import { NetworkStatus } from '../types/network'
 import { createClient } from '../utils/api-clients'
 import {
   deprecatedSettingsExist,
@@ -57,7 +58,8 @@ export interface GlobalContextProps {
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
   currentNetwork: NetworkType | 'custom'
-  isOffline: boolean
+  networkStatus: NetworkStatus
+  updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
 }
 
@@ -77,7 +79,8 @@ export const initialGlobalContext: GlobalContextProps = {
   setSnackbarMessage: () => null,
   isClientLoading: false,
   currentNetwork: 'mainnet',
-  isOffline: false,
+  networkStatus: 'uninitialized',
+  updateNetworkSettings: () => null,
   newLatestVersion: ''
 }
 
@@ -97,7 +100,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
-  const [isOffline, setIsOffline] = useState(false)
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -105,6 +108,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
     updatedSettings && setSettings(updatedSettings)
     return updatedSettings
+  }
+
+  const updateNetworkSettings = (newNetworkSettings: Settings['network']) => {
+    setNetworkStatus('connecting')
+    updateSettings('network', newNetworkSettings)
   }
 
   const lockWallet = () => {
@@ -138,8 +146,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     setClient(clientResp)
 
     if (!clientResp || !settings.network.explorerApiHost || !settings.network.nodeHost) {
-      setIsOffline(true)
+      setNetworkStatus('offline')
     } else if (clientResp) {
+      setNetworkStatus('online')
+
       console.log('Clients initialized.')
 
       setSnackbarMessage({
@@ -147,10 +157,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         type: 'info',
         duration: 4000
       })
-      if (isOffline) setIsOffline(false)
     }
     setIsClientLoading(false)
-  }, [currentNetwork, isOffline, settings.network])
+  }, [currentNetwork, settings.network])
 
   useEffect(() => {
     const networkSettingsHaveChanged =
@@ -162,21 +171,21 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       previousNodeHost.current = settings.network.nodeHost
       previousExplorerAPIHost.current = settings.network.explorerApiHost
     }
-  }, [currentNetwork, getClient, isOffline, setSnackbarMessage, settings.network])
+  }, [currentNetwork, getClient, networkStatus, setSnackbarMessage, settings.network])
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>
-    if (isOffline) {
+    if (networkStatus === 'offline') {
       interval = setInterval(getClient, 2000)
     }
     return () => clearInterval(interval)
   })
 
   useEffect(() => {
-    if (isOffline) {
+    if (networkStatus === 'offline') {
       setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert', duration: 5000 })
     }
-  }, [currentNetwork, isOffline])
+  }, [currentNetwork, networkStatus])
 
   // Save settings to local storage
   useEffect(() => {
@@ -200,7 +209,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           updateSettings,
           isClientLoading,
           currentNetwork,
-          isOffline,
+          networkStatus,
+          updateNetworkSettings,
           newLatestVersion
         },
         overrideContextValue as GlobalContextProps
