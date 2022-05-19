@@ -31,7 +31,6 @@ import {
   getNetworkName,
   loadSettings,
   migrateDeprecatedSettings,
-  NetworkName,
   Settings,
   storeSettings,
   UpdateSettingsFunctionSignature,
