@@ -80,14 +80,14 @@ describe('Button correctly links to', () => {
     const button = screen.getByRole('button', { name: 'New wallet' })
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
-    expect(mockedHistoryPush).toHaveBeenCalledWith('/create')
+    expect(mockedHistoryPush).toHaveBeenCalledWith('/create/0')
   })
 
   it('the new wallet import page', () => {
     const button = screen.getByRole('button', { name: 'Import wallet' })
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
-    expect(mockedHistoryPush).toHaveBeenCalledWith('/import')
+    expect(mockedHistoryPush).toHaveBeenCalledWith('/import/0')
   })
 })
 
