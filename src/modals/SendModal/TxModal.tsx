@@ -40,13 +40,19 @@ import TransferTxModal from './TransferTxModal'
 
 type ReactSet<T> = Dispatch<SetStateAction<T>>
 
+export type UnsignedTx = {
+  fromGroup: number
+  toGroup: number
+  unsignedTx: string
+}
+
 export type TxContext = {
   setIsSweeping: ReactSet<boolean>
   sweepUnsignedTxs: SweepAddressTransaction[]
   setSweepUnsignedTxs: ReactSet<SweepAddressTransaction[]>
   setFees: ReactSet<bigint | undefined>
-  unsignedTransaction: string
-  setUnsignedTransaction: ReactSet<string>
+  unsignedTransaction: UnsignedTx | undefined
+  setUnsignedTransaction: ReactSet<UnsignedTx | undefined>
   unsignedTxId: string
   setUnsignedTxId: ReactSet<string>
   isSweeping: boolean
@@ -104,7 +110,7 @@ export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT
 
   const { setAddress } = useAddressesContext()
   const [unsignedTxId, setUnsignedTxId] = useState('')
-  const [unsignedTransaction, setUnsignedTransaction] = useState('')
+  const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
 
   const getTxContext = (): TxContext => ({
     setIsSweeping: setIsSweeping,

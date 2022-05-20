@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
-import { SignContractCreationTxParams, SignScriptTxParams, SignTransferTxParams } from 'alephium-web3'
+import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from 'alephium-web3'
 import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
@@ -157,19 +157,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           setTxData(['transfer', txData])
         } else if (method === 'alph_signContractCreationTx') {
-          const p = params as SignContractCreationTxParams
+          const p = params as SignDeployContractTxParams
           const txData: BuildDeployContractTxData = {
             fromAddress: extractAddress(p.signerAddress),
             bytecode: p.bytecode,
-            initialFields: p.initialFields,
-            alphAmount: p.alphAmount,
+            initialAlphAmount: p.initialAlphAmount,
             issueTokenAmount: p.issueTokenAmount,
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
           setTxData(['deploy-contract', txData])
         } else if (method === 'alph_signScriptTx') {
-          const p = params as SignScriptTxParams
+          const p = params as SignExecuteScriptTxParams
           const txData: BuildScriptTxData = {
             fromAddress: extractAddress(p.signerAddress),
             bytecode: p.bytecode,

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
-import { convertHttpResponse, SignScriptTxResult } from 'alephium-web3'
+import { SignExecuteScriptTxResult } from 'alephium-web3'
 
 import { Client } from '../../contexts/global'
 import { BuildScriptTxData, BuildScriptTxProps } from './BuildScriptTx'
@@ -32,36 +32,44 @@ export type ScriptTxModalProps = {
 
 const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
   const buildTransaction = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
-    const response = convertHttpResponse(
-      await client.web3.contracts.postContractsUnsignedTxBuildScript({
-        fromPublicKey: txData.fromAddress.publicKey,
-        bytecode: txData.bytecode,
-        alphAmount: txData.alphAmount,
-        tokens: undefined,
-        gasAmount: txData.gasAmount,
-        gasPrice: txData.gasPrice ? convertAlphToSet(txData.gasPrice).toString() : undefined
-      })
-    )
-    ctx.setUnsignedTransaction(response.unsignedTx)
+    const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
+      fromPublicKey: txData.fromAddress.publicKey,
+      bytecode: txData.bytecode,
+      alphAmount: txData.alphAmount,
+      tokens: undefined,
+      gasAmount: txData.gasAmount,
+      gasPrice: txData.gasPrice ? convertAlphToSet(txData.gasPrice).toString() : undefined
+    })
+    ctx.setUnsignedTransaction(response)
     ctx.setUnsignedTxId(response.txId)
     ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 
   const handleSend = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
-    const data = await client.signAndSendContractOrScript(
-      txData.fromAddress,
-      ctx.unsignedTxId,
-      ctx.unsignedTransaction,
-      ctx.currentNetwork
-    )
-    return data.signature
+    if (typeof ctx.unsignedTransaction !== 'undefined') {
+      const data = await client.signAndSendContractOrScript(
+        txData.fromAddress,
+        ctx.unsignedTxId,
+        ctx.unsignedTransaction.unsignedTx,
+        ctx.currentNetwork
+      )
+      return data.signature
+    } else {
+      throw Error('No unsignedTransaction available')
+    }
   }
 
-  const getWalletConnectResult = (context: TxContext, signature: string): SignScriptTxResult => {
-    return {
-      unsignedTx: context.unsignedTransaction,
-      txId: context.unsignedTxId,
-      signature: signature
+  const getWalletConnectResult = (context: TxContext, signature: string): SignExecuteScriptTxResult => {
+    if (typeof context.unsignedTransaction !== 'undefined') {
+      return {
+        fromGroup: context.unsignedTransaction.fromGroup,
+        toGroup: context.unsignedTransaction.toGroup,
+        unsignedTx: context.unsignedTransaction.unsignedTx,
+        txId: context.unsignedTxId,
+        signature: signature
+      }
+    } else {
+      throw Error('No unsignedTransaction available')
     }
   }
 

@@ -103,7 +103,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const accounts: string[] = [
         formatAccount(permittedChain.chainId, {
           address: signerAddress.hash,
-          pubkey: signerAddress.publicKey,
+          publicKey: signerAddress.publicKey,
           group: signerAddress.group
         })
       ]

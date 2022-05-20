@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
-import { CliqueClient as Web3Client } from 'alephium-web3'
+import { NodeProvider as Web3Client } from 'alephium-web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
 import { TransactionType } from '../types/transactions'
@@ -29,9 +29,7 @@ export async function createClient(settings: Settings['network']) {
       baseUrl: settings.nodeHost
     })
 
-    const web3Client = new Web3Client({
-      baseUrl: settings.nodeHost
-    })
+    const web3Client = new Web3Client(settings.nodeHost)
 
     const explorerClient = new ExplorerClient({
       baseUrl: settings.explorerApiHost
@@ -46,7 +44,6 @@ export async function createClient(settings: Settings['network']) {
 
     // Init clients
     await cliqueClient.init(isMultiNodesClique)
-    await web3Client.init(isMultiNodesClique)
 
     const fetchAddressDetails = async (address: Address) => {
       console.log('⬇️ Fetching address details: ', address.hash)

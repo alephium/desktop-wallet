@@ -49,7 +49,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
         gasAmount ? gasAmount : undefined,
         gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
       )
-      context.setUnsignedTransaction(data.unsignedTx)
+      context.setUnsignedTransaction(data)
       context.setUnsignedTxId(data.txId)
       context.setFees(BigInt(data.gasAmount) * BigInt(data.gasPrice))
     }
@@ -58,7 +58,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   const handleSend = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, alphAmount, ...rest } = transactionData
 
-    if (toAddress) {
+    if (toAddress && context.unsignedTransaction) {
       if (context.isSweeping) {
         const sendToAddress = context.consolidationRequired ? fromAddress.hash : toAddress
         const transactionType = context.consolidationRequired ? 'consolidation' : 'sweep'
@@ -81,7 +81,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
         const data = await client.signAndSendTransaction(
           fromAddress,
           context.unsignedTxId,
-          context.unsignedTransaction,
+          context.unsignedTransaction.unsignedTx,
           toAddress,
           'transfer',
           context.currentNetwork,
@@ -92,11 +92,19 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
     }
   }
 
-  const getWalletConnectResult = (context: TxContext, signature: string): SignTransferTxResult => ({
-    unsignedTx: context.unsignedTransaction,
-    txId: context.unsignedTxId,
-    signature: signature
-  })
+  const getWalletConnectResult = (context: TxContext, signature: string): SignTransferTxResult => {
+    if (typeof context.unsignedTransaction !== 'undefined') {
+      return {
+        fromGroup: context.unsignedTransaction.fromGroup,
+        toGroup: context.unsignedTransaction.toGroup,
+        unsignedTx: context.unsignedTransaction.unsignedTx,
+        txId: context.unsignedTxId,
+        signature: signature
+      }
+    } else {
+      throw Error('No unsignedTransaction available')
+    }
+  }
 
   return (
     <TxModalFactory

@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertHttpResponse } from 'alephium-web3'
 import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -82,7 +81,7 @@ const NetworkSettingsSection = () => {
           const newNetworkSettings = networkEndpoints[option.value]
           let networkId = newNetworkSettings.networkId
           if (typeof networkId === 'undefined' && typeof client !== 'undefined') {
-            const response = convertHttpResponse(await client.web3.infos.getInfosChainParams())
+            const response = await client.web3.infos.getInfosChainParams()
             networkId = response.networkId
           }
           if (typeof networkId !== 'undefined') {

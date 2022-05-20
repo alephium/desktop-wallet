@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
-import { binToHex, contractIdFromAddress, convertHttpResponse, SignContractCreationTxResult } from 'alephium-web3'
+import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from 'alephium-web3'
 import { useState } from 'react'
 
 import { Client } from '../../contexts/global'
@@ -34,50 +34,48 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   const [contractAddress, setContractAddress] = useState<string>('')
 
   const buildTransaction = async (client: Client, data: BuildDeployContractTxData, context: TxContext) => {
-    const params = {
+    const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
-      initialFields: data.initialFields,
-      alphAmount: data.alphAmount,
+      initialAlphAmount: data.initialAlphAmount,
       issueTokenAmount: data.issueTokenAmount,
-      gas: data.gasAmount,
+      gasAmount: data.gasAmount,
       gasPrice: data.gasPrice ? convertAlphToSet(data.gasPrice).toString() : undefined
-    }
-    const response = convertHttpResponse(
-      await client.web3.contracts.postContractsUnsignedTxBuildContract({
-        fromPublicKey: data.fromAddress.publicKey,
-        bytecode: data.bytecode,
-        initialFields: data.initialFields,
-        alphAmount: data.alphAmount,
-        issueTokenAmount: data.issueTokenAmount,
-        gasAmount: data.gasAmount,
-        gasPrice: data.gasPrice ? convertAlphToSet(data.gasPrice).toString() : undefined
-      })
-    )
+    })
     setContractAddress(response.contractAddress)
-    context.setUnsignedTransaction(response.unsignedTx)
+    context.setUnsignedTransaction(response)
     context.setUnsignedTxId(response.txId)
     context.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 
   const handleSend = async (client: Client, txData: BuildDeployContractTxData, context: TxContext) => {
-    const data = await client.signAndSendContractOrScript(
-      txData.fromAddress,
-      context.unsignedTxId,
-      context.unsignedTransaction,
-      context.currentNetwork
-    )
-    return data.signature
+    if (typeof context.unsignedTransaction !== 'undefined') {
+      const data = await client.signAndSendContractOrScript(
+        txData.fromAddress,
+        context.unsignedTxId,
+        context.unsignedTransaction.unsignedTx,
+        context.currentNetwork
+      )
+      return data.signature
+    } else {
+      throw Error('No unsignedTransaction available')
+    }
   }
 
-  const getWalletConnectResult = (context: TxContext, signature: string): SignContractCreationTxResult => {
-    const contractId = binToHex(contractIdFromAddress(contractAddress))
-    return {
-      unsignedTx: context.unsignedTransaction,
-      txId: context.unsignedTxId,
-      signature: signature,
-      contractAddress: contractAddress,
-      contractId: contractId
+  const getWalletConnectResult = (context: TxContext, signature: string): SignDeployContractTxResult => {
+    if (typeof context.unsignedTransaction !== 'undefined') {
+      const contractId = binToHex(contractIdFromAddress(contractAddress))
+      return {
+        fromGroup: context.unsignedTransaction.fromGroup,
+        toGroup: context.unsignedTransaction.toGroup,
+        unsignedTx: context.unsignedTransaction.unsignedTx,
+        txId: context.unsignedTxId,
+        signature: signature,
+        contractAddress: contractAddress,
+        contractId: contractId
+      }
+    } else {
+      throw Error('No unsignedTransaction available')
     }
   }
 

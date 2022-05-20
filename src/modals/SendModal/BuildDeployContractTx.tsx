@@ -33,9 +33,8 @@ import {
 export interface BuildDeployContractTxData {
   fromAddress: Address
   bytecode: string
-  initialFields: node.Val[]
 
-  alphAmount?: string
+  initialAlphAmount?: string
   issueTokenAmount?: string
   gasAmount?: number
   gasPrice?: string
@@ -49,9 +48,8 @@ export interface BuildDeployContractTxProps {
 
 const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContractTxProps) => {
   const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+    useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
-  const [fields, Fields] = useContractFields(data.initialFields ?? [])
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -69,7 +67,6 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
       <ModalContent>
         {FromAddress}
         {Bytecode}
-        {Fields}
         {AlphAmount}
         {IssueTokenAmount}
       </ModalContent>
@@ -79,9 +76,8 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
           onSubmit({
             fromAddress: data.fromAddress,
             bytecode: bytecode,
-            initialFields: fields.fields,
             issueTokenAmount: issueTokenAmount ? issueTokenAmount : undefined,
-            alphAmount: alphAmount ? alphAmount : undefined,
+            initialAlphAmount: alphAmount ? alphAmount : undefined,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })
