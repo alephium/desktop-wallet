@@ -159,12 +159,7 @@ const WalletLayout: FC = ({ children }) => {
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
             >
-              <WalletPassphrase
-                value={passphrase}
-                label="Optional passphrase"
-                onChange={onUpdatePassphrase}
-                isValid={passphrase.length > 0}
-              />
+              <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
             </PasswordConfirmation>
           </CenteredModal>
         )}
