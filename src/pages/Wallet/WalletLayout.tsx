@@ -92,13 +92,6 @@ const WalletLayout: FC = ({ children }) => {
     setPassphraseState('')
   }
 
-  const onUpdatePassphrase = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      setPassphraseState(e.target.value)
-    },
-    [setPassphraseState]
-  )
-
   if (!wallet) return null
 
   return (
@@ -159,7 +152,7 @@ const WalletLayout: FC = ({ children }) => {
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
             >
-              <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
+              <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
             </PasswordConfirmation>
           </CenteredModal>
         )}
