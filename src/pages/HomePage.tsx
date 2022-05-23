@@ -110,13 +110,6 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
     login(credentials.accountName, credentials.password, () => navigate('/wallet/overview'), passphrase)
   }
 
-  const onUpdatePassphrase = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      setPassphraseState(e.target.value)
-    },
-    [setPassphraseState]
-  )
-
   return (
     <>
       <SectionStyled inList>
@@ -135,7 +128,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
+        <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
       </SectionStyled>
       <SectionStyled inList>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
