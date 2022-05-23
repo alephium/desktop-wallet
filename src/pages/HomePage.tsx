@@ -135,12 +135,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase
-          value={passphrase}
-          label="Optional passphrase"
-          onChange={onUpdatePassphrase}
-          isValid={passphrase.length > 0}
-        />
+        <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
       </SectionStyled>
       <SectionStyled inList>
         <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
