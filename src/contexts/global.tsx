@@ -131,17 +131,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       return
     }
     try {
-      let wallet
-      if (passphrase) {
-        wallet = walletOpen(password, walletEncrypted)
-        let mnemonicFinal = wallet.mnemonic
-        mnemonicFinal += ' ' + passphrase
-        wallet = getWalletFromMnemonic(mnemonicFinal)
-        setUsedPassphrase(true)
-      } else {
-        wallet = walletOpen(password, walletEncrypted)
-      }
+      let wallet = walletOpen(password, walletEncrypted)
       if (!wallet) return
+      if (passphrase) {
+        wallet = getWalletFromMnemonic(`${wallet.mnemonic} ${passphrase}`)
+        setUsedPassphrase(true)
+      }
       setWallet(wallet)
       setCurrentAccountName(accountName)
       callback()
