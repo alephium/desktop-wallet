@@ -21,7 +21,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { ChangeEvent, FC, useCallback, useState } from 'react'
+import { FC, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -93,13 +93,6 @@ const WalletLayout: FC = ({ children }) => {
     setPassphraseState('')
   }
 
-  const onUpdatePassphrase = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      setPassphraseState(e.target.value)
-    },
-    [setPassphraseState]
-  )
-
   if (!wallet) return null
 
   return (
@@ -160,7 +153,7 @@ const WalletLayout: FC = ({ children }) => {
               onCorrectPasswordEntered={onLoginClick}
               accountName={switchToAccountName}
             >
-              <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
+              <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
             </PasswordConfirmation>
           </CenteredModal>
         )}

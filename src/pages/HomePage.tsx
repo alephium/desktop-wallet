@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -110,13 +110,6 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
     login(credentials.accountName, credentials.password, () => history.push('/wallet/overview'), passphrase)
   }
 
-  const onUpdatePassphrase = useCallback(
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      setPassphraseState(e.target.value)
-    },
-    [setPassphraseState]
-  )
-
   return (
     <>
       <SectionStyled inList>
@@ -135,7 +128,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase value={passphrase} onChange={onUpdatePassphrase} />
+        <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
       </SectionStyled>
       <SectionStyled inList>
         <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
