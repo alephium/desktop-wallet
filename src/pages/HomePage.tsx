@@ -156,7 +156,11 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => navigate('/create/0')}>New wallet</Button>
         <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
-        {showLinkToExistingAccounts && <SwitchLink onClick={onLinkClick}>Use an existing wallet</SwitchLink>}
+        {showLinkToExistingAccounts && (
+          <SwitchLink onClick={onLinkClick} centered>
+            Use an existing wallet
+          </SwitchLink>
+        )}
       </Section>
     </>
   )
