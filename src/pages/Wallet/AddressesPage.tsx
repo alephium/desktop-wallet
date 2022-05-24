@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
@@ -56,14 +56,14 @@ const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addresses } = useAddressesContext()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
   const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
-    history.push(`/wallet/addresses/${addressHash}`)
+    navigate(`/wallet/addresses/${addressHash}`)
   }
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
@@ -38,7 +38,7 @@ interface AddressSummaryCardProps {
 export const addressSummaryCardWidthPx = 100
 
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
 
@@ -49,10 +49,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       animate={{ x: collapsedPosition }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ClickableArea
-        onClick={() => clickable && history.push(`/wallet/addresses/${address.hash}`)}
-        clickable={clickable}
-      >
+      <ClickableArea onClick={() => clickable && navigate(`/wallet/addresses/${address.hash}`)} clickable={clickable}>
         <AddressNameSection collapsed={!clickable}>
           <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} truncate />
         </AddressNameSection>

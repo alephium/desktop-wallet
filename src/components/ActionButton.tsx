@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
 
 interface ActionButtonProps {
@@ -28,12 +28,12 @@ interface ActionButtonProps {
 
 const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   const theme = useTheme()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
 
   const handleClick = () => {
     if (link) {
-      history.push(link)
+      navigate(link)
     } else if (onClick) {
       onClick()
     }

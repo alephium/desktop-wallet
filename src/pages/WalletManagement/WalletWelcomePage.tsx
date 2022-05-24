@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
 import Button from '../../components/Button'
@@ -42,7 +42,7 @@ const WalletWelcomePage = () => {
   const [confettiRunning, setConfettiRunning] = useState(true)
   const { wallet } = useGlobalContext()
   const { width, height } = useWindowSize()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { mainAddress, updateAddressSettings, generateOneAddressPerGroup } = useAddressesContext()
 
   useTimeout(() => {
@@ -63,7 +63,7 @@ const WalletWelcomePage = () => {
       })
     }
 
-    history.push('/wallet/overview')
+    navigate('/wallet/overview')
   }
 
   return (
