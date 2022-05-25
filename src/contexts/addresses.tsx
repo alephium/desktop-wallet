@@ -29,9 +29,13 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
-import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
-import { NetworkName } from '../utils/settings'
+import {
+  AddressSettings,
+  loadStoredAddressesMetadataOfAccount,
+  storeAddressMetadataOfAccount
+} from '../utils/addresses'
 import { stringToDoubleSHA215HexString } from '../utils/misc'
+import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
