@@ -26,6 +26,7 @@ import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
 import { createClient } from '../utils/api-clients'
+import { stringToDoubleSHA215HexString } from '../utils/misc'
 import {
   deprecatedSettingsExist,
   getNetworkName,
@@ -61,7 +62,7 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
-  usedPassphrase: boolean
+  passphraseDoubleHashed: string
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -83,7 +84,7 @@ export const initialGlobalContext: GlobalContextProps = {
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
   newLatestVersion: '',
-  usedPassphrase: false
+  passphraseDoubleHashed: ''
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -103,7 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
-  const [usedPassphrase, setUsedPassphrase] = useState(false)
+  const [passphraseDoubleHashed, setPassphraseDoubleHashed] = useState('')
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -119,8 +120,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }
 
   const lockWallet = () => {
+<<<<<<< HEAD
     setCurrentWalletName('')
     setUsedPassphrase(false)
+=======
+    setPassphraseDoubleHashed('')
+    setCurrentAccountName('')
+>>>>>>> 232d72f (Support labels for derived wallets)
     setWallet(undefined)
   }
 
@@ -135,7 +141,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       if (!wallet) return
       if (passphrase) {
         wallet = getWalletFromMnemonic(`${wallet.mnemonic} ${passphrase}`)
-        setUsedPassphrase(true)
+        const _passphraseDoubleHashed = stringToDoubleSHA215HexString(passphrase)
+        setPassphraseDoubleHashed(_passphraseDoubleHashed)
       }
       setWallet(wallet)
       setCurrentWalletName(walletName)
@@ -220,7 +227,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
-          usedPassphrase
+          passphraseDoubleHashed
         },
         overrideContextValue as GlobalContextProps
       )}

@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { createHash } from 'crypto'
+
 // ===================== //
 // ==== RUNNING ENV ==== //
 // ===================== //
@@ -37,4 +39,16 @@ export const openInWebBrowser = (url: string) => {
       newWindow.focus()
     }
   }
+}
+
+export const stringToDoubleSHA215HexString = (data: string): string => {
+  let hash
+
+  hash = createHash('sha512')
+  hash.update(data)
+  const first = hash.digest()
+
+  hash = createHash('sha512')
+  hash.update(first)
+  return hash.digest('hex')
 }

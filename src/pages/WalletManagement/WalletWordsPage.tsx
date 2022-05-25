@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getWalletFromMnemonic } from '@alephium/sdk'
-import { generateMnemonic } from 'bip39'
+import { walletGenerate } from '@alephium/sdk'
 import { Edit3 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
@@ -40,14 +39,14 @@ const WalletWordsPage = () => {
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   useEffect(() => {
-    setMnemonic(generateMnemonic(256))
-  }, [setMnemonic])
+    const wallet = walletGenerate()
+    setPlainWallet(wallet)
+    setMnemonic(wallet.mnemonic)
+  }, [setMnemonic, setPlainWallet])
 
   const onGenerate = useCallback(() => {
-    const wallet = getWalletFromMnemonic(mnemonic)
-    setPlainWallet(wallet)
     onButtonNext()
-  }, [setPlainWallet, onButtonNext, mnemonic])
+  }, [onButtonNext])
 
   const renderFormatedMnemonic = (mnemonic: string) => {
     return mnemonic.split(' ').map((w, i) => {
