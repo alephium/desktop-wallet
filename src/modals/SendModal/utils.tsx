@@ -207,7 +207,7 @@ export function useBuildTxCommon(
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress!.availableBalance} />
+    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress.availableBalance} />
   )
 
   const GasSettings = (

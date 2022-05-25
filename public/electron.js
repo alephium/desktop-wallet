@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, ipcRenderer, BrowserWindow, Menu, shell } = require('electron')
+const { app, BrowserWindow, Menu, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
