@@ -31,6 +31,7 @@ import { PartialDeep } from 'type-fest'
 import { TimeInMs } from '../types/numbers'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
+import { stringToDoubleSHA215HexString } from '../utils/misc'
 import { useGlobalContext } from './global'
 
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
@@ -163,7 +164,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       network: { nodeHost, explorerApiHost }
     },
     networkStatus,
-    usedPassphrase
+    passphraseDoubleHashed
   } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
@@ -178,6 +179,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const constructMapKey = useCallback(
     (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
     [currentNetwork]
+  )
+
+  const getAccountKey = useCallback(
+    () => stringToDoubleSHA215HexString(`${currentAccountName}-${passphraseDoubleHashed}`),
+    [currentAccountName, passphraseDoubleHashed]
   )
 
   const getAddress = useCallback(
@@ -209,11 +215,14 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [updateAddressesState]
   )
 
-  const updateAddressSettings = (address: Address, settings: AddressSettings) => {
-    storeAddressMetadataOfWallet(activeWalletName, address.index, settings)
-    address.settings = settings
-    setAddress(address)
-  }
+  const updateAddressSettings = useCallback(
+    (address: Address, settings: AddressSettings) => {
+      storeAddressMetadataOfAccount(getAccountKey(), address.index, settings)
+      address.settings = settings
+      setAddress(address)
+    },
+    [getAccountKey, setAddress]
+  )
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
@@ -283,11 +292,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
-      storeAddressMetadataOfWallet(activeWalletName, newAddress.index, newAddress.settings)
+      storeAddressMetadataOfAccount(getAccountKey(), newAddress.index, newAddress.settings)
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [activeWalletName, fetchAndStoreAddressesData, setAddress]
+    [getAccountKey, fetchAndStoreAddressesData, setAddress]
   )
 
   const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
@@ -314,9 +323,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfWallet(activeWalletName)
+      const addressesMetadata = loadStoredAddressesMetadataOfAccount(getAccountKey())
 
-      if (usedPassphrase || addressesMetadata.length === 0) {
+      if (addressesMetadata.length === 0) {
         saveNewAddress(
           new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
             isMain: true,
@@ -356,7 +365,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, activeWalletName, wallet, explorerApiHost, nodeHost, usedPassphrase])
+  }, [currentNetwork, networkStatus, client, activeWalletName, getAccountKey, wallet, explorerApiHost, nodeHost, usedPassphrase])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
