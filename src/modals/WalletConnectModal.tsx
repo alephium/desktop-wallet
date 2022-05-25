@@ -156,11 +156,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           subtitle="Initiate a session with a dApp"
           onClose={onClose}
         >
-          <Input
-            onChange={(t) => setUri(t.target.value)}
-            value={uri}
-            placeholder="Paste what was copied from the dApp"
-          />
+          <Input onChange={(t) => setUri(t.target.value)} value={uri} label="Paste what was copied from the dApp" />
           <ModalFooterButtons>
             <ModalFooterButton secondary onClick={onClose}>
               Cancel
