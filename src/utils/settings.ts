@@ -57,7 +57,8 @@ export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, PartialBy<
     explorerUrl: 'https://testnet.alephium.org'
   },
   localhost: {
-    nodeHost: 'http://localhost:12973',
+    networkId: 4,
+    nodeHost: 'http://127.0.0.1:22973',
     explorerApiHost: 'http://localhost:9090',
     explorerUrl: 'http://localhost:3000'
   }
