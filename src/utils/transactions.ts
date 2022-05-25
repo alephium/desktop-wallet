@@ -16,10 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { isConsolidationTx, MIN_UTXO_SET_AMOUNT, removeConsolidationChangeAmount } from '@alephium/sdk'
+import {
+  convertAlphToSet,
+  isConsolidationTx,
+  MIN_UTXO_SET_AMOUNT,
+  removeConsolidationChangeAmount
+} from '@alephium/sdk'
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '../contexts/addresses'
+import { GasInfo } from '../types/transactions'
 import { PendingTx, TransactionStatus } from '../types/transactions'
 import { NetworkName } from './settings'
 
@@ -111,4 +117,15 @@ export const convertUnconfirmedTxToPendingTx = (
     amount,
     status: 'pending'
   }
+}
+
+export const hasNoGasErrors = ({ gasAmount, gasPrice }: GasInfo) => !gasAmount.error && !gasPrice.error
+
+export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
+  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
+  const amountIncludingFees = amountInSet + fees
+  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
+  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
+
+  return expectedAmount
 }

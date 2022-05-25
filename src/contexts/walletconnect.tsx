@@ -26,189 +26,183 @@ import {
 } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
-import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
-import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
-import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
-import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
+import {
+  DappTxData,
+  DeployContractTxData,
+  ScriptTxData,
+  TransferTxData,
+  TxDataToModalType,
+  TxType
+} from '../types/transactions'
 import { extractErrorMsg } from '../utils/misc'
 import { useGlobalContext } from './global'
+import { useSendModalContext } from './sendModal'
 
-export interface ContextType {
-  isWalletConnectModalOpen: boolean
-  setIsWalletConnectModalOpen: (isOpen: boolean) => void
-  walletConnect?: SignClient
-  setWalletConnect: Dispatch<SetStateAction<SignClient | undefined>>
-  dappTransactionData?:
-    | ['transfer', BuildTransferTxData]
-    | ['deploy-contract', BuildDeployContractTxData]
-    | ['script', BuildScriptTxData]
-    | undefined
+export interface WalletConnectContextProps {
+  walletConnectClient?: SignClient
   requestEvent?: SignClientTypes.EventArguments['session_request']
+  dappTxData?: DappTxData
+  setDappTxData: (data?: DappTxData) => void
   onError: (error: string) => void
 }
 
-export const initialContext: ContextType = {
-  isWalletConnectModalOpen: false,
-  setIsWalletConnectModalOpen: () => undefined,
-  walletConnect: undefined,
-  setWalletConnect: () => undefined,
-  dappTransactionData: undefined,
+const initialContext: WalletConnectContextProps = {
+  walletConnectClient: undefined,
+  dappTxData: undefined,
+  setDappTxData: () => null,
   requestEvent: undefined,
-  onError: (error: string) => undefined
+  onError: () => null
 }
 
-export const Context = createContext<ContextType>(initialContext)
-
-const respondError = (
-  signClient: SignClient,
-  requestEvent: SignClientTypes.EventArguments['session_request'],
-  error: string
-) => {
-  signClient.respond({
-    topic: requestEvent.topic,
-    response: {
-      id: requestEvent.id,
-      jsonrpc: '2.0',
-      error: {
-        code: -32000,
-        message: error
-      }
-    }
-  })
-}
-
-const respondResult = (
-  signClient: SignClient,
-  requestEvent: SignClientTypes.EventArguments['session_request'],
-  result: any
-) => {
-  signClient.respond({
-    topic: requestEvent.topic,
-    response: {
-      id: requestEvent.id,
-      jsonrpc: '2.0',
-      result: result
-    }
-  })
-}
+const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { setTxModalType, settings, client } = useGlobalContext()
+  const { client } = useGlobalContext()
+  const { openSendModal } = useSendModalContext()
   const { addresses } = useAddressesContext()
-  const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
-  const [walletConnect, setWalletConnect] = useState<SignClient>()
-  const [dappTransactionData, setDappTransactionData] = useState<ContextType['dappTransactionData']>()
+  const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
+  const [dappTxData, setDappTxData] = useState<DappTxData>()
   const [requestEvent, setRequestEvent] = useState<SignClientTypes.EventArguments['session_request']>()
 
-  const setTxData = useCallback(
-    (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
-      setDappTransactionData(data)
-      setTxModalType(data[0])
-    },
-    [setDappTransactionData, setTxModalType]
-  )
-
-  const onError = useCallback(
-    (error: string): void => {
-      if (walletConnect && requestEvent) {
-        respondError(walletConnect, requestEvent, error)
-      }
-    },
-    [walletConnect, requestEvent]
-  )
-
-  useEffect(() => {
-    if (walletConnect === undefined) {
-      SignClient.init({
-        // TODO: add as an advanced settings option "WalletConnect Project Id"
+  const initializeWalletConnectClient = useCallback(async () => {
+    try {
+      const client = await SignClient.init({
         projectId: '6e2562e43678dd68a9070a62b6d52207',
         relayUrl: 'wss://relay.walletconnect.com',
         metadata: {
-          name: 'Alephium Wallet',
-          description: 'Alephium Wallet',
+          name: 'Alephium desktop wallet',
+          description: 'Alephium desktop wallet',
           url: 'https://github.com/alephium/desktop-wallet/releases',
           icons: ['https://alephium.org/favicon-32x32.png']
         }
       })
-        .then((client) => {
-          setWalletConnect(client)
-        })
-        .catch((e) => {
-          console.log('WalletConnect error')
-          console.log(e)
-        })
-      return
-    }
 
-    const extractAddress = (signerAddress: string) => {
-      const address = addresses.find((a) => a.hash === signerAddress)
-      if (typeof address === 'undefined') {
-        throw new Error(`Unknown signer address: ${signerAddress}`)
+      setWalletConnectClient(client)
+    } catch (e) {
+      console.error('Could not initialize WalletConnect client', e)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (walletConnectClient) return
+
+    initializeWalletConnectClient()
+  }, [initializeWalletConnectClient, walletConnectClient])
+
+  const onError = useCallback(
+    (error: string): void => {
+      if (!walletConnectClient || !requestEvent) return
+
+      walletConnectClient.respond({
+        topic: requestEvent.topic,
+        response: {
+          id: requestEvent.id,
+          jsonrpc: '2.0',
+          error: {
+            code: -32000,
+            message: error
+          }
+        }
+      })
+    },
+    [walletConnectClient, requestEvent]
+  )
+
+  const onSessionRequest = useCallback(
+    async (event: SignClientTypes.EventArguments['session_request']) => {
+      if (!client || !walletConnectClient) return
+
+      const getAddressByHash = (signerAddress: string) => {
+        const address = addresses.find((a) => a.hash === signerAddress)
+        if (!address) throw new Error(`Unknown signer address: ${signerAddress}`)
+
+        return address
       }
-      return address
-    }
 
-    const onSessionRequest = async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      const { params } = requestEvent
-      const { request } = params
+      const setTxDataAndOpenModal = ({ txData, modalType }: TxDataToModalType) => {
+        setDappTxData(txData)
+        openSendModal(modalType)
+      }
 
-      setRequestEvent(requestEvent)
+      setRequestEvent(event)
+
+      const {
+        params: { request }
+      } = event
 
       try {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
-            const p = request.params as any as SignTransferTxParams
+            const p = request.params as SignTransferTxParams
             const alphAmount = convertSetToAlph(p.destinations[0].attoAlphAmount)
-            const txData: BuildTransferTxData = {
-              fromAddress: extractAddress(p.signerAddress),
+            const txData: TransferTxData = {
+              fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
               alphAmount: alphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
-            setTxData(['transfer', txData])
+
+            setTxDataAndOpenModal({ txData, modalType: TxType.TRANSFER })
             break
           }
           case 'alph_signAndSubmitDeployContractTx': {
-            const p = request.params as any as SignDeployContractTxParams
+            const p = request.params as SignDeployContractTxParams
             const initialAlphAmount =
               p.initialAttoAlphAmount !== undefined ? convertSetToAlph(p.initialAttoAlphAmount) : undefined
-            const txData: BuildDeployContractTxData = {
-              fromAddress: extractAddress(p.signerAddress),
+            const txData: DeployContractTxData = {
+              fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
               initialAlphAmount: initialAlphAmount,
               issueTokenAmount: p.issueTokenAmount?.toString(),
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
-            setTxData(['deploy-contract', txData])
+
+            setTxDataAndOpenModal({ txData, modalType: TxType.DEPLOY_CONTRACT })
             break
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
-            const p = request.params as any as SignExecuteScriptTxParams
+            const p = request.params as SignExecuteScriptTxParams
             const alphAmount = p.attoAlphAmount !== undefined ? convertSetToAlph(p.attoAlphAmount) : undefined
-            const txData: BuildScriptTxData = {
-              fromAddress: extractAddress(p.signerAddress),
+            const txData: ScriptTxData = {
+              fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
               alphAmount: alphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
-            setTxData(['script', txData])
+
+            setTxDataAndOpenModal({ txData, modalType: TxType.SCRIPT })
             break
           }
           case 'alph_requestNodeApi': {
-            const p = request.params as any as ApiRequestArguments
-            const result = await client!.web3.request(p)
-            await respondResult(walletConnect, requestEvent, result)
+            const p = request.params as ApiRequestArguments
+            const result = await client.web3.request(p)
+            await walletConnectClient.respond({
+              topic: event.topic,
+              response: {
+                id: event.id,
+                jsonrpc: '2.0',
+                result
+              }
+            })
             break
           }
           case 'alph_requestExplorerApi': {
-            const p = request.params as any as ApiRequestArguments
-            const result = await client!.explorer.request(p)
-            await respondResult(walletConnect, requestEvent, result)
+            const p = request.params as ApiRequestArguments
+            const result = await client.explorer.request(p)
+            await walletConnectClient.respond({
+              topic: event.topic,
+              response: {
+                id: event.id,
+                jsonrpc: '2.0',
+                result
+              }
+            })
             break
           }
           default:
@@ -216,33 +210,34 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             throw new Error(`Method not supported: ${request.method}`)
         }
       } catch (e) {
-        const error = extractErrorMsg(e)
-        console.warn(error)
-        respondError(walletConnect, requestEvent, error)
+        console.error('Error while parsing WalletConnect session request', e)
+        onError(extractErrorMsg(e))
       }
-    }
+    },
+    [addresses, client, onError, openSendModal, walletConnectClient]
+  )
 
-    walletConnect.on('session_request', onSessionRequest)
+  useEffect(() => {
+    walletConnectClient?.on('session_request', onSessionRequest)
+
     return () => {
-      walletConnect.removeListener('session_request', onSessionRequest)
+      walletConnectClient?.removeListener('session_request', onSessionRequest)
     }
-  }, [walletConnect, addresses, setTxModalType, settings, setTxData])
+  }, [onSessionRequest, walletConnectClient])
 
   return (
-    <Context.Provider
+    <WalletConnectContext.Provider
       value={{
         requestEvent,
-        isWalletConnectModalOpen,
-        setIsWalletConnectModalOpen,
-        walletConnect,
-        setWalletConnect,
-        dappTransactionData,
+        walletConnectClient,
+        dappTxData,
+        setDappTxData,
         onError
       }}
     >
       {children}
-    </Context.Provider>
+    </WalletConnectContext.Provider>
   )
 }
 
-export const useWalletConnectContext = () => useContext(Context)
+export const useWalletConnectContext = () => useContext(WalletConnectContext)

@@ -8,11 +8,11 @@
   "scripts": {
     "build": "cross-env REACT_APP_VERSION=$npm_package_version INLINE_RUNTIME_CHUNK=false REACT_APP_CSP=\"script-src 'self'\" react-scripts build",
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "npm run build && npx electron-builder",
-    "electron-pack-windows": "npm run build && npx electron-builder -w",
-    "electron-pack-macos": "npm run build && npx electron-builder --mac --universal",
-    "electron-pack-ubuntu": "npm run build && npx electron-builder -l",
-    "electron-pack-linux:arm64": "npm run build && npx electron-builder -l --arm64",
+    "electron-pack": "npm run build && electron-builder",
+    "electron-pack-windows": "npm run build && electron-builder -w",
+    "electron-pack-macos": "npm run build && electron-builder --mac --universal",
+    "electron-pack-ubuntu": "npm run build && electron-builder -l",
+    "electron-pack-linux:arm64": "npm run build && electron-builder -l --arm64",
     "start": "cross-env REACT_APP_VERSION=$npm_package_version REACT_APP_CSP=\"script-src 'self' 'unsafe-inline'\" react-scripts start",
     "test": "react-scripts test",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
@@ -25,15 +25,13 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "colord": "^2.9.3",
-    "compare-versions": "^5.0.1",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
   "devDependencies": {
     "@alephium/sdk": "0.2.0",
-    "@alephium/walletconnect-provider": "0.2.0-rc.4",
-    "@alephium/web3": "0.2.0-rc.36",
+    "@alephium/walletconnect-provider": "0.2.0",
+    "@alephium/web3": "0.2.0",
     "@json-rpc-tools/utils": "^1.7.6",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.0",
@@ -54,6 +52,8 @@
     "better-sqlite3": "^7.6.2",
     "bip39": "^3.0.4",
     "classnames": "^2.3.1",
+    "colord": "^2.9.3",
+    "compare-versions": "^5.0.1",
     "concurrently": "^7.4.0",
     "cross-env": "^7.0.3",
     "dayjs": "^1.10.7",
@@ -112,7 +112,7 @@
     "afterPack": ".afterPack.js"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=16",
+    "npm": ">=8"
   }
 }

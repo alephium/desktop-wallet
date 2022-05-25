@@ -16,28 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BuildTransferTxData } from './BuildTransferTx'
-import {
-  AlphAmountInfo,
-  CheckTxFooter,
-  CheckTxProps,
-  expectedAmount,
-  FeeInfo,
-  FromAddressInfo,
-  ModalContent,
-  ToAddressInfo
-} from './utils'
+import { useState } from 'react'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => (
-  <>
-    <ModalContent>
-      <FromAddressInfo fromAddress={data.fromAddress} />
-      <ToAddressInfo toAddress={data.toAddress} />
-      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.alphAmount, fees)} />
-      <FeeInfo fees={fees} />
-    </ModalContent>
-    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
-  </>
-)
+import { WithParsed } from '../types/data'
 
-export default CheckTransferTx
+export function useStateWithParsed<T>(initialValue: T, stringified: string) {
+  const [value, setValue] = useState<WithParsed<T>>({
+    parsed: initialValue,
+    raw: stringified,
+    error: ''
+  })
+
+  const setValueWithError = (newValue: string, parsed: T, newError: string) => {
+    setValue({ parsed: parsed, raw: newValue, error: newError })
+  }
+
+  return [value, setValueWithError] as const
+}

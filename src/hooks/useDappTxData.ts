@@ -16,28 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BuildScriptTxData } from './BuildScriptTx'
-import {
-  AlphAmountInfo,
-  BytecodeInfo,
-  CheckTxFooter,
-  CheckTxProps,
-  expectedAmount,
-  FeeInfo,
-  FromAddressInfo,
-  ModalContent
-} from './utils'
+import { Address, useAddressesContext } from '../contexts/addresses'
+import { useWalletConnectContext } from '../contexts/walletconnect'
 
-const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) => (
-  <>
-    <ModalContent>
-      <FromAddressInfo fromAddress={data.fromAddress} />
-      <BytecodeInfo bytecode={data.bytecode} />
-      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.alphAmount, fees)} />
-      <FeeInfo fees={fees} />
-    </ModalContent>
-    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
-  </>
-)
+const useDappTxData = () => {
+  const { mainAddress } = useAddressesContext()
+  const { dappTxData } = useWalletConnectContext()
 
-export default CheckScriptTx
+  return dappTxData ?? { fromAddress: mainAddress as Address }
+}
+
+export default useDappTxData
