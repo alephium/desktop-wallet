@@ -107,7 +107,7 @@ export function useSignerAddress(group: number) {
 
   const SignerAddress = signerAddress ? (
     <AddressSelect
-      placeholder="From address"
+      label="From address"
       title="Select the address to send funds from."
       options={addressOptions}
       defaultAddress={signerAddress}
@@ -148,9 +148,7 @@ export function useAddress(initialAddress: string) {
 
 export function useBytecode(initialBytecode: string) {
   const [bytecode, setBytecode] = useState(initialBytecode)
-  const Bytecode = (
-    <Input id="code" placeholder="bytecode" value={bytecode} onChange={(e) => setBytecode(e.target.value)} />
-  )
+  const Bytecode = <Input id="code" label="bytecode" value={bytecode} onChange={(e) => setBytecode(e.target.value)} />
 
   return [bytecode, Bytecode] as const
 }
@@ -240,7 +238,7 @@ export const FromAddressSelect = ({
 
   return (
     <AddressSelect
-      placeholder="From address"
+      label="From address"
       title="Select the address to send funds from."
       options={addresses}
       defaultAddress={defaultAddress}
@@ -260,7 +258,7 @@ export const ToAddress = ({
 }) => {
   return (
     <Input
-      placeholder="Recipient's address"
+      label="Recipient's address"
       value={toAddress.value}
       onChange={(e) => handleAddressChange(e.target.value)}
       error={toAddress.error}
@@ -295,7 +293,7 @@ export const GasAmount = ({
   return (
     <Input
       id="gas-amount"
-      placeholder={`Gas amount (≥ ${MINIMAL_GAS_AMOUNT})`}
+      label={`Gas amount (≥ ${MINIMAL_GAS_AMOUNT})`}
       value={gasAmount.raw}
       onChange={(e) => handleGasAmountChange(e.target.value)}
       type="number"
@@ -317,7 +315,7 @@ export const GasPrice = ({
   return (
     <Input
       id="gas-price"
-      placeholder={
+      label={
         <>
           Gas price (≥ {minimalGasPriceInALPH} <AlefSymbol color={theme.font.secondary} />)
         </>
@@ -385,7 +383,7 @@ export function useContractFields(initialFields: node.Val[]) {
   const Fields = (
     <Input
       id="fields"
-      placeholder="Contract fields"
+      label="Contract fields"
       value={fields.fieldsString}
       onChange={(e) => handleFieldsChange(e.target.value)}
     />
@@ -404,7 +402,7 @@ export const InitialFields = ({
   return (
     <Input
       id="fields"
-      placeholder="Initial fields"
+      label="Initial fields"
       value={initialFields.map((field) => `${field.value} ${field.type}`).join(',')}
       onChange={(e) => setInitialFields(e.target.value)}
     />
@@ -416,7 +414,7 @@ export function useIssueTokenAmount(initialTokenAmount: string | undefined) {
   const IssueTokenAmount = (
     <Input
       id="issue-token-amount"
-      placeholder="Tokens to issue (optional)"
+      label="Tokens to issue (optional)"
       value={issueTokenAmount}
       type="number"
       onChange={(e) => setIssueTokenAmount(e.target.value)}
