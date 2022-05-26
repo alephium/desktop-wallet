@@ -59,7 +59,7 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
 
-  if (typeof fromAddress === 'undefined') {
+  if (fromAddress === undefined) {
     onCancel()
     return <></>
   }

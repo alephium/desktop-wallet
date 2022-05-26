@@ -50,7 +50,7 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
   ] = useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
 
-  if (typeof fromAddress === 'undefined') {
+  if (fromAddress === undefined) {
     onCancel()
     return <></>
   }
