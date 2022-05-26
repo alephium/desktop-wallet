@@ -44,7 +44,7 @@ enum State {
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const { addresses } = useAddressesContext()
-  const { walletConnect } = useWalletConnectContext()
+  const { walletConnectClient } = useWalletConnectContext()
   const [uri, setUri] = useState('')
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
   const [proposal, setProposal] = useState<SessionTypes.Proposal>()
@@ -65,7 +65,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const onProposal = useCallback(
     async (proposal: SessionTypes.Proposal) => {
       const permittedChain = proposal.permissions.blockchain.chains[0]
-      if (typeof permittedChain === 'undefined') {
+      if (permittedChain === undefined) {
         setErrorState('No chain is permitted')
         return
       }
@@ -78,16 +78,16 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   )
 
   useEffect(() => {
-    walletConnect?.on(CLIENT_EVENTS.session.proposal, onProposal)
-    walletConnect?.on(CLIENT_EVENTS.session.created, onClose)
+    walletConnectClient?.on(CLIENT_EVENTS.session.proposal, onProposal)
+    walletConnectClient?.on(CLIENT_EVENTS.session.created, onClose)
     return () => {
-      walletConnect?.removeListener(CLIENT_EVENTS.session.proposal, onProposal)
-      walletConnect?.removeListener(CLIENT_EVENTS.session.created, onClose)
+      walletConnectClient?.removeListener(CLIENT_EVENTS.session.proposal, onProposal)
+      walletConnectClient?.removeListener(CLIENT_EVENTS.session.created, onClose)
     }
-  }, [onClose, onProposal, walletConnect])
+  }, [onClose, onProposal, walletConnectClient])
 
   const onInitiate = useCallback(async () => {
-    walletConnect
+    walletConnectClient
       ?.pair({ uri })
       .then((e) => {
         onConnect && onConnect()
@@ -96,7 +96,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         setUri('')
         setErrorState(`Error in pairing: ${extractErrorMsg(e)}`)
       })
-  }, [walletConnect, uri, onConnect, setErrorState])
+  }, [walletConnectClient, uri, onConnect, setErrorState])
 
   const onApprove = useCallback(
     async (signerAddress: Address) => {
@@ -112,10 +112,10 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           group: signerAddress.group
         })
       ]
-      await walletConnect?.approve({ proposal, response: { state: { accounts } } })
+      await walletConnectClient?.approve({ proposal, response: { state: { accounts } } })
       onClose()
     },
-    [proposal, permittedChain.chainId, walletConnect, onClose]
+    [proposal, permittedChain.chainId, walletConnectClient, onClose]
   )
 
   const onReject = useCallback(async () => {
@@ -124,9 +124,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return
     }
 
-    await walletConnect?.reject({ proposal })
+    await walletConnectClient?.reject({ proposal })
     onClose()
-  }, [walletConnect, proposal, onClose])
+  }, [walletConnectClient, proposal, onClose])
 
   switch (state) {
     case State.Error:
@@ -172,9 +172,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const url = proposal?.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.proposer.metadata.description ?? 'No description given'
 
-      if (typeof fromAddress === 'undefined') {
+      if (fromAddress === undefined) {
         setErrorState(`No address with balance for group ${permittedChain.permittedGroup}`)
-        return <></>
+        return null
       }
 
       return (
