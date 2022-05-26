@@ -38,7 +38,7 @@ const SendTransactionModalContext = createContext<SendTransactionModalContextPro
 
 export const SendTransactionModalContextProvider: FC = ({ children }) => {
   const [isSendTxModalOpen, setIsSendTxModalOpen] = useState(initialContext.isSendTxModalOpen)
-  const [sendTxModalType, setSendTxModalType] = useState(initialContext.sendTxModalType)
+  const [sendTxModalType, setSendTxModalType] = useState<SendTxModalType>()
 
   const openSendTxModal = (type: SendTxModalType) => {
     setIsSendTxModalOpen(true)
