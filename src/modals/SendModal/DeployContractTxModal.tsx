@@ -23,7 +23,7 @@ import { useState } from 'react'
 import { Client } from '../../contexts/global'
 import BuildDeployContractTx, { BuildDeployContractTxData, BuildDeployContractTxProps } from './BuildDeployContractTx'
 import CheckDeployContractTx from './CheckDeployContractTx'
-import { TxContext, TxModalFactory } from './TxModal'
+import TxModalFactory, { TxContext } from './TxModalFactory'
 
 export type DeployContractTxModalProps = {
   initialTxData: BuildDeployContractTxProps['data']
@@ -49,7 +49,7 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   }
 
   const handleSend = async (client: Client, txData: BuildDeployContractTxData, context: TxContext) => {
-    if (typeof context.unsignedTransaction !== 'undefined') {
+    if (context.unsignedTransaction !== undefined) {
       const data = await client.signAndSendContractOrScript(
         txData.fromAddress,
         context.unsignedTxId,
@@ -63,7 +63,7 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   }
 
   const getWalletConnectResult = (context: TxContext, signature: string): SignDeployContractTxResult => {
-    if (typeof context.unsignedTransaction !== 'undefined') {
+    if (context.unsignedTransaction !== undefined) {
       const contractId = binToHex(contractIdFromAddress(contractAddress))
       return {
         fromGroup: context.unsignedTransaction.fromGroup,

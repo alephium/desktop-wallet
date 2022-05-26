@@ -23,7 +23,7 @@ import { Client } from '../../contexts/global'
 import { BuildScriptTxData, BuildScriptTxProps } from './BuildScriptTx'
 import BuildScriptTx from './BuildScriptTx'
 import CheckScriptTx from './CheckScriptTx'
-import { TxContext, TxModalFactory } from './TxModal'
+import TxModalFactory, { TxContext } from './TxModalFactory'
 
 export type ScriptTxModalProps = {
   initialTxData: BuildScriptTxProps['data']
@@ -46,7 +46,7 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
   }
 
   const handleSend = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
-    if (typeof ctx.unsignedTransaction !== 'undefined') {
+    if (ctx.unsignedTransaction !== undefined) {
       const data = await client.signAndSendContractOrScript(
         txData.fromAddress,
         ctx.unsignedTxId,
@@ -60,7 +60,7 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
   }
 
   const getWalletConnectResult = (context: TxContext, signature: string): SignExecuteScriptTxResult => {
-    if (typeof context.unsignedTransaction !== 'undefined') {
+    if (context.unsignedTransaction !== undefined) {
       return {
         fromGroup: context.unsignedTransaction.fromGroup,
         toGroup: context.unsignedTransaction.toGroup,

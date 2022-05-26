@@ -38,7 +38,7 @@ import { useSendTransactionModalContext } from '../../contexts/sendTransactionMo
 import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
 import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
-import { TxModal } from '../../modals/SendModal/TxModal'
+import SendModal from '../../modals/SendModal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
 
 interface WalletNameSelectOptions {
@@ -138,7 +138,7 @@ const WalletLayout: FC = ({ children }) => {
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendTxModalOpen && <TxModal txModalType={sendTxModalType} onClose={closeSendTxModal} />}
+        {isSendTxModalOpen && sendTxModalType && <SendModal txModalType={sendTxModalType} onClose={closeSendTxModal} />}
         {isPasswordModalOpen && (
           <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation

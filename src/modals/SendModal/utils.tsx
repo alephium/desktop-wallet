@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
-import { node, toApiVal } from 'alephium-web3'
 import { useEffect, useState } from 'react'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
@@ -28,11 +27,8 @@ import AddressSelect from '../../components/Inputs/AddressSelect'
 import AmountInput from '../../components/Inputs/AmountInput'
 import Input from '../../components/Inputs/Input'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import { checkAddressValidity } from '../../utils/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
-
-export type Step = 'send' | 'info-check' | 'password-check'
 
 export type PartialTxData<T, K extends keyof T> = {
   [P in keyof Omit<T, K>]?: T[P]
@@ -43,7 +39,7 @@ export const ModalContent = styled.div`
   flex-direction: column;
 `
 
-export const ExpandableSectionStyled = styled(ExpandableSection)`
+const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 38px;
 `
 
@@ -51,7 +47,7 @@ export const InfoBoxStyled = styled(InfoBox)`
   margin-top: var(--spacing-5);
 `
 
-export const checkAmount = (amount: string, minAmount: bigint, shouldConvertToSet: boolean): string | undefined => {
+const getAmountErrorMessage = (amount: string, minAmount: bigint, shouldConvertToSet: boolean): string => {
   try {
     const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
     if (amountNumber < minAmount) {
@@ -60,24 +56,14 @@ export const checkAmount = (amount: string, minAmount: bigint, shouldConvertToSe
   } catch (e) {
     return 'Unable to convert the amount'
   }
+  return ''
 }
 
-export const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+type WithError<T> = { value: T; error: string }
 
-export type WithError<T> = { value: T; error: string }
+type WithParsed<T> = { raw: string; parsed: T; error: string }
 
-export function useStateWithError<T>(initialValue: T) {
-  const [value, setValue] = useState({ value: initialValue, error: '' })
-
-  const setValueWithError = (newValue: T, newError: string) => {
-    setValue({ value: newValue, error: newError })
-  }
-
-  return [value, setValueWithError] as const
-}
-
-export type WithParsed<T> = { raw: string; parsed: T; error: string }
-export function useStateWithParsed<T>(initialValue: T, stringified: string) {
+function useStateWithParsed<T>(initialValue: T, stringified: string) {
   const [value, setValue] = useState<WithParsed<T>>({
     parsed: initialValue,
     raw: stringified,
@@ -91,21 +77,17 @@ export function useStateWithParsed<T>(initialValue: T, stringified: string) {
   return [value, setValueWithError] as const
 }
 
-const filter = (group: number, address?: Address): Address | undefined => {
-  return group === -1 ? address : address?.group === group ? address : undefined
-}
-
 export function useSignerAddress(group: number) {
   const { addresses, mainAddress } = useAddressesContext()
   const [signerAddress, setSignerAddress] = useState<Address>()
-
   const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
+
   useEffect(() => {
-    const defaultAddress = filter(group, mainAddress) ?? addressOptions.at(0)
+    const defaultAddress = group === -1 || mainAddress?.group === group ? mainAddress : addressOptions.at(0)
     setSignerAddress(defaultAddress)
   }, [addressOptions, group, mainAddress])
 
-  const SignerAddress = signerAddress ? (
+  const SignerAddressSelect = signerAddress ? (
     <AddressSelect
       label="From address"
       title="Select the address to send funds from."
@@ -115,42 +97,38 @@ export function useSignerAddress(group: number) {
       id="from-address"
       hideEmptyAvailableBalance
     />
-  ) : (
-    <></>
-  )
+  ) : null
 
-  return [signerAddress, SignerAddress] as const
+  return [signerAddress, SignerAddressSelect] as const
 }
 
-export function useFromAddress(initialAddress: Address) {
+function useFromAddress(initialAddress: Address) {
   const { addresses } = useAddressesContext()
   const updatedInitialAddress = addresses.find((a) => a.hash === initialAddress.hash) ?? initialAddress
 
   const [fromAddress, setFromAddress] = useState(updatedInitialAddress)
-  const FromAddress = <FromAddressSelect defaultAddress={updatedInitialAddress} setFromAddress={setFromAddress} />
+  const FromAddressSelect = (
+    <AddressSelect
+      label="From address"
+      title="Select the address to send funds from."
+      options={addresses}
+      defaultAddress={updatedInitialAddress}
+      onAddressChange={(newAddress) => setFromAddress(newAddress)}
+      id="from-address"
+      hideEmptyAvailableBalance
+    />
+  )
 
-  return [fromAddress, FromAddress] as const
-}
-
-export function useAddress(initialAddress: string) {
-  const [address, setAddress] = useStateWithError(initialAddress)
-
-  const handleAddressChange = (value: string) => {
-    if (checkAddressValidity(value)) {
-      setAddress(value, '')
-    } else {
-      setAddress(value, 'Address format is incorrect')
-    }
-  }
-
-  return [address, handleAddressChange] as const
+  return [fromAddress, FromAddressSelect] as const
 }
 
 export function useBytecode(initialBytecode: string) {
   const [bytecode, setBytecode] = useState(initialBytecode)
-  const Bytecode = <Input id="code" label="bytecode" value={bytecode} onChange={(e) => setBytecode(e.target.value)} />
+  const BytecodeInput = (
+    <Input id="code" label="bytecode" value={bytecode} onChange={(e) => setBytecode(e.target.value)} />
+  )
 
-  return [bytecode, Bytecode] as const
+  return [bytecode, BytecodeInput] as const
 }
 
 export function useBuildTxCommon(
@@ -160,15 +138,15 @@ export function useBuildTxCommon(
   initialGasPrice: string | undefined
 ) {
   const theme = useTheme()
-  const [fromAddress, FromAddress] = useFromAddress(initialFromAddress)
+  const [fromAddress, FromAddressSelect] = useFromAddress(initialFromAddress)
   const [alphAmount, setAlphAmount] = useState(initialAlphAmount ?? '')
   const [gasAmount, setGasAmount] = useStateWithParsed<number | undefined>(
     initialGasAmount,
-    typeof initialGasAmount !== 'undefined' ? initialGasAmount.toString() : ''
+    initialGasAmount !== undefined ? initialGasAmount.toString() : ''
   )
   const [gasPrice, setGasPrice] = useStateWithParsed<string | undefined>(
     initialGasPrice,
-    typeof initialGasPrice !== 'undefined' ? initialGasPrice : ''
+    initialGasPrice !== undefined ? initialGasPrice : ''
   )
 
   const handleGasAmountChange = (newGasAmount: string) => {
@@ -176,12 +154,8 @@ export function useBuildTxCommon(
       setGasAmount('', undefined, '')
       return
     }
-    const error = checkAmount(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false)
-    if (typeof error !== 'undefined') {
-      setGasAmount(newGasAmount, undefined, error)
-    } else {
-      setGasAmount(newGasAmount, parseInt(newGasAmount), '')
-    }
+    const errorMessage = getAmountErrorMessage(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false)
+    setGasAmount(newGasAmount, !errorMessage ? parseInt(newGasAmount) : undefined, errorMessage)
   }
 
   const handleGasPriceChange = (newGasPrice: string) => {
@@ -189,29 +163,25 @@ export function useBuildTxCommon(
       setGasPrice('', undefined, '')
       return
     }
-    const error = checkAmount(newGasPrice, MINIMAL_GAS_PRICE, true)
-    if (typeof error !== 'undefined') {
-      setGasPrice(newGasPrice, undefined, error)
-    } else {
-      setGasPrice(newGasPrice, newGasPrice, '')
-    }
+    const errorMessage = getAmountErrorMessage(newGasPrice, MINIMAL_GAS_PRICE, true)
+    setGasPrice(newGasPrice, !errorMessage ? newGasPrice : undefined, errorMessage)
   }
 
   const expectedFeeInALPH =
-    typeof gasAmount.parsed !== 'undefined' && typeof gasPrice.parsed !== 'undefined'
+    gasAmount.parsed !== undefined && gasPrice.parsed !== undefined
       ? formatAmountForDisplay(BigInt(gasAmount.parsed) * convertAlphToSet(gasPrice.parsed), true)
       : ''
 
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
-  const AlphAmount = (
-    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress.availableBalance} />
+  const AlphAmountInput = (
+    <AmountInput value={alphAmount} onChange={setAlphAmount} availableAmount={fromAddress.availableBalance} />
   )
 
-  const GasSettings = (
+  const GasSettingsExpandableSection = (
     <ExpandableSectionStyled sectionTitleClosed="Gas">
-      <GasAmount gasAmount={gasAmount} handleGasAmountChange={handleGasAmountChange} />
-      <GasPrice theme={theme} gasPrice={gasPrice} handleGasPriceChange={handleGasPriceChange} />
+      <GasAmountInput gasAmount={gasAmount} handleGasAmountChange={handleGasAmountChange} />
+      <GasPriceInput theme={theme} gasPrice={gasPrice} handleGasPriceChange={handleGasPriceChange} />
       <InfoBoxStyled short label="Expected fee">
         {expectedFeeInALPH && (
           <>
@@ -222,88 +192,53 @@ export function useBuildTxCommon(
     </ExpandableSectionStyled>
   )
 
-  return [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] as const
+  return [
+    fromAddress,
+    FromAddressSelect,
+    alphAmount,
+    AlphAmountInput,
+    gasAmount,
+    gasPrice,
+    GasSettingsExpandableSection,
+    isCommonReady
+  ] as const
 }
 
-export const FromAddressSelect = ({
-  defaultAddress,
-  setFromAddress,
-  group
-}: {
-  defaultAddress: Address
-  setFromAddress: (newAddress: Address) => void
-  group?: number
-}) => {
-  const { addresses } = useAddressesContext()
-
-  return (
-    <AddressSelect
-      label="From address"
-      title="Select the address to send funds from."
-      options={addresses}
-      defaultAddress={defaultAddress}
-      onAddressChange={(newAddress) => setFromAddress(newAddress)}
-      id="from-address"
-      hideEmptyAvailableBalance
-    />
-  )
-}
-
-export const ToAddress = ({
+export const ToAddressInput = ({
   toAddress,
   handleAddressChange
 }: {
   toAddress: WithError<string>
   handleAddressChange: (address: string) => void
-}) => {
-  return (
-    <Input
-      label="Recipient's address"
-      value={toAddress.value}
-      onChange={(e) => handleAddressChange(e.target.value)}
-      error={toAddress.error}
-      isValid={toAddress.value.length > 0 && !toAddress.error}
-    />
-  )
-}
+}) => (
+  <Input
+    label="Recipient's address"
+    value={toAddress.value}
+    onChange={(e) => handleAddressChange(e.target.value)}
+    error={toAddress.error}
+    isValid={toAddress.value.length > 0 && !toAddress.error}
+  />
+)
 
-export const TxAmount = ({
-  alphAmount,
-  setAlphAmount,
-  availableBalance
-}: {
-  alphAmount: string
-  setAlphAmount: (amount: string) => void
-  availableBalance: bigint
-}) => {
-  return (
-    <>
-      <AmountInput value={alphAmount} onChange={setAlphAmount} availableAmount={availableBalance} />
-    </>
-  )
-}
-
-export const GasAmount = ({
+const GasAmountInput = ({
   gasAmount,
   handleGasAmountChange
 }: {
   gasAmount: WithParsed<number | undefined>
   handleGasAmountChange: (error: string) => void
-}) => {
-  return (
-    <Input
-      id="gas-amount"
-      label={`Gas amount (≥ ${MINIMAL_GAS_AMOUNT})`}
-      value={gasAmount.raw}
-      onChange={(e) => handleGasAmountChange(e.target.value)}
-      type="number"
-      min={MINIMAL_GAS_AMOUNT}
-      error={gasAmount.error}
-    />
-  )
-}
+}) => (
+  <Input
+    id="gas-amount"
+    label={`Gas amount (≥ ${MINIMAL_GAS_AMOUNT})`}
+    value={gasAmount.raw}
+    onChange={(e) => handleGasAmountChange(e.target.value)}
+    type="number"
+    min={MINIMAL_GAS_AMOUNT}
+    error={gasAmount.error}
+  />
+)
 
-export const GasPrice = ({
+const GasPriceInput = ({
   theme,
   gasPrice,
   handleGasPriceChange
@@ -312,6 +247,8 @@ export const GasPrice = ({
   gasPrice: WithParsed<string | undefined>
   handleGasPriceChange: (error: string) => void
 }) => {
+  const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+
   return (
     <Input
       id="gas-price"
@@ -330,7 +267,7 @@ export const GasPrice = ({
   )
 }
 
-export const SubmitOrCancel = ({
+export const SendTxModalFooterButtons = ({
   onSubmit,
   onCancel,
   isSubmitButtonActive
@@ -338,76 +275,16 @@ export const SubmitOrCancel = ({
   onSubmit: () => void
   onCancel: () => void
   isSubmitButtonActive: boolean | string
-}) => {
-  return (
-    <ModalFooterButtons>
-      <ModalFooterButton secondary onClick={onCancel}>
-        Cancel
-      </ModalFooterButton>
-      <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
-        Check
-      </ModalFooterButton>
-    </ModalFooterButtons>
-  )
-}
-
-const parseField = (field: string): node.Val => {
-  const [value, type] = field.split(':').map((t) => t.trim())
-  return toApiVal(value, type)
-}
-
-const parseFields = (fields: string): node.Val[] => {
-  return fields.split(',').map(parseField)
-}
-
-const encodeFields = (fields: node.Val[]): string => {
-  return fields.map((field) => `${field.value}:${field.type}`).join(',')
-}
-
-export function useContractFields(initialFields: node.Val[]) {
-  const [fields, setFields] = useState({
-    fields: initialFields,
-    fieldsString: encodeFields(initialFields),
-    error: ''
-  })
-
-  const handleFieldsChange = (newFields: string) => {
-    try {
-      setFields({ fields: parseFields(newFields), fieldsString: newFields, error: '' })
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? `: ${e.message}` : ''
-      setFields({ fields: [], fieldsString: newFields, error: `Invalid fields${errorMessage}` })
-    }
-  }
-
-  const Fields = (
-    <Input
-      id="fields"
-      label="Contract fields"
-      value={fields.fieldsString}
-      onChange={(e) => handleFieldsChange(e.target.value)}
-    />
-  )
-
-  return [fields, Fields] as const
-}
-
-export const InitialFields = ({
-  initialFields,
-  setInitialFields
-}: {
-  initialFields: node.Val[]
-  setInitialFields: (fields: string) => void
-}) => {
-  return (
-    <Input
-      id="fields"
-      label="Initial fields"
-      value={initialFields.map((field) => `${field.value} ${field.type}`).join(',')}
-      onChange={(e) => setInitialFields(e.target.value)}
-    />
-  )
-}
+}) => (
+  <ModalFooterButtons>
+    <ModalFooterButton secondary onClick={onCancel}>
+      Cancel
+    </ModalFooterButton>
+    <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
+      Check
+    </ModalFooterButton>
+  </ModalFooterButtons>
+)
 
 export function useIssueTokenAmount(initialTokenAmount: string | undefined) {
   const [issueTokenAmount, setIssueTokenAmount] = useState(initialTokenAmount ?? '')
@@ -443,10 +320,6 @@ export const FromAddressInfo = ({ fromAddress }: { fromAddress: Address }) => (
   <InfoBox text={fromAddress.hash} label="From address" wordBreak />
 )
 
-export const ToAddressInfo = ({ toAddress }: { toAddress: string }) => (
-  <InfoBox text={toAddress} label="To address" wordBreak />
-)
-
 export const AlphAmountInfo = ({ expectedAmount }: { expectedAmount: bigint }) => (
   <InfoBox label="Amount">
     {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
@@ -462,12 +335,6 @@ export const FeeInfo = ({ fees }: { fees: bigint }) => (
 export const BytecodeInfo = ({ bytecode }: { bytecode: string }) => (
   <InfoBox text={bytecode} label="Bytecode" wordBreak />
 )
-
-export const FieldsInfo = ({ fields }: { fields: node.Val[] }) =>
-  fields.length > 0 ? <InfoBox text={encodeFields(fields)} label="Contract Fields" wordBreak /> : <></>
-
-export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: string }) =>
-  issueTokenAmount ? <InfoBox text={issueTokenAmount} label="Issue token amount" wordBreak /> : <></>
 
 export const CheckTxFooter = ({ onSend, onCancel }: { onSend: () => void; onCancel: () => void }) => (
   <ModalFooterButtons>

@@ -17,10 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
+import { useState } from 'react'
 
 import { Address } from '../../contexts/addresses'
+import { isAddressValid } from '../../utils/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
-import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, useBuildTxCommon } from './utils'
+import { ModalContent, PartialTxData, SendTxModalFooterButtons, ToAddressInput, useBuildTxCommon } from './utils'
 
 export interface BuildTransferTxData {
   fromAddress: Address
@@ -37,9 +39,21 @@ export interface BuildTransferTxProps {
 }
 
 const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
-  const [toAddress, handleAddressChange] = useAddress(data?.toAddress ?? '')
+  const [
+    fromAddress,
+    FromAddressSelect,
+    alphAmount,
+    AlphAmountInput,
+    gasAmount,
+    gasPrice,
+    GasSettingsExpandableSection,
+    isCommonReady
+  ] = useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
+
+  const handleAddressChange = (value: string) => {
+    setToAddress(value, isAddressValid(value) ? '' : 'Address format is incorrect')
+  }
 
   if (typeof fromAddress === 'undefined') {
     onCancel()
@@ -56,12 +70,12 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
   return (
     <>
       <ModalContent>
-        {FromAddress}
-        <ToAddress toAddress={toAddress} handleAddressChange={handleAddressChange} />
-        {AlphAmount}
+        {FromAddressSelect}
+        <ToAddressInput toAddress={toAddress} handleAddressChange={handleAddressChange} />
+        {AlphAmountInput}
       </ModalContent>
-      {GasSettings}
-      <SubmitOrCancel
+      {GasSettingsExpandableSection}
+      <SendTxModalFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: fromAddress,
@@ -79,3 +93,13 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
 }
 
 export default BuildTransferTx
+
+function useStateWithError<T>(initialValue: T) {
+  const [value, setValue] = useState({ value: initialValue, error: '' })
+
+  const setValueWithError = (newValue: T, newError: string) => {
+    setValue({ value: newValue, error: newError })
+  }
+
+  return [value, setValueWithError] as const
+}
