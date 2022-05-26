@@ -44,8 +44,6 @@ if (deprecatedSettingsExist()) {
   localStorageSettings = migrateDeprecatedSettings()
 }
 
-export type TxModalType = 'transfer' | 'deploy-contract' | 'script'
-
 export interface GlobalContextProps {
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
@@ -64,8 +62,6 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
-  txModalType: TxModalType | false
-  setTxModalType: (a: TxModalType | false) => void
 }
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, false | undefined>
@@ -87,9 +83,7 @@ export const initialGlobalContext: GlobalContextProps = {
   networkStatus: 'uninitialized',
   currentNetworkId: 0,
   updateNetworkSettings: () => null,
-  newLatestVersion: '',
-  txModalType: false,
-  setTxModalType: () => false
+  newLatestVersion: ''
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -111,7 +105,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
-  const [txModalType, setTxModalType] = useState<TxModalType | false>(false)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -220,9 +213,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           currentNetwork,
           networkStatus,
           updateNetworkSettings,
-          newLatestVersion,
-          txModalType,
-          setTxModalType
+          newLatestVersion
         },
         overrideContextValue as GlobalContextProps
       )}
