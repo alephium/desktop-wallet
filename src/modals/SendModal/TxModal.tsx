@@ -25,7 +25,7 @@ import { useTheme } from 'styled-components'
 
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import { Client, TxModalType, useGlobalContext } from '../../contexts/global'
+import { Client, useGlobalContext } from '../../contexts/global'
 import { useWalletConnectContext } from '../../contexts/walletconnect'
 import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
 import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
@@ -37,6 +37,7 @@ import { Step, stepToTitle } from '.'
 import DeployContractTxModal from './DeployContractTxModal'
 import ScriptTxModal from './ScriptTxModal'
 import TransferTxModal from './TransferTxModal'
+import { SendTxModalType } from '../../contexts/sendTransactionModal'
 
 type ReactSet<T> = Dispatch<SetStateAction<T>>
 
@@ -62,7 +63,7 @@ export type TxContext = {
 }
 
 export type TxModalProps = {
-  txModalType: TxModalType
+  txModalType: SendTxModalType
   onClose: () => void
 }
 

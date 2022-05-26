@@ -27,6 +27,7 @@ import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
 import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
 import { extractErrorMsg } from '../utils/misc'
 import { useGlobalContext } from './global'
+import { useSendTransactionModalContext } from './sendTransactionModal'
 
 export interface ContextType {
   isWalletConnectModalOpen: boolean
@@ -69,7 +70,8 @@ const respondError = (walletConnect: WalletConnectClient, requestEvent: SessionT
 }
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { setTxModalType, settings } = useGlobalContext()
+  const { settings } = useGlobalContext()
+  const { openSendTxModal } = useSendTransactionModalContext()
   const { addresses } = useAddressesContext()
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const [walletConnect, setWalletConnect] = useState<WalletConnectClient>()
@@ -79,9 +81,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const setTxData = useCallback(
     (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
       setDappTransactionData(data)
-      setTxModalType(data[0])
+      openSendTxModal(data[0])
     },
-    [setDappTransactionData, setTxModalType]
+    [setDappTransactionData, openSendTxModal]
   )
 
   const onError = useCallback(
@@ -178,7 +180,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     return () => {
       walletConnect.removeListener(CLIENT_EVENTS.session.request, onSessionRequest)
     }
-  }, [walletConnect, addresses, setTxModalType, settings, setTxData])
+  }, [walletConnect, addresses, openSendTxModal, settings, setTxData])
 
   return (
     <Context.Provider
