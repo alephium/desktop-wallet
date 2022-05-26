@@ -146,7 +146,9 @@ const WalletLayout: FC = ({ children }) => {
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendTxModalOpen && sendTxModalType && <SendModal modalType={sendTxModalType} onClose={closeSendTxModal} />}
+        {isSendTxModalOpen && sendTxModalType !== undefined && (
+          <SendModal modalType={sendTxModalType} onClose={closeSendTxModal} />
+        )}
         {isPasswordModalOpen && (
           <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
