@@ -18,7 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createContext, FC, useContext, useState } from 'react'
 
-export type SendTxModalType = 'transfer' | 'deploy-contract' | 'script'
+export enum SendTxModalType {
+  TRANSFER,
+  DEPLOY_CONTRACT,
+  SCRIPT
+}
 
 interface SendTransactionModalContextProps {
   sendTxModalType?: SendTxModalType
