@@ -28,18 +28,16 @@ import {
   ModalContent
 } from './utils'
 
-const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) => {
-  return (
-    <>
-      <ModalContent>
-        <FromAddressInfo fromAddress={data.fromAddress} />
-        <BytecodeInfo bytecode={data.bytecode} />
-        <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
-        <FeeInfo fees={fees} />
-      </ModalContent>
-      <CheckTxFooter onSend={onSend} onCancel={onCancel} />
-    </>
-  )
-}
+const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) => (
+  <>
+    <ModalContent>
+      <FromAddressInfo fromAddress={data.fromAddress} />
+      <BytecodeInfo bytecode={data.bytecode} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      <FeeInfo fees={fees} />
+    </ModalContent>
+    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
+  </>
+)
 
 export default CheckScriptTx

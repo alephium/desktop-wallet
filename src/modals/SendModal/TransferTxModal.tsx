@@ -22,7 +22,7 @@ import { SignTransferTxResult } from 'alephium-web3'
 import { Client } from '../../contexts/global'
 import BuildTransferTx, { BuildTransferTxData, BuildTransferTxProps } from './BuildTransferTx'
 import CheckTransferTx from './CheckTransferTx'
-import { TxContext, TxModalFactory } from './TxModal'
+import TxModalFactory, { TxContext } from './TxModalFactory'
 
 export type TransferTxModalProps = {
   initialTxData: BuildTransferTxProps['data']
@@ -93,7 +93,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   }
 
   const getWalletConnectResult = (context: TxContext, signature: string): SignTransferTxResult => {
-    if (typeof context.unsignedTransaction !== 'undefined') {
+    if (context.unsignedTransaction !== undefined) {
       return {
         fromGroup: context.unsignedTransaction.fromGroup,
         toGroup: context.unsignedTransaction.toGroup,

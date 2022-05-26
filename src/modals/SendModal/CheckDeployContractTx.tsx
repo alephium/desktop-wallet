@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import InfoBox from '../../components/InfoBox'
 import { BuildDeployContractTxData } from './BuildDeployContractTx'
 import {
   AlphAmountInfo,
@@ -25,23 +26,20 @@ import {
   expectedAmount,
   FeeInfo,
   FromAddressInfo,
-  IssueTokenAmountInfo,
   ModalContent
 } from './utils'
 
-const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) => {
-  return (
-    <>
-      <ModalContent>
-        <FromAddressInfo fromAddress={data.fromAddress} />
-        <BytecodeInfo bytecode={data.bytecode} />
-        <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
-        <IssueTokenAmountInfo issueTokenAmount={data.issueTokenAmount} />
-        <FeeInfo fees={fees} />
-      </ModalContent>
-      <CheckTxFooter onSend={onSend} onCancel={onCancel} />
-    </>
-  )
-}
+const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) => (
+  <>
+    <ModalContent>
+      <FromAddressInfo fromAddress={data.fromAddress} />
+      <BytecodeInfo bytecode={data.bytecode} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label="Issue token amount" wordBreak />}
+      <FeeInfo fees={fees} />
+    </ModalContent>
+    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
+  </>
+)
 
 export default CheckDeployContractTx

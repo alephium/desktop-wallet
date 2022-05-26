@@ -16,6 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Address, useAddressesContext } from '../../contexts/addresses'
+import { SendTxModalType } from '../../contexts/sendTransactionModal'
+import { useWalletConnectContext } from '../../contexts/walletconnect'
+import DeployContractTxModal from './DeployContractTxModal'
+import ScriptTxModal from './ScriptTxModal'
+import TransferTxModal from './TransferTxModal'
+
 export type Step = 'send' | 'info-check' | 'password-check'
 
 export const stepToTitle: { [k in Step]: string } = {
@@ -23,3 +30,24 @@ export const stepToTitle: { [k in Step]: string } = {
   'info-check': 'Review',
   'password-check': 'Password Check'
 }
+type TxModalProps = {
+  txModalType: SendTxModalType
+  onClose: () => void
+}
+
+const SendModal = ({ txModalType, onClose }: TxModalProps) => {
+  const { mainAddress } = useAddressesContext()
+  const { dappTransactionData } = useWalletConnectContext()
+
+  if (!dappTransactionData && !mainAddress) return null
+
+  const txData = dappTransactionData ?? { fromAddress: mainAddress as Address }
+
+  return {
+    transfer: <TransferTxModal initialTxData={txData} onClose={onClose} />,
+    'deploy-contract': <DeployContractTxModal initialTxData={txData} onClose={onClose} />,
+    script: <ScriptTxModal initialTxData={txData} onClose={onClose} />
+  }[txModalType]
+}
+
+export default SendModal

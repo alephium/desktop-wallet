@@ -20,7 +20,7 @@ import { convertAlphToSet } from '@alephium/sdk'
 
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
-import { ModalContent, PartialTxData, SubmitOrCancel, useBuildTxCommon, useBytecode } from './utils'
+import { ModalContent, PartialTxData, SendTxModalFooterButtons, useBuildTxCommon, useBytecode } from './utils'
 
 export interface BuildScriptTxData {
   fromAddress: Address
@@ -38,9 +38,17 @@ export interface BuildScriptTxProps {
 }
 
 const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
+  const [
+    fromAddress,
+    FromAddressSelect,
+    alphAmount,
+    AlphAmountInput,
+    gasAmount,
+    gasPrice,
+    GasSettingsExpandableSection,
+    isCommonReady
+  ] = useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
 
   if (typeof fromAddress === 'undefined') {
     onCancel()
@@ -55,12 +63,12 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
   return (
     <>
       <ModalContent>
-        {FromAddress}
-        {AlphAmount}
-        {Bytecode}
+        {FromAddressSelect}
+        {AlphAmountInput}
+        {BytecodeInput}
       </ModalContent>
-      {GasSettings}
-      <SubmitOrCancel
+      {GasSettingsExpandableSection}
+      <SendTxModalFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: data.fromAddress,

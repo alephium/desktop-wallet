@@ -32,7 +32,7 @@ type AddressMetadata = AddressSettings & {
   index: number
 }
 
-export const checkAddressValidity = (address: string) => {
+export const isAddressValid = (address: string) => {
   const match = address.match(/^[1-9A-HJ-NP-Za-km-z]+$/)
 
   if (match === null) return false
