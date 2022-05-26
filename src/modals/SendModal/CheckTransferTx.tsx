@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import InfoBox from '../../components/InfoBox'
 import { BuildTransferTxData } from './BuildTransferTx'
 import {
   AlphAmountInfo,
@@ -24,22 +25,19 @@ import {
   expectedAmount,
   FeeInfo,
   FromAddressInfo,
-  ModalContent,
-  ToAddressInfo
+  ModalContent
 } from './utils'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => {
-  return (
-    <>
-      <ModalContent>
-        <FromAddressInfo fromAddress={data.fromAddress} />
-        <ToAddressInfo toAddress={data.toAddress} />
-        <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
-        <FeeInfo fees={fees} />
-      </ModalContent>
-      <CheckTxFooter onSend={onSend} onCancel={onCancel} />
-    </>
-  )
-}
+const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => (
+  <>
+    <ModalContent>
+      <FromAddressInfo fromAddress={data.fromAddress} />
+      <InfoBox text={data.toAddress} label="To address" wordBreak />
+      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      <FeeInfo fees={fees} />
+    </ModalContent>
+    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
+  </>
+)
 
 export default CheckTransferTx

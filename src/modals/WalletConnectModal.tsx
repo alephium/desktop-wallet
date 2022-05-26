@@ -54,7 +54,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     permittedGroup: -1
   })
 
-  const [fromAddress, FromAddress] = useSignerAddress(permittedChain.permittedGroup)
+  const [fromAddress, FromAddressSelect] = useSignerAddress(permittedChain.permittedGroup)
   const [error, setError] = useState('')
 
   const setErrorState = useCallback((error: string): void => {
@@ -193,7 +193,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
               {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}
             </Desc>
           </List>
-          {FromAddress}
+          {FromAddressSelect}
           <ModalFooterButtons>
             <ModalFooterButton secondary onClick={onReject}>
               Reject

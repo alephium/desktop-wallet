@@ -20,7 +20,7 @@ import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { SignResult } from 'alephium-web3'
 import { AnimatePresence } from 'framer-motion'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'
 
 import PasswordConfirmation from '../../components/PasswordConfirmation'
@@ -34,12 +34,6 @@ import { NetworkName } from '../../utils/settings'
 import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
 import { Step, stepToTitle } from '.'
-import DeployContractTxModal from './DeployContractTxModal'
-import ScriptTxModal from './ScriptTxModal'
-import TransferTxModal from './TransferTxModal'
-import { SendTxModalType } from '../../contexts/sendTransactionModal'
-
-type ReactSet<T> = Dispatch<SetStateAction<T>>
 
 export type UnsignedTx = {
   fromGroup: number
@@ -48,23 +42,18 @@ export type UnsignedTx = {
 }
 
 export type TxContext = {
-  setIsSweeping: ReactSet<boolean>
+  setIsSweeping: (isSweeping: boolean) => void
   sweepUnsignedTxs: SweepAddressTransaction[]
-  setSweepUnsignedTxs: ReactSet<SweepAddressTransaction[]>
-  setFees: ReactSet<bigint | undefined>
+  setSweepUnsignedTxs: (txs: SweepAddressTransaction[]) => void
+  setFees: (fees: bigint | undefined) => void
   unsignedTransaction: UnsignedTx | undefined
-  setUnsignedTransaction: ReactSet<UnsignedTx | undefined>
+  setUnsignedTransaction: (tx: UnsignedTx | undefined) => void
   unsignedTxId: string
-  setUnsignedTxId: ReactSet<string>
+  setUnsignedTxId: (txId: string) => void
   isSweeping: boolean
   consolidationRequired: boolean
   currentNetwork: NetworkName
   setAddress: (address: Address) => void
-}
-
-export type TxModalProps = {
-  txModalType: SendTxModalType
-  onClose: () => void
 }
 
 export type TxModalFactoryProps<PT extends { fromAddress: Address }, T extends PT> = {
@@ -78,7 +67,7 @@ export type TxModalFactoryProps<PT extends { fromAddress: Address }, T extends P
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
-export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
+function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
   buildTitle,
   initialTxData,
   onClose,
@@ -257,28 +246,4 @@ export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT
   )
 }
 
-export const TxModal = ({ txModalType, onClose }: TxModalProps) => {
-  const { mainAddress } = useAddressesContext()
-  const { dappTransactionData } = useWalletConnectContext()
-
-  let txData
-  if (typeof dappTransactionData === 'undefined') {
-    if (typeof mainAddress === 'undefined') {
-      return <></>
-    } else {
-      txData = { fromAddress: mainAddress }
-    }
-  } else {
-    txData = dappTransactionData[1]
-  }
-
-  return (
-    <>
-      {txModalType === 'transfer' && <TransferTxModal initialTxData={txData} onClose={onClose} />}
-      {txModalType === 'deploy-contract' && <DeployContractTxModal initialTxData={txData} onClose={onClose} />}
-      {txModalType === 'script' && <ScriptTxModal initialTxData={txData} onClose={onClose} />}
-    </>
-  )
-}
-
-export default TxModal
+export default TxModalFactory

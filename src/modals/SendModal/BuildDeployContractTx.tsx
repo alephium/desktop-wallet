@@ -23,7 +23,7 @@ import { isAmountWithinRange } from '../../utils/transactions'
 import {
   ModalContent,
   PartialTxData,
-  SubmitOrCancel,
+  SendTxModalFooterButtons,
   useBuildTxCommon,
   useBytecode,
   useIssueTokenAmount
@@ -46,9 +46,17 @@ export interface BuildDeployContractTxProps {
 }
 
 const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContractTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
+  const [
+    fromAddress,
+    FromAddressSelect,
+    alphAmount,
+    AlphAmountInput,
+    gasAmount,
+    gasPrice,
+    GasSettingsExpandableSection,
+    isCommonReady
+  ] = useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
+  const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -64,13 +72,13 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   return (
     <>
       <ModalContent>
-        {FromAddress}
-        {Bytecode}
-        {AlphAmount}
+        {FromAddressSelect}
+        {BytecodeInput}
+        {AlphAmountInput}
         {IssueTokenAmount}
       </ModalContent>
-      {GasSettings}
-      <SubmitOrCancel
+      {GasSettingsExpandableSection}
+      <SendTxModalFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: data.fromAddress,

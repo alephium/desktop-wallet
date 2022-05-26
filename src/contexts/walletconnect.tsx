@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from 'alephium-web3'
-import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
@@ -29,16 +29,14 @@ import { extractErrorMsg } from '../utils/misc'
 import { useGlobalContext } from './global'
 import { useSendTransactionModalContext } from './sendTransactionModal'
 
+type DappTxData = BuildTransferTxData | BuildDeployContractTxData | BuildScriptTxData
+
 export interface ContextType {
   isWalletConnectModalOpen: boolean
   setIsWalletConnectModalOpen: (isOpen: boolean) => void
   walletConnect?: WalletConnectClient
-  setWalletConnect: Dispatch<SetStateAction<WalletConnectClient | undefined>>
-  dappTransactionData?:
-    | ['transfer', BuildTransferTxData]
-    | ['deploy-contract', BuildDeployContractTxData]
-    | ['script', BuildScriptTxData]
-    | undefined
+  setWalletConnect: (client: WalletConnectClient | undefined) => void
+  dappTransactionData?: DappTxData
   requestEvent?: SessionTypes.RequestEvent
   onError: (error: string) => void
 }
@@ -50,7 +48,7 @@ export const initialContext: ContextType = {
   setWalletConnect: () => undefined,
   dappTransactionData: undefined,
   requestEvent: undefined,
-  onError: (error: string) => undefined
+  onError: () => undefined
 }
 
 export const Context = createContext<ContextType>(initialContext)
@@ -77,14 +75,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [walletConnect, setWalletConnect] = useState<WalletConnectClient>()
   const [dappTransactionData, setDappTransactionData] = useState<ContextType['dappTransactionData']>()
   const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent>()
-
-  const setTxData = useCallback(
-    (data: Exclude<ContextType['dappTransactionData'], undefined>) => {
-      setDappTransactionData(data)
-      openSendTxModal(data[0])
-    },
-    [setDappTransactionData, openSendTxModal]
-  )
 
   const onError = useCallback(
     (error: string): void => {
@@ -144,7 +134,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
-          setTxData(['transfer', txData])
+          setDappTransactionData(txData)
+          openSendTxModal('transfer')
         } else if (method === 'alph_signContractCreationTx') {
           const p = params as SignDeployContractTxParams
           const txData: BuildDeployContractTxData = {
@@ -155,7 +146,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
-          setTxData(['deploy-contract', txData])
+          setDappTransactionData(txData)
+          openSendTxModal('deploy-contract')
         } else if (method === 'alph_signScriptTx') {
           const p = params as SignExecuteScriptTxParams
           const txData: BuildScriptTxData = {
@@ -165,7 +157,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
-          setTxData(['script', txData])
+          setDappTransactionData(txData)
+          openSendTxModal('script')
         } else {
           throw new Error(`Unsupported walletconnect request: ${method}`)
         }
@@ -180,7 +173,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     return () => {
       walletConnect.removeListener(CLIENT_EVENTS.session.request, onSessionRequest)
     }
-  }, [walletConnect, addresses, openSendTxModal, settings, setTxData])
+  }, [walletConnect, addresses, openSendTxModal, settings])
 
   return (
     <Context.Provider
