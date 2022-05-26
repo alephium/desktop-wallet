@@ -25,7 +25,6 @@ import tinycolor from 'tinycolor2'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
-import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
 import WalletConnectModal from '../modals/WalletConnectModal'
@@ -39,7 +38,7 @@ import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { isWalletConnectModalOpen, setIsWalletConnectModalOpen } = useWalletConnectContext()
+  const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()

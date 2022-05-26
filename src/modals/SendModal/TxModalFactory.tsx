@@ -96,7 +96,7 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
   const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [fees, setFees] = useState<bigint>()
   const theme = useTheme()
-  const { requestEvent, walletConnect, onError } = useWalletConnectContext()
+  const { requestEvent, walletConnectClient, onError } = useWalletConnectContext()
 
   const { setAddress } = useAddressesContext()
   const [unsignedTxId, setUnsignedTxId] = useState('')
@@ -182,9 +182,9 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
         const txContext = getTxContext()
         const signature = await handleSend(client, transactionData, txContext)
 
-        if (signature && requestEvent && walletConnect) {
+        if (signature && requestEvent && walletConnectClient) {
           const wcResult = getWalletConnectResult(txContext, signature)
-          await walletConnect.respond({
+          await walletConnectClient.respond({
             topic: requestEvent.topic,
             response: {
               id: requestEvent.request.id,

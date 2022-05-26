@@ -37,11 +37,11 @@ type TxModalProps = {
 
 const SendModal = ({ txModalType, onClose }: TxModalProps) => {
   const { mainAddress } = useAddressesContext()
-  const { dappTransactionData } = useWalletConnectContext()
+  const { dappTxData } = useWalletConnectContext()
 
-  if (!dappTransactionData && !mainAddress) return null
+  if (!dappTxData && !mainAddress) return null
 
-  const txData = dappTransactionData ?? { fromAddress: mainAddress as Address }
+  const txData = dappTxData ?? { fromAddress: mainAddress as Address }
 
   return {
     transfer: <TransferTxModal initialTxData={txData} onClose={onClose} />,

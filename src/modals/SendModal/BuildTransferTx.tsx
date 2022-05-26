@@ -55,7 +55,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     setToAddress(value, isAddressValid(value) ? '' : 'Address format is incorrect')
   }
 
-  if (typeof fromAddress === 'undefined') {
+  if (fromAddress === undefined) {
     onCancel()
     return <></>
   }
