@@ -30,12 +30,13 @@ export const stepToTitle: { [k in Step]: string } = {
   'info-check': 'Review',
   'password-check': 'Password Check'
 }
-type TxModalProps = {
-  txModalType: SendTxModalType
+
+type SendModalProps = {
+  modalType: SendTxModalType
   onClose: () => void
 }
 
-const SendModal = ({ txModalType, onClose }: TxModalProps) => {
+const SendModal = ({ modalType, onClose }: SendModalProps) => {
   const { mainAddress } = useAddressesContext()
   const { dappTxData } = useWalletConnectContext()
 
@@ -44,10 +45,10 @@ const SendModal = ({ txModalType, onClose }: TxModalProps) => {
   const txData = dappTxData ?? { fromAddress: mainAddress as Address }
 
   return {
-    transfer: <TransferTxModal initialTxData={txData} onClose={onClose} />,
-    'deploy-contract': <DeployContractTxModal initialTxData={txData} onClose={onClose} />,
-    script: <ScriptTxModal initialTxData={txData} onClose={onClose} />
-  }[txModalType]
+    [SendTxModalType.TRANSFER]: <TransferTxModal initialTxData={txData} onClose={onClose} />,
+    [SendTxModalType.DEPLOY_CONTRACT]: <DeployContractTxModal initialTxData={txData} onClose={onClose} />,
+    [SendTxModalType.SCRIPT]: <ScriptTxModal initialTxData={txData} onClose={onClose} />
+  }[modalType]
 }
 
 export default SendModal
