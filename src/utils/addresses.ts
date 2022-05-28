@@ -17,8 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage } from '@alephium/sdk'
+import { decrypt, encrypt } from '@alephium/sdk/dist/lib/password-crypto'
 
 import { Address } from '../contexts/addresses'
+import { latestUserDataVersion } from './migration'
 
 const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
 
@@ -42,16 +44,21 @@ export const checkAddressValidity = (address: string) => {
 
 const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
 
-export const loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
-  const data = localStorage.getItem(constructMetadataKey(walletName))
+export const loadStoredAddressesMetadataOfAccount = (mnemonic: string, walletName: string): AddressMetadata[] => {
+  const json = localStorage.getItem(constructMetadataKey(walletName))
 
-  if (data === null) return []
-
-  return JSON.parse(data)
+  if (json === null) return []
+  const { encryptedSettings } = JSON.parse(json)
+  return JSON.parse(decrypt(mnemonic, encryptedSettings))
 }
 
-export const storeAddressMetadataOfWallet = (walletName: string, index: number, settings: AddressSettings) => {
-  const addressesMetadata = loadStoredAddressesMetadataOfWallet(walletName)
+export const storeAddressMetadataOfAccount = (
+  mnemonic: string,
+  walletName: string,
+  index: number,
+  settings: AddressSettings
+) => {
+  const addressesMetadata = loadStoredAddressesMetadataOfAccount(walletName, mnemonic)
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
@@ -63,7 +70,14 @@ export const storeAddressMetadataOfWallet = (walletName: string, index: number, 
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(constructMetadataKey(walletName), JSON.stringify(addressesMetadata))
+
+  localStorage.setItem(
+    constructMetadataKey(walletName),
+    JSON.stringify({
+      version: latestUserDataVersion,
+      encryptedSettings: encrypt(mnemonic, JSON.stringify(addressesMetadata))
+    })
+  )
 }
 
 export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {

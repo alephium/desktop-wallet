@@ -221,11 +221,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const updateAddressSettings = useCallback(
     (address: Address, settings: AddressSettings) => {
-      storeAddressMetadataOfAccount(getAccountKey(), address.index, settings)
+      if (!wallet) return
+      storeAddressMetadataOfAccount(wallet.mnemonic, getAccountKey(), address.index, settings)
       address.settings = settings
       setAddress(address)
     },
-    [getAccountKey, setAddress]
+    [getAccountKey, setAddress, wallet]
   )
 
   const fetchAndStoreAddressesData = useCallback(
@@ -296,11 +297,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
-      storeAddressMetadataOfAccount(getAccountKey(), newAddress.index, newAddress.settings)
+      if (!wallet) return
+      storeAddressMetadataOfAccount(wallet.mnemonic, getAccountKey(), newAddress.index, newAddress.settings)
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [getAccountKey, fetchAndStoreAddressesData, setAddress]
+    [getAccountKey, fetchAndStoreAddressesData, setAddress, wallet]
   )
 
   const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
@@ -327,7 +329,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfAccount(getAccountKey())
+      const addressesMetadata = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, getAccountKey())
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(
