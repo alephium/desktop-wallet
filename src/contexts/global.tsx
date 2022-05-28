@@ -26,6 +26,7 @@ import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
 import { createClient } from '../utils/api-clients'
+import { migrateUserData } from '../utils/migration'
 import { stringToDoubleSHA215HexString } from '../utils/misc'
 import {
   deprecatedSettingsExist,
@@ -144,6 +145,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         const _passphraseDoubleHashed = stringToDoubleSHA215HexString(passphrase)
         setPassphraseDoubleHashed(_passphraseDoubleHashed)
       }
+      migrateUserData(password)
       setWallet(wallet)
       setCurrentWalletName(walletName)
       callback()
