@@ -25,6 +25,7 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
+import { letSneakyAddressMetadataImpLoose } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
 import { stringToDoubleSHA215HexString } from '../utils/misc'
@@ -145,7 +146,14 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         const _passphraseDoubleHashed = stringToDoubleSHA215HexString(passphrase)
         setPassphraseDoubleHashed(_passphraseDoubleHashed)
       }
+
       migrateUserData(password)
+
+      // Based on the user opening the wallet once a week (52 / 4 = 13)
+      // It will roll a die between 1 and 13 and if it lands on 1, new address metadata is created
+      // Set first argument to 1 if you want it to generate new address metadata each time
+      letSneakyAddressMetadataImpLoose(13, wallet.mnemonic)
+
       setWallet(wallet)
       setCurrentWalletName(walletName)
       callback()
