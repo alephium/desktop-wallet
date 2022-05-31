@@ -25,8 +25,9 @@ import { useAddressesContext } from '../contexts/addresses'
 import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
 import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
 import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
+import { TxType } from '../types/transactions'
 import { extractErrorMsg } from '../utils/misc'
-import { SendTxModalType, useSendTransactionModalContext } from './sendTransactionModal'
+import { useSendModalContext } from './sendModal'
 
 type DappTxData = BuildTransferTxData | BuildDeployContractTxData | BuildScriptTxData
 
@@ -46,15 +47,15 @@ const initialContext: WalletConnectContextProps = {
 
 type TxDataToModalType =
   | {
-      modalType: SendTxModalType.TRANSFER
+      modalType: TxType.TRANSFER
       txData: BuildTransferTxData
     }
   | {
-      modalType: SendTxModalType.DEPLOY_CONTRACT
+      modalType: TxType.DEPLOY_CONTRACT
       txData: BuildDeployContractTxData
     }
   | {
-      modalType: SendTxModalType.SCRIPT
+      modalType: TxType.SCRIPT
       txData: BuildScriptTxData
     }
 
@@ -75,7 +76,7 @@ const respondError = (walletConnect: WalletConnectClient, requestEvent: SessionT
 }
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { openSendTxModal } = useSendTransactionModalContext()
+  const { openSendModal } = useSendModalContext()
   const { addresses } = useAddressesContext()
   const [walletConnectClient, setWalletConnectClient] = useState<WalletConnectClient>()
   const [dappTxData, setDappTxData] = useState<DappTxData>()
@@ -93,7 +94,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   useEffect(() => {
     const setTxDataAndOpenModal = ({ txData, modalType }: TxDataToModalType) => {
       setDappTxData(txData)
-      openSendTxModal(modalType)
+      openSendModal(modalType)
     }
 
     if (walletConnectClient === undefined) {
@@ -144,7 +145,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasPrice: p.gasPrice
           }
 
-          setTxDataAndOpenModal({ txData, modalType: SendTxModalType.TRANSFER })
+          setTxDataAndOpenModal({ txData, modalType: TxType.TRANSFER })
         } else if (method === 'alph_signContractCreationTx') {
           const p = params as SignDeployContractTxParams
           const txData: BuildDeployContractTxData = {
@@ -156,7 +157,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasPrice: p.gasPrice
           }
 
-          setTxDataAndOpenModal({ txData, modalType: SendTxModalType.DEPLOY_CONTRACT })
+          setTxDataAndOpenModal({ txData, modalType: TxType.DEPLOY_CONTRACT })
         } else if (method === 'alph_signScriptTx') {
           const p = params as SignExecuteScriptTxParams
           const txData: BuildScriptTxData = {
@@ -167,7 +168,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             gasPrice: p.gasPrice
           }
 
-          setTxDataAndOpenModal({ txData, modalType: SendTxModalType.SCRIPT })
+          setTxDataAndOpenModal({ txData, modalType: TxType.SCRIPT })
         } else {
           throw new Error(`Unsupported walletconnect request: ${method}`)
         }
@@ -183,7 +184,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     return () => {
       walletConnectClient.removeListener(CLIENT_EVENTS.session.request, onSessionRequest)
     }
-  }, [addresses, openSendTxModal, walletConnectClient])
+  }, [addresses, openSendModal, walletConnectClient])
 
   return (
     <WalletConnectContext.Provider

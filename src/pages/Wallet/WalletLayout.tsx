@@ -34,12 +34,13 @@ import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
-import { SendTxModalType, useSendTransactionModalContext } from '../../contexts/sendTransactionModal'
+import { useSendModalContext } from '../../contexts/sendModal'
 import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
 import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
 import SendModal from '../../modals/SendModal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
+import { TxType } from '../../types/transactions'
 
 interface WalletNameSelectOptions {
   label: string
@@ -52,7 +53,7 @@ const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
-  const { isSendTxModalOpen, sendTxModalType, openSendTxModal, closeSendTxModal } = useSendTransactionModalContext()
+  const { isSendModalOpen, txType, openSendModal, closeSendModal } = useSendModalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const navigate = useNavigate()
@@ -131,24 +132,14 @@ const WalletLayout: FC = ({ children }) => {
           <ActionsTitle>MENU</ActionsTitle>
           <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
           <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
-          <ActionButton Icon={Send} label="Send" onClick={() => openSendTxModal(SendTxModalType.TRANSFER)} />
-          <ActionButton
-            Icon={TerminalSquare}
-            label="Call Contract"
-            onClick={() => openSendTxModal(SendTxModalType.SCRIPT)}
-          />
-          <ActionButton
-            Icon={FileCode}
-            label="Deploy Contract"
-            onClick={() => openSendTxModal(SendTxModalType.DEPLOY_CONTRACT)}
-          />
+          <ActionButton Icon={Send} label="Send" onClick={() => openSendModal(TxType.TRANSFER)} />
+          <ActionButton Icon={TerminalSquare} label="Call Contract" onClick={() => openSendModal(TxType.SCRIPT)} />
+          <ActionButton Icon={FileCode} label="Deploy Contract" onClick={() => openSendModal(TxType.DEPLOY_CONTRACT)} />
           <ActionButton Icon={Lock} label="Lock" onClick={lockWallet} />
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendTxModalOpen && sendTxModalType !== undefined && (
-          <SendModal modalType={sendTxModalType} onClose={closeSendTxModal} />
-        )}
+        {isSendModalOpen && txType !== undefined && <SendModal modalType={txType} onClose={closeSendModal} />}
         {isPasswordModalOpen && (
           <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation

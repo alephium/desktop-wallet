@@ -18,14 +18,20 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { NetworkName } from '../utils/settings'
 
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
+export enum TxType {
+  TRANSFER,
+  DEPLOY_CONTRACT,
+  SCRIPT
+}
 
-export type BaseTx = {
+export type PendingTxType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
+
+export type PendingTx = {
   txId: string
   fromAddress: string
   timestamp: number
-  type: TransactionType
+  type: PendingTxType
   network: NetworkName
+  toAddress?: string
+  amount?: bigint
 }
-
-export type PendingTx = BaseTx & { toAddress?: string; amount?: bigint }

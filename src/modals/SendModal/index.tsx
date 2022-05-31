@@ -17,8 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import { SendTxModalType } from '../../contexts/sendTransactionModal'
 import { useWalletConnectContext } from '../../contexts/walletconnect'
+import { TxType } from '../../types/transactions'
 import DeployContractTxModal from './DeployContractTxModal'
 import ScriptTxModal from './ScriptTxModal'
 import TransferTxModal from './TransferTxModal'
@@ -32,7 +32,7 @@ export const stepToTitle: { [k in Step]: string } = {
 }
 
 type SendModalProps = {
-  modalType: SendTxModalType
+  modalType: TxType
   onClose: () => void
 }
 
@@ -45,9 +45,9 @@ const SendModal = ({ modalType, onClose }: SendModalProps) => {
   const txData = dappTxData ?? { fromAddress: mainAddress as Address }
 
   return {
-    [SendTxModalType.TRANSFER]: <TransferTxModal initialTxData={txData} onClose={onClose} />,
-    [SendTxModalType.DEPLOY_CONTRACT]: <DeployContractTxModal initialTxData={txData} onClose={onClose} />,
-    [SendTxModalType.SCRIPT]: <ScriptTxModal initialTxData={txData} onClose={onClose} />
+    [TxType.TRANSFER]: <TransferTxModal initialTxData={txData} onClose={onClose} />,
+    [TxType.DEPLOY_CONTRACT]: <DeployContractTxModal initialTxData={txData} onClose={onClose} />,
+    [TxType.SCRIPT]: <ScriptTxModal initialTxData={txData} onClose={onClose} />
   }[modalType]
 }
 
