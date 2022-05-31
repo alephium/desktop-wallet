@@ -19,7 +19,8 @@
     "test": "react-scripts test --silent",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "postinstall": "electron-builder install-app-deps"
   },
   "browserslist": {
     "production": [
