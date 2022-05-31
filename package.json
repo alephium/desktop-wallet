@@ -8,18 +8,19 @@
   "scripts": {
     "build": "cross-env REACT_APP_VERSION=$npm_package_version INLINE_RUNTIME_CHUNK=false REACT_APP_CSP=\"script-src 'self'\" react-scripts build",
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "npm run build && npx electron-builder",
-    "electron-pack-windows": "npm run build && npx electron-builder -w",
-    "electron-pack-macos": "npm run build && npx electron-builder --mac --universal",
-    "electron-pack-ubuntu": "npm run build && npx electron-builder -l",
-    "electron-pack-linux:arm64": "npm run build && npx electron-builder -l --arm64",
+    "electron-pack": "npm run build && electron-builder build",
+    "electron-pack-windows": "npm run build && electron-builder build -w",
+    "electron-pack-macos": "npm run build && electron-builder build --mac --universal",
+    "electron-pack-ubuntu": "npm run build && electron-builder build -l",
+    "electron-pack-linux:arm64": "npm run build && electron-builder build -l --arm64",
     "extension-build": "shx rm -rf build && npm run build && shx cp public/background.js public/manifest.json build",
     "extension-pack": "npm run extension-build && web-ext build --source-dir=build --artifacts-dir=. --filename=alephium-wallet.zip --overwrite-dest",
     "start": "cross-env REACT_APP_VERSION=$npm_package_version REACT_APP_CSP=\"script-src 'self' 'unsafe-inline'\" react-scripts start",
     "test": "react-scripts test --silent",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "postinstall": "electron-builder install-app-deps"
   },
   "browserslist": {
     "production": [
@@ -112,7 +113,10 @@
     "directories": {
       "buildResources": "assets"
     },
-    "afterPack": ".afterPack.js"
+    "afterPack": ".afterPack.js",
+    "mac": {
+      "singleArchFiles": "node_modules/better-sqlite3/**"
+    }
   },
   "engines": {
     "node": ">=14.0.0",
