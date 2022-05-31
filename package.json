@@ -34,16 +34,12 @@
     ]
   },
   "dependencies": {
-    "@json-rpc-tools/utils": "^1.7.6",
-    "@walletconnect/client": "^2.0.0-beta.26",
-    "@walletconnect/utils": "^2.0.0-beta.26",
-    "alephium-walletconnect-provider": "0.1.2",
-    "alephium-web3": "0.9.0",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
   "devDependencies": {
     "@alephium/sdk": "0.0.5",
+    "@json-rpc-tools/utils": "^1.7.6",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.0",
     "@types/jest": "^27.0.2",
@@ -56,7 +52,11 @@
     "@types/tinycolor2": "^1.4.3",
     "@types/yaireo__tagify": "^4.7.0",
     "@types/zxcvbn": "^4.4.1",
+    "@walletconnect/client": "^2.0.0-beta.26",
+    "@walletconnect/utils": "^2.0.0-beta.26",
     "@yaireo/tagify": "^4.8.0",
+    "alephium-walletconnect-provider": "0.1.2",
+    "alephium-web3": "0.9.0",
     "bip39": "^3.0.4",
     "classnames": "^2.3.1",
     "concurrently": "^6.2.1",
