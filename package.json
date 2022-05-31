@@ -10,7 +10,7 @@
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-pack": "npm run build && electron-builder",
     "electron-pack-windows": "npm run build && electron-builder -w",
-    "electron-pack-macos": "npm run build && electron-builder --mac --universal",
+    "electron-pack-macos": "npm run build && DEBUG=electron-builder electron-builder --mac --universal",
     "electron-pack-ubuntu": "npm run build && electron-builder -l",
     "electron-pack-linux:arm64": "npm run build && electron-builder -l --arm64",
     "extension-build": "shx rm -rf build && npm run build && shx cp public/background.js public/manifest.json build",
