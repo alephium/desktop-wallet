@@ -20,7 +20,7 @@ import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 import { NodeProvider as Web3Client } from 'alephium-web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
-import { TransactionType } from '../types/transactions'
+import { PendingTxType } from '../types/transactions'
 import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {
@@ -110,7 +110,7 @@ export async function createClient(settings: Settings['network']) {
       txId: string,
       unsignedTx: string,
       toAddressHash: AddressHash,
-      type: TransactionType,
+      type: PendingTxType,
       network: NetworkName,
       amount?: bigint
     ) => {
