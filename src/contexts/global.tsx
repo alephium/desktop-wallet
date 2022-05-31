@@ -44,6 +44,8 @@ if (deprecatedSettingsExist()) {
   localStorageSettings = migrateDeprecatedSettings()
 }
 
+export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
+
 export interface GlobalContextProps {
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
@@ -63,8 +65,6 @@ export interface GlobalContextProps {
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
 }
-
-export type Client = Exclude<AsyncReturnType<typeof createClient>, false | undefined>
 
 export const initialGlobalContext: GlobalContextProps = {
   activeWalletName: '',
