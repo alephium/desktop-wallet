@@ -73,9 +73,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
             context.currentNetwork
           )
 
-          if (data) {
-            context.setAddress(fromAddress)
-          }
+          if (data) context.setAddress(fromAddress)
         }
       } else {
         const data = await client.signAndSendTransaction(
@@ -87,23 +85,23 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
           context.currentNetwork,
           convertAlphToSet(alphAmount)
         )
+
         return data.signature
       }
     }
   }
 
   const getWalletConnectResult = (context: TxContext, signature: string): SignTransferTxResult => {
-    if (context.unsignedTransaction !== undefined) {
+    if (context.unsignedTransaction)
       return {
         fromGroup: context.unsignedTransaction.fromGroup,
         toGroup: context.unsignedTransaction.toGroup,
         unsignedTx: context.unsignedTransaction.unsignedTx,
         txId: context.unsignedTxId,
-        signature: signature
+        signature
       }
-    } else {
-      throw Error('No unsignedTransaction available')
-    }
+
+    throw Error('No unsignedTransaction available')
   }
 
   return (
