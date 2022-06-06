@@ -23,30 +23,24 @@ import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import Input from '../components/Inputs/Input'
-import { Address, useAddressesContext } from '../contexts/addresses'
+import { Address } from '../contexts/addresses'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
 import { extractErrorMsg } from '../utils/misc'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 import { useSignerAddress } from './SendModal/utils'
 
+type WalletConnectSessionState = 'error' | 'initiateSession' | 'proposal'
+
 interface Props {
   onClose: () => void
   onConnect?: () => void
 }
 
-enum State {
-  Error,
-  InitiateSession,
-  Proposal,
-  RequireUnlock
-}
-
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
-  const { addresses } = useAddressesContext()
   const { walletConnectClient } = useWalletConnectContext()
   const [uri, setUri] = useState('')
-  const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
+  const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>('initiateSession')
   const [proposal, setProposal] = useState<SessionTypes.Proposal>()
   const [permittedChain, setPermittedChain] = useState({
     chainId: formatChain(0, -1),
@@ -58,7 +52,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const [error, setError] = useState('')
 
   const setErrorState = useCallback((error: string): void => {
-    setState(State.Error)
+    setWcSessionState('error')
     setError(error)
   }, [])
 
@@ -72,7 +66,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
       setPermittedChain({ chainId: permittedChain, networkId: permittedNetworkId, permittedGroup: permittedChainGroup })
       setProposal(proposal)
-      setState(State.Proposal)
+      setWcSessionState('proposal')
     },
     [setErrorState]
   )
@@ -80,6 +74,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   useEffect(() => {
     walletConnectClient?.on(CLIENT_EVENTS.session.proposal, onProposal)
     walletConnectClient?.on(CLIENT_EVENTS.session.created, onClose)
+
     return () => {
       walletConnectClient?.removeListener(CLIENT_EVENTS.session.proposal, onProposal)
       walletConnectClient?.removeListener(CLIENT_EVENTS.session.created, onClose)
@@ -101,7 +96,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const onApprove = useCallback(
     async (signerAddress: Address) => {
       if (proposal === undefined) {
-        setState(State.InitiateSession)
+        setWcSessionState('initiateSession')
         return
       }
 
@@ -120,7 +115,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
   const onReject = useCallback(async () => {
     if (proposal === undefined) {
-      setState(State.InitiateSession)
+      setWcSessionState('initiateSession')
       return
     }
 
@@ -128,8 +123,8 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     onClose()
   }, [walletConnectClient, proposal, onClose])
 
-  switch (state) {
-    case State.Error:
+  switch (wcSessionState) {
+    case 'error':
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
@@ -140,7 +135,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           <ModalFooterButtons>
             <ModalFooterButton
               onClick={() => {
-                setState(State.InitiateSession)
+                setWcSessionState('initiateSession')
                 setError('')
               }}
             >
@@ -149,7 +144,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           </ModalFooterButtons>
         </CenteredModal>
       )
-    case State.InitiateSession:
+    case 'initiateSession':
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
@@ -167,7 +162,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           </ModalFooterButtons>
         </CenteredModal>
       )
-    case State.Proposal: {
+    case 'proposal': {
       const name = proposal?.proposer.metadata.name ?? 'No application name'
       const url = proposal?.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.proposer.metadata.description ?? 'No description given'
@@ -187,11 +182,11 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           <List>
             <Name>{name}</Name>
             <Url>{url}</Url>
-            <Desc>{description}</Desc>
-            <Desc>
+            <Description>{description}</Description>
+            <Description>
               NetworkId: {permittedChain.networkId}, Group:{' '}
               {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}
-            </Desc>
+            </Description>
           </List>
           {FromAddressSelect}
           <ModalFooterButtons>
@@ -203,19 +198,6 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         </CenteredModal>
       )
     }
-    case State.RequireUnlock:
-      return (
-        <CenteredModal
-          title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="Initiate a session with a dApp"
-          onClose={onClose}
-        >
-          <div>Please unlock a wallet.</div>
-          <ModalFooterButtons>
-            <ModalFooterButton onClick={onClose}>Ok</ModalFooterButton>
-          </ModalFooterButtons>
-        </CenteredModal>
-      )
     default:
       return <div>Unknown state</div>
   }
@@ -245,10 +227,12 @@ const List = styled.div`
 const Name = styled.div`
   font-size: 14px;
 `
+
 const Url = styled.div`
   font-size: 10px;
   margin-bottom: 1em;
 `
-const Desc = styled.div`
+
+const Description = styled.div`
   margin-bottom: 1em;
 `

@@ -101,16 +101,20 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         <NetworkBadge />
         <HeaderDivider />
-        <Button
-          transparent
-          squared
-          onClick={() => setIsWalletConnectModalOpen(true)}
-          aria-label="WalletConnect"
-          data-tip="Connect wallet to dApp"
-        >
-          <img src={walletConnectIcon} style={{ width: '100%' }} />
-        </Button>
-        <HeaderDivider />
+        {mainAddress && (
+          <>
+            <Button
+              transparent
+              squared
+              onClick={() => setIsWalletConnectModalOpen(true)}
+              aria-label="WalletConnect"
+              data-tip="Connect wallet to dApp"
+            >
+              <img src={walletConnectIcon} style={{ width: '100%' }} />
+            </Button>
+            <HeaderDivider />
+          </>
+        )}
         <Button
           transparent
           squared
