@@ -127,9 +127,7 @@ function createWindow() {
     minHeight: 700,
     titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden',
     webPreferences: {
-      spellcheck: true,
-      nodeIntegration: true,
-      contextIsolation: false
+      spellcheck: true
     }
   })
 
