@@ -27,6 +27,8 @@ export const latestUserDataVersion = '2022-05-27T12:00:00Z'
 //
 // Future dependencies must be explained as they are added.
 //
+// ANY MODIFICATIONS MUST HAVE TESTS ADDED TO tests/migration.test.ts!
+//
 export const migrateUserData = (mnemonic: string) => {
   console.log('🚚 Migrating user data')
   _20220527_120000(mnemonic)
