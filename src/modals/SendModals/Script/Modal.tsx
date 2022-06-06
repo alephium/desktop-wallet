@@ -19,11 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from 'alephium-web3'
 
-import { Client } from '../../contexts/global'
-import { BuildScriptTxProps, ScriptTxData } from './BuildScriptTx'
-import BuildScriptTx from './BuildScriptTx'
-import CheckScriptTx from './CheckScriptTx'
-import TxModalFactory, { TxContext } from './TxModalFactory'
+import { Client } from '../../../contexts/global'
+import { ScriptTxData } from '../../../types/transactions'
+import SendModal, { TxContext } from '../SendModal'
+import { BuildScriptTxProps } from './BuildTxModalContent'
+import BuildScriptTx from './BuildTxModalContent'
+import CheckScriptTx from './CheckTxModalContent'
 
 export type ScriptTxModalProps = {
   initialTxData: BuildScriptTxProps['data']
@@ -74,7 +75,7 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
   }
 
   return (
-    <TxModalFactory
+    <SendModal
       buildTitle="Call Contract"
       initialTxData={initialTxData}
       onClose={onClose}

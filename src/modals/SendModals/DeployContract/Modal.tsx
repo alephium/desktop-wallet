@@ -20,10 +20,11 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from 'alephium-web3'
 import { useState } from 'react'
 
-import { Client } from '../../contexts/global'
-import BuildDeployContractTx, { BuildDeployContractTxProps, DeployContractTxData } from './BuildDeployContractTx'
-import CheckDeployContractTx from './CheckDeployContractTx'
-import TxModalFactory, { TxContext } from './TxModalFactory'
+import { Client } from '../../../contexts/global'
+import { DeployContractTxData } from '../../../types/transactions'
+import SendModal, { TxContext } from '../SendModal'
+import BuildDeployContractTx, { BuildDeployContractTxProps } from './BuildTxModalContent'
+import CheckDeployContractTx from './CheckTxModalContent'
 
 export type DeployContractTxModalProps = {
   initialTxData: BuildDeployContractTxProps['data']
@@ -79,7 +80,7 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   }
 
   return (
-    <TxModalFactory
+    <SendModal
       buildTitle="Deploy Contract"
       initialTxData={initialTxData}
       onClose={onClose}

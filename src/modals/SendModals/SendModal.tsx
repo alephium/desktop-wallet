@@ -33,7 +33,14 @@ import { extractErrorMsg } from '../../utils/misc'
 import { NetworkName } from '../../utils/settings'
 import CenteredModal from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
-import { Step, stepToTitle } from '.'
+
+export type Step = 'send' | 'info-check' | 'password-check'
+
+export const stepToTitle: { [k in Step]: string } = {
+  send: 'Send',
+  'info-check': 'Review',
+  'password-check': 'Password Check'
+}
 
 export type UnsignedTx = {
   fromGroup: number
@@ -56,7 +63,7 @@ export type TxContext = {
   setAddress: (address: Address) => void
 }
 
-export type TxModalFactoryProps<PT extends { fromAddress: Address }, T extends PT> = {
+export type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   buildTitle: string
   initialTxData: PT
   onClose: () => void
@@ -67,7 +74,7 @@ export type TxModalFactoryProps<PT extends { fromAddress: Address }, T extends P
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
-function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
+function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   buildTitle,
   initialTxData,
   onClose,
@@ -76,7 +83,7 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
   buildTransaction,
   handleSend,
   getWalletConnectResult
-}: TxModalFactoryProps<PT, T>) {
+}: SendModalProps<PT, T>) {
   const {
     currentNetwork,
     client,
@@ -245,4 +252,4 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
   )
 }
 
-export default TxModalFactory
+export default SendModal

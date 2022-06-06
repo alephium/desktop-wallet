@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet } from '@alephium/sdk'
 
-import { Address } from '../../contexts/addresses'
-import { isAmountWithinRange } from '../../utils/transactions'
+import { DeployContractTxData } from '../../../types/transactions'
+import { isAmountWithinRange } from '../../../utils/transactions'
 import {
   ModalContent,
   PartialTxData,
@@ -27,17 +27,7 @@ import {
   useBuildTxCommon,
   useBytecode,
   useIssueTokenAmount
-} from './utils'
-
-export interface DeployContractTxData {
-  fromAddress: Address
-  bytecode: string
-
-  initialAlphAmount?: string
-  issueTokenAmount?: string
-  gasAmount?: number
-  gasPrice?: string
-}
+} from '../utils'
 
 export interface BuildDeployContractTxProps {
   data: PartialTxData<DeployContractTxData, 'fromAddress'>

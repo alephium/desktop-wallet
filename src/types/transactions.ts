@@ -16,9 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { DeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
-import { ScriptTxData } from '../modals/SendModal/BuildScriptTx'
-import { TransferTxData } from '../modals/SendModal/BuildTransferTx'
+import { Address } from '../contexts/addresses'
 import { NetworkName } from '../utils/settings'
 
 export enum TxType {
@@ -54,3 +52,30 @@ export type TxDataToModalType =
       modalType: TxType.SCRIPT
       txData: ScriptTxData
     }
+
+export interface DeployContractTxData {
+  fromAddress: Address
+  bytecode: string
+
+  initialAlphAmount?: string
+  issueTokenAmount?: string
+  gasAmount?: number
+  gasPrice?: string
+}
+
+export interface ScriptTxData {
+  fromAddress: Address
+  bytecode: string
+
+  alphAmount?: string
+  gasAmount?: number
+  gasPrice?: string
+}
+
+export interface TransferTxData {
+  fromAddress: Address
+  toAddress: string
+  alphAmount: string
+  gasAmount?: number
+  gasPrice?: string
+}

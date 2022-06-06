@@ -22,10 +22,14 @@ import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxPa
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
-import { DeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
-import { ScriptTxData } from '../modals/SendModal/BuildScriptTx'
-import { TransferTxData } from '../modals/SendModal/BuildTransferTx'
-import { DappTxData, TxDataToModalType, TxType } from '../types/transactions'
+import {
+  DappTxData,
+  DeployContractTxData,
+  ScriptTxData,
+  TransferTxData,
+  TxDataToModalType,
+  TxType
+} from '../types/transactions'
 import { extractErrorMsg } from '../utils/misc'
 import { useSendModalContext } from './sendModal'
 
