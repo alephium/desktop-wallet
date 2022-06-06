@@ -16,23 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ScriptTxData } from './BuildScriptTx'
+import InfoBox from '../../../components/InfoBox'
+import { TransferTxData } from '../../../types/transactions'
 import {
   AlphAmountInfo,
-  BytecodeInfo,
   CheckTxFooter,
   CheckTxProps,
   expectedAmount,
   FeeInfo,
   FromAddressInfo,
   ModalContent
-} from './utils'
+} from '../utils'
 
-const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<ScriptTxData>) => (
+const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<TransferTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
-      <BytecodeInfo bytecode={data.bytecode} />
+      <InfoBox text={data.toAddress} label="To address" wordBreak />
       <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
       <FeeInfo fees={fees} />
     </ModalContent>
@@ -40,4 +40,4 @@ const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<ScriptTxDa
   </>
 )
 
-export default CheckScriptTx
+export default CheckTransferTx

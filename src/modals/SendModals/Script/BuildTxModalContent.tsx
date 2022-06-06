@@ -18,18 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet } from '@alephium/sdk'
 
-import { Address } from '../../contexts/addresses'
-import { isAmountWithinRange } from '../../utils/transactions'
-import { ModalContent, PartialTxData, SendTxModalFooterButtons, useBuildTxCommon, useBytecode } from './utils'
-
-export interface ScriptTxData {
-  fromAddress: Address
-  bytecode: string
-
-  alphAmount?: string
-  gasAmount?: number
-  gasPrice?: string
-}
+import { ScriptTxData } from '../../../types/transactions'
+import { isAmountWithinRange } from '../../../utils/transactions'
+import { ModalContent, PartialTxData, SendTxModalFooterButtons, useBuildTxCommon, useBytecode } from '../utils'
 
 export interface BuildScriptTxProps {
   data: PartialTxData<ScriptTxData, 'fromAddress'>

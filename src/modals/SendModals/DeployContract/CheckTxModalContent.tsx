@@ -16,28 +16,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import InfoBox from '../../components/InfoBox'
-import { TransferTxData } from './BuildTransferTx'
+import InfoBox from '../../../components/InfoBox'
+import { DeployContractTxData } from '../../../types/transactions'
 import {
   AlphAmountInfo,
+  BytecodeInfo,
   CheckTxFooter,
   CheckTxProps,
   expectedAmount,
   FeeInfo,
   FromAddressInfo,
   ModalContent
-} from './utils'
+} from '../utils'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<TransferTxData>) => (
+const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<DeployContractTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
-      <InfoBox text={data.toAddress} label="To address" wordBreak />
+      <BytecodeInfo bytecode={data.bytecode} />
       <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label="Issue token amount" wordBreak />}
       <FeeInfo fees={fees} />
     </ModalContent>
     <CheckTxFooter onSend={onSend} onCancel={onCancel} />
   </>
 )
 
-export default CheckTransferTx
+export default CheckDeployContractTx

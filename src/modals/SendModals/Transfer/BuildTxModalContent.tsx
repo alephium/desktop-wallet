@@ -19,18 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 import { useState } from 'react'
 
-import { Address } from '../../contexts/addresses'
-import { isAddressValid } from '../../utils/addresses'
-import { isAmountWithinRange } from '../../utils/transactions'
-import { ModalContent, PartialTxData, SendTxModalFooterButtons, ToAddressInput, useBuildTxCommon } from './utils'
-
-export interface TransferTxData {
-  fromAddress: Address
-  toAddress: string
-  alphAmount: string
-  gasAmount?: number
-  gasPrice?: string
-}
+import { TransferTxData } from '../../../types/transactions'
+import { isAddressValid } from '../../../utils/addresses'
+import { isAmountWithinRange } from '../../../utils/transactions'
+import { ModalContent, PartialTxData, SendTxModalFooterButtons, ToAddressInput, useBuildTxCommon } from '../utils'
 
 export interface BuildTransferTxProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>

@@ -19,10 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from 'alephium-web3'
 
-import { Client } from '../../contexts/global'
-import BuildTransferTx, { BuildTransferTxProps, TransferTxData } from './BuildTransferTx'
-import CheckTransferTx from './CheckTransferTx'
-import TxModalFactory, { TxContext } from './TxModalFactory'
+import { Client } from '../../../contexts/global'
+import { TransferTxData } from '../../../types/transactions'
+import SendModal, { TxContext } from '../SendModal'
+import BuildTransferTx, { BuildTransferTxProps } from './BuildTxModalContent'
+import CheckTransferTx from './CheckTxModalContent'
 
 export type TransferTxModalProps = {
   initialTxData: BuildTransferTxProps['data']
@@ -105,7 +106,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   }
 
   return (
-    <TxModalFactory
+    <SendModal
       buildTitle="Send"
       initialTxData={initialTxData}
       onClose={onClose}

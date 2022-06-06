@@ -35,10 +35,13 @@ import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
+import useDappTxData from '../../hooks/useDappTxData'
 import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
 import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
-import SendModal from '../../modals/SendModal'
+import DeployContractSendModal from '../../modals/SendModals/DeployContract/Modal'
+import ScriptSendModal from '../../modals/SendModals/Script/Modal'
+import TransferSendModal from '../../modals/SendModals/Transfer/Modal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
 import { TxType } from '../../types/transactions'
 
@@ -53,9 +56,10 @@ const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
-  const { isSendModalOpen, txType, openSendModal, closeSendModal } = useSendModalContext()
+  const { isSendModalOpen, openSendModal, closeSendModal, txType } = useSendModalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
+  const txData = useDappTxData()
   const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme()
@@ -139,7 +143,15 @@ const WalletLayout: FC = ({ children }) => {
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && txType !== undefined && <SendModal modalType={txType} onClose={closeSendModal} />}
+        {isSendModalOpen && txType === TxType.TRANSFER && (
+          <TransferSendModal initialTxData={txData} onClose={closeSendModal} />
+        )}
+        {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && (
+          <DeployContractSendModal initialTxData={txData} onClose={closeSendModal} />
+        )}
+        {isSendModalOpen && txType === TxType.SCRIPT && (
+          <ScriptSendModal initialTxData={txData} onClose={closeSendModal} />
+        )}
         {isPasswordModalOpen && (
           <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
