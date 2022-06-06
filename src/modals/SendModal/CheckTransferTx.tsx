@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import InfoBox from '../../components/InfoBox'
-import { BuildTransferTxData } from './BuildTransferTx'
+import { TransferTxData } from './BuildTransferTx'
 import {
   AlphAmountInfo,
   CheckTxFooter,
@@ -28,7 +28,7 @@ import {
   ModalContent
 } from './utils'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => (
+const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<TransferTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

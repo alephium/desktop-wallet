@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BuildScriptTxData } from './BuildScriptTx'
+import { ScriptTxData } from './BuildScriptTx'
 import {
   AlphAmountInfo,
   BytecodeInfo,
@@ -28,7 +28,7 @@ import {
   ModalContent
 } from './utils'
 
-const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) => (
+const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<ScriptTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

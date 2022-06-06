@@ -22,7 +22,7 @@ import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import { ModalContent, PartialTxData, SendTxModalFooterButtons, useBuildTxCommon, useBytecode } from './utils'
 
-export interface BuildScriptTxData {
+export interface ScriptTxData {
   fromAddress: Address
   bytecode: string
 
@@ -32,8 +32,8 @@ export interface BuildScriptTxData {
 }
 
 export interface BuildScriptTxProps {
-  data: PartialTxData<BuildScriptTxData, 'fromAddress'>
-  onSubmit: (data: BuildScriptTxData) => void
+  data: PartialTxData<ScriptTxData, 'fromAddress'>
+  onSubmit: (data: ScriptTxData) => void
   onCancel: () => void
 }
 

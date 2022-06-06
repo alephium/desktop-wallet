@@ -21,7 +21,7 @@ import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from 'ale
 import { useState } from 'react'
 
 import { Client } from '../../contexts/global'
-import BuildDeployContractTx, { BuildDeployContractTxData, BuildDeployContractTxProps } from './BuildDeployContractTx'
+import BuildDeployContractTx, { BuildDeployContractTxProps, DeployContractTxData } from './BuildDeployContractTx'
 import CheckDeployContractTx from './CheckDeployContractTx'
 import TxModalFactory, { TxContext } from './TxModalFactory'
 
@@ -33,7 +33,7 @@ export type DeployContractTxModalProps = {
 const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModalProps) => {
   const [contractAddress, setContractAddress] = useState<string>('')
 
-  const buildTransaction = async (client: Client, data: BuildDeployContractTxData, context: TxContext) => {
+  const buildTransaction = async (client: Client, data: DeployContractTxData, context: TxContext) => {
     const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
@@ -48,7 +48,7 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
     context.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 
-  const handleSend = async (client: Client, txData: BuildDeployContractTxData, context: TxContext) => {
+  const handleSend = async (client: Client, txData: DeployContractTxData, context: TxContext) => {
     if (context.unsignedTransaction !== undefined) {
       const data = await client.signAndSendContractOrScript(
         txData.fromAddress,

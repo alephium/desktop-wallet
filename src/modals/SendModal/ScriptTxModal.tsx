@@ -20,7 +20,7 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from 'alephium-web3'
 
 import { Client } from '../../contexts/global'
-import { BuildScriptTxData, BuildScriptTxProps } from './BuildScriptTx'
+import { BuildScriptTxProps, ScriptTxData } from './BuildScriptTx'
 import BuildScriptTx from './BuildScriptTx'
 import CheckScriptTx from './CheckScriptTx'
 import TxModalFactory, { TxContext } from './TxModalFactory'
@@ -31,7 +31,7 @@ export type ScriptTxModalProps = {
 }
 
 const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
-  const buildTransaction = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
+  const buildTransaction = async (client: Client, txData: ScriptTxData, ctx: TxContext) => {
     const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
       fromPublicKey: txData.fromAddress.publicKey,
       bytecode: txData.bytecode,
@@ -45,7 +45,7 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
     ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
   }
 
-  const handleSend = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
+  const handleSend = async (client: Client, txData: ScriptTxData, ctx: TxContext) => {
     if (ctx.unsignedTransaction !== undefined) {
       const data = await client.signAndSendContractOrScript(
         txData.fromAddress,
