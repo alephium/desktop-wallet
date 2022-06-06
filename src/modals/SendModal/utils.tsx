@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
@@ -75,31 +75,6 @@ function useStateWithParsed<T>(initialValue: T, stringified: string) {
   }
 
   return [value, setValueWithError] as const
-}
-
-export function useSignerAddress(group: number) {
-  const { addresses, mainAddress } = useAddressesContext()
-  const [signerAddress, setSignerAddress] = useState<Address>()
-  const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
-
-  useEffect(() => {
-    const defaultAddress = group === -1 || mainAddress?.group === group ? mainAddress : addressOptions.at(0)
-    setSignerAddress(defaultAddress)
-  }, [addressOptions, group, mainAddress])
-
-  const SignerAddressSelect = signerAddress ? (
-    <AddressSelect
-      label="From address"
-      title="Select the address to send funds from."
-      options={addressOptions}
-      defaultAddress={signerAddress}
-      onAddressChange={(newAddress) => setSignerAddress(newAddress)}
-      id="from-address"
-      hideEmptyAvailableBalance
-    />
-  ) : null
-
-  return [signerAddress, SignerAddressSelect] as const
 }
 
 function useFromAddress(initialAddress: Address) {

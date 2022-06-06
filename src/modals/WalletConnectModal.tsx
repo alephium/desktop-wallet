@@ -22,15 +22,23 @@ import { formatAccount, formatChain, parseChain } from 'alephium-walletconnect-p
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
+import InfoBox from '../components/InfoBox'
+import AddressSelect from '../components/Inputs/AddressSelect'
 import Input from '../components/Inputs/Input'
-import { Address } from '../contexts/addresses'
+import { Section } from '../components/PageComponents/PageContainers'
+import { Address, useAddressesContext } from '../contexts/addresses'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
 import { extractErrorMsg } from '../utils/misc'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
-import { useSignerAddress } from './SendModal/utils'
 
-type WalletConnectSessionState = 'error' | 'initiateSession' | 'proposal'
+type WalletConnectSessionState = 'uninitialized' | 'proposal'
+
+type PermittedChain = {
+  chainId: string
+  networkId: number
+  permittedGroup: number | 'all'
+}
 
 interface Props {
   onClose: () => void
@@ -39,37 +47,39 @@ interface Props {
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const { walletConnectClient } = useWalletConnectContext()
+  const { addresses } = useAddressesContext()
   const [uri, setUri] = useState('')
-  const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>('initiateSession')
+  const [error, setError] = useState('')
+  const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>('uninitialized')
   const [proposal, setProposal] = useState<SessionTypes.Proposal>()
-  const [permittedChain, setPermittedChain] = useState({
+  const [permittedChain, setPermittedChain] = useState<PermittedChain>({
     chainId: formatChain(0, -1),
     networkId: 0,
-    permittedGroup: -1
+    permittedGroup: 'all'
   })
+  const addressOptions =
+    permittedChain.permittedGroup === 'all'
+      ? addresses
+      : addresses.filter((a) => a.group === permittedChain.permittedGroup)
+  const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.settings.isMain))
 
-  const [fromAddress, FromAddressSelect] = useSignerAddress(permittedChain.permittedGroup)
-  const [error, setError] = useState('')
+  const onProposal = useCallback(async (proposal: SessionTypes.Proposal) => {
+    const permittedChain = proposal.permissions.blockchain.chains[0]
 
-  const setErrorState = useCallback((error: string): void => {
-    setWcSessionState('error')
-    setError(error)
+    if (permittedChain === undefined) {
+      setError('No chain is permitted')
+      return
+    }
+
+    const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
+    setPermittedChain({
+      chainId: permittedChain,
+      networkId: permittedNetworkId,
+      permittedGroup: permittedChainGroup === -1 ? 'all' : permittedChainGroup
+    })
+    setProposal(proposal)
+    setWcSessionState('proposal')
   }, [])
-
-  const onProposal = useCallback(
-    async (proposal: SessionTypes.Proposal) => {
-      const permittedChain = proposal.permissions.blockchain.chains[0]
-      if (permittedChain === undefined) {
-        setErrorState('No chain is permitted')
-        return
-      }
-      const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
-      setPermittedChain({ chainId: permittedChain, networkId: permittedNetworkId, permittedGroup: permittedChainGroup })
-      setProposal(proposal)
-      setWcSessionState('proposal')
-    },
-    [setErrorState]
-  )
 
   useEffect(() => {
     walletConnectClient?.on(CLIENT_EVENTS.session.proposal, onProposal)
@@ -81,141 +91,124 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     }
   }, [onClose, onProposal, walletConnectClient])
 
-  const onInitiate = useCallback(async () => {
-    walletConnectClient
-      ?.pair({ uri })
-      .then((e) => {
-        onConnect && onConnect()
-      })
-      .catch((e) => {
-        setUri('')
-        setErrorState(`Error in pairing: ${extractErrorMsg(e)}`)
-      })
-  }, [walletConnectClient, uri, onConnect, setErrorState])
+  if (!walletConnectClient) return null
 
-  const onApprove = useCallback(
-    async (signerAddress: Address) => {
-      if (proposal === undefined) {
-        setWcSessionState('initiateSession')
-        return
-      }
+  const handleConnect = async () => {
+    try {
+      await walletConnectClient.pair({ uri })
+      if (onConnect) onConnect()
+    } catch (e) {
+      setUri('')
+      setError(`Error in pairing: ${extractErrorMsg(e)}`)
+    }
+  }
 
-      const accounts: string[] = [
-        formatAccount(permittedChain.chainId, {
-          address: signerAddress.hash,
-          publicKey: signerAddress.publicKey,
-          group: signerAddress.group
-        })
-      ]
-      await walletConnectClient?.approve({ proposal, response: { state: { accounts } } })
-      onClose()
-    },
-    [proposal, permittedChain.chainId, walletConnectClient, onClose]
-  )
-
-  const onReject = useCallback(async () => {
+  const onApprove = async (signerAddress: Address) => {
     if (proposal === undefined) {
-      setWcSessionState('initiateSession')
+      setWcSessionState('uninitialized')
       return
     }
 
-    await walletConnectClient?.reject({ proposal })
+    const accounts: string[] = [
+      formatAccount(permittedChain.chainId, {
+        address: signerAddress.hash,
+        publicKey: signerAddress.publicKey,
+        group: signerAddress.group
+      })
+    ]
+    await walletConnectClient.approve({ proposal, response: { state: { accounts } } })
     onClose()
-  }, [walletConnectClient, proposal, onClose])
-
-  switch (wcSessionState) {
-    case 'error':
-      return (
-        <CenteredModal
-          title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="WalletConnect Error"
-          onClose={onClose}
-        >
-          <div>{error}</div>
-          <ModalFooterButtons>
-            <ModalFooterButton
-              onClick={() => {
-                setWcSessionState('initiateSession')
-                setError('')
-              }}
-            >
-              Ok
-            </ModalFooterButton>
-          </ModalFooterButtons>
-        </CenteredModal>
-      )
-    case 'initiateSession':
-      return (
-        <CenteredModal
-          title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="Initiate a session with a dApp"
-          onClose={onClose}
-        >
-          <Input onChange={(t) => setUri(t.target.value)} value={uri} label="Paste what was copied from the dApp" />
-          <ModalFooterButtons>
-            <ModalFooterButton secondary onClick={onClose}>
-              Cancel
-            </ModalFooterButton>
-            <ModalFooterButton onClick={onInitiate} disabled={uri === ''}>
-              Connect
-            </ModalFooterButton>
-          </ModalFooterButtons>
-        </CenteredModal>
-      )
-    case 'proposal': {
-      const name = proposal?.proposer.metadata.name ?? 'No application name'
-      const url = proposal?.proposer.metadata.url ?? 'No URL specified'
-      const description = proposal?.proposer.metadata.description ?? 'No description given'
-
-      if (fromAddress === undefined) {
-        setErrorState(`No address with balance for group ${permittedChain.permittedGroup}`)
-        return null
-      }
-
-      return (
-        <CenteredModal
-          title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="Approve the proposal to connect"
-          onClose={onClose}
-        >
-          <Notice>Please review the following before authorizing the dApp</Notice>
-          <List>
-            <Name>{name}</Name>
-            <Url>{url}</Url>
-            <Description>{description}</Description>
-            <Description>
-              NetworkId: {permittedChain.networkId}, Group:{' '}
-              {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}
-            </Description>
-          </List>
-          {FromAddressSelect}
-          <ModalFooterButtons>
-            <ModalFooterButton secondary onClick={onReject}>
-              Reject
-            </ModalFooterButton>
-            <ModalFooterButton onClick={() => onApprove(fromAddress)}>Approve</ModalFooterButton>
-          </ModalFooterButtons>
-        </CenteredModal>
-      )
-    }
-    default:
-      return <div>Unknown state</div>
   }
+
+  const onReject = async () => {
+    if (proposal === undefined) {
+      setWcSessionState('uninitialized')
+      return
+    }
+
+    await walletConnectClient.reject({ proposal })
+    onClose()
+  }
+
+  if (error) {
+    return (
+      <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle="WalletConnect Error" onClose={onClose}>
+        {error}
+        <ModalFooterButtons>
+          <ModalFooterButton
+            onClick={() => {
+              setWcSessionState('uninitialized')
+              setError('')
+            }}
+          >
+            Try again
+          </ModalFooterButton>
+        </ModalFooterButtons>
+      </CenteredModal>
+    )
+  } else if (wcSessionState === 'uninitialized') {
+    return (
+      <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle="Connect to a dApp" onClose={onClose}>
+        <Input onChange={(t) => setUri(t.target.value)} value={uri} label="Paste what was copied from the dApp" />
+        <ModalFooterButtons>
+          <ModalFooterButton secondary onClick={onClose}>
+            Cancel
+          </ModalFooterButton>
+          <ModalFooterButton onClick={handleConnect} disabled={uri === ''}>
+            Connect
+          </ModalFooterButton>
+        </ModalFooterButtons>
+      </CenteredModal>
+    )
+  } else if (wcSessionState === 'proposal' && !signerAddress) {
+    setError(`No address with balance for group ${permittedChain.permittedGroup}`)
+  } else if (wcSessionState === 'proposal' && signerAddress) {
+    return (
+      <CenteredModal
+        title={<ImageStyled src={walletConnectFull} />}
+        subtitle="Approve the proposal to connect"
+        onClose={onClose}
+      >
+        <Section>
+          <InfoBox>
+            <Info>Please review the following before authorizing the dApp:</Info>
+            <List>
+              <Info>Name: {proposal?.proposer.metadata.name ?? 'Uknown dApp name'}</Info>
+              <Info>URL: {proposal?.proposer.metadata.url ?? 'Uknown dApp URL'}</Info>
+              <Info>Description: {proposal?.proposer.metadata.description ?? 'Uknown dApp description'}</Info>
+              <Info>NetworkId: {permittedChain.networkId}</Info>
+              <Info>Group: {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}</Info>
+            </List>
+          </InfoBox>
+        </Section>
+        <Section>
+          <AddressSelect
+            label="Signer address"
+            title="Select an address to sign with."
+            options={addressOptions}
+            defaultAddress={signerAddress}
+            onAddressChange={(newAddress) => setSignerAddress(newAddress)}
+            id="from-address"
+            hideEmptyAvailableBalance
+          />
+        </Section>
+        <ModalFooterButtons>
+          <ModalFooterButton secondary onClick={onReject}>
+            Reject
+          </ModalFooterButton>
+          <ModalFooterButton onClick={() => onApprove(signerAddress)}>Approve</ModalFooterButton>
+        </ModalFooterButtons>
+      </CenteredModal>
+    )
+  }
+
+  return null
 }
 
 export default WalletConnectModal
 
-const WalletConnectTitle = styled.img`
+const ImageStyled = styled.img`
   width: 12rem;
-`
-
-const Notice = styled.div`
-  border: solid 1px #ccc;
-  border-radius: 4px;
-  background-color: #f0f0f0;
-  font-size: 13px;
-  padding: 1em;
-  margin: 1em 0;
 `
 
 const List = styled.div`
@@ -224,15 +217,6 @@ const List = styled.div`
   margin-left: 1em;
 `
 
-const Name = styled.div`
-  font-size: 14px;
-`
-
-const Url = styled.div`
-  font-size: 10px;
-  margin-bottom: 1em;
-`
-
-const Description = styled.div`
+const Info = styled.div`
   margin-bottom: 1em;
 `
