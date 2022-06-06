@@ -16,6 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
+import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
+import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
 import { NetworkName } from '../utils/settings'
 
 export enum TxType {
@@ -35,3 +38,19 @@ export type PendingTx = {
   toAddress?: string
   amount?: bigint
 }
+
+export type DappTxData = BuildTransferTxData | BuildDeployContractTxData | BuildScriptTxData
+
+export type TxDataToModalType =
+  | {
+      modalType: TxType.TRANSFER
+      txData: BuildTransferTxData
+    }
+  | {
+      modalType: TxType.DEPLOY_CONTRACT
+      txData: BuildDeployContractTxData
+    }
+  | {
+      modalType: TxType.SCRIPT
+      txData: BuildScriptTxData
+    }
