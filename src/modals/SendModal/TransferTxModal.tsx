@@ -20,7 +20,7 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from 'alephium-web3'
 
 import { Client } from '../../contexts/global'
-import BuildTransferTx, { BuildTransferTxData, BuildTransferTxProps } from './BuildTransferTx'
+import BuildTransferTx, { BuildTransferTxProps, TransferTxData } from './BuildTransferTx'
 import CheckTransferTx from './CheckTransferTx'
 import TxModalFactory, { TxContext } from './TxModalFactory'
 
@@ -30,7 +30,7 @@ export type TransferTxModalProps = {
 }
 
 const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
-  const buildTransaction = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
+  const buildTransaction = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice } = transactionData
     const amountInSet = convertAlphToSet(alphAmount)
     const sweep = amountInSet === fromAddress.availableBalance
@@ -55,7 +55,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
     }
   }
 
-  const handleSend = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
+  const handleSend = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, alphAmount } = transactionData
 
     if (toAddress && context.unsignedTransaction) {

@@ -29,7 +29,7 @@ import {
   useIssueTokenAmount
 } from './utils'
 
-export interface BuildDeployContractTxData {
+export interface DeployContractTxData {
   fromAddress: Address
   bytecode: string
 
@@ -40,8 +40,8 @@ export interface BuildDeployContractTxData {
 }
 
 export interface BuildDeployContractTxProps {
-  data: PartialTxData<BuildDeployContractTxData, 'fromAddress'>
-  onSubmit: (data: BuildDeployContractTxData) => void
+  data: PartialTxData<DeployContractTxData, 'fromAddress'>
+  onSubmit: (data: DeployContractTxData) => void
   onCancel: () => void
 }
 

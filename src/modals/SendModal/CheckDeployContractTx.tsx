@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import InfoBox from '../../components/InfoBox'
-import { BuildDeployContractTxData } from './BuildDeployContractTx'
+import { DeployContractTxData } from './BuildDeployContractTx'
 import {
   AlphAmountInfo,
   BytecodeInfo,
@@ -29,7 +29,7 @@ import {
   ModalContent
 } from './utils'
 
-const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) => (
+const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<DeployContractTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

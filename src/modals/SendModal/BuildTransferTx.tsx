@@ -24,7 +24,7 @@ import { isAddressValid } from '../../utils/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import { ModalContent, PartialTxData, SendTxModalFooterButtons, ToAddressInput, useBuildTxCommon } from './utils'
 
-export interface BuildTransferTxData {
+export interface TransferTxData {
   fromAddress: Address
   toAddress: string
   alphAmount: string
@@ -33,8 +33,8 @@ export interface BuildTransferTxData {
 }
 
 export interface BuildTransferTxProps {
-  data: PartialTxData<BuildTransferTxData, 'fromAddress'>
-  onSubmit: (data: BuildTransferTxData) => void
+  data: PartialTxData<TransferTxData, 'fromAddress'>
+  onSubmit: (data: TransferTxData) => void
   onCancel: () => void
 }
 

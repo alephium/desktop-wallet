@@ -22,9 +22,9 @@ import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxPa
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
-import { BuildDeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
-import { BuildScriptTxData } from '../modals/SendModal/BuildScriptTx'
-import { BuildTransferTxData } from '../modals/SendModal/BuildTransferTx'
+import { DeployContractTxData } from '../modals/SendModal/BuildDeployContractTx'
+import { ScriptTxData } from '../modals/SendModal/BuildScriptTx'
+import { TransferTxData } from '../modals/SendModal/BuildTransferTx'
 import { DappTxData, TxDataToModalType, TxType } from '../types/transactions'
 import { extractErrorMsg } from '../utils/misc'
 import { useSendModalContext } from './sendModal'
@@ -126,7 +126,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       try {
         if (method === 'alph_signTransferTx') {
           const p = params as SignTransferTxParams
-          const txData: BuildTransferTxData = {
+          const txData: TransferTxData = {
             fromAddress: getAddressByHash(p.signerAddress),
             toAddress: p.destinations[0].address,
             alphAmount: p.destinations[0].alphAmount,
@@ -137,7 +137,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           setTxDataAndOpenModal({ txData, modalType: TxType.TRANSFER })
         } else if (method === 'alph_signContractCreationTx') {
           const p = params as SignDeployContractTxParams
-          const txData: BuildDeployContractTxData = {
+          const txData: DeployContractTxData = {
             fromAddress: getAddressByHash(p.signerAddress),
             bytecode: p.bytecode,
             initialAlphAmount: p.initialAlphAmount,
@@ -149,7 +149,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           setTxDataAndOpenModal({ txData, modalType: TxType.DEPLOY_CONTRACT })
         } else if (method === 'alph_signScriptTx') {
           const p = params as SignExecuteScriptTxParams
-          const txData: BuildScriptTxData = {
+          const txData: ScriptTxData = {
             fromAddress: getAddressByHash(p.signerAddress),
             bytecode: p.bytecode,
             alphAmount: p.alphAmount,
