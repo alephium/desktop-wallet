@@ -102,20 +102,20 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
 
-  const getTxContext = (): TxContext => ({
-    setIsSweeping: setIsSweeping,
-    sweepUnsignedTxs: sweepUnsignedTxs,
-    setSweepUnsignedTxs: setSweepUnsignedTxs,
-    setFees: setFees,
-    unsignedTransaction: unsignedTransaction,
-    setUnsignedTransaction: setUnsignedTransaction,
-    unsignedTxId: unsignedTxId,
-    setUnsignedTxId: setUnsignedTxId,
-    isSweeping: isSweeping,
-    consolidationRequired: consolidationRequired,
-    currentNetwork: currentNetwork,
-    setAddress: setAddress
-  })
+  const txContext: TxContext = {
+    setIsSweeping,
+    sweepUnsignedTxs,
+    setSweepUnsignedTxs,
+    setFees,
+    unsignedTransaction,
+    setUnsignedTransaction,
+    unsignedTxId,
+    setUnsignedTxId,
+    isSweeping,
+    consolidationRequired,
+    currentNetwork,
+    setAddress
+  }
 
   useEffect(() => {
     if (step !== 'send') {
@@ -153,7 +153,7 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
     if (wallet && client) {
       setIsLoading(true)
       try {
-        await buildTransaction(client, data, getTxContext())
+        await buildTransaction(client, data, txContext)
         if (!isConsolidateUTXOsModalVisible) {
           setStep('info-check')
         }
@@ -179,7 +179,6 @@ function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
     if (client && transactionData) {
       setIsLoading(true)
       try {
-        const txContext = getTxContext()
         const signature = await handleSend(client, transactionData, txContext)
 
         if (signature && requestEvent && walletConnectClient) {

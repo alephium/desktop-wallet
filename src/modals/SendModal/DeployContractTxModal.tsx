@@ -49,34 +49,33 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   }
 
   const handleSend = async (client: Client, txData: DeployContractTxData, context: TxContext) => {
-    if (context.unsignedTransaction !== undefined) {
+    if (context.unsignedTransaction) {
       const data = await client.signAndSendContractOrScript(
         txData.fromAddress,
         context.unsignedTxId,
         context.unsignedTransaction.unsignedTx,
         context.currentNetwork
       )
+
       return data.signature
-    } else {
-      throw Error('No unsignedTransaction available')
     }
+
+    throw Error('No unsignedTransaction available')
   }
 
   const getWalletConnectResult = (context: TxContext, signature: string): SignDeployContractTxResult => {
-    if (context.unsignedTransaction !== undefined) {
-      const contractId = binToHex(contractIdFromAddress(contractAddress))
+    if (context.unsignedTransaction)
       return {
         fromGroup: context.unsignedTransaction.fromGroup,
         toGroup: context.unsignedTransaction.toGroup,
         unsignedTx: context.unsignedTransaction.unsignedTx,
         txId: context.unsignedTxId,
-        signature: signature,
-        contractAddress: contractAddress,
-        contractId: contractId
+        signature,
+        contractAddress,
+        contractId: binToHex(contractIdFromAddress(contractAddress))
       }
-    } else {
-      throw Error('No unsignedTransaction available')
-    }
+
+    throw Error('No unsignedTransaction available')
   }
 
   return (
