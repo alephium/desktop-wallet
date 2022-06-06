@@ -28,7 +28,7 @@ import { NetworkStatus } from '../types/network'
 import { letSneakyAddressMetadataImpLoose } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
-import { stringToDoubleSHA215HexString } from '../utils/misc'
+import { stringToDoubleSHA512HexString } from '../utils/misc'
 import {
   deprecatedSettingsExist,
   getNetworkName,
@@ -143,7 +143,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       if (!wallet) return
       if (passphrase) {
         wallet = getWalletFromMnemonic(`${wallet.mnemonic} ${passphrase}`)
-        const _passphraseDoubleHashed = stringToDoubleSHA215HexString(passphrase)
+        const _passphraseDoubleHashed = stringToDoubleSHA512HexString(passphrase)
         setPassphraseDoubleHashed(_passphraseDoubleHashed)
       }
 
