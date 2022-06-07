@@ -32,7 +32,7 @@ import { walletGenerate } from '@alephium/sdk'
 // address metadata storage (store *and* load) at a period in time.
 //
 
-test('_20220527_120000', () => {
+describe('_20220527_120000', () => {
   const settings = {
     isMain: true,
     label: "test",
@@ -76,21 +76,24 @@ test('_20220527_120000', () => {
     localStorage.setItem(_constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
   }
 
-  accounts.forEach(({ accountName, index, settings }) =>
-    _storeAddressMetadataOfAccount(accountName, index, settings)
-  )
+  it('properly encrypts and decrypts multiple user wallets', () => {
+    accounts.forEach(({ accountName, index, settings }) =>
+      _storeAddressMetadataOfAccount(accountName, index, settings)
+    )
 
-  accounts.forEach(({ accountName, wallet }) =>
-    migrate._20220527_120000(wallet.mnemonic, accountName)
-  )
+    accounts.forEach(({ accountName, wallet }) =>
+      migrate._20220527_120000(wallet.mnemonic, accountName)
+    )
 
-  accounts.forEach(({ accountName, wallet, index, settings }) => {
-    const addresses = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, accountName)
-    expect(addresses[0]).toStrictEqual({...settings, index })
+    accounts.forEach(({ accountName, wallet, index, settings }) => {
+      const addresses = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, accountName)
+      expect(addresses[0]).toStrictEqual({...settings, index })
+    })
   })
 
-  // Make sure it's not the same wallet used for encryption
-  const accountFirst = loadStoredAddressesMetadataOfAccount(accounts[0].wallet.mnemonic, accounts[0].accountName)
-  const accountLast = loadStoredAddressesMetadataOfAccount(accounts[accounts.length - 1].wallet.mnemonic, accounts[accounts.length - 1].accountName)
-  expect(accountFirst).not.toStrictEqual(accountLast)
+  it('does not use the same wallet to encrypt address metadata', () => {
+    const accountFirst = loadStoredAddressesMetadataOfAccount(accounts[0].wallet.mnemonic, accounts[0].accountName)
+    const accountLast = loadStoredAddressesMetadataOfAccount(accounts[accounts.length - 1].wallet.mnemonic, accounts[accounts.length - 1].accountName)
+    expect(accountFirst).not.toStrictEqual(accountLast)
+  })
 })
