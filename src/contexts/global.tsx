@@ -147,7 +147,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         setPassphraseDoubleHashed(_passphraseDoubleHashed)
       }
 
-      migrateUserData(password)
+      migrateUserData(wallet.mnemonic, accountName)
 
       // Based on the user opening the wallet once a week (52 / 4 = 13)
       // It will roll a die between 1 and 13 and if it lands on 1, new address metadata is created
