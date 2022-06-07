@@ -31,21 +31,19 @@ const Storage = getStorage()
 
 const Router = () => {
   const { newLatestVersion } = useGlobalContext()
-  const accountNames = Storage.list()
-  const hasWallet = accountNames.length > 0
+  const walletNames = Storage.list()
+  const hasWallet = walletNames.length > 0
 
   return (
-    <>
-      <AnimateSharedLayout type="crossfade">
-        {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
-        <Routes>
-          <Route path="/create/:step" element={<CreateWalletRoutes />} />
-          <Route path="/import/:step" element={<ImportWalletRoutes />} />
-          <Route path="/wallet/*" element={<WalletRoutes />} />
-          <Route path="" element={<HomePage hasWallet={hasWallet} accountNames={accountNames} />} />
-        </Routes>
-      </AnimateSharedLayout>
-    </>
+    <AnimateSharedLayout type="crossfade">
+      {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
+      <Routes>
+        <Route path="/create/:step" element={<CreateWalletRoutes />} />
+        <Route path="/import/:step" element={<ImportWalletRoutes />} />
+        <Route path="/wallet/*" element={<WalletRoutes />} />
+        <Route path="" element={<HomePage hasWallet={hasWallet} walletNames={walletNames} />} />
+      </Routes>
+    </AnimateSharedLayout>
   )
 }
 

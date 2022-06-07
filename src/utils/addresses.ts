@@ -42,16 +42,16 @@ export const checkAddressValidity = (address: string) => {
 
 const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
 
-export const loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-  const data = localStorage.getItem(constructMetadataKey(accountName))
+export const loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
+  const data = localStorage.getItem(constructMetadataKey(walletName))
 
   if (data === null) return []
 
   return JSON.parse(data)
 }
 
-export const storeAddressMetadataOfAccount = (accountName: string, index: number, settings: AddressSettings) => {
-  const addressesMetadata = loadStoredAddressesMetadataOfAccount(accountName)
+export const storeAddressMetadataOfWallet = (walletName: string, index: number, settings: AddressSettings) => {
+  const addressesMetadata = loadStoredAddressesMetadataOfWallet(walletName)
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
@@ -63,11 +63,11 @@ export const storeAddressMetadataOfAccount = (accountName: string, index: number
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
+  localStorage.setItem(constructMetadataKey(walletName), JSON.stringify(addressesMetadata))
 }
 
-export const deleteStoredAddressMetadataOfAccount = (accountName: string) => {
-  localStorage.removeItem(constructMetadataKey(accountName))
+export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
+  localStorage.removeItem(constructMetadataKey(walletName))
 }
 
 export const sortAddressList = (addresses: Address[]): Address[] =>

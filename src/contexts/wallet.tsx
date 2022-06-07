@@ -17,24 +17,24 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wallet } from '@alephium/sdk'
-import { createContext, Dispatch, FC, SetStateAction, useContext, useState } from 'react'
+import { createContext, FC, useContext, useState } from 'react'
 
 export interface WalletContextType {
   plainWallet?: Wallet | undefined
-  setPlainWallet: Dispatch<SetStateAction<Wallet | undefined>>
+  setPlainWallet: (w: Wallet | undefined) => void
   mnemonic: string
-  setMnemonic: Dispatch<SetStateAction<string>>
-  accountName: string
-  setAccountName: Dispatch<SetStateAction<string>>
+  setMnemonic: (m: string) => void
+  walletName: string
+  setWalletName: (w: string) => void
   password: string
-  setPassword: Dispatch<SetStateAction<string>>
+  setPassword: (p: string) => void
 }
 
 export const initialWalletContext: WalletContextType = {
   mnemonic: '',
   setMnemonic: () => null,
-  accountName: '',
-  setAccountName: () => null,
+  walletName: '',
+  setWalletName: () => null,
   password: '',
   setPassword: () => null,
   setPlainWallet: () => null
@@ -43,14 +43,14 @@ export const initialWalletContext: WalletContextType = {
 export const WalletContext = createContext<WalletContextType>(initialWalletContext)
 
 export const WalletContextProvider: FC = ({ children }) => {
-  const [accountName, setAccountName] = useState('')
+  const [walletName, setWalletName] = useState('')
   const [password, setPassword] = useState('')
   const [plainWallet, setPlainWallet] = useState<Wallet>()
   const [mnemonic, setMnemonic] = useState('')
 
   return (
     <WalletContext.Provider
-      value={{ accountName, setAccountName, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
+      value={{ walletName, setWalletName, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
     >
       {children}
     </WalletContext.Provider>

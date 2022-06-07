@@ -29,11 +29,7 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
-import {
-  AddressSettings,
-  loadStoredAddressesMetadataOfAccount,
-  storeAddressMetadataOfAccount
-} from '../utils/addresses'
+import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
@@ -158,7 +154,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
   const {
-    currentAccountName,
+    activeWalletName,
     wallet,
     client,
     currentNetwork,
@@ -213,7 +209,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const updateAddressSettings = (address: Address, settings: AddressSettings) => {
-    storeAddressMetadataOfAccount(currentAccountName, address.index, settings)
+    storeAddressMetadataOfWallet(activeWalletName, address.index, settings)
     address.settings = settings
     setAddress(address)
   }
@@ -286,11 +282,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
-      storeAddressMetadataOfAccount(currentAccountName, newAddress.index, newAddress.settings)
+      storeAddressMetadataOfWallet(activeWalletName, newAddress.index, newAddress.settings)
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [currentAccountName, fetchAndStoreAddressesData, setAddress]
+    [activeWalletName, fetchAndStoreAddressesData, setAddress]
   )
 
   const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
@@ -315,9 +311,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
       console.log('🥇 Initializing current network addresses')
-      if (!currentAccountName || !wallet) return
+      if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfAccount(currentAccountName)
+      const addressesMetadata = loadStoredAddressesMetadataOfWallet(activeWalletName)
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(
@@ -345,7 +341,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
     if (networkStatus !== 'online') return
 
-    // Clean state when locking the wallet or changing accounts
+    // Clean state when locking the wallet or changing wallets
     if (wallet === undefined || wallet !== previousWallet.current) {
       console.log('🧽 Cleaning state.')
       setAddressesState(new Map())
@@ -359,7 +355,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, currentAccountName, wallet, explorerApiHost, nodeHost])
+  }, [currentNetwork, networkStatus, client, activeWalletName, wallet, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
