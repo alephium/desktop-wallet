@@ -29,13 +29,13 @@ import {
   useIssueTokenAmount
 } from '../utils'
 
-export interface BuildDeployContractTxProps {
+export interface DeployContractBuildTxModalContentProps {
   data: PartialTxData<DeployContractTxData, 'fromAddress'>
   onSubmit: (data: DeployContractTxData) => void
   onCancel: () => void
 }
 
-const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContractTxProps) => {
+const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
   const [
     fromAddress,
     FromAddressSelect,
@@ -86,4 +86,4 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   )
 }
 
-export default BuildDeployContractTx
+export default DeployContractBuildTxModalContent

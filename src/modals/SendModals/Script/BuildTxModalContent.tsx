@@ -22,13 +22,13 @@ import { ScriptTxData } from '../../../types/transactions'
 import { isAmountWithinRange } from '../../../utils/transactions'
 import { ModalContent, PartialTxData, SendTxModalFooterButtons, useBuildTxCommon, useBytecode } from '../utils'
 
-export interface BuildScriptTxProps {
+export interface ScriptBuildTxModalContentProps {
   data: PartialTxData<ScriptTxData, 'fromAddress'>
   onSubmit: (data: ScriptTxData) => void
   onCancel: () => void
 }
 
-const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
+const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxModalContentProps) => {
   const [
     fromAddress,
     FromAddressSelect,
@@ -76,4 +76,4 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
   )
 }
 
-export default BuildScriptTx
+export default ScriptBuildTxModalContent

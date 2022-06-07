@@ -24,13 +24,13 @@ import { isAddressValid } from '../../../utils/addresses'
 import { isAmountWithinRange } from '../../../utils/transactions'
 import { ModalContent, PartialTxData, SendTxModalFooterButtons, ToAddressInput, useBuildTxCommon } from '../utils'
 
-export interface BuildTransferTxProps {
+export interface TransferBuildTxModalContentProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>
   onSubmit: (data: TransferTxData) => void
   onCancel: () => void
 }
 
-const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => {
+const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
   const [
     fromAddress,
     FromAddressSelect,
@@ -84,7 +84,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
   )
 }
 
-export default BuildTransferTx
+export default TransferBuildTxModalContent
 
 function useStateWithError<T>(initialValue: T) {
   const [value, setValue] = useState({ value: initialValue, error: '' })
