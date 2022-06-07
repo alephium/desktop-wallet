@@ -67,8 +67,8 @@ export type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = 
   buildTitle: string
   initialTxData: PT
   onClose: () => void
-  BuildTx: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element
-  CheckTx: (props: { data: T; fees: bigint; onSend: () => void; onCancel: () => void }) => JSX.Element
+  BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element
+  CheckTxModalContent: (props: { data: T; fees: bigint; onSend: () => void; onCancel: () => void }) => JSX.Element
   buildTransaction: (client: Client, data: T, context: TxContext) => Promise<void>
   handleSend: (client: Client, data: T, context: TxContext) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
@@ -78,8 +78,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   buildTitle,
   initialTxData,
   onClose,
-  BuildTx,
-  CheckTx,
+  BuildTxModalContent,
+  CheckTxModalContent,
   buildTransaction,
   handleSend,
   getWalletConnectResult
@@ -222,10 +222,14 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   return (
     <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={modalHeader}>
       {step === 'send' && (
-        <BuildTx data={transactionData ?? initialTxData} onSubmit={buildTransactionExtended} onCancel={onClose} />
+        <BuildTxModalContent
+          data={transactionData ?? initialTxData}
+          onSubmit={buildTransactionExtended}
+          onCancel={onClose}
+        />
       )}
       {step === 'info-check' && transactionData && fees && (
-        <CheckTx
+        <CheckTxModalContent
           data={transactionData}
           fees={fees}
           onSend={passwordRequirement ? confirmPassword : handleSendExtended}

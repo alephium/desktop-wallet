@@ -22,12 +22,12 @@ import { SignExecuteScriptTxResult } from 'alephium-web3'
 import { Client } from '../../../contexts/global'
 import { ScriptTxData } from '../../../types/transactions'
 import SendModal, { TxContext } from '../SendModal'
-import { BuildScriptTxProps } from './BuildTxModalContent'
-import BuildScriptTx from './BuildTxModalContent'
-import CheckScriptTx from './CheckTxModalContent'
+import { ScriptBuildTxModalContentProps } from './BuildTxModalContent'
+import ScriptBuildTxModalContent from './BuildTxModalContent'
+import ScriptCheckTxModalContent from './CheckTxModalContent'
 
 export type ScriptTxModalProps = {
-  initialTxData: BuildScriptTxProps['data']
+  initialTxData: ScriptBuildTxModalContentProps['data']
   onClose: () => void
 }
 
@@ -79,8 +79,8 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
       buildTitle="Call Contract"
       initialTxData={initialTxData}
       onClose={onClose}
-      BuildTx={BuildScriptTx}
-      CheckTx={CheckScriptTx}
+      BuildTxModalContent={ScriptBuildTxModalContent}
+      CheckTxModalContent={ScriptCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}

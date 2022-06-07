@@ -23,11 +23,11 @@ import { useState } from 'react'
 import { Client } from '../../../contexts/global'
 import { DeployContractTxData } from '../../../types/transactions'
 import SendModal, { TxContext } from '../SendModal'
-import BuildDeployContractTx, { BuildDeployContractTxProps } from './BuildTxModalContent'
-import CheckDeployContractTx from './CheckTxModalContent'
+import DeployContractBuildTxModalContent, { DeployContractBuildTxModalContentProps } from './BuildTxModalContent'
+import DeployContractCheckTxModalContent from './CheckTxModalContent'
 
 export type DeployContractTxModalProps = {
-  initialTxData: BuildDeployContractTxProps['data']
+  initialTxData: DeployContractBuildTxModalContentProps['data']
   onClose: () => void
 }
 
@@ -84,8 +84,8 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
       buildTitle="Deploy Contract"
       initialTxData={initialTxData}
       onClose={onClose}
-      BuildTx={BuildDeployContractTx}
-      CheckTx={CheckDeployContractTx}
+      BuildTxModalContent={DeployContractBuildTxModalContent}
+      CheckTxModalContent={DeployContractCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}

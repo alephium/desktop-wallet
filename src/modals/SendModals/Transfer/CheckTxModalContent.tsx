@@ -28,7 +28,7 @@ import {
   ModalContent
 } from '../utils'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<TransferTxData>) => (
+const TransferCheckTxModalContent = ({ data, fees, onSend, onCancel }: CheckTxProps<TransferTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
@@ -40,4 +40,4 @@ const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<Transfer
   </>
 )
 
-export default CheckTransferTx
+export default TransferCheckTxModalContent
