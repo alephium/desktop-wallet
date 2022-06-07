@@ -34,7 +34,7 @@ import {
   loadStoredAddressesMetadataOfAccount,
   storeAddressMetadataOfAccount
 } from '../utils/addresses'
-import { stringToDoubleSHA215HexString } from '../utils/misc'
+import { stringToDoubleSHA256HexString } from '../utils/misc'
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
@@ -186,7 +186,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const getAccountKey = useCallback(
-    () => stringToDoubleSHA215HexString(`${currentAccountName}-${passphraseDoubleHashed}`),
+    () => stringToDoubleSHA256HexString(`${currentAccountName}-${passphraseDoubleHashed}`),
     [currentAccountName, passphraseDoubleHashed]
   )
 

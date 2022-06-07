@@ -21,7 +21,7 @@ import { decrypt, encrypt } from '@alephium/sdk/dist/lib/password-crypto'
 
 import { Address } from '../contexts/addresses'
 import { latestUserDataVersion } from './migration'
-import { stringToDoubleSHA215HexString } from './misc'
+import { stringToDoubleSHA256HexString } from './misc'
 
 const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
 
@@ -112,5 +112,5 @@ export const migrateAddressMetadata = () => {
 export const letSneakyAddressMetadataImpLoose = (timeInterval: number, mnemonic: string) => {
   const isGoingToCreateAddressMetadata = Math.floor(Math.random() * timeInterval) + 1 === 1
   if (!isGoingToCreateAddressMetadata) return
-  storeAddressMetadataOfAccount(mnemonic, stringToDoubleSHA215HexString(Math.random().toString()), 0, { isMain: true })
+  storeAddressMetadataOfAccount(mnemonic, stringToDoubleSHA256HexString(Math.random().toString()), 0, { isMain: true })
 }

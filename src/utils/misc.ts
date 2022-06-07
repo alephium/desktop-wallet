@@ -41,7 +41,7 @@ export const openInWebBrowser = (url: string) => {
   }
 }
 
-export const stringToDoubleSHA512HexString = (data: string): string => {
+export const stringToDoubleSHA256HexString = (data: string): string => {
   let hash
 
   hash = createHash('sha512')
