@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { encrypt } from '@alephium/sdk/dist/lib/password-crypto'
+
 import { constructMetadataKey } from './addresses'
 
 export const latestUserDataVersion = '2022-05-27T12:00:00Z'
@@ -38,7 +39,11 @@ export const migrateUserData = (mnemonic: string, accountName: string) => {
 export const _20220527_120000 = (mnemonic: string, accountName: string) => {
   const key = constructMetadataKey(accountName)
   const json = localStorage.getItem(key)
+  if (json === null) return
+
   const addressSettingsList = JSON.parse(json)
+
+  alert(JSON.stringify(addressSettingsList))
 
   //
   // Means the old format is being used, which is not encrypted.
