@@ -287,8 +287,6 @@ export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string
 export type CheckTxProps<T> = {
   data: T
   fees: bigint
-  onSend: () => void
-  onCancel: () => void
 }
 
 export const FromAddressInfo = ({ fromAddress }: { fromAddress: Address }) => (
@@ -309,13 +307,4 @@ export const FeeInfo = ({ fees }: { fees: bigint }) => (
 
 export const BytecodeInfo = ({ bytecode }: { bytecode: string }) => (
   <InfoBox text={bytecode} label="Bytecode" wordBreak />
-)
-
-export const CheckTxFooter = ({ onSend, onCancel }: { onSend: () => void; onCancel: () => void }) => (
-  <ModalFooterButtons>
-    <ModalFooterButton secondary onClick={onCancel}>
-      Back
-    </ModalFooterButton>
-    <ModalFooterButton onClick={onSend}>Send</ModalFooterButton>
-  </ModalFooterButtons>
 )
