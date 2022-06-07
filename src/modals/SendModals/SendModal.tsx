@@ -31,7 +31,7 @@ import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-da
 import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
 import { extractErrorMsg } from '../../utils/misc'
 import { NetworkName } from '../../utils/settings'
-import CenteredModal from '../CenteredModal'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
 
 export type Step = 'send' | 'info-check' | 'password-check'
@@ -68,7 +68,7 @@ export type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = 
   initialTxData: PT
   onClose: () => void
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element
-  CheckTxModalContent: (props: { data: T; fees: bigint; onSend: () => void; onCancel: () => void }) => JSX.Element
+  CheckTxModalContent: (props: { data: T; fees: bigint }) => JSX.Element
   buildTransaction: (client: Client, data: T, context: TxContext) => Promise<void>
   handleSend: (client: Client, data: T, context: TxContext) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
@@ -229,12 +229,17 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         />
       )}
       {step === 'info-check' && transactionData && fees && (
-        <CheckTxModalContent
-          data={transactionData}
-          fees={fees}
-          onSend={passwordRequirement ? confirmPassword : handleSendExtended}
-          onCancel={() => setStep('send')}
-        />
+        <>
+          <CheckTxModalContent data={transactionData} fees={fees} />
+          <ModalFooterButtons>
+            <ModalFooterButton secondary onClick={() => setStep('send')}>
+              Back
+            </ModalFooterButton>
+            <ModalFooterButton onClick={passwordRequirement ? confirmPassword : handleSendExtended}>
+              Send
+            </ModalFooterButton>
+          </ModalFooterButtons>
+        </>
       )}
       {step === 'password-check' && passwordRequirement && (
         <PasswordConfirmation
