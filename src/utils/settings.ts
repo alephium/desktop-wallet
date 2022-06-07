@@ -43,6 +43,7 @@ export type UpdateSettingsFunctionSignature = <T extends keyof Settings>(
 type DeprecatedNetworkSettings = Settings['network']
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
 export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, PartialBy<Settings['network'], 'networkId'>> = {
   mainnet: {
     networkId: 0,

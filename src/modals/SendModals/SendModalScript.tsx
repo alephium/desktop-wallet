@@ -45,7 +45,7 @@ const ScriptTxModal = () => {
 
   return (
     <SendModal
-      buildTitle="Call Contract"
+      title="Call Contract"
       initialTxData={initialTxData}
       onClose={closeSendModal}
       BuildTxModalContent={ScriptBuildTxModalContent}

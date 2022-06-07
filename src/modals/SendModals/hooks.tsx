@@ -29,7 +29,7 @@ import Input from '../../components/Inputs/Input'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 
-export function useBytecodeInputComponent(initialBytecode: string) {
+export const useBytecodeInputComponent = (initialBytecode: string) => {
   const [bytecode, setBytecode] = useState(initialBytecode)
   const BytecodeInput = (
     <Input id="code" label="bytecode" value={bytecode} onChange={(e) => setBytecode(e.target.value)} />
@@ -40,9 +40,9 @@ export function useBytecodeInputComponent(initialBytecode: string) {
 
 export const useBuildTxCommonComponents = (
   initialFromAddress: Address,
-  initialAlphAmount: string | undefined,
-  initialGasAmount: number | undefined,
-  initialGasPrice: string | undefined
+  initialAlphAmount?: string,
+  initialGasAmount?: number,
+  initialGasPrice?: string
 ) => {
   const theme = useTheme()
   const { addresses } = useAddressesContext()

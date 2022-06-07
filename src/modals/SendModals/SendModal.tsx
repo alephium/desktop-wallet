@@ -34,15 +34,9 @@ import { NetworkName } from '../../utils/settings'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
 import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
 
-export type Step = 'send' | 'info-check' | 'password-check'
+type Step = 'build-tx' | 'info-check' | 'password-check'
 
-export const stepToTitle: { [k in Step]: string } = {
-  send: 'Send',
-  'info-check': 'Review',
-  'password-check': 'Password Check'
-}
-
-export type UnsignedTx = {
+type UnsignedTx = {
   fromGroup: number
   toGroup: number
   unsignedTx: string
@@ -63,8 +57,8 @@ export type TxContext = {
   setAddress: (address: Address) => void
 }
 
-export type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
-  buildTitle: string
+type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
+  title: string
   initialTxData: PT
   onClose: () => void
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element
@@ -75,7 +69,7 @@ export type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = 
 }
 
 function SendModal<PT extends { fromAddress: Address }, T extends PT>({
-  buildTitle,
+  title,
   initialTxData,
   onClose,
   BuildTxModalContent,
@@ -93,10 +87,10 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     },
     setSnackbarMessage
   } = useGlobalContext()
-  const [title, setTitle] = useState(buildTitle)
+  const [modalTitle, setModalTitle] = useState(title)
   const [transactionData, setTransactionData] = useState<T | undefined>()
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState<Step>('send')
+  const [step, setStep] = useState<Step>('build-tx')
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
@@ -125,12 +119,14 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }
 
   useEffect(() => {
-    if (step !== 'send') {
-      setTitle(stepToTitle[step])
-    } else {
-      setTitle(buildTitle)
+    if (step === 'info-check') {
+      setModalTitle('Review')
+    } else if (step === 'password-check') {
+      setModalTitle('Password Check')
+    } else if (step === 'build-tx') {
+      setModalTitle(title)
     }
-  }, [buildTitle, setStep, setTitle, step])
+  }, [step, title])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
@@ -220,8 +216,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     }
   }
   return (
-    <CenteredModal title={title} onClose={onClose} isLoading={isLoading} header={modalHeader}>
-      {step === 'send' && (
+    <CenteredModal title={modalTitle} onClose={onClose} isLoading={isLoading} header={modalHeader}>
+      {step === 'build-tx' && (
         <BuildTxModalContent
           data={transactionData ?? initialTxData}
           onSubmit={buildTransactionExtended}
@@ -232,7 +228,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         <>
           <CheckTxModalContent data={transactionData} fees={fees} />
           <ModalFooterButtons>
-            <ModalFooterButton secondary onClick={() => setStep('send')}>
+            <ModalFooterButton secondary onClick={() => setStep('build-tx')}>
               Back
             </ModalFooterButton>
             <ModalFooterButton onClick={passwordRequirement ? confirmPassword : handleSendExtended}>
