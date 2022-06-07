@@ -16,14 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+export type PartialTxData<T, K extends keyof T> = {
+  [P in keyof Omit<T, K>]?: T[P]
+} & Pick<T, K>
 
-import { Address } from '../../contexts/addresses'
-
-export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
-  const amountIncludingFees = amountInSet + fees
-  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
-  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
-  return expectedAmount
+export type CheckTxProps<T> = {
+  data: T
+  fees: bigint
 }

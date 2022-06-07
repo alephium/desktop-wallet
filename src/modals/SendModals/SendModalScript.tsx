@@ -19,25 +19,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from 'alephium-web3'
 
+import InfoBox from '../../components/InfoBox'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
 import useDappTxData from '../../hooks/useDappTxData'
 import { ScriptTxData } from '../../types/transactions'
 import { isAmountWithinRange } from '../../utils/transactions'
+import AlphAmountInfoBox from './AlphAmountInfoBox'
+import BuildTxFooterButtons from './BuildTxFooterButtons'
+import { useBuildTxCommonComponents, useBytecodeInputComponent } from './hooks'
+import { ModalInputFields } from './ModalInputFields'
 import SendModal, { TxContext } from './SendModal'
-import {
-  AlphAmountInfo,
-  BytecodeInfo,
-  CheckTxProps,
-  expectedAmount,
-  FeeInfo,
-  FromAddressInfo,
-  ModalContent,
-  PartialTxData,
-  SendTxModalFooterButtons,
-  useBuildTxCommon,
-  useBytecode
-} from './utils'
+import { CheckTxProps, PartialTxData } from './types'
+import { expectedAmount } from './utils'
 
 interface ScriptBuildTxModalContentProps {
   data: PartialTxData<ScriptTxData, 'fromAddress'>
@@ -64,12 +58,12 @@ const ScriptTxModal = () => {
 }
 
 const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) => (
-  <ModalContent>
-    <FromAddressInfo fromAddress={data.fromAddress} />
-    <BytecodeInfo bytecode={data.bytecode} />
-    <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
-    <FeeInfo fees={fees} />
-  </ModalContent>
+  <>
+    <InfoBox label="From address" text={data.fromAddress.hash} wordBreak />
+    <InfoBox label="Bytecode" text={data.bytecode} wordBreak />
+    <AlphAmountInfoBox label="Amount" amount={expectedAmount(data, fees)} />
+    <AlphAmountInfoBox label="Expected fee" amount={fees} fullPrecision />
+  </>
 )
 
 const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxModalContentProps) => {
@@ -82,8 +76,8 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     gasPrice,
     GasSettingsExpandableSection,
     isCommonReady
-  ] = useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
+  ] = useBuildTxCommonComponents(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const [bytecode, BytecodeInput] = useBytecodeInputComponent(data.bytecode ?? '')
 
   if (fromAddress === undefined) {
     onCancel()
@@ -97,13 +91,13 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
 
   return (
     <>
-      <ModalContent>
+      <ModalInputFields>
         {FromAddressSelect}
         {AlphAmountInput}
         {BytecodeInput}
-      </ModalContent>
+      </ModalInputFields>
       {GasSettingsExpandableSection}
-      <SendTxModalFooterButtons
+      <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: data.fromAddress,

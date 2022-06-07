@@ -21,25 +21,20 @@ import { SignTransferTxResult } from 'alephium-web3'
 import { useState } from 'react'
 
 import InfoBox from '../../components/InfoBox'
+import Input from '../../components/Inputs/Input'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
 import useDappTxData from '../../hooks/useDappTxData'
 import { TransferTxData } from '../../types/transactions'
 import { isAddressValid } from '../../utils/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
+import AlphAmountInfoBox from './AlphAmountInfoBox'
+import BuildTxFooterButtons from './BuildTxFooterButtons'
+import { useBuildTxCommonComponents } from './hooks'
+import { ModalInputFields } from './ModalInputFields'
 import SendModal, { TxContext } from './SendModal'
-import {
-  AlphAmountInfo,
-  CheckTxProps,
-  expectedAmount,
-  FeeInfo,
-  FromAddressInfo,
-  ModalContent,
-  PartialTxData,
-  SendTxModalFooterButtons,
-  ToAddressInput,
-  useBuildTxCommon
-} from './utils'
+import { CheckTxProps, PartialTxData } from './types'
+import { expectedAmount } from './utils'
 
 interface TransferBuildTxModalContentProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>
@@ -66,12 +61,12 @@ const TransferTxModal = () => {
 }
 
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => (
-  <ModalContent>
-    <FromAddressInfo fromAddress={data.fromAddress} />
-    <InfoBox text={data.toAddress} label="To address" wordBreak />
-    <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
-    <FeeInfo fees={fees} />
-  </ModalContent>
+  <>
+    <InfoBox label="From address" text={data.fromAddress.hash} wordBreak />
+    <InfoBox label="To address" text={data.toAddress} wordBreak />
+    <AlphAmountInfoBox label="Amount" amount={expectedAmount(data, fees)} />
+    <AlphAmountInfoBox label="Expected fee" amount={fees} fullPrecision />
+  </>
 )
 
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
@@ -84,7 +79,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     gasPrice,
     GasSettingsExpandableSection,
     isCommonReady
-  ] = useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  ] = useBuildTxCommonComponents(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
   const handleAddressChange = (value: string) => {
@@ -105,13 +100,19 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 
   return (
     <>
-      <ModalContent>
+      <ModalInputFields>
         {FromAddressSelect}
-        <ToAddressInput toAddress={toAddress} handleAddressChange={handleAddressChange} />
+        <Input
+          label="Recipient's address"
+          value={toAddress.value}
+          onChange={(e) => handleAddressChange(e.target.value)}
+          error={toAddress.error}
+          isValid={toAddress.value.length > 0 && !toAddress.error}
+        />
         {AlphAmountInput}
-      </ModalContent>
+      </ModalInputFields>
       {GasSettingsExpandableSection}
-      <SendTxModalFooterButtons
+      <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: fromAddress,

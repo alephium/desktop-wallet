@@ -21,26 +21,19 @@ import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from 'ale
 import { useState } from 'react'
 
 import InfoBox from '../../components/InfoBox'
+import Input from '../../components/Inputs/Input'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
 import useDappTxData from '../../hooks/useDappTxData'
 import { DeployContractTxData } from '../../types/transactions'
 import { isAmountWithinRange } from '../../utils/transactions'
+import AlphAmountInfoBox from './AlphAmountInfoBox'
+import BuildTxFooterButtons from './BuildTxFooterButtons'
+import { useBuildTxCommonComponents, useBytecodeInputComponent } from './hooks'
+import { ModalInputFields } from './ModalInputFields'
 import SendModal, { TxContext } from './SendModal'
-import {
-  AlphAmountInfo,
-  BytecodeInfo,
-  CheckTxProps,
-  expectedAmount,
-  FeeInfo,
-  FromAddressInfo,
-  ModalContent,
-  PartialTxData,
-  SendTxModalFooterButtons,
-  useBuildTxCommon,
-  useBytecode,
-  useIssueTokenAmount
-} from './utils'
+import { CheckTxProps, PartialTxData } from './types'
+import { expectedAmount } from './utils'
 
 interface DeployContractBuildTxModalContentProps {
   data: PartialTxData<DeployContractTxData, 'fromAddress'>
@@ -98,13 +91,13 @@ const DeployContractTxModal = () => {
 }
 
 const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployContractTxData>) => (
-  <ModalContent>
-    <FromAddressInfo fromAddress={data.fromAddress} />
-    <BytecodeInfo bytecode={data.bytecode} />
-    <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+  <>
+    <InfoBox label="From address" text={data.fromAddress.hash} wordBreak />
+    <InfoBox label="Bytecode" text={data.bytecode} wordBreak />
+    <AlphAmountInfoBox label="Amount" amount={expectedAmount(data, fees)} />
     {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label="Issue token amount" wordBreak />}
-    <FeeInfo fees={fees} />
-  </ModalContent>
+    <AlphAmountInfoBox label="Expected fee" amount={fees} fullPrecision />
+  </>
 )
 
 const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
@@ -117,9 +110,9 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     gasPrice,
     GasSettingsExpandableSection,
     isCommonReady
-  ] = useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, BytecodeInput] = useBytecode(data.bytecode ?? '')
-  const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
+  ] = useBuildTxCommonComponents(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
+  const [bytecode, BytecodeInput] = useBytecodeInputComponent(data.bytecode ?? '')
+  const [issueTokenAmount, setIssueTokenAmount] = useState(data.issueTokenAmount ?? '')
 
   if (fromAddress === undefined) {
     onCancel()
@@ -133,14 +126,20 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
 
   return (
     <>
-      <ModalContent>
+      <ModalInputFields>
         {FromAddressSelect}
         {BytecodeInput}
         {AlphAmountInput}
-        {IssueTokenAmount}
-      </ModalContent>
+        <Input
+          id="issue-token-amount"
+          label="Tokens to issue (optional)"
+          value={issueTokenAmount}
+          type="number"
+          onChange={(e) => setIssueTokenAmount(e.target.value)}
+        />
+      </ModalInputFields>
       {GasSettingsExpandableSection}
-      <SendTxModalFooterButtons
+      <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: data.fromAddress,

@@ -16,14 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
 
-import { Address } from '../../contexts/addresses'
-
-export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
-  const amountIncludingFees = amountInSet + fees
-  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
-  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
-  return expectedAmount
+interface BuildTxFooterButtons {
+  onSubmit: () => void
+  onCancel: () => void
+  isSubmitButtonActive: boolean | string
 }
+
+const BuildTxFooterButtons = ({ onSubmit, onCancel, isSubmitButtonActive }: BuildTxFooterButtons) => (
+  <ModalFooterButtons>
+    <ModalFooterButton secondary onClick={onCancel}>
+      Cancel
+    </ModalFooterButton>
+    <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
+      Check
+    </ModalFooterButton>
+  </ModalFooterButtons>
+)
+
+export default BuildTxFooterButtons
