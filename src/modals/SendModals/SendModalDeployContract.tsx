@@ -78,7 +78,7 @@ const DeployContractTxModal = () => {
 
   return (
     <SendModal
-      buildTitle="Deploy Contract"
+      title="Deploy Contract"
       initialTxData={initialTxData}
       onClose={closeSendModal}
       BuildTxModalContent={DeployContractBuildTxModalContent}

@@ -48,7 +48,7 @@ const TransferTxModal = () => {
 
   return (
     <SendModal
-      buildTitle="Send"
+      title="Send"
       initialTxData={initialTxData}
       onClose={closeSendModal}
       BuildTxModalContent={TransferBuildTxModalContent}
