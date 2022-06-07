@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { loadStoredAddressesMetadataOfAccount } from '../utils/addresses'
 import * as migrate from '../utils/migration'
 import { walletGenerate } from '@alephium/sdk'
 
+// hi
 //
 // Each step should:
 // * Create a wallet
@@ -31,28 +33,35 @@ import { walletGenerate } from '@alephium/sdk'
 //
 
 test('_20220527_120000', () => {
-  const wallet = walletGenerate()
-  const accountName = 'test'
-
   const settings = {
     isMain: true,
     label: "test",
     color: "blue"
   }
+  const accounts = new Array(10)
+  .fill({})
+  .map((account, index) =>
+    ({
+      accountName: 'accountName' + index,
+      wallet: walletGenerate(),
+      index,
+      settings
+    })
+  )
 
   // from b8d121ed847cccc0aee841581b432a85ccca3aa5
   const _addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
   const _constructMapKey =  (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`
-  const _constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+  const _constructMetadataKey = (walletName: string) => `${_addressesMetadataLocalStorageKeyPrefix}-${walletName}`
   const _loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-    const data = localStorage.getItem(constructMetadataKey(accountName))
+    const data = localStorage.getItem(_constructMetadataKey(accountName))
 
     if (data === null) return []
 
     return JSON.parse(data)
   }
   const _storeAddressMetadataOfAccount = (accountName: string, index: number, settings: AddressSettings) => {
-    const addressesMetadata = loadStoredAddressesMetadataOfAccount(accountName)
+    const addressesMetadata = _loadStoredAddressesMetadataOfAccount(accountName)
     const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
     if (!existingAddressMetadata) {
@@ -64,11 +73,24 @@ test('_20220527_120000', () => {
       Object.assign(existingAddressMetadata, settings)
     }
     console.log(`🟠 Storing address index ${index} metadata locally`)
-    localStorage.setItem(constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
+    localStorage.setItem(_constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
   }
 
-  _storeAddressMetadataOfAccount(accountName, 0, settings)
-  migrate._20220527_120000()
-  const addresses = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, accountName)
-  expect(addresses[0]).ToBe({...settings, index: 0 })
+  accounts.forEach(({ accountName, index, settings }) =>
+    _storeAddressMetadataOfAccount(accountName, index, settings)
+  )
+
+  accounts.forEach(({ accountName, wallet }) =>
+    migrate._20220527_120000(wallet.mnemonic, accountName)
+  )
+
+  accounts.forEach(({ accountName, wallet, index, settings }) => {
+    const addresses = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, accountName)
+    expect(addresses[0]).toStrictEqual({...settings, index })
+  })
+
+  // Make sure it's not the same wallet used for encryption
+  const accountFirst = loadStoredAddressesMetadataOfAccount(accounts[0].wallet.mnemonic, accounts[0].accountName)
+  const accountLast = loadStoredAddressesMetadataOfAccount(accounts[accounts.length - 1].wallet.mnemonic, accounts[accounts.length - 1].accountName)
+  expect(accountFirst).not.toStrictEqual(accountLast)
 })
