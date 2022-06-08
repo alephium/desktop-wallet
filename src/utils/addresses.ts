@@ -60,7 +60,7 @@ export const loadStoredAddressesMetadataOfWallet = ({
 
   if (json === null) return []
   const { encryptedSettings } = JSON.parse(json)
-  return JSON.parse(decrypt(mnemonic, encryptedSettings))
+  return JSON.parse(decrypt(mnemonic + (passphraseHash ?? ''), encryptedSettings))
 }
 
 export const storeAddressMetadataOfWallet = (
@@ -84,10 +84,10 @@ export const storeAddressMetadataOfWallet = (
   console.log(`🟠 Storing address index ${index} metadata locally`)
 
   localStorage.setItem(
-    constructMetadataKey(walletName),
+    constructMetadataKey(walletName, passphraseHash),
     JSON.stringify({
       version: latestUserDataVersion,
-      encryptedSettings: encrypt(mnemonic, JSON.stringify(addressesMetadata))
+      encryptedSettings: encrypt(mnemonic + (passphraseHash ?? ''), JSON.stringify(addressesMetadata))
     })
   )
 }
