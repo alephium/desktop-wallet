@@ -30,20 +30,20 @@ interface PasswordConfirmationProps {
   onCorrectPasswordEntered: (password: string) => void
   text?: string
   buttonText?: string
-  accountName?: string
+  walletName?: string
 }
 
 const PasswordConfirmation = ({
   text,
   buttonText,
   onCorrectPasswordEntered,
-  accountName
+  walletName
 }: PasswordConfirmationProps) => {
-  const { currentAccountName, setSnackbarMessage } = useGlobalContext()
+  const { activeWalletName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 
   const validatePassword = () => {
-    const walletEncrypted = Storage.load(accountName || currentAccountName)
+    const walletEncrypted = Storage.load(walletName || activeWalletName)
 
     try {
       if (walletOpen(password, walletEncrypted)) {

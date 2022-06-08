@@ -22,12 +22,12 @@ import styled from 'styled-components'
 import { useAddressesContext } from '../contexts/addresses'
 import Amount from './Amount'
 
-interface AccountSummaryCardProps {
+interface WalletSummaryCardProps {
   isLoading?: boolean
   className?: string
 }
 
-const AccountSummaryCard = ({ className, isLoading }: AccountSummaryCardProps) => {
+const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => {
   const { addresses } = useAddressesContext()
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
@@ -55,7 +55,7 @@ const AccountSummaryCard = ({ className, isLoading }: AccountSummaryCardProps) =
   )
 }
 
-export default styled(AccountSummaryCard)`
+export default styled(WalletSummaryCard)`
   border-radius: var(--radius-medium);
   border: 1px solid ${({ theme }) => theme.border.secondary};
   background-color: ${({ theme }) => theme.bg.primary};

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from '@alephium/sdk'
 import { AlertTriangle } from 'lucide-react'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
@@ -39,25 +39,19 @@ import { useWalletContext } from '../../contexts/wallet'
 
 const Storage = getStorage()
 
-const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
-  const { setCurrentAccountName } = useGlobalContext()
-  const {
-    setAccountName,
-    setPassword,
-    accountName: existingAccountName,
-    password: existingPassword
-  } = useWalletContext()
+const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
+  const { setCurrentWalletName } = useGlobalContext()
+  const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const [accountName, setAccountNameState] = useState(existingAccountName)
-  const [accountNameError, setAccountNameError] = useState('')
+  const [walletName, setWalletNameState] = useState(existingWalletName)
+  const [walletNameError, setWalletNameError] = useState('')
   const [password, setPasswordState] = useState(existingPassword)
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState(existingPassword)
 
-  const accountNames = Storage.list()
+  const walletNames = Storage.list()
 
-  const onUpdatePassword = (e: ChangeEvent<HTMLInputElement>): void => {
-    const password = e.target.value
+  const onUpdatePassword = (password: string): void => {
     let passwordError = ''
 
     if (password.length) {
@@ -72,31 +66,30 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
     setPasswordError(passwordError)
   }
 
-  const onUpdateAccountName = (e: ChangeEvent<HTMLInputElement>) => {
-    const accountName = e.target.value
-    let accountNameError = ''
+  const onUpdateWalletName = (walletName: string) => {
+    let walletNameError = ''
 
-    if (accountName.length < 3) {
-      accountNameError = 'Wallet name is too short'
-    } else if (accountNames?.includes(accountName)) {
-      accountNameError = 'Wallet name already taken'
+    if (walletName.length < 3) {
+      walletNameError = 'Wallet name is too short'
+    } else if (walletNames?.includes(walletName)) {
+      walletNameError = 'Wallet name already taken'
     }
 
-    setAccountNameState(accountName)
-    setAccountNameError(accountNameError)
+    setWalletNameState(walletName)
+    setWalletNameError(walletNameError)
   }
 
   const isNextButtonActive =
     password.length > 0 &&
     passwordError.length === 0 &&
     password === passwordCheck &&
-    accountName.length > 0 &&
-    accountNameError.length === 0
+    walletName.length > 0 &&
+    walletNameError.length === 0
 
   const handleNextButtonClick = () => {
-    setAccountName(accountName)
+    setWalletName(walletName)
     setPassword(password)
-    setCurrentAccountName(accountName)
+    setCurrentWalletName(walletName)
     onButtonNext()
   }
 
@@ -106,17 +99,17 @@ const CreateAccountPage = ({ isRestoring = false }: { isRestoring?: boolean }) =
       <PanelContentContainer>
         <Section inList>
           <Input
-            value={accountName}
+            value={walletName}
             label={isRestoring ? 'New wallet name' : 'Wallet name'}
-            onChange={onUpdateAccountName}
-            error={accountNameError}
-            isValid={accountName.length > 0 && accountNameError.length === 0}
+            onChange={(e) => onUpdateWalletName(e.target.value)}
+            error={walletNameError}
+            isValid={walletName.length > 0 && walletNameError.length === 0}
           />
           <Input
             value={password}
             label={isRestoring ? 'New password' : 'Password'}
             type="password"
-            onChange={onUpdatePassword}
+            onChange={(e) => onUpdatePassword(e.target.value)}
             error={passwordError}
             isValid={!passwordError && password.length > 0}
           />
@@ -155,4 +148,4 @@ const WarningNote = styled(Paragraph)`
   margin-bottom: 0;
 `
 
-export default CreateAccountPage
+export default CreateWalletPage

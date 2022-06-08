@@ -26,51 +26,51 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
-import { deleteStoredAddressMetadataOfAccount } from '../../utils/addresses'
-import AccountRemovalModal from '../AccountRemovalModal'
+import { deleteStoredAddressMetadataOfWallet } from '../../utils/addresses'
 import SecretPhraseModal from '../SecretPhraseModal'
+import WalletRemovalModal from '../WalletRemovalModal'
 
 const Storage = getStorage()
 
-const AccountsSettingsSection = () => {
-  const { currentAccountName, wallet, lockWallet } = useGlobalContext()
+const WalletsSettingsSection = () => {
+  const { activeWalletName, wallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [accountToRemove, setAccountToRemove] = useState<string>('')
+  const [walletToRemove, setWalletToRemove] = useState<string>('')
 
-  const openRemoveAccountModal = (accountName: string) => setAccountToRemove(accountName)
+  const openRemoveWalletModal = (walletName: string) => setWalletToRemove(walletName)
   const openSecretPhraseModal = () => setIsDisplayingSecretModal(true)
   const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
 
-  const handleRemoveAccount = (accountName: string) => {
-    Storage.remove(accountName)
-    deleteStoredAddressMetadataOfAccount(accountName)
+  const handleRemoveWallet = (walletName: string) => {
+    Storage.remove(walletName)
+    deleteStoredAddressMetadataOfWallet(walletName)
 
-    accountName === currentAccountName ? lockWallet() : setAccountToRemove('')
+    walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
   }
 
-  const accountNames = Storage.list()
+  const walletNames = Storage.list()
 
   return (
     <>
       {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
 
-      {accountToRemove && (
-        <AccountRemovalModal
-          accountName={accountToRemove}
-          onClose={() => setAccountToRemove('')}
-          onAccountRemove={() => handleRemoveAccount(accountToRemove)}
+      {walletToRemove && (
+        <WalletRemovalModal
+          walletName={walletToRemove}
+          onClose={() => setWalletToRemove('')}
+          onWalletRemove={() => handleRemoveWallet(walletToRemove)}
         />
       )}
       <Section align="flex-start">
-        <h2>Wallet list ({accountNames.length})</h2>
+        <h2>Wallet list ({walletNames.length})</h2>
         <BoxContainer>
-          {accountNames.map((n) => {
+          {walletNames.map((n) => {
             return (
-              <AccountItem
+              <WalletItem
                 key={n}
-                accountName={n}
-                isCurrent={n === currentAccountName}
-                onAccountDelete={(name) => setAccountToRemove(name)}
+                walletName={n}
+                isCurrent={n === activeWalletName}
+                onWalletDelete={(name) => setWalletToRemove(name)}
               />
             )
           })}
@@ -81,7 +81,7 @@ const AccountsSettingsSection = () => {
           <HorizontalDivider />
           <Section align="flex-start">
             <h2>Current wallet</h2>
-            <InfoBox label="Wallet name" text={currentAccountName} />
+            <InfoBox label="Wallet name" text={activeWalletName} />
           </Section>
           <Section>
             <Button secondary onClick={lockWallet}>
@@ -90,7 +90,7 @@ const AccountsSettingsSection = () => {
             <Button secondary alert onClick={openSecretPhraseModal}>
               Show your secret phrase
             </Button>
-            <Button alert onClick={() => openRemoveAccountModal(currentAccountName)}>
+            <Button alert onClick={() => openRemoveWalletModal(activeWalletName)}>
               Remove current wallet
             </Button>
           </Section>
@@ -100,36 +100,36 @@ const AccountsSettingsSection = () => {
   )
 }
 
-interface AccountItemProps {
-  accountName: string
+interface WalletItemProps {
+  walletName: string
   isCurrent: boolean
-  onAccountDelete: (accountName: string) => void
+  onWalletDelete: (walletName: string) => void
 }
 
-const AccountItem = ({ accountName, isCurrent, onAccountDelete }: AccountItemProps) => {
+const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
   return (
-    <AccountItemContainer
+    <WalletItemContainer
       onMouseEnter={() => setIsShowingDeleteButton(true)}
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
-      <AccountName>
-        {accountName}
-        {isCurrent && <CurrentAccountLabel> (current)</CurrentAccountLabel>}
-      </AccountName>
+      <WalletName>
+        {walletName}
+        {isCurrent && <CurrentWalletLabel> (current)</CurrentWalletLabel>}
+      </WalletName>
       {isShowingDeleteButton && (
-        <AccountDeleteButton squared transparent onClick={() => onAccountDelete(accountName)}>
+        <WalletDeleteButton squared transparent onClick={() => onWalletDelete(walletName)}>
           <Trash size={15} />
-        </AccountDeleteButton>
+        </WalletDeleteButton>
       )}
-    </AccountItemContainer>
+    </WalletItemContainer>
   )
 }
 
-export default AccountsSettingsSection
+export default WalletsSettingsSection
 
-const AccountItemContainer = styled.div`
+const WalletItemContainer = styled.div`
   display: flex;
   align-items: center;
   height: var(--inputHeight);
@@ -140,12 +140,12 @@ const AccountItemContainer = styled.div`
   }
 `
 
-const AccountName = styled.div`
+const WalletName = styled.div`
   flex: 1;
 `
 
-const CurrentAccountLabel = styled.span`
+const CurrentWalletLabel = styled.span`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AccountDeleteButton = styled(Button)``
+const WalletDeleteButton = styled(Button)``

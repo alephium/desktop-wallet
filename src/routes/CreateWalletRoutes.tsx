@@ -22,13 +22,13 @@ import { StepsContextProvider } from '../contexts/steps'
 import { WalletContextProvider } from '../contexts/wallet'
 import CheckWordsIntroPage from '../pages/WalletManagement/CheckWordsIntroPage'
 import CheckWordsPage from '../pages/WalletManagement/CheckWordsPage'
-import CreateAccountPage from '../pages/WalletManagement/CreateAccountPage'
+import CreateWalletPage from '../pages/WalletManagement/CreateWalletPage'
 import WalletWelcomePage from '../pages/WalletManagement/WalletWelcomePage'
 import WalletWordsPage from '../pages/WalletManagement/WalletWordsPage'
 
 const CreateWalletRoutes = () => {
   const createWalletSteps: JSX.Element[] = [
-    <CreateAccountPage key="create-account" />,
+    <CreateWalletPage key="create-wallet" />,
     <WalletWordsPage key="wallet-words" />,
     <CheckWordsIntroPage key="check-words-intro" />,
     <CheckWordsPage key="check-words" />,

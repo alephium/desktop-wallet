@@ -21,10 +21,10 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-import AccountSummaryCard from '../../components/AccountSummaryCard'
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Button from '../../components/Button'
 import GradientCanvas from '../../components/GradientCanvas'
+import WalletSummaryCard from '../../components/WalletSummaryCard'
 import { useAddressesContext } from '../../contexts/addresses'
 import DayskyImageSrc from '../../images/daysky.jpeg'
 import NightskyImageSrc from '../../images/nightsky.png'
@@ -65,7 +65,7 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
       <TopGradient />
       <GradientCanvas />
       <Summaries>
-        <AccountSummaryCardStyled isLoading={isLoadingData} />
+        <WalletSummaryCardStyled isLoading={isLoadingData} />
         <AddressSummaryCards
           collapsed={!areAddressSummariesExpanded}
           totalAddresses={addresses.length}
@@ -148,7 +148,7 @@ const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: num
   z-index: 1;
 `
 
-const AccountSummaryCardStyled = styled(AccountSummaryCard)`
+const WalletSummaryCardStyled = styled(WalletSummaryCard)`
   flex-shrink: 0;
   z-index: 2;
 `

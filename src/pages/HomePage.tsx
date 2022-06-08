@@ -36,10 +36,10 @@ import { deviceBreakPoints } from '../style/globalStyles'
 
 interface HomeProps {
   hasWallet: boolean
-  accountNames: string[]
+  walletNames: string[]
 }
 
-const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
+const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const { newLatestVersion } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
@@ -69,13 +69,13 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
               <Paragraph centered secondary>
                 Please choose a wallet and enter your password to continue.
               </Paragraph>
-              <Login onLinkClick={displayInitialActions} accountNames={accountNames} />
+              <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
             </>
           )}
           {showInitialActions && (
             <>
               <PanelTitle useLayoutId={false}>New wallet</PanelTitle>
-              <InitialActions showLinkToExistingAccounts onLinkClick={hideInitialActions} />
+              <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
             </>
           )}
         </FloatingPanel>
@@ -90,22 +90,22 @@ const HomePage = ({ hasWallet, accountNames }: HomeProps) => {
 // === Components
 
 interface LoginProps {
-  accountNames: string[]
+  walletNames: string[]
   onLinkClick: () => void
 }
 
-const Login = ({ accountNames, onLinkClick }: LoginProps) => {
-  const [credentials, setCredentials] = useState({ accountName: '', password: '' })
+const Login = ({ walletNames, onLinkClick }: LoginProps) => {
+  const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()
 
-  const handleCredentialsChange = useCallback((type: 'accountName' | 'password', value: string) => {
+  const handleCredentialsChange = useCallback((type: 'walletName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.accountName, credentials.password, () => navigate('/wallet/overview'))
+    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'))
   }
 
   return (
@@ -113,8 +113,8 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
       <SectionStyled inList>
         <Select
           label="Wallet"
-          options={accountNames.map((u) => ({ label: u, value: u }))}
-          onValueChange={(value) => handleCredentialsChange('accountName', value?.value || '')}
+          options={walletNames.map((u) => ({ label: u, value: u }))}
+          onValueChange={(value) => handleCredentialsChange('walletName', value?.value || '')}
           title="Select a wallet"
           id="wallet"
         />
@@ -128,7 +128,7 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
         />
       </SectionStyled>
       <SectionStyled inList>
-        <Button onClick={handleLogin} submit disabled={!credentials.accountName || !credentials.password}>
+        <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
           Login
         </Button>
       </SectionStyled>
@@ -140,10 +140,10 @@ const Login = ({ accountNames, onLinkClick }: LoginProps) => {
 }
 
 const InitialActions = ({
-  showLinkToExistingAccounts,
+  showLinkToExistingWallets,
   onLinkClick
 }: {
-  showLinkToExistingAccounts?: boolean
+  showLinkToExistingWallets?: boolean
   onLinkClick?: () => void
 }) => {
   const navigate = useNavigate()
@@ -156,7 +156,7 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => navigate('/create/0')}>New wallet</Button>
         <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
-        {showLinkToExistingAccounts && (
+        {showLinkToExistingWallets && (
           <SwitchLink onClick={onLinkClick} centered>
             Use an existing wallet
           </SwitchLink>

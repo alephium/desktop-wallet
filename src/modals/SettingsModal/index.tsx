@@ -22,14 +22,14 @@ import styled from 'styled-components'
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
 import TabBar, { TabItem } from '../../components/TabBar'
 import CenteredModal from '../CenteredModal'
-import AccountsSettingsSection from './AccountsSettingsSection'
 import GeneralSettingsSection from './GeneralSettingsSection'
 import NetworkSettingsSection from './NetworkSettingsSection'
+import WalletsSettingsSection from './WalletsSettingsSection'
 
 const tabs = [
   { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
   { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
-  { value: 'accounts', label: 'Wallets', component: <AccountsSettingsSection /> }
+  { value: 'wallets', label: 'Wallets', component: <WalletsSettingsSection /> }
 ]
 
 interface SettingsModalProps {

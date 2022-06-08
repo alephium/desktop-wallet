@@ -25,17 +25,17 @@ import { Section } from '../components/PageComponents/PageContainers'
 import Paragraph from '../components/Paragraph'
 import CenteredModal from './CenteredModal'
 
-interface AccountRemovalModalProps {
-  accountName: string
-  onAccountRemove: () => void
+interface WalletRemovalModalProps {
+  walletName: string
+  onWalletRemove: () => void
   onClose: () => void
 }
 
-const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountRemovalModalProps) => {
+const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemovalModalProps) => {
   const theme = useTheme()
 
   return (
-    <CenteredModal title={`Remove wallet "${accountName}"`} onClose={onClose} focusMode>
+    <CenteredModal title={`Remove wallet "${walletName}"`} onClose={onClose} focusMode>
       <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
       </Section>
@@ -49,7 +49,7 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
         </Paragraph>
       </Section>
       <Section inList>
-        <Button alert onClick={onAccountRemove}>
+        <Button alert onClick={onWalletRemove}>
           CONFIRM REMOVAL
         </Button>
       </Section>
@@ -57,4 +57,4 @@ const AccountRemovalModal = ({ accountName, onAccountRemove, onClose }: AccountR
   )
 }
 
-export default AccountRemovalModal
+export default WalletRemovalModal
