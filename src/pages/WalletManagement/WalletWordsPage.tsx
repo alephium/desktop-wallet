@@ -44,10 +44,6 @@ const WalletWordsPage = () => {
     setMnemonic(wallet.mnemonic)
   }, [setMnemonic, setPlainWallet])
 
-  const onGenerate = useCallback(() => {
-    onButtonNext()
-  }, [onButtonNext])
-
   const renderFormatedMnemonic = (mnemonic: string) => {
     return mnemonic.split(' ').map((w, i) => {
       return (
@@ -76,7 +72,7 @@ const WalletWordsPage = () => {
         </WordsContent>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
-        <Button onClick={onGenerate} submit>
+        <Button onClick={onButtonNext} submit>
           {"I've copied the words, continue"}
         </Button>
       </FooterActionsContainer>
