@@ -64,7 +64,7 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
-  passphraseDoubleHashed: string
+  passphraseHash: string
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -86,7 +86,7 @@ export const initialGlobalContext: GlobalContextProps = {
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
   newLatestVersion: '',
-  passphraseDoubleHashed: ''
+  passphraseHash: ''
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -106,7 +106,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
-  const [passphraseDoubleHashed, setPassphraseDoubleHashed] = useState('')
+  const [passphraseHash, setPassphraseHash] = useState('')
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -143,8 +143,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       if (!wallet) return
       if (passphrase) {
         wallet = getWalletFromMnemonic(`${wallet.mnemonic} ${passphrase}`)
-        const _passphraseDoubleHashed = stringToDoubleSHA256HexString(passphrase)
-        setPassphraseDoubleHashed(_passphraseDoubleHashed)
+        const _passphraseHash = stringToDoubleSHA256HexString(passphrase)
+        setPassphraseHash(_passphraseHash)
       }
 
       migrateUserData(wallet.mnemonic, accountName)
@@ -237,7 +237,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
-          passphraseDoubleHashed
+          passphraseHash
         },
         overrideContextValue as GlobalContextProps
       )}
