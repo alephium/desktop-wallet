@@ -34,11 +34,6 @@ import { stringToDoubleSHA256HexString } from '../utils/misc'
 // address metadata storage (store *and* load) at a period in time.
 //
 
-
-beforeAll(() => {
-  window.localStorage = localStorage
-})
-
 describe('_20220511_074100', () => {
   const settings = {
     isMain: true,
@@ -170,8 +165,15 @@ describe('_20220527_120000', () => {
   })
 
   it('does not use the same wallet to encrypt address metadata', () => {
-    const accountFirst = loadStoredAddressesMetadataOfAccount(accounts[0].wallet.mnemonic, accounts[0].accountName)
-    const accountLast = loadStoredAddressesMetadataOfAccount(accounts[accounts.length - 1].wallet.mnemonic, accounts[accounts.length - 1].accountName)
+    const accountFirst = loadStoredAddressesMetadataOfAccount({
+      mnemonic: accounts[0].wallet.mnemonic,
+      accountName: accounts[0].accountName
+    })
+
+    const accountLast = loadStoredAddressesMetadataOfAccount({
+      mnemonic: accounts[accounts.length - 1].wallet.mnemonic,
+      accountName: accounts[accounts.length - 1].accountName)
+    })
     expect(accountFirst).not.toStrictEqual(accountLast)
   })
 })
