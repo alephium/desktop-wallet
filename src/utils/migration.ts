@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage } from '@alephium/sdk'
 import { encrypt } from '@alephium/sdk/dist/lib/password-crypto'
 
-import { constructMetadataKey } from './addresses'
 import { stringToDoubleSHA256HexString } from './misc'
 
 export const latestUserDataVersion = '2022-05-27T12:00:00Z'
@@ -75,7 +74,9 @@ export const _20220527_120000 = (mnemonic: string, accountName: string, passphra
   // We can also take this opportunity to start versioning our data.
   //
   if (Array.isArray(addressSettingsList)) {
-    const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(accountName + (passphraseHash ?? ''))}`
+    const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(
+      accountName + (passphraseHash ?? '')
+    )}`
     localStorage.setItem(
       keyNew,
       JSON.stringify({

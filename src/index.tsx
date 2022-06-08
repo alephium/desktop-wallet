@@ -30,9 +30,6 @@ import { GlobalContextProvider } from './contexts/global'
 import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
-import { migrateAddressMetadata } from './utils/addresses'
-
-migrateAddressMetadata()
 
 ReactDOM.render(
   <React.StrictMode>
