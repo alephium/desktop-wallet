@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { decrypt, encrypt } from '@alephium/sdk/dist/lib/password-crypto'
 
 import { Address } from '../contexts/addresses'
@@ -46,7 +45,17 @@ export const checkAddressValidity = (address: string) => {
 export const constructMetadataKey = (accountName: string, passphraseHash?: string) =>
   `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(accountName + (passphraseHash ?? ''))}`
 
-export const loadStoredAddressesMetadataOfWallet = (mnemonic: string, walletName: string, passphraseHash?: string): AddressMetadata[] => {
+interface AddressMetadataKeyProperties {
+  mnemonic: string
+  accountName: string
+  passphraseHash?: string
+}
+
+export const loadStoredAddressesMetadataOfWallet = ({
+  mnemonic,
+  walletName,
+  passphraseHash
+}: AddressMetadataKeyProperties): AddressMetadata[] => {
   const json = localStorage.getItem(constructMetadataKey(walletName, passphraseHash))
 
   if (json === null) return []
@@ -98,5 +107,8 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
 export const letSneakyAddressMetadataImpLoose = (timeInterval: number, mnemonic: string) => {
   const isGoingToCreateAddressMetadata = Math.floor(Math.random() * timeInterval) + 1 === 1
   if (!isGoingToCreateAddressMetadata) return
-  storeAddressMetadataOfWallet(mnemonic, Math.random().toString(), Math.random().toString(), 0, { isMain: true })
+
+  const accountName = Math.random().toString()
+  const passphraseHash = stringToDoubleSHA256HexString(Math.random().toString())
+  storeAddressMetadataOfWallet({ mnemonic, walletName, index: 0, settings: { isMain: true }, passphraseHash })
 }
