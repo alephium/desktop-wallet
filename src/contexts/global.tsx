@@ -136,13 +136,15 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     try {
       let wallet = walletOpen(password, walletEncrypted)
       if (!wallet) return
+
+      let _passphraseHash = passphraseHash
       if (passphrase) {
-        wallet = getWalletFromMnemonic(`${wallet.mnemonic} ${passphrase}`)
-        const _passphraseHash = stringToDoubleSHA256HexString(passphrase)
+        wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
+        _passphraseHash = stringToDoubleSHA256HexString(passphrase)
         setPassphraseHash(_passphraseHash)
       }
 
-      migrateUserData(wallet.mnemonic, accountName)
+      migrateUserData(wallet.mnemonic, accountName, _passphraseHash)
 
       // Based on the user opening the wallet once a week (52 / 4 = 13)
       // It will roll a die between 1 and 13 and if it lands on 1, new address metadata is created
