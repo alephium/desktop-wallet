@@ -16,8 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { convertAlphToSet, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+
+import { GasInfo } from '../types/transactions'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
   return amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 }
+
+export const getAmountErrorMessage = (amount: string, minAmount: bigint, shouldConvertToSet: boolean): string => {
+  try {
+    const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
+    if (amountNumber < minAmount) {
+      return `The amount must be greater than ${minAmount}`
+    }
+  } catch (e) {
+    return 'Unable to convert the amount'
+  }
+  return ''
+}
+
+export const hasNoGasErrors = ({ gasAmount, gasPrice }: GasInfo) => !gasAmount.error && !gasPrice.error

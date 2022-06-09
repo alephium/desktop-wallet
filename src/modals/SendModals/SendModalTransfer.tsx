@@ -18,17 +18,21 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from 'alephium-web3'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
+import GasSettingsExpandableSection from '../../components/GasSettingsExpandableSection'
 import InfoBox from '../../components/InfoBox'
+import AddressSelectFrom from '../../components/Inputs/AddressSelectFrom'
+import AmountInput from '../../components/Inputs/AmountInput'
 import Input from '../../components/Inputs/Input'
+import { useAddressesContext } from '../../contexts/addresses'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
-import { useBuildTxCommonComponents } from '../../hooks/modals/SendModals/hooks'
 import useDappTxData from '../../hooks/useDappTxData'
-import { TransferTxData } from '../../types/transactions'
+import useStateObject from '../../hooks/useStateObject'
+import { TransferTxData, TxPreparation } from '../../types/transactions'
 import { isAddressValid } from '../../utils/addresses'
-import { isAmountWithinRange } from '../../utils/transactions'
+import { hasNoGasErrors, isAmountWithinRange } from '../../utils/transactions'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import { ModalInputFields } from './ModalInputFields'
@@ -70,21 +74,31 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
 )
 
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
-  const [
-    fromAddress,
-    FromAddressSelect,
-    alphAmount,
-    AlphAmountInput,
-    gasAmount,
-    gasPrice,
-    GasSettingsExpandableSection,
-    isCommonReady
-  ] = useBuildTxCommonComponents(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const { addresses } = useAddressesContext()
+  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
+    fromAddress: data.fromAddress ?? '',
+    gasAmount: {
+      parsed: data.gasAmount,
+      raw: data.gasAmount?.toString() ?? '',
+      error: ''
+    },
+    gasPrice: {
+      parsed: data.gasPrice,
+      raw: data.gasPrice ?? '',
+      error: ''
+    },
+    alphAmount: data.alphAmount
+  })
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
-  const handleAddressChange = (value: string) => {
-    setToAddress(value, isAddressValid(value) ? '' : 'Address format is incorrect')
-  }
+  const handleToAddressChange = useCallback(
+    (value: string) => {
+      setToAddress(value, isAddressValid(value) ? '' : 'Address format is incorrect')
+    },
+    [setToAddress]
+  )
+
+  const { fromAddress, gasAmount, gasPrice, alphAmount } = txPrep
 
   if (fromAddress === undefined) {
     onCancel()
@@ -92,32 +106,41 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   }
 
   const isSubmitButtonActive =
-    isCommonReady &&
+    hasNoGasErrors({ gasAmount, gasPrice }) &&
     toAddress.value &&
     !toAddress.error &&
-    alphAmount &&
+    !!alphAmount &&
     isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
 
   return (
     <>
       <ModalInputFields>
-        {FromAddressSelect}
+        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
         <Input
           label="Recipient's address"
           value={toAddress.value}
-          onChange={(e) => handleAddressChange(e.target.value)}
+          onChange={(e) => handleToAddressChange(e.target.value)}
           error={toAddress.error}
           isValid={toAddress.value.length > 0 && !toAddress.error}
         />
-        {AlphAmountInput}
+        <AmountInput
+          value={alphAmount}
+          onChange={setTxPrepProp('alphAmount')}
+          availableAmount={fromAddress.availableBalance}
+        />
       </ModalInputFields>
-      {GasSettingsExpandableSection}
+      <GasSettingsExpandableSection
+        gasAmount={gasAmount}
+        gasPrice={gasPrice}
+        onGasAmountChange={setTxPrepProp('gasAmount')}
+        onGasPriceChange={setTxPrepProp('gasPrice')}
+      />
       <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
-            alphAmount: alphAmount,
+            alphAmount: alphAmount || '',
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

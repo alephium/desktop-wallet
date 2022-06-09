@@ -20,14 +20,19 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from 'alephium-web3'
 import { useState } from 'react'
 
+import GasSettingsExpandableSection from '../../components/GasSettingsExpandableSection'
 import InfoBox from '../../components/InfoBox'
+import AddressSelectFrom from '../../components/Inputs/AddressSelectFrom'
+import AmountInput from '../../components/Inputs/AmountInput'
+import BytecodeInput from '../../components/Inputs/BytecodeInput'
 import Input from '../../components/Inputs/Input'
+import { useAddressesContext } from '../../contexts/addresses'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
-import { useBuildTxCommonComponents, useBytecodeInputComponent } from '../../hooks/modals/SendModals/hooks'
 import useDappTxData from '../../hooks/useDappTxData'
-import { DeployContractTxData } from '../../types/transactions'
-import { isAmountWithinRange } from '../../utils/transactions'
+import useStateObject from '../../hooks/useStateObject'
+import { DeployContractTxData, TxPreparation } from '../../types/transactions'
+import { hasNoGasErrors, isAmountWithinRange } from '../../utils/transactions'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import { ModalInputFields } from './ModalInputFields'
@@ -101,18 +106,25 @@ const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployCo
 )
 
 const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
-  const [
-    fromAddress,
-    FromAddressSelect,
-    alphAmount,
-    AlphAmountInput,
-    gasAmount,
-    gasPrice,
-    GasSettingsExpandableSection,
-    isCommonReady
-  ] = useBuildTxCommonComponents(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, BytecodeInput] = useBytecodeInputComponent(data.bytecode ?? '')
-  const [issueTokenAmount, setIssueTokenAmount] = useState(data.issueTokenAmount ?? '')
+  const { addresses } = useAddressesContext()
+  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
+    fromAddress: data.fromAddress ?? '',
+    bytecode: data.bytecode ?? '',
+    gasAmount: {
+      parsed: data.gasAmount,
+      raw: data.gasAmount?.toString() ?? '',
+      error: ''
+    },
+    gasPrice: {
+      parsed: data.gasPrice,
+      raw: data.gasPrice ?? '',
+      error: ''
+    },
+    alphAmount: data.initialAlphAmount,
+    issueTokenAmount: data.issueTokenAmount ?? ''
+  })
+
+  const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount, issueTokenAmount } = txPrep
 
   if (fromAddress === undefined) {
     onCancel()
@@ -120,32 +132,41 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   }
 
   const isSubmitButtonActive =
-    isCommonReady &&
-    bytecode &&
+    hasNoGasErrors({ gasAmount, gasPrice }) &&
+    !!bytecode &&
     (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
 
   return (
     <>
       <ModalInputFields>
-        {FromAddressSelect}
-        {BytecodeInput}
-        {AlphAmountInput}
+        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
+        <BytecodeInput value={bytecode} onChange={(e) => setTxPrepProp('bytecode')(e.target.value)} />
+        <AmountInput
+          value={alphAmount}
+          onChange={setTxPrepProp('alphAmount')}
+          availableAmount={fromAddress.availableBalance}
+        />
         <Input
           id="issue-token-amount"
           label="Tokens to issue (optional)"
           value={issueTokenAmount}
           type="number"
-          onChange={(e) => setIssueTokenAmount(e.target.value)}
+          onChange={(e) => setTxPrepProp('issueTokenAmount')(e.target.value)}
         />
       </ModalInputFields>
-      {GasSettingsExpandableSection}
+      <GasSettingsExpandableSection
+        gasAmount={gasAmount}
+        gasPrice={gasPrice}
+        onGasAmountChange={setTxPrepProp('gasAmount')}
+        onGasPriceChange={setTxPrepProp('gasPrice')}
+      />
       <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
-            fromAddress: data.fromAddress,
-            bytecode: bytecode,
-            issueTokenAmount: issueTokenAmount ? issueTokenAmount : undefined,
-            initialAlphAmount: alphAmount ? alphAmount : undefined,
+            fromAddress,
+            bytecode: bytecode ?? '',
+            issueTokenAmount: issueTokenAmount || undefined,
+            initialAlphAmount: alphAmount || undefined,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })
