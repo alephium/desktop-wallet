@@ -20,14 +20,14 @@ import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { useState } from 'react'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
-import AlefSymbol from '../../components/AlefSymbol'
-import ExpandableSection from '../../components/ExpandableSection'
-import InfoBox from '../../components/InfoBox'
-import AddressSelect from '../../components/Inputs/AddressSelect'
-import AmountInput from '../../components/Inputs/AmountInput'
-import Input from '../../components/Inputs/Input'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
+import AlefSymbol from '../../../components/AlefSymbol'
+import ExpandableSection from '../../../components/ExpandableSection'
+import InfoBox from '../../../components/InfoBox'
+import AddressSelect from '../../../components/Inputs/AddressSelect'
+import AmountInput from '../../../components/Inputs/AmountInput'
+import Input from '../../../components/Inputs/Input'
+import { Address, useAddressesContext } from '../../../contexts/addresses'
+import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../../utils/constants'
 
 export const useBytecodeInputComponent = (initialBytecode: string) => {
   const [bytecode, setBytecode] = useState(initialBytecode)
