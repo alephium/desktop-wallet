@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Address } from '../contexts/addresses'
 import { NetworkName } from '../utils/settings'
+import { WithParsed } from './data'
 
 export enum TxType {
   TRANSFER,
@@ -78,4 +79,16 @@ export interface TransferTxData {
   alphAmount: string
   gasAmount?: number
   gasPrice?: string
+}
+
+export interface GasInfo {
+  gasAmount: WithParsed<number | undefined>
+  gasPrice: WithParsed<string | undefined>
+}
+
+export interface TxPreparation extends GasInfo {
+  fromAddress: Address
+  bytecode?: string
+  issueTokenAmount?: string
+  alphAmount?: string
 }

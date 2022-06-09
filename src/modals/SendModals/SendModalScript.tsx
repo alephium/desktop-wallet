@@ -19,13 +19,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from 'alephium-web3'
 
+import GasSettingsExpandableSection from '../../components/GasSettingsExpandableSection'
 import InfoBox from '../../components/InfoBox'
+import AddressSelectFrom from '../../components/Inputs/AddressSelectFrom'
+import AmountInput from '../../components/Inputs/AmountInput'
+import BytecodeInput from '../../components/Inputs/BytecodeInput'
+import { useAddressesContext } from '../../contexts/addresses'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
-import { useBuildTxCommonComponents, useBytecodeInputComponent } from '../../hooks/modals/SendModals/hooks'
 import useDappTxData from '../../hooks/useDappTxData'
-import { ScriptTxData } from '../../types/transactions'
-import { isAmountWithinRange } from '../../utils/transactions'
+import useStateObject from '../../hooks/useStateObject'
+import { ScriptTxData, TxPreparation } from '../../types/transactions'
+import { hasNoGasErrors, isAmountWithinRange } from '../../utils/transactions'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import { ModalInputFields } from './ModalInputFields'
@@ -67,17 +72,23 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
 )
 
 const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxModalContentProps) => {
-  const [
-    fromAddress,
-    FromAddressSelect,
-    alphAmount,
-    AlphAmountInput,
-    gasAmount,
-    gasPrice,
-    GasSettingsExpandableSection,
-    isCommonReady
-  ] = useBuildTxCommonComponents(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
-  const [bytecode, BytecodeInput] = useBytecodeInputComponent(data.bytecode ?? '')
+  const { addresses } = useAddressesContext()
+  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
+    fromAddress: data.fromAddress ?? '',
+    bytecode: data.bytecode ?? '',
+    gasAmount: {
+      parsed: data.gasAmount,
+      raw: data.gasAmount?.toString() ?? '',
+      error: ''
+    },
+    gasPrice: {
+      parsed: data.gasPrice,
+      raw: data.gasPrice ?? '',
+      error: ''
+    },
+    alphAmount: data.alphAmount
+  })
+  const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount } = txPrep
 
   if (fromAddress === undefined) {
     onCancel()
@@ -85,24 +96,33 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   }
 
   const isSubmitButtonActive =
-    isCommonReady &&
-    bytecode &&
+    hasNoGasErrors({ gasAmount, gasPrice }) &&
+    !!bytecode &&
     (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
 
   return (
     <>
       <ModalInputFields>
-        {FromAddressSelect}
-        {AlphAmountInput}
-        {BytecodeInput}
+        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
+        <AmountInput
+          value={alphAmount}
+          onChange={setTxPrepProp('alphAmount')}
+          availableAmount={fromAddress.availableBalance}
+        />
+        <BytecodeInput value={bytecode} onChange={(e) => setTxPrepProp('bytecode')(e.target.value)} />
       </ModalInputFields>
-      {GasSettingsExpandableSection}
+      <GasSettingsExpandableSection
+        gasAmount={gasAmount}
+        gasPrice={gasPrice}
+        onGasAmountChange={setTxPrepProp('gasAmount')}
+        onGasPriceChange={setTxPrepProp('gasPrice')}
+      />
       <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
-            fromAddress: data.fromAddress,
-            bytecode: bytecode,
-            alphAmount: alphAmount ? alphAmount : undefined,
+            fromAddress,
+            bytecode: bytecode ?? '',
+            alphAmount: alphAmount || undefined,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })
