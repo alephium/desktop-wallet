@@ -20,7 +20,7 @@ import { InputProps } from '.'
 import Input from './Input'
 
 const BytecodeInput = ({ value, onChange }: InputProps) => {
-  return <Input id="code" label="bytecode" value={value} onChange={onChange} />
+  return <Input id="code" label="Bytecode" value={value} onChange={onChange} />
 }
 
 export default BytecodeInput
