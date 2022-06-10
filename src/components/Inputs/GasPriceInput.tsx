@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { formatAmountForDisplay } from '@alephium/sdk'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { DefaultTheme } from 'styled-components'
 
 import { useStateWithParsed } from '../../hooks/useStateWithParsed'
@@ -41,6 +41,14 @@ const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
     value.parsed,
     value.parsed !== undefined ? value.parsed : ''
   )
+  const [prevGasPrice, setPrevGasPrice] = useState(gasPrice)
+
+  useEffect(() => {
+    if (prevGasPrice != gasPrice) {
+      onChange(gasPrice)
+      setPrevGasPrice(gasPrice)
+    }
+  }, [prevGasPrice, gasPrice, onChange])
 
   const handleGasPriceChange = useCallback(
     (newGasPrice: string) => {
@@ -50,9 +58,8 @@ const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
       }
       const errorMessage = getAmountErrorMessage(newGasPrice, MINIMAL_GAS_PRICE, true)
       setGasPrice(newGasPrice, !errorMessage ? newGasPrice : undefined, errorMessage)
-      onChange(gasPrice)
     },
-    [setGasPrice, gasPrice, onChange]
+    [setGasPrice]
   )
 
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)

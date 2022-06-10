@@ -126,8 +126,6 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
 
   const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount, issueTokenAmount } = txPrep
 
-  console.log(alphAmount)
-
   if (fromAddress === undefined) {
     onCancel()
     return <></>
