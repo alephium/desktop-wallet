@@ -86,7 +86,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
       raw: data.gasPrice ?? '',
       error: ''
     },
-    alphAmount: data.alphAmount
+    alphAmount: data.alphAmount ?? ''
   })
   const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount } = txPrep
 

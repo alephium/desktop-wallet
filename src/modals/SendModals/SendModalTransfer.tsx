@@ -87,7 +87,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
       raw: data.gasPrice ?? '',
       error: ''
     },
-    alphAmount: data.alphAmount
+    alphAmount: data.alphAmount ?? ''
   })
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
