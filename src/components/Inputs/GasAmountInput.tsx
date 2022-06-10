@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useStateWithParsed } from '../../hooks/useStateWithParsed'
 import { WithParsed } from '../../types/data'
@@ -37,6 +37,14 @@ const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
     value.parsed,
     value.parsed !== undefined ? value.parsed.toString() : ''
   )
+  const [prevGasAmount, setPrevGasAmount] = useState(gasAmount)
+
+  useEffect(() => {
+    if (prevGasAmount != gasAmount) {
+      onChange(gasAmount)
+      setPrevGasAmount(gasAmount)
+    }
+  }, [prevGasAmount, gasAmount, onChange])
 
   const handleGasAmountChange = useCallback(
     (newGasAmount: string) => {
@@ -46,9 +54,8 @@ const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
       }
       const errorMessage = getAmountErrorMessage(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false)
       setGasAmount(newGasAmount, !errorMessage ? parseInt(newGasAmount) : undefined, errorMessage)
-      onChange(gasAmount)
     },
-    [setGasAmount, gasAmount, onChange]
+    [setGasAmount]
   )
 
   return (
