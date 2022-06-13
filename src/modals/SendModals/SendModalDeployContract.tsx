@@ -164,7 +164,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             fromAddress,
             bytecode: bytecode ?? '',
             issueTokenAmount: issueTokenAmount || undefined,
-            initialAlphAmount: alphAmount || undefined,
+            initialAlphAmount: (alphAmount && convertAlphToSet(alphAmount).toString()) || undefined,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })
