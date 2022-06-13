@@ -39,7 +39,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
-  const { settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
+  const { client, settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
@@ -70,7 +70,7 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    (option: typeof networkSelectOptions[number] | undefined) => {
+    async (option: typeof networkSelectOptions[number] | undefined) => {
       if (option && option.value !== selectedNetwork) {
         setSelectedNetwork(option.value)
 
@@ -79,12 +79,20 @@ const NetworkSettingsSection = () => {
           setAdvancedSectionOpen(true)
         } else {
           const newNetworkSettings = networkEndpoints[option.value]
-          updateNetworkSettings(newNetworkSettings)
-          setTempAdvancedSettings(newNetworkSettings)
+          let networkId = newNetworkSettings.networkId
+          if (networkId === undefined && client !== undefined) {
+            const response = await client.web3.infos.getInfosChainParams()
+            networkId = response.networkId
+          }
+          if (networkId !== undefined) {
+            const settings = { ...newNetworkSettings, networkId: networkId }
+            updateNetworkSettings(settings)
+            setTempAdvancedSettings(settings)
+          }
         }
       }
     },
-    [selectedNetwork, updateNetworkSettings]
+    [client, selectedNetwork, updateNetworkSettings]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
