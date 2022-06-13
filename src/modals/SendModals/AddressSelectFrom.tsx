@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import AddressSelect from '../../components/Inputs/AddressSelect'
 import { Address } from '../../contexts/addresses'
-import AddressSelect from './AddressSelect'
 
 export interface AddressSelectFromProps {
   addresses: Address[]

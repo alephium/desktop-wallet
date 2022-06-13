@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { InputProps } from '.'
-import Input from './Input'
+import { InputProps } from '../../components/Inputs'
+import Input from '../../components/Inputs/Input'
 
 const BytecodeInput = ({ value, onChange }: InputProps) => {
   return <Input id="code" label="Bytecode" value={value} onChange={onChange} />
