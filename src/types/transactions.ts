@@ -92,3 +92,12 @@ export interface TxPreparation extends GasInfo {
   issueTokenAmount?: string
   alphAmount?: string
 }
+
+export type PartialTxData<T, K extends keyof T> = {
+  [P in keyof Omit<T, K>]?: T[P]
+} & Pick<T, K>
+
+export type CheckTxProps<T> = {
+  data: T
+  fees: bigint
+}
