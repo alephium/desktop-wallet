@@ -44,6 +44,8 @@ if (deprecatedSettingsExist()) {
   localStorageSettings = migrateDeprecatedSettings()
 }
 
+export type TxModalType = 'transfer' | 'deploy-contract' | 'script'
+
 export interface GlobalContextProps {
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
@@ -58,14 +60,15 @@ export interface GlobalContextProps {
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
   currentNetwork: NetworkName | 'custom'
+  currentNetworkId: number
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
-  isSendModalOpen: boolean
-  setIsSendModalOpen: (a: boolean) => void
+  txModalType: TxModalType | false
+  setTxModalType: (a: TxModalType | false) => void
 }
 
-export type Client = AsyncReturnType<typeof createClient>
+export type Client = Exclude<AsyncReturnType<typeof createClient>, false | undefined>
 
 export const initialGlobalContext: GlobalContextProps = {
   activeWalletName: '',
@@ -82,10 +85,11 @@ export const initialGlobalContext: GlobalContextProps = {
   isClientLoading: false,
   currentNetwork: 'mainnet',
   networkStatus: 'uninitialized',
+  currentNetworkId: 0,
   updateNetworkSettings: () => null,
   newLatestVersion: '',
-  isSendModalOpen: false,
-  setIsSendModalOpen: () => false
+  txModalType: false,
+  setTxModalType: () => false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -107,7 +111,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [txModalType, setTxModalType] = useState<TxModalType | false>(false)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -217,8 +221,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
-          isSendModalOpen,
-          setIsSendModalOpen
+          txModalType,
+          setTxModalType
         },
         overrideContextValue as GlobalContextProps
       )}

@@ -38,3 +38,15 @@ export const openInWebBrowser = (url: string) => {
     }
   }
 }
+
+export const extractErrorMsg = (e: unknown): string => {
+  let error: string
+  if (typeof e === 'string') {
+    error = e
+  } else if (e instanceof Error) {
+    error = e.message
+  } else {
+    error = 'Unknown internal error'
+  }
+  return error
+}

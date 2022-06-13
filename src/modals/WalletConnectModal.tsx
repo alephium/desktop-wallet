@@ -18,14 +18,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
+import { formatAccount, formatChain, parseChain } from 'alephium-walletconnect-provider'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import Input from '../components/Inputs/Input'
-import { useAddressesContext } from '../contexts/addresses'
+import { Address, useAddressesContext } from '../contexts/addresses'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
+import { extractErrorMsg } from '../utils/misc'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import { useSignerAddress } from './SendModal/utils'
 
 interface Props {
   onClose: () => void
@@ -45,13 +48,33 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const [uri, setUri] = useState('')
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
   const [proposal, setProposal] = useState<SessionTypes.Proposal>()
+  const [permittedChain, setPermittedChain] = useState({
+    chainId: formatChain(0, -1),
+    networkId: 0,
+    permittedGroup: -1
+  })
+
+  const [fromAddress, FromAddress] = useSignerAddress(permittedChain.permittedGroup)
+  const [error, setError] = useState('')
+
+  const setErrorState = useCallback((error: string): void => {
+    setState(State.Error)
+    setError(error)
+  }, [])
 
   const onProposal = useCallback(
     async (proposal: SessionTypes.Proposal) => {
+      const permittedChain = proposal.permissions.blockchain.chains[0]
+      if (typeof permittedChain === 'undefined') {
+        setErrorState('No chain is permitted')
+        return
+      }
+      const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
+      setPermittedChain({ chainId: permittedChain, networkId: permittedNetworkId, permittedGroup: permittedChainGroup })
       setProposal(proposal)
       setState(State.Proposal)
     },
-    [setProposal, setState]
+    [setErrorState]
   )
 
   useEffect(() => {
@@ -71,20 +94,29 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       })
       .catch((e) => {
         setUri('')
-        setState(State.Error)
+        setErrorState(`Error in pairing: ${extractErrorMsg(e)}`)
       })
-  }, [walletConnect, uri, onConnect])
+  }, [walletConnect, uri, onConnect, setErrorState])
 
-  const onApprove = useCallback(async () => {
-    if (proposal === undefined) {
-      setState(State.InitiateSession)
-      return
-    }
+  const onApprove = useCallback(
+    async (signerAddress: Address) => {
+      if (proposal === undefined) {
+        setState(State.InitiateSession)
+        return
+      }
 
-    const accounts: string[] = addresses.map((a) => `alephium:${a.network}:${a.hash}`)
-    await walletConnect?.approve({ proposal, response: { state: { accounts } } })
-    onClose()
-  }, [walletConnect, proposal, addresses, onClose])
+      const accounts: string[] = [
+        formatAccount(permittedChain.chainId, {
+          address: signerAddress.hash,
+          publicKey: signerAddress.publicKey,
+          group: signerAddress.group
+        })
+      ]
+      await walletConnect?.approve({ proposal, response: { state: { accounts } } })
+      onClose()
+    },
+    [proposal, permittedChain.chainId, walletConnect, onClose]
+  )
 
   const onReject = useCallback(async () => {
     if (proposal === undefined) {
@@ -101,12 +133,19 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
-          subtitle="Initiate a session with a dApp"
+          subtitle="WalletConnect Error"
           onClose={onClose}
         >
-          <div>Please try to generate a new session identifier in the dApp.</div>
+          <div>{error}</div>
           <ModalFooterButtons>
-            <ModalFooterButton onClick={() => setState(State.InitiateSession)}>Ok</ModalFooterButton>
+            <ModalFooterButton
+              onClick={() => {
+                setState(State.InitiateSession)
+                setError('')
+              }}
+            >
+              Ok
+            </ModalFooterButton>
           </ModalFooterButtons>
         </CenteredModal>
       )
@@ -137,6 +176,11 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const url = proposal?.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.proposer.metadata.description ?? 'No description given'
 
+      if (typeof fromAddress === 'undefined') {
+        setErrorState(`No address with balance for group ${permittedChain.permittedGroup}`)
+        return <></>
+      }
+
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
@@ -148,12 +192,17 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
             <Name>{name}</Name>
             <Url>{url}</Url>
             <Desc>{description}</Desc>
+            <Desc>
+              NetworkId: {permittedChain.networkId}, Group:{' '}
+              {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}
+            </Desc>
           </List>
+          {FromAddress}
           <ModalFooterButtons>
             <ModalFooterButton secondary onClick={onReject}>
               Reject
             </ModalFooterButton>
-            <ModalFooterButton onClick={onApprove}>Approve</ModalFooterButton>
+            <ModalFooterButton onClick={() => onApprove(fromAddress)}>Approve</ModalFooterButton>
           </ModalFooterButtons>
         </CenteredModal>
       )
@@ -204,4 +253,6 @@ const Url = styled.div`
   font-size: 10px;
   margin-bottom: 1em;
 `
-const Desc = styled.div``
+const Desc = styled.div`
+  margin-bottom: 1em;
+`
