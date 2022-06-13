@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 
+import { Address } from '../contexts/addresses'
 import { GasInfo } from '../types/transactions'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
@@ -37,3 +38,11 @@ export const getAmountErrorMessage = (amount: string, minAmount: bigint, shouldC
 }
 
 export const hasNoGasErrors = ({ gasAmount, gasPrice }: GasInfo) => !gasAmount.error && !gasPrice.error
+
+export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
+  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
+  const amountIncludingFees = amountInSet + fees
+  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
+  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
+  return expectedAmount
+}
