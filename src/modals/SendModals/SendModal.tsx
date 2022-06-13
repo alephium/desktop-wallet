@@ -97,7 +97,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [fees, setFees] = useState<bigint>()
   const theme = useTheme()
-  const { requestEvent, walletConnectClient, onError } = useWalletConnectContext()
+  const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
 
   const { setAddress } = useAddressesContext()
   const [unsignedTxId, setUnsignedTxId] = useState('')
@@ -201,7 +201,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           text: isSweeping && sweepUnsignedTxs.length > 1 ? 'Transactions sent!' : 'Transaction sent!',
           type: 'success'
         })
-        onClose()
+        onCloseExtended()
       } catch (e) {
         console.error(e)
         const error = extractErrorMsg(e)
@@ -215,13 +215,19 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       setIsLoading(false)
     }
   }
+
+  const onCloseExtended = () => {
+    setDappTxData(undefined)
+    onClose()
+  }
+
   return (
-    <CenteredModal title={modalTitle} onClose={onClose} isLoading={isLoading} header={modalHeader}>
+    <CenteredModal title={modalTitle} onClose={onCloseExtended} isLoading={isLoading} header={modalHeader}>
       {step === 'build-tx' && (
         <BuildTxModalContent
           data={transactionData ?? initialTxData}
           onSubmit={buildTransactionExtended}
-          onCancel={onClose}
+          onCancel={onCloseExtended}
         />
       )}
       {step === 'info-check' && transactionData && fees && (

@@ -36,6 +36,7 @@ import { useSendModalContext } from './sendModal'
 interface WalletConnectContextProps {
   walletConnectClient?: WalletConnectClient
   dappTxData?: DappTxData
+  setDappTxData: (data?: DappTxData) => void
   requestEvent?: SessionTypes.RequestEvent
   onError: (error: string) => void
 }
@@ -43,6 +44,7 @@ interface WalletConnectContextProps {
 const initialContext: WalletConnectContextProps = {
   walletConnectClient: undefined,
   dappTxData: undefined,
+  setDappTxData: () => null,
   requestEvent: undefined,
   onError: () => null
 }
@@ -87,7 +89,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       setDappTxData(txData)
       openSendModal(modalType)
     },
-    [openSendModal]
+    [openSendModal, setDappTxData]
   )
 
   const getAddressByHash = useCallback(
@@ -187,6 +189,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         requestEvent,
         walletConnectClient,
         dappTxData,
+        setDappTxData,
         onError
       }}
     >
