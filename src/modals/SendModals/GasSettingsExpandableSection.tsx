@@ -67,13 +67,11 @@ const GasSettingsExpandableSection = ({
     <ExpandableSectionStyled sectionTitleClosed="Gas">
       <GasAmountInput value={gasAmount} onChange={onGasAmountChange} />
       <GasPriceInput theme={theme} value={gasPrice} onChange={onGasPriceChange} />
-      <InfoBoxStyled short label="Expected fee">
-        {expectedFeeInALPH && (
-          <>
-            {expectedFeeInALPH} <AlefSymbol />
-          </>
-        )}
-      </InfoBoxStyled>
+      {expectedFeeInALPH && (
+        <InfoBox short label="Expected fee">
+          {expectedFeeInALPH} <AlefSymbol />
+        </InfoBox>
+      )}
     </ExpandableSectionStyled>
   )
 }
@@ -167,8 +165,4 @@ export default GasSettingsExpandableSection
 
 const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 38px;
-`
-
-const InfoBoxStyled = styled(InfoBox)`
-  margin-top: var(--spacing-5);
 `
