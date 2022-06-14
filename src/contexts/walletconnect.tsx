@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
-import { SessionTypes } from '@walletconnect/types'
+import SignClient from '@walletconnect/sign-client'
 import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from 'alephium-web3'
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
@@ -34,15 +33,24 @@ import { extractErrorMsg } from '../utils/misc'
 import { useSendModalContext } from './sendModal'
 
 interface WalletConnectContextProps {
-  walletConnectClient?: WalletConnectClient
+  walletConnectClient?: SignClient
+  sessionTopic?: string
+  setSessionTopic: (topic?: string) => void
   dappTxData?: DappTxData
   setDappTxData: (data?: DappTxData) => void
-  requestEvent?: SessionTypes.RequestEvent
+  // TODO: Specify type when @walletconnect has specified it. Untyped as of beta.101
+  requestEvent?: any
   onError: (error: string) => void
+}
+
+function noop() {
+  // do nothing.
 }
 
 const initialContext: WalletConnectContextProps = {
   walletConnectClient: undefined,
+  sessionTopic: undefined,
+  setSessionTopic: () => null,
   dappTxData: undefined,
   setDappTxData: () => null,
   requestEvent: undefined,
@@ -54,9 +62,11 @@ const WalletConnectContext = createContext<WalletConnectContextProps>(initialCon
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { openSendModal } = useSendModalContext()
   const { addresses } = useAddressesContext()
-  const [walletConnectClient, setWalletConnectClient] = useState<WalletConnectClient>()
+  const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
   const [dappTxData, setDappTxData] = useState<DappTxData>()
-  const [requestEvent, setRequestEvent] = useState<SessionTypes.RequestEvent>()
+  // TODO: Specify type when @walletconnect specifies it. Untyped as of beta.101
+  const [requestEvent, setRequestEvent] = useState<any>()
+  const [sessionTopic, setSessionTopic] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     if (!walletConnectClient) initializeWalletConnectClient()
@@ -64,10 +74,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const initializeWalletConnectClient = async () => {
     try {
-      const client = await WalletConnectClient.init({
-        controller: true,
-
-        // TODO: add as an advanced settings option "WalletConnect Project Id"
+      const client = await SignClient.init({
         projectId: '6e2562e43678dd68a9070a62b6d52207',
         relayUrl: 'wss://relay.walletconnect.com',
         metadata: {
@@ -122,7 +129,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionRequest = useCallback(
-    async (event: SessionTypes.RequestEvent) => {
+    // TODO: Specify type on event when @walletconnect specifies it. Untyped as of beta.101
+    async (event: any) => {
       setRequestEvent(event)
 
       const {
@@ -176,10 +184,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   useEffect(() => {
-    walletConnectClient?.on(CLIENT_EVENTS.session.request, onSessionRequest)
+    walletConnectClient?.on('session_request', onSessionRequest)
 
     return () => {
-      walletConnectClient?.removeListener(CLIENT_EVENTS.session.request, onSessionRequest)
+      walletConnectClient?.removeListener('session_request', onSessionRequest)
     }
   }, [onSessionRequest, walletConnectClient])
 
@@ -190,6 +198,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         walletConnectClient,
         dappTxData,
         setDappTxData,
+        sessionTopic,
+        setSessionTopic,
         onError
       }}
     >

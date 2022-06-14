@@ -16,8 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CLIENT_EVENTS } from '@walletconnect/client'
-import { SessionTypes } from '@walletconnect/types'
 import { formatAccount, formatChain, parseChain } from 'alephium-walletconnect-provider'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -46,12 +44,13 @@ interface Props {
 }
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
-  const { walletConnectClient } = useWalletConnectContext()
+  const { walletConnectClient, sessionTopic, setSessionTopic } = useWalletConnectContext()
   const { addresses } = useAddressesContext()
   const [uri, setUri] = useState('')
   const [error, setError] = useState('')
   const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>('uninitialized')
-  const [proposal, setProposal] = useState<SessionTypes.Proposal>()
+  // TODO: Specify type when @walletconnect specifies it. Untyped as of beta.101
+  const [proposal, setProposal] = useState<any>()
   const [permittedChain, setPermittedChain] = useState<PermittedChain>({
     chainId: formatChain(0, -1),
     networkId: 0,
@@ -63,8 +62,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       : addresses.filter((a) => a.group === permittedChain.permittedGroup)
   const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.settings.isMain))
 
-  const onProposal = useCallback(async (proposal: SessionTypes.Proposal) => {
-    const permittedChain = proposal.permissions.blockchain.chains[0]
+  // TODO: Specify type on proposal when @walletconnect specifies it. Untyped as of beta.101
+  const onProposal = useCallback(async (proposal: any) => {
+    const permittedChain = proposal.params.requiredNamespaces.alephium.chains[0]
 
     if (permittedChain === undefined) {
       setError('No chain is permitted')
@@ -82,14 +82,12 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   }, [])
 
   useEffect(() => {
-    walletConnectClient?.on(CLIENT_EVENTS.session.proposal, onProposal)
-    walletConnectClient?.on(CLIENT_EVENTS.session.created, onClose)
+    walletConnectClient?.on('session_proposal', onProposal)
 
     return () => {
-      walletConnectClient?.removeListener(CLIENT_EVENTS.session.proposal, onProposal)
-      walletConnectClient?.removeListener(CLIENT_EVENTS.session.created, onClose)
+      walletConnectClient?.removeListener('session_proposal', onProposal)
     }
-  }, [onClose, onProposal, walletConnectClient])
+  }, [onProposal, walletConnectClient])
 
   if (!walletConnectClient) return null
 
@@ -116,7 +114,20 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         group: signerAddress.group
       })
     ]
-    await walletConnectClient.approve({ proposal, response: { state: { accounts } } })
+
+    const { topic, acknowledged } = await walletConnectClient.approve({
+      id: proposal.id,
+      namespaces: {
+        alephium: {
+          accounts,
+          methods: ['alph_signContractCreationTx', 'alph_signScriptTx', 'alph_signTransferTx', 'alph_getAccounts'],
+          events: []
+        }
+      }
+    })
+
+    setSessionTopic(topic)
+    await acknowledged()
     onClose()
   }
 
@@ -126,7 +137,10 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return
     }
 
-    await walletConnectClient.reject({ proposal })
+    await walletConnectClient.reject({
+      id: proposal.id,
+      reason: { code: -1, message: 'User rejected the proposal to connect.' }
+    })
     onClose()
   }
 
@@ -163,6 +177,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   } else if (wcSessionState === 'proposal' && !signerAddress) {
     setError(`No address with balance for group ${permittedChain.permittedGroup}`)
   } else if (wcSessionState === 'proposal' && signerAddress) {
+    const { name, url, description } = proposal?.params.proposer.metadata
     return (
       <CenteredModal
         title={<ImageStyled src={walletConnectFull} />}
@@ -173,9 +188,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           <InfoBox>
             <Info>Please review the following before authorizing the dApp:</Info>
             <List>
-              <Info>Name: {proposal?.proposer.metadata.name ?? 'Uknown dApp name'}</Info>
-              <Info>URL: {proposal?.proposer.metadata.url ?? 'Uknown dApp URL'}</Info>
-              <Info>Description: {proposal?.proposer.metadata.description ?? 'Uknown dApp description'}</Info>
+              <Info>Name: {name ?? 'Absent dApp name'}</Info>
+              <Info>URL: {url ?? 'Absent dApp URL'}</Info>
+              <Info>Description: {description ?? 'Absent dApp description'}</Info>
               <Info>NetworkId: {permittedChain.networkId}</Info>
               <Info>Group: {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}</Info>
             </List>
