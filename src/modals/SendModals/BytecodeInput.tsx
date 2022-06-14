@@ -20,17 +20,10 @@ import styled from 'styled-components'
 
 import { InputProps } from '../../components/Inputs'
 import Input from '../../components/Inputs/Input'
-
-const BytecodeInput = ({ value, onChange }: InputProps) => {
-  return (
-    <Container>
-      <Input id="code" label="Bytecode" value={value} onChange={onChange} />
-    </Container>
-  )
+const BytecodeInput = ({ value, onChange, className }: InputProps) => {
+  return <Input className={className} id="code" label="Bytecode" value={value} onChange={onChange} />
 }
 
-export default BytecodeInput
-
-const Container = styled.div`
+export default styled(BytecodeInput)`
   padding-top: 1rem;
-`
+` 
