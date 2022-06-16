@@ -18,30 +18,36 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect, useState } from 'react'
 
-import { useGlobalContext } from '../contexts/global'
+import { AppData, KEY_APPDATA, toAppData } from '../utils/app-data'
 
 const currentVersion = process.env.REACT_APP_VERSION
 const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 
+const ONE_HOUR = 1000 * 60 * 60
+
 const useLatestGitHubRelease = () => {
   const [newLatestRelease, setNewLatestRelease] = useState('')
-  const { currentNetwork } = useGlobalContext()
+  const { lastVersionCheckedAt }: AppData = JSON.parse(localStorage.getItem(KEY_APPDATA) ?? '{}', toAppData) ?? {}
+
+  const fetchLatestVersion = async () => {
+    const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
+    const data = await response.json()
+    const latestVersion = data.tag_name.replace('v', '')
+
+    if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
+      setNewLatestRelease(latestVersion)
+    }
+  }
 
   useEffect(() => {
-    if (currentNetwork !== 'mainnet') return
-
-    const fetchLatestVersion = async () => {
-      const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
-      const data = await response.json()
-      const latestVersion = data.tag_name.replace('v', '')
-
-      if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
-        setNewLatestRelease(latestVersion)
-      }
+    if (lastVersionCheckedAt !== undefined && Date.now() - lastVersionCheckedAt.getTime() < ONE_HOUR) {
+      return
     }
 
+    localStorage.setItem(KEY_APPDATA, JSON.stringify({ lastVersionCheckedAt: new Date() }))
+
     fetchLatestVersion()
-  }, [currentNetwork])
+  })
 
   return newLatestRelease
 }
