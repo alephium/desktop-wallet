@@ -115,7 +115,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         walletConnectClient.respond({
           topic: requestEvent.topic,
           response: {
-            id: requestEvent.request.id,
+            id: requestEvent.id,
             jsonrpc: '2.0',
             error: {
               code: -32000,
@@ -134,7 +134,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       setRequestEvent(event)
 
       const {
-        request: { method, params }
+        params: {
+          request: { method, params }
+        }
       } = event
 
       try {

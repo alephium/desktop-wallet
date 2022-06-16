@@ -189,7 +189,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           await walletConnectClient.respond({
             topic: requestEvent.topic,
             response: {
-              id: requestEvent.request.id,
+              id: requestEvent.id,
               jsonrpc: '2.0',
               result: wcResult
             }
