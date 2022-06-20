@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { clone, isEqual, merge } from 'lodash'
+import { clone, merge } from 'lodash'
 
 import { ThemeType } from '../style/themes'
 
@@ -73,9 +73,12 @@ export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as con
 
 export type NetworkName = typeof networkNames[number]
 
+export const isEqualNetwork = (a: Settings['network'], b: Settings['network']): boolean =>
+  a.nodeHost === b.nodeHost && a.explorerUrl === b.explorerUrl && a.explorerApiHost === b.explorerApiHost
+
 export const getNetworkName = (settings: Settings['network']) => {
   return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
-    return isEqual(presetSettings, settings)
+    return isEqualNetwork(presetSettings, settings)
   })?.[0] || 'custom') as NetworkName | 'custom'
 }
 
