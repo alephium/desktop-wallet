@@ -23,7 +23,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import AddressMetadataForm from '../components/AddressMetadataForm'
 import ExpandableSection from '../components/ExpandableSection'
 import InfoBox from '../components/InfoBox'
-import Select from '../components/Inputs/Select'
+import Select, { SelectOption } from '../components/Inputs/Select'
 import { Section } from '../components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
@@ -51,7 +51,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       if (!wallet?.seed) return
       const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes.current)
       setNewAddressData(data)
-      setNewAddressGroup(group || addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
+      setNewAddressGroup(group ?? addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
     },
     [wallet]
   )
@@ -82,6 +82,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
     }
     onClose()
+  }
+
+  const onGroupSelect = (newValue: SelectOption<number> | undefined) => {
+    if (newValue !== undefined) {
+      generateNewAddress(newValue.value)
+    }
   }
 
   let mainAddressMessage = 'Default address for sending transactions.'
@@ -119,9 +125,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
             label="Group"
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-            onValueChange={(newValue) => {
-              newValue && generateNewAddress(newValue.value)
-            }}
+            onValueChange={onGroupSelect}
             title="Select group"
             id="group"
           />
