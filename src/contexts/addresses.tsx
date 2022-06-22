@@ -29,11 +29,7 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
-import {
-  AddressSettings,
-  loadStoredAddressesMetadataOfAccount,
-  storeAddressMetadataOfAccount
-} from '../utils/addresses'
+import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
@@ -226,7 +222,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       address.settings = settings
       setAddress(address)
     },
-    [setAddress, wallet, currentAccountName, passphraseHash]
+    [setAddress, wallet, activeWalletName, passphraseHash]
   )
 
   const fetchAndStoreAddressesData = useCallback(
@@ -308,7 +304,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [fetchAndStoreAddressesData, setAddress, wallet, currentAccountName, passphraseHash]
+    [fetchAndStoreAddressesData, setAddress, wallet, activeWalletName, passphraseHash]
   )
 
   const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
@@ -335,7 +331,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfAccount({
+      const addressesMetadata = loadStoredAddressesMetadataOfWallet({
         mnemonic: wallet.mnemonic,
         walletName: activeWalletName,
         passphraseHash
@@ -381,7 +377,17 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, activeWalletName, getAccountKey, wallet, explorerApiHost, nodeHost, usedPassphrase])
+  }, [
+    currentNetwork,
+    networkStatus,
+    client,
+    activeWalletName,
+    getAccountKey,
+    wallet,
+    explorerApiHost,
+    nodeHost,
+    usedPassphrase
+  ])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
