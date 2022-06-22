@@ -17,16 +17,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { walletGenerate } from '@alephium/sdk'
-import { loadStoredAddressesMetadataOfAccount } from '../utils/addresses'
+
+import { loadStoredAddressesMetadataOfWallet } from '../utils/addresses'
 import * as migrate from '../utils/migration'
-import { stringToDoubleSHA256HexString } from '../utils/misc'
 
 //
 // ANY CHANGES TO THIS FILE MUST BE REVIEWED BY AT LEAST ONE CORE CONTRIBUTOR
 //
 // Each step should:
 // * Create a wallet
-// * Call the storeAddressMetadataOfAccount function (depends on loadStoredAddressesMetadataOfAccount)
+// * Call the storeAddressMetadataOfWallet function (depends on loadStoredAddressesMetadataOfWallet)
 // * Call the migrate step
 // * Verify it worked
 //
@@ -37,34 +37,30 @@ import { stringToDoubleSHA256HexString } from '../utils/misc'
 describe('_20220511_074100', () => {
   const settings = {
     isMain: true,
-    label: "test",
-    color: "blue"
+    label: 'test',
+    color: 'blue'
   }
 
-  const accounts = new Array(10)
-  .fill({})
-  .map((account, index) =>
-    ({
-      accountName: 'accountName' + index,
-      wallet: walletGenerate(),
-      index,
-      settings
-    })
-  )
+  const wallets = new Array(10).fill({}).map((wallet, index) => ({
+    walletName: 'walletName' + index,
+    wallet: walletGenerate(),
+    index,
+    settings
+  }))
 
   const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
   const addressesMetadataLocalStorageKeySuffix = 'addresses-metadata'
 
   // from 1aa10a20e5da393345a0fda220a4a327d709f8ce
-  const _loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-    const data = localStorage.getItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`)
+  const _loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
+    const data = localStorage.getItem(`${walletName}-${addressesMetadataLocalStorageKeySuffix}`)
 
     if (data === null) return []
 
     return JSON.parse(data)
   }
-  const _storeAddressMetadataOfAccount = (accountName: string, index: number, settings: AddressSettings) => {
-    const addressesMetadata = _loadStoredAddressesMetadataOfAccount(accountName)
+  const _storeAddressMetadataOfWallet = (walletName: string, index: number, settings: AddressSettings) => {
+    const addressesMetadata = _loadStoredAddressesMetadataOfWallet(walletName)
     const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
     if (!existingAddressMetadata) {
@@ -75,14 +71,13 @@ describe('_20220511_074100', () => {
     } else {
       Object.assign(existingAddressMetadata, settings)
     }
-    localStorage.setItem(`${accountName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
+    localStorage.setItem(`${walletName}-${addressesMetadataLocalStorageKeySuffix}`, JSON.stringify(addressesMetadata))
   }
-
 
   // from b8d121ed847cccc0aee841581b432a85ccca3aa5
   const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
-  const loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-    const data = localStorage.getItem(constructMetadataKey(accountName))
+  const loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
+    const data = localStorage.getItem(constructMetadataKey(walletName))
 
     if (data === null) return []
 
@@ -90,18 +85,18 @@ describe('_20220511_074100', () => {
   }
 
   it('transitions the key names', () => {
-    accounts.forEach(({ accountName, index, settings }) => {
+    wallets.forEach(({ walletName, index, settings }) => {
       // This is necessary because getStorage().list() uses this to list the
-      // wallet account names, which use the key names.
-      localStorage.setItem('wallet-' + accountName, '')
-      _storeAddressMetadataOfAccount(accountName, index, settings)
+      // wallet names, which use the key names.
+      localStorage.setItem('wallet-' + walletName, '')
+      _storeAddressMetadataOfWallet(walletName, index, settings)
     })
 
     migrate._20220511_074100()
 
-    accounts.forEach(({ accountName, wallet, index, settings }) => {
-      const addresses = loadStoredAddressesMetadataOfAccount(accountName)
-      expect(addresses[0]).toStrictEqual({...settings, index })
+    wallets.forEach(({ walletName, wallet, index, settings }) => {
+      const addresses = loadStoredAddressesMetadataOfWallet(walletName)
+      expect(addresses[0]).toStrictEqual({ ...settings, index })
     })
   })
 })
@@ -109,33 +104,28 @@ describe('_20220511_074100', () => {
 describe('_20220527_120000', () => {
   const settings = {
     isMain: true,
-    label: "test",
-    color: "blue"
+    label: 'test',
+    color: 'blue'
   }
-  const accounts = new Array(10)
-  .fill({})
-  .map((account, index) =>
-    ({
-      accountName: 'accountName' + index,
-      wallet: walletGenerate(),
-      index,
-      settings
-    })
-  )
+  const wallets = new Array(10).fill({}).map((wallet, index) => ({
+    walletName: 'walletName' + index,
+    wallet: walletGenerate(),
+    index,
+    settings
+  }))
 
   // from b8d121ed847cccc0aee841581b432a85ccca3aa5
   const _addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
-  const _constructMapKey =  (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`
   const _constructMetadataKey = (walletName: string) => `${_addressesMetadataLocalStorageKeyPrefix}-${walletName}`
-  const _loadStoredAddressesMetadataOfAccount = (accountName: string): AddressMetadata[] => {
-    const data = localStorage.getItem(_constructMetadataKey(accountName))
+  const _loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
+    const data = localStorage.getItem(_constructMetadataKey(walletName))
 
     if (data === null) return []
 
     return JSON.parse(data)
   }
-  const _storeAddressMetadataOfAccount = (accountName: string, index: number, settings: AddressSettings) => {
-    const addressesMetadata = _loadStoredAddressesMetadataOfAccount(accountName)
+  const _storeAddressMetadataOfWallet = (walletName: string, index: number, settings: AddressSettings) => {
+    const addressesMetadata = _loadStoredAddressesMetadataOfWallet(walletName)
     const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
     if (!existingAddressMetadata) {
@@ -146,34 +136,30 @@ describe('_20220527_120000', () => {
     } else {
       Object.assign(existingAddressMetadata, settings)
     }
-    localStorage.setItem(_constructMetadataKey(accountName), JSON.stringify(addressesMetadata))
+    localStorage.setItem(_constructMetadataKey(walletName), JSON.stringify(addressesMetadata))
   }
 
   it('properly encrypts and decrypts multiple user wallets', () => {
-    accounts.forEach(({ accountName, index, settings }) =>
-      _storeAddressMetadataOfAccount(accountName, index, settings)
-    )
+    wallets.forEach(({ walletName, index, settings }) => _storeAddressMetadataOfWallet(walletName, index, settings))
 
-    accounts.forEach(({ accountName, wallet }) =>
-      migrate._20220527_120000(wallet.mnemonic, accountName)
-    )
+    wallets.forEach(({ walletName, wallet }) => migrate._20220527_120000(wallet.mnemonic, walletName))
 
-    accounts.forEach(({ accountName, wallet, index, settings }) => {
-      const addresses = loadStoredAddressesMetadataOfAccount(wallet.mnemonic, accountName)
-      expect(addresses[0]).toStrictEqual({...settings, index })
+    wallets.forEach(({ walletName, wallet, index, settings }) => {
+      const addresses = loadStoredAddressesMetadataOfWallet(wallet.mnemonic, walletName)
+      expect(addresses[0]).toStrictEqual({ ...settings, index })
     })
   })
 
   it('does not use the same wallet to encrypt address metadata', () => {
-    const accountFirst = loadStoredAddressesMetadataOfAccount({
-      mnemonic: accounts[0].wallet.mnemonic,
-      accountName: accounts[0].accountName
+    const walletFirst = loadStoredAddressesMetadataOfWallet({
+      mnemonic: wallets[0].wallet.mnemonic,
+      walletName: wallets[0].walletName
     })
 
-    const accountLast = loadStoredAddressesMetadataOfAccount({
-      mnemonic: accounts[accounts.length - 1].wallet.mnemonic,
-      accountName: accounts[accounts.length - 1].accountName)
+    const walletLast = loadStoredAddressesMetadataOfWallet({
+      mnemonic: wallets[wallets.length - 1].wallet.mnemonic,
+      walletName: wallets[wallets.length - 1].walletName
     })
-    expect(accountFirst).not.toStrictEqual(accountLast)
+    expect(walletFirst).not.toStrictEqual(walletLast)
   })
 })

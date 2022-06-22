@@ -56,8 +56,8 @@ export const WalletContextProvider: FC = ({ children }) => {
   return (
     <WalletContext.Provider
       value={{
-        accountName,
-        setAccountName,
+        walletName,
+        setWalletName,
         password,
         setPassword,
         mnemonic,
