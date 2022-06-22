@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { walletGenerate } from '@alephium/sdk'
 import { Edit3 } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
