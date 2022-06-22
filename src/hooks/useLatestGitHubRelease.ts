@@ -58,7 +58,7 @@ const useLatestGitHubRelease = () => {
     const timeSinceLastCheck = (lastVersionCheckedAt !== undefined && Date.now() - lastVersionCheckedAt.getTime()) || 0
     const nextTimeUntilNextFetch = Math.max(0, ONE_HOUR - timeSinceLastCheck)
 
-    if (timeUntilNextFetch === 0 && nextTimeUntilNextFetch !== 0) {
+    if (timeUntilNextFetch === 0 && nextTimeUntilNextFetch !== 0 && lastVersionCheckedAt !== undefined) {
       setTimeUntilNextFetch(nextTimeUntilNextFetch)
       return
     }
