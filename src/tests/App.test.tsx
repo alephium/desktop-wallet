@@ -44,7 +44,7 @@ jest.mock('@alephium/sdk', () => ({
 }))
 
 jest.mock('../utils/migration', () => ({
-  migrateUserData: () => {}
+  migrateUserData: () => ({})
 }))
 
 const walletLockTimeInMinutes = 4
