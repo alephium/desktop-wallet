@@ -6,7 +6,7 @@ This document is written with the intention of demonstrating the build process i
 
 ## Getting Started / Prerequisites
 
-### Instal NodeJS
+### Install NodeJS
 
 Navigate to the [NodeJS Offical Installer](https://nodejs.org/en/download/) and download the Windows installer proper for your architecture (the most common choice is `x64` in `.msi` format)
 
@@ -23,6 +23,8 @@ Download the `desktop-wallet` [repo](https://github.com/alephium/desktop-wallet)
 This can be accomplished by selecting the green `<>Code` button and then `Download ZIP` from the dropdown.
 
 Or by following this [link](https://github.com/alephium/desktop-wallet/archive/refs/heads/master.zip).
+
+The project will now need to be extracted. Do this by right clicking on the `.zip` file and then `Extract All`
 
 
 ### Navigate to the Project Within a Terminal
