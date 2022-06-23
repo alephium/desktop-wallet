@@ -24,7 +24,7 @@ This can be accomplished by selecting the green `<>Code` button and then `Downlo
 
 ![ghss](../assets/ghss.png)
 
-Or by following this [link](https://github.com/alephium/desktop-wallet/archive/refs/heads/master.zip).
+Or by following this [link](https://github.com/alephium/desktop-wallet/archive/refs/tags/latest.zip).
 
 The project will now need to be extracted. Do this by right clicking on the `.zip` file and then `Extract All`
 
