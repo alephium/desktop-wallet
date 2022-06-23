@@ -28,6 +28,7 @@ Or by following this [link](https://github.com/alephium/desktop-wallet/archive/r
 
 The project will now need to be extracted. Do this by right clicking on the `.zip` file and then `Extract All`
 
+![wss](../assets/windows-extraction.PNG)
 
 ### Navigate to the Project Within a Terminal
 
