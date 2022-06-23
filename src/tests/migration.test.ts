@@ -145,7 +145,10 @@ describe('_20220527_120000', () => {
     wallets.forEach(({ walletName, wallet }) => migrate._20220527_120000(wallet.mnemonic, walletName))
 
     wallets.forEach(({ walletName, wallet, index, settings }) => {
-      const addresses = loadStoredAddressesMetadataOfWallet(wallet.mnemonic, walletName)
+      const addresses = loadStoredAddressesMetadataOfWallet({
+        mnemonic: wallet.mnemonic,
+        walletName
+      })
       expect(addresses[0]).toStrictEqual({ ...settings, index })
     })
   })
