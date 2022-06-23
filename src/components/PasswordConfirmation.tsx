@@ -40,7 +40,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   onCorrectPasswordEntered,
   walletName,
   children
-}: PasswordConfirmationProps) => {
+}) => {
   const { activeWalletName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 
