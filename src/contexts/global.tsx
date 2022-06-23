@@ -146,10 +146,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       migrateUserData(wallet.mnemonic, walletName, _passphraseHash)
 
-      // Based on the user opening the wallet once a week (52 / 4 = 13)
-      // It will roll a die between 1 and 13 and if it lands on 1, new address metadata is created
+      // Based on the user opening the wallet five times a week and having a 1/4 chance of dummy metadata (52 * 5 / 4 = 65)
+      // It will roll a die between 1 and 65 and if it lands on 1, new address metadata is created
       // Set first argument to 1 if you want it to generate new address metadata each time
-      letSneakyAddressMetadataImpLoose(13, wallet.mnemonic)
+      letSneakyAddressMetadataImpLoose(65, wallet.mnemonic)
 
       setWallet(wallet)
       setCurrentWalletName(walletName)
