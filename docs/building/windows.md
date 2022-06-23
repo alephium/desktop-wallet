@@ -22,6 +22,8 @@ Download the `desktop-wallet` [repo](https://github.com/alephium/desktop-wallet)
 
 This can be accomplished by selecting the green `<>Code` button and then `Download ZIP` from the dropdown.
 
+![ghss](../assets/ghss.png)
+
 Or by following this [link](https://github.com/alephium/desktop-wallet/archive/refs/heads/master.zip).
 
 The project will now need to be extracted. Do this by right clicking on the `.zip` file and then `Extract All`
