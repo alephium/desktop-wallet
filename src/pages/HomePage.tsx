@@ -107,7 +107,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.accountName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
   }
 
   return (

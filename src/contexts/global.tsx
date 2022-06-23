@@ -53,7 +53,7 @@ export interface GlobalContextProps {
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
-  login: (accountName: string, password: string, callback: () => void, passphrase?: string) => void
+  login: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -127,8 +127,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     setWallet(undefined)
   }
 
-  const login = async (accountName: string, password: string, callback: () => void, passphrase?: string) => {
-    const walletEncrypted = Storage.load(accountName)
+  const login = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+    const walletEncrypted = Storage.load(walletName)
     if (!walletEncrypted) {
       setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
       return
@@ -144,7 +144,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         setPassphraseHash(_passphraseHash)
       }
 
-      migrateUserData(wallet.mnemonic, accountName, _passphraseHash)
+      migrateUserData(wallet.mnemonic, walletName, _passphraseHash)
 
       // Based on the user opening the wallet once a week (52 / 4 = 13)
       // It will roll a die between 1 and 13 and if it lands on 1, new address metadata is created
