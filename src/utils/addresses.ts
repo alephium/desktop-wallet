@@ -70,7 +70,7 @@ export const storeAddressMetadataOfWallet = (
   settings: AddressSettings,
   passphraseHash?: string
 ) => {
-  const addressesMetadata = loadStoredAddressesMetadataOfWallet(walletName, mnemonic, passphraseHash)
+  const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic, passphraseHash })
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
