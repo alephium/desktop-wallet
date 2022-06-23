@@ -45,7 +45,7 @@ export const checkAddressValidity = (address: string) => {
 export const constructMetadataKey = (walletName: string, passphraseHash?: string) =>
   `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName + (passphraseHash ?? ''))}`
 
-interface AddressMetadataKeyProperties {
+interface AddressMetadataKey {
   mnemonic: string
   walletName: string
   passphraseHash?: string
@@ -55,7 +55,7 @@ export const loadStoredAddressesMetadataOfWallet = ({
   mnemonic,
   walletName,
   passphraseHash
-}: AddressMetadataKeyProperties): AddressMetadata[] => {
+}: AddressMetadataKey): AddressMetadata[] => {
   const json = localStorage.getItem(constructMetadataKey(walletName, passphraseHash))
 
   if (json === null) return []
@@ -64,11 +64,9 @@ export const loadStoredAddressesMetadataOfWallet = ({
 }
 
 export const storeAddressMetadataOfWallet = (
-  mnemonic: string,
-  walletName: string,
+  { mnemonic, walletName, passphraseHash }: AddressMetadataKey,
   index: number,
-  settings: AddressSettings,
-  passphraseHash?: string
+  settings: AddressSettings
 ) => {
   const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic, passphraseHash })
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
@@ -110,5 +108,5 @@ export const letSneakyAddressMetadataImpLoose = (timeInterval: number, mnemonic:
 
   const walletName = Math.random().toString()
   const passphraseHash = stringToDoubleSHA256HexString(Math.random().toString())
-  storeAddressMetadataOfWallet({ mnemonic, walletName, index: 0, settings: { isMain: true }, passphraseHash })
+  storeAddressMetadataOfWallet({ mnemonic, walletName, passphraseHash }, 0, { isMain: true })
 }

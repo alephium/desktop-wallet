@@ -27,9 +27,9 @@ export interface WalletContextType {
   walletName: string
   setWalletName: (w: string) => void
   password: string
-  setPassword: Dispatch<SetStateAction<string>>
+  setPassword: (password: string) => void
   passphrase: string
-  setPassphrase: Dispatch<SetStateAction<string>>
+  setPassphrase: (password: string) => void
 }
 
 export const initialWalletContext: WalletContextType = {

@@ -212,13 +212,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const updateAddressSettings = useCallback(
     (address: Address, settings: AddressSettings) => {
       if (!wallet) return
-      storeAddressMetadataOfWallet({
-        mnemonic: wallet.mnemonic,
-        activeWalletName: activeWalletName,
-        index: address.index,
-        settings,
-        passphraseHash
-      })
+      storeAddressMetadataOfWallet(
+        {
+          mnemonic: wallet.mnemonic,
+          walletName: activeWalletName,
+          passphraseHash
+        },
+        address.index,
+        settings
+      )
       address.settings = settings
       setAddress(address)
     },
@@ -294,13 +296,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
       if (!wallet) return
-      storeAddressMetadataOfWallet({
-        mnemonic: wallet.mnemonic,
-        walletName: activeWalletName,
-        index: newAddress.index,
-        settings: newAddress.settings,
-        passphraseHash
-      })
+      storeAddressMetadataOfWallet(
+        {
+          mnemonic: wallet.mnemonic,
+          walletName: activeWalletName,
+          passphraseHash
+        },
+        newAddress.index,
+        newAddress.settings
+      )
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
@@ -377,17 +381,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currentNetwork,
-    networkStatus,
-    client,
-    activeWalletName,
-    getAccountKey,
-    wallet,
-    explorerApiHost,
-    nodeHost,
-    usedPassphrase
-  ])
+  }, [currentNetwork, networkStatus, client, activeWalletName, wallet, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
