@@ -44,6 +44,10 @@ Open a new terminal within the local repo with the following steps:
 cmd
 ```
 
+If you are having troubles locating the navigation bar, here is a screenshot that might help:
+
+![windowsnav](../assets/winnavbar.png)
+
 4. A terminal window should appear
 
 ### Build `desktop-wallet`
