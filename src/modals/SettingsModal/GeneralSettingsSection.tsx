@@ -80,7 +80,7 @@ const GeneralSettingsSection = () => {
       />
       <HorizontalDivider narrow />
       <KeyValueInput
-        label={t`Discreet mode"`}
+        label={t`Discreet mode`}
         description={t`Toggle discreet mode (hide amounts).`}
         InputComponent={
           <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />

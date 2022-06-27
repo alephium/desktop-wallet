@@ -38,16 +38,16 @@ migrateAddressMetadata()
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <GlobalContextProvider>
-        <AddressesContextProvider>
-          <ThemeProvider theme={lightTheme}>
-            <GlobalStyle />
-            <Suspense fallback="loading">
+      <Suspense fallback="loading">
+        <GlobalContextProvider>
+          <AddressesContextProvider>
+            <ThemeProvider theme={lightTheme}>
+              <GlobalStyle />
               <App />
-            </Suspense>
-          </ThemeProvider>
-        </AddressesContextProvider>
-      </GlobalContextProvider>
+            </ThemeProvider>
+          </AddressesContextProvider>
+        </GlobalContextProvider>
+      </Suspense>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')
