@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import './index.css' // Importing CSS through CSS file to avoid font flickering
+import './i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
@@ -41,7 +42,9 @@ ReactDOM.render(
         <AddressesContextProvider>
           <ThemeProvider theme={lightTheme}>
             <GlobalStyle />
-            <App />
+            <Suspense fallback="loading">
+              <App />
+            </Suspense>
           </ThemeProvider>
         </AddressesContextProvider>
       </GlobalContextProvider>

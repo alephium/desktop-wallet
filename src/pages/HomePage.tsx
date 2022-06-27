@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -147,18 +148,19 @@ const InitialActions = ({
   onLinkClick?: () => void
 }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation('App')
 
   return (
     <>
       <Paragraph centered secondary>
-        Please choose whether you want to create a new wallet or import an existing one.
+        {t`Please choose whether you want to create a new wallet or import an existing one.`}
       </Paragraph>
       <Section inList>
-        <Button onClick={() => navigate('/create/0')}>New wallet</Button>
-        <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
+        <Button onClick={() => navigate('/create/0')}>{t`New wallet`}</Button>
+        <Button onClick={() => navigate('/import/0')}>{t`Import wallet`}</Button>
         {showLinkToExistingWallets && (
           <SwitchLink onClick={onLinkClick} centered>
-            Use an existing wallet
+            {t`Use an existing wallet`}
           </SwitchLink>
         )}
       </Section>

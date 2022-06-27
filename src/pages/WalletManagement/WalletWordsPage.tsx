@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { walletGenerate } from '@alephium/sdk'
 import { Edit3 } from 'lucide-react'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -36,6 +37,7 @@ import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
 const WalletWordsPage = () => {
+  const { t } = useTranslation('App')
   const { mnemonic, plainWallet, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
@@ -56,7 +58,7 @@ const WalletWordsPage = () => {
           throw e
         })
         .then(() => {
-          setSnackbarMessage({ text: 'Address copied to clipboard!', type: 'info' })
+          setSnackbarMessage({ text: t`Address copied to clipboard!`, type: 'info' })
         })
     }
   }
@@ -75,17 +77,17 @@ const WalletWordsPage = () => {
   return (
     <FloatingPanel enforceMinHeight>
       <PanelTitle color="primary" onBackButtonClick={onButtonBack}>
-        Your Wallet
+        {t`Your Wallet`}
       </PanelTitle>
       <PanelContentContainer>
         <PublicAddressContent>
-          <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
+          <InfoBox text={plainWallet?.address || ''} label={t`Your address`} onClick={handleAddressClick} wordBreak />
         </PublicAddressContent>
         <WordsContent inList>
           <Label>Secret phrase</Label>
           <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
           <InfoBox
-            text={'Carefully note down the words! They are the secret keys to your wallet.'}
+            text={t`Carefully note down the words! They are the secret keys to your wallet.`}
             Icon={Edit3}
             importance="alert"
           />
@@ -93,7 +95,7 @@ const WalletWordsPage = () => {
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button onClick={onButtonNext} submit>
-          {"I've copied the words, continue"}
+          {t`I've copied the words, continue`}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>
