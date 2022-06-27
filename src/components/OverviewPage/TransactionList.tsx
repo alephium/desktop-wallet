@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import dayjs from 'dayjs'
+import { useTranslation } from 'react-i18next'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
@@ -41,6 +42,7 @@ interface OverviewPageTransactionListProps {
 }
 
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
+  const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
 
@@ -59,6 +61,8 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   }
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+
+  const transactionsTableHeadersTranslated = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
 
   return (
     <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading} className={className}>

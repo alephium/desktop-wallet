@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, walletOpen } from '@alephium/sdk'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useGlobalContext } from '../contexts/global'
 import Button from './Button'
@@ -39,6 +40,7 @@ const PasswordConfirmation = ({
   onCorrectPasswordEntered,
   walletName
 }: PasswordConfirmationProps) => {
+  const { t } = useTranslation('App')
   const { activeWalletName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 
@@ -61,7 +63,7 @@ const PasswordConfirmation = ({
       </Section>
       <Section>
         <Button onClick={validatePassword} submit wide>
-          {buttonText || 'Submit'}
+          {buttonText || t`Submit`}
         </Button>
       </Section>
     </>
