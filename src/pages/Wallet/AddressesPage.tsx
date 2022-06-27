@@ -20,6 +20,7 @@ import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18n'
 import { useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -54,6 +55,7 @@ const addressesTableHeaders: TableProps['headers'] = [
 const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 
 const AddressesPage = () => {
+  const { t } = useTranslation('App')
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addresses } = useAddressesContext()
   const navigate = useNavigate()
@@ -71,9 +73,9 @@ const AddressesPage = () => {
   return (
     <MainContent>
       <PageTitleRow>
-        <PageH1>Addresses</PageH1>
+        <PageH1>{t`Addresses}</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
-          + Generate new address
+          + {t`Generate new address`}
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minWidth="580px">
@@ -113,7 +115,7 @@ const AddressesPage = () => {
         })}
         <TableFooterStyled>
           <TableCell>
-            <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ Generate new address</ActionLink>
+            <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ {t`Generate new address`}</ActionLink>
           </TableCell>
           <Summary align="end">
             <Badge border>
@@ -122,52 +124,52 @@ const AddressesPage = () => {
           </Summary>
         </TableFooterStyled>
       </Table>
-      <PageH2>Advanced management</PageH2>
+      <PageH2>{t`Advanced management`}</PageH2>
       <Description>
-        Advanced operations reserved to more experienced users. A “normal” user should not need to use them very often,
-        if not at all.
+        {t('Advanced operations reserved to more experienced users. A "normal" user should not need to use them very often, ' +
+          'if not at all.')}
       </Description>
       <ExpandableSection
-        sectionTitleClosed="Show operations"
-        sectionTitleOpen="Hide operations"
+        sectionTitleClosed={t`Show operations`}
+        sectionTitleOpen={t`Hide operations`}
         open={isAdvancedSectionOpen}
         onOpenChange={(isOpen) => setIsAdvancedSectionOpen(isOpen)}
       >
         <AdvancedOperations>
           <OperationBox
-            title="Consolidate UTXOs"
+            title={t`Consolidate UTXOs`}
             Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
-            description="Consolidate (merge) your UTXOs into one."
-            buttonText="Start"
+            description={t`Consolidate (merge) your UTXOs into one.`}
+            buttonText={t`Start`}
             onButtonClick={() => setIsConsolidationModalOpen(true)}
             infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#utxo-consolidation"
           />
           <OperationBox
-            title="Generate one address per group"
+            title={t`Generate one address per group`}
             Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
-            description="Useful for miners or DeFi use."
-            buttonText="Start"
+            description={t`Useful for miners or DeFi use.`}
+            buttonText={t`Start`}
             onButtonClick={() => setIsAddressesGenerationModalOpen(true)}
             infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses"
           />
           <OperationBox
             placeholder
-            title="More to come..."
+            title={t`More to come...`}
             Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
-            description="You have great ideas you want to share?"
-            buttonText="Tell us!"
+            description={t`You have great ideas you want to share?`}
+            buttonText={t`Tell us!`}
             onButtonClick={() => openInWebBrowser('https://discord.com/channels/747741246667227157/930164826418860032')}
           />
         </AdvancedOperations>
       </ExpandableSection>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isGenerateNewAddressModalOpen && (
-          <NewAddressModal singleAddress title="New address" onClose={() => setIsGenerateNewAddressModalOpen(false)} />
+          <NewAddressModal singleAddress title={t`New address`} onClose={() => setIsGenerateNewAddressModalOpen(false)} />
         )}
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (
           <NewAddressModal
-            title="Generate one address per group"
+            title={t`Generate one address per group`}
             onClose={() => setIsAddressesGenerationModalOpen(false)}
           />
         )}

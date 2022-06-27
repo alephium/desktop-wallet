@@ -22,6 +22,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -50,6 +51,7 @@ dayjs.extend(relativeTime)
 const Storage = getStorage()
 
 const WalletLayout: FC = ({ children }) => {
+  const { t } = useTranslation('App')
   const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
@@ -95,8 +97,8 @@ const WalletLayout: FC = ({ children }) => {
             squared
             onClick={refreshData}
             disabled={isLoadingData}
-            aria-label="Refresh"
-            data-tip="Refresh data"
+            aria-label={t`Refresh`}
+            data-tip={t`Refresh data`}
           >
             {isLoadingData ? <Spinner /> : <RefreshCw />}
           </RefreshButton>
@@ -104,43 +106,43 @@ const WalletLayout: FC = ({ children }) => {
       </AppHeader>
       <WalletSidebar>
         <LogoContainer>
-          <Logo src={theme.name === 'light' ? LogoDarkSrc : LogoLightSrc} alt="Alephium Logo" />
+          <Logo src={theme.name === 'light' ? LogoDarkSrc : LogoLightSrc} alt={t`Alephium Logo`} />
           <Texts>
-            <AlephiumText>Alephium</AlephiumText>
-            <WalletText>Wallet</WalletText>
+            <AlephiumText>{t`Alephium`}</AlephiumText>
+            <WalletText>{t`Wallet`}</WalletText>
           </Texts>
         </LogoContainer>
         {walletNameSelectOptions.length === 0 ? (
-          <InfoBox text={activeWalletName} label="WALLET" />
+          <InfoBox text={activeWalletName} label={t`WALLET`} />
         ) : (
           <Select
-            label="WALLET"
+            label={t`WALLET`}
             options={walletNameSelectOptions}
             controlledValue={{
               label: activeWalletName,
               value: activeWalletName
             }}
             onValueChange={handleWalletNameChange}
-            title="Select a wallet"
+            title={t`Select a wallet`}
             id="wallet"
             raised
           />
         )}
         <WalletActions>
-          <ActionsTitle>MENU</ActionsTitle>
-          <ActionButton Icon={Layers} label="Overview" link="/wallet/overview" />
-          <ActionButton Icon={List} label="Addresses" link="/wallet/addresses" />
-          <ActionButton Icon={Send} label="Send" onClick={() => setIsSendModalOpen(true)} />
-          <ActionButton Icon={Lock} label="Lock" onClick={lockWallet} />
+          <ActionsTitle>{t`MENU`}</ActionsTitle>
+          <ActionButton Icon={Layers} label={t`Overview`} link="/wallet/overview" />
+          <ActionButton Icon={List} label={t`Addresses`} link="/wallet/addresses" />
+          <ActionButton Icon={Send} label={t`Send`} onClick={() => setIsSendModalOpen(true)} />
+          <ActionButton Icon={Lock} label={t`Lock`} onClick={lockWallet} />
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
         {isPasswordModalOpen && (
-          <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal narrow title={t`Enter password`} onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
               text={`Enter password for "${switchToWalletName}"`}
-              buttonText="Login"
+              buttonText={t`Login`}
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
             />
