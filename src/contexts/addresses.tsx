@@ -272,7 +272,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState]
+    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState, t]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {

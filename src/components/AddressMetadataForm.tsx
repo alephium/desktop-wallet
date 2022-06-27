@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useTranslation } from 'react-i18next'
 
-import ColoredLabelInput, { ColoredLabelInputValue } from './Inputs/ColoredLabelInput'`}
+import ColoredLabelInput, { ColoredLabelInputValue } from './Inputs/ColoredLabelInput'
 import InlineLabelValueInput from './Inputs/InlineLabelValueInput'
 import Toggle from './Inputs/Toggle'
 import HorizontalDivider from './PageComponents/HorizontalDivider'

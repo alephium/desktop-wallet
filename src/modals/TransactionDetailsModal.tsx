@@ -81,7 +81,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details>
-        <DetailsRow label=t{`From`}>
+        <DetailsRow label={t`From`}>
           {isOutgoingTx ? (
             <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
           ) : (

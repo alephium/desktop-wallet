@@ -64,7 +64,9 @@ const WalletsSettingsSection = () => {
         />
       )}
       <Section align="flex-start">
-        <h2>{t`Wallet list`} ({walletNames.length})</h2>
+        <h2>
+          {t`Wallet list`} ({walletNames.length})
+        </h2>
         <BoxContainer>
           {walletNames.map((n) => {
             return (

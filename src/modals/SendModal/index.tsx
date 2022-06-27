@@ -81,7 +81,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
     } else if (step === 3) {
       setTitle(t`Password Check`)
     }
-  }, [setStep, setTitle, step])
+  }, [setStep, setTitle, step, t])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)

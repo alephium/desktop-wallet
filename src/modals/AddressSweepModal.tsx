@@ -76,7 +76,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     }
 
     buildTransactions()
-  }, [client, setSnackbarMessage, sweepAddresses.from, sweepAddresses.to])
+  }, [client, setSnackbarMessage, sweepAddresses.from, sweepAddresses.to, t])
 
   const onSweepClick = async () => {
     if (!client || !sweepAddresses.from || !sweepAddresses.to) return
@@ -114,7 +114,11 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   if (!sweepAddresses.from || !sweepAddresses.to) return null
 
   return (
-    <CenteredModal title={sweepAddress ? t`Sweep address` : t`Consolidate UTXOs`} onClose={onClose} isLoading={isLoading}>
+    <CenteredModal
+      title={sweepAddress ? t`Sweep address` : t`Consolidate UTXOs`}
+      onClose={onClose}
+      isLoading={isLoading}
+    >
       <Content>
         <AddressSelect
           label={t`From address`}
@@ -136,8 +140,8 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         />
         <InfoBox Icon={Info} contrast noBorders>
           {t`This operation will sweep all funds from`}{' '}
-          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord>
-          {' '}{t`and transfer them to`}{' '}
+          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord>{' '}
+          {t`and transfer them to`}{' '}
           <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.getName()}</ColoredWord>.
         </InfoBox>
         <Fee>
@@ -151,7 +155,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>
-          {sweepAddress ? {t`Sweep`} : {t`Consolidate`}}
+          {sweepAddress ? t`Sweep` : t`Consolidate`}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>

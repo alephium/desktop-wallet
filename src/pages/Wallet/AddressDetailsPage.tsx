@@ -80,7 +80,9 @@ const AddressDetailsPage = () => {
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => navigate(-1)} />
-          <PageH1Styled>{t`Address details`} {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
+          <PageH1Styled>
+            {t`Address details`} {address.settings.isMain && <MainAddressLabelStyled />}
+          </PageH1Styled>
           {address.settings.label && (
             <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
           )}

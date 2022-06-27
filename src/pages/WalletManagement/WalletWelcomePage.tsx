@@ -83,9 +83,7 @@ const WalletWelcomePage = () => {
         </Button>
         <div>
           <AdvancedUserMessage>
-            <span>
-              {t`Advanced user: want to start with <b>one address per group for mining or DeFi?</b>`}
-            </span>
+            <span>{t`Advanced user: want to start with <b>one address per group for mining or DeFi?</b>`}</span>
             <InfoIcon
               size="16px"
               onClick={() =>
@@ -97,7 +95,7 @@ const WalletWelcomePage = () => {
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed={t`Show advanced options`}
-            sectionTitleOpen={`Hide advanced options`}
+            sectionTitleOpen={'Hide advanced options'}
             centered
           >
             <InfoBox contrast noBorders>

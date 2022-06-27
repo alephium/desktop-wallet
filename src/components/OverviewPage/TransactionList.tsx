@@ -62,10 +62,10 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  const transactionsTableHeadersTranslated = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
+  const transactionsTableHeadersI18n = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
 
   return (
-    <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading} className={className}>
+    <Table headers={transactionsTableHeadersI18n} isLoading={showSkeletonLoading} className={className}>
       {allPendingTxs
         .slice(0)
         .reverse()

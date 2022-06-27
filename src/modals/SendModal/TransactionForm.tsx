@@ -84,7 +84,9 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       stateSetter: setGasPrice,
       errorMessage: (
         <>
-          {t('Gas price must be greater than {{ amount }}', { amount: formatAmountForDisplay(MINIMAL_GAS_PRICE, true) })}
+          {t('Gas price must be greater than {{ amount }}', {
+            amount: formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+          })}
           <AlefSymbol color={theme.global.alert} />.
         </>
       ),

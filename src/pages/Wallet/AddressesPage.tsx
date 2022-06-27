@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18n'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -73,7 +73,7 @@ const AddressesPage = () => {
   return (
     <MainContent>
       <PageTitleRow>
-        <PageH1>{t`Addresses}</PageH1>
+        <PageH1>{t`Addresses`}</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
           + {t`Generate new address`}
         </Button>
@@ -126,8 +126,10 @@ const AddressesPage = () => {
       </Table>
       <PageH2>{t`Advanced management`}</PageH2>
       <Description>
-        {t('Advanced operations reserved to more experienced users. A "normal" user should not need to use them very often, ' +
-          'if not at all.')}
+        {t(
+          'Advanced operations reserved to more experienced users. A "normal" user should not need to use them very often, ' +
+            'if not at all.'
+        )}
       </Description>
       <ExpandableSection
         sectionTitleClosed={t`Show operations`}
@@ -164,7 +166,11 @@ const AddressesPage = () => {
       </ExpandableSection>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isGenerateNewAddressModalOpen && (
-          <NewAddressModal singleAddress title={t`New address`} onClose={() => setIsGenerateNewAddressModalOpen(false)} />
+          <NewAddressModal
+            singleAddress
+            title={t`New address`}
+            onClose={() => setIsGenerateNewAddressModalOpen(false)}
+          />
         )}
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (

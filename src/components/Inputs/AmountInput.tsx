@@ -63,7 +63,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         ? t('Amount must be greater than {{minAmountInAlph}}', { minAmountInAlph })
         : ''
     )
-  }, [amountValue, availableAmountInAlph, minAmountInAlph])
+  }, [amountValue, availableAmountInAlph, minAmountInAlph, t])
 
   return (
     <div className={className}>

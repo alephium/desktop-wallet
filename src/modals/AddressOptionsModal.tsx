@@ -29,7 +29,7 @@ import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
-import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface AddressOptionsModal {
   address: Address
@@ -66,13 +66,14 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   }
 
   let mainAddressMessage = 'Default address for sending transactions.'
-  mainAddressMessage += ' ' + isMainAddressToggleEnabled
-    ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
-    : t`To remove this address from being the main address, you must set another one as main first.`
+  mainAddressMessage +=
+    ' ' + isMainAddressToggleEnabled
+      ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
+      : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
     <>
-      <ModalCentered title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
+      <CenteredModal title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
         <AddressMetadataForm
           label={addressLabel}
           setLabel={setAddressLabel}
@@ -108,7 +109,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           </ModalFooterButton>
           <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
-      </ModalCenteded>
+      </CenteredModal>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressSweepModalOpen && (
           <AddressSweepModal

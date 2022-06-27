@@ -49,7 +49,9 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
         <TabBar tabItems={tabsI18n} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
         {tabsI18n.find((t) => t.value === currentTab.value)?.component}
         <Section>
-          <VersionNumber>{t`Version`}: {process.env.REACT_APP_VERSION}</VersionNumber>
+          <VersionNumber>
+            {t`Version`}: {process.env.REACT_APP_VERSION}
+          </VersionNumber>
         </Section>
       </PanelContentContainer>
     </CenteredModal>

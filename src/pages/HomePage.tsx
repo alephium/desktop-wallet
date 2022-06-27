@@ -96,6 +96,7 @@ interface LoginProps {
 }
 
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
+  const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()

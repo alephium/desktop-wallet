@@ -36,11 +36,16 @@ const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => {
     <CenteredModal title={t`New version`} onClose={onClose} focusMode>
       <Section>
         <InfoBox Icon={BellPlus}>
-          {t('Version {{newVersion}} is available. Please, download it and install it to avoid any issues with wallet.', { newVersion })}
+          {t(
+            'Version {{newVersion}} is available. Please, download it and install it to avoid any issues with wallet.',
+            { newVersion }
+          )}
         </InfoBox>
       </Section>
       <ModalFooterButtons>
-        <ModalFooterButton onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}>
+        <ModalFooterButton
+          onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}
+        >
           {t`Download`}
         </ModalFooterButton>
       </ModalFooterButtons>

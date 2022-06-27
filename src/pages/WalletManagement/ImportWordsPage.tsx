@@ -54,7 +54,9 @@ const ImportWordsPage = () => {
     // Split words where spaces are
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
-    setCustomPlaceholder(newPhrase.length > 0 ? t('{{amount}} words entered', { amount: newPhrase.length }) : defaultPlaceholder)
+    setCustomPlaceholder(
+      newPhrase.length > 0 ? t('{{amount}} words entered', { amount: newPhrase.length }) : defaultPlaceholder
+    )
   }
 
   useEffect(() => {
@@ -100,8 +102,8 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? {t`Make sure to properly write down the words in a secure location! They are the secret key to your wallet.`}
-            : {t`All good? Let's continue!`}
+            ? t`Make sure to properly write down the words in a secure location! They are the secret key to your wallet.`
+            : t`All good? Let's continue!`}
         </Paragraph>
       </PanelContentContainer>
       <FooterActionsContainer>

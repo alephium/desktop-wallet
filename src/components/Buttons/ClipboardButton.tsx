@@ -65,7 +65,7 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
         clearInterval(interval)
       }
     }
-  }, [hasBeenCopied, setSnackbarMessage, textToCopy, className])
+  }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
   if (!hasBeenCopied) {
     return (

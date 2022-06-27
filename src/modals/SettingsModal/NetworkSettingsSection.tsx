@@ -93,7 +93,7 @@ const NetworkSettingsSection = () => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
     updateNetworkSettings(tempAdvancedSettings)
     setSnackbarMessage({ text: t`Custom network settings saved.`, type: 'info' })
-  }, [overrideSelectionIfMatchesPreset, updateNetworkSettings, setSnackbarMessage, tempAdvancedSettings])
+  }, [overrideSelectionIfMatchesPreset, updateNetworkSettings, setSnackbarMessage, tempAdvancedSettings, t])
 
   // Set existing value on mount
   useMountEffect(() => {
