@@ -83,7 +83,9 @@ const WalletWelcomePage = () => {
         </Button>
         <div>
           <AdvancedUserMessage>
-            <span>{t`Advanced user: want to start with <b>one address per group for mining or DeFi?</b>`}</span>
+            <span>
+              {t`Advanced user: want to start with`} <b>{t`one address per group for mining or DeFi?`}</b>
+            </span>
             <InfoIcon
               size="16px"
               onClick={() =>
