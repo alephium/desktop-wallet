@@ -52,7 +52,7 @@ const PasswordConfirmation = ({
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
-      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
     }
   }
 

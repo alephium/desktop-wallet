@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertSetToAlph, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../ActionLink'
@@ -33,6 +34,7 @@ interface AmountInputProps extends Omit<InputProps, 'onChange'> {
 
 const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps) => {
   const { value, onChange, ...restProps } = props
+  const { t } = useTranslation('App')
   const [amountValue, setAmountValue] = useState(value)
   const availableAmountInAlph = convertSetToAlph(availableAmount)
   const minAmountInAlph = convertSetToAlph(MIN_UTXO_SET_AMOUNT)
@@ -56,9 +58,9 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
     const amountValueAsFloat = parseFloat(amountValue.toString())
     setError(
       amountValueAsFloat > parseFloat(availableAmountInAlph)
-        ? 'Amount exceeds available balance'
+        ? t`Amount exceeds available balance`
         : amountValueAsFloat < parseFloat(minAmountInAlph)
-        ? `Amount must be greater than ${minAmountInAlph}`
+        ? t('Amount must be greater than {{minAmountInAlph}}', { minAmountInAlph })
         : ''
     )
   }, [amountValue, availableAmountInAlph, minAmountInAlph])
@@ -73,7 +75,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         max={availableAmountInAlph}
         label={
           <>
-            Amount (<AlefSymbol color={theme.font.secondary} />)
+            {t`Amount`} (<AlefSymbol color={theme.font.secondary} />)
           </>
         }
         {...restProps}
@@ -82,9 +84,9 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
       {availableAmount && (
         <>
           <AvailableAmount>
-            Available: <Amount value={BigInt(availableAmount)} />
+            {t`Available`}: <Amount value={BigInt(availableAmount)} />
           </AvailableAmount>
-          <ActionLink onClick={onUseMaxAmountClick}>Use max amount</ActionLink>
+          <ActionLink onClick={onUseMaxAmountClick}>{t`Use max amount`}</ActionLink>
         </>
       )}
     </div>

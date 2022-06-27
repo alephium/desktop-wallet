@@ -95,7 +95,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             onClick={() => onTransactionClick(transaction)}
           >
             <TableCell>
-              <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
+              <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
             </TableCell>
             <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
             <TableCell>
@@ -119,13 +119,13 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow>
           <TableCell align="center">
-            <ActionLink onClick={loadNextTransactionsPage}>Show more</ActionLink>
+            <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
           </TableCell>
         </TableRow>
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow>
-          <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
+          <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}
     </Table>

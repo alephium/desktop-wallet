@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
+import { useTranslation } from 'react-i18next'
 
 import { AddressHash } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
@@ -37,6 +38,7 @@ interface IOListProps {
 }
 
 const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer, truncate }: IOListProps) => {
+  const { t } = useTranslation('App')
   const {
     settings: {
       network: { explorerUrl }
@@ -78,9 +80,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </>
     )
   } else if (timestamp === genesisTimestamp) {
-    return <Badge truncate={truncate}>Genesis TX</Badge>
+    return <Badge truncate={truncate}>{t`Genesis TX`}</Badge>
   } else {
-    return <Badge truncate={truncate}>Mining Rewards</Badge>
+    return <Badge truncate={truncate}>{t`Mining Rewards`}</Badge>
   }
 }
 
