@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
@@ -37,15 +38,18 @@ interface SettingsModalProps {
 }
 
 const SettingsModal = ({ onClose }: SettingsModalProps) => {
+  const { t } = useTranslation('App')
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
+  const tabsI18n = tabs.map((tab) => ({ ...tab, label: t(tab.label) }))
+
   return (
-    <CenteredModal title="Settings" onClose={onClose}>
+    <CenteredModal title={t`Settings`} onClose={onClose}>
       <PanelContentContainer>
-        <TabBar tabItems={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-        {tabs.find((t) => t.value === currentTab.value)?.component}
+        <TabBar tabItems={tabsI18n} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+        {tabsI18n.find((t) => t.value === currentTab.value)?.component}
         <Section>
-          <VersionNumber>Version: {process.env.REACT_APP_VERSION}</VersionNumber>
+          <VersionNumber>{t`Version`}: {process.env.REACT_APP_VERSION}</VersionNumber>
         </Section>
       </PanelContentContainer>
     </CenteredModal>

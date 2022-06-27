@@ -20,6 +20,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Check, Clipboard } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
@@ -31,6 +32,7 @@ interface ClipboardButtonProps {
 }
 
 const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
+  const { t } = useTranslation('App')
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
@@ -49,7 +51,7 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
     let interval: ReturnType<typeof setInterval>
     // Reset icon after copy
     if (hasBeenCopied) {
-      setSnackbarMessage({ text: 'Copied to clipboard!', type: 'info' })
+      setSnackbarMessage({ text: t`Copied to clipboard!`, type: 'info' })
 
       interval = setInterval(() => {
         setHasBeenCopied(false)
@@ -67,13 +69,13 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
 
   if (!hasBeenCopied) {
     return (
-      <div data-tip="Copy to clipboard">
+      <div data-tip={t`Copy to clipboard`}>
         <Clipboard className={`${className} clipboard`} size={15} onClick={handleClick} />
       </div>
     )
   } else {
     return (
-      <div data-tip="Copied">
+      <div data-tip={t`Copied`}>
         <Check className={`${className} check`} size={15} />
       </div>
     )

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Edit3 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import InfoBox from '../components/InfoBox'
@@ -27,27 +28,28 @@ import { useGlobalContext } from '../contexts/global'
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
+  const { t } = useTranslation('App')
   const { wallet } = useGlobalContext()
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
   return (
-    <CenteredModal title="Secret phrase" onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
+    <CenteredModal title={t`Secret phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text="Type your password to show your secret phrase."
-            buttonText="Show"
+            text={t`Type your password to show your secret phrase.`}
+            buttonText={t`Show`}
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />
         </div>
       ) : (
         <Section>
           <InfoBox
-            text={'Carefully note down the words! They are the secret keys to your wallet.'}
+            text={t`Carefully note down the words! They are the secret keys to your wallet.`}
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || 'No secret phrase was stored along with this wallet'}</PhraseBox>
+          <PhraseBox>{wallet?.mnemonic || t`No secret phrase was stored along with this wallet`}</PhraseBox>
         </Section>
       )}
     </CenteredModal>

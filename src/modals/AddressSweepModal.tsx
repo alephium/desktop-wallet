@@ -20,6 +20,7 @@ import { getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Amount from '../components/Amount'
@@ -39,6 +40,7 @@ interface AddressSweepModal {
 }
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
+  const { t } = useTranslation('App')
   const { addresses, mainAddress } = useAddressesContext()
   const fromAddress = sweepAddress || mainAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
@@ -65,7 +67,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         setFee(fees)
       } catch (e) {
         setSnackbarMessage({
-          text: getHumanReadableError(e, 'Error while building transaction'),
+          text: getHumanReadableError(e, t`Error while building transaction`),
           type: 'alert',
           duration: 5000
         })
@@ -97,7 +99,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       onSuccessfulSweep && onSuccessfulSweep()
     } catch (e) {
       setSnackbarMessage({
-        text: getHumanReadableError(e, `Error while sweeping address ${sweepAddresses.from}`),
+        text: getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from })),
         type: 'alert',
         duration: 5000
       })
@@ -112,11 +114,11 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   if (!sweepAddresses.from || !sweepAddresses.to) return null
 
   return (
-    <CenteredModal title={sweepAddress ? 'Sweep address' : 'Consolidate UTXOs'} onClose={onClose} isLoading={isLoading}>
+    <CenteredModal title={sweepAddress ? t`Sweep address` : t`Consolidate UTXOs`} onClose={onClose} isLoading={isLoading}>
       <Content>
         <AddressSelect
-          label="From address"
-          title="Select the address to sweep the funds from."
+          label={t`From address`}
+          title={t`Select the address to sweep the funds from.`}
           options={addresses}
           defaultAddress={sweepAddresses.from}
           onAddressChange={(newAddress) => onAddressChange('from', newAddress)}
@@ -125,31 +127,31 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           hideEmptyAvailableBalance
         />
         <AddressSelect
-          label="To address"
-          title="Select the address to sweep the funds to."
+          label={t`To address`}
+          title={t`Select the address to sweep the funds to.`}
           options={toAddressOptions}
           defaultAddress={sweepAddresses.to}
           onAddressChange={(newAddress) => onAddressChange('to', newAddress)}
           id="to-address"
         />
         <InfoBox Icon={Info} contrast noBorders>
-          This operation will sweep all funds from{' '}
-          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord> and
-          transfer them to{' '}
+          {t`This operation will sweep all funds from`}{' '}
+          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord>
+          {' '}{t`and transfer them to`}{' '}
           <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.getName()}</ColoredWord>.
         </InfoBox>
         <Fee>
-          Fee
+          {t`Fee`}
           <Amount value={fee} fadeDecimals />
         </Fee>
       </Content>
       <HorizontalDivider narrow />
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onClose}>
-          Cancel
+          {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>
-          {sweepAddress ? 'Sweep' : 'Consolidate'}
+          {sweepAddress ? {t`Sweep`} : {t`Consolidate`}}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>

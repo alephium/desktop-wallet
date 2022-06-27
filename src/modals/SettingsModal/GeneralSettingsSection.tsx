@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
@@ -29,6 +30,7 @@ import { useGlobalContext } from '../../contexts/global'
 import CenteredModal from '../CenteredModal'
 
 const GeneralSettingsSection = () => {
+  const { t } = useTranslation('App')
   const {
     settings: {
       general: { walletLockTimeInMinutes, discreetMode, passwordRequirement }
@@ -55,15 +57,15 @@ const GeneralSettingsSection = () => {
   return (
     <>
       <KeyValueInput
-        label="Lock time"
-        description="Duration in minutes after which an idle wallet will lock automatically."
+        label={t`Lock time`}
+        description={t`Duration in minutes after which an idle wallet will lock automatically.`}
         InputComponent={
           <Input
             value={walletLockTimeInMinutes || ''}
             onChange={(v) =>
               updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
             }
-            label={walletLockTimeInMinutes ? 'Minutes' : 'Off'}
+            label={walletLockTimeInMinutes ? t`Minutes` : t`Off`}
             type="number"
             step={1}
             min={1}
@@ -72,14 +74,14 @@ const GeneralSettingsSection = () => {
       />
       <HorizontalDivider narrow />
       <KeyValueInput
-        label="Theme"
-        description="Select the theme and please your eyes."
+        label={t`Theme`}
+        description={t`Select the theme and please your eyes.`}
         InputComponent={<ThemeSwitcher />}
       />
       <HorizontalDivider narrow />
       <KeyValueInput
-        label="Discreet mode"
-        description="Toggle discreet mode (hide amounts)."
+        label={t`Discreet mode"`}
+        description={t`Toggle discreet mode (hide amounts).`}
         InputComponent={
           <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
         }
@@ -88,8 +90,8 @@ const GeneralSettingsSection = () => {
       {wallet && (
         <>
           <KeyValueInput
-            label="Password requirement"
-            description="Require password confirmation before sending each transaction."
+            label={t`Password requirement`}
+            description={t`Require password confirmation before sending each transaction.`}
             InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
           />
           <HorizontalDivider narrow />
@@ -97,10 +99,10 @@ const GeneralSettingsSection = () => {
       )}
       <AnimatePresence>
         {isPasswordModelOpen && (
-          <CenteredModal title="Password" onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
+          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
             <PasswordConfirmation
-              text="Type your password to change this setting."
-              buttonText="Enter"
+              text={t`Type your password to change this setting.`}
+              buttonText={t`Enter`}
               onCorrectPasswordEntered={disablePasswordRequirement}
             />
           </CenteredModal>

@@ -117,7 +117,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
           />
           <Input
             value={passwordCheck}
-            label="Retype password"
+            label={t`Retype password`}
             type="password"
             onChange={(e) => setPasswordCheck(e.target.value)}
             error={passwordCheck && password !== passwordCheck ? t`Passwords are different` : ''}
@@ -134,10 +134,10 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button secondary onClick={onButtonBack}>
-          Back
+          {t`Back`}
         </Button>
         <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick} submit>
-          Continue
+          {t`Continue`}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>

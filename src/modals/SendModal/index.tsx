@@ -20,6 +20,7 @@ import { APIError, convertAlphToSet, getHumanReadableError } from '@alephium/sdk
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
 import PasswordConfirmation from '../../components/PasswordConfirmation'
@@ -48,6 +49,7 @@ interface SendModalProps {
 }
 
 const SendModal = ({ onClose }: SendModalProps) => {
+  const { t } = useTranslation('App')
   const {
     client,
     wallet,
@@ -73,11 +75,11 @@ const SendModal = ({ onClose }: SendModalProps) => {
 
   useEffect(() => {
     if (step === 1) {
-      setTitle('Send')
+      setTitle(t`Send`)
     } else if (step === 2) {
-      setTitle('Info Check')
+      setTitle(t`Info Check`)
     } else if (step === 3) {
-      setTitle('Password Check')
+      setTitle(t`Password Check`)
     }
   }, [setStep, setTitle, step])
 
@@ -129,7 +131,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
           setConsolidationRequired(true)
         } else {
           setSnackbarMessage({
-            text: getHumanReadableError(e, 'Error while building the transaction'),
+            text: getHumanReadableError(e, t`Error while building the transaction`),
             type: 'alert',
             duration: 5000
           })
@@ -201,14 +203,14 @@ const SendModal = ({ onClose }: SendModalProps) => {
         }
 
         setSnackbarMessage({
-          text: isSweeping && sweepUnsignedTxs.length > 1 ? 'Transactions sent!' : 'Transaction sent!',
+          text: isSweeping && sweepUnsignedTxs.length > 1 ? t`Transactions sent!` : t`Transaction sent!`,
           type: 'success'
         })
         onClose()
       } catch (e) {
         console.error(e)
         setSnackbarMessage({
-          text: getHumanReadableError(e, 'Error while sending the transaction'),
+          text: getHumanReadableError(e, t`Error while sending the transaction`),
           type: 'alert',
           duration: 5000
         })
@@ -239,8 +241,8 @@ const SendModal = ({ onClose }: SendModalProps) => {
       )}
       {step === 3 && passwordRequirement && (
         <PasswordConfirmation
-          text="Enter your password to send the transaction."
-          buttonText="Send"
+          text={t`Enter your password to send the transaction.`}
+          buttonText={t`Send`}
           onCorrectPasswordEntered={handleSend}
         />
       )}

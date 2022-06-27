@@ -72,7 +72,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         .map(({ txId, timestamp, address, amount, type }) => (
           <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
             <TableCell>
-              <TransactionalInfo content="Pending" type="pending" />
+              <TransactionalInfo content={t`Pending`} type="pending" />
             </TableCell>
             <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
             <TableCell>

@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence, motion, useTransform, useViewportScroll } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -35,6 +36,7 @@ import ThemeSwitcher from './ThemeSwitcher'
 import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
+  const { t } = useTranslation('App')
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
@@ -65,7 +67,7 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         {isOffline && (
           <>
-            <div data-tip="The wallet is offline.">
+            <div data-tip={t`The wallet is offline.`}>
               <OfflineIcon size={20} />
             </div>
             <HeaderDivider />
@@ -82,7 +84,7 @@ const AppHeader: FC = ({ children }) => {
           onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
           IconOn={EyeOff}
           IconOff={Eye}
-          data-tip="Discreet mode"
+          data-tip={t`Discreet mode`}
         />
         {mainAddress && (
           <>
@@ -90,7 +92,7 @@ const AppHeader: FC = ({ children }) => {
             <AddressBadge
               color={mainAddress?.settings.color}
               addressName={mainAddress?.getLabelName()}
-              data-tip="Main address"
+              data-tip={t`Main address`}
               opaqueBg
             />
           </>
@@ -102,8 +104,8 @@ const AppHeader: FC = ({ children }) => {
           transparent
           squared
           onClick={() => setIsSettingsModalOpen(true)}
-          aria-label="Settings"
-          data-tip="Settings"
+          aria-label={t`Settings`}
+          data-tip={t`Settings`}
         >
           <SettingsIcon />
         </Button>

@@ -16,16 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
 import Badge from './Badge'
 
 const NetworkBadge = ({ className }: { className?: string }) => {
+  const { t } = useTranslation('App')
   const { currentNetwork } = useGlobalContext()
 
   return (
-    <Badge className={className} border data-tip="Current network">
+    <Badge className={className} border data-tip={t`Current network`}>
       {currentNetwork}
     </Badge>
   )

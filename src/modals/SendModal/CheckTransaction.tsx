@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
@@ -32,6 +33,7 @@ interface SendModalCheckTransactionProps {
 }
 
 const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCheckTransactionProps) => {
+  const { t } = useTranslation('App')
   const isSendButtonActive = data.toAddress.length > 0 && data.amount.length > 0
   const amountInSet = convertAlphToSet(data.amount)
   const amountIncludingFees = amountInSet + fees
@@ -41,23 +43,23 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
   return (
     <>
       <ModalContent>
-        <InfoBox text={data.fromAddress.hash} label="From address" wordBreak />
-        <InfoBox text={data.toAddress} label="To address" wordBreak />
-        <InfoBox label="Amount">
+        <InfoBox text={data.fromAddress.hash} label={t`From address`} wordBreak />
+        <InfoBox text={data.toAddress} label={t`To address`} wordBreak />
+        <InfoBox label={t`Amount`}>
           {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
         </InfoBox>
         {fees && (
-          <InfoBox label="Expected fee">
+          <InfoBox label={t`Expected fee`}>
             {formatAmountForDisplay(fees, true)} <AlefSymbol />
           </InfoBox>
         )}
       </ModalContent>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
-          Cancel
+          {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onSend} disabled={!isSendButtonActive}>
-          Send
+          {t`Send`}
         </ModalFooterButton>
       </ModalFooterButtons>
     </>

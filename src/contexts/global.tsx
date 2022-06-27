@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
@@ -92,6 +93,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   children,
   overrideContextValue
 }) => {
+  const { t } = useTranslation('App')
   const [wallet, setWallet] = useState<Wallet>()
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
@@ -123,7 +125,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const login = async (walletName: string, password: string, callback: () => void) => {
     const walletEncrypted = Storage.load(walletName)
     if (!walletEncrypted) {
-      setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
+      setSnackbarMessage({ text: t`Unknown wallet name`, type: 'alert' })
       return
     }
     try {
@@ -133,7 +135,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       setCurrentWalletName(walletName)
       callback()
     } catch (e) {
-      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
     }
   }
 
@@ -183,7 +185,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useEffect(() => {
     if (networkStatus === 'offline') {
-      setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert', duration: 5000 })
+      setSnackbarMessage({ text: t('Could not connect to the {{currentNetwork}} network.', { currentNetwork }), type: 'alert', duration: 5000 })
     }
   }, [currentNetwork, networkStatus])
 

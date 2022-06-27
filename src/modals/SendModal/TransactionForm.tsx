@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
@@ -40,6 +41,7 @@ interface TransactionFormProps {
 }
 
 const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormProps) => {
+  const { t } = useTranslation('App')
   const { addresses, mainAddress } = useAddressesContext()
   const [fromAddress, setFromAddress] = useState(data?.fromAddress ?? mainAddress)
   const [toAddress, setToAddress] = useState(data?.toAddress ?? '')
@@ -60,7 +62,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       setToAddress(validValue)
       setToAddressError('')
     } else {
-      setToAddressError('Address format is incorrect')
+      setToAddressError(t`Address format is incorrect`)
     }
   }
 
@@ -69,7 +71,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       amount: newAmount,
       minAmount: BigInt(MINIMAL_GAS_AMOUNT),
       stateSetter: setGasAmount,
-      errorMessage: `Gas amount must be greater than ${MINIMAL_GAS_AMOUNT}.`,
+      errorMessage: t('Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.', { MINIMAL_GAS_AMOUNT }),
       currentErrorState: gasAmountError,
       errorStateSetter: setGasAmountError
     })
@@ -82,7 +84,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       stateSetter: setGasPrice,
       errorMessage: (
         <>
-          Gas price must be greater than {formatAmountForDisplay(MINIMAL_GAS_PRICE, true)}
+          {t('Gas price must be greater than {{ amount }}', { amount: formatAmountForDisplay(MINIMAL_GAS_PRICE, true) })}
           <AlefSymbol color={theme.global.alert} />.
         </>
       ),
@@ -108,8 +110,8 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
     <>
       <ModalContent>
         <AddressSelect
-          label="From address"
-          title="Select the address to send funds from."
+          label={t`From address`}
+          title={t`Select the address to send funds from.`}
           options={addresses}
           defaultAddress={fromAddress}
           onAddressChange={(newAddress) => setFromAddress(newAddress)}
@@ -117,7 +119,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           hideEmptyAvailableBalance
         />
         <Input
-          label="Recipient's address"
+          label={t`Recipient's address`}
           value={toAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           error={addressError}
@@ -125,16 +127,16 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
         />
         <AmountInput value={amount} onChange={setAmount} availableAmount={fromAddress.availableBalance} />
         {expectedFeeInALPH && (
-          <InfoBoxStyled short label="Expected fee">
+          <InfoBoxStyled short label={t`Expected fee`}>
             {expectedFeeInALPH}
             <AlefSymbol />
           </InfoBoxStyled>
         )}
       </ModalContent>
-      <ExpandableSectionStyled sectionTitleClosed="Advanced settings">
+      <ExpandableSectionStyled sectionTitleClosed={t`Advanced settings`}>
         <Input
           id="gas-amount"
-          label="Gas amount"
+          label={t`Gas amount`}
           value={gasAmount}
           onChange={(e) => handleGasAmountChange(e.target.value)}
           type="number"
@@ -145,7 +147,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           id="gas-price"
           label={
             <>
-              Gas price (<AlefSymbol color={theme.font.secondary} />)
+              {t`Gas price`} (<AlefSymbol color={theme.font.secondary} />)
             </>
           }
           value={gasPrice}
@@ -158,7 +160,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
       </ExpandableSectionStyled>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
-          Cancel
+          {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton
           onClick={() =>
@@ -172,7 +174,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           }
           disabled={!isSubmitButtonActive}
         >
-          Check
+          {t`Check`}
         </ModalFooterButton>
       </ModalFooterButtons>
     </>

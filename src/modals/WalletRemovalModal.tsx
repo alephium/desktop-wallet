@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AlertTriangle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
 import Button from '../components/Button'
@@ -32,25 +33,26 @@ interface WalletRemovalModalProps {
 }
 
 const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemovalModalProps) => {
+  const { t } = useTranslation('App')
   const theme = useTheme()
 
   return (
-    <CenteredModal title={`Remove wallet "${walletName}"`} onClose={onClose} focusMode>
+    <CenteredModal title={t('Remove wallet "{{ walletName }}"', { walletName })} onClose={onClose} focusMode>
       <Section>
         <AlertTriangle size={60} color={theme.global.alert} style={{ marginBottom: 35 }} />
       </Section>
       <Section>
         <InfoBox
           importance="alert"
-          text="Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost."
+          text={t`Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost.`}
         />
         <Paragraph secondary centered>
-          <b>Not your keys, not your coins.</b>
+          <b>{t`Not your keys, not your coins.`}</b>
         </Paragraph>
       </Section>
       <Section inList>
         <Button alert onClick={onWalletRemove}>
-          CONFIRM REMOVAL
+          {t`CONFIRM REMOVAL`}
         </Button>
       </Section>
     </CenteredModal>
