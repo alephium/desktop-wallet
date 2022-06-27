@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '../../components/Button'
@@ -33,12 +34,13 @@ import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
 import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
 
 const CheckWordsIntroPage = () => {
+  const { t } = useTranslation('App')
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   return (
     <FloatingPanel enforceMinHeight>
       <PanelTitle color="primary" onBackButtonClick={onButtonBack}>
-        Security Check
+        {t`Security Check`}
       </PanelTitle>
       <PanelContentContainer>
         <Section>
@@ -56,15 +58,15 @@ const CheckWordsIntroPage = () => {
               </LockBodyContainer>
             </Lock>
           </LockContainer>
-          <Paragraph centered>Alright! Time to check if you got your words right!</Paragraph>
+          <Paragraph centered>{t`Alright! Time to check if you got your words right!`}</Paragraph>
           <Paragraph secondary centered>
-            Select the words in the right order. Ready?
+            {t`Select the words in the right order. Ready?`}
           </Paragraph>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button onClick={onButtonNext} submit>
-          Ready!
+          {t`Ready!`}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>

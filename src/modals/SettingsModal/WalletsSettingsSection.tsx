@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage } from '@alephium/sdk'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '../../components/Button'
@@ -33,6 +34,7 @@ import WalletRemovalModal from '../WalletRemovalModal'
 const Storage = getStorage()
 
 const WalletsSettingsSection = () => {
+  const { t } = useTranslation('App')
   const { activeWalletName, wallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
@@ -62,7 +64,9 @@ const WalletsSettingsSection = () => {
         />
       )}
       <Section align="flex-start">
-        <h2>Wallet list ({walletNames.length})</h2>
+        <h2>
+          {t`Wallet list`} ({walletNames.length})
+        </h2>
         <BoxContainer>
           {walletNames.map((n) => {
             return (
@@ -80,18 +84,18 @@ const WalletsSettingsSection = () => {
         <>
           <HorizontalDivider />
           <Section align="flex-start">
-            <h2>Current wallet</h2>
-            <InfoBox label="Wallet name" text={activeWalletName} />
+            <h2>{t`Current wallet`}</h2>
+            <InfoBox label={t`Wallet name`} text={activeWalletName} />
           </Section>
           <Section>
             <Button secondary onClick={lockWallet}>
-              Lock current wallet
+              {t`Lock current wallet`}
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
-              Show your secret phrase
+              {t`Show your secret phrase`}
             </Button>
             <Button alert onClick={() => openRemoveWalletModal(activeWalletName)}>
-              Remove current wallet
+              {t`Remove current wallet`}
             </Button>
           </Section>
         </>

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import AddressMetadataForm from '../components/AddressMetadataForm'
@@ -28,7 +29,7 @@ import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
-import ModalCenteded, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface AddressOptionsModal {
   address: Address
@@ -36,6 +37,7 @@ interface AddressOptionsModal {
 }
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
+  const { t } = useTranslation('App')
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
@@ -64,13 +66,14 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   }
 
   let mainAddressMessage = 'Default address for sending transactions.'
-  mainAddressMessage += isMainAddressToggleEnabled
-    ? ` Note that if activated, "${mainAddress.getName()}" will not be the main address anymore.`
-    : ' To remove this address from being the main address, you must set another one as main first.'
+  mainAddressMessage +=
+    ' ' + isMainAddressToggleEnabled
+      ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
+      : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
     <>
-      <ModalCenteded title="Address options" subtitle={address.getName()} onClose={onClose}>
+      <CenteredModal title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
         {!isPassphraseUsed && (
           <>
             <AddressMetadataForm
@@ -86,8 +89,8 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           </>
         )}
         <KeyValueInput
-          label="Sweep address"
-          description="Sweep all the unlocked funds of this address to another address."
+          label={t`Sweep address`}
+          description={t`Sweep all the unlocked funds of this address to another address.`}
           InputComponent={
             <SweepButton>
               <ModalFooterButton
@@ -95,10 +98,10 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
                 onClick={() => isSweepButtonEnabled && setIsAddressSweepModalOpen(true)}
                 disabled={!isSweepButtonEnabled}
               >
-                Sweep
+                {t`Sweep`}
               </ModalFooterButton>
               <AvailableAmount>
-                Available: <Amount value={address.availableBalance} color={theme.font.secondary} />
+                {t`Available`}: <Amount value={address.availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
             </SweepButton>
           }
@@ -106,11 +109,11 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
         <HorizontalDivider narrow />
         <ModalFooterButtons>
           <ModalFooterButton secondary onClick={onClose}>
-            Cancel
+            {t`Cancel`}
           </ModalFooterButton>
-          <ModalFooterButton onClick={onGenerateClick}>Save</ModalFooterButton>
+          <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
-      </ModalCenteded>
+      </CenteredModal>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isAddressSweepModalOpen && (
           <AddressSweepModal

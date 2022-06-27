@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '../../components/Button'
@@ -39,6 +40,7 @@ interface NetworkSelectOption {
 type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
+  const { t } = useTranslation('App')
   const { settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
@@ -90,8 +92,8 @@ const NetworkSettingsSection = () => {
   const handleAdvancedSettingsSave = useCallback(() => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
     updateNetworkSettings(tempAdvancedSettings)
-    setSnackbarMessage({ text: 'Custom network settings saved.', type: 'info' })
-  }, [overrideSelectionIfMatchesPreset, updateNetworkSettings, setSnackbarMessage, tempAdvancedSettings])
+    setSnackbarMessage({ text: t`Custom network settings saved.`, type: 'info' })
+  }, [overrideSelectionIfMatchesPreset, updateNetworkSettings, setSnackbarMessage, tempAdvancedSettings, t])
 
   // Set existing value on mount
   useMountEffect(() => {
@@ -102,40 +104,40 @@ const NetworkSettingsSection = () => {
     <>
       <InfoBox
         Icon={AlertTriangle}
-        text="Make sure to always check what is the selected network before sending transactions."
+        text={t`Make sure to always check what is the selected network before sending transactions.`}
       />
       <Select
         options={networkSelectOptions}
         onValueChange={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
-        title="Network"
-        label="Current network"
+        title={t`Network`}
+        label={t`Current network`}
         id="network"
       />
       <ExpandableSection
-        sectionTitleClosed="Advanced settings"
+        sectionTitleClosed={t`Advanced settings`}
         open={advancedSectionOpen}
         onOpenChange={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >
         <UrlInputs>
           <Input
-            label="Node host"
+            label={t`Node host`}
             value={tempAdvancedSettings.nodeHost}
             onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
           />
           <Input
-            label="Explorer API host"
+            label={t`Explorer API host`}
             value={tempAdvancedSettings.explorerApiHost}
             onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
           />
           <Input
-            label="Explorer URL"
+            label={t`Explorer URL`}
             value={tempAdvancedSettings.explorerUrl}
             onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
           />
         </UrlInputs>
         <Section inList>
-          <Button onClick={handleAdvancedSettingsSave}>Save</Button>
+          <Button onClick={handleAdvancedSettingsSave}>{t`Save`}</Button>
         </Section>
       </ExpandableSection>
     </>

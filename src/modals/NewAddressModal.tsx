@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import AddressMetadataForm from '../components/AddressMetadataForm'
 import ExpandableSection from '../components/ExpandableSection'
@@ -45,6 +46,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
+  const { t } = useTranslation('App')
 
   const generateNewAddress = useCallback(
     (group?: number) => {
@@ -93,11 +95,10 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   let mainAddressMessage = 'Default address for sending transactions.'
 
   if (mainAddress && wallet?.seed) {
+    const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
     mainAddressMessage +=
       mainAddress.index !== newAddressData?.addressIndex
-        ? ` Note that if activated, "${
-            mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
-          }" will not be the main address anymore.`
+        ? t(' Note that if activated, "{{ address }}" will not be the main address anymore.', { address })
         : ''
   }
 
@@ -116,34 +117,33 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
           />
           {!singleAddress && (
             <InfoBox Icon={Info} contrast noBorders>
-              The group number will be automatically be appended to the addresses’ label.
+              {t`The group number will be automatically be appended to the addresses’ label.`}
             </InfoBox>
           )}
         </Section>
       )}
       {isPassphraseUsed && singleAddress && (
         <InfoBox contrast noBorders>
-          By default, the address is generated in a random group. You can select the group you want the address to be
-          generated in using the Advanced options.
+          {t`By default, the address is generated in a random group. You can select the group you want the address to be generated in using the Advanced options.`}
         </InfoBox>
       )}
       {singleAddress && (
-        <ExpandableSection sectionTitleClosed="Advanced options">
+        <ExpandableSection sectionTitleClosed={t`Advanced options`}>
           <Select
-            label="Group"
+            label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
             onValueChange={onGroupSelect}
-            title="Select group"
+            title={t`Select group`}
             id="group"
           />
         </ExpandableSection>
       )}
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onClose}>
-          Cancel
+          {t`Cancel`}
         </ModalFooterButton>
-        <ModalFooterButton onClick={onGenerateClick}>Generate</ModalFooterButton>
+        <ModalFooterButton onClick={onGenerateClick}>{t`Generate`}</ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
   )

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -96,6 +97,7 @@ interface LoginProps {
 }
 
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
+  const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()
@@ -116,14 +118,14 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
     <>
       <SectionStyled inList>
         <Select
-          label="Wallet"
+          label={t`Wallet`}
           options={walletNames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('walletName', value?.value || '')}
-          title="Select a wallet"
+          title={t`Select a wallet`}
           id="wallet"
         />
         <Input
-          label="Password"
+          label={t`Password`}
           type="password"
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
@@ -152,18 +154,19 @@ const InitialActions = ({
   onLinkClick?: () => void
 }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation('App')
 
   return (
     <>
       <Paragraph centered secondary>
-        Please choose whether you want to create a new wallet or import an existing one.
+        {t`Please choose whether you want to create a new wallet or import an existing one.`}
       </Paragraph>
       <Section inList>
-        <Button onClick={() => navigate('/create/0')}>New wallet</Button>
-        <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
+        <Button onClick={() => navigate('/create/0')}>{t`New wallet`}</Button>
+        <Button onClick={() => navigate('/import/0')}>{t`Import wallet`}</Button>
         {showLinkToExistingWallets && (
           <SwitchLink onClick={onLinkClick} centered>
-            Use an existing wallet
+            {t`Use an existing wallet`}
           </SwitchLink>
         )}
       </Section>

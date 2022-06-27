@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Codesandbox } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import Amount from '../components/Amount'
@@ -33,10 +34,11 @@ interface ConsolidateUTXOsModalProps {
 }
 
 const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: ConsolidateUTXOsModalProps) => {
+  const { t } = useTranslation('App')
   const theme = useTheme()
 
   return (
-    <CenteredModal title="Consolidate UTXOs" onClose={onClose}>
+    <CenteredModal title={t`Consolidate UTXOs`} onClose={onClose}>
       <HeaderContent>
         <HeaderLogo>
           <Codesandbox color={theme.global.accent} size={'70%'} strokeWidth={0.7} />
@@ -44,15 +46,17 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
         <Section>
           <InfoBox
             importance="accent"
-            text="It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate
-            (merge) your UTXOs first. This will cost a small fee."
+            text={t(
+              'It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate ' +
+                '(merge) your UTXOs first. This will cost a small fee.'
+            )}
           />
           <Fee>
-            Fee
+            {t`Fee`}
             {fee ? <Amount value={fee} fadeDecimals /> : <Spinner size="12px" />}
           </Fee>
           <Button onClick={onConsolidateClick} submit disabled={!fee}>
-            Consolidate
+            {t`Consolidate`}
           </Button>
         </Section>
       </HeaderContent>
