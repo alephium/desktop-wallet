@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
@@ -38,6 +39,7 @@ import { openInWebBrowser } from '../../utils/misc'
 // This is shown when a user creates or imports a wallet
 
 const WalletWelcomePage = () => {
+  const { t } = useTranslation('App')
   const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
   const { wallet } = useGlobalContext()
@@ -72,17 +74,17 @@ const WalletWelcomePage = () => {
         <Confetti width={width} height={height} numberOfPieces={confettiRunning ? 200 : 0} />
       </ConfettiWrapper>
       <Section>
-        <ReadyParagraph>Everything is ready!</ReadyParagraph>
-        <SubParagraph>Welcome to Alephium.</SubParagraph>
+        <ReadyParagraph>{t`Everything is ready!`}</ReadyParagraph>
+        <SubParagraph>{t`Welcome to Alephium.`}</SubParagraph>
       </Section>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button onClick={onButtonClick} submit>
-          {"Let's go!"}
+          {t`Let's go!`}
         </Button>
         <div>
           <AdvancedUserMessage>
             <span>
-              Advanced user: want to start with <b>one address per group for mining or DeFi?</b>
+              {t`Advanced user: want to start with <b>one address per group for mining or DeFi?</b>`}
             </span>
             <InfoIcon
               size="16px"
@@ -94,14 +96,14 @@ const WalletWelcomePage = () => {
             />
           </AdvancedUserMessage>
           <ExpandableSectionStyled
-            sectionTitleClosed="Show advanced options"
-            sectionTitleOpen="Hide advanced options"
+            sectionTitleClosed={t`Show advanced options`}
+            sectionTitleOpen={`Hide advanced options`}
             centered
           >
             <InfoBox contrast noBorders>
               <KeyValueInputStyled
-                label="Generate one address per group"
-                description="For mining or DeFi use."
+                label={t`Generate one address per group`}
+                description={t`For mining or DeFi use.`}
                 InputComponent={
                   <Toggle
                     toggled={shouldGenerateOneAddressPerGroup}

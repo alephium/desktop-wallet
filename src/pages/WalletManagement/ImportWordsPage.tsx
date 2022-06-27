@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getHumanReadableError, getStorage, walletImport } from '@alephium/sdk'
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Button from '../../components/Button'
 import TextAreaTags from '../../components/Inputs/TextAreaTags'
@@ -38,6 +39,7 @@ import { bip39Words } from '../../utils/bip39'
 const Storage = getStorage()
 
 const ImportWordsPage = () => {
+  const { t } = useTranslation('App')
   const { setWallet, setSnackbarMessage } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
@@ -52,7 +54,7 @@ const ImportWordsPage = () => {
     // Split words where spaces are
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
-    setCustomPlaceholder(newPhrase.length > 0 ? `${newPhrase.length} words entered` : defaultPlaceholder)
+    setCustomPlaceholder(newPhrase.length > 0 ? t('{{amount}} words entered', { amount: newPhrase.length }) : defaultPlaceholder)
   }
 
   useEffect(() => {
@@ -77,7 +79,7 @@ const ImportWordsPage = () => {
 
       onButtonNext()
     } catch (e) {
-      setSnackbarMessage({ text: getHumanReadableError(e, 'Error while importing wallet'), type: 'alert' })
+      setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })
     }
   }
 
@@ -86,7 +88,7 @@ const ImportWordsPage = () => {
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">Secret phrase</PanelTitle>
+      <PanelTitle color="primary">{t`Secret phrase`}</PanelTitle>
       <PanelContentContainer>
         <Section>
           <TextAreaTags
@@ -98,16 +100,16 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? 'Make sure to properly write down the words in a secure location! They are the secret key to your wallet.'
-            : "All good? Let's continue!"}
+            ? {t`Make sure to properly write down the words in a secure location! They are the secret key to your wallet.`}
+            : {t`All good? Let's continue!`}
         </Paragraph>
       </PanelContentContainer>
       <FooterActionsContainer>
         <Button secondary onClick={onButtonBack}>
-          Cancel
+          {t`Cancel`}
         </Button>
         <Button onClick={handleWalletImport} disabled={!isNextButtonActive} submit>
-          Continue
+          {t`Continue`}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>
