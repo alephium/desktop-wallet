@@ -138,6 +138,7 @@
   "Inputs":"Inputs",
   "Outputs":"Outputs",
   "New version":"New version",
+  "Version {{newVersion}} is available. Please, download it and install it to avoid any issues with wallet.":"Version {{newVersion}} is available. Please, download it and install it to avoid any issues with wallet.",
   "Download":"Download",
   "Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost.":"Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost.",
   "Not your keys, not your coins.":"Not your keys, not your coins.",
