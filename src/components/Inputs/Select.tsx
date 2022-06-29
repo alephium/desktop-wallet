@@ -26,7 +26,7 @@ import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
 import { inputDefaultStyle, InputLabel, InputProps } from './'
 
-interface SelectOption<T> {
+export interface SelectOption<T> {
   value: T
   label: string
 }
