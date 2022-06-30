@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import ExpandableSection from '../ExpandableSection'
+import InfoBox from '../InfoBox'
 import Input from './Input'
 
 interface Props {
@@ -26,13 +27,15 @@ interface Props {
 
 const WalletPassphrase = ({ value, onChange }: Props) => (
   <ExpandableSection sectionTitleClosed="Optional passphrase" centered>
-    <p>The software will derive or &quot;find&quot; a wallet based on the passphrase entered below.</p>
-    <p>
-      <strong>An incorrect passphrase could generate a wallet with zero funds.</strong>
-      <span> Do not panic, this is normal! Calmly try again.</span>
-    </p>
-    <p>Addresses need to be re-discovered to see all funds after unlocking.</p>
-    <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
+    <InfoBox noMarginBottom>
+      <p>The software will derive or &quot;find&quot; a wallet based on the passphrase entered below.</p>
+      <p>
+        <strong>This is an advanced feature!</strong>
+        <span> Before using it, please take some time to learn more about it in our wiki.</span>
+      </p>
+      <p>Addresses need to be re-discovered to see all funds after unlocking.</p>
+      <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
+    </InfoBox>
   </ExpandableSection>
 )
 
