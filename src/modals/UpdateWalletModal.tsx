@@ -37,7 +37,7 @@ const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => {
       <Section>
         <InfoBox Icon={BellPlus}>
           {t(
-            'Version {{newVersion}} is available. Please, download it and install it to avoid any issues with wallet.',
+            'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.',
             { newVersion }
           )}
         </InfoBox>

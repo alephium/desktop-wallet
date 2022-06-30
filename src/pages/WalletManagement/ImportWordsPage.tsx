@@ -55,7 +55,7 @@ const ImportWordsPage = () => {
     const newPhrase = event.detail.value && JSON.parse(event.detail.value)
     setPhrase(newPhrase || [])
     setCustomPlaceholder(
-      newPhrase.length > 0 ? t('{{amount}} words entered', { amount: newPhrase.length }) : defaultPlaceholder
+      newPhrase.length > 0 ? t('{{ amount }} words entered', { amount: newPhrase.length }) : defaultPlaceholder
     )
   }
 

@@ -186,7 +186,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   useEffect(() => {
     if (networkStatus === 'offline') {
       setSnackbarMessage({
-        text: t('Could not connect to the {{currentNetwork}} network.', { currentNetwork }),
+        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork }),
         type: 'alert',
         duration: 5000
       })

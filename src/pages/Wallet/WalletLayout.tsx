@@ -141,7 +141,7 @@ const WalletLayout: FC = ({ children }) => {
         {isPasswordModalOpen && (
           <CenteredModal narrow title={t`Enter password`} onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
-              text={t('Enter password for "{{switchToWalletName}}"', { switchToWalletName })}
+              text={t('Enter password for "{{ switchToWalletName }}"', { switchToWalletName })}
               buttonText={t`Login`}
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
