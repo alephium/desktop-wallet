@@ -130,7 +130,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
         />
         <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
       </SectionStyled>
-      <SectionStyled inList>
+      <SectionStyled>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
           Login
         </Button>
