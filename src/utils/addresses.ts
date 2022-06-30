@@ -68,6 +68,8 @@ export const storeAddressMetadataOfWallet = (
   index: number,
   settings: AddressSettings
 ) => {
+  if (passphraseHash !== '') return
+
   const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic, passphraseHash })
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
@@ -101,12 +103,3 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
-
-export const letSneakyAddressMetadataImpLoose = (timeInterval: number, mnemonic: string) => {
-  const isGoingToCreateAddressMetadata = Math.floor(Math.random() * timeInterval) + 1 === 1
-  if (!isGoingToCreateAddressMetadata) return
-
-  const walletName = Math.random().toString()
-  const passphraseHash = stringToDoubleSHA256HexString(Math.random().toString())
-  storeAddressMetadataOfWallet({ mnemonic, walletName, passphraseHash }, 0, { isMain: true })
-}
