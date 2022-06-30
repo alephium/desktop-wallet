@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback, useState } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
-import { AppData, KEY_APPDATA, toAppData } from '../utils/app-data'
+import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
 import { useTimeout } from '../utils/hooks'
 
 const currentVersion = process.env.REACT_APP_VERSION
@@ -53,7 +53,7 @@ const useLatestGitHubRelease = () => {
   }, [setSnackbarMessage])
 
   useTimeout(async () => {
-    const appData: AppData = JSON.parse(localStorage.getItem(KEY_APPDATA) ?? '{}', toAppData) ?? {}
+    const appData: AppMetaData = JSON.parse(localStorage.getItem(KEY_APPMETADATA) ?? '{}', toAppMetaData) ?? {}
     const { lastVersionCheckedAt } = appData
     const timeSinceLastCheck = (lastVersionCheckedAt !== undefined && Date.now() - lastVersionCheckedAt.getTime()) || 0
     const nextTimeUntilNextFetch = Math.max(0, ONE_HOUR - timeSinceLastCheck)
@@ -64,7 +64,7 @@ const useLatestGitHubRelease = () => {
     }
 
     await tryFetchLatestVersion()
-    localStorage.setItem(KEY_APPDATA, JSON.stringify({ ...appData, lastVersionCheckedAt: new Date() }))
+    localStorage.setItem(KEY_APPMETADATA, JSON.stringify({ ...appData, lastVersionCheckedAt: new Date() }))
     setTimeUntilNextFetch(nextTimeUntilNextFetch)
   }, timeUntilNextFetch)
 

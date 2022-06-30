@@ -16,20 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export const KEY_APPDATA = 'alephium/desktop-wallet/appdata'
+export const KEY_APPMETADATA = 'alephium/desktop-wallet/appmetadata'
 
-export interface AppData {
+export interface AppMetaData {
   lastVersionCheckedAt: Date
 }
 
 export type TypeConstructors = DateConstructor | StringConstructor | NumberConstructor | BooleanConstructor
 
-export const APPDATA_KEYS: Record<string, TypeConstructors> = {
+export const APPMETADATA_KEYS: Record<string, TypeConstructors> = {
   lastVersionCheckedAt: Date
 }
 
-export const toAppData = (key: string, value: string): unknown => {
+export const toAppMetaData = (key: string, value: string): unknown => {
   if (key === '') return value
-  const TypeConstructor = APPDATA_KEYS[key]
+  const TypeConstructor = APPMETADATA_KEYS[key]
   return (TypeConstructor && new TypeConstructor(value)) || undefined
 }
