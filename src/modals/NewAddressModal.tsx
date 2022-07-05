@@ -102,6 +102,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         : ''
   }
 
+  function onValueChange(newValue?: SelectOption<number>) {
+    if (newValue === undefined) return
+
+    generateNewAddress(newValue.value)
+  }
+
   return (
     <CenteredModal title={title} onClose={onClose}>
       {!isPassphraseUsed && (
@@ -133,7 +139,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
             label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-            onValueChange={onGroupSelect}
+            onValueChange={onValueChange}
             title={t`Select group`}
             id="group"
           />

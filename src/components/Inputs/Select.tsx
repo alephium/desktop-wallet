@@ -19,19 +19,31 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence, motion } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { KeyboardEventHandler, MouseEventHandler, OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
 import { inputDefaultStyle, InputLabel, InputProps } from './'
 
-export interface SelectOption<T> {
+type Writable<T> = T extends string
+  ? string
+  : T extends number
+  ? number
+  : T extends undefined
+  ? undefined
+  : T extends readonly (infer U)[]
+  ? U
+  : never
+
+export type OptionValue = Writable<OptionHTMLAttributes<HTMLOptionElement>['value']>
+
+export interface SelectOption<T extends OptionValue> {
   value: T
   label: string
 }
 
-interface SelectProps<T> {
+interface SelectProps<T extends OptionValue> {
   label?: string
   disabled?: boolean
   controlledValue?: SelectOption<T>
@@ -44,7 +56,7 @@ interface SelectProps<T> {
   skipEqualityCheck?: boolean
 }
 
-function Select<T>({
+function Select<T extends OptionValue>({
   options,
   title,
   label,
@@ -125,7 +137,7 @@ function Select<T>({
   )
 }
 
-function SelectOptionsPopup<T>({
+function SelectOptionsPopup<T extends OptionValue>({
   options,
   setValue,
   onBackgroundClick,
@@ -136,23 +148,31 @@ function SelectOptionsPopup<T>({
   onBackgroundClick: () => void
   title?: string
 }) {
-  const handleOptionSelect = (value: SelectOption<T>) => {
-    setValue(value)
+  const handleEvent = (el: HTMLSelectElement) => {
+    setValue({
+      label: options[el.selectedIndex].label,
+      value: el.value as T
+    })
     onBackgroundClick()
   }
 
+  const onClick: MouseEventHandler<HTMLSelectElement> = (event) => handleEvent(event.currentTarget)
+  const onKeyPress: KeyboardEventHandler<HTMLSelectElement> = (event) => handleEvent(event.currentTarget)
+
   return (
     <Popup title={title} onBackgroundClick={onBackgroundClick}>
-      {options.map((o) => (
-        <OptionItem key={o.label} onClick={() => handleOptionSelect(o)}>
-          {o.label}
-        </OptionItem>
-      ))}
+      <OptionSelect autoFocus size={options.length} onKeyPress={onKeyPress} onClick={onClick}>
+        {options.map((o) => (
+          <OptionItem key={o.label} value={o.value}>
+            {o.label}
+          </OptionItem>
+        ))}
+      </OptionSelect>
     </Popup>
   )
 }
 
-const InputContainer = styled(motion.div)`
+const InputContainer = styled(motion.button)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
@@ -170,7 +190,14 @@ export const SelectContainer = styled(InputContainer)`
   cursor: pointer;
 `
 
-export const OptionItem = styled.div`
+export const OptionSelect = styled.select`
+  width: 100%;
+  overflow-y: auto;
+  border: 0;
+  outline: 0;
+`
+
+export const OptionItem = styled.option`
   padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
