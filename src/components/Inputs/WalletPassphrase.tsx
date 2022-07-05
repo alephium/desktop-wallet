@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { openInWebBrowser } from '../../utils/misc'
+import ActionLink from '../ActionLink'
 import ExpandableSection from '../ExpandableSection'
 import InfoBox from '../InfoBox'
 import Input from './Input'
@@ -25,13 +27,19 @@ interface Props {
   onChange: (passphrase: string) => void
 }
 
+const passphraseLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase'
+
 const WalletPassphrase = ({ value, onChange }: Props) => (
   <ExpandableSection sectionTitleClosed="Optional passphrase" centered>
     <InfoBox noMarginBottom>
       <p>The software will derive or &quot;find&quot; a wallet based on the passphrase entered below.</p>
       <p>
         <strong>This is an advanced feature!</strong>
-        <span> Before using it, please take some time to learn more about it in our wiki.</span>
+        <span>
+          {' '}
+          Before using it, please take some time to{' '}
+          <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>learn more about it</ActionLink> in our wiki.
+        </span>
       </p>
       <p>Addresses need to be re-discovered to see all funds after unlocking.</p>
       <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
