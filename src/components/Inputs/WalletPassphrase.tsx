@@ -36,6 +36,7 @@ const WalletPassphrase = ({ value, onChange }: Props) => (
     <InfoBox noMarginBottom importance="alert">
       <p>
         <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
+        <br />
         <span>Use it only if you know what you are doing. Please, consult our </span>
         <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>documentation</ActionLink>
         <span> to learn about it.</span>
