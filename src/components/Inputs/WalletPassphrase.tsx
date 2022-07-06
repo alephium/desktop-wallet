@@ -33,7 +33,7 @@ const passphraseLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#pa
 
 const WalletPassphrase = ({ value, onChange }: Props) => (
   <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered>
-    <InfoBox noMarginBottom importance="alert">
+    <InfoBox importance="alert">
       <p>
         <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
         <br />
