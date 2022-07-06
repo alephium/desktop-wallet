@@ -16,6 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AlertTriangle } from 'lucide-react'
+import styled from 'styled-components'
+
 import { openInWebBrowser } from '../../utils/misc'
 import ActionLink from '../ActionLink'
 import ExpandableSection from '../ExpandableSection'
@@ -30,21 +33,24 @@ interface Props {
 const passphraseLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase'
 
 const WalletPassphrase = ({ value, onChange }: Props) => (
-  <ExpandableSection sectionTitleClosed="Optional passphrase" centered>
-    <InfoBox noMarginBottom>
-      <p>The software will derive or &quot;find&quot; a wallet based on the passphrase entered below.</p>
-      <p>
-        <strong>This is an advanced feature!</strong>
-        <span>
-          {' '}
-          Before using it, please take some time to{' '}
-          <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>learn more about it</ActionLink> in our wiki.
-        </span>
-      </p>
-      <p>Addresses need to be re-discovered to see all funds after unlocking.</p>
-      <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
+  <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered>
+    <InfoBox noMarginBottom importance="alert" Icon={AlertTriangle}>
+      <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
+      <br />
+      <span>
+        {' '}
+        Before using it, please take some time to{' '}
+        <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>learn more about it</ActionLink> in our wiki.
+      </span>
+      <br />
+      <span>Addresses need to be re-discovered to see all funds after unlocking.</span>
     </InfoBox>
+    <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
   </ExpandableSection>
 )
+
+const WarningEmphasis = styled.strong`
+  color: ${({ theme }) => theme.global.alert};
+`
 
 export default WalletPassphrase
