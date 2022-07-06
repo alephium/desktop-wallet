@@ -37,7 +37,6 @@ interface InfoBoxProps {
   short?: boolean
   contrast?: boolean
   noBorders?: boolean
-  noMarginBottom?: boolean
 }
 
 const InfoBox: FC<InfoBoxProps> = ({
@@ -148,11 +147,6 @@ const Label = styled(motion.label)`
 export default styled(InfoBox)`
   width: 100%;
   margin: 0 auto var(--spacing-4) auto;
-  ${({ noMarginBottom }) =>
-    noMarginBottom &&
-    css`
-      margin-bottom: 0;
-    `};
   margin-top: var(--spacing-2);
   max-width: ${({ small }) => (small ? '300px' : 'initial')};
   line-height: 1.5em;
