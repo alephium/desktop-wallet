@@ -90,8 +90,8 @@ const IconContainer = styled.div`
   max-width: 100px;
 
   svg {
-    height: 30%;
-    width: 30%;
+    height: 35%;
+    width: 35%;
     margin: auto;
   }
 `
@@ -155,4 +155,5 @@ export default styled(InfoBox)`
     `};
   margin-top: var(--spacing-2);
   max-width: ${({ small }) => (small ? '300px' : 'initial')};
+  line-height: 1.5em;
 `
