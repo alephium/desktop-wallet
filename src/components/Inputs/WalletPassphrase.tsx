@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AlertTriangle } from 'lucide-react'
 import styled from 'styled-components'
 
 import { openInWebBrowser } from '../../utils/misc'
@@ -34,16 +33,13 @@ const passphraseLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#pa
 
 const WalletPassphrase = ({ value, onChange }: Props) => (
   <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered>
-    <InfoBox noMarginBottom importance="alert" Icon={AlertTriangle}>
-      <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
-      <br />
-      <span>
-        {' '}
-        Before using it, please take some time to{' '}
-        <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>learn more about it</ActionLink> in our wiki.
-      </span>
-      <br />
-      <span>Addresses need to be re-discovered to see all funds after unlocking.</span>
+    <InfoBox noMarginBottom importance="alert">
+      <p>
+        <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
+        <span>Use it only if you know what you are doing. Please, consult our </span>
+        <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>documentation</ActionLink>
+        <span> to learn about it.</span>
+      </p>
     </InfoBox>
     <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
   </ExpandableSection>
