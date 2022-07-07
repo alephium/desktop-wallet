@@ -68,7 +68,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
 export default styled(AddressSummaryCard)`
   display: flex;
   flex-direction: column;
-  width: ${addressSummaryCardWidthPx}px;
+  min-width: ${addressSummaryCardWidthPx}px;
   height: 95%;
 
   ${({ clickable }) =>
