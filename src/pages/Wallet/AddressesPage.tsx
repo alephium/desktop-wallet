@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { discoverActiveAddresses } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
+import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -38,7 +39,7 @@ import { MainContent, PageTitleRow } from '../../components/PageComponents/PageC
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import { Address, AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
@@ -60,12 +61,12 @@ const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 const AddressesPage = () => {
   const { t } = useTranslation('App')
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addresses, generateOneAddressPerGroup } = useAddressesContext()
+  const { addresses, generateOneAddressPerGroup, saveNewAddress } = useAddressesContext()
   const navigate = useNavigate()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
-  const { isPassphraseUsed } = useGlobalContext()
+  const { isPassphraseUsed, client, wallet } = useGlobalContext()
   const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
@@ -76,6 +77,23 @@ const AddressesPage = () => {
     } else {
       setIsAddressesGenerationModalOpen(true)
     }
+  }
+
+  const handleAddressDiscoveryClick = async () => {
+    if (!client || !wallet) return
+
+    const skipIndexes = addresses.map((address) => address.index)
+    const newActiveAddresses = await discoverActiveAddresses(wallet.seed, skipIndexes, client.explorer)
+
+    newActiveAddresses.forEach((address) =>
+      saveNewAddress(
+        new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+          isMain: false,
+          label: '',
+          color: ''
+        })
+      )
+    )
   }
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
@@ -162,6 +180,14 @@ const AddressesPage = () => {
             description={t`Useful for miners or DeFi use.`}
             buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
             onButtonClick={handleOneAddressPerGroupClick}
+            infoLink={links.miningWallet}
+          />
+          <OperationBox
+            title={t`Discover active addresses`}
+            Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
+            description={t`Scan the blockchain for addresses you used in the past.`}
+            buttonText={t`Search`}
+            onButtonClick={handleAddressDiscoveryClick}
             infoLink={links.miningWallet}
           />
           <OperationBox
