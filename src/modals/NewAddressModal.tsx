@@ -37,11 +37,11 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const [addressLabel, setAddressLabel] = useState({ title: '', color: getRandomLabelColor() })
+  const { wallet, passphraseHash } = useGlobalContext()
+  const [addressLabel, setAddressLabel] = useState({ title: '', color: passphraseHash ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { wallet, passphraseHash } = useGlobalContext()
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
