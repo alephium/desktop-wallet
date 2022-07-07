@@ -41,7 +41,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { wallet } = useGlobalContext()
+  const { wallet, passphraseHash } = useGlobalContext()
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
@@ -103,22 +103,30 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   return (
     <CenteredModal title={title} onClose={onClose}>
-      <Section>
-        <AddressMetadataForm
-          label={addressLabel}
-          setLabel={setAddressLabel}
-          mainAddressMessage={mainAddressMessage}
-          isMain={isMainAddress}
-          setIsMain={setIsMainAddress}
-          isMainAddressToggleEnabled
-          singleAddress={singleAddress}
-        />
-        {!singleAddress && (
-          <InfoBox Icon={Info} contrast noBorders>
-            The group number will be automatically be appended to the addresses’ label.
-          </InfoBox>
-        )}
-      </Section>
+      {!passphraseHash && (
+        <Section>
+          <AddressMetadataForm
+            label={addressLabel}
+            setLabel={setAddressLabel}
+            mainAddressMessage={mainAddressMessage}
+            isMain={isMainAddress}
+            setIsMain={setIsMainAddress}
+            isMainAddressToggleEnabled
+            singleAddress={singleAddress}
+          />
+          {!singleAddress && (
+            <InfoBox Icon={Info} contrast noBorders>
+              The group number will be automatically be appended to the addresses’ label.
+            </InfoBox>
+          )}
+        </Section>
+      )}
+      {passphraseHash && singleAddress && (
+        <InfoBox contrast noBorders>
+          If you don&apos;t mind in which group the address will be, go ahead and hit that &quot;Generate&quot; button.
+          Otherwise, check out the Advanced options
+        </InfoBox>
+      )}
       {singleAddress && (
         <ExpandableSection sectionTitleClosed="Advanced options">
           <Select

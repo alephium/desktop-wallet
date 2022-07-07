@@ -91,8 +91,8 @@ export class Address {
     return this.settings.label || this.shortHash
   }
 
-  getLabelName() {
-    return `${this.settings.isMain ? '★ ' : ''}${this.getName()}`
+  getLabelName(showStar = true) {
+    return `${this.settings.isMain && showStar ? '★ ' : ''}${this.getName()}`
   }
 
   addPendingTransaction(transaction: SimpleTx) {
@@ -128,7 +128,7 @@ export interface AddressesContextProps {
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
-  generateOneAddressPerGroup: (labelPrefix: string, color: string, skipGroups?: number[]) => void
+  generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
 
@@ -311,10 +311,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [fetchAndStoreAddressesData, setAddress, wallet, activeWalletName, passphraseHash]
   )
 
-  const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
+  const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
     if (!wallet?.seed) return
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
+    const hasLabel = !!labelPrefix && !!labelColor
     Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
       .filter((group) => !skipGroups.includes(group))
       .map((group) => ({ ...deriveNewAddressData(wallet.seed, group, undefined, skipAddressIndexes), group }))
@@ -322,8 +323,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         saveNewAddress(
           new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
             isMain: false,
-            label: `${labelPrefix} ${address.group}`,
-            color: labelColor
+            label: hasLabel ? `${labelPrefix} ${address.group}` : '',
+            color: hasLabel ? labelColor : ''
           })
         )
       })

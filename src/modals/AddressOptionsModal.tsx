@@ -42,7 +42,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     color: address?.settings.color ?? getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
-  const { wallet } = useGlobalContext()
+  const { wallet, passphraseHash } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
   const theme = useTheme()
 
@@ -71,16 +71,20 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   return (
     <>
       <ModalCenteded title="Address options" subtitle={address.getName()} onClose={onClose}>
-        <AddressMetadataForm
-          label={addressLabel}
-          setLabel={setAddressLabel}
-          mainAddressMessage={mainAddressMessage}
-          isMain={isMainAddress}
-          setIsMain={setIsMainAddress}
-          isMainAddressToggleEnabled={isMainAddressToggleEnabled}
-          singleAddress
-        />
-        <HorizontalDivider narrow />
+        {!passphraseHash && (
+          <>
+            <AddressMetadataForm
+              label={addressLabel}
+              setLabel={setAddressLabel}
+              mainAddressMessage={mainAddressMessage}
+              isMain={isMainAddress}
+              setIsMain={setIsMainAddress}
+              isMainAddressToggleEnabled={isMainAddressToggleEnabled}
+              singleAddress
+            />
+            <HorizontalDivider narrow />
+          </>
+        )}
         <KeyValueInput
           label="Sweep address"
           description="Sweep all the unlocked funds of this address to another address."
