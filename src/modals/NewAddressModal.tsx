@@ -123,8 +123,8 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       )}
       {passphraseHash && singleAddress && (
         <InfoBox contrast noBorders>
-          If you don&apos;t mind which group the address will be in, go ahead and hit that &quot;Generate&quot; button.
-          Otherwise, check out the Advanced options.
+          By default, the address is generated in a random group. You can select the group you want the address to be
+          generated in using the Advanced options.
         </InfoBox>
       )}
       {singleAddress && (
