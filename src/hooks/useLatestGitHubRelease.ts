@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useCallback, useState } from 'react'
+import semverCompare from 'semver-compare'
 
 import { useGlobalContext } from '../contexts/global'
 import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
@@ -38,7 +39,7 @@ const useLatestGitHubRelease = () => {
     const data = await response.json()
     const latestVersion = data.tag_name.replace('v', '')
 
-    if (semverRegex.test(latestVersion) && currentVersion !== latestVersion) {
+    if (semverRegex.test(latestVersion) && currentVersion && semverCompare(latestVersion, currentVersion) > 0) {
       setNewLatestRelease(latestVersion)
     }
   }
