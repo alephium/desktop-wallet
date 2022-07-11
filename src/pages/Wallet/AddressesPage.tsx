@@ -37,6 +37,7 @@ import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
 import { sortAddressList } from '../../utils/addresses'
@@ -55,15 +56,24 @@ const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 
 const AddressesPage = () => {
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addresses } = useAddressesContext()
+  const { addresses, generateOneAddressPerGroup } = useAddressesContext()
   const navigate = useNavigate()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
+  const { passphraseHash } = useGlobalContext()
   const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
     navigate(`/wallet/addresses/${addressHash}`)
+  }
+
+  const handleOneAddressPerGroupClick = () => {
+    if (passphraseHash) {
+      generateOneAddressPerGroup()
+    } else {
+      setIsAddressesGenerationModalOpen(true)
+    }
   }
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
@@ -88,7 +98,7 @@ const AddressesPage = () => {
                 {address.settings.isMain ? (
                   <MainAddressWrapper>
                     <Truncate>{address.hash}</Truncate>
-                    <StyledMainAddressLabel />
+                    {!passphraseHash && <StyledMainAddressLabel />}
                   </MainAddressWrapper>
                 ) : (
                   <Truncate>{address.hash}</Truncate>
@@ -146,8 +156,8 @@ const AddressesPage = () => {
             title="Generate one address per group"
             Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
             description="Useful for miners or DeFi use."
-            buttonText="Start"
-            onButtonClick={() => setIsAddressesGenerationModalOpen(true)}
+            buttonText={passphraseHash ? 'Generate' : 'Start'}
+            onButtonClick={handleOneAddressPerGroupClick}
             infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses"
           />
           <OperationBox

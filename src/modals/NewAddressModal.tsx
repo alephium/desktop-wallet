@@ -37,11 +37,11 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const [addressLabel, setAddressLabel] = useState({ title: '', color: getRandomLabelColor() })
+  const { wallet, passphraseHash } = useGlobalContext()
+  const [addressLabel, setAddressLabel] = useState({ title: '', color: passphraseHash ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { wallet } = useGlobalContext()
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
@@ -103,22 +103,30 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   return (
     <CenteredModal title={title} onClose={onClose}>
-      <Section>
-        <AddressMetadataForm
-          label={addressLabel}
-          setLabel={setAddressLabel}
-          mainAddressMessage={mainAddressMessage}
-          isMain={isMainAddress}
-          setIsMain={setIsMainAddress}
-          isMainAddressToggleEnabled
-          singleAddress={singleAddress}
-        />
-        {!singleAddress && (
-          <InfoBox Icon={Info} contrast noBorders>
-            The group number will be automatically be appended to the addresses’ label.
-          </InfoBox>
-        )}
-      </Section>
+      {!passphraseHash && (
+        <Section>
+          <AddressMetadataForm
+            label={addressLabel}
+            setLabel={setAddressLabel}
+            mainAddressMessage={mainAddressMessage}
+            isMain={isMainAddress}
+            setIsMain={setIsMainAddress}
+            isMainAddressToggleEnabled
+            singleAddress={singleAddress}
+          />
+          {!singleAddress && (
+            <InfoBox Icon={Info} contrast noBorders>
+              The group number will be automatically be appended to the addresses’ label.
+            </InfoBox>
+          )}
+        </Section>
+      )}
+      {passphraseHash && singleAddress && (
+        <InfoBox contrast noBorders>
+          By default, the address is generated in a random group. You can select the group you want the address to be
+          generated in using the Advanced options.
+        </InfoBox>
+      )}
       {singleAddress && (
         <ExpandableSection sectionTitleClosed="Advanced options">
           <Select

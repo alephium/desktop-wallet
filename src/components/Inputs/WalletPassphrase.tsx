@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { FC } from 'react'
 import styled from 'styled-components'
 
 import { openInWebBrowser } from '../../utils/misc'
@@ -27,19 +28,20 @@ import Input from './Input'
 interface Props {
   value: string
   onChange: (passphrase: string) => void
+  className?: string
 }
 
-const passphraseLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase'
-
-const WalletPassphrase = ({ value, onChange }: Props) => (
-  <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered>
-    <InfoBox noMarginBottom importance="alert">
+const WalletPassphrase = ({ value, onChange, className }: Props) => (
+  <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered className={className}>
+    <InfoBox importance="alert">
       <p>
         <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
         <br />
-        <span>Use it only if you know what you are doing. Please, consult our </span>
-        <ActionLink onClick={() => openInWebBrowser(passphraseLink)}>documentation</ActionLink>
-        <span> to learn about it.</span>
+        <span>Use it only if you know what you are doing.</span>
+        <br />
+        <span>
+          Please, consult our <Link>documentation</Link> to learn about it.
+        </span>
       </p>
     </InfoBox>
     <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
@@ -50,4 +52,12 @@ const WarningEmphasis = styled.strong`
   color: ${({ theme }) => theme.global.alert};
 `
 
-export default WalletPassphrase
+const Link: FC = ({ children }) => (
+  <ActionLink onClick={() => openInWebBrowser('https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase')}>
+    {children}
+  </ActionLink>
+)
+
+export default styled(WalletPassphrase)`
+  max-width: 400px;
+`
