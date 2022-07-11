@@ -30,7 +30,7 @@ export type AddressSettings = {
   color?: string
 }
 
-type AddressMetadata = AddressSettings & {
+export type AddressMetadata = AddressSettings & {
   index: number
 }
 
@@ -42,35 +42,36 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-export const constructMetadataKey = (walletName: string, passphraseHash?: string) =>
-  `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName + (passphraseHash ?? ''))}`
+export const constructMetadataKey = (walletName: string) =>
+  `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
 
 interface AddressMetadataKey {
   mnemonic: string
   walletName: string
-  passphraseHash?: string
 }
 
-export const loadStoredAddressesMetadataOfWallet = ({
-  mnemonic,
-  walletName,
-  passphraseHash
-}: AddressMetadataKey): AddressMetadata[] => {
-  const json = localStorage.getItem(constructMetadataKey(walletName, passphraseHash))
+export const loadStoredAddressesMetadataOfWallet = (
+  { mnemonic, walletName }: AddressMetadataKey,
+  isPassphraseUsed?: boolean
+): AddressMetadata[] => {
+  if (isPassphraseUsed) return []
+
+  const json = localStorage.getItem(constructMetadataKey(walletName))
 
   if (json === null) return []
   const { encryptedSettings } = JSON.parse(json)
-  return JSON.parse(decrypt(mnemonic + (passphraseHash ?? ''), encryptedSettings))
+  return JSON.parse(decrypt(mnemonic, encryptedSettings))
 }
 
 export const storeAddressMetadataOfWallet = (
-  { mnemonic, walletName, passphraseHash }: AddressMetadataKey,
+  { mnemonic, walletName }: AddressMetadataKey,
   index: number,
-  settings: AddressSettings
+  settings: AddressSettings,
+  isPassphraseUsed?: boolean
 ) => {
-  if (passphraseHash !== '') return
+  if (isPassphraseUsed) return
 
-  const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic, passphraseHash })
+  const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic })
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
@@ -84,16 +85,16 @@ export const storeAddressMetadataOfWallet = (
   console.log(`🟠 Storing address index ${index} metadata locally`)
 
   localStorage.setItem(
-    constructMetadataKey(walletName, passphraseHash),
+    constructMetadataKey(walletName),
     JSON.stringify({
       version: latestUserDataVersion,
-      encryptedSettings: encrypt(mnemonic + (passphraseHash ?? ''), JSON.stringify(addressesMetadata))
+      encryptedSettings: encrypt(mnemonic, JSON.stringify(addressesMetadata))
     })
   )
 }
 
-export const deleteStoredAddressMetadataOfWallet = (walletName: string, passphraseHash?: string) => {
-  localStorage.removeItem(constructMetadataKey(walletName, passphraseHash))
+export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
+  localStorage.removeItem(constructMetadataKey(walletName))
 }
 
 export const sortAddressList = (addresses: Address[]): Address[] =>

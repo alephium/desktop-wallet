@@ -42,7 +42,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     color: address?.settings.color ?? getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
-  const { wallet, passphraseHash } = useGlobalContext()
+  const { wallet, isPassphraseUsed } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
   const theme = useTheme()
 
@@ -71,7 +71,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   return (
     <>
       <ModalCenteded title="Address options" subtitle={address.getName()} onClose={onClose}>
-        {!passphraseHash && (
+        {!isPassphraseUsed && (
           <>
             <AddressMetadataForm
               label={addressLabel}

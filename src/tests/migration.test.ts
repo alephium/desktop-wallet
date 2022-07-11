@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { walletGenerate } from '@alephium/sdk'
 
-import { loadStoredAddressesMetadataOfWallet } from '../utils/addresses'
+import { AddressMetadata, AddressSettings, loadStoredAddressesMetadataOfWallet } from '../utils/addresses'
 import * as migrate from '../utils/migration'
 
 //

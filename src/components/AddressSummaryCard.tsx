@@ -40,7 +40,7 @@ export const addressSummaryCardWidthPx = 100
 
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const navigate = useNavigate()
-  const { passphraseHash } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
 
   const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
 
@@ -55,7 +55,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         <AddressNameSection collapsed={!clickable}>
           <AddressBadgeStyled
             color={address.settings.color}
-            addressName={address.getLabelName(!passphraseHash)}
+            addressName={address.getLabelName(!isPassphraseUsed)}
             truncate
           />
         </AddressNameSection>

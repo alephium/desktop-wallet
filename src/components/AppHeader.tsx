@@ -39,7 +39,7 @@ const AppHeader: FC = ({ children }) => {
   const { scrollY } = useViewportScroll()
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
-  const { networkStatus, passphraseHash } = useGlobalContext()
+  const { networkStatus, isPassphraseUsed } = useGlobalContext()
   const isOffline = networkStatus === 'offline'
 
   const headerBGColor = useTransform(
@@ -84,7 +84,7 @@ const AppHeader: FC = ({ children }) => {
           IconOff={Eye}
           data-tip="Discreet mode"
         />
-        {mainAddress && !passphraseHash && (
+        {mainAddress && !isPassphraseUsed && (
           <>
             <HeaderDivider />
             <AddressBadge

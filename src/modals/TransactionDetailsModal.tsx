@@ -50,12 +50,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     settings: {
       network: { explorerUrl }
     },
-    passphraseHash
+    isPassphraseUsed
   } = useGlobalContext()
   const theme = useTheme()
   let amount = calAmountDelta(transaction, address.hash)
   const isOutgoingTx = amount < 0
   amount = isOutgoingTx ? amount * -1n : amount
+  const addressName = address.getLabelName(!isPassphraseUsed)
+  const color = address.settings.color
 
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
@@ -75,14 +77,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <HeaderInfo>
           <Direction>{isOutgoingTx ? '↑ Sent' : '↓ Received'}</Direction>
           <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
-          <AddressBadge color={address.settings.color} addressName={address.getLabelName(!passphraseHash)} truncate />
+          <AddressBadge color={color} addressName={addressName} truncate />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
       </Header>
       <Details>
         <DetailsRow label="From">
           {isOutgoingTx ? (
-            <AddressBadge color={address.settings.color} addressName={address.getLabelName(!passphraseHash)} truncate />
+            <AddressBadge color={color} addressName={addressName} truncate />
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -96,7 +98,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label="To">
           {!isOutgoingTx ? (
-            <AddressBadge color={address.settings.color} addressName={address.getLabelName(!passphraseHash)} />
+            <AddressBadge color={color} addressName={addressName} />
           ) : (
             <IOList
               currentAddress={address.hash}

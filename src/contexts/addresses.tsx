@@ -163,7 +163,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       network: { nodeHost, explorerApiHost }
     },
     networkStatus,
-    passphraseHash
+    isPassphraseUsed
   } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
@@ -212,19 +212,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const updateAddressSettings = useCallback(
     (address: Address, settings: AddressSettings) => {
       if (!wallet) return
-      storeAddressMetadataOfWallet(
-        {
-          mnemonic: wallet.mnemonic,
-          walletName: activeWalletName,
-          passphraseHash
-        },
-        address.index,
-        settings
-      )
+
+      if (!isPassphraseUsed)
+        storeAddressMetadataOfWallet(
+          {
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          },
+          address.index,
+          settings
+        )
       address.settings = settings
       setAddress(address)
     },
-    [setAddress, wallet, activeWalletName, passphraseHash]
+    [wallet, activeWalletName, isPassphraseUsed, setAddress]
   )
 
   const fetchAndStoreAddressesData = useCallback(
@@ -296,19 +297,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
       if (!wallet) return
-      storeAddressMetadataOfWallet(
-        {
-          mnemonic: wallet.mnemonic,
-          walletName: activeWalletName,
-          passphraseHash
-        },
-        newAddress.index,
-        newAddress.settings
-      )
+
+      if (!isPassphraseUsed)
+        storeAddressMetadataOfWallet(
+          {
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          },
+          newAddress.index,
+          newAddress.settings
+        )
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [fetchAndStoreAddressesData, setAddress, wallet, activeWalletName, passphraseHash]
+    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData]
   )
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
@@ -336,11 +338,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfWallet({
-        mnemonic: wallet.mnemonic,
-        walletName: activeWalletName,
-        passphraseHash
-      })
+      const addressesMetadata = isPassphraseUsed
+        ? []
+        : loadStoredAddressesMetadataOfWallet({
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          })
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(

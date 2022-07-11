@@ -99,7 +99,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()
-  const [passphrase, setPassphraseState] = useState('')
+  const [passphrase, setPassphrase] = useState('')
 
   const handleCredentialsChange = useCallback((type: 'walletName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
@@ -108,6 +108,8 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+
+    if (passphrase) setPassphrase('')
   }
 
   return (
@@ -128,7 +130,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase value={passphrase} onChange={setPassphraseState} />
+        <WalletPassphrase value={passphrase} onChange={setPassphrase} />
       </SectionStyled>
       <SectionStyled>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>

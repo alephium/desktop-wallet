@@ -34,24 +34,25 @@ export const latestUserDataVersion = '2022-05-27T12:00:00Z'
 //
 // ANY MODIFICATIONS MUST HAVE TESTS ADDED TO tests/migration.test.ts!
 //
-export const migrateUserData = (mnemonic: string, accountName: string, passphrase?: string) => {
+export const migrateUserData = (mnemonic: string, walletName: string) => {
   console.log('🚚 Migrating user data')
   _20220511_074100()
-  _20220527_120000(mnemonic, accountName, passphrase)
+  _20220527_120000(mnemonic, walletName)
 }
 
+// Change localStorage address metadata key from "{walletName}-addresses-metadata" to "addresses-metadata-{walletName}"
 // See https://github.com/alephium/desktop-wallet/issues/236
 export const _20220511_074100 = () => {
   const Storage = getStorage()
-  const accountNames = Storage.list()
+  const walletNames = Storage.list()
 
-  for (const accountName of accountNames) {
-    const keyDeprecated = `${accountName}-addresses-metadata`
+  for (const walletName of walletNames) {
+    const keyDeprecated = `${walletName}-addresses-metadata`
     const data = localStorage.getItem(keyDeprecated)
 
     if (data) {
       const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
-      const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${accountName}`
+      const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
 
       localStorage.setItem(keyNew, data)
       localStorage.removeItem(keyDeprecated)
@@ -59,9 +60,10 @@ export const _20220511_074100 = () => {
   }
 }
 
-export const _20220527_120000 = (mnemonic: string, accountName: string, passphraseHash?: string) => {
+// Encrypt address metadata key and value
+export const _20220527_120000 = (mnemonic: string, walletName: string) => {
   const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
-  const keyDeprecated = `${addressesMetadataLocalStorageKeyPrefix}-${accountName}`
+  const keyDeprecated = `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
 
   const json = localStorage.getItem(keyDeprecated)
   if (json === null) return
@@ -74,9 +76,8 @@ export const _20220527_120000 = (mnemonic: string, accountName: string, passphra
   // We can also take this opportunity to start versioning our data.
   //
   if (Array.isArray(addressSettingsList)) {
-    const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(
-      accountName + (passphraseHash ?? '')
-    )}`
+    const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
+
     localStorage.setItem(
       keyNew,
       JSON.stringify({

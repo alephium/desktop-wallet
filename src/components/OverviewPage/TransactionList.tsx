@@ -44,7 +44,7 @@ interface OverviewPageTransactionListProps {
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
-  const { passphraseHash } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
 
   const allConfirmedTxs = addresses
     .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
@@ -74,7 +74,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             </TableCell>
             <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
             <TableCell>
-              <AddressBadge color={address.settings.color} addressName={address.getLabelName(!passphraseHash)} />
+              <AddressBadge color={address.settings.color} addressName={address.getLabelName(!isPassphraseUsed)} />
             </TableCell>
             <TableCell align="end">
               {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
@@ -100,7 +100,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
               <AddressBadge
                 color={transaction.address.settings.color}
                 truncate
-                addressName={transaction.address.getLabelName(!passphraseHash)}
+                addressName={transaction.address.getLabelName(!isPassphraseUsed)}
               />
             </TableCell>
             <TableCell align="end">
