@@ -32,16 +32,22 @@ interface TabBarProps {
 
 const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => (
   <Wrapper>
-    <TabBarContainer>
+    <TabBarContainer role="navigation">
       <TabSelector
         animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
         transition={{ duration: 0.2 }}
         style={{ width: `${100 / tabItems.length}%` }}
       />
       <TabBarContent>
-        {tabItems.map((i) => (
+        {tabItems.map((i, index) => (
           <TabContainer key={i.value}>
-            <Tab onClick={() => onTabChange(i)} isActive={activeTab.value === i.value}>
+            <Tab
+              role="link"
+              tabIndex={0}
+              onClick={() => onTabChange(i)}
+              onKeyPress={() => onTabChange(i)}
+              isActive={activeTab.value === i.value}
+            >
               {i.label}
             </Tab>
           </TabContainer>
