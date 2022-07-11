@@ -60,7 +60,7 @@ const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
   const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
-  const { passphraseHash } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const navigate = useNavigate()
@@ -81,7 +81,7 @@ const AddressDetailsPage = () => {
         <Title>
           <ArrowLeftStyled onClick={() => navigate(-1)} />
           <PageH1Styled>
-            Address details {address.settings.isMain && !passphraseHash && <MainAddressLabelStyled />}
+            Address details {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
           {address.settings.label && (
             <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />

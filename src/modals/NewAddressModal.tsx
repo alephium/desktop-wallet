@@ -37,8 +37,8 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const { wallet, passphraseHash } = useGlobalContext()
-  const [addressLabel, setAddressLabel] = useState({ title: '', color: passphraseHash ? '' : getRandomLabelColor() })
+  const { wallet, isPassphraseUsed } = useGlobalContext()
+  const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
@@ -103,7 +103,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   return (
     <CenteredModal title={title} onClose={onClose}>
-      {!passphraseHash && (
+      {!isPassphraseUsed && (
         <Section>
           <AddressMetadataForm
             label={addressLabel}
@@ -121,7 +121,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
           )}
         </Section>
       )}
-      {passphraseHash && singleAddress && (
+      {isPassphraseUsed && singleAddress && (
         <InfoBox contrast noBorders>
           By default, the address is generated in a random group. You can select the group you want the address to be
           generated in using the Advanced options.

@@ -28,8 +28,6 @@ export interface WalletContextType {
   setWalletName: (w: string) => void
   password: string
   setPassword: (password: string) => void
-  passphrase: string
-  setPassphrase: (password: string) => void
 }
 
 export const initialWalletContext: WalletContextType = {
@@ -39,9 +37,7 @@ export const initialWalletContext: WalletContextType = {
   setWalletName: () => null,
   password: '',
   setPassword: () => null,
-  setPlainWallet: () => null,
-  passphrase: '',
-  setPassphrase: () => null
+  setPlainWallet: () => null
 }
 
 export const WalletContext = createContext<WalletContextType>(initialWalletContext)
@@ -51,7 +47,6 @@ export const WalletContextProvider: FC = ({ children }) => {
   const [password, setPassword] = useState('')
   const [plainWallet, setPlainWallet] = useState<Wallet>()
   const [mnemonic, setMnemonic] = useState('')
-  const [passphrase, setPassphrase] = useState('')
 
   return (
     <WalletContext.Provider
@@ -63,9 +58,7 @@ export const WalletContextProvider: FC = ({ children }) => {
         mnemonic,
         setMnemonic,
         plainWallet,
-        setPlainWallet,
-        passphrase,
-        setPassphrase
+        setPlainWallet
       }}
     >
       {children}

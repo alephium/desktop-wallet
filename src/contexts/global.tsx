@@ -27,7 +27,6 @@ import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
-import { stringToDoubleSHA256HexString } from '../utils/misc'
 import {
   deprecatedSettingsExist,
   getNetworkName,
@@ -63,7 +62,7 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
-  passphraseHash: string
+  isPassphraseUsed: boolean
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -85,7 +84,7 @@ export const initialGlobalContext: GlobalContextProps = {
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
   newLatestVersion: '',
-  passphraseHash: ''
+  isPassphraseUsed: false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -105,7 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
-  const [passphraseHash, setPassphraseHash] = useState('')
+  const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -122,29 +121,30 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const lockWallet = () => {
     setCurrentWalletName('')
-    setPassphraseHash('')
+    setIsPassphraseUsed(false)
     setWallet(undefined)
   }
 
   const login = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
     const walletEncrypted = Storage.load(walletName)
+
     if (!walletEncrypted) {
       setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
       return
     }
+
     try {
       let wallet = walletOpen(password, walletEncrypted)
+
       if (!wallet) return
 
-      let _passphraseHash = passphraseHash
       if (passphrase) {
         wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
-        _passphraseHash = stringToDoubleSHA256HexString(passphrase)
-        setPassphraseHash(_passphraseHash)
       }
 
-      migrateUserData(wallet.mnemonic, walletName, _passphraseHash)
+      migrateUserData(wallet.mnemonic, walletName)
 
+      setIsPassphraseUsed(!!passphrase)
       setWallet(wallet)
       setCurrentWalletName(walletName)
       callback()
@@ -228,7 +228,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
-          passphraseHash
+          isPassphraseUsed
         },
         overrideContextValue as GlobalContextProps
       )}

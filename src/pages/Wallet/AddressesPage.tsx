@@ -61,7 +61,7 @@ const AddressesPage = () => {
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
-  const { passphraseHash } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
   const theme = useTheme()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
@@ -69,7 +69,7 @@ const AddressesPage = () => {
   }
 
   const handleOneAddressPerGroupClick = () => {
-    if (passphraseHash) {
+    if (isPassphraseUsed) {
       generateOneAddressPerGroup()
     } else {
       setIsAddressesGenerationModalOpen(true)
@@ -98,7 +98,7 @@ const AddressesPage = () => {
                 {address.settings.isMain ? (
                   <MainAddressWrapper>
                     <Truncate>{address.hash}</Truncate>
-                    {!passphraseHash && <StyledMainAddressLabel />}
+                    {!isPassphraseUsed && <StyledMainAddressLabel />}
                   </MainAddressWrapper>
                 ) : (
                   <Truncate>{address.hash}</Truncate>
@@ -156,7 +156,7 @@ const AddressesPage = () => {
             title="Generate one address per group"
             Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
             description="Useful for miners or DeFi use."
-            buttonText={passphraseHash ? 'Generate' : 'Start'}
+            buttonText={isPassphraseUsed ? 'Generate' : 'Start'}
             onButtonClick={handleOneAddressPerGroupClick}
             infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses"
           />
