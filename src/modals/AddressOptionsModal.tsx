@@ -65,7 +65,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     onClose()
   }
 
-  let mainAddressMessage = 'Default address for sending transactions.'
+  let mainAddressMessage = t`Default address for sending transactions.`
   mainAddressMessage +=
     ' ' + isMainAddressToggleEnabled
       ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })

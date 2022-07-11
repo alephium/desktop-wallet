@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ExternalLink } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../../contexts/global'
@@ -28,6 +29,7 @@ interface OpenInExplorerButtonProps {
 }
 
 const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps) => {
+  const { t } = useTranslation('App')
   const {
     settings: {
       network: { explorerUrl }
@@ -40,7 +42,7 @@ const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps)
     openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
-  return <ExternalLink className={className} data-tip="Open in explorer" size={15} onClick={handleShowInExplorer} />
+  return <ExternalLink className={className} data-tip={t`Open in explorer`} size={15} onClick={handleShowInExplorer} />
 }
 
 export default styled(OpenInExplorerButton)`

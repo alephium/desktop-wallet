@@ -155,13 +155,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       console.log('Clients initialized.')
 
       setSnackbarMessage({
-        text: `Current network: ${currentNetwork}.`,
+        text: `${t`Current network`}: ${currentNetwork}.`,
         type: 'info',
         duration: 4000
       })
     }
     setIsClientLoading(false)
-  }, [currentNetwork, settings.network])
+  }, [currentNetwork, settings.network, t])
 
   useEffect(() => {
     const networkSettingsHaveChanged =
