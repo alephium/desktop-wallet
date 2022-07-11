@@ -27,9 +27,9 @@ interface ActionLinkProps {
 
 let ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => {
   return (
-    <a className={className} onClick={onClick}>
+    <button className={className} onClick={onClick}>
       {children}
-    </a>
+    </button>
   )
 }
 
@@ -41,6 +41,10 @@ ActionLink = styled(ActionLink)`
 
   &:hover {
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+  }
+
+  &:focus-visible {
+    text-decoration: underline;
   }
 `
 

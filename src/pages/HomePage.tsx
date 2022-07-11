@@ -21,8 +21,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
+import ActionLink from '../components/ActionLink'
 import AppHeader from '../components/AppHeader'
 import Button from '../components/Button'
 import SideBar from '../components/HomePage/SideBar'
@@ -140,16 +140,14 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           {t`Login`}
         </Button>
       </SectionStyled>
-      <SwitchLink onClick={onLinkClick} centered>
-        {t`Create / import a new wallet`}
-      </SwitchLink>
+      <SwitchLink onClick={onLinkClick}>{t`Create / import a new wallet`}</SwitchLink>
     </>
   )
 }
 
 const InitialActions = ({
   showLinkToExistingWallets,
-  onLinkClick
+  onLinkClick = () => ({})
 }: {
   showLinkToExistingWallets?: boolean
   onLinkClick?: () => void
@@ -163,13 +161,9 @@ const InitialActions = ({
         {t`Please choose whether you want to create a new wallet or import an existing one.`}
       </Paragraph>
       <Section inList>
-        <Button onClick={() => navigate('/create/0')}>{t`New wallet`}</Button>
-        <Button onClick={() => navigate('/import/0')}>{t`Import wallet`}</Button>
-        {showLinkToExistingWallets && (
-          <SwitchLink onClick={onLinkClick} centered>
-            {t`Use an existing wallet`}
-          </SwitchLink>
-        )}
+        <Button onClick={() => navigate('/create/0')}>New wallet</Button>
+        <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
+        {showLinkToExistingWallets && <SwitchLink onClick={onLinkClick}>{t`Use an existing wallet`}</SwitchLink>}
       </Section>
     </>
   )
@@ -193,19 +187,15 @@ const InteractionArea = styled.div`
   padding: var(--spacing-5);
 `
 
-const SwitchLink = styled(Paragraph)`
-  color: ${({ theme }) => theme.global.accent};
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: var(--spacing-1);
-  cursor: pointer;
-
-  &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
-  }
-`
-
 const SectionStyled = styled(Section)`
   min-width: 400px;
+`
+
+const SwitchLink = styled(ActionLink)`
+  font-weight: var(--fontWeight-medium);
+  font-size: 12px;
+  font-family: inherit;
+  height: var(--inputHeight);
 `
 
 export default HomePage
