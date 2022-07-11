@@ -256,7 +256,7 @@ const RemainingWordList = styled.div`
   align-content: flex-start;
 `
 
-const SelectedWord = styled(motion.div)`
+const SelectedWord = styled(motion.button)`
   padding: 6px var(--spacing-2);
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
@@ -273,6 +273,10 @@ const SelectedWord = styled(motion.div)`
 
   &:hover {
     background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.8).toString()};
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
   }
 `
 
