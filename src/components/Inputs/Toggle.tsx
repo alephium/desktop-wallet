@@ -57,7 +57,7 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
 
   const transition: Transition = { duration: 0.2, type: 'tween' }
 
-  const onClick = () => {
+  const handleSwitch = () => {
     if (!disabled) {
       onToggle(!toggled)
     }
@@ -67,8 +67,12 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
 
   return (
     <StyledToggle
-      onClick={onClick}
+      onClick={handleSwitch}
+      onKeyPress={handleSwitch}
       className={className}
+      role="checkbox"
+      tabIndex={0}
+      aria-checked={toggled}
       toggled={toggled}
       variants={toggleBackgroundVariants}
       animate={toggleState}
