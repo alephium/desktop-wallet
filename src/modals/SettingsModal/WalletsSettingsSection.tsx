@@ -111,6 +111,7 @@ interface WalletItemProps {
 }
 
 const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
+  const { t } = useTranslation('App')
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
   return (
@@ -120,7 +121,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
     >
       <WalletName>
         {walletName}
-        {isCurrent && <CurrentWalletLabel> (current)</CurrentWalletLabel>}
+        {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
         <WalletDeleteButton squared transparent onClick={() => onWalletDelete(walletName)}>

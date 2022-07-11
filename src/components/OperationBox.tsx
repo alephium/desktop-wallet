@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Info } from 'lucide-react'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import { openInWebBrowser } from '../utils/misc'
@@ -45,6 +46,8 @@ const OperationBox = ({
   infoLink,
   placeholder
 }: OperationBoxProps) => {
+  const { t } = useTranslation('App')
+
   return (
     <div className={className}>
       <div>
@@ -62,7 +65,7 @@ const OperationBox = ({
         )}
         {infoLink && (
           <ActionLink onClick={() => openInWebBrowser(infoLink)}>
-            <InfoIcon size={12} /> More info
+            <InfoIcon size={12} /> {t`More info`}
           </ActionLink>
         )}
       </Footer>

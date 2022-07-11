@@ -275,7 +275,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           }
         } catch (e) {
           setSnackbarMessage({
-            text: getHumanReadableError(e, `Error while fetching data for address ${address.hash}`),
+            text: getHumanReadableError(
+              e,
+              t('Error while fetching data for address {{ hash }}', { hash: address.hash })
+            ),
             type: 'alert'
           })
         }

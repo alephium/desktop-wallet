@@ -20,7 +20,7 @@ import { getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Amount from '../components/Amount'
@@ -139,10 +139,14 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           id="to-address"
         />
         <InfoBox Icon={Info} contrast noBorders>
-          {t`This operation will sweep all funds from`}{' '}
-          <ColoredWord color={sweepAddresses.from.settings.color}>{sweepAddresses.from.getName()}</ColoredWord>{' '}
-          {t`and transfer them to`}{' '}
-          <ColoredWord color={sweepAddresses.to.settings.color}>{sweepAddresses.to.getName()}</ColoredWord>.
+          <Trans t={t} i18nKey="sweepOperationFromTo">
+            This operation will sweep all funds from
+            <ColoredWord color={sweepAddresses.from.settings.color}>
+              {{ from: sweepAddresses.from.getName() }}
+            </ColoredWord>
+            and transfer them to
+            <ColoredWord color={sweepAddresses.to.settings.color}>{{ to: sweepAddresses.to.getName() }}</ColoredWord>.
+          </Trans>
         </InfoBox>
         <Fee>
           {t`Fee`}

@@ -51,7 +51,7 @@ const AddressMetadataForm = ({
         <>
           <HorizontalDivider narrow />
           <InlineLabelValueInput
-            label={t`★ Main address`}
+            label={`★ ${t`Main address`}`}
             description={mainAddressMessage}
             InputComponent={
               <Toggle toggled={isMain} onToggle={() => setIsMain(!isMain)} disabled={!isMainAddressToggleEnabled} />

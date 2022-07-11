@@ -45,6 +45,7 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const { newLatestVersion } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const { t } = useTranslation('App')
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
@@ -61,22 +62,22 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`Welcome!`}</PanelTitle>
               <InitialActions />
             </>
           )}
           {!showInitialActions && hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`Welcome back!`}</PanelTitle>
               <Paragraph centered secondary>
-                Please choose a wallet and enter your password to continue.
+                {t`Please choose a wallet and enter your password to continue.`}
               </Paragraph>
               <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
             </>
           )}
           {showInitialActions && (
             <>
-              <PanelTitle useLayoutId={false}>New wallet</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`New wallet`}</PanelTitle>
               <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
             </>
           )}
@@ -136,11 +137,11 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
       </SectionStyled>
       <SectionStyled>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
-          Login
+          {t`Login`}
         </Button>
       </SectionStyled>
       <SwitchLink onClick={onLinkClick} centered>
-        Create / import a new wallet
+        {t`Create / import a new wallet`}
       </SwitchLink>
     </>
   )

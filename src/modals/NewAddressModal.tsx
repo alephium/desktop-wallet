@@ -92,7 +92,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     }
   }
 
-  let mainAddressMessage = 'Default address for sending transactions.'
+  let mainAddressMessage = t`Default address for sending transactions.`
 
   if (mainAddress && wallet?.seed) {
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`

@@ -60,7 +60,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
       amountValueAsFloat > parseFloat(availableAmountInAlph)
         ? t`Amount exceeds available balance`
         : amountValueAsFloat < parseFloat(minAmountInAlph)
-        ? t('Amount must be greater than {{minAmountInAlph}}', { minAmountInAlph })
+        ? t('Amount must be greater than {{ minAmountInAlph }}', { minAmountInAlph })
         : ''
     )
   }, [amountValue, availableAmountInAlph, minAmountInAlph, t])
