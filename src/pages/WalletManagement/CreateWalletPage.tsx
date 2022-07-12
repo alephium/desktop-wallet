@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage } from '@alephium/sdk'
 import { AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
@@ -40,6 +41,7 @@ import { useWalletContext } from '../../contexts/wallet'
 const Storage = getStorage()
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
+  const { t } = useTranslation('App')
   const { setCurrentWalletName } = useGlobalContext()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
@@ -57,9 +59,9 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
     if (password.length) {
       const strength = zxcvbn(password)
       if (strength.score < 1) {
-        passwordError = 'Password is too weak'
+        passwordError = t`Password is too weak`
       } else if (strength.score < 3) {
-        passwordError = 'Insecure password'
+        passwordError = t`Insecure password`
       }
     }
     setPasswordState(password)
@@ -70,9 +72,9 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
     let walletNameError = ''
 
     if (walletName.length < 3) {
-      walletNameError = 'Wallet name is too short'
+      walletNameError = t`Wallet name is too short`
     } else if (walletNames?.includes(walletName)) {
-      walletNameError = 'Wallet name already taken'
+      walletNameError = t`Wallet name already taken`
     }
 
     setWalletNameState(walletName)
@@ -95,19 +97,19 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">{isRestoring ? 'Import Wallet' : 'New Wallet'}</PanelTitle>
+      <PanelTitle color="primary">{isRestoring ? t`Import Wallet` : t`New Wallet`}</PanelTitle>
       <PanelContentContainer>
         <Section inList>
           <Input
             value={walletName}
-            label={isRestoring ? 'New wallet name' : 'Wallet name'}
+            label={isRestoring ? t`New wallet name` : t`Wallet name`}
             onChange={(e) => onUpdateWalletName(e.target.value)}
             error={walletNameError}
             isValid={walletName.length > 0 && walletNameError.length === 0}
           />
           <Input
             value={password}
-            label={isRestoring ? 'New password' : 'Password'}
+            label={isRestoring ? t`New password` : t`Password`}
             type="password"
             onChange={(e) => onUpdatePassword(e.target.value)}
             error={passwordError}
@@ -115,27 +117,27 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
           />
           <Input
             value={passwordCheck}
-            label="Retype password"
+            label={t`Retype password`}
             type="password"
             onChange={(e) => setPasswordCheck(e.target.value)}
-            error={passwordCheck && password !== passwordCheck ? 'Passwords are different' : ''}
+            error={passwordCheck && password !== passwordCheck ? t`Passwords are different` : ''}
             isValid={password.length > 0 && password === passwordCheck}
             disabled={!password || passwordError.length > 0}
           />
           <InfoBox
             Icon={AlertTriangle}
             importance="alert"
-            text={'Make sure to keep your password secured as it cannot be changed in the future.'}
+            text={t`Make sure to keep your password secured as it cannot be changed in the future.`}
           />
-          <WarningNote>{"Alephium doesn't have access to your wallet.\nYou are the only owner."}</WarningNote>
+          <WarningNote>{t`Alephium doesn't have access to your wallet.\nYou are the only owner.`}</WarningNote>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button secondary onClick={onButtonBack}>
-          Back
+          {t`Back`}
         </Button>
         <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick} submit>
-          Continue
+          {t`Continue`}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>

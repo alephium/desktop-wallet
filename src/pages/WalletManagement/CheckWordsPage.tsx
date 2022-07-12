@@ -21,6 +21,7 @@ import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -46,6 +47,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
+  const { t } = useTranslation('App')
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
@@ -195,18 +197,18 @@ const CheckWordsPage = () => {
     const success = createEncryptedWallet()
     if (success) onButtonNext()
     else {
-      setSnackbarMessage({ text: 'Something went wrong when creating encrypted wallet.', type: 'alert' })
+      setSnackbarMessage({ text: t`Something went wrong when creating encrypted wallet.`, type: 'alert' })
     }
   }
 
   return (
     <FloatingPanel enforceMinHeight>
       <PanelTitle color="primary" onBackButtonClick={onButtonBack} smaller>
-        Security Check
+        {t`Security Check`}
       </PanelTitle>
       <PanelContentContainer>
         <Section>
-          <Paragraph>Select the words in the right order.</Paragraph>
+          <Paragraph>{t`Select the words in the right order.`}</Paragraph>
           <SelectedWordList
             className={selectedWords.length === wordList.current.length ? (areWordsValid ? 'valid' : 'error') : ''}
           >
@@ -220,19 +222,19 @@ const CheckWordsPage = () => {
           <InfoBox
             Icon={AlertTriangle}
             importance="alert"
-            text="It seems like you made a mistake in the words' order. But don't worry, you can reorder the words by dragging them around."
+            text={t`It seems like you made a mistake in the words' order. But don't worry, you can reorder the words by dragging them around.`}
           />
         ) : (
-          <InfoBox small Icon={ThumbsUp} importance="accent" text="Great job! Remember to keep those words safe." />
+          <InfoBox small Icon={ThumbsUp} importance="accent" text={t`Great job! Remember to keep those words safe.`} />
         )
       ) : null}
       {selectedWords.length === wordList.current.length && (
         <FooterActionsContainer>
           <Button secondary onClick={onButtonBack}>
-            Cancel
+            {t`Cancel`}
           </Button>
           <Button onClick={handleButtonNext} disabled={!areWordsValid} submit>
-            Continue
+            {t`Continue`}
           </Button>
         </FooterActionsContainer>
       )}

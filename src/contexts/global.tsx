@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
@@ -95,6 +96,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   children,
   overrideContextValue
 }) => {
+  const { t } = useTranslation('App')
   const [wallet, setWallet] = useState<Wallet>()
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
@@ -129,7 +131,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     const walletEncrypted = Storage.load(walletName)
 
     if (!walletEncrypted) {
-      setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
+      setSnackbarMessage({ text: t`Unknown wallet name`, type: 'alert' })
       return
     }
 
@@ -149,7 +151,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       setCurrentWalletName(walletName)
       callback()
     } catch (e) {
-      setSnackbarMessage({ text: 'Invalid password', type: 'alert' })
+      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
     }
   }
 
@@ -169,13 +171,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       console.log('Clients initialized.')
 
       setSnackbarMessage({
-        text: `Current network: ${currentNetwork}.`,
+        text: `${t`Current network`}: ${currentNetwork}.`,
         type: 'info',
         duration: 4000
       })
     }
     setIsClientLoading(false)
-  }, [currentNetwork, settings.network])
+  }, [currentNetwork, settings.network, t])
 
   useEffect(() => {
     const networkSettingsHaveChanged =
@@ -199,9 +201,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useEffect(() => {
     if (networkStatus === 'offline') {
-      setSnackbarMessage({ text: `Could not connect to the ${currentNetwork} network.`, type: 'alert', duration: 5000 })
+      setSnackbarMessage({
+        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork }),
+        type: 'alert',
+        duration: 5000
+      })
     }
-  }, [currentNetwork, networkStatus])
+  }, [currentNetwork, networkStatus, t])
 
   // Save settings to local storage
   useEffect(() => {

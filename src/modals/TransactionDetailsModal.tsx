@@ -20,6 +20,7 @@ import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import dayjs from 'dayjs'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
@@ -46,6 +47,7 @@ interface DetailsRowProps {
 }
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
+  const { t } = useTranslation('App')
   const {
     settings: {
       network: { explorerUrl }
@@ -75,14 +77,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
         <HeaderInfo>
-          <Direction>{isOutgoingTx ? '↑ Sent' : '↓ Received'}</Direction>
-          <FromIn>{isOutgoingTx ? 'from' : 'in'}</FromIn>
+          <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
+          <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
           <AddressBadge color={addressColor} addressName={addressName} truncate />
         </HeaderInfo>
-        <ActionLink onClick={handleShowTxInExplorer}>↗ Show in explorer</ActionLink>
+        <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details>
-        <DetailsRow label="From">
+        <DetailsRow label={t`From`}>
           {isOutgoingTx ? (
             <AddressBadge color={addressColor} addressName={addressName} truncate />
           ) : (
@@ -96,7 +98,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             />
           )}
         </DetailsRow>
-        <DetailsRow label="To">
+        <DetailsRow label={t`To`}>
           {!isOutgoingTx ? (
             <AddressBadge color={addressColor} addressName={addressName} />
           ) : (
@@ -110,24 +112,24 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             />
           )}
         </DetailsRow>
-        <DetailsRow label="Status">
+        <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
-            Confirmed
+            {t`Confirmed`}
           </Badge>
         </DetailsRow>
-        <DetailsRow label="Timestamp">
+        <DetailsRow label={t`Timestamp`}>
           {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
         </DetailsRow>
-        <DetailsRow label="Fee">
+        <DetailsRow label={t`Fee`}>
           {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
         </DetailsRow>
-        <DetailsRow label="Total value">{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
-        <ExpandableSectionStyled sectionTitleClosed="Click to see more" sectionTitleOpen="Click to see less">
-          <DetailsRow label="Gas amount">{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
-          <DetailsRow label="Gas price">
+        <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+        <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
+          <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
+          <DetailsRow label={t`Gas price`}>
             <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>
-          <DetailsRow label="Inputs">
+          <DetailsRow label={t`Inputs`}>
             <IOs>
               {transaction.inputs?.map((input) => (
                 <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddressInExplorer(input.address)}>
@@ -136,7 +138,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
               ))}
             </IOs>
           </DetailsRow>
-          <DetailsRow label="Outputs">
+          <DetailsRow label={t`Outputs`}>
             <IOs>
               {transaction.outputs?.map((output) => (
                 <ActionLink key={`${output.key}`} onClick={() => handleShowAddressInExplorer(output.address)}>

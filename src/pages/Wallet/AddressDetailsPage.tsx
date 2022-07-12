@@ -22,6 +22,7 @@ import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -57,6 +58,7 @@ const transactionsTableHeaders: TableProps['headers'] = [
 const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 const AddressDetailsPage = () => {
+  const { t } = useTranslation('App')
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
   const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
@@ -81,7 +83,7 @@ const AddressDetailsPage = () => {
         <Title>
           <ArrowLeftStyled onClick={() => navigate(-1)} />
           <PageH1Styled>
-            Address details {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
+            {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
           {address.settings.label && (
             <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
@@ -90,7 +92,7 @@ const AddressDetailsPage = () => {
             transparent
             squared
             onClick={() => setIsAddressOptionsModalOpen(true)}
-            aria-label="Address options"
+            aria-label={t`Address options`}
           >
             <SettingsIcon />
           </OptionsButton>
@@ -98,7 +100,7 @@ const AddressDetailsPage = () => {
       </PageTitleRow>
       <DataList>
         <DataListRow>
-          <DataListCell>Address</DataListCell>
+          <DataListCell>{t`Address`}</DataListCell>
           <DataListCell>
             <Truncate>{addressHash}</Truncate>
             <IconButtons>
@@ -119,12 +121,12 @@ const AddressDetailsPage = () => {
           </DataListCell>
         </DataListRow>
         <DataListRow>
-          <DataListCell>Number of transactions</DataListCell>
+          <DataListCell>{t`Number of transactions`}</DataListCell>
           <DataListCell>{address.details?.txNumber}</DataListCell>
         </DataListRow>
         {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
           <DataListRow>
-            <DataListCell>Locked ALPH balance</DataListCell>
+            <DataListCell>{t`Locked ALPH balance`}</DataListCell>
             <DataListCell>
               <Badge>
                 <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
@@ -133,7 +135,7 @@ const AddressDetailsPage = () => {
           </DataListRow>
         )}
         <DataListRow>
-          <DataListCell>Total ALPH balance</DataListCell>
+          <DataListCell>{t`Total ALPH balance`}</DataListCell>
           <DataListCell>
             {address.details?.balance ? (
               <Badge border>
@@ -145,7 +147,7 @@ const AddressDetailsPage = () => {
           </DataListCell>
         </DataListRow>
       </DataList>
-      <PageH2>Transaction history</PageH2>
+      <PageH2>{t`Transaction history`}</PageH2>
       <Table headers={transactionsTableHeaders} minWidth="500px">
         {address.transactions.pending
           .slice(0)
@@ -153,12 +155,12 @@ const AddressDetailsPage = () => {
           .map(({ txId, timestamp, toAddress, amount, type }) => (
             <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
               <TableCell>
-                <TransactionalInfo content="Pending" type="pending" />
+                <TransactionalInfo content={t`Pending`} type="pending" />
               </TableCell>
               <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
               <TableCell>
                 <DirectionalAddress>
-                  <DirectionBadge>To</DirectionBadge>
+                  <DirectionBadge>{t`To`}</DirectionBadge>
                   <Truncate>{toAddress}</Truncate>
                 </DirectionalAddress>
               </TableCell>
@@ -179,12 +181,12 @@ const AddressDetailsPage = () => {
               onClick={() => onTransactionClick(transaction)}
             >
               <TableCell>
-                <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
+                <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
               </TableCell>
               <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
               <TableCell>
                 <DirectionalAddress>
-                  <DirectionBadge>{isOut ? 'To' : 'From'}</DirectionBadge>
+                  <DirectionBadge>{isOut ? t`To` : t`From`}</DirectionBadge>
                   <IOList
                     currentAddress={addressHash}
                     isOut={isOut}
@@ -209,13 +211,13 @@ const AddressDetailsPage = () => {
         {address.transactions.confirmed.length !== address.details.txNumber && (
           <TableRow>
             <TableCell align="center">
-              <ActionLink onClick={loadNextTransactionsPage}>Show more</ActionLink>
+              <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
           <TableRow>
-            <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
+            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
           </TableRow>
         )}
       </Table>

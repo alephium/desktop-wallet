@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence } from 'framer-motion'
 import { MoreVertical } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
@@ -128,6 +129,7 @@ const AddressSelectModal = ({
   title: string
   hideEmptyAvailableBalance?: boolean
 }) => {
+  const { t } = useTranslation('App')
   const [selectedAddress, setSelectedAddress] = useState(selectedOption)
   const displayedOptions = hideEmptyAvailableBalance
     ? options.filter((address) => address.availableBalance > 0)
@@ -140,7 +142,7 @@ const AddressSelectModal = ({
   }
 
   return (
-    <CenteredModal title="Addresses" onClose={onClose}>
+    <CenteredModal title={t`Addresses`} onClose={onClose}>
       <Description>{title}</Description>
       <div>
         {displayedOptions.map((address) => (
@@ -156,19 +158,19 @@ const AddressSelectModal = ({
         {noAddressesWithAvailableBalance && (
           <InfoBox
             importance="accent"
-            text="There are no addresses with available balance. Please, send some funds to one of your addresses, and try again."
+            text={t`There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.`}
           />
         )}
       </div>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onClose}>
-          Cancel
+          {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton
           onClick={() => selectedAddress && onOptionAddressSelect(selectedAddress)}
           disabled={!selectedAddress || noAddressesWithAvailableBalance}
         >
-          Select
+          {t`Select`}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>

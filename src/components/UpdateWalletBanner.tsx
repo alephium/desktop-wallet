@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { openInWebBrowser } from '../utils/misc'
@@ -27,16 +28,26 @@ interface UpdateWalletBannerProps {
   className?: string
 }
 
-const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) => (
-  <Banner className={className}>
-    <UpdateMessage>
-      Version {newVersion} is available. Please, download it and install it to avoid any issues with wallet.
-    </UpdateMessage>
-    <ButtonStyled short onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}>
-      Download
-    </ButtonStyled>
-  </Banner>
-)
+const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <Banner className={className}>
+      <UpdateMessage>
+        {t(
+          'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.',
+          { newVersion }
+        )}
+      </UpdateMessage>
+      <ButtonStyled
+        short
+        onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}
+      >
+        {t`Download`}
+      </ButtonStyled>
+    </Banner>
+  )
+}
 
 export default styled(UpdateWalletBanner)`
   gap: 50px;

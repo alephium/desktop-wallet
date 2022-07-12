@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useTranslation } from 'react-i18next'
+
 import ColoredLabelInput, { ColoredLabelInputValue } from './Inputs/ColoredLabelInput'
 import InlineLabelValueInput from './Inputs/InlineLabelValueInput'
 import Toggle from './Inputs/Toggle'
@@ -39,22 +41,26 @@ const AddressMetadataForm = ({
   isMain,
   setIsMain,
   isMainAddressToggleEnabled
-}: AddressMetadataFormProps) => (
-  <>
-    <ColoredLabelInput label="Address label" onChange={setLabel} value={label} id="label" maxLength={50} />
-    {singleAddress && (
-      <>
-        <HorizontalDivider narrow />
-        <InlineLabelValueInput
-          label="★ Main address"
-          description={mainAddressMessage}
-          InputComponent={
-            <Toggle toggled={isMain} onToggle={() => setIsMain(!isMain)} disabled={!isMainAddressToggleEnabled} />
-          }
-        />
-      </>
-    )}
-  </>
-)
+}: AddressMetadataFormProps) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <>
+      <ColoredLabelInput label={t`Address label`} onChange={setLabel} value={label} id="label" maxLength={50} />
+      {singleAddress && (
+        <>
+          <HorizontalDivider narrow />
+          <InlineLabelValueInput
+            label={`★ ${t`Main address`}`}
+            description={mainAddressMessage}
+            InputComponent={
+              <Toggle toggled={isMain} onToggle={() => setIsMain(!isMain)} disabled={!isMainAddressToggleEnabled} />
+            }
+          />
+        </>
+      )}
+    </>
+  )
+}
 
 export default AddressMetadataForm

@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
@@ -32,6 +33,7 @@ import { appHeaderHeightPx } from '../../style/globalStyles'
 import { sortAddressList } from '../../utils/addresses'
 
 const OverviewPageHeader = ({ className }: { className?: string }) => {
+  const { t } = useTranslation('App')
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, isLoadingData } = useAddressesContext()
   const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
@@ -85,7 +87,7 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
         </AddressSummaryCards>
         <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
           {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
-          {areAddressSummariesExpanded ? 'Reduce' : 'Show addresses'}
+          {areAddressSummariesExpanded ? t`Reduce` : t`Show addresses`}
           {!areAddressSummariesExpanded && <ArrowRight size="12px" />}
         </ExpandButton>
       </Summaries>

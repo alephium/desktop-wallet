@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useAddressesContext } from '../contexts/addresses'
@@ -28,6 +29,7 @@ interface WalletSummaryCardProps {
 }
 
 const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => {
+  const { t } = useTranslation('App')
   const { addresses } = useAddressesContext()
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
@@ -38,17 +40,17 @@ const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => 
     <div className={classNames(className, { 'skeleton-loader': isLoading })}>
       <div>
         <AmountStyled value={totalBalance} />
-        <BalanceLabel>TOTAL BALANCE</BalanceLabel>
+        <BalanceLabel>{t`TOTAL BALANCE`}</BalanceLabel>
       </div>
       <Divider />
       <Balances>
         <Balance>
           <Amount value={totalAvailableBalance} />
-          <BalanceLabel>AVAILABLE</BalanceLabel>
+          <BalanceLabel>{t`AVAILABLE`}</BalanceLabel>
         </Balance>
         <Balance>
           <Amount value={totalLockedBalance} />
-          <BalanceLabel>LOCKED</BalanceLabel>
+          <BalanceLabel>{t`LOCKED`}</BalanceLabel>
         </Balance>
       </Balances>
     </div>

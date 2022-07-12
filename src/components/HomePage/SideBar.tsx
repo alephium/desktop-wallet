@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -28,6 +29,7 @@ import { PanelContentContainer } from '../PageComponents/PageContainers'
 import PanelTitle from '../PageComponents/PanelTitle'
 
 const SideBar = () => {
+  const { t } = useTranslation('App')
   const theme = useTheme()
 
   return (
@@ -46,8 +48,8 @@ const SideBar = () => {
           >
             Alephium
           </PanelTitle>
-          <PageSubtitle>Official Wallet</PageSubtitle>
-          <p>The easiest way to get started with Alephium.</p>
+          <PageSubtitle>{t`Official Wallet`}</PageSubtitle>
+          <p>{t`The easiest way to get started with Alephium.`}</p>
         </HeaderText>
         <IllustrationsContainer>
           <Moon

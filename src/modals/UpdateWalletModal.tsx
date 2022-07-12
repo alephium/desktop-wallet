@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { BellPlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import InfoBox from '../components/InfoBox'
 import { Section } from '../components/PageComponents/PageContainers'
@@ -28,19 +29,28 @@ interface UpdateWalletModalProps {
   newVersion: string
 }
 
-const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => (
-  <CenteredModal title="New version" onClose={onClose} focusMode>
-    <Section>
-      <InfoBox Icon={BellPlus}>
-        Version {newVersion} is available. Please, download it and install it to avoid any issues with wallet.
-      </InfoBox>
-    </Section>
-    <ModalFooterButtons>
-      <ModalFooterButton onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}>
-        Download
-      </ModalFooterButton>
-    </ModalFooterButtons>
-  </CenteredModal>
-)
+const UpdateWalletModal = ({ onClose, newVersion }: UpdateWalletModalProps) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <CenteredModal title={t`New version`} onClose={onClose} focusMode>
+      <Section>
+        <InfoBox Icon={BellPlus}>
+          {t(
+            'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.',
+            { newVersion }
+          )}
+        </InfoBox>
+      </Section>
+      <ModalFooterButtons>
+        <ModalFooterButton
+          onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}
+        >
+          {t`Download`}
+        </ModalFooterButton>
+      </ModalFooterButtons>
+    </CenteredModal>
+  )
+}
 
 export default UpdateWalletModal

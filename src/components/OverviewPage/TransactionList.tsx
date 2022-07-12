@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import dayjs from 'dayjs'
+import { useTranslation } from 'react-i18next'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
@@ -42,6 +43,7 @@ interface OverviewPageTransactionListProps {
 }
 
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
+  const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
   const { isPassphraseUsed } = useGlobalContext()
@@ -62,15 +64,17 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
+  const transactionsTableHeadersI18n = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
+
   return (
-    <Table headers={transactionsTableHeaders} isLoading={showSkeletonLoading} className={className}>
+    <Table headers={transactionsTableHeadersI18n} isLoading={showSkeletonLoading} className={className}>
       {allPendingTxs
         .slice(0)
         .reverse()
         .map(({ txId, timestamp, address, amount, type }) => (
           <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
             <TableCell>
-              <TransactionalInfo content="Pending" type="pending" />
+              <TransactionalInfo content={t`Pending`} type="pending" />
             </TableCell>
             <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
             <TableCell>
@@ -93,7 +97,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             onClick={() => onTransactionClick(transaction)}
           >
             <TableCell>
-              <TransactionalInfo content={isOut ? '↑ Sent' : '↓ Received'} type={isOut ? 'out' : 'in'} />
+              <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
             </TableCell>
             <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
             <TableCell>
@@ -117,13 +121,13 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow>
           <TableCell align="center">
-            <ActionLink onClick={loadNextTransactionsPage}>Show more</ActionLink>
+            <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
           </TableCell>
         </TableRow>
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow>
-          <TableCellPlaceholder align="center">No transactions to display</TableCellPlaceholder>
+          <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}
     </Table>

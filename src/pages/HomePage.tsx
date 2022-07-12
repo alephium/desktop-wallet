@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -44,6 +45,7 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const { newLatestVersion } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const { t } = useTranslation('App')
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
@@ -60,22 +62,22 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome!</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`Welcome!`}</PanelTitle>
               <InitialActions />
             </>
           )}
           {!showInitialActions && hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>Welcome back!</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`Welcome back!`}</PanelTitle>
               <Paragraph centered secondary>
-                Please choose a wallet and enter your password to continue.
+                {t`Please choose a wallet and enter your password to continue.`}
               </Paragraph>
               <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
             </>
           )}
           {showInitialActions && (
             <>
-              <PanelTitle useLayoutId={false}>New wallet</PanelTitle>
+              <PanelTitle useLayoutId={false}>{t`New wallet`}</PanelTitle>
               <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
             </>
           )}
@@ -96,6 +98,7 @@ interface LoginProps {
 }
 
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
+  const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()
@@ -116,14 +119,14 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
     <>
       <SectionStyled inList>
         <Select
-          label="Wallet"
+          label={t`Wallet`}
           options={walletNames.map((u) => ({ label: u, value: u }))}
           onValueChange={(value) => handleCredentialsChange('walletName', value?.value || '')}
-          title="Select a wallet"
+          title={t`Select a wallet`}
           id="wallet"
         />
         <Input
-          label="Password"
+          label={t`Password`}
           type="password"
           autoComplete="off"
           onChange={(e) => handleCredentialsChange('password', e.target.value)}
@@ -134,11 +137,11 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
       </SectionStyled>
       <SectionStyled>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
-          Login
+          {t`Login`}
         </Button>
       </SectionStyled>
       <SwitchLink onClick={onLinkClick} centered>
-        Create / import a new wallet
+        {t`Create / import a new wallet`}
       </SwitchLink>
     </>
   )
@@ -152,18 +155,19 @@ const InitialActions = ({
   onLinkClick?: () => void
 }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation('App')
 
   return (
     <>
       <Paragraph centered secondary>
-        Please choose whether you want to create a new wallet or import an existing one.
+        {t`Please choose whether you want to create a new wallet or import an existing one.`}
       </Paragraph>
       <Section inList>
-        <Button onClick={() => navigate('/create/0')}>New wallet</Button>
-        <Button onClick={() => navigate('/import/0')}>Import wallet</Button>
+        <Button onClick={() => navigate('/create/0')}>{t`New wallet`}</Button>
+        <Button onClick={() => navigate('/import/0')}>{t`Import wallet`}</Button>
         {showLinkToExistingWallets && (
           <SwitchLink onClick={onLinkClick} centered>
-            Use an existing wallet
+            {t`Use an existing wallet`}
           </SwitchLink>
         )}
       </Section>

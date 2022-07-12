@@ -26,6 +26,7 @@ import {
 import { AddressInfo, Transaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
@@ -151,6 +152,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   children,
   overrideContextValue
 }) => {
+  const { t } = useTranslation('App')
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
   const {
@@ -232,7 +234,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
       if (!client) {
         setSnackbarMessage({
-          text: 'Could not fetch data because the wallet is offline',
+          text: t`Could not fetch data because the wallet is offline`,
           type: 'alert',
           duration: 5000
         })
@@ -273,7 +275,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           }
         } catch (e) {
           setSnackbarMessage({
-            text: getHumanReadableError(e, `Error while fetching data for address ${address.hash}`),
+            text: getHumanReadableError(
+              e,
+              t('Error while fetching data for address {{ hash }}', { hash: address.hash })
+            ),
             type: 'alert'
           })
         }
@@ -284,7 +289,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState]
+    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState, t]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
