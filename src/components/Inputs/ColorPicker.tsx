@@ -35,9 +35,15 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const ref = useDetectClickOutside({ onTriggered: () => setIsPopupOpen(false) })
 
+  const handlePopupOpen = () => setIsPopupOpen(!isPopupOpen)
+  const onChangeComplete = (newColor: { hex: string }) => {
+    onChange(newColor.hex)
+    handlePopupOpen()
+  }
+
   return (
     <ColorPickerContainer ref={ref}>
-      <Input onClick={() => setIsPopupOpen(!isPopupOpen)}>
+      <Input role="button" tabIndex={0} onClick={handlePopupOpen} onKeyPress={handlePopupOpen}>
         <Circle color={color} />
       </Input>
       <AnimatePresence exitBeforeEnter initial={true}>
@@ -45,7 +51,7 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
           <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <TwitterPickerStyled
               color={color}
-              onChangeComplete={(newColor) => onChange(newColor.hex)}
+              onChangeComplete={onChangeComplete}
               colors={labelColorPalette}
               triangle="top-right"
             />
