@@ -80,6 +80,11 @@ function Select<T extends OptionValue>({
     [onValueChange, value]
   )
 
+  const onContainerClick = () => {
+    if (options.length <= 1) return
+    setShowPopup(true)
+  }
+
   useEffect(() => {
     // Controlled component
     if (controlledValue) {
@@ -101,14 +106,18 @@ function Select<T extends OptionValue>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={() => setShowPopup(true)}
+        onClick={onContainerClick}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
         </InputLabel>
-        <MoreIcon>
-          <MoreVertical />
-        </MoreIcon>
+        {options.length > 1 && (
+          <>
+            <MoreIcon>
+              <MoreVertical />
+            </MoreIcon>
+          </>
+        )}
         <ClickableInput
           type="text"
           className={className}
@@ -175,6 +184,7 @@ const InputContainer = styled(motion.button)`
   height: var(--inputHeight);
   width: 100%;
   margin: 16px 0;
+  padding: 0;
 `
 
 export const MoreIcon = styled.div`
