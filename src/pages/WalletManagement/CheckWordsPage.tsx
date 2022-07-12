@@ -233,7 +233,7 @@ const CheckWordsPage = () => {
           <Button secondary onClick={onButtonBack}>
             {t`Cancel`}
           </Button>
-          <Button onClick={handleButtonNext} disabled={!areWordsValid} submit>
+          <Button onClick={handleButtonNext} disabled={!areWordsValid}>
             {t`Continue`}
           </Button>
         </FooterActionsContainer>

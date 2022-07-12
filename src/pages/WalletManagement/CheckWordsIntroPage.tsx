@@ -65,9 +65,7 @@ const CheckWordsIntroPage = () => {
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
-        <Button onClick={onButtonNext} submit>
-          {t`Ready!`}
-        </Button>
+        <Button onClick={onButtonNext}>{t`Ready!`}</Button>
       </FooterActionsContainer>
     </FloatingPanel>
   )
