@@ -226,7 +226,7 @@ const WalletSidebar = styled.div`
   }
 `
 
-const WalletActions = styled.div`
+const WalletActions = styled.nav`
   display: flex;
   flex-direction: column;
   flex: 1;
