@@ -31,7 +31,7 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleClick = () => {
+  const handleInput = () => {
     if (link) {
       navigate(link)
     } else if (onClick) {
@@ -40,7 +40,13 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   }
 
   return (
-    <ActionButtonContainer onClick={handleClick} isActive={link !== undefined && location.pathname.startsWith(link)}>
+    <ActionButtonContainer
+      role="button"
+      tabIndex={0}
+      onClick={handleInput}
+      onKeyPress={handleInput}
+      isActive={link !== undefined && location.pathname.startsWith(link)}
+    >
       <ActionContent>
         <ActionIcon>
           <Icon color={theme.font.primary} size={18} />
