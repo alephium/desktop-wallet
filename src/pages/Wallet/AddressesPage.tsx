@@ -67,7 +67,7 @@ const AddressesPage = () => {
   const { isPassphraseUsed } = useGlobalContext()
   const theme = useTheme()
 
-  const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
+  const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => {
     navigate(`/wallet/addresses/${addressHash}`)
   }
 
@@ -93,11 +93,13 @@ const AddressesPage = () => {
         {sortAddressList(addresses).map((address) => {
           return (
             <TableRow
+              role="row"
               key={address.hash}
               columnWidths={tableColumnWidths}
-              onClick={() => navigateToAddressDetailsPage(address.hash)}
+              onClick={navigateToAddressDetailsPage(address.hash)}
+              onKeyPress={navigateToAddressDetailsPage(address.hash)}
             >
-              <TableCell>
+              <TableCell role="cell" tabIndex={0}>
                 {address.settings.isMain ? (
                   <MainAddressWrapper>
                     <Truncate>{address.hash}</Truncate>
@@ -107,17 +109,23 @@ const AddressesPage = () => {
                   <Truncate>{address.hash}</Truncate>
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell role="cell" tabIndex={0}>
                 {address.settings.label ? (
                   <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
                 ) : (
                   '-'
                 )}
               </TableCell>
-              <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
-              <TableCell>{address.details?.txNumber ?? 0}</TableCell>
-              <TableCell>{address.group}</TableCell>
-              <TableCellAmount align="end">
+              <TableCell role="cell" tabIndex={0}>
+                {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
+              </TableCell>
+              <TableCell role="cell" tabIndex={0}>
+                {address.details?.txNumber ?? 0}
+              </TableCell>
+              <TableCell role="cell" tabIndex={0}>
+                {address.group}
+              </TableCell>
+              <TableCellAmount role="cell" tabIndex={0} align="end">
                 {address.transactions.pending.length > 0 && <Spinner size="12px" />}
                 <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
               </TableCellAmount>
@@ -128,7 +136,7 @@ const AddressesPage = () => {
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ {t`Generate new address`}</ActionLink>
           </TableCell>
-          <Summary align="end">
+          <Summary role="cell" tabIndex={0} align="end">
             <Badge border>
               <Amount value={balanceSummary} fadeDecimals />
             </Badge>
