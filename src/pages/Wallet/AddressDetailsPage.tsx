@@ -77,11 +77,13 @@ const AddressDetailsPage = () => {
     setSelectedTransaction(transaction)
   }
 
+  const goBack = () => navigate(-1)
+
   return (
     <MainContent>
       <PageTitleRow>
         <Title>
-          <ArrowLeftStyled onClick={() => navigate(-1)} />
+          <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
           <PageH1Styled>
             {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
@@ -98,10 +100,10 @@ const AddressDetailsPage = () => {
           </OptionsButton>
         </Title>
       </PageTitleRow>
-      <DataList>
-        <DataListRow>
-          <DataListCell>{t`Address`}</DataListCell>
-          <DataListCell>
+      <DataList role="table">
+        <DataListRow role="row">
+          <DataListCell role="cell" tabIndex={0}>{t`Address`}</DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
             <Truncate>{addressHash}</Truncate>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} />
@@ -111,8 +113,10 @@ const AddressDetailsPage = () => {
           </DataListCell>
         </DataListRow>
         <DataListRow>
-          <DataListCell>Label</DataListCell>
-          <DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
+            Label
+          </DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
             {address.settings.label ? (
               <AddressBadge truncate color={address.settings.color} addressName={address.getLabelName()} />
             ) : (
@@ -121,22 +125,30 @@ const AddressDetailsPage = () => {
           </DataListCell>
         </DataListRow>
         <DataListRow>
-          <DataListCell>{t`Number of transactions`}</DataListCell>
-          <DataListCell>{address.details?.txNumber}</DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
+            {t`Number of transactions`}
+          </DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
+            {address.details?.txNumber}
+          </DataListCell>
         </DataListRow>
         {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
           <DataListRow>
-            <DataListCell>{t`Locked ALPH balance`}</DataListCell>
-            <DataListCell>
+            <DataListCell role="cell" tabIndex={0}>
+              {t`Locked ALPH balance`}
+            </DataListCell>
+            <DataListCell role="cell" tabIndex={0}>
               <Badge>
                 <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
               </Badge>
             </DataListCell>
           </DataListRow>
         )}
-        <DataListRow>
-          <DataListCell>{t`Total ALPH balance`}</DataListCell>
-          <DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="cell" tabIndex={0}>
+            {t`Total ALPH balance`}
+          </DataListCell>
+          <DataListCell role="cell" tabIndex={0}>
             {address.details?.balance ? (
               <Badge border>
                 <Amount value={BigInt(address.details.balance)} fadeDecimals />
@@ -153,18 +165,20 @@ const AddressDetailsPage = () => {
           .slice(0)
           .reverse()
           .map(({ txId, timestamp, toAddress, amount, type }) => (
-            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-              <TableCell>
+            <TableRow role="row" key={txId} columnWidths={tableColumnWidths} blinking>
+              <TableCell role="cell" tabIndex={0}>
                 <TransactionalInfo content={t`Pending`} type="pending" />
               </TableCell>
-              <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-              <TableCell>
+              <TableCell role="cell" tabIndex={0}>
+                {dayjs(timestamp).fromNow()}
+              </TableCell>
+              <TableCell role="cell" tabIndex={0}>
                 <DirectionalAddress>
                   <DirectionBadge>{t`To`}</DirectionBadge>
                   <Truncate>{toAddress}</Truncate>
                 </DirectionalAddress>
               </TableCell>
-              <TableCell align="end">
+              <TableCell align="end" role="cell" tabIndex={0}>
                 {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
               </TableCell>
             </TableRow>
@@ -176,15 +190,18 @@ const AddressDetailsPage = () => {
 
           return (
             <TableRow
+              role="role"
               key={transaction.hash}
               columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
             >
-              <TableCell>
+              <TableCell role="cell" tabIndex={0}>
                 <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
               </TableCell>
-              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell>
+              <TableCell role="cell" tabIndex={0}>
+                {dayjs(transaction.timestamp).fromNow()}
+              </TableCell>
+              <TableCell role="cell" tabIndex={0}>
                 <DirectionalAddress>
                   <DirectionBadge>{isOut ? t`To` : t`From`}</DirectionBadge>
                   <IOList
@@ -197,7 +214,7 @@ const AddressDetailsPage = () => {
                   />
                 </DirectionalAddress>
               </TableCell>
-              <TableCell align="end">
+              <TableCell align="end" role="cell" tabIndex={0}>
                 <TransactionalInfo
                   type={isOut ? 'out' : 'in'}
                   prefix={isOut ? '- ' : '+ '}
@@ -209,15 +226,17 @@ const AddressDetailsPage = () => {
           )
         })}
         {address.transactions.confirmed.length !== address.details.txNumber && (
-          <TableRow>
-            <TableCell align="center">
+          <TableRow role="row">
+            <TableCell align="center" role="cell" tabIndex={0}>
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
-          <TableRow>
-            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+          <TableRow role="row">
+            <TableCellPlaceholder align="center" role="cell" tabIndex={0}>
+              {t`No transactions to display`}
+            </TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
