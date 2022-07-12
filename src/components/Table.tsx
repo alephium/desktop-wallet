@@ -40,10 +40,10 @@ interface TableCellProps {
 
 const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
   <ScrollableWrapper>
-    <div className={classNames(className, { 'skeleton-loader': isLoading })}>
-      <TableHeaderRow columnWidths={headers.map(({ width }) => width)}>
+    <div role="table" className={classNames(className, { 'skeleton-loader': isLoading })}>
+      <TableHeaderRow role="row" columnWidths={headers.map(({ width }) => width)}>
         {headers.map(({ title, align }) => (
-          <TableHeaderCell key={title} align={align}>
+          <TableHeaderCell role="rowheader" key={title} align={align}>
             {title}
           </TableHeaderCell>
         ))}
