@@ -43,7 +43,7 @@ const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
     <div role="table" className={classNames(className, { 'skeleton-loader': isLoading })}>
       <TableHeaderRow role="row" columnWidths={headers.map(({ width }) => width)}>
         {headers.map(({ title, align }) => (
-          <TableHeaderCell role="rowheader" key={title} align={align}>
+          <TableHeaderCell role="rowheader" tabIndex={0} key={title} align={align}>
             {title}
           </TableHeaderCell>
         ))}

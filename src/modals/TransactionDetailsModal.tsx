@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import dayjs from 'dayjs'
-import { FC } from 'react'
+import { FC, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -47,6 +47,7 @@ interface DetailsRowProps {
 }
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
+  const divRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation('App')
   const {
     settings: {
@@ -69,10 +70,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
+  useEffect(() => {
+    divRef?.current?.focus()
+  }, [divRef])
+
   return (
     <SideModal onClose={onClose}>
       <Header contrast>
-        <AmountWrapper color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
+        <AmountWrapper ref={divRef} tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
           <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
