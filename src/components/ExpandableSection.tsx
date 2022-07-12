@@ -47,7 +47,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
     setIsExpanded(open)
   }, [open])
 
-  const handleTitleClick = () => {
+  const handleTitleExpansion = () => {
     const newState = !isExpanded
     onOpenChange && onOpenChange(newState)
     setIsExpanded(newState)
@@ -55,7 +55,13 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 
   return (
     <div className={className}>
-      <Title onClick={handleTitleClick}>
+      <Title
+        onClick={handleTitleExpansion}
+        onKeyPress={handleTitleExpansion}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+      >
         {centered && <LeftDivider />}
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
