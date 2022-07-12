@@ -194,6 +194,7 @@ export const OptionSelect = styled.select`
   border: 0;
   outline: 0;
   color: inherit;
+  background: transparent;
 `
 
 export const OptionItem = styled.option`
