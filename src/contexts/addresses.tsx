@@ -91,8 +91,8 @@ export class Address {
     return this.settings.label || this.shortHash
   }
 
-  getLabelName() {
-    return `${this.settings.isMain ? '★ ' : ''}${this.getName()}`
+  getLabelName(showStar = true) {
+    return `${this.settings.isMain && showStar ? '★ ' : ''}${this.getName()}`
   }
 
   addPendingTransaction(transaction: SimpleTx) {
@@ -128,7 +128,7 @@ export interface AddressesContextProps {
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
-  generateOneAddressPerGroup: (labelPrefix: string, color: string, skipGroups?: number[]) => void
+  generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
 
@@ -162,7 +162,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     settings: {
       network: { nodeHost, explorerApiHost }
     },
-    networkStatus
+    networkStatus,
+    isPassphraseUsed
   } = useGlobalContext()
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
@@ -208,11 +209,24 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [updateAddressesState]
   )
 
-  const updateAddressSettings = (address: Address, settings: AddressSettings) => {
-    storeAddressMetadataOfWallet(activeWalletName, address.index, settings)
-    address.settings = settings
-    setAddress(address)
-  }
+  const updateAddressSettings = useCallback(
+    (address: Address, settings: AddressSettings) => {
+      if (!wallet) return
+
+      if (!isPassphraseUsed)
+        storeAddressMetadataOfWallet(
+          {
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          },
+          address.index,
+          settings
+        )
+      address.settings = settings
+      setAddress(address)
+    },
+    [wallet, activeWalletName, isPassphraseUsed, setAddress]
+  )
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
@@ -282,17 +296,28 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
-      storeAddressMetadataOfWallet(activeWalletName, newAddress.index, newAddress.settings)
+      if (!wallet) return
+
+      if (!isPassphraseUsed)
+        storeAddressMetadataOfWallet(
+          {
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          },
+          newAddress.index,
+          newAddress.settings
+        )
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
     },
-    [activeWalletName, fetchAndStoreAddressesData, setAddress]
+    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData]
   )
 
-  const generateOneAddressPerGroup = (labelPrefix: string, labelColor: string, skipGroups: number[] = []) => {
+  const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
     if (!wallet?.seed) return
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
+    const hasLabel = !!labelPrefix && !!labelColor
     Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
       .filter((group) => !skipGroups.includes(group))
       .map((group) => ({ ...deriveNewAddressData(wallet.seed, group, undefined, skipAddressIndexes), group }))
@@ -300,8 +325,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         saveNewAddress(
           new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
             isMain: false,
-            label: `${labelPrefix} ${address.group}`,
-            color: labelColor
+            label: hasLabel ? `${labelPrefix} ${address.group}` : '',
+            color: hasLabel ? labelColor : ''
           })
         )
       })
@@ -313,7 +338,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletName || !wallet) return
 
-      const addressesMetadata = loadStoredAddressesMetadataOfWallet(activeWalletName)
+      const addressesMetadata = isPassphraseUsed
+        ? []
+        : loadStoredAddressesMetadataOfWallet({
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          })
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(

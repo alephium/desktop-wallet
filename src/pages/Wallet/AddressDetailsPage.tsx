@@ -43,6 +43,7 @@ import Tooltip from '../../components/Tooltip'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
+import { useGlobalContext } from '../../contexts/global'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 
@@ -59,6 +60,7 @@ const AddressDetailsPage = () => {
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
   const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const { isPassphraseUsed } = useGlobalContext()
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const navigate = useNavigate()
@@ -78,7 +80,9 @@ const AddressDetailsPage = () => {
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled onClick={() => navigate(-1)} />
-          <PageH1Styled>Address details {address.settings.isMain && <MainAddressLabelStyled />}</PageH1Styled>
+          <PageH1Styled>
+            Address details {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
+          </PageH1Styled>
           {address.settings.label && (
             <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
           )}

@@ -27,6 +27,7 @@ import Button from '../components/Button'
 import SideBar from '../components/HomePage/SideBar'
 import Input from '../components/Inputs/Input'
 import Select from '../components/Inputs/Select'
+import WalletPassphrase from '../components/Inputs/WalletPassphrase'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
@@ -98,6 +99,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { login } = useGlobalContext()
   const navigate = useNavigate()
+  const [passphrase, setPassphrase] = useState('')
 
   const handleCredentialsChange = useCallback((type: 'walletName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
@@ -105,7 +107,9 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'))
+    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+
+    if (passphrase) setPassphrase('')
   }
 
   return (
@@ -126,8 +130,9 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
+        <WalletPassphrase value={passphrase} onChange={setPassphrase} />
       </SectionStyled>
-      <SectionStyled inList>
+      <SectionStyled>
         <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
           Login
         </Button>

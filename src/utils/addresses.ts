@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
+import { decrypt, encrypt } from '@alephium/sdk/dist/lib/password-crypto'
 
 import { Address } from '../contexts/addresses'
+import { latestUserDataVersion } from './migration'
+import { stringToDoubleSHA256HexString } from './misc'
 
 const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
 
@@ -28,7 +30,7 @@ export type AddressSettings = {
   color?: string
 }
 
-type AddressMetadata = AddressSettings & {
+export type AddressMetadata = AddressSettings & {
   index: number
 }
 
@@ -40,18 +42,36 @@ export const checkAddressValidity = (address: string) => {
   return match[0] === address && address
 }
 
-const constructMetadataKey = (walletName: string) => `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+export const constructMetadataKey = (walletName: string) =>
+  `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
 
-export const loadStoredAddressesMetadataOfWallet = (walletName: string): AddressMetadata[] => {
-  const data = localStorage.getItem(constructMetadataKey(walletName))
-
-  if (data === null) return []
-
-  return JSON.parse(data)
+interface AddressMetadataKey {
+  mnemonic: string
+  walletName: string
 }
 
-export const storeAddressMetadataOfWallet = (walletName: string, index: number, settings: AddressSettings) => {
-  const addressesMetadata = loadStoredAddressesMetadataOfWallet(walletName)
+export const loadStoredAddressesMetadataOfWallet = (
+  { mnemonic, walletName }: AddressMetadataKey,
+  isPassphraseUsed?: boolean
+): AddressMetadata[] => {
+  if (isPassphraseUsed) return []
+
+  const json = localStorage.getItem(constructMetadataKey(walletName))
+
+  if (json === null) return []
+  const { encryptedSettings } = JSON.parse(json)
+  return JSON.parse(decrypt(mnemonic, encryptedSettings))
+}
+
+export const storeAddressMetadataOfWallet = (
+  { mnemonic, walletName }: AddressMetadataKey,
+  index: number,
+  settings: AddressSettings,
+  isPassphraseUsed?: boolean
+) => {
+  if (isPassphraseUsed) return
+
+  const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic })
   const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
   if (!existingAddressMetadata) {
@@ -63,7 +83,14 @@ export const storeAddressMetadataOfWallet = (walletName: string, index: number, 
     Object.assign(existingAddressMetadata, settings)
   }
   console.log(`🟠 Storing address index ${index} metadata locally`)
-  localStorage.setItem(constructMetadataKey(walletName), JSON.stringify(addressesMetadata))
+
+  localStorage.setItem(
+    constructMetadataKey(walletName),
+    JSON.stringify({
+      version: latestUserDataVersion,
+      encryptedSettings: encrypt(mnemonic, JSON.stringify(addressesMetadata))
+    })
+  )
 }
 
 export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
@@ -77,19 +104,3 @@ export const sortAddressList = (addresses: Address[]): Address[] =>
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
-
-// See https://github.com/alephium/desktop-wallet/issues/236
-export const migrateAddressMetadata = () => {
-  const Storage = getStorage()
-  const walletNames = Storage.list()
-
-  for (const name of walletNames) {
-    const deprecatedKey = `${name}-addresses-metadata`
-    const data = localStorage.getItem(deprecatedKey)
-
-    if (data) {
-      localStorage.setItem(constructMetadataKey(name), data)
-      localStorage.removeItem(deprecatedKey)
-    }
-  }
-}

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, Wallet, walletOpen } from '@alephium/sdk'
+import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
@@ -26,6 +26,7 @@ import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
 import { createClient } from '../utils/api-clients'
+import { migrateUserData } from '../utils/migration'
 import {
   deprecatedSettingsExist,
   getNetworkName,
@@ -50,7 +51,7 @@ export interface GlobalContextProps {
   wallet?: Wallet
   setWallet: (w: Wallet | undefined) => void
   lockWallet: () => void
-  login: (walletName: string, password: string, callback: () => void) => void
+  login: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -61,6 +62,7 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
+  isPassphraseUsed: boolean
 }
 
 export type Client = AsyncReturnType<typeof createClient>
@@ -81,7 +83,8 @@ export const initialGlobalContext: GlobalContextProps = {
   currentNetwork: 'mainnet',
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
-  newLatestVersion: ''
+  newLatestVersion: '',
+  isPassphraseUsed: false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -101,6 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
+  const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
 
@@ -117,18 +121,30 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const lockWallet = () => {
     setCurrentWalletName('')
+    setIsPassphraseUsed(false)
     setWallet(undefined)
   }
 
-  const login = async (walletName: string, password: string, callback: () => void) => {
+  const login = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
     const walletEncrypted = Storage.load(walletName)
+
     if (!walletEncrypted) {
       setSnackbarMessage({ text: 'Unknown wallet name', type: 'alert' })
       return
     }
+
     try {
-      const wallet = walletOpen(password, walletEncrypted)
+      let wallet = walletOpen(password, walletEncrypted)
+
       if (!wallet) return
+
+      if (passphrase) {
+        wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
+      }
+
+      migrateUserData(wallet.mnemonic, walletName)
+
+      setIsPassphraseUsed(!!passphrase)
       setWallet(wallet)
       setCurrentWalletName(walletName)
       callback()
@@ -211,7 +227,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           currentNetwork,
           networkStatus,
           updateNetworkSettings,
-          newLatestVersion
+          newLatestVersion,
+          isPassphraseUsed
         },
         overrideContextValue as GlobalContextProps
       )}

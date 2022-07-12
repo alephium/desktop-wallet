@@ -30,6 +30,7 @@ import AppHeader from '../../components/AppHeader'
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
 import Select from '../../components/Inputs/Select'
+import WalletPassphrase from '../../components/Inputs/WalletPassphrase'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import Spinner from '../../components/Spinner'
 import { useAddressesContext } from '../../contexts/addresses'
@@ -53,6 +54,7 @@ const WalletLayout: FC = ({ children }) => {
   const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const [passphrase, setPassphrase] = useState('')
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const navigate = useNavigate()
   const location = useLocation()
@@ -78,10 +80,16 @@ const WalletLayout: FC = ({ children }) => {
 
   const onLoginClick = (password: string) => {
     setIsPasswordModalOpen(false)
-    login(switchToWalletName, password, () => {
-      const nextPageLocation = '/wallet/overview'
-      if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
-    })
+    login(
+      switchToWalletName,
+      password,
+      () => {
+        const nextPageLocation = '/wallet/overview'
+        if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
+      },
+      passphrase
+    )
+    if (passphrase) setPassphrase('')
   }
 
   if (!wallet) return null
@@ -143,7 +151,9 @@ const WalletLayout: FC = ({ children }) => {
               buttonText="Login"
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
-            />
+            >
+              <WalletPassphrase value={passphrase} onChange={setPassphrase} />
+            </PasswordConfirmation>
           </CenteredModal>
         )}
       </AnimatePresence>

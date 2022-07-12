@@ -31,35 +31,18 @@ import {
   Section
 } from '../../components/PageComponents/PageContainers'
 import PanelTitle from '../../components/PageComponents/PanelTitle'
-import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
 const WalletWordsPage = () => {
-  const { mnemonic, plainWallet, setPlainWallet, setMnemonic } = useWalletContext()
+  const { mnemonic, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage } = useGlobalContext()
 
-  // Init wallet
   useEffect(() => {
     const wallet = walletGenerate()
     setPlainWallet(wallet)
     setMnemonic(wallet.mnemonic)
   }, [setMnemonic, setPlainWallet])
-
-  const handleAddressClick = () => {
-    const address = plainWallet?.address
-    if (address) {
-      navigator.clipboard
-        .writeText(address)
-        .catch((e) => {
-          throw e
-        })
-        .then(() => {
-          setSnackbarMessage({ text: 'Address copied to clipboard!', type: 'info' })
-        })
-    }
-  }
 
   const renderFormatedMnemonic = (mnemonic: string) => {
     return mnemonic.split(' ').map((w, i) => {
@@ -78,9 +61,6 @@ const WalletWordsPage = () => {
         Your Wallet
       </PanelTitle>
       <PanelContentContainer>
-        <PublicAddressContent>
-          <InfoBox text={plainWallet?.address || ''} label={'Your address'} onClick={handleAddressClick} wordBreak />
-        </PublicAddressContent>
         <WordsContent inList>
           <Label>Secret phrase</Label>
           <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
@@ -108,11 +88,6 @@ const Label = styled.label`
   padding-bottom: var(--spacing-1);
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
-`
-
-const PublicAddressContent = styled(Section)`
-  flex: 0;
-  justify-content: flex-start;
 `
 
 const WordsContent = styled(Section)`

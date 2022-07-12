@@ -27,7 +27,7 @@ export interface WalletContextType {
   walletName: string
   setWalletName: (w: string) => void
   password: string
-  setPassword: (p: string) => void
+  setPassword: (password: string) => void
 }
 
 export const initialWalletContext: WalletContextType = {
@@ -50,7 +50,16 @@ export const WalletContextProvider: FC = ({ children }) => {
 
   return (
     <WalletContext.Provider
-      value={{ walletName, setWalletName, password, setPassword, mnemonic, setMnemonic, plainWallet, setPlainWallet }}
+      value={{
+        walletName,
+        setWalletName,
+        password,
+        setPassword,
+        mnemonic,
+        setMnemonic,
+        plainWallet,
+        setPlainWallet
+      }}
     >
       {children}
     </WalletContext.Provider>
