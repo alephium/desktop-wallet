@@ -72,15 +72,17 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         .slice(0)
         .reverse()
         .map(({ txId, timestamp, address, amount, type }) => (
-          <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-            <TableCell>
+          <TableRow role="row" key={txId} columnWidths={tableColumnWidths} blinking>
+            <TableCell role="cell" tabIndex={0}>
               <TransactionalInfo content={t`Pending`} type="pending" />
             </TableCell>
-            <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-            <TableCell>
+            <TableCell role="cell" tabIndex={0}>
+              {dayjs(timestamp).fromNow()}
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
               <AddressBadge color={address.settings.color} addressName={address.getLabelName(!isPassphraseUsed)} />
             </TableCell>
-            <TableCell align="end">
+            <TableCell align="end" role="cell" tabIndex={0}>
               {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
             </TableCell>
           </TableRow>
@@ -95,19 +97,22 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             key={`${transaction.hash}-${transaction.address.hash}`}
             columnWidths={tableColumnWidths}
             onClick={() => onTransactionClick(transaction)}
+            onKeyPress={() => onTransactionClick(transaction)}
           >
-            <TableCell>
+            <TableCell role="cell" tabIndex={0}>
               <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
             </TableCell>
-            <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-            <TableCell>
+            <TableCell role="cell" tabIndex={0}>
+              {dayjs(transaction.timestamp).fromNow()}
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
               <AddressBadge
                 color={transaction.address.settings.color}
                 truncate
                 addressName={transaction.address.getLabelName(!isPassphraseUsed)}
               />
             </TableCell>
-            <TableCell align="end">
+            <TableCell align="end" role="cell" tabIndex={0}>
               <TransactionalInfo
                 type={isOut ? 'out' : 'in'}
                 prefix={isOut ? '- ' : '+ '}
@@ -120,7 +125,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       })}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow>
-          <TableCell align="center">
+          <TableCell align="center" role="cell" tabIndex={0}>
             <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
           </TableCell>
         </TableRow>
