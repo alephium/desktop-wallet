@@ -35,7 +35,15 @@ const PanelTitle: FC<PanelTitleProps> = ({ color, children, onBackButtonClick, s
 
   return (
     <TitleContainer layoutId={useLayoutId ? 'sectionTitle' : ''}>
-      {onBackButtonClick && <BackArrow onClick={onBackButtonClick} strokeWidth={3} />}
+      {onBackButtonClick && (
+        <BackArrow
+          onClick={onBackButtonClick}
+          onKeyPress={onBackButtonClick}
+          strokeWidth={3}
+          role="button"
+          tabIndex={0}
+        />
+      )}
       <H1 color={color} smaller={smaller} style={{ scale: titleScale, originX: 0 }}>
         {children}
       </H1>
