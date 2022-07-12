@@ -86,12 +86,6 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     onClose()
   }
 
-  const onGroupSelect = (newValue: SelectOption<number> | undefined) => {
-    if (newValue !== undefined) {
-      generateNewAddress(newValue.value)
-    }
-  }
-
   let mainAddressMessage = t`Default address for sending transactions.`
 
   if (mainAddress && wallet?.seed) {

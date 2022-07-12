@@ -42,7 +42,19 @@ const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps)
     openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
-  return <ExternalLink className={className} data-tip={t`Open in explorer`} size={15} onClick={handleShowInExplorer} />
+  return (
+    <>
+      <ExternalLink
+        className={className}
+        data-tip={t`Open in explorer`}
+        size={15}
+        onClick={handleShowInExplorer}
+        onKeyPress={handleShowInExplorer}
+        role="link"
+        tabIndex={0}
+      />
+    </>
+  )
 }
 
 export default styled(OpenInExplorerButton)`
