@@ -193,12 +193,14 @@ export const OptionSelect = styled.select`
   overflow-y: auto;
   border: 0;
   outline: 0;
+  color: inherit;
 `
 
 export const OptionItem = styled.option`
   padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
+  color: inherit;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
