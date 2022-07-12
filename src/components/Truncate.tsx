@@ -20,7 +20,13 @@ import { FC } from 'react'
 import styled from 'styled-components'
 
 const Truncate: FC<{ className?: string }> = ({ className, children }) => {
-  return <div className={className}>{children}</div>
+  return (
+    <>
+      <div tabIndex={0} className={className}>
+        {children}
+      </div>
+    </>
+  )
 }
 
 export default styled(Truncate)`
