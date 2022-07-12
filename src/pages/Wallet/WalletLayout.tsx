@@ -92,6 +92,11 @@ const WalletLayout: FC = ({ children }) => {
     if (passphrase) setPassphrase('')
   }
 
+  const onPasswordModalClose = () => {
+    setSwitchToWalletName('')
+    setIsPasswordModalOpen(false)
+  }
+
   if (!wallet) return null
 
   return (
@@ -145,7 +150,7 @@ const WalletLayout: FC = ({ children }) => {
       <AnimatePresence exitBeforeEnter initial={true}>
         {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
         {isPasswordModalOpen && (
-          <CenteredModal narrow title="Enter password" onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal narrow title="Enter password" onClose={onPasswordModalClose}>
             <PasswordConfirmation
               text={`Enter password for "${switchToWalletName}"`}
               buttonText="Login"
