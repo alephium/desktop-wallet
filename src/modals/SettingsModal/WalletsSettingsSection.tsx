@@ -116,15 +116,25 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
 
   return (
     <WalletItemContainer
+      role="row"
+      tabIndex={0}
       onMouseEnter={() => setIsShowingDeleteButton(true)}
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
-      <WalletName>
+      <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {walletName}
-        {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
+        {isCurrent && <CurrentWalletLabel>{t`(current)`}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
-        <WalletDeleteButton squared transparent onClick={() => onWalletDelete(walletName)}>
+        <WalletDeleteButton
+          role="button"
+          aria-label="Delete"
+          tabIndex={0}
+          squared
+          transparent
+          onClick={() => onWalletDelete(walletName)}
+          onBlur={() => setIsShowingDeleteButton(false)}
+        >
           <Trash size={15} />
         </WalletDeleteButton>
       )}
