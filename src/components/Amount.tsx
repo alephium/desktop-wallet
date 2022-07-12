@@ -52,7 +52,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
   }
 
   return (
-    <span className={className}>
+    <span tabIndex={0} className={className}>
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (

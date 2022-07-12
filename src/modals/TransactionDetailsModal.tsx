@@ -119,7 +119,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
-            {t`Confirmed`}
+            <span tabIndex={0}>{t`Confirmed`}</span>
           </Badge>
         </DetailsRow>
         <DetailsRow label={t`Timestamp`}>
@@ -128,9 +128,13 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <DetailsRow label={t`Fee`}>
           {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
         </DetailsRow>
-        <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+        <DetailsRow label={t`Total value`}>
+          <Amount value={amount} fadeDecimals fullPrecision />
+        </DetailsRow>
         <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
-          <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
+          <DetailsRow label={t`Gas amount`}>
+            <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
+          </DetailsRow>
           <DetailsRow label={t`Gas price`}>
             <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>

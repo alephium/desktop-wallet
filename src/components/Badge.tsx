@@ -37,7 +37,7 @@ const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'dat
       {children}
     </Truncate>
   ) : (
-    <span className={className} data-tip={dataTip}>
+    <span tabIndex={0} className={className} data-tip={dataTip}>
       {children}
     </span>
   )
