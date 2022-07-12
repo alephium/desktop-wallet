@@ -106,7 +106,7 @@ const ImportWordsPage = () => {
         <Button secondary onClick={onButtonBack}>
           Cancel
         </Button>
-        <Button onClick={handleWalletImport} disabled={!isNextButtonActive} submit>
+        <Button onClick={handleWalletImport} disabled={!isNextButtonActive}>
           Continue
         </Button>
       </FooterActionsContainer>
