@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { openInWebBrowser } from '../../utils/misc'
+import { openInWebBrowser, passphraseWikiLink } from '../../utils/misc'
 import ActionLink from '../ActionLink'
 import ExpandableSection from '../ExpandableSection'
 import InfoBox from '../InfoBox'
@@ -53,9 +53,7 @@ const WarningEmphasis = styled.strong`
 `
 
 const Link: FC = ({ children }) => (
-  <ActionLink onClick={() => openInWebBrowser('https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase')}>
-    {children}
-  </ActionLink>
+  <ActionLink onClick={() => openInWebBrowser(passphraseWikiLink)}>{children}</ActionLink>
 )
 
 export default styled(WalletPassphrase)`

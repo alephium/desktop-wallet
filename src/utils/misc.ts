@@ -52,3 +52,5 @@ export const stringToDoubleSHA256HexString = (data: string): string => {
   hash.update(first)
   return hash.digest('hex')
 }
+
+export const passphraseWikiLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide/#passphrase'
