@@ -107,7 +107,7 @@ const WalletWelcomePage = () => {
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed={t`Show advanced options`}
-            sectionTitleOpen={'Hide advanced options'}
+            sectionTitleOpen={t`Hide advanced options`}
             centered
           >
             <InfoBox contrast noBorders>
