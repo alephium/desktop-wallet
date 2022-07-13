@@ -30,7 +30,7 @@ import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, InputProps } from '.'
-import { MoreIcon, OptionItem, SelectContainer } from './Select'
+import { MoreIcon, SelectContainer } from './Select'
 
 interface AddressSelectProps {
   id: string
@@ -146,7 +146,13 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {displayedOptions.map((address) => (
-          <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
+          <AddressOption
+            role="button"
+            tabIndex={0}
+            key={address.hash}
+            onClick={() => setSelectedAddress(address)}
+            onKeyPress={() => setSelectedAddress(address)}
+          >
             <Circle filled={selectedAddress?.hash === address.hash} />
             {address?.settings.label && (
               <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
@@ -214,10 +220,23 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AddressOption = styled(OptionItem)`
+const AddressOption = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
+
+  padding: var(--spacing-3);
+  cursor: pointer;
+  background-color: ${({ theme }) => theme.bg.primary};
+  color: inherit;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.secondary};
+  }
 `
 
 const ClickableInput = styled.div<InputProps>`
