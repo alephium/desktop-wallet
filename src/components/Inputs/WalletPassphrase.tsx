@@ -75,6 +75,7 @@ const WarningEmphasis = styled.strong`
 const ConsentCheckbox = styled.div`
   display: flex;
   align-items: center;
+  gap: 5px;
 `
 
 export default styled(WalletPassphrase)`
