@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -38,6 +38,7 @@ interface AddressOptionsModal {
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { t } = useTranslation('App')
+  const divRef = useRef<HTMLDivElement>(null)
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
@@ -47,6 +48,10 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { wallet, isPassphraseUsed } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
   const theme = useTheme()
+
+  useEffect(() => {
+    divRef?.current?.focus()
+  }, [])
 
   if (!address || !wallet || !mainAddress) return null
 
@@ -72,7 +77,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
       : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
-    <>
+    <div ref={divRef} tabIndex={0}>
       <CenteredModal title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
         {!isPassphraseUsed && (
           <>
@@ -123,7 +128,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           />
         )}
       </AnimatePresence>
-    </>
+    </div>
   )
 }
 
