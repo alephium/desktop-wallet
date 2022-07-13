@@ -159,7 +159,7 @@ function SelectOptionsPopup<T extends OptionValue>({
 }) {
   const handleEvent = (el: HTMLSelectElement) => {
     setValue({
-      label: options[el.selectedIndex].label,
+      label: options[el.selectedIndex]?.label,
       value: el.value as T
     })
     onBackgroundClick()
