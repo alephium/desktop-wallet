@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
@@ -30,6 +30,7 @@ import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Toggle from '../../components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
+import PassphraseLink from '../../components/PassphraseLink'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
@@ -81,6 +82,15 @@ const WalletWelcomePage = () => {
         <Button onClick={onButtonClick} submit>
           {t`Let's go!`}
         </Button>
+        <div>
+          <AdvancedUserMessage>
+            <span>
+              <Trans t={t} i18nKey="welcomeScreenPassphraseMessage">
+                If you want to use a <PassphraseLink>passphrase</PassphraseLink>, lock your newlly created wallet.
+              </Trans>
+            </span>
+          </AdvancedUserMessage>
+        </div>
         <div>
           <AdvancedUserMessage>
             <span>
