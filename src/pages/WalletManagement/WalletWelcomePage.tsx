@@ -86,7 +86,7 @@ const WalletWelcomePage = () => {
           <AdvancedUserMessage>
             <span>
               <Trans t={t} i18nKey="welcomeScreenPassphraseMessage">
-                If you want to use a <PassphraseLink>passphrase</PassphraseLink>, lock your newlly created wallet.
+                If you want to use a <PassphraseLink>passphrase</PassphraseLink>, lock your newly created wallet.
               </Trans>
             </span>
           </AdvancedUserMessage>

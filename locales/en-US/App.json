@@ -216,7 +216,7 @@
   "Show addresses": "Show addresses",
   "More info": "More info",
   "passphraseWarningMessage": "<0>This is an advanced feature!</0><br />Use it only if you know what you are doing.<br />Please, read our <5>documentation</5> to learn about it.",
-  "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newlly created wallet.",
+  "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
   "I have read and understood the documentation": "I have read and understood the documentation",
   "Optional passphrase (advanced)": "Optional passphrase (advanced)",
   "Optional passphrase": "Optional passphrase"
