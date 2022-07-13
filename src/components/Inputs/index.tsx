@@ -71,6 +71,7 @@ export const inputDefaultStyle = (isValid?: boolean) => {
     &:disabled {
       background-color: ${({ theme }) => theme.bg.secondary};
       border: 1px solid ${({ theme }) => theme.border.primary};
+      cursor: not-allowed;
     }
 
     // Remove number arrows

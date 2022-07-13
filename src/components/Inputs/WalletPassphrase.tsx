@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -32,9 +33,10 @@ interface Props {
 
 const WalletPassphrase = ({ value, onChange, className }: Props) => {
   const { t } = useTranslation('App')
+  const [isConsentActive, setIsConsentActive] = useState(false)
 
   return (
-    <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered className={className}>
+    <ExpandableSection sectionTitleClosed={t`Optional passphrase (advanced)`} centered className={className}>
       <InfoBox importance="alert">
         <p>
           <Trans t={t} i18nKey="passphraseWarningMessage">
@@ -46,13 +48,33 @@ const WalletPassphrase = ({ value, onChange, className }: Props) => {
           </Trans>
         </p>
       </InfoBox>
-      <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
+      <ConsentCheckbox>
+        <input
+          type="checkbox"
+          id="passphrase-consent"
+          checked={isConsentActive}
+          onClick={() => setIsConsentActive(!isConsentActive)}
+        />
+        <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
+      </ConsentCheckbox>
+      <Input
+        value={value}
+        label={t`Optional passphrase`}
+        type="password"
+        onChange={(e) => onChange(e.target.value)}
+        disabled={!isConsentActive}
+      />
     </ExpandableSection>
   )
 }
 
 const WarningEmphasis = styled.strong`
   color: ${({ theme }) => theme.global.alert};
+`
+
+const ConsentCheckbox = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 export default styled(WalletPassphrase)`
