@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { FC } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { openInWebBrowser, passphraseWikiLink } from '../../utils/misc'
@@ -31,22 +32,26 @@ interface Props {
   className?: string
 }
 
-const WalletPassphrase = ({ value, onChange, className }: Props) => (
-  <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered className={className}>
-    <InfoBox importance="alert">
-      <p>
-        <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
-        <br />
-        <span>Use it only if you know what you are doing.</span>
-        <br />
-        <span>
-          Please, consult our <Link>documentation</Link> to learn about it.
-        </span>
-      </p>
-    </InfoBox>
-    <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
-  </ExpandableSection>
-)
+const WalletPassphrase = ({ value, onChange, className }: Props) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered className={className}>
+      <InfoBox importance="alert">
+        <p>
+          <Trans t={t} i18nKey="passphraseWarningMessage">
+            <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
+            <br />
+            Use it only if you know what you are doing.
+            <br />
+            Please, read our <Link>documentation</Link> to learn about it.
+          </Trans>
+        </p>
+      </InfoBox>
+      <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
+    </ExpandableSection>
+  )
+}
 
 const WarningEmphasis = styled.strong`
   color: ${({ theme }) => theme.global.alert};

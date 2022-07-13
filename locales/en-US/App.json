@@ -214,5 +214,6 @@
   "Open in explorer": "Open in explorer",
   "Reduce": "Reduce",
   "Show addresses": "Show addresses",
-  "More info": "More info"
+  "More info": "More info",
+  "passphraseWarningMessage": "<0>This is an advanced feature!</0><br />Use it only if you know what you are doing.<br />Please, read our <5>documentation</5> to learn about it."
 }
