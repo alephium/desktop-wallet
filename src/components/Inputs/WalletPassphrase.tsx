@@ -53,7 +53,7 @@ const WalletPassphrase = ({ value, onChange, className }: Props) => {
           type="checkbox"
           id="passphrase-consent"
           checked={isConsentActive}
-          onClick={() => setIsConsentActive(!isConsentActive)}
+          onChange={() => setIsConsentActive(!isConsentActive)}
         />
         <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
       </ConsentCheckbox>
