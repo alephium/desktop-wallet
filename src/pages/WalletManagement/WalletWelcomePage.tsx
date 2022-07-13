@@ -94,7 +94,9 @@ const WalletWelcomePage = () => {
         <div>
           <AdvancedUserMessage>
             <span>
-              {t`Advanced user: want to start with`} <b>{t`one address per group for mining or DeFi?`}</b>
+              <Trans t={t} i18nKey="welcomeScreenOneAddressPerGroupMessage">
+                Advanced user: want to start with <b>one address per group for mining or DeFi?</b>
+              </Trans>
             </span>
             <InfoIcon
               size="16px"
