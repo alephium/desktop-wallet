@@ -39,7 +39,7 @@ const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => (
         style={{ width: `${100 / tabItems.length}%` }}
       />
       <TabBarContent>
-        {tabItems.map((i, index) => (
+        {tabItems.map((i) => (
           <TabContainer key={i.value}>
             <Tab
               role="link"

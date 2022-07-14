@@ -42,32 +42,30 @@ const Popup: FC<PopupProps> = ({ children, onBackgroundClick, title }) => {
   }, [handleEscapeKeyPress, onBackgroundClick])
 
   return (
-    <>
-      <PopupContainer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => {
-          onBackgroundClick()
+    <PopupContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => {
+        onBackgroundClick()
+      }}
+    >
+      <PopupContent
+        onClick={(e) => {
+          e.stopPropagation()
         }}
+        initial={{ y: -10 }}
+        animate={{ y: 0 }}
+        exit={{ y: -10 }}
       >
-        <PopupContent
-          onClick={(e) => {
-            e.stopPropagation()
-          }}
-          initial={{ y: -10 }}
-          animate={{ y: 0 }}
-          exit={{ y: -10 }}
-        >
-          {title && (
-            <PopupHeader>
-              <h2>{title}</h2>
-            </PopupHeader>
-          )}
-          {children}
-        </PopupContent>
-      </PopupContainer>
-    </>
+        {title && (
+          <PopupHeader>
+            <h2>{title}</h2>
+          </PopupHeader>
+        )}
+        {children}
+      </PopupContent>
+    </PopupContainer>
   )
 }
 

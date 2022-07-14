@@ -123,7 +123,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {walletName}
-        {isCurrent && <CurrentWalletLabel>{t`(current)`}</CurrentWalletLabel>}
+        {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
         <WalletDeleteButton

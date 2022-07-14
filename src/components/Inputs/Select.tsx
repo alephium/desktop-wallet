@@ -114,11 +114,9 @@ function Select<T extends OptionValue>({
           {label}
         </InputLabel>
         {options.length > 1 && (
-          <>
-            <MoreIcon>
-              <MoreVertical />
-            </MoreIcon>
-          </>
+          <MoreIcon>
+            <MoreVertical />
+          </MoreIcon>
         )}
         <ClickableInput
           type="text"
