@@ -22,6 +22,7 @@ import semverCompare from 'semver-compare'
 import { useGlobalContext } from '../contexts/global'
 import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
 import { useTimeout } from '../utils/hooks'
+import { links } from '../utils/links'
 
 const currentVersion = process.env.REACT_APP_VERSION
 const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
@@ -35,7 +36,7 @@ const useLatestGitHubRelease = () => {
   const [timeUntilNextFetch, setTimeUntilNextFetch] = useState(0)
 
   const fetchLatestVersion = async () => {
-    const response = await fetch('https://api.github.com/repos/alephium/desktop-wallet/releases/latest')
+    const response = await fetch(links.latestReleaseApi)
     const data = await response.json()
     const latestVersion = data.tag_name.replace('v', '')
 

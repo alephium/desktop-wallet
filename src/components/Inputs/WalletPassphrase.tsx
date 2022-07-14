@@ -20,9 +20,11 @@ import { useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { links } from '../../utils/links'
+import { openInWebBrowser } from '../../utils/misc'
+import ActionLink from '../ActionLink'
 import ExpandableSection from '../ExpandableSection'
 import InfoBox from '../InfoBox'
-import PassphraseLink from '../PassphraseLink'
 import Input from './Input'
 
 interface Props {
@@ -44,7 +46,8 @@ const WalletPassphrase = ({ value, onChange, className }: Props) => {
             <br />
             Use it only if you know what you are doing.
             <br />
-            Please, read our <PassphraseLink>documentation</PassphraseLink> to learn about it.
+            Please, read our <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>documentation</ActionLink>
+            to learn about it.
           </Trans>
         </p>
       </InfoBox>

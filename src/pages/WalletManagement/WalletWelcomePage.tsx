@@ -23,6 +23,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
+import ActionLink from '../../components/ActionLink'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
@@ -30,11 +31,11 @@ import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Toggle from '../../components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
-import PassphraseLink from '../../components/PassphraseLink'
 import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
+import { links } from '../../utils/links'
 import { openInWebBrowser } from '../../utils/misc'
 
 // This is shown when a user creates or imports a wallet
@@ -86,7 +87,9 @@ const WalletWelcomePage = () => {
           <AdvancedUserMessage>
             <span>
               <Trans t={t} i18nKey="welcomeScreenPassphraseMessage">
-                If you want to use a <PassphraseLink>passphrase</PassphraseLink>, lock your newly created wallet.
+                If you want to use a
+                <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>passphrase</ActionLink>, lock your newly
+                created wallet.
               </Trans>
             </span>
           </AdvancedUserMessage>
@@ -98,14 +101,7 @@ const WalletWelcomePage = () => {
                 Advanced user: want to start with <b>one address per group for mining or DeFi?</b>
               </Trans>
             </span>
-            <InfoIcon
-              size="16px"
-              onClick={() =>
-                openInWebBrowser(
-                  'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses'
-                )
-              }
-            />
+            <InfoIcon size="16px" onClick={() => openInWebBrowser(links.miningWallet)} />
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed={t`Show advanced options`}

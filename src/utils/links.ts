@@ -16,15 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
-
-import { openInWebBrowser } from '../utils/misc'
-import ActionLink from './ActionLink'
-
-const passphraseWikiLink = 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide/#passphrase'
-
-const PassphraseLink: FC = ({ children }) => (
-  <ActionLink onClick={() => openInWebBrowser(passphraseWikiLink)}>{children}</ActionLink>
-)
-
-export default PassphraseLink
+export const links = {
+  passphrase: 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide/#passphrase',
+  latestRelease: 'https://github.com/alephium/desktop-wallet/releases/latest',
+  latestReleaseApi: 'https://api.github.com/repos/alephium/desktop-wallet/releases/latest',
+  utxoConsolidation: 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide/#utxo-consolidation',
+  miningWallet: 'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide/#creating-a-mining-wallet-with-4-addresses',
+  discord: 'https://discord.com/channels/747741246667227157/930164826418860032'
+}
