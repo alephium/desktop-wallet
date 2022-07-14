@@ -122,6 +122,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
         />
         <Input
           label={t`Recipient's address`}
+          aria-label={t`Recipient's address`}
           value={toAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           error={addressError}

@@ -162,6 +162,7 @@
   "Alephium Logo": "Alephium Logo",
   "Alephium": "Alephium",
   "WALLET": "WALLET",
+  "SWITCH WALLET": "SWITCH WALLET",
   "MENU": "MENU",
   "Overview": "Overview",
   "Lock": "Lock",
@@ -219,5 +220,7 @@
   "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
   "I have read and understood the documentation": "I have read and understood the documentation",
   "Optional passphrase (advanced)": "Optional passphrase (advanced)",
-  "Optional passphrase": "Optional passphrase"
+  "Optional passphrase": "Optional passphrase",
+  "Activate dark mode": "Activate dark mode",
+  "Pick a color": "Pick a color"
 }

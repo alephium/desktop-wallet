@@ -51,8 +51,10 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
     fractionalPart = amountParts[1]
   }
 
+  const amount = `${integralPart}.${fractionalPart}`
+
   return (
-    <span tabIndex={0} className={className}>
+    <span tabIndex={0} aria-label={amount} className={className}>
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (
@@ -63,7 +65,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
             {suffix && <span>{suffix}</span>}
           </>
         ) : (
-          `${integralPart}.${fractionalPart}`
+          amount
         )
       ) : (
         '-'

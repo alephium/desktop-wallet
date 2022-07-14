@@ -51,6 +51,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
       <StyledInput
         {...props}
         value={value}
+        aria-label={props['aria-label']}
         onChange={onChange}
         className={className}
         disabled={disabled}

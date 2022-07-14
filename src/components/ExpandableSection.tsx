@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { Section } from './PageComponents/PageContainers'
@@ -42,16 +42,31 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
+  const [isVisible, setIsVisible] = useState(open)
 
   useEffect(() => {
-    setIsExpanded(open)
+    if (open) {
+      setIsVisible(open)
+      setIsExpanded(open)
+    } else {
+      setIsExpanded(open)
+    }
   }, [open])
+
+  const onAnimationComplete = useCallback(() => {
+    setIsVisible(isExpanded)
+  }, [isExpanded])
 
   const handleTitleExpansion = () => {
     const newState = !isExpanded
     onOpenChange && onOpenChange(newState)
+    if (newState) {
+      setIsVisible(newState)
+    }
     setIsExpanded(newState)
   }
+
+  const titleText = isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed
 
   return (
     <div className={className}>
@@ -61,17 +76,25 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
+        aria-pressed={isExpanded}
+        aria-label={titleText}
       >
         {centered && <LeftDivider />}
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
-        <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
+        <TitleText>{titleText}</TitleText>
         <Divider />
       </Title>
-      <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
-        <Content>
-          <Section align="stretch">{children}</Section>
-        </Content>
-      </ContentWrapper>
+      {isVisible && (
+        <ContentWrapper
+          onAnimationComplete={onAnimationComplete}
+          animate={{ height: isExpanded ? 'auto' : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Content>
+            <Section align="stretch">{children}</Section>
+          </Content>
+        </ContentWrapper>
+      )}
     </div>
   )
 }

@@ -80,6 +80,9 @@ function AddressSelect({
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
         onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
+        onKeyPress={() => !disabled && setIsAddressSelectModalOpen(true)}
+        tabIndex={0}
+        role="button"
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>

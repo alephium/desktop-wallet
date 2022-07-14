@@ -103,7 +103,7 @@ const AddressDetailsPage = () => {
       <DataList role="table">
         <DataListRow role="row">
           <DataListCell role="cell" tabIndex={0}>{t`Address`}</DataListCell>
-          <DataListCell role="cell" tabIndex={0}>
+          <DataListCell role="cell">
             <Truncate>{addressHash}</Truncate>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} />
@@ -116,7 +116,7 @@ const AddressDetailsPage = () => {
           <DataListCell role="cell" tabIndex={0}>
             Label
           </DataListCell>
-          <DataListCell role="cell" tabIndex={0}>
+          <DataListCell role="cell">
             {address.settings.label ? (
               <AddressBadge truncate color={address.settings.color} addressName={address.getLabelName()} />
             ) : (
@@ -148,7 +148,7 @@ const AddressDetailsPage = () => {
           <DataListCell role="cell" tabIndex={0}>
             {t`Total ALPH balance`}
           </DataListCell>
-          <DataListCell role="cell" tabIndex={0}>
+          <DataListCell role="cell">
             {address.details?.balance ? (
               <Badge border>
                 <Amount value={BigInt(address.details.balance)} fadeDecimals />
@@ -194,6 +194,7 @@ const AddressDetailsPage = () => {
               key={transaction.hash}
               columnWidths={tableColumnWidths}
               onClick={() => onTransactionClick(transaction)}
+              onKeyPress={() => onTransactionClick(transaction)}
             >
               <TableCell role="cell" tabIndex={0}>
                 <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
@@ -214,7 +215,7 @@ const AddressDetailsPage = () => {
                   />
                 </DirectionalAddress>
               </TableCell>
-              <TableCell align="end" role="cell" tabIndex={0}>
+              <TableCell align="end" role="cell">
                 <TransactionalInfo
                   type={isOut ? 'out' : 'in'}
                   prefix={isOut ? '- ' : '+ '}

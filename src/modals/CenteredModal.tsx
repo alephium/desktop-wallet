@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Button from '../components/Button'
@@ -44,39 +44,49 @@ const CenteredModal: FC<CenteredModalProps> = ({
   header,
   narrow = false,
   children
-}) => (
-  <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
-    <CenteredBox
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      narrow={narrow}
-    >
-      <ModalHeader contrast={!!header}>
-        <TitleRow>
-          <PanelTitle smaller useLayoutId={false}>
-            {title}
-            {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
-          </PanelTitle>
-          <CloseButton squared transparent onClick={onClose}>
-            <X />
-          </CloseButton>
-        </TitleRow>
-        {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
-      </ModalHeader>
-      <ModalContent>{children}</ModalContent>
-      {isLoading && (
-        <>
-          <ModalBackdrop light />
-          <ModalLoadingSpinner>
-            <Spinner />
-          </ModalLoadingSpinner>
-        </>
-      )}
-    </CenteredBox>
-  </ModalContainer>
-)
+}) => {
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    divRef?.current?.focus()
+  }, [divRef])
+
+  return (
+    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
+      <CenteredBox
+        ref={divRef}
+        tabIndex={0}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        narrow={narrow}
+      >
+        <ModalHeader contrast={!!header}>
+          <TitleRow>
+            <PanelTitle smaller useLayoutId={false}>
+              {title}
+              {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
+            </PanelTitle>
+            <CloseButton squared transparent onClick={onClose}>
+              <X />
+            </CloseButton>
+          </TitleRow>
+          {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
+        </ModalHeader>
+        <ModalContent>{children}</ModalContent>
+        {isLoading && (
+          <>
+            <ModalBackdrop light />
+            <ModalLoadingSpinner>
+              <Spinner />
+            </ModalLoadingSpinner>
+          </>
+        )}
+      </CenteredBox>
+    </ModalContainer>
+  )
+}
 
 export default CenteredModal
 

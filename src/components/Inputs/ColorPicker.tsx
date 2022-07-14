@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { TwitterPicker } from 'react-color'
 import { useDetectClickOutside } from 'react-detect-click-outside'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { getRandomLabelColor, labelColorPalette } from '../../utils/colors'
@@ -31,6 +32,7 @@ interface ColorPickerProps {
 }
 
 const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
+  const { t } = useTranslation('App')
   const color = value?.toString() || getRandomLabelColor()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const ref = useDetectClickOutside({ onTriggered: () => setIsPopupOpen(false) })
@@ -43,7 +45,13 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
 
   return (
     <ColorPickerContainer ref={ref}>
-      <Input role="button" tabIndex={0} onClick={handlePopupOpen} onKeyPress={handlePopupOpen}>
+      <Input
+        role="button"
+        tabIndex={0}
+        aria-label={t`Pick a color`}
+        onClick={handlePopupOpen}
+        onKeyPress={handlePopupOpen}
+      >
         <Circle color={color} />
       </Input>
       <AnimatePresence exitBeforeEnter initial={true}>

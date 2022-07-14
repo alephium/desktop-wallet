@@ -99,7 +99,7 @@ const AddressesPage = () => {
               onClick={navigateToAddressDetailsPage(address.hash)}
               onKeyPress={navigateToAddressDetailsPage(address.hash)}
             >
-              <TableCell role="cell" tabIndex={0}>
+              <TableCell role="cell">
                 {address.settings.isMain ? (
                   <MainAddressWrapper>
                     <Truncate>{address.hash}</Truncate>
@@ -109,7 +109,7 @@ const AddressesPage = () => {
                   <Truncate>{address.hash}</Truncate>
                 )}
               </TableCell>
-              <TableCell role="cell" tabIndex={0}>
+              <TableCell role="cell">
                 {address.settings.label ? (
                   <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
                 ) : (
@@ -125,7 +125,7 @@ const AddressesPage = () => {
               <TableCell role="cell" tabIndex={0}>
                 {address.group}
               </TableCell>
-              <TableCellAmount role="cell" tabIndex={0} align="end">
+              <TableCellAmount role="cell" align="end">
                 {address.transactions.pending.length > 0 && <Spinner size="12px" />}
                 <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
               </TableCellAmount>

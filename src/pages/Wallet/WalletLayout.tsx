@@ -127,7 +127,7 @@ const WalletLayout: FC = ({ children }) => {
           <InfoBox text={activeWalletName} label={t`WALLET`} />
         ) : (
           <Select
-            label={t`WALLET`}
+            label={t`SWITCH WALLET`}
             options={walletNameSelectOptions}
             controlledValue={{
               label: activeWalletName,

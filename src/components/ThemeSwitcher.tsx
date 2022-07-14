@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Moon, Sun } from 'lucide-react'
 import { FC, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useGlobalContext } from '../contexts/global'
 import { ThemeType } from '../style/themes'
@@ -28,6 +29,8 @@ interface ThemeSwitcherProps {
 }
 
 const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
+  const { t } = useTranslation('App')
+
   const {
     settings: {
       general: { theme: currentTheme }
@@ -46,6 +49,7 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
 
   return (
     <Toggle
+      label={t`Activate dark mode`}
       ToggleIcons={[Sun, Moon]}
       handleColors={['var(--color-orange)', 'var(--color-purple)']}
       toggled={currentTheme === 'dark'}

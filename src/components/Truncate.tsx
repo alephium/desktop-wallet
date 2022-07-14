@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 const Truncate: FC<{ className?: string }> = ({ className, children }) => {
   return (
-    <div tabIndex={0} className={className}>
+    <div role="representation" className={className}>
       {children}
     </div>
   )

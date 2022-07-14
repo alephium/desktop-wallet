@@ -76,6 +76,7 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
           onClick={handleInput}
           onKeyPress={handleInput}
           role="button"
+          aria-label={t`Copy to clipboard`}
           tabIndex={0}
         />
       </div>

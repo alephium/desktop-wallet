@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
@@ -43,6 +44,10 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
   const { isPassphraseUsed } = useGlobalContext()
 
   const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
+  const onInput = useCallback(
+    () => clickable && navigate(`/wallet/addresses/${address.hash}`),
+    [clickable, address.hash, navigate]
+  )
 
   return (
     <motion.div
@@ -51,8 +56,8 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       animate={{ x: collapsedPosition }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ClickableArea onClick={() => clickable && navigate(`/wallet/addresses/${address.hash}`)} clickable={clickable}>
-        <AddressNameSection collapsed={!clickable}>
+      <ClickableArea onClick={onInput} onKeyPress={onInput} clickable={clickable}>
+        <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">
           <AddressBadgeStyled
             color={address.settings.color}
             addressName={address.getLabelName(!isPassphraseUsed)}

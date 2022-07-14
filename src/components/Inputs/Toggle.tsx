@@ -27,9 +27,10 @@ interface ToggleProps {
   disabled?: boolean
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
+  label?: string
 }
 
-const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors }: ToggleProps) => {
+const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors, label }: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
@@ -70,9 +71,10 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
       onClick={handleSwitch}
       onKeyPress={handleSwitch}
       className={className}
+      aria-label={label}
+      aria-checked={toggled}
       role="checkbox"
       tabIndex={0}
-      aria-checked={toggled}
       toggled={toggled}
       variants={toggleBackgroundVariants}
       animate={toggleState}

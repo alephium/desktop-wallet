@@ -108,7 +108,10 @@ function Select<T extends OptionValue>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
+        tabIndex={0}
+        role="button"
         onClick={onContainerClick}
+        onKeyPress={onContainerClick}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
@@ -120,6 +123,7 @@ function Select<T extends OptionValue>({
         )}
         <ClickableInput
           type="text"
+          tabIndex={-1}
           className={className}
           disabled={disabled}
           id={id}
@@ -186,7 +190,7 @@ function SelectOptionsPopup<T extends OptionValue>({
   )
 }
 
-const InputContainer = styled(motion.button)`
+const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;

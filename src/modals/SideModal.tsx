@@ -17,23 +17,33 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC } from 'react'
+import { FC, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
-const SideModal: FC<ModalContainerProps> = ({ onClose, children }) => (
-  <ModalContainer onClose={onClose}>
-    <Sidebar
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-    >
-      {children}
-    </Sidebar>
-  </ModalContainer>
-)
+const SideModal: FC<ModalContainerProps> = ({ onClose, children }) => {
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    divRef?.current?.focus()
+  }, [divRef])
+
+  return (
+    <ModalContainer onClose={onClose}>
+      <Sidebar
+        ref={divRef}
+        tabIndex={0}
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+      >
+        {children}
+      </Sidebar>
+    </ModalContainer>
+  )
+}
 
 export default SideModal
 

@@ -73,6 +73,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         type="number"
         min={minAmountInAlph}
         max={availableAmountInAlph}
+        aria-label={t`Amount`}
         label={
           <>
             {t`Amount`} (<AlefSymbol color={theme.font.secondary} />)

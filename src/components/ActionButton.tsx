@@ -43,6 +43,7 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
     <ActionButtonContainer
       role="button"
       tabIndex={0}
+      aria-label={label}
       onClick={handleInput}
       onKeyPress={handleInput}
       isActive={link !== undefined && location.pathname.startsWith(link)}

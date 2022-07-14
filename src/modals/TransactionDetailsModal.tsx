@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import dayjs from 'dayjs'
-import { FC, useEffect, useRef } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -47,7 +47,6 @@ interface DetailsRowProps {
 }
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
-  const divRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation('App')
   const {
     settings: {
@@ -70,14 +69,10 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
-  useEffect(() => {
-    divRef?.current?.focus()
-  }, [divRef])
-
   return (
     <SideModal onClose={onClose}>
       <Header contrast>
-        <AmountWrapper ref={divRef} tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
+        <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
           <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
@@ -88,10 +83,12 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
-      <Details>
+      <Details role="table">
         <DetailsRow label={t`From`}>
           {isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} truncate />
+            <span tabIndex={0}>
+              <AddressBadge color={addressColor} addressName={addressName} truncate />
+            </span>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -105,7 +102,9 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`To`}>
           {!isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} />
+            <span tabIndex={0}>
+              <AddressBadge color={addressColor} addressName={addressName} />
+            </span>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -123,7 +122,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </Badge>
         </DetailsRow>
         <DetailsRow label={t`Timestamp`}>
-          {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+          <span tabIndex={0}>{dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
         </DetailsRow>
         <DetailsRow label={t`Fee`}>
           {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
@@ -165,8 +164,10 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
 export default TransactionDetailsModal
 
 let DetailsRow: FC<DetailsRowProps> = ({ children, label, className }) => (
-  <div className={className}>
-    <DetailsRowLabel>{label}</DetailsRowLabel>
+  <div className={className} role="row">
+    <DetailsRowLabel tabIndex={0} role="cell">
+      {label}
+    </DetailsRowLabel>
     {children}
   </div>
 )
