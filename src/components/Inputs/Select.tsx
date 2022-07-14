@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence, motion } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { KeyboardEventHandler, MouseEventHandler, OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
+import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
@@ -156,21 +156,28 @@ function SelectOptionsPopup<T extends OptionValue>({
   title?: string
 }) {
   const handleEvent = (el: HTMLSelectElement) => {
-    setValue({
+    handleOptionSelect({
       label: options[el.selectedIndex]?.label,
       value: el.value as T
     })
+  }
+
+  const handleOptionSelect = (option: SelectOption<T>) => {
+    setValue(option)
     onBackgroundClick()
   }
 
-  const onClick: MouseEventHandler<HTMLSelectElement> = (event) => handleEvent(event.currentTarget)
-  const onKeyPress: KeyboardEventHandler<HTMLSelectElement> = (event) => handleEvent(event.currentTarget)
-
   return (
     <Popup title={title} onBackgroundClick={onBackgroundClick}>
-      <OptionSelect autoFocus size={options.length} onKeyPress={onKeyPress} onClick={onClick}>
+      <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
         {options.map((o) => (
-          <OptionItem key={o.label} value={o.value}>
+          <OptionItem
+            key={o.label}
+            value={o.value}
+            onClick={() => {
+              handleOptionSelect(o)
+            }}
+          >
             {o.label}
           </OptionItem>
         ))}
