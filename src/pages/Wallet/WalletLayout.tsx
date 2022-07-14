@@ -62,19 +62,17 @@ const WalletLayout: FC = ({ children }) => {
   const location = useLocation()
   const theme = useTheme()
   const [switchToWalletName, setSwitchToWalletName] = useState(activeWalletName)
-  const walletNameSelectOptions = Storage.list()
-    .filter((walletName) => walletName !== activeWalletName)
-    .map((walletName) => ({
-      label: walletName,
-      value: walletName
-    }))
+  const walletNameSelectOptions = Storage.list().map((walletName) => ({
+    label: walletName,
+    value: walletName
+  }))
 
   const refreshData = () => {
     refreshAddressesData()
   }
 
   const handleWalletNameChange = (option: WalletNameSelectOptions | undefined) => {
-    if (option && option.value !== switchToWalletName && option.value !== activeWalletName) {
+    if (option) {
       setSwitchToWalletName(option.value)
       setIsPasswordModalOpen(true)
     }
@@ -139,6 +137,7 @@ const WalletLayout: FC = ({ children }) => {
             title={t`Select a wallet`}
             id="wallet"
             raised
+            skipEqualityCheck
           />
         )}
         <WalletActions>
