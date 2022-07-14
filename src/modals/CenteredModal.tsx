@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { FC, ReactNode, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import Button from '../components/Button'
@@ -45,6 +46,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   narrow = false,
   children
 }) => {
+  const { t } = useTranslation('App')
   const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -68,7 +70,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
               {title}
               {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
             </PanelTitle>
-            <CloseButton squared transparent onClick={onClose}>
+            <CloseButton aria-label={t`Close`} squared transparent onClick={onClose}>
               <X />
             </CloseButton>
           </TitleRow>
