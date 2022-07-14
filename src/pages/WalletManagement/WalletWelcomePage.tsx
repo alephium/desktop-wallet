@@ -19,10 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 
+import ActionLink from '../../components/ActionLink'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
@@ -34,6 +35,7 @@ import { useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
+import { links } from '../../utils/links'
 import { openInWebBrowser } from '../../utils/misc'
 
 // This is shown when a user creates or imports a wallet
@@ -84,20 +86,26 @@ const WalletWelcomePage = () => {
         <div>
           <AdvancedUserMessage>
             <span>
-              {t`Advanced user: want to start with`} <b>{t`one address per group for mining or DeFi?`}</b>
+              <Trans t={t} i18nKey="welcomeScreenPassphraseMessage">
+                If you want to use a
+                <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>passphrase</ActionLink>, lock your newly
+                created wallet.
+              </Trans>
             </span>
-            <InfoIcon
-              size="16px"
-              onClick={() =>
-                openInWebBrowser(
-                  'https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses'
-                )
-              }
-            />
+          </AdvancedUserMessage>
+        </div>
+        <div>
+          <AdvancedUserMessage>
+            <span>
+              <Trans t={t} i18nKey="welcomeScreenOneAddressPerGroupMessage">
+                Advanced user: want to start with <b>one address per group for mining or DeFi?</b>
+              </Trans>
+            </span>
+            <InfoIcon size="16px" onClick={() => openInWebBrowser(links.miningWallet)} />
           </AdvancedUserMessage>
           <ExpandableSectionStyled
             sectionTitleClosed={t`Show advanced options`}
-            sectionTitleOpen={'Hide advanced options'}
+            sectionTitleOpen={t`Hide advanced options`}
             centered
           >
             <InfoBox contrast noBorders>

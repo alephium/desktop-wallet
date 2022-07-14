@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
+import { useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { links } from '../../utils/links'
 import { openInWebBrowser } from '../../utils/misc'
 import ActionLink from '../ActionLink'
 import ExpandableSection from '../ExpandableSection'
@@ -31,32 +33,53 @@ interface Props {
   className?: string
 }
 
-const WalletPassphrase = ({ value, onChange, className }: Props) => (
-  <ExpandableSection sectionTitleClosed="Optional passphrase (advanced)" centered className={className}>
-    <InfoBox importance="alert">
-      <p>
-        <WarningEmphasis>This is an advanced feature! </WarningEmphasis>
-        <br />
-        <span>Use it only if you know what you are doing.</span>
-        <br />
-        <span>
-          Please, consult our <Link>documentation</Link> to learn about it.
-        </span>
-      </p>
-    </InfoBox>
-    <Input value={value} label="Optional passphrase" type="password" onChange={(e) => onChange(e.target.value)} />
-  </ExpandableSection>
-)
+const WalletPassphrase = ({ value, onChange, className }: Props) => {
+  const { t } = useTranslation('App')
+  const [isConsentActive, setIsConsentActive] = useState(false)
+
+  return (
+    <ExpandableSection sectionTitleClosed={t`Optional passphrase (advanced)`} centered className={className}>
+      <InfoBox importance="alert">
+        <p>
+          <Trans t={t} i18nKey="passphraseWarningMessage">
+            <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
+            <br />
+            Use it only if you know what you are doing.
+            <br />
+            Please, read our <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>documentation</ActionLink>
+            to learn about it.
+          </Trans>
+        </p>
+      </InfoBox>
+      <ConsentCheckbox>
+        <input
+          type="checkbox"
+          id="passphrase-consent"
+          checked={isConsentActive}
+          onChange={() => setIsConsentActive(!isConsentActive)}
+        />
+        <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
+      </ConsentCheckbox>
+      <Input
+        value={value}
+        label={t`Optional passphrase`}
+        type="password"
+        onChange={(e) => onChange(e.target.value)}
+        disabled={!isConsentActive}
+      />
+    </ExpandableSection>
+  )
+}
 
 const WarningEmphasis = styled.strong`
   color: ${({ theme }) => theme.global.alert};
 `
 
-const Link: FC = ({ children }) => (
-  <ActionLink onClick={() => openInWebBrowser('https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#passphrase')}>
-    {children}
-  </ActionLink>
-)
+const ConsentCheckbox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`
 
 export default styled(WalletPassphrase)`
   max-width: 400px;

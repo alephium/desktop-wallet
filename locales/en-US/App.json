@@ -194,9 +194,9 @@
   "Everything is ready!": "Everything is ready!",
   "Welcome to Alephium.": "Welcome to Alephium.",
   "Let's go!": "Let's go!",
-  "Advanced user: want to start with": "Advanced user: want to start with",
-  "one address per group for mining or DeFi?": "one address per group for mining or DeFi?",
+  "welcomeScreenOneAddressPerGroupMessage": "Advanced user: want to start with <1>one address per group for mining or DeFi?</1>",
   "Show advanced options": "Show advanced options",
+  "Hide advanced options": "Hide advanced options",
   "For mining or DeFi use.": "For mining or DeFi use.",
   "Address copied to clipboard!": "Address copied to clipboard!",
   "Your Wallet": "Your Wallet",
@@ -214,5 +214,10 @@
   "Open in explorer": "Open in explorer",
   "Reduce": "Reduce",
   "Show addresses": "Show addresses",
-  "More info": "More info"
+  "More info": "More info",
+  "passphraseWarningMessage": "<0>This is an advanced feature!</0><br />Use it only if you know what you are doing.<br />Please, read our <5>documentation</5> to learn about it.",
+  "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
+  "I have read and understood the documentation": "I have read and understood the documentation",
+  "Optional passphrase (advanced)": "Optional passphrase (advanced)",
+  "Optional passphrase": "Optional passphrase"
 }

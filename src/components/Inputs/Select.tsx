@@ -41,6 +41,7 @@ interface SelectProps<T> {
   onValueChange: (value: SelectOption<T> | undefined) => void
   className?: string
   raised?: boolean
+  skipEqualityCheck?: boolean
 }
 
 function Select<T>({
@@ -52,7 +53,8 @@ function Select<T>({
   className,
   id,
   onValueChange,
-  raised
+  raised,
+  skipEqualityCheck = false
 }: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
@@ -60,20 +62,20 @@ function Select<T>({
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
-      if (!value || !isEqual(option, value)) {
+      if (!value || !isEqual(option, value) || skipEqualityCheck) {
         onValueChange(option)
         setValue(option)
       }
     },
-    [onValueChange, value]
+    [onValueChange, skipEqualityCheck, value]
   )
 
   useEffect(() => {
     // Controlled component
-    if (controlledValue) {
-      setInputValue(controlledValue)
+    if (controlledValue && (!isEqual(controlledValue, value) || skipEqualityCheck)) {
+      setValue(controlledValue)
     }
-  }, [controlledValue, setInputValue])
+  }, [controlledValue, setInputValue, skipEqualityCheck, value])
 
   useEffect(() => {
     // If only one value, select it

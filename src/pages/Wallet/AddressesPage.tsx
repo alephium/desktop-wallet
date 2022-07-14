@@ -42,6 +42,7 @@ import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
 import { sortAddressList } from '../../utils/addresses'
+import { links } from '../../utils/links'
 import { openInWebBrowser } from '../../utils/misc'
 
 const addressesTableHeaders: TableProps['headers'] = [
@@ -154,7 +155,7 @@ const AddressesPage = () => {
             description={t`Consolidate (merge) your UTXOs into one.`}
             buttonText={t`Start`}
             onButtonClick={() => setIsConsolidationModalOpen(true)}
-            infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#utxo-consolidation"
+            infoLink={links.utxoConsolidation}
           />
           <OperationBox
             title={t`Generate one address per group`}
@@ -162,7 +163,7 @@ const AddressesPage = () => {
             description={t`Useful for miners or DeFi use.`}
             buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
             onButtonClick={handleOneAddressPerGroupClick}
-            infoLink="https://wiki.alephium.org/wallet/Desktop-Wallet-Guide#creating-a-mining-wallet-with-4-addresses"
+            infoLink={links.miningWallet}
           />
           <OperationBox
             placeholder
@@ -170,7 +171,7 @@ const AddressesPage = () => {
             Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
             description={t`You have great ideas you want to share?`}
             buttonText={t`Tell us!`}
-            onButtonClick={() => openInWebBrowser('https://discord.com/channels/747741246667227157/930164826418860032')}
+            onButtonClick={() => openInWebBrowser(links.discord)}
           />
         </AdvancedOperations>
       </ExpandableSection>

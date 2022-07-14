@@ -24,6 +24,7 @@ import styled, { css } from 'styled-components'
 
 import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
+import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
@@ -145,7 +146,7 @@ const AddressSelectModal = ({
     <CenteredModal title={t`Addresses`} onClose={onClose}>
       <Description>{title}</Description>
       <div>
-        {displayedOptions.map((address) => (
+        {sortAddressList(displayedOptions).map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
             {address?.settings.label && (

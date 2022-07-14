@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { links } from '../utils/links'
 import { openInWebBrowser } from '../utils/misc'
 import Banner from './Banner'
 import Button from './Button'
@@ -39,10 +40,7 @@ const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) 
           { newVersion }
         )}
       </UpdateMessage>
-      <ButtonStyled
-        short
-        onClick={() => openInWebBrowser('https://github.com/alephium/desktop-wallet/releases/latest')}
-      >
+      <ButtonStyled short onClick={() => openInWebBrowser(links.latestRelease)}>
         {t`Download`}
       </ButtonStyled>
     </Banner>
