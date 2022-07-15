@@ -16,20 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) => {
-  const [lastInteractionTime, setLastInteractionTime] = useState(new Date().getTime())
+  const lastInteractionTime = useRef(new Date().getTime())
 
   const lastInteractionTimeThrottle = 10000 // 10 seconds
 
   const updateLastInteractionTime = useCallback(() => {
     const currentTime = new Date().getTime()
 
-    if (currentTime - lastInteractionTime > lastInteractionTimeThrottle) {
-      setLastInteractionTime(currentTime)
+    if (currentTime - lastInteractionTime.current > lastInteractionTimeThrottle) {
+      lastInteractionTime.current = currentTime
     }
-  }, [lastInteractionTime])
+  }, [])
 
   useEffect(() => {
     let checkIfIdleForTooLong: ReturnType<typeof setInterval> | null = null
@@ -38,7 +38,7 @@ const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) =
       checkIfIdleForTooLong = setInterval(() => {
         const currentTime = new Date().getTime()
 
-        if (currentTime - lastInteractionTime > timeoutInMs) {
+        if (currentTime - lastInteractionTime.current > timeoutInMs) {
           onIdleForTooLong()
         }
       }, 2000)
@@ -56,7 +56,7 @@ const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) =
         clearInterval(checkIfIdleForTooLong)
       }
     }
-  }, [lastInteractionTime, onIdleForTooLong, timeoutInMs, updateLastInteractionTime])
+  }, [onIdleForTooLong, timeoutInMs, lastInteractionTime, updateLastInteractionTime])
 }
 
 export default useIdleForTooLong
