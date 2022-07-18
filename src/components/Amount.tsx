@@ -27,10 +27,11 @@ interface AmountProps {
   className?: string
   fadeDecimals?: boolean
   fullPrecision?: boolean
+  nbOfDecimalsToShow?: number
   color?: string
 }
 
-const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }: AmountProps) => {
+const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color, nbOfDecimalsToShow }: AmountProps) => {
   const {
     settings: {
       general: { discreetMode }
@@ -41,7 +42,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color }
   let suffix = ''
 
   if (!discreetMode && value !== undefined) {
-    let amount = formatAmountForDisplay(value, fullPrecision)
+    let amount = formatAmountForDisplay(value, fullPrecision, nbOfDecimalsToShow)
     if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
       suffix = amount.slice(-1)
       amount = amount.slice(0, -1)
