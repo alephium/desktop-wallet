@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { FC, ReactNode, useEffect, useRef } from 'react'
+import { FC, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -26,6 +26,7 @@ import Button from '../components/Button'
 import { Section } from '../components/PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
 import Spinner from '../components/Spinner'
+import useFocusOnMount from '../hooks/useFocusOnMount'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
@@ -47,11 +48,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   children
 }) => {
   const { t } = useTranslation('App')
-  const divRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    divRef?.current?.focus()
-  }, [divRef])
+  const divRef = useFocusOnMount<HTMLDivElement>()
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>

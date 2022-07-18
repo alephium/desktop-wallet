@@ -17,17 +17,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC, useEffect, useRef } from 'react'
+import { FC } from 'react'
 import styled from 'styled-components'
 
+import useFocusOnMount from '../hooks/useFocusOnMount'
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
 const SideModal: FC<ModalContainerProps> = ({ onClose, children }) => {
-  const divRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    divRef?.current?.focus()
-  }, [divRef])
+  const divRef = useFocusOnMount<HTMLDivElement>()
 
   return (
     <ModalContainer onClose={onClose}>

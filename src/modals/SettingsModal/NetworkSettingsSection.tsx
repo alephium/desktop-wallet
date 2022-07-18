@@ -73,19 +73,17 @@ const NetworkSettingsSection = () => {
 
   const handleNetworkPresetChange = useCallback(
     (option?: SelectOption<NetworkName>) => {
-      if (option === undefined) return
+      if (option === undefined || option.value !== selectedNetwork) return
 
-      if (option.value !== selectedNetwork) {
-        setSelectedNetwork(option.value)
+      setSelectedNetwork(option.value)
 
-        if (option.value === 'custom') {
-          // Make sure to open expandable advanced section
-          setAdvancedSectionOpen(true)
-        } else {
-          const newNetworkSettings = networkEndpoints[option.value]
-          updateNetworkSettings(newNetworkSettings)
-          setTempAdvancedSettings(newNetworkSettings)
-        }
+      if (option.value === 'custom') {
+        // Make sure to open expandable advanced section
+        setAdvancedSectionOpen(true)
+      } else {
+        const newNetworkSettings = networkEndpoints[option.value]
+        updateNetworkSettings(newNetworkSettings)
+        setTempAdvancedSettings(newNetworkSettings)
       }
     },
     [selectedNetwork, updateNetworkSettings]

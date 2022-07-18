@@ -127,8 +127,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
       </WalletName>
       {isShowingDeleteButton && (
         <WalletDeleteButton
-          role="button"
-          aria-label="Delete"
+          aria-label={t`Delete`}
           tabIndex={0}
           squared
           transparent

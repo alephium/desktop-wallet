@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -27,6 +27,7 @@ import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import useFocusOnMount from '../hooks/useFocusOnMount'
 import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
@@ -38,7 +39,7 @@ interface AddressOptionsModal {
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { t } = useTranslation('App')
-  const divRef = useRef<HTMLDivElement>(null)
+  const divRef = useFocusOnMount<HTMLDivElement>()
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
@@ -48,10 +49,6 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { wallet, isPassphraseUsed } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
   const theme = useTheme()
-
-  useEffect(() => {
-    divRef?.current?.focus()
-  }, [])
 
   if (!address || !wallet || !mainAddress) return null
 
