@@ -84,7 +84,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
       {availableAmount && (
         <>
           <AvailableAmount>
-            {t`Available`}: <Amount value={BigInt(availableAmount)} />
+            {t`Available`}: <Amount value={BigInt(availableAmount)} nbOfDecimalsToShow={4} />
           </AvailableAmount>
           <ActionLink onClick={onUseMaxAmountClick}>{t`Use max amount`}</ActionLink>
         </>
