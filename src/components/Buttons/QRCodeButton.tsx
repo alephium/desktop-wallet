@@ -30,8 +30,8 @@ interface QRCodeButtonProps {
 
 const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => (
   <>
-    <QRCodeIcon className={className} data-tip data-for="qr-code-tooltip" data-event="click" size={15} />
-    <Tooltip id="qr-code-tooltip" backgroundColor="black" globalEventOff="click" place="right">
+    <QRCodeIcon className={className} data-tip data-for={`qr-${textToEncode}`} data-event="click" size={15} />
+    <Tooltip id={`qr-${textToEncode}`} backgroundColor="black" globalEventOff="click" place="right">
       <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
     </Tooltip>
   </>
