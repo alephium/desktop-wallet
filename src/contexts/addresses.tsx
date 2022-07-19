@@ -366,13 +366,15 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           return new Address(address, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
-        if (networkStatus === 'online') fetchAndStoreAddressesData(addressesToFetchData)
+        fetchAndStoreAddressesData(addressesToFetchData)
       }
     }
 
     const walletHasChanged = previousWallet.current !== wallet
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+
+    if (networkStatus === 'connecting' || networkStatus === 'uninitialized') return
 
     // Clean state when locking the wallet or changing wallets
     if (wallet === undefined || wallet !== previousWallet.current) {
