@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu, shell } = require('electron')
+const { app, BrowserWindow, dialog, Menu, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
@@ -33,6 +33,10 @@ const gotTheLock = app.requestSingleInstanceLock()
 // Build menu
 
 const isMac = process.platform === 'darwin'
+const isWindows = process.platform === 'win32'
+const isLinux = !isMac && !isWindows
+
+console.log(isMac ? 'mac' : isWindows ? 'windows' : 'linux')
 
 const template = [
   ...(isMac
@@ -99,7 +103,21 @@ const template = [
   {
     role: 'help',
     submenu: [
-      ...(isMac ? [] : [{ role: 'about' }, { type: 'separator' }]),
+      ...(isMac
+        ? []
+        : isWindows
+        ? [{ role: 'about' }, { type: 'separator' }]
+        : [{
+          label: 'About',
+          click: async () => {
+            dialog.showMessageBox(mainWindow, {
+              message: `Version ${app.getVersion()}`,
+              title: 'About',
+              type: 'info'
+            })
+          }
+        }]
+      ),
       {
         label: 'Report an issue',
         click: async () => {
@@ -125,13 +143,13 @@ function createWindow() {
     height: 800,
     minWidth: 1000,
     minHeight: 700,
-    titleBarStyle: process.platform === 'win32' ? 'default' : 'hidden',
+    titleBarStyle: isWindows ? 'default' : 'hidden',
     webPreferences: {
       spellcheck: true
     }
   })
 
-  if (process.platform === 'linux') {
+  if (isLinux) {
     mainWindow.setIcon(path.join(__dirname, 'icons/logo-48.png'))
   }
 
