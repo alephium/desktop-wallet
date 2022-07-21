@@ -27,6 +27,7 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../moda
 import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
+import ClickableArea from '../Buttons/ClickableArea'
 import InfoBox from '../InfoBox'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
@@ -152,13 +153,7 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {sortAddressList(displayedOptions).map((address) => (
-          <AddressOption
-            role="button"
-            tabIndex={0}
-            key={address.hash}
-            onClick={() => setSelectedAddress(address)}
-            onKeyPress={() => setSelectedAddress(address)}
-          >
+          <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
             {address?.settings.label && (
               <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
@@ -226,13 +221,12 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AddressOption = styled.div`
+const AddressOption = styled(ClickableArea)`
   display: flex;
   gap: 12px;
   align-items: center;
 
   padding: var(--spacing-3);
-  cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
 
