@@ -28,14 +28,18 @@ interface QRCodeButtonProps {
   className?: string
 }
 
-const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => (
-  <>
-    <QRCodeIcon className={className} data-tip data-for={`qr-${textToEncode}`} data-event="click" size={15} />
-    <Tooltip id={`qr-${textToEncode}`} backgroundColor="black" globalEventOff="click" place="right">
-      <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
-    </Tooltip>
-  </>
-)
+const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => {
+  const qrCodeId = `qr-${textToEncode}`
+
+  return (
+    <>
+      <QRCodeIcon className={className} data-tip data-for={qrCodeId} data-event="click" size={15} />
+      <Tooltip id={qrCodeId} backgroundColor="black" globalEventOff="click" place="right">
+        <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
+      </Tooltip>
+    </>
+  )
+}
 
 const QRCodeIcon = styled(QrCode)`
   cursor: pointer;
