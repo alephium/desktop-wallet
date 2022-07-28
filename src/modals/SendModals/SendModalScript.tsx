@@ -122,6 +122,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
             bytecode: bytecode ?? '',
             alphAmount: alphAmount || undefined,
             gasAmount: gasAmount.parsed,
+            tokens: data.tokens,
             gasPrice: gasPrice.parsed
           })
         }
@@ -137,7 +138,7 @@ const buildTransaction = async (client: Client, txData: ScriptTxData, ctx: TxCon
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     alphAmount: txData.alphAmount,
-    tokens: undefined,
+    tokens: txData.tokens,
     gasAmount: txData.gasAmount,
     gasPrice: txData.gasPrice ? convertAlphToSet(txData.gasPrice).toString() : undefined
   })

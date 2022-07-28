@@ -26,4 +26,4 @@ const BytecodeInput = ({ value, onChange, className }: InputProps) => {
 
 export default styled(BytecodeInput)`
   padding-top: 1rem;
-` 
+`
