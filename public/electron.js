@@ -34,7 +34,6 @@ const gotTheLock = app.requestSingleInstanceLock()
 
 const isMac = process.platform === 'darwin'
 const isWindows = process.platform === 'win32'
-const isNotMacOrWindows = !isMac && !isWindows
 
 const template = [
   ...(isMac
@@ -147,7 +146,7 @@ function createWindow() {
     }
   })
 
-  if (isNotMacOrWindows) {
+  if (!isMac && !isWindows) {
     mainWindow.setIcon(path.join(__dirname, 'icons/logo-48.png'))
   }
 
