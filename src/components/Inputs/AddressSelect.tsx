@@ -27,8 +27,8 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../moda
 import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
-import ClickableArea from '../Buttons/ClickableArea'
 import InfoBox from '../InfoBox'
+import InputArea from '../Inputs/InputArea'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, InputProps } from '.'
@@ -82,10 +82,7 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={onInput}
-        onKeyPress={onInput}
-        tabIndex={0}
-        role="button"
+        onInput={onInput}
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
@@ -153,7 +150,7 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {sortAddressList(displayedOptions).map((address) => (
-          <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
+          <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
             {address?.settings.label && (
               <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
@@ -221,7 +218,7 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AddressOption = styled(ClickableArea)`
+const AddressOption = styled(InputArea)`
   display: flex;
   gap: 12px;
   align-items: center;

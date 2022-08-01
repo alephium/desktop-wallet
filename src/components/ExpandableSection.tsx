@@ -21,7 +21,7 @@ import { ChevronDown } from 'lucide-react'
 import { FC, useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import ClickableArea from './Buttons/ClickableArea'
+import InputArea from './Inputs/InputArea'
 import { Section } from './PageComponents/PageContainers'
 
 interface ExpandableSectionProps {
@@ -71,7 +71,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 
   return (
     <div className={className}>
-      <Title onClick={handleTitleExpansion} aria-expanded={isExpanded} aria-pressed={isExpanded} aria-label={titleText}>
+      <Title onInput={handleTitleExpansion} aria-expanded={isExpanded} aria-pressed={isExpanded} aria-label={titleText}>
         {centered && <LeftDivider />}
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         <TitleText>{titleText}</TitleText>
@@ -98,7 +98,7 @@ export default styled(ExpandableSection)`
   margin: var(--spacing-5) 0;
 `
 
-const Title = styled(ClickableArea)`
+const Title = styled(InputArea)`
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.global.accent};

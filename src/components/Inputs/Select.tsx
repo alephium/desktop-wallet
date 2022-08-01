@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
 import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
@@ -25,6 +25,7 @@ import styled, { css } from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
 import { inputDefaultStyle, InputLabel, InputProps } from './'
+import InputArea from './InputArea'
 
 type Writable<T> = T extends string
   ? string
@@ -82,7 +83,7 @@ function Select<T extends OptionValue>({
     [onValueChange, skipEqualityCheck, value]
   )
 
-  const onContainerClick = () => {
+  const onContainerInput = () => {
     if (options.length <= 1) return
     setShowPopup(true)
   }
@@ -108,10 +109,7 @@ function Select<T extends OptionValue>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        tabIndex={0}
-        role="button"
-        onClick={onContainerClick}
-        onKeyPress={onContainerClick}
+        onInput={onContainerInput}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
@@ -190,7 +188,7 @@ function SelectOptionsPopup<T extends OptionValue>({
   )
 }
 
-const InputContainer = styled(motion.div)`
+const InputContainer = styled(InputArea)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;

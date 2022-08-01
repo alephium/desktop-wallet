@@ -16,20 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion, MotionProps } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-interface ClickableAreaProps {
-  className?: string
-  onClick?: () => void
+interface InputAreaProps extends MotionProps {
+  onInput?: () => void
 }
 
-const ClickableArea: FC<ClickableAreaProps> = ({ className, onClick, children }) => (
-  <div className={className} role="button" tabIndex={0} onClick={onClick} onKeyPress={onClick}>
+const InputArea: FC<InputAreaProps> = ({ onInput, children, ...rest }) => (
+  <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} {...rest}>
     {children}
-  </div>
+  </motion.div>
 )
 
-export default styled(ClickableArea)`
+export default styled(InputArea)`
   cursor: pointer;
 `

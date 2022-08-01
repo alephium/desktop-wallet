@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
 
-import ClickableArea from './Buttons/ClickableArea'
+import InputArea from './Inputs/InputArea'
 
 interface ActionButtonProps {
   Icon: LucideIconType
@@ -44,7 +44,7 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   return (
     <ActionButtonContainer
       aria-label={label}
-      onClick={handleInput}
+      onInput={handleInput}
       isActive={link !== undefined && location.pathname.startsWith(link)}
     >
       <ActionContent>
@@ -80,7 +80,7 @@ const ActionIcon = styled.div`
   transition: all 0.1s ease-out;
 `
 
-const ActionButtonContainer = styled(ClickableArea)<{ isActive: boolean }>`
+const ActionButtonContainer = styled(InputArea)<{ isActive: boolean }>`
   display: flex;
   align-items: stretch;
   width: 100%;

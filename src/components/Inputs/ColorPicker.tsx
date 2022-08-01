@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { getRandomLabelColor, labelColorPalette } from '../../utils/colors'
-import ClickableArea from '../Buttons/ClickableArea'
+import InputArea from '../Inputs/InputArea'
 import { inputDefaultStyle, InputProps } from '.'
 
 interface ColorPickerProps {
@@ -46,9 +46,9 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
 
   return (
     <ColorPickerContainer ref={ref}>
-      <Input aria-label={t`Pick a color`} onClick={handlePopupOpen}>
+      <InputAreaStyled aria-label={t`Pick a color`} onInput={handlePopupOpen}>
         <Circle color={color} />
-      </Input>
+      </InputAreaStyled>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isPopupOpen && (
           <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -72,7 +72,7 @@ const ColorPickerContainer = styled.div<InputProps>`
   flex-direction: column;
 `
 
-const Input = styled(ClickableArea)<InputProps>`
+const InputAreaStyled = styled(InputArea)<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
   position: relative;
   display: inline-flex;
