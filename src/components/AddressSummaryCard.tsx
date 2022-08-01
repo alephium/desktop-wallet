@@ -27,6 +27,7 @@ import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
+import InputArea from './Inputs/InputArea'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -56,7 +57,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       animate={{ x: collapsedPosition }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ClickableArea onClick={onInput} onKeyPress={onInput} clickable={clickable}>
+      <InputAreaStyled onInput={onInput} clickable={clickable}>
         <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">
           <AddressBadgeStyled
             color={address.settings.color}
@@ -67,7 +68,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
         <AmountsSection collapsed={!clickable}>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
         </AmountsSection>
-      </ClickableArea>
+      </InputAreaStyled>
       <ButtonsSection collapsed={!clickable}>
         <ClipboardButton textToCopy={address.hash} />
         <QRCodeButton textToEncode={address.hash} />
@@ -150,7 +151,7 @@ const ButtonsSection = styled.div<{ collapsed: boolean }>`
     `}
 `
 
-const ClickableArea = styled.div<{ clickable?: boolean }>`
+const InputAreaStyled = styled(InputArea)<{ clickable?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;
