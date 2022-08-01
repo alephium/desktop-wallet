@@ -169,6 +169,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             fromAddress: getAddressByHash(p.signerAddress),
             bytecode: p.bytecode,
             alphAmount: p.alphAmount,
+            tokens: p.tokens,
             gasAmount: p.gasAmount,
             gasPrice: p.gasPrice
           }
