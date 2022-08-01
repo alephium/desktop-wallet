@@ -73,7 +73,7 @@ const NetworkSettingsSection = () => {
 
   const handleNetworkPresetChange = useCallback(
     (option?: SelectOption<NetworkName>) => {
-      if (option === undefined || option.value !== selectedNetwork) return
+      if (option === undefined || option.value === selectedNetwork) return
 
       setSelectedNetwork(option.value)
 
