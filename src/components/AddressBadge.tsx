@@ -20,7 +20,7 @@ import { ComponentPropsWithoutRef } from 'react'
 import styled from 'styled-components'
 
 import { Address } from '../contexts/addresses'
-import { AddressSettings } from '../utils/addresses'
+import { AddressSettings, isAddress, isAddressSettings } from '../utils/addresses'
 import Badge from './Badge'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
@@ -31,14 +31,14 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   let data
 
-  if ((address as Address)?.settings) {
+  if (isAddress(address)) {
     data = {
-      color: (address as Address).settings.color,
-      isMain: (address as Address).settings.isMain,
-      label: (address as Address).getLabelName(false)
+      color: address.settings.color,
+      isMain: address.settings.isMain,
+      label: address.getLabelName(false)
     }
-  } else if (address as AddressSettings) {
-    data = address as AddressSettings
+  } else if (isAddressSettings(address)) {
+    data = address
   } else {
     data = {
       color: 'white',
