@@ -42,7 +42,11 @@ interface ColoredLabelInputProps {
 let ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
   const [title, setTitle] = useState(value.title)
   const [color, setColor] = useState(value.color)
-  const [isFocused, setIsFocused] = useState(false)
+  const address = {
+    isMain: false,
+    color,
+    label: title
+  }
 
   useEffect(() => {
     onChange({ title, color })
@@ -58,10 +62,8 @@ let ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: C
         id={id}
         color={color}
         maxLength={maxLength}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
       />
-      {title && <AddressBadgeStyled color={color} rounded addressName={title} seeThroughBg={isFocused} />}
+      {title && <AddressBadgeStyled address={address} />}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
@@ -81,7 +83,7 @@ const InputStyled = styled(Input)`
     theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
 
   &:not([value='']) {
-    padding-left: 20px;
+    padding-left: calc(1rem + 0.2rem + 1em);
   }
 `
 

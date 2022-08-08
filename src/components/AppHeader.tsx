@@ -89,12 +89,7 @@ const AppHeader: FC = ({ children }) => {
         {mainAddress && !isPassphraseUsed && (
           <>
             <HeaderDivider />
-            <AddressBadge
-              color={mainAddress?.settings.color}
-              addressName={mainAddress?.getLabelName()}
-              data-tip={t`Main address`}
-              opaqueBg
-            />
+            <AddressBadge address={mainAddress} data-tip={t`Main address`} />
           </>
         )}
         <HeaderDivider />

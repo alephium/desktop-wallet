@@ -21,7 +21,6 @@ import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'
@@ -36,13 +35,12 @@ interface AddressSummaryCardProps {
   position?: number
 }
 
-export const addressSummaryCardWidthPx = 100
+export const addressSummaryCardWidthPx = 150
 
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const navigate = useNavigate()
-  const { isPassphraseUsed } = useGlobalContext()
 
-  const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
+  const collapsedPosition = !clickable ? (totalCards - index) * -159 + 5 : 0
 
   return (
     <motion.div
@@ -53,11 +51,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
     >
       <ClickableArea onClick={() => clickable && navigate(`/wallet/addresses/${address.hash}`)} clickable={clickable}>
         <AddressNameSection collapsed={!clickable}>
-          <AddressBadgeStyled
-            color={address.settings.color}
-            addressName={address.getLabelName(!isPassphraseUsed)}
-            truncate
-          />
+          <AddressBadgeStyled address={address} truncate />
         </AddressNameSection>
         <AmountsSection collapsed={!clickable}>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
@@ -108,6 +102,7 @@ const AddressBadgeStyled = styled(AddressBadge)`
   padding: 11px 17px;
   border-radius: 0;
   text-align: center;
+  justify-content: center;
 `
 
 const AmountsSection = styled.div<{ collapsed: boolean }>`

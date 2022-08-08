@@ -91,9 +91,7 @@ function AddressSelect({
           </MoreIcon>
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
-          {address?.settings.label && (
-            <BadgeStyled color={address?.settings.color} addressName={address?.getLabelName()} truncate />
-          )}
+          {address?.settings.label && <BadgeStyled address={address} truncate />}
           <Truncate>{address?.hash}</Truncate>
         </ClickableInput>
       </AddressSelectContainer>
@@ -149,9 +147,7 @@ const AddressSelectModal = ({
         {sortAddressList(displayedOptions).map((address) => (
           <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && (
-              <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
-            )}
+            {address?.settings.label && <AddressBadge address={address} />}
             {address.shortHash}
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
