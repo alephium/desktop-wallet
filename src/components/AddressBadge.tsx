@@ -35,7 +35,7 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
     data = {
       color: (address as Address).settings.color,
       isMain: (address as Address).settings.isMain,
-      label: (address as Address).getLabelName(false)
+      label: (address as Address).getName()
     }
   } else if (address as AddressSettings) {
     data = address as AddressSettings

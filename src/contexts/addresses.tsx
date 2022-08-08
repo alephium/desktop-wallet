@@ -93,10 +93,6 @@ export class Address {
     return this.settings.label || this.shortHash
   }
 
-  getLabelName(showStar = true) {
-    return `${this.settings.isMain && showStar ? '★ ' : ''}${this.getName()}`
-  }
-
   addPendingTransaction(transaction: SimpleTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
