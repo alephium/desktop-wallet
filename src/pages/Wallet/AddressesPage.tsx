@@ -96,23 +96,7 @@ const AddressesPage = () => {
             columnWidths={tableColumnWidths}
             onClick={() => navigateToAddressDetailsPage(address.hash)}
           >
-            <TableCell>
-              {address.settings.isMain ? (
-                <MainAddressWrapper>
-                  <Truncate>{address.hash}</Truncate>
-                  {!isPassphraseUsed && <StyledMainAddressLabel />}
-                </MainAddressWrapper>
-              ) : (
-                <Truncate>{address.hash}</Truncate>
-              )}
-            </TableCell>
-            <TableCell>
-              {address.settings.label ? (
-                <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
-              ) : (
-                '-'
-              )}
-            </TableCell>
+            <TableCell>{address.settings.label ? <AddressBadge address={address} truncate /> : '-'}</TableCell>
             <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
             <TableCell>{address.details?.txNumber ?? 0}</TableCell>
             <TableCell>{address.group}</TableCell>

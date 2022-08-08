@@ -29,8 +29,9 @@ import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
-import { Address, AddressHash } from '../contexts/addresses'
+import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import { openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
@@ -51,22 +52,17 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const {
     settings: {
       network: { explorerUrl }
-    },
-    isPassphraseUsed
+    }
   } = useGlobalContext()
   const theme = useTheme()
+  const handleShowAddress = useAddressLinkHandler()
+
   let amount = calAmountDelta(transaction, address.hash)
   const isOutgoingTx = amount < 0
   amount = isOutgoingTx ? amount * -1n : amount
-  const addressName = address.getLabelName(!isPassphraseUsed)
-  const addressColor = address.settings.color
 
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
-  }
-
-  const handleShowAddressInExplorer = (address: AddressHash) => {
-    openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
   }
 
   return (
@@ -79,14 +75,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <HeaderInfo>
           <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
           <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
-          <AddressBadge color={addressColor} addressName={addressName} truncate />
+          <AddressBadge address={address} truncate />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details>
         <DetailsRow label={t`From`}>
           {isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} truncate />
+            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+              <AddressBadge address={address} truncate />
+            </ActionLink>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -100,7 +98,9 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`To`}>
           {!isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} />
+            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+              <AddressBadge address={address} />
+            </ActionLink>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -132,7 +132,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t`Inputs`}>
             <IOs>
               {transaction.inputs?.map((input) => (
-                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddressInExplorer(input.address)}>
+                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
                   {input.address}
                 </ActionLink>
               ))}
@@ -141,7 +141,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t`Outputs`}>
             <IOs>
               {transaction.outputs?.map((output) => (
-                <ActionLink key={`${output.key}`} onClick={() => handleShowAddressInExplorer(output.address)}>
+                <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
                   {output.address}
                 </ActionLink>
               ))}
