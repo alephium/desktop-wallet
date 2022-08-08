@@ -34,9 +34,10 @@ import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetad
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
 
+export type TransactionDirection = 'out' | 'in' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
-type SimpleTx = {
+export interface SimpleTx {
   txId: string
   fromAddress: string
   toAddress: string
