@@ -32,10 +32,8 @@ import { PartialDeep } from 'type-fest'
 import { TimeInMs } from '../types/numbers'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
+import { TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
-
-export type TransactionDirection = 'out' | 'in' | 'pending'
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 
 export interface SimpleTx {
   txId: string

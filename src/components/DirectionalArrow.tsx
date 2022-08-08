@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import { TransactionDirection } from '../contexts/addresses'
 import arrowDownSvg from '../images/arrow_down.svg'
+import { TransactionDirection } from '../utils/transactions'
 
 interface Props {
   direction: TransactionDirection

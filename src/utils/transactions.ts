@@ -27,6 +27,9 @@ type TransactionVariant = Transaction | SimpleTx
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 
+export type TransactionDirection = 'out' | 'in' | 'pending'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
+
 export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
   const _tx = tx as Transaction
   return (
