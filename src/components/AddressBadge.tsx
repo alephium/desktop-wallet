@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ComponentPropsWithoutRef } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
 import { AddressSettings, isAddress, isAddressSettings } from '../utils/addresses'
@@ -29,6 +29,8 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 }
 
 const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
+  const theme = useTheme()
+
   let data
 
   if (isAddress(address)) {
@@ -41,7 +43,7 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
     data = address
   } else {
     data = {
-      color: 'white',
+      color: theme.font.primary,
       isMain: false,
       label: ''
     }
@@ -60,19 +62,21 @@ const Label = styled.span<AddressBadgeProps>`
   ${({ truncate }) => truncate && 'overflow: hidden; text-overflow: ellipsis;'}
 `
 
-const Icon = styled.span<AddressBadgeProps>`
-  &::before {
-    width: 1rem;
-    display: block;
-    text-align: center;
-    margin-right: 0.2rem;
-    line-height: 1rem;
-    font-size: ${({ isMain }) => (isMain ? '1.4em' : '1em')};
-    vertical-align: middle;
-    content: '${({ isMain }) => (isMain ? '★' : '●')}';
-    border-radius: 100%;
-    color: ${({ color }) => color};
-  }
+const Icon = styled.span<{ isMain: boolean; color?: string }>`
+  ${({ color, isMain, theme }) => `
+    &::before {
+      width: 1rem;
+      display: block;
+      text-align: center;
+      margin-right: 0.2rem;
+      line-height: 1rem;
+      font-size: ${isMain ? '1.4em' : '1em'};
+      vertical-align: middle;
+      content: '${isMain ? '★' : '●'}';
+      border-radius: 100%;
+      color: ${color ?? theme.font.primary};
+    }
+  `}
 `
 
 const Container = styled.div<AddressBadgeProps>`
