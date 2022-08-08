@@ -23,7 +23,7 @@ import styled, { css } from 'styled-components'
 type AlignType = 'start' | 'center' | 'end'
 
 export interface TableProps {
-  headers: {
+  headers?: {
     title: string
     align?: AlignType
     width?: string
@@ -41,13 +41,15 @@ interface TableCellProps {
 const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
   <ScrollableWrapper>
     <div className={classNames(className, { 'skeleton-loader': isLoading })}>
-      <TableHeaderRow columnWidths={headers.map(({ width }) => width)}>
-        {headers.map(({ title, align }) => (
-          <TableHeaderCell key={title} align={align}>
-            {title}
-          </TableHeaderCell>
-        ))}
-      </TableHeaderRow>
+      {headers && headers.length > 0 && (
+        <TableHeaderRow columnWidths={headers.map(({ width }) => width)}>
+          {headers.map(({ title, align }) => (
+            <TableHeaderCell key={title} align={align}>
+              {title}
+            </TableHeaderCell>
+          ))}
+        </TableHeaderRow>
+      )}
       {children}
     </div>
   </ScrollableWrapper>
@@ -104,9 +106,8 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
           grid-auto-flow: column;
         `};
 
-  padding: 0 var(--spacing-5);
   align-items: center;
-  height: var(--tableCellHeight);
+  padding: 17.5px 20px;
 `
 
 const TableHeaderRow = styled(TableColumns)`
@@ -168,7 +169,6 @@ export const TableCellPlaceholder = styled(TableCell)`
 const ScrollableWrapper = styled.div`
   width: 100%;
   overflow: auto;
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-big);
   box-shadow: ${({ theme }) => theme.shadow.primary};
 `

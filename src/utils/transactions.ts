@@ -17,7 +17,46 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
+
+import { SimpleTx } from '../contexts/addresses'
+
+type HasTimestamp = { timestamp: number }
+type TransactionVariant = Transaction | SimpleTx
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
   return amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
+}
+
+export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
+  const _tx = tx as Transaction
+  return (
+    (_tx.hash !== undefined &&
+      _tx.blockHash !== undefined &&
+      _tx.timestamp !== undefined &&
+      _tx.gasAmount !== undefined &&
+      _tx.gasPrice !== undefined) === true
+  )
+}
+export function isSimpleTx(tx: TransactionVariant): tx is SimpleTx {
+  const _tx = tx as SimpleTx
+  return (
+    (_tx.txId !== undefined &&
+      _tx.fromAddress !== undefined &&
+      _tx.toAddress !== undefined &&
+      _tx.timestamp !== undefined &&
+      _tx.type !== undefined &&
+      _tx.network !== undefined) === true
+  )
+}
+
+export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
+  const delta = b.timestamp - a.timestamp
+
+  // Sent and received in the same block, but will not be in the right order when displaying
+  if (delta === 0) {
+    return -1
+  }
+
+  return delta
 }

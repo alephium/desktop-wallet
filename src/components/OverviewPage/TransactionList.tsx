@@ -16,47 +16,46 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 
 import ActionLink from '../../components/ActionLink'
-import AddressBadge from '../../components/AddressBadge'
-import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-
-const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction', width: '100px' },
-  { title: 'Timestamp', width: '100px' },
-  { title: 'Address', width: '100px' },
-  { title: 'Amount', align: 'end', width: '100px' }
-]
-
-const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
+import { Address, SimpleTx, useAddressesContext } from '../../contexts/addresses'
+import { sortTransactions } from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
   className?: string
 }
 
+type WithAddress<T> = { data: T; address: Address }
+
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
-  const { isPassphraseUsed } = useGlobalContext()
 
-  const allConfirmedTxs = addresses
-    .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
+  const allConfirmedTxs: WithAddress<Transaction>[] = addresses
+    .map((address) =>
+      address.transactions.confirmed.map((tx) => ({
+        data: tx,
+        address
+      }))
+    )
     .flat()
-    .sort((a, b) => b.timestamp - a.timestamp)
+    .sort((a, b) => sortTransactions(a.data, b.data))
 
-  const allPendingTxs = addresses
-    .map((address) => address.transactions.pending.map((tx) => ({ ...tx, address })))
+  const allPendingTxs: WithAddress<SimpleTx>[] = addresses
+    .map((address) =>
+      address.transactions.pending.map((tx) => ({
+        data: tx,
+        address
+      }))
+    )
     .flat()
-    .sort((a, b) => b.timestamp - a.timestamp)
+    .sort((a, b) => sortTransactions(a.data, b.data))
 
   const loadNextTransactionsPage = async () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
@@ -64,57 +63,20 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  const transactionsTableHeadersI18n = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
-
   return (
-    <Table headers={transactionsTableHeadersI18n} isLoading={showSkeletonLoading} className={className}>
+    <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
       {allPendingTxs
         .slice(0)
         .reverse()
-        .map(({ txId, timestamp, address, amount, type }) => (
-          <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-            <TableCell>
-              <TransactionalInfo content={t`Pending`} type="pending" />
-            </TableCell>
-            <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-            <TableCell>
-              <AddressBadge color={address.settings.color} addressName={address.getLabelName(!isPassphraseUsed)} />
-            </TableCell>
-            <TableCell align="end">
-              {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
-            </TableCell>
+        .map(({ data: tx, address }: WithAddress<SimpleTx>) => (
+          <TableRow key={tx.txId} blinking>
+            {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
           </TableRow>
         ))}
-      {allConfirmedTxs.map((transaction) => {
-        const amount = calAmountDelta(transaction, transaction.address.hash)
-        const amountIsBigInt = typeof amount === 'bigint'
-        const isOut = amountIsBigInt && amount < 0
-
+      {allConfirmedTxs.map(({ data: tx, address }: WithAddress<Transaction>) => {
         return (
-          <TableRow
-            key={`${transaction.hash}-${transaction.address.hash}`}
-            columnWidths={tableColumnWidths}
-            onClick={() => onTransactionClick(transaction)}
-          >
-            <TableCell>
-              <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
-            </TableCell>
-            <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-            <TableCell>
-              <AddressBadge
-                color={transaction.address.settings.color}
-                truncate
-                addressName={transaction.address.getLabelName(!isPassphraseUsed)}
-              />
-            </TableCell>
-            <TableCell align="end">
-              <TransactionalInfo
-                type={isOut ? 'out' : 'in'}
-                prefix={isOut ? '- ' : '+ '}
-                content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                amount
-              />
-            </TableCell>
+          <TableRow key={`${tx.hash}-${address.hash}`} onClick={() => onTransactionClick({ ...tx, address })}>
+            <TransactionalInfo transaction={tx} addressHash={address.hash} />
           </TableRow>
         )
       })}
@@ -127,7 +89,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow>
-          <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+          <TableCellPlaceholder>{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}
     </Table>
