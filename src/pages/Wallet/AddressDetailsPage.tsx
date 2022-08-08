@@ -16,9 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -35,11 +33,10 @@ import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
-import IOList from '../../components/IOList'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
-import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import Tooltip from '../../components/Tooltip'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import Truncate from '../../components/Truncate'
@@ -47,15 +44,6 @@ import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
-
-const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction', width: '100px' },
-  { title: 'Timestamp', width: '100px' },
-  { title: 'Address(es)', width: '150px' },
-  { title: 'Amount', align: 'end', width: '100px' }
-]
-
-const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation('App')
@@ -85,9 +73,7 @@ const AddressDetailsPage = () => {
           <PageH1Styled>
             {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
-          {address.settings.label && (
-            <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
-          )}
+          {address.settings.label && <AddressBadgeStyled address={address} />}
           <OptionsButton
             transparent
             squared
@@ -112,13 +98,7 @@ const AddressDetailsPage = () => {
         </DataListRow>
         <DataListRow>
           <DataListCell>Label</DataListCell>
-          <DataListCell>
-            {address.settings.label ? (
-              <AddressBadge truncate color={address.settings.color} addressName={address.getLabelName()} />
-            ) : (
-              '-'
-            )}
-          </DataListCell>
+          <DataListCell>{address.settings.label ? <AddressBadge address={address} truncate /> : '-'}</DataListCell>
         </DataListRow>
         <DataListRow>
           <DataListCell>{t`Number of transactions`}</DataListCell>
@@ -148,63 +128,19 @@ const AddressDetailsPage = () => {
         </DataListRow>
       </DataList>
       <PageH2>{t`Transaction history`}</PageH2>
-      <Table headers={transactionsTableHeaders} minWidth="500px">
+      <Table minWidth="500px">
         {address.transactions.pending
           .slice(0)
           .reverse()
-          .map(({ txId, timestamp, toAddress, amount, type }) => (
-            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-              <TableCell>
-                <TransactionalInfo content={t`Pending`} type="pending" />
-              </TableCell>
-              <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-              <TableCell>
-                <DirectionalAddress>
-                  <DirectionBadge>{t`To`}</DirectionBadge>
-                  <Truncate>{toAddress}</Truncate>
-                </DirectionalAddress>
-              </TableCell>
-              <TableCell align="end">
-                {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
-              </TableCell>
+          .map((transaction) => (
+            <TableRow key={transaction.txId} blinking>
+              {transaction.type === 'transfer' && <TransactionalInfo hideLabel transaction={transaction} />}
             </TableRow>
           ))}
         {address.transactions.confirmed.map((transaction) => {
-          const amount = calAmountDelta(transaction, addressHash)
-          const amountIsBigInt = typeof amount === 'bigint'
-          const isOut = amountIsBigInt && amount < 0
-
           return (
-            <TableRow
-              key={transaction.hash}
-              columnWidths={tableColumnWidths}
-              onClick={() => onTransactionClick(transaction)}
-            >
-              <TableCell>
-                <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
-              </TableCell>
-              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell>
-                <DirectionalAddress>
-                  <DirectionBadge>{isOut ? t`To` : t`From`}</DirectionBadge>
-                  <IOList
-                    currentAddress={addressHash}
-                    isOut={isOut}
-                    outputs={transaction.outputs}
-                    inputs={transaction.inputs}
-                    timestamp={transaction.timestamp}
-                    truncate
-                  />
-                </DirectionalAddress>
-              </TableCell>
-              <TableCell align="end">
-                <TransactionalInfo
-                  type={isOut ? 'out' : 'in'}
-                  prefix={isOut ? '- ' : '+ '}
-                  content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                  amount
-                />
-              </TableCell>
+            <TableRow key={transaction.hash} onClick={() => onTransactionClick(transaction)}>
+              <TransactionalInfo hideLabel transaction={transaction} />
             </TableRow>
           )
         })}
@@ -279,17 +215,4 @@ const IconButtons = styled.div`
   > svg {
     margin-left: 10px;
   }
-`
-
-const DirectionBadge = styled(Badge)`
-  background-color: ${({ theme }) => theme.bg.secondary};
-  min-width: 50px;
-  text-align: center;
-`
-
-const DirectionalAddress = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-4);
-  max-width: 100%;
 `
