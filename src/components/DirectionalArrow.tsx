@@ -26,9 +26,10 @@ interface Props {
 }
 
 const DirectionalArrow = ({ direction }: Props) => {
+  const isReceiving = direction === 'in'
   const color = {
-    circle: direction === 'in' ? 'rgba(108, 217, 158, 0.11)' : 'rgba(153, 153, 153, 0.11)',
-    arrow: direction === 'in' ? 'rgba(62, 210, 130, 1)' : 'rgba(153, 153, 153, 1)'
+    circle: isReceiving ? 'rgba(108, 217, 158, 0.11)' : 'rgba(153, 153, 153, 0.11)',
+    arrow: isReceiving ? 'rgba(62, 210, 130, 1)' : 'rgba(153, 153, 153, 1)'
   }
   return (
     <Circle color={color.circle}>
