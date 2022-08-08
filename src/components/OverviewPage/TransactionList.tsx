@@ -26,7 +26,6 @@ import AddressBadge from '../../components/AddressBadge'
 import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
 
 const transactionsTableHeaders: TableProps['headers'] = [
   { title: 'Direction', width: '100px' },
@@ -46,7 +45,6 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
-  const { isPassphraseUsed } = useGlobalContext()
 
   const allConfirmedTxs = addresses
     .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
@@ -78,7 +76,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             </TableCell>
             <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
             <TableCell>
-              <AddressBadge color={address.settings.color} addressName={address.getLabelName(!isPassphraseUsed)} />
+              <AddressBadge address={address} />
             </TableCell>
             <TableCell align="end">
               {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
@@ -101,11 +99,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             </TableCell>
             <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
             <TableCell>
-              <AddressBadge
-                color={transaction.address.settings.color}
-                truncate
-                addressName={transaction.address.getLabelName(!isPassphraseUsed)}
-              />
+              <AddressBadge address={transaction.address} truncate />
             </TableCell>
             <TableCell align="end">
               <TransactionalInfo
