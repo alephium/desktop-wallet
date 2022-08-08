@@ -353,7 +353,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (addressesMetadata.length === 0) {
         saveNewAddress(
           new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
-            isMain: true,
+            isMain: isPassphraseUsed ? false : true,
             label: undefined,
             color: undefined
           })
