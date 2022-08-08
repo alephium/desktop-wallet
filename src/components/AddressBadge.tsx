@@ -17,42 +17,73 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ComponentPropsWithoutRef } from 'react'
-import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
+import styled from 'styled-components'
 
+import { Address } from '../contexts/addresses'
+import { AddressSettings } from '../utils/addresses'
 import Badge from './Badge'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  addressName: string
-  opaqueBg?: boolean
+  address: Address | AddressSettings
+  truncate?: boolean
 }
 
-const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
-  <Badge className={className} rounded {...props}>
-    {addressName}
-  </Badge>
-)
+const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
+  let data
 
-export default styled(AddressBadge)`
-  ${({ color, opaqueBg, theme }) => {
-    const usedColor = color || theme.font.secondary
-    const isBright = tinycolor(usedColor).getBrightness() > 160
+  if ((address as Address)?.settings) {
+    data = {
+      color: (address as Address).settings.color,
+      isMain: (address as Address).settings.isMain,
+      label: (address as Address).getLabelName(false)
+    }
+  } else if (address as AddressSettings) {
+    data = address as AddressSettings
+  } else {
+    data = {
+      color: 'white',
+      isMain: false,
+      label: ''
+    }
+  }
 
-    return css`
-      color: ${opaqueBg
-        ? isBright
-          ? theme.font.primary
-          : theme.font.contrastPrimary
-        : isBright
-        ? tinycolor(usedColor).darken(5).toString()
-        : usedColor};
-      background-color: ${({ theme }) =>
-        opaqueBg
-          ? tinycolor(usedColor).setAlpha(0.8).toString()
-          : theme.name === 'dark'
-          ? tinycolor(usedColor).setAlpha(0.08).toString()
-          : tinycolor(usedColor).setAlpha(0.1).toString()};
-      padding: 6px 10px;
+  return (
+    <Container className={className} {...props}>
+      <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
+    </Container>
+  )
+}
+
+export default AddressBadge
+
+const Label = styled.span<AddressBadgeProps>`
+  ${({ truncate }) => truncate && 'overflow: hidden; text-overflow: ellipsis;'}
+`
+
+const Icon = styled.span<AddressBadgeProps>`
+  &::before {
+    width: 1rem;
+    display: block;
+    text-align: center;
+    margin-right: 0.2rem;
+    line-height: 1rem;
+    font-size: ${({ isMain }) => (isMain ? '1.4em' : '1em')};
+    vertical-align: middle;
+    content: '${({ isMain }) => (isMain ? '★' : '●')}';
+    border-radius: 100%;
+    color: ${({ color }) => color};
+  }
+`
+
+const Container = styled.div<AddressBadgeProps>`
+  padding: 6px 0 6px 0;
+  display: flex;
+
+  ${({ truncate }) =>
+    truncate &&
     `
-  }}
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  `}
 `
