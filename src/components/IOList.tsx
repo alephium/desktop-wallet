@@ -104,6 +104,7 @@ const TruncateWrap = styled.div`
 const AddressesHidden = styled.div`
   margin-left: 0.5em;
   font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const Addresses = styled.div`
