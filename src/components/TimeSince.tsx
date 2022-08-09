@@ -29,8 +29,6 @@ const TimeSince = ({ timestamp, className }: TimeSinceProps) => {
   return <div className={className}>{dayjs(timestamp).fromNow()}</div>
 }
 
-const TimeSinceStyled = styled(TimeSince)`
+export default styled(TimeSince)`
   ${({ faded, theme }) => (faded ? `color: ${theme.font.secondary}` : '')}
 `
-
-export default TimeSinceStyled
