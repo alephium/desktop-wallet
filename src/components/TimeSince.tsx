@@ -19,13 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import styled from 'styled-components'
 
-interface Props {
+interface TimeSinceProps {
   timestamp: number
   className?: string
   faded?: boolean
 }
 
-const TimeSince = ({ timestamp, className }: Props) => {
+const TimeSince = ({ timestamp, className }: TimeSinceProps) => {
   return <div className={className}>{dayjs(timestamp).fromNow()}</div>
 }
 

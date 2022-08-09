@@ -18,12 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 export type TokenType = 'alph'
 
-interface Props {
+interface TokenProps {
   type: TokenType
   className?: string
 }
 
-const Token = ({ type, className }: Props) => {
+const Token = ({ type, className }: TokenProps) => {
   return <div className={className}>{type.toUpperCase()}</div>
 }
 
