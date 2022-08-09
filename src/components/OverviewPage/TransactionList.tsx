@@ -23,39 +23,20 @@ import ActionLink from '../../components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, SimpleTx, useAddressesContext } from '../../contexts/addresses'
-import { sortTransactions } from '../../utils/transactions'
+import { BelongingToAddress, getTransactionsForAddresses } from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
   className?: string
 }
 
-type WithAddress<T> = { data: T; address: Address }
-
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
 
-  const allConfirmedTxs: WithAddress<Transaction>[] = addresses
-    .map((address) =>
-      address.transactions.confirmed.map((tx) => ({
-        data: tx,
-        address
-      }))
-    )
-    .flat()
-    .sort((a, b) => sortTransactions(a.data, b.data))
-
-  const allPendingTxs: WithAddress<SimpleTx>[] = addresses
-    .map((address) =>
-      address.transactions.pending.map((tx) => ({
-        data: tx,
-        address
-      }))
-    )
-    .flat()
-    .sort((a, b) => sortTransactions(a.data, b.data))
+  const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
+  const allPendingTxs = getTransactionsForAddresses('pending', addresses)
 
   const loadNextTransactionsPage = async () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
@@ -68,12 +49,12 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       {allPendingTxs
         .slice(0)
         .reverse()
-        .map(({ data: tx, address }: WithAddress<SimpleTx>) => (
+        .map(({ data: tx, address }: BelongingToAddress<SimpleTx>) => (
           <TableRow key={tx.txId} blinking>
             {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
           </TableRow>
         ))}
-      {allConfirmedTxs.map(({ data: tx, address }: WithAddress<Transaction>) => {
+      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
         return (
           <TableRow key={`${tx.hash}-${address.hash}`} onClick={() => onTransactionClick({ ...tx, address })}>
             <TransactionalInfo transaction={tx} addressHash={address.hash} />
