@@ -70,7 +70,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow>
-          <TableCellPlaceholder>{t`No transactions to display`}</TableCellPlaceholder>
+          <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}
     </Table>
