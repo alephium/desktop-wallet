@@ -24,7 +24,7 @@ const tags = css`
   }
 
   .tagify__input::before {
-    line-height: 22px;
+    line-height: 16px;
   }
 
   .tags-dropdown {
