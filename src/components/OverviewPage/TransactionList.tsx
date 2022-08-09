@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 import ActionLink from '../../components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
-import { Address, SimpleTx, useAddressesContext } from '../../contexts/addresses'
+import { Address, PendingTx, useAddressesContext } from '../../contexts/addresses'
 import { BelongingToAddress, getTransactionsForAddresses } from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
@@ -49,7 +49,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
       {allPendingTxs
         .slice(0)
         .reverse()
-        .map(({ data: tx, address }: BelongingToAddress<SimpleTx>) => (
+        .map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
           <TableRow key={tx.txId} blinking>
             {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
           </TableRow>

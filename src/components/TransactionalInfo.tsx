@@ -22,8 +22,8 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
-import { AddressHash, SimpleTx, useAddressesContext } from '../contexts/addresses'
-import { isExplorerTransaction, isSimpleTx, TransactionDirection } from '../utils/transactions'
+import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
+import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import Badge from './Badge'
@@ -33,7 +33,7 @@ import TimeSince from './TimeSince'
 import Token from './Token'
 
 interface TransactionalInfoProps {
-  transaction: Transaction | SimpleTx
+  transaction: Transaction | PendingTx
   addressHash?: AddressHash
   hideLabel?: boolean
   className?: string
@@ -62,7 +62,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
     amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
-  } else if (isSimpleTx(tx)) {
+  } else if (isPendingTx(tx)) {
     type = tx.type === 'transfer' ? 'out' : 'in'
     amount = tx.amount
     timestamp = tx.timestamp
