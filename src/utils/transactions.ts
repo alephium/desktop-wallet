@@ -19,16 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address, SimpleTx } from '../contexts/addresses'
+import { Address, PendingTx } from '../contexts/addresses'
 
 type HasTimestamp = { timestamp: number }
-type TransactionVariant = Transaction | SimpleTx
-type IsTransactionVariant<T extends Transaction | SimpleTx> = T extends Transaction
+type TransactionVariant = Transaction | PendingTx
+type IsTransactionVariant<T extends Transaction | PendingTx> = T extends Transaction
   ? Transaction
-  : T extends SimpleTx
-  ? SimpleTx
+  : T extends PendingTx
+  ? PendingTx
   : never
-export type BelongingToAddress<T extends Transaction | SimpleTx> = { data: IsTransactionVariant<T>; address: Address }
+export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTransactionVariant<T>; address: Address }
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -61,8 +61,8 @@ export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction
       _tx.gasPrice !== undefined) === true
   )
 }
-export function isSimpleTx(tx: TransactionVariant): tx is SimpleTx {
-  const _tx = tx as SimpleTx
+export function isPendingTx(tx: TransactionVariant): tx is PendingTx {
+  const _tx = tx as PendingTx
   return (
     (_tx.txId !== undefined &&
       _tx.fromAddress !== undefined &&

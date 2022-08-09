@@ -35,7 +35,7 @@ import { NetworkName } from '../utils/settings'
 import { TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
-export type SimpleTx = {
+export type PendingTx = {
   txId: string
   fromAddress: string
   toAddress: string
@@ -59,7 +59,7 @@ export class Address {
   details: AddressInfo
   transactions: {
     confirmed: Transaction[]
-    pending: SimpleTx[]
+    pending: PendingTx[]
     loadedPage: number
   }
   availableBalance: bigint
@@ -91,7 +91,7 @@ export class Address {
     return this.settings.label || this.shortHash
   }
 
-  addPendingTransaction(transaction: SimpleTx) {
+  addPendingTransaction(transaction: PendingTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
     this.transactions.pending.push(transaction)
