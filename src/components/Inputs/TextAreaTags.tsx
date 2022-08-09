@@ -39,7 +39,8 @@ const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => (
           maxItems: 5,
           highlightFirst: true
         },
-        addTagOnBlur: false
+        addTagOnBlur: false,
+        editTags: false
       }}
     />
     <div className="tags-dropdown" />
