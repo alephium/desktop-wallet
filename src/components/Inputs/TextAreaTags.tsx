@@ -57,6 +57,15 @@ const TextAreaTagsContainer = styled(motion.div)`
     // Placeholder
     color: ${({ theme }) => theme.font.secondary};
   }
+
+  // Remove effects on hover
+  .tagify__tag:focus div::before,
+  .tagify__tag:hover:not([readonly]) div::before {
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
 `
 
 // NOTE: Tags dropdown is styled in GlobalStyles
