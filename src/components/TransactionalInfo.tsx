@@ -72,7 +72,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
   }
 
   return (
-    <div>
+    <div className={className}>
       <CellAmountTokenTime>
         <CellArrow>
           <DirectionalArrow direction={type} />
