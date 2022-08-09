@@ -22,11 +22,11 @@ import tinycolor from 'tinycolor2'
 import arrowDownSvg from '../images/arrow_down.svg'
 import { TransactionDirection } from '../utils/transactions'
 
-interface Props {
+interface DirectionalArrowProps {
   direction: TransactionDirection
 }
 
-const DirectionalArrow = ({ direction }: Props) => {
+const DirectionalArrow = ({ direction }: DirectionalArrowProps) => {
   const theme = useTheme()
   const isReceiving = direction === 'in'
   const color = {
@@ -54,7 +54,7 @@ const Circle = styled.span<{ color?: string }>`
   background-color: ${({ color, theme }) => color || theme.font.primary};
 `
 
-const Arrow = styled.span<{ color?: string } & Props>`
+const Arrow = styled.span<{ color?: string } & DirectionalArrowProps>`
   display: inline-block;
   font-size: 1.4em;
   width: 1em;
