@@ -84,27 +84,25 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
         </TokenTimeInner>
       </CellAmountTokenTime>
       {address && (
-        <>
-          <CellAddress>
-            {!hideLabel && (
-              <CellAddressBadge>
-                <AddressBadge address={address} truncate />
-              </CellAddressBadge>
-            )}
-            <DirectionalAddress>
-              {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
-              {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
-              <IOList
-                currentAddress={_addressHash || ''}
-                isOut={type === 'out'}
-                outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
-                truncate
-              />
-            </DirectionalAddress>
-          </CellAddress>
-        </>
+        <CellAddress>
+          {!hideLabel && (
+            <CellAddressBadge>
+              <AddressBadge address={address} truncate />
+            </CellAddressBadge>
+          )}
+          <DirectionalAddress>
+            {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
+            {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
+            <IOList
+              currentAddress={_addressHash || ''}
+              isOut={type === 'out'}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+            />
+          </DirectionalAddress>
+        </CellAddress>
       )}
       {amount && (
         <CellAmount>
