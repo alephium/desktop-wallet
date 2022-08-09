@@ -178,11 +178,17 @@ const BadgeStyled = styled(Badge)`
 `
 
 const DirectionBadgeOut = styled(BadgeStyled)`
-  background-color: ${({ theme }) => theme.bg.secondary};
+  ${({ theme }) => `
+    color: ${theme.font.secondary};
+    background-color: ${theme.bg.secondary};
+  `}
 `
 
 const DirectionBadgeIn = styled(BadgeStyled)`
-  background-color: ${({ theme }) => theme.bg.accent};
+  ${({ theme }) => `
+    color: ${theme.font.secondary};
+    background-color: ${theme.bg.accent};
+  `}
 `
 
 const DirectionalAddress = styled.div`
