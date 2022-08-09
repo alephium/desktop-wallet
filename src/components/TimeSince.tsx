@@ -21,8 +21,8 @@ import styled from 'styled-components'
 
 interface TimeSinceProps {
   timestamp: number
-  className?: string
   faded?: boolean
+  className?: string
 }
 
 const TimeSince = ({ timestamp, className }: TimeSinceProps) => {
