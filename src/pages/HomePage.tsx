@@ -68,7 +68,7 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
           )}
           {!showInitialActions && hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>{t`Welcome back!`}</PanelTitle>
+              <PanelTitle useLayoutId={false} isSticky={false}>{t`Welcome back!`}</PanelTitle>
               <Paragraph centered secondary>
                 {t`Please choose a wallet and enter your password to continue.`}
               </Paragraph>
