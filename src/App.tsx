@@ -55,10 +55,6 @@ const AppContainer = styled.div`
     background-color: ${({ theme }) => theme.bg.primary};
     justify-content: initial;
   }
-
-  @media ${deviceBreakPoints.short} {
-    background-color: ${({ theme }) => theme.bg.primary};
-  }
 `
 
 const ClientLoading = styled.div`

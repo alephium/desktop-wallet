@@ -57,6 +57,7 @@ const WalletLayout: FC = ({ children }) => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
+  const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
   const navigate = useNavigate()
   const location = useLocation()
@@ -157,8 +158,12 @@ const WalletLayout: FC = ({ children }) => {
               buttonText={t`Login`}
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
+              isSubmitDisabled={!isPassphraseConfirmed}
             >
-              <WalletPassphrase value={passphrase} onChange={setPassphrase} />
+              <WalletPassphrase
+                onPassphraseConfirmed={setPassphrase}
+                setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+              />
             </PasswordConfirmation>
           </CenteredModal>
         )}

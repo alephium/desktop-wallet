@@ -68,7 +68,7 @@ const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
           )}
           {!showInitialActions && hasWallet && (
             <>
-              <PanelTitle useLayoutId={false}>{t`Welcome back!`}</PanelTitle>
+              <PanelTitle useLayoutId={false} isSticky={false}>{t`Welcome back!`}</PanelTitle>
               <Paragraph centered secondary>
                 {t`Please choose a wallet and enter your password to continue.`}
               </Paragraph>
@@ -103,6 +103,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const { login } = useGlobalContext()
   const navigate = useNavigate()
   const [passphrase, setPassphrase] = useState('')
+  const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
 
   const handleCredentialsChange = useCallback((type: 'walletName' | 'password', value: string) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
@@ -133,10 +134,14 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase value={passphrase} onChange={setPassphrase} />
+        <WalletPassphrase onPassphraseConfirmed={setPassphrase} setIsPassphraseConfirmed={setIsPassphraseConfirmed} />
       </SectionStyled>
       <SectionStyled>
-        <Button onClick={handleLogin} submit disabled={!credentials.walletName || !credentials.password}>
+        <Button
+          onClick={handleLogin}
+          submit
+          disabled={!credentials.walletName || !credentials.password || !isPassphraseConfirmed}
+        >
           {t`Login`}
         </Button>
       </SectionStyled>
@@ -178,6 +183,7 @@ const InitialActions = ({
 const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
+  background-color: ${({ theme }) => theme.bg.secondary};
 
   @media ${deviceBreakPoints.mobile} {
     flex-direction: column;

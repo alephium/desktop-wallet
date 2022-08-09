@@ -30,6 +30,7 @@ const Storage = getStorage()
 
 interface PasswordConfirmationProps {
   onCorrectPasswordEntered: (password: string) => void
+  isSubmitDisabled?: boolean
   text?: string
   buttonText?: string
   walletName?: string
@@ -40,6 +41,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   buttonText,
   onCorrectPasswordEntered,
   walletName,
+  isSubmitDisabled = false,
   children
 }) => {
   const { t } = useTranslation('App')
@@ -65,7 +67,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         {children && <Children>{children}</Children>}
       </Section>
       <Section>
-        <Button onClick={validatePassword} submit wide>
+        <Button onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
           {buttonText || t`Submit`}
         </Button>
       </Section>
@@ -76,6 +78,5 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
 export default PasswordConfirmation
 
 const Children = styled.div`
-  margin-bottom: 1rem;
   width: 100%;
 `
