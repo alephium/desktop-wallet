@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -28,14 +28,24 @@ import InfoBox from '../InfoBox'
 import Input from './Input'
 
 interface Props {
-  value: string
-  onChange: (passphrase: string) => void
+  onPassphraseConfirmed: (passphrase: string) => void
+  setIsPassphraseConfirmed: (match: boolean) => void
   className?: string
 }
 
-const WalletPassphrase = ({ value, onChange, className }: Props) => {
+const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, className }: Props) => {
   const { t } = useTranslation('App')
   const [isConsentActive, setIsConsentActive] = useState(false)
+  const [value, setValue] = useState('')
+  const [confirmValue, setConfirmValue] = useState('')
+  const passphraseIsNotUsed = !value && !confirmValue
+  const isPassphraseConfirmed = value === confirmValue && (isConsentActive || passphraseIsNotUsed)
+  const showConfirmError = confirmValue.length >= value.length && value !== confirmValue
+
+  useEffect(() => {
+    setIsPassphraseConfirmed(isPassphraseConfirmed)
+    if (isPassphraseConfirmed) onPassphraseConfirmed(confirmValue)
+  }, [isPassphraseConfirmed, onPassphraseConfirmed, setIsPassphraseConfirmed, confirmValue])
 
   return (
     <ExpandableSection sectionTitleClosed={t`Optional passphrase (advanced)`} centered className={className}>
@@ -64,8 +74,16 @@ const WalletPassphrase = ({ value, onChange, className }: Props) => {
         value={value}
         label={t`Optional passphrase`}
         type="password"
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => setValue(e.target.value)}
         disabled={!isConsentActive}
+      />
+      <Input
+        value={confirmValue}
+        label={t`Confirm passphrase`}
+        type="password"
+        onChange={(e) => setConfirmValue(e.target.value)}
+        disabled={!isConsentActive || (!value && !confirmValue)}
+        error={showConfirmError && t`Passphrases don't match`}
       />
     </ExpandableSection>
   )
@@ -79,6 +97,7 @@ const ConsentCheckbox = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
+  margin-bottom: 16px;
 `
 
 export default styled(WalletPassphrase)`
