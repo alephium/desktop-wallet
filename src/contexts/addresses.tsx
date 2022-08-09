@@ -35,7 +35,7 @@ import { NetworkName } from '../utils/settings'
 import { TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
-export interface SimpleTx {
+export type SimpleTx = {
   txId: string
   fromAddress: string
   toAddress: string
