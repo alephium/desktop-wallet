@@ -20,7 +20,7 @@ import { calAmountDelta } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import { AddressHash, SimpleTx, useAddressesContext } from '../contexts/addresses'
 import { isExplorerTransaction, isSimpleTx, TransactionDirection } from '../utils/transactions'
@@ -44,7 +44,6 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
   const _addressHash = addressHash ?? addressHashParam
 
   const { getAddress } = useAddressesContext()
-  const theme = useTheme()
   const { t } = useTranslation('App')
 
   const address = getAddress(_addressHash)
@@ -73,7 +72,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
   }
 
   return (
-    <Container className={className} theme={theme}>
+    <div>
       <CellAmountTokenTime>
         <CellArrow>
           <DirectionalArrow direction={type} />
@@ -112,11 +111,18 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
           </CellAmountInner>
         </CellAmount>
       )}
-    </Container>
+    </div>
   )
 }
 
-export default TransactionalInfo
+export default styled(TransactionalInfo)`
+  display: flex;
+  text-align: center;
+  border-radius: 3px;
+  white-space: nowrap;
+  align-items: center;
+  flex-grow: 1;
+`
 
 const CellArrow = styled.div`
   margin-right: 25px;
@@ -159,15 +165,6 @@ const CellAmount = styled.div`
 
 const CellAmountInner = styled.div`
   min-width: 6em;
-`
-
-const Container = styled.div`
-  display: flex;
-  text-align: center;
-  border-radius: 3px;
-  white-space: nowrap;
-  align-items: center;
-  flex-grow: 1;
 `
 
 const BadgeStyled = styled(Badge)`
