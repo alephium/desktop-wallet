@@ -56,13 +56,16 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
     const extraAddressesText = io.length > 1 ? `(+${io.length - 1})` : ''
 
     const addressWithMetadata = getAddress(address)
-    const addressComponent = addressWithMetadata ? <AddressBadge address={addressWithMetadata} /> : address
 
     return truncate ? (
       <TruncateWrap>
-        <AddressSpan>
-          <Truncate key={key}>{addressComponent}</Truncate>
-        </AddressSpan>
+        {addressWithMetadata ? (
+          <AddressBadge address={addressWithMetadata} />
+        ) : (
+          <AddressSpan>
+            <Truncate key={key}>{address}</Truncate>
+          </AddressSpan>
+        )}
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
@@ -114,6 +117,6 @@ const Addresses = styled.div`
 `
 
 const AddressSpan = styled.div`
-  width: 30em;
+  width: 12em;
   min-width: 4em;
 `
