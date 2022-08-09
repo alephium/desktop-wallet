@@ -74,7 +74,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
 
   return (
     <Container className={className} theme={theme}>
-      <CellTokenTime>
+      <CellAmountTokenTime>
         <CellArrow>
           <DirectionalArrow direction={type} />
         </CellArrow>
@@ -82,7 +82,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
           <TokenStyled type={token} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
-      </CellTokenTime>
+      </CellAmountTokenTime>
       {address && (
         <>
           <CellAddress>
@@ -124,7 +124,7 @@ const CellArrow = styled.div`
   margin-right: 25px;
 `
 
-const CellTokenTime = styled.div`
+const CellAmountTokenTime = styled.div`
   display: flex;
   align-items: center;
   margin-right: 28px;
