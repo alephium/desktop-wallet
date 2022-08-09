@@ -48,6 +48,10 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
     if (isPassphraseConfirmed) onPassphraseConfirmed(confirmValue)
   }, [isPassphraseConfirmed, onPassphraseConfirmed, setIsPassphraseConfirmed, confirmValue])
 
+  useEffect(() => {
+    if (!value && !!confirmValue) setConfirmValue('')
+  }, [confirmValue, value])
+
   return (
     <ExpandableSection sectionTitleClosed={t`Optional passphrase (advanced)`} centered className={className}>
       <InfoBox importance="alert">
@@ -83,7 +87,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
         label={t`Confirm passphrase`}
         type="password"
         onChange={(e) => setConfirmValue(e.target.value)}
-        disabled={!isConsentActive || (!value && !confirmValue)}
+        disabled={!isConsentActive || !value}
         error={showConfirmError && t`Passphrases don't match`}
       />
     </ExpandableSection>
