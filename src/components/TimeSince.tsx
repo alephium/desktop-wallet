@@ -25,9 +25,9 @@ interface TimeSinceProps {
   className?: string
 }
 
-const TimeSince = ({ timestamp, className }: TimeSinceProps) => {
-  return <div className={className}>{dayjs(timestamp).fromNow()}</div>
-}
+const TimeSince = ({ timestamp, className }: TimeSinceProps) => (
+  <div className={className}>{dayjs(timestamp).fromNow()}</div>
+)
 
 export default styled(TimeSince)`
   ${({ faded, theme }) => (faded ? `color: ${theme.font.secondary}` : '')}
