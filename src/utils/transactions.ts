@@ -37,11 +37,11 @@ export type TransactionDirection = 'out' | 'in' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 export type TransactionStatus = 'pending' | 'confirmed'
 
-export function getTransactionsForAddresses(
+export const getTransactionsForAddresses = (
   txStatus: TransactionStatus,
   addresses: Address[]
-): BelongingToAddress<TransactionVariant>[] {
-  return addresses
+): BelongingToAddress<TransactionVariant>[] =>
+  addresses
     .map((address) => {
       return address.transactions[txStatus].map((tx) => ({
         data: tx,
@@ -50,7 +50,6 @@ export function getTransactionsForAddresses(
     })
     .flat()
     .sort((a, b) => sortTransactions(a.data, b.data))
-}
 
 export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
   const _tx = tx as Transaction
