@@ -38,6 +38,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
   const [isConsentActive, setIsConsentActive] = useState(false)
   const [value, setValue] = useState('')
   const [confirmValue, setConfirmValue] = useState('')
+
   const passphraseIsNotUsed = !value && !confirmValue
   const isPassphraseConfirmed = value === confirmValue && (isConsentActive || passphraseIsNotUsed)
   const showConfirmError = confirmValue.length >= value.length && value !== confirmValue
