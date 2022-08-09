@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
+import tinycolor from 'tinycolor2'
 
 import arrowDownSvg from '../images/arrow_down.svg'
 import { TransactionDirection } from '../utils/transactions'
@@ -26,10 +27,13 @@ interface Props {
 }
 
 const DirectionalArrow = ({ direction }: Props) => {
+  const theme = useTheme()
   const isReceiving = direction === 'in'
   const color = {
-    circle: isReceiving ? 'rgba(108, 217, 158, 0.11)' : 'rgba(153, 153, 153, 0.11)',
-    arrow: isReceiving ? 'rgba(62, 210, 130, 1)' : 'rgba(153, 153, 153, 1)'
+    circle: isReceiving
+      ? tinycolor(theme.font.secondary).setAlpha(0.11).toString()
+      : tinycolor(theme.global.valid).setAlpha(0.11).toString(),
+    arrow: isReceiving ? theme.font.secondary : theme.global.valid
   }
   return (
     <Circle color={color.circle}>
@@ -52,7 +56,7 @@ const Circle = styled.span<{ color?: string }>`
 
 const Arrow = styled.span<{ color?: string } & Props>`
   display: inline-block;
-  font-size: 1.2em;
+  font-size: 1.4em;
   width: 1em;
   height: 1em;
   -webkit-mask: url(${arrowDownSvg}) no-repeat 100% 100%;
