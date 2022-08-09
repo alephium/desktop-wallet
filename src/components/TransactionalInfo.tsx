@@ -147,7 +147,7 @@ const CellAddress = styled.div`
   min-width: 0;
   margin-right: 21px;
   display: flex;
-  flex-basis: 580px;
+  flex-basis: 377px;
 `
 
 const TokenStyled = styled(Token)`
