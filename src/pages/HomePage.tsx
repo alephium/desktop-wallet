@@ -183,6 +183,7 @@ const InitialActions = ({
 const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
+  background-color: ${({ theme }) => theme.bg.secondary};
 
   @media ${deviceBreakPoints.mobile} {
     flex-direction: column;
