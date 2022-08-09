@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from '@alephium/sdk'
 import { AlertTriangle } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
@@ -94,6 +94,10 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
     setCurrentWalletName(walletName)
     onButtonNext()
   }
+
+  useEffect(() => {
+    if (!password && !!passwordCheck) setPasswordCheck('')
+  }, [password, passwordCheck])
 
   return (
     <FloatingPanel>
