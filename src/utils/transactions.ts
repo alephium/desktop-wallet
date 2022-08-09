@@ -19,16 +19,38 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 
-import { SimpleTx } from '../contexts/addresses'
+import { Address, SimpleTx } from '../contexts/addresses'
 
 type HasTimestamp = { timestamp: number }
 type TransactionVariant = Transaction | SimpleTx
+type IsTransactionVariant<T extends Transaction | SimpleTx> = T extends Transaction
+  ? Transaction
+  : T extends SimpleTx
+  ? SimpleTx
+  : never
+export type BelongingToAddress<T extends Transaction | SimpleTx> = { data: IsTransactionVariant<T>; address: Address }
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 
 export type TransactionDirection = 'out' | 'in' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
+export type TransactionStatus = 'pending' | 'confirmed'
+
+export function getTransactionsForAddresses(
+  txStatus: TransactionStatus,
+  addresses: Address[]
+): BelongingToAddress<TransactionVariant>[] {
+  return addresses
+    .map((address) => {
+      return address.transactions[txStatus].map((tx) => ({
+        data: tx,
+        address
+      }))
+    })
+    .flat()
+    .sort((a, b) => sortTransactions(a.data, b.data))
+}
 
 export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
   const _tx = tx as Transaction
