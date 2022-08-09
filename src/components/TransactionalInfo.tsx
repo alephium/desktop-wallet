@@ -34,7 +34,7 @@ import Token from './Token'
 
 interface TransactionalInfoProps {
   transaction: Transaction | SimpleTx
-  addressHash?: string
+  addressHash?: AddressHash
   hideLabel?: boolean
   className?: string
 }
