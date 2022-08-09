@@ -78,6 +78,5 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
 export default PasswordConfirmation
 
 const Children = styled.div`
-  margin-bottom: 1rem;
   width: 100%;
 `

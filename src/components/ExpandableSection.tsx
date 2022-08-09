@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { Section } from './PageComponents/PageContainers'
 
@@ -29,6 +29,7 @@ interface ExpandableSectionProps {
   open?: boolean
   onOpenChange?: (isOpen: boolean) => void
   centered?: boolean
+  shrinkWhenOpen?: boolean
   className?: string
 }
 
@@ -39,6 +40,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   onOpenChange,
   children,
   centered,
+  shrinkWhenOpen = false,
   className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
@@ -54,7 +56,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   }
 
   return (
-    <div className={className}>
+    <ExpandableSectionContainer className={className} shrinkWhenOpen={shrinkWhenOpen} isOpen={isExpanded}>
       <Title onClick={handleTitleClick}>
         {centered && <LeftDivider />}
         <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
@@ -66,14 +68,22 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
           <Section align="stretch">{children}</Section>
         </Content>
       </ContentWrapper>
-    </div>
+    </ExpandableSectionContainer>
   )
 }
 
-export default styled(ExpandableSection)`
+const ExpandableSectionContainer = styled.div<{ shrinkWhenOpen: boolean; isOpen?: boolean }>`
   display: flex;
   flex-direction: column;
   margin: var(--spacing-5) 0;
+  transition: margin 0.2s ease-in-out;
+
+  ${({ shrinkWhenOpen, isOpen }) =>
+    shrinkWhenOpen &&
+    isOpen &&
+    css`
+      margin-bottom: 0;
+    `}
 `
 
 const Title = styled.div`
@@ -112,3 +122,5 @@ const Content = styled.div`
   margin-top: var(--spacing-2);
   padding: var(--spacing-2);
 `
+
+export default ExpandableSection

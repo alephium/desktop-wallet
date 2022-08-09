@@ -53,7 +53,12 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
   }, [confirmValue, value])
 
   return (
-    <ExpandableSection sectionTitleClosed={t`Optional passphrase (advanced)`} centered className={className}>
+    <ExpandableSection
+      sectionTitleClosed={t`Optional passphrase (advanced)`}
+      centered
+      shrinkWhenOpen
+      className={className}
+    >
       <InfoBox importance="alert">
         <p>
           <Trans t={t} i18nKey="passphraseWarningMessage">
