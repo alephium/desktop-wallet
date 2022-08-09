@@ -23,8 +23,6 @@ interface TokenProps {
   className?: string
 }
 
-const Token = ({ type, className }: TokenProps) => {
-  return <div className={className}>{type.toUpperCase()}</div>
-}
+const Token = ({ type, className }: TokenProps) => <div className={className}>{type.toUpperCase()}</div>
 
 export default Token
