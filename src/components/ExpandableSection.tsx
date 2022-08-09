@@ -30,17 +30,19 @@ interface ExpandableSectionProps {
   onOpenChange?: (isOpen: boolean) => void
   centered?: boolean
   shrinkWhenOpen?: boolean
+  isCheckbox?: boolean
   className?: string
 }
 
 const ExpandableSection: FC<ExpandableSectionProps> = ({
   sectionTitleClosed,
   sectionTitleOpen,
-  open,
+  open = false,
   onOpenChange,
   children,
   centered,
   shrinkWhenOpen = false,
+  isCheckbox = false,
   className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
@@ -59,7 +61,12 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
     <ExpandableSectionContainer className={className} shrinkWhenOpen={shrinkWhenOpen} isOpen={isExpanded}>
       <Title onClick={handleTitleClick}>
         {centered && <LeftDivider />}
-        <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
+        {isCheckbox ? (
+          <input type="checkbox" checked={isExpanded} onChange={() => setIsExpanded(!isExpanded)} />
+        ) : (
+          <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
+        )}
+
         <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
         <Divider />
       </Title>

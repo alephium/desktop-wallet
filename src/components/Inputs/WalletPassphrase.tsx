@@ -52,11 +52,21 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
     if (!value && !!confirmValue) setConfirmValue('')
   }, [confirmValue, value])
 
+  const onExpandableSectionToggle = (isOpen: boolean) => {
+    if (!isOpen) {
+      if (value) setValue('')
+      if (confirmValue) setConfirmValue('')
+      if (isConsentActive) setIsConsentActive(false)
+    }
+  }
+
   return (
     <ExpandableSection
-      sectionTitleClosed={t`Optional passphrase (advanced)`}
+      sectionTitleClosed={t`Use optional passphrase (advanced)`}
       centered
       shrinkWhenOpen
+      isCheckbox
+      onOpenChange={onExpandableSectionToggle}
       className={className}
     >
       <InfoBox importance="alert">
