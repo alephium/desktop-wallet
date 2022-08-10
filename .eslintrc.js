@@ -27,6 +27,7 @@ module.exports = {
   ],
   plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'unused-imports', 'simple-import-sort', 'header'],
   rules: {
+    'arrow-body-style': [2, 'as-needed'],
     'react/prop-types': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
