@@ -32,9 +32,8 @@ export type AddressSettings = {
 
 export type AddressVariant = Address | AddressSettings
 
-export function isAddressSettings(address: AddressVariant): address is AddressSettings {
-  return (address as AddressSettings).isMain !== undefined
-}
+export const isAddressSettings = (address: AddressVariant): address is AddressSettings =>
+  (address as AddressSettings).isMain !== undefined
 
 export function isAddress(address: AddressVariant): address is Address {
   const _a = address as Address
