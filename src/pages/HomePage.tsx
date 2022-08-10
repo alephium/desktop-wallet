@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { MouseEvent, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -109,7 +109,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
-  const handleLogin = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
 

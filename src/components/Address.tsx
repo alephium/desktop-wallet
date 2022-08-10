@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MouseEvent } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -30,7 +29,7 @@ const Address = ({ hash }: { hash: string }) => {
     }
   } = useGlobalContext()
 
-  const handleClick = (e: MouseEvent<HTMLSpanElement, MouseEvent>) => {
+  const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
     openInWebBrowser(`${explorerUrl}/#/addresses/${hash}`)
   }
