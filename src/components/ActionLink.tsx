@@ -21,19 +21,17 @@ import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
 interface ActionLinkProps {
-  className?: string
   onClick: () => void
+  className?: string
 }
 
-let ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => {
-  return (
-    <a className={className} onClick={onClick}>
-      {children}
-    </a>
-  )
-}
+const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
+  <a className={className} onClick={onClick}>
+    {children}
+  </a>
+)
 
-ActionLink = styled(ActionLink)`
+export default styled(ActionLink)`
   color: ${({ theme }) => theme.global.accent};
   cursor: pointer;
   display: inline-flex;
@@ -43,5 +41,3 @@ ActionLink = styled(ActionLink)`
     color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
   }
 `
-
-export default ActionLink

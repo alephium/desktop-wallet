@@ -76,11 +76,9 @@ export type NetworkName = typeof networkNames[number]
 export const isEqualNetwork = (a: Settings['network'], b: Settings['network']): boolean =>
   a.nodeHost === b.nodeHost && a.explorerUrl === b.explorerUrl && a.explorerApiHost === b.explorerApiHost
 
-export const getNetworkName = (settings: Settings['network']) => {
-  return (Object.entries(networkEndpoints).find(([, presetSettings]) => {
-    return isEqualNetwork(presetSettings, settings)
-  })?.[0] || 'custom') as NetworkName | 'custom'
-}
+export const getNetworkName = (settings: Settings['network']) =>
+  (Object.entries(networkEndpoints).find(([, presetSettings]) => isEqualNetwork(presetSettings, settings))?.[0] ||
+    'custom') as NetworkName | 'custom'
 
 export const loadSettings = (): Settings => {
   const rawSettings = window.localStorage.getItem('settings')
@@ -95,9 +93,7 @@ export const loadSettings = (): Settings => {
   }
 }
 
-export const deprecatedSettingsExist = (): boolean => {
-  return !!window.localStorage.getItem('theme')
-}
+export const deprecatedSettingsExist = (): boolean => !!window.localStorage.getItem('theme')
 
 export const migrateDeprecatedSettings = (): Settings => {
   const settings = loadSettings()

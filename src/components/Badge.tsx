@@ -24,15 +24,15 @@ import { HasTooltip } from './Tooltip'
 import Truncate from './Truncate'
 
 interface BadgeProps {
-  className?: string
   color?: string
   border?: boolean
   truncate?: boolean
   rounded?: boolean
+  className?: string
 }
 
-const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'data-tip': dataTip }) => {
-  return truncate ? (
+const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'data-tip': dataTip }) =>
+  truncate ? (
     <Truncate className={className} data-tip={dataTip}>
       {children}
     </Truncate>
@@ -41,7 +41,6 @@ const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'dat
       {children}
     </span>
   )
-}
 
 export default styled(Badge)`
   ${({ color, theme, rounded, border, truncate }) => {

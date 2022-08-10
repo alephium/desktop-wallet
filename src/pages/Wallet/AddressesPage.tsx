@@ -90,40 +90,38 @@ const AddressesPage = () => {
         </Button>
       </PageTitleRow>
       <Table headers={addressesTableHeaders} minWidth="580px">
-        {sortAddressList(addresses).map((address) => {
-          return (
-            <TableRow
-              key={address.hash}
-              columnWidths={tableColumnWidths}
-              onClick={() => navigateToAddressDetailsPage(address.hash)}
-            >
-              <TableCell>
-                {address.settings.isMain ? (
-                  <MainAddressWrapper>
-                    <Truncate>{address.hash}</Truncate>
-                    {!isPassphraseUsed && <StyledMainAddressLabel />}
-                  </MainAddressWrapper>
-                ) : (
+        {sortAddressList(addresses).map((address) => (
+          <TableRow
+            key={address.hash}
+            columnWidths={tableColumnWidths}
+            onClick={() => navigateToAddressDetailsPage(address.hash)}
+          >
+            <TableCell>
+              {address.settings.isMain ? (
+                <MainAddressWrapper>
                   <Truncate>{address.hash}</Truncate>
-                )}
-              </TableCell>
-              <TableCell>
-                {address.settings.label ? (
-                  <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
-                ) : (
-                  '-'
-                )}
-              </TableCell>
-              <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
-              <TableCell>{address.details?.txNumber ?? 0}</TableCell>
-              <TableCell>{address.group}</TableCell>
-              <TableCellAmount align="end">
-                {address.transactions.pending.length > 0 && <Spinner size="12px" />}
-                <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
-              </TableCellAmount>
-            </TableRow>
-          )
-        })}
+                  {!isPassphraseUsed && <StyledMainAddressLabel />}
+                </MainAddressWrapper>
+              ) : (
+                <Truncate>{address.hash}</Truncate>
+              )}
+            </TableCell>
+            <TableCell>
+              {address.settings.label ? (
+                <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
+              ) : (
+                '-'
+              )}
+            </TableCell>
+            <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
+            <TableCell>{address.details?.txNumber ?? 0}</TableCell>
+            <TableCell>{address.group}</TableCell>
+            <TableCellAmount align="end">
+              {address.transactions.pending.length > 0 && <Spinner size="12px" />}
+              <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
+            </TableCellAmount>
+          </TableRow>
+        ))}
         <TableFooterStyled>
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ {t`Generate new address`}</ActionLink>
@@ -195,6 +193,8 @@ const AddressesPage = () => {
   )
 }
 
+export default AddressesPage
+
 const TableFooterStyled = styled(TableFooter)`
   grid-auto-columns: 1fr;
 `
@@ -229,5 +229,3 @@ const StyledMainAddressLabel = styled(MainAddressLabel)`
 const MainAddressWrapper = styled.div`
   max-width: 100%;
 `
-
-export default AddressesPage

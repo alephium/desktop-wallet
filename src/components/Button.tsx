@@ -68,6 +68,8 @@ const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
   )
 }
 
+export default Button
+
 const StyledButton = styled(motion.button)<ButtonProps>`
   display: flex;
   align-items: center;
@@ -140,5 +142,3 @@ const StyledButton = styled(motion.button)<ButtonProps>`
     box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
   }
 `
-
-export default Button

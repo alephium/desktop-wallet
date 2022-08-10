@@ -68,16 +68,14 @@ const WalletsSettingsSection = () => {
           {t`Wallet list`} ({walletNames.length})
         </h2>
         <BoxContainer>
-          {walletNames.map((n) => {
-            return (
-              <WalletItem
-                key={n}
-                walletName={n}
-                isCurrent={n === activeWalletName}
-                onWalletDelete={(name) => setWalletToRemove(name)}
-              />
-            )
-          })}
+          {walletNames.map((n) => (
+            <WalletItem
+              key={n}
+              walletName={n}
+              isCurrent={n === activeWalletName}
+              onWalletDelete={(name) => setWalletToRemove(name)}
+            />
+          ))}
         </BoxContainer>
       </Section>
       {wallet && (

@@ -41,8 +41,8 @@ interface AddressSelectProps {
   defaultAddress?: Address
   label?: string
   disabled?: boolean
-  className?: string
   hideEmptyAvailableBalance?: boolean
+  className?: string
 }
 
 function AddressSelect({
@@ -178,6 +178,8 @@ const AddressSelectModal = ({
   )
 }
 
+export default AddressSelect
+
 const AddressSelectContainer = styled(SelectContainer)<{ disabled: boolean }>`
   ${({ disabled }) =>
     disabled &&
@@ -236,5 +238,3 @@ const AmountStyled = styled(Amount)`
   flex: 1;
   text-align: right;
 `
-
-export default AddressSelect

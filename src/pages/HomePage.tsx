@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import React, { useCallback, useEffect, useState } from 'react'
+import { MouseEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
@@ -109,7 +109,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
     setCredentials((prev) => ({ ...prev, [type]: value }))
   }, [])
 
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLogin = (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
 
@@ -180,6 +180,8 @@ const InitialActions = ({
   )
 }
 
+export default HomePage
+
 const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
@@ -213,5 +215,3 @@ const SwitchLink = styled(Paragraph)`
 const SectionStyled = styled(Section)`
   min-width: 400px;
 `
-
-export default HomePage

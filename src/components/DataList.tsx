@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-const DataList = styled.div`
+export default styled.div`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.primary};
@@ -41,5 +41,3 @@ export const DataListCell = styled.div`
   display: flex;
   align-items: center;
 `
-
-export default DataList

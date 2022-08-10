@@ -24,11 +24,11 @@ import AlefSymbol from './AlefSymbol'
 
 interface AmountProps {
   value: bigint | undefined
-  className?: string
   fadeDecimals?: boolean
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
+  className?: string
 }
 
 const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color, nbOfDecimalsToShow }: AmountProps) => {

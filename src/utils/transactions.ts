@@ -18,6 +18,5 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 
-export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean => {
-  return amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
-}
+export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
+  amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount

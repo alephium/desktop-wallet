@@ -18,11 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import Tags from '@yaireo/tagify/dist/react.tagify'
 import { motion } from 'framer-motion'
+import { ComponentProps } from 'react'
 import styled from 'styled-components'
 
 import { inputDefaultStyle } from '.'
 
-const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => (
+const TextAreaTags = (props: ComponentProps<typeof Tags>) => (
   <TextAreaTagsContainer className={props.className}>
     <StyledTags
       {...props}
@@ -46,6 +47,8 @@ const TextAreaTags = (props: React.ComponentProps<typeof Tags>) => (
     <div className="tags-dropdown" />
   </TextAreaTagsContainer>
 )
+
+export default TextAreaTags
 
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
@@ -77,5 +80,3 @@ const StyledTags = styled(Tags)`
   line-height: 20px;
   border-radius: var(--radius);
 `
-
-export default TextAreaTags

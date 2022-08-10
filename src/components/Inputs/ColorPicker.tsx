@@ -56,6 +56,8 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
   )
 }
 
+export default ColorPicker
+
 const ColorPickerContainer = styled.div<InputProps>`
   position: relative;
   width: auto;
@@ -87,5 +89,3 @@ const Circle = styled.div<{ color: string }>`
   border-radius: 16px;
   background-color: ${({ color }) => color};
 `
-
-export default ColorPicker

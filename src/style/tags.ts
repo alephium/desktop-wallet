@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { css } from 'styled-components'
 
-const tags = css`
+export default css`
   .tagify__tag__removeBtn {
     display: none;
   }
@@ -58,5 +58,3 @@ const tags = css`
     }
   }
 `
-
-export default tags

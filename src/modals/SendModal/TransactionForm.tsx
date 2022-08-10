@@ -183,14 +183,8 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   )
 }
 
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) => {
-  return formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), true)
-}
+const getExpectedFee = (gasAmount: string, gasPriceInALPH: string) =>
+  formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPriceInALPH), true)
 
 const onAmountInputValueChange = ({
   amount,
@@ -227,6 +221,13 @@ const onAmountInputValueChange = ({
   stateSetter(amount)
 }
 
+export default SendModalTransactionForm
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
 const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 38px;
 `
@@ -234,5 +235,3 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
 const InfoBoxStyled = styled(InfoBox)`
   margin-top: var(--spacing-5);
 `
-
-export default SendModalTransactionForm

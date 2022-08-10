@@ -51,6 +51,8 @@ const Popup: FC<PopupProps> = ({ children, onBackgroundClick, title }) => (
   </PopupContainer>
 )
 
+export default Popup
+
 const PopupContainer = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -81,5 +83,3 @@ const PopupHeader = styled.div`
   display: flex;
   align-items: center;
 `
-
-export default Popup

@@ -21,7 +21,7 @@ import styled from 'styled-components'
 import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monochrome.svg'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-const FloatingLogo = styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
+export default styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
   position: absolute;
   left: var(--spacing-5);
   width: 35px;
@@ -37,5 +37,3 @@ const FloatingLogo = styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
     display: none;
   }
 `
-
-export default FloatingLogo

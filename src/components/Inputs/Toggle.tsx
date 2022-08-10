@@ -23,10 +23,10 @@ import styled, { css, useTheme } from 'styled-components'
 interface ToggleProps {
   toggled: boolean
   onToggle: (value: boolean) => void
-  className?: string
   disabled?: boolean
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
+  className?: string
 }
 
 const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors }: ToggleProps) => {
@@ -92,6 +92,8 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
   )
 }
 
+export default Toggle
+
 export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   position: relative;
   display: flex;
@@ -149,4 +151,3 @@ const ToggleIconContainer = styled.div`
     margin: auto;
   }
 `
-export default Toggle

@@ -47,6 +47,8 @@ const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
   </StyledParagraph>
 )
 
+export default Paragraph
+
 const StyledParagraph = styled(motion.p)<ParagraphProps>`
   white-space: pre-wrap;
   font-weight: var(--fontWeight-medium);
@@ -64,5 +66,3 @@ const StyledParagraph = styled(motion.p)<ParagraphProps>`
       color: ${theme.font.secondary};
     `}
 `
-
-export default Paragraph

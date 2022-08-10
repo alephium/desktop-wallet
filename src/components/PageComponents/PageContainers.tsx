@@ -33,9 +33,9 @@ type SectionContentAlignment = 'flex-start' | 'center' | 'stretch'
 interface SectionProps {
   apparitionDelay?: number
   style?: MotionStyle
-  className?: string
   inList?: boolean
   align?: SectionContentAlignment
+  className?: string
 }
 
 const sectionVariants: Variants = {

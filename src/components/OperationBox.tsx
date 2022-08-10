@@ -32,8 +32,8 @@ interface OperationBoxProps {
   buttonText: string
   onButtonClick: () => void
   infoLink?: string
-  className?: string
   placeholder?: boolean
+  className?: string
 }
 
 const OperationBox = ({
@@ -73,30 +73,6 @@ const OperationBox = ({
   )
 }
 
-const Title = styled.div`
-  font-size: 13px;
-  font-weight: var(--fontWeight-semiBold);
-  margin-bottom: var(--spacing-2);
-  min-height: 2rem;
-`
-
-const IconWrapper = styled.div``
-
-const Description = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-  margin: var(--spacing-4) 0;
-`
-
-const InfoIcon = styled(Info)`
-  margin-right: var(--spacing-1);
-`
-
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
 export default styled(OperationBox)`
   padding: var(--spacing-3) var(--spacing-5);
   background-color: ${({ theme }) => theme.bg.secondary};
@@ -132,4 +108,28 @@ export default styled(OperationBox)`
         margin: var(--spacing-3) 0;
       }
     `}
+`
+
+const Title = styled.div`
+  font-size: 13px;
+  font-weight: var(--fontWeight-semiBold);
+  margin-bottom: var(--spacing-2);
+  min-height: 2rem;
+`
+
+const IconWrapper = styled.div``
+
+const Description = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+  margin: var(--spacing-4) 0;
+`
+
+const InfoIcon = styled(Info)`
+  margin-right: var(--spacing-1);
+`
+
+const Footer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `

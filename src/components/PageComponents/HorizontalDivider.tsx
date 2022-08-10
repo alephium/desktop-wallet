@@ -18,11 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-const HorizontalDivider = styled.div<{ narrow?: boolean }>`
+export default styled.div<{ narrow?: boolean }>`
   background-color: ${({ theme }) => theme.border.secondary};
   margin: ${({ narrow }) => (narrow ? 0 : 'var(--spacing-3)')} var(--spacing-1);
   height: 1px;
   width: 100%;
 `
-
-export default HorizontalDivider

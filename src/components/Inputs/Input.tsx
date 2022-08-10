@@ -67,6 +67,8 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
   )
 }
 
+export default Input
+
 const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
@@ -77,5 +79,3 @@ const InputContainer = styled(motion.div)`
 const StyledInput = styled.input<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
 `
-
-export default Input

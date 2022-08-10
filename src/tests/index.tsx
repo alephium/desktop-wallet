@@ -21,6 +21,5 @@ import { PartialDeep } from 'type-fest'
 
 import { GlobalContextProps, GlobalContextProvider } from '../contexts/global'
 
-export const renderWithGlobalContext = (el: JSX.Element, contextObject?: PartialDeep<GlobalContextProps>) => {
-  return render(<GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>)
-}
+export const renderWithGlobalContext = (el: JSX.Element, contextObject?: PartialDeep<GlobalContextProps>) =>
+  render(<GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>)

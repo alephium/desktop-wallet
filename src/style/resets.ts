@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import { css } from 'styled-components'
 
-const resets = css`
+export default css`
   * {
     box-sizing: border-box;
   }
@@ -34,5 +34,3 @@ const resets = css`
     color: inherit;
   }
 `
-
-export default resets

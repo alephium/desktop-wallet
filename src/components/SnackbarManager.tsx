@@ -62,6 +62,8 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
   )
 }
 
+export default SnackbarManager
+
 const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
@@ -98,5 +100,3 @@ const SnackbarPopup = styled(motion.div)`
     background-color: ${({ theme }) => theme.global.valid};
   }
 `
-
-export default SnackbarManager

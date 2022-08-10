@@ -29,7 +29,6 @@ interface InfoBoxProps {
   Icon?: LucideIconType
   label?: string
   importance?: InfoBoxImportance
-  className?: string
   ellipsis?: boolean
   wordBreak?: boolean
   onClick?: () => void
@@ -37,6 +36,7 @@ interface InfoBoxProps {
   short?: boolean
   contrast?: boolean
   noBorders?: boolean
+  className?: string
 }
 
 const InfoBox: FC<InfoBoxProps> = ({
@@ -83,6 +83,14 @@ const InfoBox: FC<InfoBoxProps> = ({
   )
 }
 
+export default styled(InfoBox)`
+  width: 100%;
+  margin: 0 auto var(--spacing-4) auto;
+  margin-top: var(--spacing-2);
+  max-width: ${({ small }) => (small ? '300px' : 'initial')};
+  line-height: 1.5em;
+`
+
 const IconContainer = styled.div`
   flex: 1;
   display: flex;
@@ -101,16 +109,15 @@ const TextContainer = styled.div<{ wordBreak?: boolean; ellipsis?: boolean }>`
   font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
 
-  ${({ ellipsis }) => {
-    return ellipsis
+  ${({ ellipsis }) =>
+    ellipsis
       ? css`
           overflow: 'hidden';
           textoverflow: 'ellipsis';
         `
       : css`
           overflowwrap: 'anywhere';
-        `
-  }}
+        `}
 `
 
 const StyledBox = styled(motion.div)<{
@@ -142,12 +149,4 @@ const Label = styled(motion.label)`
   margin-bottom: 7px;
   color: ${({ theme }) => theme.font.secondary};
   font-weight: var(--fontWeight-medium);
-`
-
-export default styled(InfoBox)`
-  width: 100%;
-  margin: 0 auto var(--spacing-4) auto;
-  margin-top: var(--spacing-2);
-  max-width: ${({ small }) => (small ? '300px' : 'initial')};
-  line-height: 1.5em;
 `

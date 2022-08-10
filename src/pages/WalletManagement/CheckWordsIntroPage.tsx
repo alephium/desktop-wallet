@@ -73,6 +73,8 @@ const CheckWordsIntroPage = () => {
   )
 }
 
+export default CheckWordsIntroPage
+
 const LockContainer = styled.div`
   width: 100%;
   margin-bottom: var(--spacing-5);
@@ -111,5 +113,3 @@ const LockHandle = styled(LockHandleSVG)`
 const LockBody = styled(LockBodySVG)`
   width: 100%;
 `
-
-export default CheckWordsIntroPage
