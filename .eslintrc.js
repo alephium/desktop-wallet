@@ -36,6 +36,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'no-use-before-define': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react/jsx-no-useless-fragment': 'error',
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
     'unused-imports/no-unused-imports-ts': 'warn',
