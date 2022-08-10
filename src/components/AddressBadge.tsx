@@ -50,13 +50,24 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   }
 
   return (
-    <Container className={className} {...props}>
+    <div className={className} {...props}>
       <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
-    </Container>
+    </div>
   )
 }
 
-export default AddressBadge
+export default styled(AddressBadge)`
+  padding: 6px 0 6px 0;
+  display: flex;
+
+  ${({ truncate }) =>
+    truncate &&
+    `
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  `}
+`
 
 const Label = styled.span<AddressBadgeProps>`
   ${({ truncate }) => truncate && 'overflow: hidden; text-overflow: ellipsis;'}
@@ -76,18 +87,5 @@ const Icon = styled.span<{ isMain: boolean; color?: string }>`
       border-radius: 100%;
       color: ${color ?? theme.font.primary};
     }
-  `}
-`
-
-const Container = styled.div<AddressBadgeProps>`
-  padding: 6px 0 6px 0;
-  display: flex;
-
-  ${({ truncate }) =>
-    truncate &&
-    `
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
   `}
 `
