@@ -54,13 +54,11 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
           </TableRow>
         ))}
-      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
-        return (
-          <TableRow key={`${tx.hash}-${address.hash}`} onClick={() => onTransactionClick({ ...tx, address })}>
-            <TransactionalInfo transaction={tx} addressHash={address.hash} />
-          </TableRow>
-        )
-      })}
+      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => (
+        <TableRow key={`${tx.hash}-${address.hash}`} onClick={() => onTransactionClick({ ...tx, address })}>
+          <TransactionalInfo transaction={tx} addressHash={address.hash} />
+        </TableRow>
+      ))}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow>
           <TableCell align="center">

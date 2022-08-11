@@ -42,12 +42,12 @@ export const getTransactionsForAddresses = (
   addresses: Address[]
 ): BelongingToAddress<TransactionVariant>[] =>
   addresses
-    .map((address) => {
-      return address.transactions[txStatus].map((tx) => ({
+    .map((address) =>
+      address.transactions[txStatus].map((tx) => ({
         data: tx,
         address
       }))
-    })
+    )
     .flat()
     .sort((a, b) => sortTransactions(a.data, b.data))
 
