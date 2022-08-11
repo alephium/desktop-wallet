@@ -79,6 +79,8 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   )
 }
 
+export default ExpandableSection
+
 const ExpandableSectionContainer = styled.div<{ shrinkWhenOpen: boolean; isOpen?: boolean }>`
   display: flex;
   flex-direction: column;
@@ -129,5 +131,3 @@ const Content = styled.div`
   margin-top: var(--spacing-2);
   padding: var(--spacing-2);
 `
-
-export default ExpandableSection

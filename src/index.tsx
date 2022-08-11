@@ -20,7 +20,7 @@ import './index.css' // Importing CSS through CSS file to avoid font flickering
 import './i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
-import React, { Suspense } from 'react'
+import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
@@ -33,7 +33,7 @@ import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <Router>
       <ThemeProvider theme={lightTheme}>
         <Suspense fallback="loading">
@@ -46,7 +46,7 @@ ReactDOM.render(
         </Suspense>
       </ThemeProvider>
     </Router>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root')
 )
 

@@ -173,6 +173,8 @@ const WalletLayout: FC = ({ children }) => {
   )
 }
 
+export default WalletLayout
+
 const WalletContainer = styled(motion.div)`
   display: flex;
   flex: 1;
@@ -249,5 +251,3 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
-
-export default WalletLayout

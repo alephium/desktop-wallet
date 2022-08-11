@@ -23,9 +23,9 @@ import Amount from './Amount'
 interface TransactionalInfoProps {
   type: 'out' | 'in' | 'pending'
   content: string | bigint
-  className?: string
   amount?: boolean
   prefix?: string
+  className?: string
 }
 
 const TransactionalInfo = ({ content, className, amount, prefix, type }: TransactionalInfoProps) => {

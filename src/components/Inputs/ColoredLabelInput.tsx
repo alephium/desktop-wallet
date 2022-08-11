@@ -31,15 +31,15 @@ export type ColoredLabelInputValue = {
 
 interface ColoredLabelInputProps {
   value: ColoredLabelInputValue
-  className?: string
   onChange: ({ title, color }: ColoredLabelInputValue) => void
   disabled?: boolean
   label?: string
   id?: string
   maxLength?: number
+  className?: string
 }
 
-let ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
+const ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
   const [title, setTitle] = useState(value.title)
   const [color, setColor] = useState(value.color)
   const [isFocused, setIsFocused] = useState(false)
@@ -67,7 +67,7 @@ let ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: C
   )
 }
 
-ColoredLabelInput = styled(ColoredLabelInput)`
+export default styled(ColoredLabelInput)`
   display: flex;
   gap: 17px;
   width: 100%;
@@ -89,5 +89,3 @@ const AddressBadgeStyled = styled(AddressBadge)`
   position: absolute;
   left: 12px;
 `
-
-export default ColoredLabelInput

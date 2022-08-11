@@ -51,6 +51,8 @@ const PanelTitle: FC<PanelTitleProps> = ({
   )
 }
 
+export default PanelTitle
+
 export const TitleContainer = styled(motion.div)<{ isSticky: boolean }>`
   display: flex;
   align-items: center;
@@ -78,5 +80,3 @@ const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
   font-size: ${({ smaller }) => (smaller ? '2.0em' : 'revert')};
   font-weight: var(--fontWeight-medium);
 `
-
-export default PanelTitle

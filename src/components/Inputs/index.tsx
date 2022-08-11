@@ -40,53 +40,51 @@ export const inputPlaceHolderVariants: Variants = {
   down: { y: 0, scale: 1 }
 }
 
-export const inputDefaultStyle = (isValid?: boolean) => {
-  return css`
-    background-image: none;
-    height: var(--inputHeight);
-    width: 100%;
-    border-radius: var(--radius);
+export const inputDefaultStyle = (isValid?: boolean) => css`
+  background-image: none;
+  height: var(--inputHeight);
+  width: 100%;
+  border-radius: var(--radius);
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  color: ${({ theme }) => theme.font.primary};
+  padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
+  font-weight: var(--fontWeight-medium);
+  font-size: 1em;
+  text-align: left;
+  font-family: inherit;
+  box-shadow: inset ${({ theme }) => theme.shadow.primary};
+
+  transition: 0.2s ease-out;
+
+  &:focus {
+    background-color: ${({ theme }) => theme.bg.primary};
+    border: 1px solid ${({ theme }) => theme.global.accent};
+  }
+
+  &.error {
+    border: 1px solid ${({ theme }) => theme.global.alert};
+    background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
+  }
+
+  &:disabled {
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
-    color: ${({ theme }) => theme.font.primary};
-    padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
-    font-weight: var(--fontWeight-medium);
-    font-size: 1em;
-    text-align: left;
-    font-family: inherit;
-    box-shadow: inset ${({ theme }) => theme.shadow.primary};
+    cursor: not-allowed;
+  }
 
-    transition: 0.2s ease-out;
+  // Remove number arrows
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-    &:focus {
-      background-color: ${({ theme }) => theme.bg.primary};
-      border: 1px solid ${({ theme }) => theme.global.accent};
-    }
-
-    &.error {
-      border: 1px solid ${({ theme }) => theme.global.alert};
-      background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
-    }
-
-    &:disabled {
-      background-color: ${({ theme }) => theme.bg.secondary};
-      border: 1px solid ${({ theme }) => theme.border.primary};
-      cursor: not-allowed;
-    }
-
-    // Remove number arrows
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    /* Firefox */
-    &[type='number'] {
-      -moz-appearance: textfield;
-    }
-  `
-}
+  /* Firefox */
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
+`
 
 export const InputErrorMessage = styled(motion.label)<InputProps>`
   position: absolute;

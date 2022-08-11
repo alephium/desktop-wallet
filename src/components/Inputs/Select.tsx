@@ -39,9 +39,9 @@ interface SelectProps<T> {
   title?: string
   id: string
   onValueChange: (value: SelectOption<T> | undefined) => void
-  className?: string
   raised?: boolean
   skipEqualityCheck?: boolean
+  className?: string
 }
 
 function Select<T>({
@@ -152,6 +152,8 @@ function SelectOptionsPopup<T>({
   )
 }
 
+export default Select
+
 const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
@@ -198,5 +200,3 @@ const ClickableInput = styled.input<InputProps & { raised: boolean }>`
       box-shadow: ${({ theme }) => theme.shadow.secondary};
     `}
 `
-
-export default Select

@@ -27,12 +27,10 @@ interface TooltipProps {
 
 export type HasTooltip<T> = T & { 'data-tip'?: string }
 
-const Tooltip: FC<TooltipProps> = ({ id, children }) => {
-  return (
-    <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" id={id}>
-      {children}
-    </ReactTooltip>
-  )
-}
+const Tooltip: FC<TooltipProps> = ({ id, children }) => (
+  <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" id={id}>
+    {children}
+  </ReactTooltip>
+)
 
 export default Tooltip

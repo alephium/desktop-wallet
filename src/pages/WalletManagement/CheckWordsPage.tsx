@@ -152,18 +152,17 @@ const CheckWordsPage = () => {
 
   // === Renders
 
-  const renderRemainingWords = () => {
-    return wordList.current
+  const renderRemainingWords = () =>
+    wordList.current
       .filter((w) => !selectedWords?.includes(w))
       .map((w) => (
         <RemainingWord onClick={() => setSelectedWords([...selectedWords, w])} key={w.key} layoutId={w.key}>
           {w.word}
         </RemainingWord>
       ))
-  }
 
-  const renderSelectedWords = () => {
-    return selectedWords?.map((w) => (
+  const renderSelectedWords = () =>
+    selectedWords?.map((w) => (
       <SelectedWord
         onPointerUp={() => handleSelectedWordRemove(w)}
         key={w.key}
@@ -180,7 +179,6 @@ const CheckWordsPage = () => {
         {w.word}
       </SelectedWord>
     ))
-  }
 
   const areWordsValid = selectedWords.map((w) => w.word).toString() == splitMnemonic.toString()
 
@@ -242,9 +240,9 @@ const CheckWordsPage = () => {
   )
 }
 
-const getAlphabeticallyOrderedList = (arr: string[]) => {
-  return arr.slice().sort()
-}
+const getAlphabeticallyOrderedList = (arr: string[]) => arr.slice().sort()
+
+export default CheckWordsPage
 
 const RemainingWordList = styled.div`
   display: flex;
@@ -323,5 +321,3 @@ const RemainingWord = styled(SelectedWord)`
     background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.3).toString()};
   }
 `
-
-export default CheckWordsPage

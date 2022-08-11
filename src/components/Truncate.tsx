@@ -19,9 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FC } from 'react'
 import styled from 'styled-components'
 
-const Truncate: FC<{ className?: string }> = ({ className, children }) => {
-  return <div className={className}>{children}</div>
-}
+const Truncate: FC<{ className?: string }> = ({ className, children }) => <div className={className}>{children}</div>
 
 export default styled(Truncate)`
   white-space: nowrap;

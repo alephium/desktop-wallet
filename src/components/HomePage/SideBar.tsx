@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
@@ -84,6 +85,8 @@ const SideBar = () => {
     </Sidebar>
   )
 }
+
+export default SideBar
 
 const Sidebar = styled.div`
   flex: 0.5;
@@ -172,7 +175,7 @@ const CloudGroup = ({
   lengths: string[]
   side: 'right' | 'left'
   distance: string
-  style?: React.CSSProperties | undefined
+  style?: CSSProperties | undefined
 }) => {
   const clouds = []
 
@@ -222,5 +225,3 @@ const AlephiumLogo = styled.div`
     z-index: 1;
   }
 `
-
-export default SideBar

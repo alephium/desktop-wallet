@@ -41,6 +41,8 @@ const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => {
   )
 }
 
+export default QRCodeButton
+
 const QRCodeIcon = styled(QrCode)`
   cursor: pointer;
   color: ${({ theme }) => theme.font.secondary};
@@ -49,5 +51,3 @@ const QRCodeIcon = styled(QrCode)`
 const Tooltip = styled(ReactTooltip)`
   opacity: 1 !important;
 `
-
-export default QRCodeButton

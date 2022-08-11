@@ -27,6 +27,7 @@ module.exports = {
   ],
   plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'unused-imports', 'simple-import-sort', 'header'],
   rules: {
+    'arrow-body-style': [2, 'as-needed'],
     'react/prop-types': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -35,6 +36,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'no-use-before-define': 'off',
     'react/react-in-jsx-scope': 'off',
+    'react/jsx-no-useless-fragment': 'error',
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
     'unused-imports/no-unused-imports-ts': 'warn',

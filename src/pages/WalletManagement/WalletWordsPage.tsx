@@ -46,16 +46,13 @@ const WalletWordsPage = () => {
     setMnemonic(wallet.mnemonic)
   }, [setMnemonic, setPlainWallet])
 
-  const renderFormatedMnemonic = (mnemonic: string) => {
-    return mnemonic.split(' ').map((w, i) => {
-      return (
-        <MnemonicWordContainer key={i}>
-          <MnemonicNumber>{i + 1}</MnemonicNumber>
-          <MnemonicWord>{w}</MnemonicWord>
-        </MnemonicWordContainer>
-      )
-    })
-  }
+  const renderFormatedMnemonic = (mnemonic: string) =>
+    mnemonic.split(' ').map((w, i) => (
+      <MnemonicWordContainer key={i}>
+        <MnemonicNumber>{i + 1}</MnemonicNumber>
+        <MnemonicWord>{w}</MnemonicWord>
+      </MnemonicWordContainer>
+    ))
 
   return (
     <FloatingPanel enforceMinHeight>

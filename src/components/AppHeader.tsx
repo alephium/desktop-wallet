@@ -118,6 +118,8 @@ const AppHeader: FC = ({ children }) => {
   )
 }
 
+export default AppHeader
+
 export const HeaderDivider = styled.div`
   width: 1px;
   height: var(--spacing-2);
@@ -150,5 +152,3 @@ const OfflineIcon = styled(WifiOff)`
   color: ${({ theme }) => theme.font.secondary};
   margin: 0 10px;
 `
-
-export default AppHeader

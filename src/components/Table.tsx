@@ -28,9 +28,9 @@ export interface TableProps {
     align?: AlignType
     width?: string
   }[]
-  className?: string
   isLoading?: boolean
   minWidth?: string
+  className?: string
 }
 
 interface TableCellProps {

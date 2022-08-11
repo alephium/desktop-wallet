@@ -51,6 +51,8 @@ const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => (
   </Wrapper>
 )
 
+export default TabBar
+
 const Wrapper = styled.div`
   margin: var(--spacing-2) 0;
   position: sticky;
@@ -102,5 +104,3 @@ const TabSelector = styled(motion.div)`
   background-color: ${({ theme }) => theme.global.accent};
   z-index: -1;
 `
-
-export default TabBar

@@ -32,8 +32,8 @@ interface AddressSummaryCardProps {
   totalCards: number
   index: number
   clickable?: boolean
-  className?: string
   position?: number
+  className?: string
 }
 
 export const addressSummaryCardWidthPx = 100

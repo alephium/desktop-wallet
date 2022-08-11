@@ -38,6 +38,8 @@ const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void
   </StyledSplashScreen>
 )
 
+export default SplashScreen
+
 const StyledSplashScreen = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -67,5 +69,3 @@ const AlephiumLogo = styled.div`
   height: 60%;
   margin: auto;
 `
-
-export default SplashScreen
