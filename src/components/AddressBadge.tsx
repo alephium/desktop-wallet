@@ -50,7 +50,7 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   }
 
   return (
-    <div className={className} {...props}>
+    <div className={className}>
       <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
     </div>
   )
