@@ -30,13 +30,11 @@ import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
-import MainAddressLabel from '../../components/MainAddressLabel'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
@@ -96,7 +94,9 @@ const AddressesPage = () => {
             columnWidths={tableColumnWidths}
             onClick={() => navigateToAddressDetailsPage(address.hash)}
           >
-            <TableCell>{address.settings.label ? <AddressBadge address={address} truncate /> : '-'}</TableCell>
+            <TableCell>
+              <AddressBadge address={address} truncate />
+            </TableCell>
             <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
             <TableCell>{address.details?.txNumber ?? 0}</TableCell>
             <TableCell>{address.group}</TableCell>
@@ -204,12 +204,4 @@ const TableCellAmount = styled(TableCell)`
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
-`
-
-const StyledMainAddressLabel = styled(MainAddressLabel)`
-  margin-top: 2px;
-`
-
-const MainAddressWrapper = styled.div`
-  max-width: 100%;
 `
