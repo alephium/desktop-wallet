@@ -137,13 +137,11 @@ const AddressDetailsPage = () => {
               {transaction.type === 'transfer' && <TransactionalInfo hideLabel transaction={transaction} />}
             </TableRow>
           ))}
-        {address.transactions.confirmed.map((transaction) => {
-          return (
-            <TableRow key={transaction.hash} onClick={() => onTransactionClick(transaction)}>
-              <TransactionalInfo hideLabel transaction={transaction} />
-            </TableRow>
-          )
-        })}
+        {address.transactions.confirmed.map((transaction) => (
+          <TableRow key={transaction.hash} onClick={() => onTransactionClick(transaction)}>
+            <TransactionalInfo hideLabel transaction={transaction} />
+          </TableRow>
+        ))}
         {address.transactions.confirmed.length !== address.details.txNumber && (
           <TableRow>
             <TableCell align="center">
