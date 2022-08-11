@@ -53,9 +53,13 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       .value()
     const address = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
     const key = isAllCurrentAddress ? undefined : address
-    const extraAddressesText = io.length > 1 ? `(+${io.length - 1})` : ''
+    const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
 
     const addressWithMetadata = getAddress(address)
+
+    // There may be a case where a wallet sends funds to the same address, which doesn't
+    // make it a change address but a legimitate receiving address.
+    const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
 
     return truncate ? (
       <TruncateWrap>
@@ -70,22 +74,18 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </TruncateWrap>
     ) : (
       <Addresses>
-        {_(io)
-          .map((o) => o.address)
-          .uniq()
-          .value()
-          .map((address) => {
-            const addressWithMetadata = getAddress(address)
-            const addressComponent = addressWithMetadata ? <AddressBadge address={addressWithMetadata} /> : address
+        {addressesToShow.map((address) => {
+          const addressWithMetadata = getAddress(address)
+          const addressComponent = addressWithMetadata ? <AddressBadge address={addressWithMetadata} /> : address
 
-            return linkToExplorer ? (
-              <ActionLink onClick={() => handleShowAddress(address)} key={address}>
-                {addressComponent}
-              </ActionLink>
-            ) : (
-              addressComponent
-            )
-          })}
+          return linkToExplorer ? (
+            <ActionLink onClick={() => handleShowAddress(address)} key={address}>
+              {addressComponent}
+            </ActionLink>
+          ) : (
+            addressComponent
+          )
+        })}
       </Addresses>
     )
   } else if (timestamp === genesisTimestamp) {
