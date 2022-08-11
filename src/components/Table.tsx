@@ -107,7 +107,7 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 17.5px 20px;
+  padding: 18px 20px;
 `
 
 const TableHeaderRow = styled(TableColumns)`
