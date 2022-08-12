@@ -16,35 +16,180 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled, { useTheme } from 'styled-components'
+import { calAmountDelta } from '@alephium/sdk'
+import { Output, Transaction } from '@alephium/sdk/api/explorer'
+import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 
+import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
+import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
+import AddressBadge from './AddressBadge'
 import Amount from './Amount'
+import Badge from './Badge'
+import DirectionalArrow from './DirectionalArrow'
+import IOList from './IOList'
+import TimeSince from './TimeSince'
+import Token from './Token'
 
 interface TransactionalInfoProps {
-  type: 'out' | 'in' | 'pending'
-  content: string | bigint
-  amount?: boolean
-  prefix?: string
+  transaction: Transaction | PendingTx
+  addressHash?: AddressHash
+  hideLabel?: boolean
   className?: string
 }
 
-const TransactionalInfo = ({ content, className, amount, prefix, type }: TransactionalInfoProps) => {
-  const theme = useTheme()
-  const color = type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid
+const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel }: TransactionalInfoProps) => {
+  const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
+  const _addressHash = addressHash ?? addressHashParam
+
+  const { getAddress } = useAddressesContext()
+  const { t } = useTranslation('App')
+
+  const address = getAddress(_addressHash)
+
+  let amount: bigint | undefined = BigInt(0)
+  let timestamp = 0
+  let type: TransactionDirection
+  let outputs: Output[] = []
+
+  const token = 'alph'
+
+  if (isExplorerTransaction(tx)) {
+    amount = calAmountDelta(tx, _addressHash)
+    const amountIsBigInt = typeof amount === 'bigint'
+    type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
+    amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+    timestamp = tx.timestamp
+    outputs = tx.outputs || []
+  } else if (isPendingTx(tx)) {
+    type = tx.type === 'transfer' ? 'out' : 'in'
+    amount = tx.amount
+    timestamp = tx.timestamp
+    outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+  } else {
+    throw new Error('Could not determine transaction type, all transactions should have a type')
+  }
 
   return (
-    <div className={className} color={color}>
-      {prefix && <span>{prefix}</span>}
-      {amount && content ? <Amount value={BigInt(content)} fadeDecimals color={color} /> : content}
+    <div className={className}>
+      <CellAmountTokenTime>
+        <CellArrow>
+          <DirectionalArrow direction={type} />
+        </CellArrow>
+        <TokenTimeInner>
+          <TokenStyled type={token} />
+          <TimeSince timestamp={timestamp} faded />
+        </TokenTimeInner>
+      </CellAmountTokenTime>
+      {address && (
+        <CellAddress>
+          {!hideLabel && (
+            <CellAddressBadge>
+              <AddressBadge address={address} truncate />
+            </CellAddressBadge>
+          )}
+          <DirectionalAddress>
+            {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
+            {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
+            <IOList
+              currentAddress={_addressHash || ''}
+              isOut={type === 'out'}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+            />
+          </DirectionalAddress>
+        </CellAddress>
+      )}
+      {amount && (
+        <CellAmount>
+          <CellAmountInner>
+            {type === 'out' ? '-' : '+'}
+            <Amount value={amount} fadeDecimals />
+          </CellAmountInner>
+        </CellAmount>
+      )}
     </div>
   )
 }
 
 export default styled(TransactionalInfo)`
-  color: ${({ type, theme }) => (type === 'out' || type === 'pending' ? theme.font.secondary : theme.global.valid)};
+  display: flex;
   text-align: center;
   border-radius: 3px;
-  font-weight: var(--fontWeight-semiBold);
-  float: left;
   white-space: nowrap;
+  align-items: center;
+  flex-grow: 1;
+`
+
+const CellArrow = styled.div`
+  margin-right: 25px;
+`
+
+const CellAmountTokenTime = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 28px;
+  text-align: left;
+  flex-grow: 1;
+`
+
+const TokenTimeInner = styled.div`
+  width: 9em;
+`
+
+const CellAddressBadge = styled.div`
+  min-width: 100px;
+  max-width: 100px;
+  margin-right: 21px;
+`
+
+const CellAddress = styled.div`
+  flex-shrink: 1;
+  min-width: 0;
+  margin-right: 21px;
+  display: flex;
+  flex-basis: 377px;
+`
+
+const TokenStyled = styled(Token)`
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const CellAmount = styled.div`
+  flex-grow: 1;
+  text-align: right;
+`
+
+const CellAmountInner = styled.div`
+  min-width: 6em;
+`
+
+const BadgeStyled = styled(Badge)`
+  min-width: 50px;
+  text-align: center;
+`
+
+const DirectionBadgeOut = styled(BadgeStyled)`
+  ${({ theme }) => `
+    color: ${theme.font.secondary};
+    background-color: ${theme.bg.secondary};
+  `}
+`
+
+const DirectionBadgeIn = styled(BadgeStyled)`
+  ${({ theme }) => `
+    color: ${theme.font.secondary};
+    background-color: ${theme.bg.accent};
+  `}
+`
+
+const DirectionalAddress = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-4);
+  max-width: 100%;
+  min-width: 0;
 `

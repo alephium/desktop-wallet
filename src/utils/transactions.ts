@@ -17,6 +17,69 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
+
+import { Address, PendingTx } from '../contexts/addresses'
+
+type HasTimestamp = { timestamp: number }
+type TransactionVariant = Transaction | PendingTx
+type IsTransactionVariant<T extends Transaction | PendingTx> = T extends Transaction
+  ? Transaction
+  : T extends PendingTx
+  ? PendingTx
+  : never
+export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTransactionVariant<T>; address: Address }
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
+
+export type TransactionDirection = 'out' | 'in' | 'pending'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
+export type TransactionStatus = 'pending' | 'confirmed'
+
+export const getTransactionsForAddresses = (
+  txStatus: TransactionStatus,
+  addresses: Address[]
+): BelongingToAddress<TransactionVariant>[] =>
+  addresses
+    .map((address) =>
+      address.transactions[txStatus].map((tx) => ({
+        data: tx,
+        address
+      }))
+    )
+    .flat()
+    .sort((a, b) => sortTransactions(a.data, b.data))
+
+export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
+  const _tx = tx as Transaction
+  return (
+    (_tx.hash !== undefined &&
+      _tx.blockHash !== undefined &&
+      _tx.timestamp !== undefined &&
+      _tx.gasAmount !== undefined &&
+      _tx.gasPrice !== undefined) === true
+  )
+}
+export function isPendingTx(tx: TransactionVariant): tx is PendingTx {
+  const _tx = tx as PendingTx
+  return (
+    (_tx.txId !== undefined &&
+      _tx.fromAddress !== undefined &&
+      _tx.toAddress !== undefined &&
+      _tx.timestamp !== undefined &&
+      _tx.type !== undefined &&
+      _tx.network !== undefined) === true
+  )
+}
+
+export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
+  const delta = b.timestamp - a.timestamp
+
+  // Sent and received in the same block, but will not be in the right order when displaying
+  if (delta === 0) {
+    return -1
+  }
+
+  return delta
+}
