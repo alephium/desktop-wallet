@@ -52,7 +52,7 @@ export const lightTheme: DefaultTheme = {
     accent: '#5981f3',
     complementary: '#FF5D51',
     alert: '#ed4a34',
-    valid: '#4ebf08',
+    valid: '#3ed282',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }
@@ -88,7 +88,7 @@ export const darkTheme: DefaultTheme = {
     accent: '#6083FF',
     complementary: '#FF5D51',
     alert: '#ed4a34',
-    valid: '#4ebf08',
+    valid: '#3ed282',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }

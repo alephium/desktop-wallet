@@ -19,11 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import { AddressHash } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { openInWebBrowser } from '../utils/misc'
+import { useAddressesContext } from '../contexts/addresses'
+import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import ActionLink from './ActionLink'
+import AddressBadge from './AddressBadge'
 import Badge from './Badge'
 import Truncate from './Truncate'
 
@@ -39,45 +40,53 @@ interface IOListProps {
 
 const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer, truncate }: IOListProps) => {
   const { t } = useTranslation('App')
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { getAddress } = useAddressesContext()
+  const handleShowAddress = useAddressLinkHandler()
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
   const genesisTimestamp = 1231006505000
 
-  const handleShowAddressInExplorer = (address: AddressHash) => {
-    openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
-  }
-
   if (io && io.length > 0) {
-    return io.every((o) => o.address === currentAddress) ? (
-      linkToExplorer ? (
-        <ActionLink onClick={() => handleShowAddressInExplorer(currentAddress)}>{currentAddress}</ActionLink>
-      ) : truncate ? (
-        <Truncate>{currentAddress}</Truncate>
-      ) : (
-        <span>{currentAddress}</span>
-      )
+    const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
+    const notCurrentAddresses = _(io.filter((o) => o.address !== currentAddress))
+      .map((v) => v.address)
+      .uniq()
+      .value()
+    const address = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
+    const key = isAllCurrentAddress ? undefined : address
+    const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
+
+    const addressWithMetadata = getAddress(address)
+
+    // There may be a case where a wallet sends funds to the same address, which doesn't
+    // make it a change address but a legimitate receiving address.
+    const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
+
+    return truncate ? (
+      <TruncateWrap>
+        {addressWithMetadata ? (
+          <AddressBadge address={addressWithMetadata} />
+        ) : (
+          <AddressSpan>
+            <Truncate key={key}>{address}</Truncate>
+          </AddressSpan>
+        )}
+        {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
+      </TruncateWrap>
     ) : (
-      <>
-        {_(io.filter((o) => o.address !== currentAddress))
-          .map((v) => v.address)
-          .uniq()
-          .value()
-          .map((address) =>
-            linkToExplorer ? (
-              <ActionLink onClick={() => handleShowAddressInExplorer(address)} key={address}>
-                {address}
-              </ActionLink>
-            ) : truncate ? (
-              <Truncate key={address}>{address}</Truncate>
-            ) : (
-              <span key={address}>{address}</span>
-            )
-          )}
-      </>
+      <Addresses>
+        {addressesToShow.map((address) => {
+          const addressWithMetadata = getAddress(address)
+          const addressComponent = addressWithMetadata ? <AddressBadge address={addressWithMetadata} /> : address
+
+          return linkToExplorer ? (
+            <ActionLink onClick={() => handleShowAddress(address)} key={address}>
+              {addressComponent}
+            </ActionLink>
+          ) : (
+            addressComponent
+          )
+        })}
+      </Addresses>
     )
   } else if (timestamp === genesisTimestamp) {
     return <Badge truncate={truncate}>{t`Genesis TX`}</Badge>
@@ -87,3 +96,27 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
 }
 
 export default IOList
+
+const TruncateWrap = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  text-align: left;
+`
+
+const AddressesHidden = styled.div`
+  margin-left: 0.5em;
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const Addresses = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+`
+
+const AddressSpan = styled.div`
+  width: 12em;
+  min-width: 4em;
+`
