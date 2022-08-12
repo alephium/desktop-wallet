@@ -41,6 +41,11 @@ export const inputPlaceHolderVariants: Variants = {
   down: { y: 0, scale: 1 }
 }
 
+export const inputStyling = {
+  paddingRight: '12px',
+  paddingLeftRight: '12px'
+}
+
 export const inputDefaultStyle = (isValid?: boolean) => css`
   background-image: none;
   height: var(--inputHeight);
@@ -49,7 +54,7 @@ export const inputDefaultStyle = (isValid?: boolean) => css`
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
-  padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
+  padding: ${isValid ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
   font-weight: var(--fontWeight-medium);
   font-size: 1em;
   text-align: left;

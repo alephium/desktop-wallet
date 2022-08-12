@@ -20,7 +20,8 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import tinycolor from 'tinycolor2'
 
-import AddressBadge from '../AddressBadge'
+import AddressBadge, { dotStyling } from '../AddressBadge'
+import { inputStyling } from '.'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
@@ -83,7 +84,7 @@ const InputStyled = styled(Input)`
     theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
 
   &:not([value='']) {
-    padding-left: calc(1rem + 0.2rem + 1em);
+    padding-left: calc(${dotStyling.width} + ${dotStyling.marginRight} + ${inputStyling.paddingLeftRight});
   }
 `
 

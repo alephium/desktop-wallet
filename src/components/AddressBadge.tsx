@@ -73,13 +73,18 @@ const Label = styled.span<AddressBadgeProps>`
   ${({ truncate }) => truncate && 'overflow: hidden; text-overflow: ellipsis;'}
 `
 
+export const dotStyling = {
+  width: '1rem',
+  marginRight: '0.2rem'
+}
+
 const Icon = styled.span<{ isMain: boolean; color?: string }>`
   ${({ color, isMain, theme }) => `
     &::before {
-      width: 1rem;
+      width: ${dotStyling.width};
       display: block;
       text-align: center;
-      margin-right: 0.2rem;
+      margin-right: ${dotStyling.marginRight};
       line-height: 1rem;
       font-size: ${isMain ? '1.4em' : '1em'};
       vertical-align: middle;
