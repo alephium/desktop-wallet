@@ -25,6 +25,7 @@ import styled from 'styled-components'
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Button from '../../components/Button'
 import GradientCanvas from '../../components/GradientCanvas'
+import Scrollbar from '../../components/Scrollbar'
 import WalletSummaryCard from '../../components/WalletSummaryCard'
 import { useAddressesContext } from '../../contexts/addresses'
 import DayskyImageSrc from '../../images/daysky.jpeg'
@@ -68,23 +69,25 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
       <GradientCanvas />
       <Summaries>
         <WalletSummaryCardStyled isLoading={isLoadingData} />
-        <AddressSummaryCards
-          collapsed={!areAddressSummariesExpanded}
-          totalAddresses={addresses.length}
-          ref={addressSummaryCardsRef}
-        >
-          <AnimatePresence>
-            {sortAddressList(addresses).map((address, index) => (
-              <AddressSummaryCardStyled
-                key={address.hash}
-                address={address}
-                index={index}
-                clickable={areAddressSummariesExpanded}
-                totalCards={addresses.length}
-              />
-            ))}
-          </AnimatePresence>
-        </AddressSummaryCards>
+        <Scrollbar noScrollY isDynamic>
+          <AddressSummaryCards
+            collapsed={!areAddressSummariesExpanded}
+            totalAddresses={addresses.length}
+            ref={addressSummaryCardsRef}
+          >
+            <AnimatePresence>
+              {sortAddressList(addresses).map((address, index) => (
+                <AddressSummaryCardStyled
+                  key={address.hash}
+                  address={address}
+                  index={index}
+                  clickable={areAddressSummariesExpanded}
+                  totalCards={addresses.length}
+                />
+              ))}
+            </AnimatePresence>
+          </AddressSummaryCards>
+        </Scrollbar>
         <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
           {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
           {areAddressSummariesExpanded ? t`Reduce` : t`Show addresses`}
@@ -135,8 +138,9 @@ const Summaries = styled.div`
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
   gap: ${addressSummaryCardsGapPx}px;
-  overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
   margin-left: calc(var(--spacing-2) * -1);
+  overflow: hidden;
+  height: 100%;
   padding-left: var(--spacing-4);
   align-items: center;
   width: ${({ collapsed, totalAddresses }) =>
