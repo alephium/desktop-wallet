@@ -29,6 +29,7 @@ import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
+import Scrollbar from '../components/Scrollbar'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
@@ -79,76 +80,85 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
-      <Details>
-        <DetailsRow label={t`From`}>
-          {isOutgoingTx ? (
-            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-              <AddressBadge address={address} truncate />
-            </ActionLink>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={isOutgoingTx}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
-        <DetailsRow label={t`To`}>
-          {!isOutgoingTx ? (
-            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-              <AddressBadge address={address} />
-            </ActionLink>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={isOutgoingTx}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
-        <DetailsRow label={t`Status`}>
-          <Badge color={theme.global.valid} border>
-            {t`Confirmed`}
-          </Badge>
-        </DetailsRow>
-        <DetailsRow label={t`Timestamp`}>
-          {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
-        </DetailsRow>
-        <DetailsRow label={t`Fee`}>
-          {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
-        </DetailsRow>
-        <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
-        <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
-          <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
-          <DetailsRow label={t`Gas price`}>
-            <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+      <Scrollbar>
+        <Details>
+          <DetailsRow label={t`From`}>
+            {isOutgoingTx ? (
+              <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} truncate />
+              </ActionLink>
+            ) : (
+              <IOList
+                currentAddress={address.hash}
+                isOut={isOutgoingTx}
+                outputs={transaction.outputs}
+                inputs={transaction.inputs}
+                timestamp={transaction.timestamp}
+                linkToExplorer
+              />
+            )}
           </DetailsRow>
-          <DetailsRow label={t`Inputs`}>
-            <IOs>
-              {transaction.inputs?.map((input) => (
-                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
-                  {input.address}
-                </ActionLink>
-              ))}
-            </IOs>
+          <DetailsRow label={t`To`}>
+            {!isOutgoingTx ? (
+              <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} />
+              </ActionLink>
+            ) : (
+              <IOList
+                currentAddress={address.hash}
+                isOut={isOutgoingTx}
+                outputs={transaction.outputs}
+                inputs={transaction.inputs}
+                timestamp={transaction.timestamp}
+                linkToExplorer
+              />
+            )}
           </DetailsRow>
-          <DetailsRow label={t`Outputs`}>
-            <IOs>
-              {transaction.outputs?.map((output) => (
-                <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
-                  {output.address}
-                </ActionLink>
-              ))}
-            </IOs>
+          <DetailsRow label={t`Status`}>
+            <Badge color={theme.global.valid} border>
+              {t`Confirmed`}
+            </Badge>
           </DetailsRow>
-        </ExpandableSectionStyled>
-      </Details>
+          <DetailsRow label={t`Timestamp`}>
+            {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+          </DetailsRow>
+          <DetailsRow label={t`Fee`}>
+            {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+          </DetailsRow>
+          <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+          <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
+            <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
+            <DetailsRow label={t`Gas price`}>
+              <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+            </DetailsRow>
+            <DetailsRow label={t`Inputs`}>
+              <IOs>
+                {transaction.inputs?.map((input) => (
+                  <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
+                    {input.address}
+                  </ActionLink>
+                ))}
+              </IOs>
+            </DetailsRow>
+            <DetailsRow label={t`Outputs`}>
+              <IOs>
+                {transaction.outputs?.map((output) => (
+                  <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
+                    {output.address}
+                  </ActionLink>
+                ))}
+              </IOs>
+            </DetailsRow>
+            <DetailsRow label={t`Timestamp`}>
+              {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+            </DetailsRow>
+            <DetailsRow label={t`Fee`}>
+              {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+            </DetailsRow>
+            <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+          </ExpandableSectionStyled>
+        </Details>
+      </Scrollbar>
     </SideModal>
   )
 }
