@@ -24,6 +24,7 @@ import styled, { css } from 'styled-components'
 import Button from '../components/Button'
 import { Section } from '../components/PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
+import Scrollbar from '../components/Scrollbar'
 import Spinner from '../components/Spinner'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
@@ -65,7 +66,9 @@ const CenteredModal: FC<CenteredModalProps> = ({
         </TitleRow>
         {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
       </ModalHeader>
-      <ModalContent>{children}</ModalContent>
+      <Scrollbar translateContentSizeYToHolder>
+        <ModalContent>{children}</ModalContent>
+      </Scrollbar>
       {isLoading && (
         <>
           <ModalBackdrop light />
@@ -141,9 +144,8 @@ const CloseButton = styled(Button)`
 `
 
 const ModalContent = styled.div`
-  overflow-y: auto;
-  overflow-x: hidden;
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  width: 100%;
 `
 
 export const ModalFooterButtons = styled.div`
