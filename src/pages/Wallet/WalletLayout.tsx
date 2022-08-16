@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -49,11 +48,9 @@ interface WalletNameSelectOptions {
 
 dayjs.extend(relativeTime)
 
-const Storage = getStorage()
-
 const WalletLayout: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const { wallet, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
+  const { wallet, walletNames, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
@@ -63,7 +60,7 @@ const WalletLayout: FC = ({ children }) => {
   const location = useLocation()
   const theme = useTheme()
   const [switchToWalletName, setSwitchToWalletName] = useState(activeWalletName)
-  const walletNameSelectOptions = Storage.list().map((walletName) => ({
+  const walletNameSelectOptions = walletNames.map((walletName) => ({
     label: walletName,
     value: walletName
   }))

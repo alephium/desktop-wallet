@@ -50,7 +50,7 @@ const CheckWordsPage = () => {
   const { t } = useTranslation('App')
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage } = useGlobalContext()
+  const { setSnackbarMessage, setWalletNames } = useGlobalContext()
 
   const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
@@ -186,6 +186,7 @@ const CheckWordsPage = () => {
     if (areWordsValid && plainWallet) {
       const walletEncrypted = plainWallet.encrypt(password)
       Storage.save(walletName, walletEncrypted)
+      setWalletNames(Storage.list())
       setWallet(plainWallet)
       return true
     }
