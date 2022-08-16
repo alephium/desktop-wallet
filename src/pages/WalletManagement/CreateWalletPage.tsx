@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { AlertTriangle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -38,11 +37,9 @@ import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
-const Storage = getStorage()
-
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation('App')
-  const { setCurrentWalletName } = useGlobalContext()
+  const { setCurrentWalletName, walletNames } = useGlobalContext()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const [walletName, setWalletNameState] = useState(existingWalletName)
@@ -50,8 +47,6 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const [password, setPasswordState] = useState(existingPassword)
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState(existingPassword)
-
-  const walletNames = Storage.list()
 
   const onUpdatePassword = (password: string): void => {
     let passwordError = ''

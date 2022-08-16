@@ -40,7 +40,7 @@ const Storage = getStorage()
 
 const ImportWordsPage = () => {
   const { t } = useTranslation('App')
-  const { setWallet, setSnackbarMessage } = useGlobalContext()
+  const { setWallet, setSnackbarMessage, setWalletNames } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
@@ -78,6 +78,7 @@ const ImportWordsPage = () => {
 
       const encryptedWallet = wallet.encrypt(password)
       Storage.save(walletName, encryptedWallet)
+      setWalletNames(Storage.list())
 
       onButtonNext()
     } catch (e) {

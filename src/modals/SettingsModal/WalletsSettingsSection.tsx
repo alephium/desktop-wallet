@@ -35,7 +35,7 @@ const Storage = getStorage()
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation('App')
-  const { activeWalletName, wallet, lockWallet } = useGlobalContext()
+  const { activeWalletName, wallet, walletNames, setWalletNames, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
 
@@ -46,11 +46,10 @@ const WalletsSettingsSection = () => {
   const handleRemoveWallet = (walletName: string) => {
     Storage.remove(walletName)
     deleteStoredAddressMetadataOfWallet(walletName)
+    setWalletNames(Storage.list())
 
     walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
   }
-
-  const walletNames = Storage.list()
 
   return (
     <>

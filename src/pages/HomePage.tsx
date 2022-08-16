@@ -36,16 +36,13 @@ import { useGlobalContext } from '../contexts/global'
 import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-interface HomeProps {
-  hasWallet: boolean
-  walletNames: string[]
-}
-
-const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
+const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const { newLatestVersion } = useGlobalContext()
+  const { newLatestVersion, walletNames } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
   const { t } = useTranslation('App')
+
+  const hasWallet = walletNames.length > 0
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
