@@ -20,8 +20,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import React, { CSSProperties, useState } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
-import { ElementPropsWithElementRef } from 'react-scrollbars-custom/dist/types/types'
+import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
+
+import { ScrollContextProvider } from '../contexts/scroll'
 
 const paddingRight = '6px'
 const width = `calc(6px + ${paddingRight})`
@@ -42,6 +44,7 @@ interface ScrollbarCustomProps extends ScrollbarProps {
 
 const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   const theme = useTheme()
+  const [scroll, setScroll] = useState<ScrollState>()
   const [isScrolling, setIsScrolling] = useState(false)
   const [isMouseOver, setIsMouseOver] = useState(false)
   const isShow = isScrolling || isMouseOver
@@ -101,6 +104,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
       thumbYProps={thumbProps}
       onScrollStart={onScrollStart}
       onScrollStop={onScrollStop}
+      onUpdate={(s: ScrollState) => setScroll(s)}
       scrollDetectionThreshold={500} // ms
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -108,7 +112,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
       noScrollY={props.noScrollY}
       translateContentSizeYToHolder={props.translateContentSizeYToHolder}
     >
-      {props.children}
+      <ScrollContextProvider value={{ scroll }}>{props.children}</ScrollContextProvider>
     </Scrollbar>
   )
 }
