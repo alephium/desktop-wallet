@@ -47,6 +47,8 @@ if (deprecatedSettingsExist()) {
 }
 
 export interface GlobalContextProps {
+  walletNames: string[]
+  setWalletNames: (names: string[]) => void
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
   wallet?: Wallet
@@ -69,6 +71,8 @@ export interface GlobalContextProps {
 export type Client = AsyncReturnType<typeof createClient>
 
 export const initialGlobalContext: GlobalContextProps = {
+  walletNames: [],
+  setWalletNames: () => null,
   activeWalletName: '',
   setCurrentWalletName: () => null,
   wallet: undefined,
@@ -97,6 +101,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   overrideContextValue
 }) => {
   const { t } = useTranslation('App')
+  const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
   const [wallet, setWallet] = useState<Wallet>()
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
@@ -218,6 +223,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
+          walletNames,
+          setWalletNames,
           activeWalletName,
           setCurrentWalletName,
           wallet,
