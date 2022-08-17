@@ -65,7 +65,6 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (!areAddressSummariesExpanded && scrollbarRef.current) {
-      console.log(scrollbarRef.current)
       scrollbarRef.current.scrollLeft = 0
     }
   }, [areAddressSummariesExpanded])
