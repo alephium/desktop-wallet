@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
@@ -39,8 +38,6 @@ import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
-const Storage = getStorage()
-
 interface WordKey {
   word: string
   key: string // Used to build layout and ensure anims are working when duplicates exist
@@ -50,9 +47,8 @@ const CheckWordsPage = () => {
   const { t } = useTranslation('App')
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage, setWalletNames } = useGlobalContext()
+  const { setSnackbarMessage, saveWallet } = useGlobalContext()
 
-  const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
 
   const wordList = useRef<WordKey[]>(
@@ -184,10 +180,7 @@ const CheckWordsPage = () => {
 
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
-      const walletEncrypted = plainWallet.encrypt(password)
-      Storage.save(walletName, walletEncrypted)
-      setWalletNames(Storage.list())
-      setWallet(plainWallet)
+      saveWallet(walletName, plainWallet, password)
       return true
     }
   }
