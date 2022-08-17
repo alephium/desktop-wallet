@@ -94,6 +94,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   // onto the component. That's why needed props are added as necessary.
   return (
     <Scrollbar
+      elementRef={props.elementRef}
       renderer={rendererProps}
       wrapperProps={wrapperProps}
       contentProps={contentProps}
