@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError, getStorage, walletImport } from '@alephium/sdk'
+import { getHumanReadableError, walletImport } from '@alephium/sdk'
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -36,11 +36,9 @@ import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 import { bip39Words } from '../../utils/bip39'
 
-const Storage = getStorage()
-
 const ImportWordsPage = () => {
   const { t } = useTranslation('App')
-  const { setWallet, setSnackbarMessage, setWalletNames } = useGlobalContext()
+  const { setSnackbarMessage, saveWallet } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
@@ -74,12 +72,7 @@ const ImportWordsPage = () => {
     try {
       const wallet = walletImport(formatedPhrase)
 
-      setWallet(wallet)
-
-      const encryptedWallet = wallet.encrypt(password)
-      Storage.save(walletName, encryptedWallet)
-      setWalletNames(Storage.list())
-
+      saveWallet(walletName, wallet, password)
       onButtonNext()
     } catch (e) {
       setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })
