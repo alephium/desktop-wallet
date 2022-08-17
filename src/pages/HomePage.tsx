@@ -36,16 +36,13 @@ import { useGlobalContext } from '../contexts/global'
 import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-interface HomeProps {
-  hasWallet: boolean
-  walletNames: string[]
-}
-
-const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
+const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const { newLatestVersion } = useGlobalContext()
+  const { newLatestVersion, walletNames } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
   const { t } = useTranslation('App')
+
+  const hasWallet = walletNames.length > 0
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
@@ -100,7 +97,7 @@ interface LoginProps {
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
-  const { login } = useGlobalContext()
+  const { unlockWallet } = useGlobalContext()
   const navigate = useNavigate()
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -111,7 +108,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+    unlockWallet(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
 
     if (passphrase) setPassphrase('')
   }

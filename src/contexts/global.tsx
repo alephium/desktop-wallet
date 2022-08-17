@@ -26,6 +26,7 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
+import { deleteStoredAddressMetadataOfWallet } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
 import {
@@ -47,12 +48,14 @@ if (deprecatedSettingsExist()) {
 }
 
 export interface GlobalContextProps {
+  walletNames: string[]
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
   wallet?: Wallet
-  setWallet: (w: Wallet | undefined) => void
+  saveWallet: (walletName: string, wallet: Wallet, password: string) => void
+  deleteWallet: (w: string) => void
   lockWallet: () => void
-  login: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
+  unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -69,12 +72,14 @@ export interface GlobalContextProps {
 export type Client = AsyncReturnType<typeof createClient>
 
 export const initialGlobalContext: GlobalContextProps = {
+  walletNames: [],
   activeWalletName: '',
   setCurrentWalletName: () => null,
   wallet: undefined,
-  setWallet: () => null,
+  saveWallet: () => null,
+  deleteWallet: () => null,
   lockWallet: () => null,
-  login: () => null,
+  unlockWallet: () => null,
   client: undefined,
   settings: localStorageSettings,
   updateSettings: () => null,
@@ -97,6 +102,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   overrideContextValue
 }) => {
   const { t } = useTranslation('App')
+  const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
   const [wallet, setWallet] = useState<Wallet>()
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
@@ -121,13 +127,26 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     updateSettings('network', newNetworkSettings)
   }
 
+  const saveWallet = (walletName: string, wallet: Wallet, password: string) => {
+    const walletEncrypted = wallet.encrypt(password)
+    Storage.save(walletName, walletEncrypted)
+    setWalletNames(Storage.list())
+    setWallet(wallet)
+  }
+
+  const deleteWallet = (walletName: string) => {
+    Storage.remove(walletName)
+    deleteStoredAddressMetadataOfWallet(walletName)
+    setWalletNames(Storage.list())
+  }
+
   const lockWallet = () => {
     setCurrentWalletName('')
     setIsPassphraseUsed(false)
     setWallet(undefined)
   }
 
-  const login = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+  const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
     const walletEncrypted = Storage.load(walletName)
 
     if (!walletEncrypted) {
@@ -218,12 +237,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
+          walletNames,
+          setWalletNames,
           activeWalletName,
           setCurrentWalletName,
           wallet,
           setWallet,
+          saveWallet,
+          deleteWallet,
           lockWallet,
-          login,
+          unlockWallet,
           client,
           snackbarMessage,
           setSnackbarMessage,

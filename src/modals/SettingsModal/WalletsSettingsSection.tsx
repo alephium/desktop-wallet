@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,15 +26,12 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
-import { deleteStoredAddressMetadataOfWallet } from '../../utils/addresses'
 import SecretPhraseModal from '../SecretPhraseModal'
 import WalletRemovalModal from '../WalletRemovalModal'
 
-const Storage = getStorage()
-
 const WalletsSettingsSection = () => {
   const { t } = useTranslation('App')
-  const { activeWalletName, wallet, lockWallet } = useGlobalContext()
+  const { activeWalletName, wallet, walletNames, deleteWallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
 
@@ -44,13 +40,10 @@ const WalletsSettingsSection = () => {
   const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
 
   const handleRemoveWallet = (walletName: string) => {
-    Storage.remove(walletName)
-    deleteStoredAddressMetadataOfWallet(walletName)
+    deleteWallet(walletName)
 
     walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
   }
-
-  const walletNames = Storage.list()
 
   return (
     <>
