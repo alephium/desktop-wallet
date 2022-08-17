@@ -149,13 +149,6 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                 ))}
               </IOs>
             </DetailsRow>
-            <DetailsRow label={t`Timestamp`}>
-              {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
-            </DetailsRow>
-            <DetailsRow label={t`Fee`}>
-              {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
-            </DetailsRow>
-            <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
           </ExpandableSectionStyled>
         </Details>
       </Scrollbar>
