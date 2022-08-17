@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Used as reference: https://github.com/xobotyi/react-scrollbars-custom/issues/46#issuecomment-897506147
 
-import React, { CSSProperties, useState } from 'react'
+import React, { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
@@ -47,6 +47,8 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   const [scroll, setScroll] = useState<ScrollState>()
   const [isScrolling, setIsScrolling] = useState(false)
   const [isMouseOver, setIsMouseOver] = useState(false)
+  const scrollerElemRef = useRef<HTMLDivElement | null>(null)
+
   const isShow = isScrolling || isMouseOver
 
   const onScrollStart = () => setIsScrolling(true)
@@ -56,6 +58,14 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
 
   const { isDynamic } = props
 
+  const onWheelY = useCallback(
+    (e: WheelEvent) => {
+      if (!scrollerElemRef || !scrollerElemRef.current) return
+      scrollerElemRef.current.scrollTop += e.deltaY
+    },
+    [scrollerElemRef]
+  )
+
   const transparencyStyle = {
     backgroundColor: 'transparent',
     opacity: isShow ? 1 : 0,
@@ -63,7 +73,18 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   }
 
   const trackXProps = createScrollbarPiece({ height, paddingTop }, transparencyStyle, true)
-  const trackYProps = createScrollbarPiece({ width, paddingRight }, transparencyStyle, true)
+
+  const trackYProps = {
+    renderer: ({ elementRef, style, ...restProps }: ElementPropsWithElementRef) => (
+      <div
+        {...restProps}
+        ref={elementRef}
+        onWheel={onWheelY}
+        style={{ ...style, width, paddingRight, ...transparencyStyle }}
+      />
+    )
+  }
+
   const thumbProps = createScrollbarPiece({ backgroundColor: theme.font.tertiary })
 
   const rendererProps = createScrollbarPiece(
@@ -78,11 +99,23 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
     isDynamic
   )
 
-  const scrollerProps = createScrollbarPiece(
-    {},
-    { position: 'relative' as const, height: '100%', top: '15px' },
-    isDynamic
-  )
+  const scrollerProps = {
+    renderer: ({ elementRef, style, ...restProps }: ElementPropsWithElementRef) => {
+      const onElementRef = (element: HTMLDivElement | null) => {
+        if (!elementRef) return
+        scrollerElemRef.current = element
+        elementRef(element)
+      }
+
+      return (
+        <div
+          {...restProps}
+          ref={onElementRef}
+          style={{ ...style, ...(isDynamic && { position: 'relative' as const, height: '100%', top: '15px' }) }}
+        />
+      )
+    }
+  }
 
   const contentProps = createScrollbarPiece(
     { display: 'block' },
