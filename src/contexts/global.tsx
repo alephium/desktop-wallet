@@ -55,7 +55,7 @@ export interface GlobalContextProps {
   saveWallet: (walletName: string, wallet: Wallet, password: string) => void
   deleteWallet: (w: string) => void
   lockWallet: () => void
-  login: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
+  unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   settings: Settings
   updateSettings: UpdateSettingsFunctionSignature
@@ -79,7 +79,7 @@ export const initialGlobalContext: GlobalContextProps = {
   saveWallet: () => null,
   deleteWallet: () => null,
   lockWallet: () => null,
-  login: () => null,
+  unlockWallet: () => null,
   client: undefined,
   settings: localStorageSettings,
   updateSettings: () => null,
@@ -146,7 +146,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     setWallet(undefined)
   }
 
-  const login = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+  const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
     const walletEncrypted = Storage.load(walletName)
 
     if (!walletEncrypted) {
@@ -246,7 +246,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           saveWallet,
           deleteWallet,
           lockWallet,
-          login,
+          unlockWallet,
           client,
           snackbarMessage,
           setSnackbarMessage,

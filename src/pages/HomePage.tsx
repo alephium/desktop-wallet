@@ -97,7 +97,7 @@ interface LoginProps {
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
-  const { login } = useGlobalContext()
+  const { unlockWallet } = useGlobalContext()
   const navigate = useNavigate()
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -108,7 +108,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+    unlockWallet(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
 
     if (passphrase) setPassphrase('')
   }

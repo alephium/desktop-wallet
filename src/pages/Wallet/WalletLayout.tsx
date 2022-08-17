@@ -50,7 +50,7 @@ dayjs.extend(relativeTime)
 
 const WalletLayout: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const { wallet, walletNames, lockWallet, activeWalletName, login, networkStatus } = useGlobalContext()
+  const { wallet, walletNames, lockWallet, activeWalletName, unlockWallet, networkStatus } = useGlobalContext()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
@@ -78,7 +78,7 @@ const WalletLayout: FC = ({ children }) => {
 
   const onLoginClick = (password: string) => {
     setIsPasswordModalOpen(false)
-    login(
+    unlockWallet(
       switchToWalletName,
       password,
       () => {
