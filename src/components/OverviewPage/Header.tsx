@@ -18,8 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ElementRef } from 'react-scrollbars-custom/dist/types/types'
 import styled from 'styled-components'
 
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
@@ -37,31 +38,37 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
   const { t } = useTranslation('App')
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, isLoadingData } = useAddressesContext()
-  const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
+  const scrollbarRef = useRef<HTMLDivElement | null>(null)
+
+  const onElementRef: ElementRef<HTMLDivElement> = useCallback(
+    (element) => {
+      const scrollbar = element?.querySelector('.ScrollbarsCustom-Scroller')
+      if (!scrollbar) return
+      scrollbarRef.current = scrollbar as HTMLDivElement
+
+      const onWheel = (event: Event) => {
+        const _event = event as WheelEvent
+        const delta = _event.deltaY
+        if (delta > 3 || delta < -3) {
+          _event.preventDefault()
+          scrollbar.scrollLeft = scrollbar.scrollLeft + delta
+        }
+      }
+      scrollbar.addEventListener('wheel', onWheel)
+
+      return () => {
+        scrollbar.removeEventListener('wheel', onWheel)
+      }
+    },
+    [scrollbarRef]
+  )
 
   useEffect(() => {
-    if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
-      addressSummaryCardsRef.current.scrollLeft = 0
+    if (!areAddressSummariesExpanded && scrollbarRef.current) {
+      console.log(scrollbarRef.current)
+      scrollbarRef.current.scrollLeft = 0
     }
   }, [areAddressSummariesExpanded])
-
-  useEffect(() => {
-    const cards = addressSummaryCardsRef.current
-    if (!cards || !areAddressSummariesExpanded) return
-
-    const onWheel = (event: WheelEvent) => {
-      const delta = event.deltaY
-      if (delta > 3 || delta < -3) {
-        event.preventDefault()
-        cards.scrollLeft += delta
-      }
-    }
-    cards.addEventListener('wheel', onWheel)
-
-    return () => {
-      cards.removeEventListener('wheel', onWheel)
-    }
-  })
 
   return (
     <Header className={className}>
@@ -69,12 +76,8 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
       <GradientCanvas />
       <Summaries>
         <WalletSummaryCardStyled isLoading={isLoadingData} />
-        <Scrollbar noScrollY isDynamic>
-          <AddressSummaryCards
-            collapsed={!areAddressSummariesExpanded}
-            totalAddresses={addresses.length}
-            ref={addressSummaryCardsRef}
-          >
+        <Scrollbar noScrollY isDynamic elementRef={onElementRef}>
+          <AddressSummaryCards collapsed={!areAddressSummariesExpanded} totalAddresses={addresses.length}>
             <AnimatePresence>
               {sortAddressList(addresses).map((address, index) => (
                 <AddressSummaryCardStyled
