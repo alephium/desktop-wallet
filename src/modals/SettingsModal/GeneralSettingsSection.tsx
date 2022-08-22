@@ -63,6 +63,8 @@ const GeneralSettingsSection = () => {
     { label: t`French`, value: 'fr-FR' as Language }
   ]
 
+  const discreteModeText = t`Discrete mode`
+
   return (
     <>
       <KeyValueInput
@@ -70,6 +72,7 @@ const GeneralSettingsSection = () => {
         description={t`Duration in minutes after which an idle wallet will lock automatically.`}
         InputComponent={
           <Input
+            id="wallet-lock-time-in-minutes"
             value={walletLockTimeInMinutes || ''}
             onChange={(v) =>
               updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
@@ -90,10 +93,14 @@ const GeneralSettingsSection = () => {
       />
       <HorizontalDivider narrow />
       <KeyValueInput
-        label={t`Discreet mode`}
+        label={discreteModeText}
         description={t`Toggle discreet mode (hide amounts).`}
         InputComponent={
-          <Toggle toggled={discreetMode} onToggle={() => updateSettings('general', { discreetMode: !discreetMode })} />
+          <Toggle
+            label={discreteModeText}
+            toggled={discreetMode}
+            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
+          />
         }
       />
       <HorizontalDivider narrow />
