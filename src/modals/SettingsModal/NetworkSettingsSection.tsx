@@ -26,7 +26,7 @@ import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import Select from '../../components/Inputs/Select'
+import Select, { SelectOption } from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
 import { useMountEffect } from '../../utils/hooks'
@@ -72,18 +72,18 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    (option: typeof networkSelectOptions[number] | undefined) => {
-      if (option && option.value !== selectedNetwork) {
-        setSelectedNetwork(option.value)
+    (option?: SelectOption<NetworkName>) => {
+      if (option === undefined || option.value === selectedNetwork) return
 
-        if (option.value === 'custom') {
-          // Make sure to open expandable advanced section
-          setAdvancedSectionOpen(true)
-        } else {
-          const newNetworkSettings = networkEndpoints[option.value]
-          updateNetworkSettings(newNetworkSettings)
-          setTempAdvancedSettings(newNetworkSettings)
-        }
+      setSelectedNetwork(option.value)
+
+      if (option.value === 'custom') {
+        // Make sure to open expandable advanced section
+        setAdvancedSectionOpen(true)
+      } else {
+        const newNetworkSettings = networkEndpoints[option.value]
+        updateNetworkSettings(newNetworkSettings)
+        setTempAdvancedSettings(newNetworkSettings)
       }
     },
     [selectedNetwork, updateNetworkSettings]
@@ -121,16 +121,19 @@ const NetworkSettingsSection = () => {
       >
         <UrlInputs>
           <Input
+            id="node-host"
             label={t`Node host`}
             value={tempAdvancedSettings.nodeHost}
             onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
           />
           <Input
+            id="explorer-api-host"
             label={t`Explorer API host`}
             value={tempAdvancedSettings.explorerApiHost}
             onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
           />
           <Input
+            id="explorer-url"
             label={t`Explorer URL`}
             value={tempAdvancedSettings.explorerUrl}
             onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
