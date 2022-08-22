@@ -73,6 +73,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         type="number"
         min={minAmountInAlph}
         max={availableAmountInAlph}
+        aria-label={t`Amount`}
         label={
           <>
             {t`Amount`} (<AlefSymbol color={theme.font.secondary} />)
@@ -83,7 +84,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
       />
       {availableAmount && (
         <>
-          <AvailableAmount>
+          <AvailableAmount tabIndex={0}>
             {t`Available`}: <Amount value={BigInt(availableAmount)} nbOfDecimalsToShow={4} />
           </AvailableAmount>
           <ActionLink onClick={onUseMaxAmountClick}>{t`Use max amount`}</ActionLink>
