@@ -54,7 +54,12 @@ const AddressMetadataForm = ({
             label={`★ ${t`Main address`}`}
             description={mainAddressMessage}
             InputComponent={
-              <Toggle toggled={isMain} onToggle={() => setIsMain(!isMain)} disabled={!isMainAddressToggleEnabled} />
+              <Toggle
+                toggled={isMain}
+                label={t`Make this your main address`}
+                onToggle={() => setIsMain(!isMain)}
+                disabled={!isMainAddressToggleEnabled}
+              />
             }
           />
         </>
