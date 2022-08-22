@@ -65,11 +65,13 @@ const AddressDetailsPage = () => {
     setSelectedTransaction(transaction)
   }
 
+  const goBack = () => navigate(-1)
+
   return (
     <MainContent>
       <PageTitleRow>
         <Title>
-          <ArrowLeftStyled onClick={() => navigate(-1)} />
+          <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
           <PageH1Styled>
             {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
@@ -84,11 +86,13 @@ const AddressDetailsPage = () => {
           </OptionsButton>
         </Title>
       </PageTitleRow>
-      <DataList>
-        <DataListRow>
-          <DataListCell>{t`Address`}</DataListCell>
+      <DataList role="grid" tabIndex={0}>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>{t`Address`}</DataListCell>
           <DataListCell>
-            <Truncate>{addressHash}</Truncate>
+            <Truncate role="gridcell" tabIndex={0}>
+              {addressHash}
+            </Truncate>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} />
               <QRCodeButton textToEncode={addressHash} />
@@ -96,27 +100,39 @@ const AddressDetailsPage = () => {
             </IconButtons>
           </DataListCell>
         </DataListRow>
-        <DataListRow>
-          <DataListCell>Label</DataListCell>
-          <DataListCell>{address.settings.label ? <AddressBadge address={address} truncate /> : '-'}</DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            Label
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
+            {address.settings.label ? <AddressBadge address={address} truncate /> : '-'}
+          </DataListCell>
         </DataListRow>
-        <DataListRow>
-          <DataListCell>{t`Number of transactions`}</DataListCell>
-          <DataListCell>{address.details?.txNumber}</DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            {t`Number of transactions`}
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
+            {address.details?.txNumber}
+          </DataListCell>
         </DataListRow>
         {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
-          <DataListRow>
-            <DataListCell>{t`Locked ALPH balance`}</DataListCell>
-            <DataListCell>
+          <DataListRow role="row">
+            <DataListCell role="gridcell" tabIndex={0}>
+              {t`Locked ALPH balance`}
+            </DataListCell>
+            <DataListCell role="gridcell" tabIndex={0}>
               <Badge>
                 <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
               </Badge>
             </DataListCell>
           </DataListRow>
         )}
-        <DataListRow>
-          <DataListCell>{t`Total ALPH balance`}</DataListCell>
-          <DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            {t`Total ALPH balance`}
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
             {address.details?.balance ? (
               <Badge border>
                 <Amount value={BigInt(address.details.balance)} fadeDecimals />
@@ -133,25 +149,33 @@ const AddressDetailsPage = () => {
           .slice(0)
           .reverse()
           .map((transaction) => (
-            <TableRow key={transaction.txId} blinking>
+            <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
               {transaction.type === 'transfer' && <TransactionalInfo hideLabel transaction={transaction} />}
             </TableRow>
           ))}
         {address.transactions.confirmed.map((transaction) => (
-          <TableRow key={transaction.hash} onClick={() => onTransactionClick(transaction)}>
+          <TableRow
+            role="row"
+            tabIndex={0}
+            key={transaction.hash}
+            onClick={() => onTransactionClick(transaction)}
+            onKeyPress={() => onTransactionClick(transaction)}
+          >
             <TransactionalInfo hideLabel transaction={transaction} />
           </TableRow>
         ))}
         {address.transactions.confirmed.length !== address.details.txNumber && (
-          <TableRow>
-            <TableCell align="center">
+          <TableRow role="row">
+            <TableCell align="center" role="gridcell">
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
-          <TableRow>
-            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+          <TableRow role="row" tabIndex={0}>
+            <TableCellPlaceholder align="center" role="gridcell">
+              {t`No transactions to display`}
+            </TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
