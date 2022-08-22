@@ -50,24 +50,30 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         .slice(0)
         .reverse()
         .map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
-          <TableRow key={tx.txId} blinking>
+          <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
             {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
           </TableRow>
         ))}
       {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => (
-        <TableRow key={`${tx.hash}-${address.hash}`} onClick={() => onTransactionClick({ ...tx, address })}>
+        <TableRow
+          key={`${tx.hash}-${address.hash}`}
+          role="row"
+          tabIndex={0}
+          onClick={() => onTransactionClick({ ...tx, address })}
+          onKeyPress={() => onTransactionClick({ ...tx, address })}
+        >
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
         </TableRow>
       ))}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
-        <TableRow>
-          <TableCell align="center">
+        <TableRow role="row">
+          <TableCell align="center" role="gridcell">
             <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
           </TableCell>
         </TableRow>
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
-        <TableRow>
+        <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}
