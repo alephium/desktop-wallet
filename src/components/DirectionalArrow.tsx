@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 import tinycolor from 'tinycolor2'
 
@@ -28,15 +29,19 @@ interface DirectionalArrowProps {
 
 const DirectionalArrow = ({ direction }: DirectionalArrowProps) => {
   const theme = useTheme()
+  const { t } = useTranslation('App')
   const isReceiving = direction === 'in'
   const color = {
     circle: isReceiving
-      ? tinycolor(theme.font.secondary).setAlpha(0.11).toString()
-      : tinycolor(theme.global.valid).setAlpha(0.11).toString(),
-    arrow: isReceiving ? theme.font.secondary : theme.global.valid
+      ? tinycolor(theme.global.valid).setAlpha(0.11).toString()
+      : tinycolor(theme.font.secondary).setAlpha(0.11).toString(),
+    arrow: isReceiving ? theme.global.valid : theme.font.secondary
   }
+
+  const ariaLabel = isReceiving ? t`Received` : t`Sent`
+
   return (
-    <Circle color={color.circle}>
+    <Circle color={color.circle} aria-label={ariaLabel}>
       <Arrow direction={direction} color={color.arrow} />
     </Circle>
   )
