@@ -56,11 +56,11 @@ const WalletsSettingsSection = () => {
           onWalletRemove={() => handleRemoveWallet(walletToRemove)}
         />
       )}
-      <Section align="flex-start">
-        <h2>
+      <Section align="flex-start" role="table">
+        <h2 tabIndex={0} role="label">
           {t`Wallet list`} ({walletNames.length})
         </h2>
-        <BoxContainer>
+        <BoxContainer role="rowgroup">
           {walletNames.map((n) => (
             <WalletItem
               key={n}
@@ -107,15 +107,23 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
 
   return (
     <WalletItemContainer
+      role="row"
       onMouseEnter={() => setIsShowingDeleteButton(true)}
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
-      <WalletName>
+      <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {walletName}
         {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
-        <WalletDeleteButton squared transparent onClick={() => onWalletDelete(walletName)}>
+        <WalletDeleteButton
+          aria-label={t`Delete`}
+          tabIndex={0}
+          squared
+          transparent
+          onClick={() => onWalletDelete(walletName)}
+          onBlur={() => setIsShowingDeleteButton(false)}
+        >
           <Trash size={15} />
         </WalletDeleteButton>
       )}
