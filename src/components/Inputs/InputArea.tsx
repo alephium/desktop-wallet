@@ -17,14 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, MotionProps } from 'framer-motion'
-import { FC } from 'react'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputAreaProps extends MotionProps {
+  children: ReactNode | ReactNode[]
   onInput?: () => void
 }
 
-const InputArea: FC<InputAreaProps> = ({ onInput, children, ...rest }) => (
+const InputArea = ({ onInput, children, ...rest }: InputAreaProps) => (
   <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} {...rest}>
     {children}
   </motion.div>
