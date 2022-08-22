@@ -39,18 +39,18 @@ const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => 
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading })}>
       <div>
-        <AmountStyled value={totalBalance} />
-        <BalanceLabel>{t`TOTAL BALANCE`}</BalanceLabel>
+        <AmountStyled tabIndex={0} value={totalBalance} />
+        <BalanceLabel tabIndex={0} role="representation">{t`TOTAL BALANCE`}</BalanceLabel>
       </div>
       <Divider />
       <Balances>
         <Balance>
-          <Amount value={totalAvailableBalance} />
-          <BalanceLabel>{t`AVAILABLE`}</BalanceLabel>
+          <Amount tabIndex={0} value={totalAvailableBalance} />
+          <BalanceLabel tabIndex={0} role="representation">{t`AVAILABLE`}</BalanceLabel>
         </Balance>
         <Balance>
-          <Amount value={totalLockedBalance} />
-          <BalanceLabel>{t`LOCKED`}</BalanceLabel>
+          <Amount tabIndex={0} value={totalLockedBalance} />
+          <BalanceLabel tabIndex={0} role="representation">{t`LOCKED`}</BalanceLabel>
         </Balance>
       </Balances>
     </div>
