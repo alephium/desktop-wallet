@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
@@ -25,6 +26,7 @@ import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
+import InputArea from './Inputs/InputArea'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -41,6 +43,10 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
   const navigate = useNavigate()
 
   const collapsedPosition = !clickable ? (totalCards - index) * -159 + 5 : 0
+  const onInput = useCallback(
+    () => clickable && navigate(`/wallet/addresses/${address.hash}`),
+    [clickable, address.hash, navigate]
+  )
 
   return (
     <motion.div
@@ -49,14 +55,14 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       animate={{ x: collapsedPosition }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ClickableArea onClick={() => clickable && navigate(`/wallet/addresses/${address.hash}`)} clickable={clickable}>
-        <AddressNameSection collapsed={!clickable}>
+      <InputAreaStyled onInput={onInput} clickable={clickable}>
+        <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">
           <AddressBadgeStyled address={address} truncate />
         </AddressNameSection>
         <AmountsSection collapsed={!clickable}>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
         </AmountsSection>
-      </ClickableArea>
+      </InputAreaStyled>
       <ButtonsSection collapsed={!clickable}>
         <ClipboardButton textToCopy={address.hash} />
         <QRCodeButton textToEncode={address.hash} />
@@ -140,7 +146,7 @@ const ButtonsSection = styled.div<{ collapsed: boolean }>`
     `}
 `
 
-const ClickableArea = styled.div<{ clickable?: boolean }>`
+const InputAreaStyled = styled(InputArea)<{ clickable?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;

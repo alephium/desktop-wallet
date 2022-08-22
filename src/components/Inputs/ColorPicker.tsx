@@ -20,9 +20,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { TwitterPicker } from 'react-color'
 import { useDetectClickOutside } from 'react-detect-click-outside'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { getRandomLabelColor, labelColorPalette } from '../../utils/colors'
+import InputArea from '../Inputs/InputArea'
 import { inputDefaultStyle, InputProps } from '.'
 
 interface ColorPickerProps {
@@ -31,21 +33,28 @@ interface ColorPickerProps {
 }
 
 const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
+  const { t } = useTranslation('App')
   const color = value?.toString() || getRandomLabelColor()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const ref = useDetectClickOutside({ onTriggered: () => setIsPopupOpen(false) })
 
+  const handlePopupOpen = () => setIsPopupOpen(!isPopupOpen)
+  const onChangeComplete = (newColor: { hex: string }) => {
+    onChange(newColor.hex)
+    handlePopupOpen()
+  }
+
   return (
     <ColorPickerContainer ref={ref}>
-      <Input onClick={() => setIsPopupOpen(!isPopupOpen)}>
+      <InputAreaStyled aria-label={t`Pick a color`} onInput={handlePopupOpen}>
         <Circle color={color} />
-      </Input>
+      </InputAreaStyled>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isPopupOpen && (
           <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <TwitterPickerStyled
               color={color}
-              onChangeComplete={(newColor) => onChange(newColor.hex)}
+              onChangeComplete={onChangeComplete}
               colors={labelColorPalette}
               triangle="top-right"
             />
@@ -65,9 +74,8 @@ const ColorPickerContainer = styled.div<InputProps>`
   flex-direction: column;
 `
 
-const Input = styled.div<InputProps>`
+const InputAreaStyled = styled(InputArea)<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
-  cursor: pointer;
   position: relative;
   display: inline-flex;
   align-items: center;

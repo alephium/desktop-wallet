@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { MoreVertical } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -28,10 +28,11 @@ import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
+import InputArea from '../Inputs/InputArea'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, InputProps } from '.'
-import { MoreIcon, OptionItem, SelectContainer } from './Select'
+import { MoreIcon, SelectContainer } from './Select'
 
 interface AddressSelectProps {
   id: string
@@ -72,6 +73,8 @@ function AddressSelect({
     }
   }, [address, defaultAddress, onAddressChange])
 
+  const onInput = useCallback(() => !disabled && setIsAddressSelectModalOpen(true), [disabled])
+
   return (
     <>
       <AddressSelectContainer
@@ -79,7 +82,7 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
+        onInput={onInput}
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
@@ -145,7 +148,7 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {sortAddressList(displayedOptions).map((address) => (
-          <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
+          <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
             <AddressBadge address={address} />
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
@@ -212,10 +215,22 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AddressOption = styled(OptionItem)`
+const AddressOption = styled(InputArea)`
   display: flex;
   gap: 12px;
   align-items: center;
+
+  padding: var(--spacing-3);
+  background-color: ${({ theme }) => theme.bg.primary};
+  color: inherit;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.secondary};
+  }
 `
 
 const ClickableInput = styled.div<InputProps>`
