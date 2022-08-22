@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import Button from '../components/Button'
@@ -26,6 +27,7 @@ import { Section } from '../components/PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
 import Scrollbar from '../components/Scrollbar'
 import Spinner from '../components/Spinner'
+import useFocusOnMount from '../hooks/useFocusOnMount'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
@@ -45,41 +47,49 @@ const CenteredModal: FC<CenteredModalProps> = ({
   header,
   narrow = false,
   children
-}) => (
-  <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
-    <CenteredBox
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      narrow={narrow}
-    >
-      <ModalHeader contrast={!!header}>
-        <TitleRow>
-          <PanelTitle smaller useLayoutId={false}>
-            {title}
-            {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
-          </PanelTitle>
-          <CloseButton squared transparent onClick={onClose}>
-            <X />
-          </CloseButton>
-        </TitleRow>
-        {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
-      </ModalHeader>
-      <Scrollbar translateContentSizeYToHolder>
-        <ModalContent>{children}</ModalContent>
-      </Scrollbar>
-      {isLoading && (
-        <>
-          <ModalBackdrop light />
-          <ModalLoadingSpinner>
-            <Spinner />
-          </ModalLoadingSpinner>
-        </>
-      )}
-    </CenteredBox>
-  </ModalContainer>
-)
+}) => {
+  const { t } = useTranslation('App')
+  const elRef = useFocusOnMount<HTMLSpanElement>()
+
+  return (
+    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
+      <CenteredBox
+        role="dialog"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        narrow={narrow}
+      >
+        <ModalHeader contrast={!!header}>
+          <TitleRow>
+            <PanelTitle smaller useLayoutId={false}>
+              <span ref={elRef} tabIndex={0} role="heading">
+                {title}
+              </span>
+              {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
+            </PanelTitle>
+            <CloseButton aria-label={t`Close`} squared transparent onClick={onClose}>
+              <X />
+            </CloseButton>
+          </TitleRow>
+          {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
+        </ModalHeader>
+        <Scrollbar translateContentSizeYToHolder>
+          <ModalContent>{children}</ModalContent>
+        </Scrollbar>
+        {isLoading && (
+          <>
+            <ModalBackdrop light />
+            <ModalLoadingSpinner>
+              <Spinner />
+            </ModalLoadingSpinner>
+          </>
+        )}
+      </CenteredBox>
+    </ModalContainer>
+  )
+}
 
 export default CenteredModal
 
