@@ -121,13 +121,20 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
           hideEmptyAvailableBalance
         />
         <Input
+          id="recipients-address"
           label={t`Recipient's address`}
+          aria-label={t`Recipient's address`}
           value={toAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           error={addressError}
           isValid={toAddress.length > 0 && !addressError}
         />
-        <AmountInput value={amount} onChange={setAmount} availableAmount={fromAddress.availableBalance} />
+        <AmountInput
+          id="amount-to-send"
+          value={amount}
+          onChange={setAmount}
+          availableAmount={fromAddress.availableBalance}
+        />
         {expectedFeeInALPH && (
           <InfoBoxStyled short label={t`Expected fee`}>
             {expectedFeeInALPH}
