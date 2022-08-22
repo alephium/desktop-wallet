@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
@@ -25,6 +25,7 @@ import styled, { css } from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import Popup from '../Popup'
 import { inputDefaultStyle, InputLabel, InputProps } from './'
+import InputArea from './InputArea'
 
 export interface SelectOption<T> {
   value: T
@@ -70,6 +71,11 @@ function Select<T>({
     [onValueChange, skipEqualityCheck, value]
   )
 
+  const onContainerInput = () => {
+    if (options.length <= 1) return
+    setShowPopup(true)
+  }
+
   useEffect(() => {
     // Controlled component
     if (controlledValue && (!isEqual(controlledValue, value) || skipEqualityCheck)) {
@@ -91,7 +97,7 @@ function Select<T>({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={() => setShowPopup(true)}
+        onInput={onContainerInput}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
@@ -154,11 +160,12 @@ function SelectOptionsPopup<T>({
 
 export default Select
 
-const InputContainer = styled(motion.div)`
+const InputContainer = styled(InputArea)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
   margin: 16px 0;
+  padding: 0;
 `
 
 export const MoreIcon = styled.div`
