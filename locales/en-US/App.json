@@ -217,11 +217,18 @@
   "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
   "I have read and understood the documentation": "I have read and understood the documentation",
   "Use optional passphrase (advanced)": "Use optional passphrase (advanced)",
-  "Optional passphrase": "Optional passphrase",
   "Confirm passphrase": "Confirm passphrase",
   "Passphrases don't match": "Passphrases don't match",
   "Language": "Language",
   "Change the wallet language": "Change the wallet language",
   "English": "English",
-  "French": "French"
+  "French": "French",
+  "Activate dark mode": "Activate dark mode",
+  "Pick a color": "Pick a color",
+  "Close": "Close",
+  "Tab navigation": "Tab navigation",
+  "Make this your main address": "Make this your main address",
+  "into": "into",
+  "out from": "out from",
+  "Transaction details": "Transaction details"
 }
