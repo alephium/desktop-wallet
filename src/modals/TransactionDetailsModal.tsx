@@ -69,7 +69,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   return (
     <SideModal onClose={onClose}>
       <Header contrast>
-        <AmountWrapper color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
+        <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
           <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
@@ -81,7 +81,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Scrollbar>
-        <Details>
+        <Details role="table">
           <DetailsRow label={t`From`}>
             {isOutgoingTx ? (
               <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
@@ -116,20 +116,24 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
           <DetailsRow label={t`Status`}>
             <Badge color={theme.global.valid} border>
-              {t`Confirmed`}
+              <span tabIndex={0}>{t`Confirmed`}</span>
             </Badge>
           </DetailsRow>
           <DetailsRow label={t`Timestamp`}>
-            {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+            <span tabIndex={0}>{dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
           </DetailsRow>
           <DetailsRow label={t`Fee`}>
-            {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+            {<Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
           </DetailsRow>
-          <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+          <DetailsRow label={t`Total value`}>
+            <Amount tabIndex={0} value={amount} fadeDecimals fullPrecision />
+          </DetailsRow>
           <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
-            <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
+            <DetailsRow label={t`Gas amount`}>
+              <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
+            </DetailsRow>
             <DetailsRow label={t`Gas price`}>
-              <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+              <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
             </DetailsRow>
             <DetailsRow label={t`Inputs`}>
               <IOs>
@@ -159,8 +163,10 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
 export default TransactionDetailsModal
 
 let DetailsRow: FC<DetailsRowProps> = ({ children, label, className }) => (
-  <div className={className}>
-    <DetailsRowLabel>{label}</DetailsRowLabel>
+  <div className={className} role="row">
+    <DetailsRowLabel tabIndex={0} role="cell">
+      {label}
+    </DetailsRowLabel>
     {children}
   </div>
 )
