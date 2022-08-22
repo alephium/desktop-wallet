@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
@@ -27,12 +27,24 @@ import Popup from '../Popup'
 import { inputDefaultStyle, InputLabel, InputProps } from './'
 import InputArea from './InputArea'
 
-export interface SelectOption<T> {
+type Writable<T> = T extends string
+  ? string
+  : T extends number
+  ? number
+  : T extends undefined
+  ? undefined
+  : T extends readonly (infer U)[]
+  ? U
+  : never
+
+export type OptionValue = Writable<OptionHTMLAttributes<HTMLOptionElement>['value']>
+
+export interface SelectOption<T extends OptionValue> {
   value: T
   label: string
 }
 
-interface SelectProps<T> {
+interface SelectProps<T extends OptionValue> {
   label?: string
   disabled?: boolean
   controlledValue?: SelectOption<T>
@@ -46,7 +58,7 @@ interface SelectProps<T> {
   className?: string
 }
 
-function Select<T>({
+function Select<T extends OptionValue>({
   options,
   title,
   label,
@@ -105,11 +117,14 @@ function Select<T>({
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
         </InputLabel>
-        <MoreIcon>
-          <MoreVertical />
-        </MoreIcon>
+        {options.length > 1 && (
+          <MoreIcon>
+            <MoreVertical />
+          </MoreIcon>
+        )}
         <ClickableInput
           type="text"
+          tabIndex={-1}
           className={className}
           disabled={disabled}
           id={id}
@@ -134,7 +149,7 @@ function Select<T>({
   )
 }
 
-function SelectOptionsPopup<T>({
+function SelectOptionsPopup<T extends OptionValue>({
   options,
   setValue,
   onBackgroundClick,
@@ -145,18 +160,33 @@ function SelectOptionsPopup<T>({
   onBackgroundClick: () => void
   title?: string
 }) {
-  const handleOptionSelect = (value: SelectOption<T>) => {
-    setValue(value)
+  const handleEvent = (el: HTMLSelectElement) => {
+    handleOptionSelect({
+      label: options[el.selectedIndex]?.label,
+      value: el.value as T
+    })
+  }
+
+  const handleOptionSelect = (option: SelectOption<T>) => {
+    setValue(option)
     onBackgroundClick()
   }
 
   return (
     <Popup title={title} onBackgroundClick={onBackgroundClick}>
-      {options.map((o) => (
-        <OptionItem key={o.label} onClick={() => handleOptionSelect(o)}>
-          {o.label}
-        </OptionItem>
-      ))}
+      <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
+        {options.map((o) => (
+          <OptionItem
+            key={o.label}
+            value={o.value}
+            onClick={() => {
+              handleOptionSelect(o)
+            }}
+          >
+            {o.label}
+          </OptionItem>
+        ))}
+      </OptionSelect>
     </Popup>
   )
 }
@@ -183,10 +213,20 @@ export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
-export const OptionItem = styled.div`
+export const OptionSelect = styled.select`
+  width: 100%;
+  overflow-y: auto;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+`
+
+export const OptionItem = styled.option`
   padding: var(--spacing-3);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
+  color: inherit;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
