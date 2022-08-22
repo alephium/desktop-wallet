@@ -67,7 +67,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   }
 
   return (
-    <SideModal onClose={onClose}>
+    <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
           <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
