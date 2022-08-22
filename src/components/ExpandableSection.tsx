@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import InputArea from './Inputs/InputArea'
@@ -67,10 +67,6 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
     setIsExpanded(newState)
   }
 
-  const onAnimationComplete = useCallback(() => {
-    setIsVisible(isExpanded)
-  }, [isExpanded])
-
   const titleText = isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed
 
   return (
@@ -88,7 +84,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
       </Title>
       {isVisible && (
         <ContentWrapper
-          onAnimationComplete={onAnimationComplete}
+          onAnimationComplete={() => setIsVisible(isExpanded)}
           animate={{ height: isExpanded ? 'auto' : 0 }}
           transition={{ duration: 0.2 }}
         >

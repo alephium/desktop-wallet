@@ -16,15 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import { motion } from 'framer-motion'
-import { FC, useCallback, useEffect } from 'react'
+import { ReactNode, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 
 interface PopupProps {
   onBackgroundClick: () => void
+  children?: ReactNode | ReactNode[]
   title?: string
 }
 
-const Popup: FC<PopupProps> = ({ children, onBackgroundClick, title }) => {
+const Popup = ({ children, onBackgroundClick, title }: PopupProps) => {
   const handleEscapeKeyPress = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -43,14 +44,7 @@ const Popup: FC<PopupProps> = ({ children, onBackgroundClick, title }) => {
 
   return (
     <PopupContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onBackgroundClick}>
-      <PopupContent
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-        initial={{ y: -10 }}
-        animate={{ y: 0 }}
-        exit={{ y: -10 }}
-      >
+      <PopupContent onClick={(e) => e.stopPropagation()} initial={{ y: -10 }} animate={{ y: 0 }} exit={{ y: -10 }}>
         {title && (
           <PopupHeader>
             <h2>{title}</h2>

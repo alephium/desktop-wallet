@@ -72,9 +72,6 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
-  const amountFormatted = formatAmountForDisplay(BigInt(amount ?? 0))
-  const intoOrOutFromText = type === 'out' ? t`out from` : t`into`
-
   return (
     <div className={className}>
       <CellAmountTokenTime>
@@ -82,7 +79,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
           <DirectionalArrow direction={type} />
         </CellArrow>
         <TokenTimeInner>
-          <HiddenLabel text={amountFormatted} />
+          <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
           <TokenStyled type={token} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
@@ -91,7 +88,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
         <CellAddress>
           {!hideLabel && (
             <CellAddressBadge>
-              <HiddenLabel text={intoOrOutFromText} />
+              <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
               <AddressBadge address={address} truncate />
             </CellAddressBadge>
           )}
