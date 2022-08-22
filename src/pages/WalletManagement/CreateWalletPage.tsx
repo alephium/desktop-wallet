@@ -135,7 +135,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
         <Button secondary onClick={onButtonBack}>
           {t`Back`}
         </Button>
-        <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick} submit>
+        <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick}>
           {t`Continue`}
         </Button>
       </FooterActionsContainer>
