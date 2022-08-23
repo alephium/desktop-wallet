@@ -28,6 +28,8 @@ contextMenu()
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+let isThemeSetByApp = false
+
 const gotTheLock = app.requestSingleInstanceLock()
 
 // Build menu
@@ -202,6 +204,19 @@ if (!gotTheLock) {
     )
 
     createWindow()
+    nativeTheme.on('updated', (e) => {
+      if (isThemeSetByApp) {
+        isThemeSetByApp = false
+        return
+      }
+
+      if (e.sender.themeSource !== 'system') {
+        nativeTheme.themeSource = 'system'
+        return
+      }
+
+      mainWindow.webContents.send(`update:theme:${e.sender.shouldUseDarkColors ? 'dark' : 'light'}`)
+    })
   })
 
   // Quit when all windows are closed.
