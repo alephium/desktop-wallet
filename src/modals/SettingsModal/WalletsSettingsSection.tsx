@@ -83,7 +83,7 @@ const WalletsSettingsSection = () => {
               {t`Lock current wallet`}
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
-              {t`Show your secret phrase`}
+              {t`Show your secret recovery phrase`}
             </Button>
             <Button alert onClick={() => openRemoveWalletModal(activeWalletName)}>
               {t`Remove current wallet`}
