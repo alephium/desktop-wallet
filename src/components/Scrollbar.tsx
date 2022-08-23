@@ -56,7 +56,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   const onMouseEnter = () => setIsMouseOver(true)
   const onMouseLeave = () => setIsMouseOver(false)
 
-  const { isDynamic } = props
+  const { isDynamic, noScrollX } = props
 
   const onWheelY = useCallback(
     (e: WheelEvent) => {
@@ -95,7 +95,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
 
   const wrapperProps = createScrollbarPiece(
     { right: 0 },
-    { position: 'relative' as const, height: '100%', top: '-15px' },
+    { position: 'relative' as const, height: '100%', top: !noScrollX ? '-15px' : '' },
     isDynamic
   )
 
@@ -111,7 +111,10 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
         <div
           {...restProps}
           ref={onElementRef}
-          style={{ ...style, ...(isDynamic && { position: 'relative' as const, height: '100%', top: '15px' }) }}
+          style={{
+            ...style,
+            ...(isDynamic && { position: 'relative' as const, height: '100%', top: !noScrollX ? '15px' : '' })
+          }}
         />
       )
     }
@@ -144,6 +147,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
       onMouseLeave={onMouseLeave}
       momentum
       noScrollY={props.noScrollY}
+      noScrollX={noScrollX}
       translateContentSizeYToHolder={props.translateContentSizeYToHolder}
     >
       <ScrollContextProvider value={{ scroll }}>{props.children}</ScrollContextProvider>
