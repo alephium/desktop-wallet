@@ -75,7 +75,7 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
       <GradientCanvas />
       <Summaries>
         <WalletSummaryCardStyled isLoading={isLoadingData} />
-        <Scrollbar noScrollY isDynamic elementRef={onElementRef}>
+        <Scrollbar noScrollY isDynamic elementRef={onElementRef} noScrollX={!areAddressSummariesExpanded}>
           <AddressSummaryCards collapsed={!areAddressSummariesExpanded} totalAddresses={addresses.length}>
             <AnimatePresence>
               {sortAddressList(addresses).map((address, index) => (
