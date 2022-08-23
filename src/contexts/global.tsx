@@ -26,6 +26,7 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { NetworkStatus } from '../types/network'
+import { AlephiumWindow } from '../types/window'
 import { deleteStoredAddressMetadataOfWallet } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
@@ -96,6 +97,7 @@ export const initialGlobalContext: GlobalContextProps = {
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
 
 const Storage = getStorage()
+const _window = window as unknown as AlephiumWindow
 
 export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<GlobalContextProps> }> = ({
   children,
@@ -227,6 +229,18 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       })
     }
   }, [currentNetwork, networkStatus, t])
+
+  useEffect(
+    () => {
+      _window.electron.changeTheme(settings.general.theme)
+      const removeListeners: (() => void)[] = []
+      removeListeners.push(_window.electron.onUpdateThemeDark(() => updateSettings('general', { theme: 'dark' })))
+      removeListeners.push(_window.electron.onUpdateThemeLight(() => updateSettings('general', { theme: 'light' })))
+      return () => removeListeners.forEach((r) => r())
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   // Save settings to local storage
   useEffect(() => {

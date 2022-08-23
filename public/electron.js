@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell } = require('electron')
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
@@ -27,6 +27,8 @@ contextMenu()
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+let isThemeSetByApp = false
 
 const gotTheLock = app.requestSingleInstanceLock()
 
@@ -104,17 +106,18 @@ const template = [
         ? []
         : isWindows
         ? [{ role: 'about' }, { type: 'separator' }]
-        : [{
-          label: 'About',
-          click: async () => {
-            dialog.showMessageBox(mainWindow, {
-              message: `Version ${app.getVersion()}`,
-              title: 'About',
-              type: 'info'
-            })
-          }
-        }]
-      ),
+        : [
+            {
+              label: 'About',
+              click: async () => {
+                dialog.showMessageBox(mainWindow, {
+                  message: `Version ${app.getVersion()}`,
+                  title: 'About',
+                  type: 'info'
+                })
+              }
+            }
+          ]),
       {
         label: 'Report an issue',
         click: async () => {
@@ -142,6 +145,7 @@ function createWindow() {
     minHeight: 700,
     titleBarStyle: isWindows ? 'default' : 'hidden',
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       spellcheck: true
     }
   })
@@ -188,7 +192,21 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
+    ipcMain.handle('changeTheme', handleThemeChange)
     createWindow()
+    nativeTheme.on('updated', (e) => {
+      if (isThemeSetByApp) {
+        isThemeSetByApp = false
+        return
+      }
+
+      if (e.sender.themeSource !== 'system') {
+        nativeTheme.themeSource = 'system'
+        return
+      }
+
+      mainWindow.webContents.send(`update:theme:${e.sender.shouldUseDarkColors ? 'dark' : 'light'}`)
+    })
   })
 
   // Quit when all windows are closed.
@@ -203,4 +221,9 @@ if (!gotTheLock) {
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) createWindow()
   })
+}
+
+const handleThemeChange = (_, theme) => {
+  nativeTheme.themeSource = theme
+  isThemeSetByApp = true
 }
