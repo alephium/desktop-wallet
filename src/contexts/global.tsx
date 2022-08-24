@@ -232,10 +232,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useEffect(
     () => {
-      _window.electron.changeTheme(settings.general.theme)
+      _window.electron?.changeTheme(settings.general.theme)
       const removeListeners: (() => void)[] = []
-      removeListeners.push(_window.electron.onUpdateThemeDark(() => updateSettings('general', { theme: 'dark' })))
-      removeListeners.push(_window.electron.onUpdateThemeLight(() => updateSettings('general', { theme: 'light' })))
+      removeListeners.push(_window.electron?.onUpdateThemeDark(() => updateSettings('general', { theme: 'dark' })))
+      removeListeners.push(_window.electron?.onUpdateThemeLight(() => updateSettings('general', { theme: 'light' })))
       return () => removeListeners.forEach((r) => r())
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
