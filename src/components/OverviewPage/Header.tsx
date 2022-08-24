@@ -44,16 +44,19 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
     (element) => {
       const scrollbar = element?.querySelector('.ScrollbarsCustom-Scroller')
       if (!scrollbar) return
+
       scrollbarRef.current = scrollbar as HTMLDivElement
 
       const onWheel = (event: Event) => {
         const _event = event as WheelEvent
         const delta = _event.deltaY
+
         if (delta > 3 || delta < -3) {
           _event.preventDefault()
           scrollbar.scrollLeft = scrollbar.scrollLeft + delta
         }
       }
+
       scrollbar.addEventListener('wheel', onWheel)
 
       return () => {

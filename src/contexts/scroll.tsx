@@ -28,4 +28,5 @@ const ScrollContext = createContext<ScrollContextType>({
 })
 
 export const ScrollContextProvider = ScrollContext.Provider
+
 export const useScrollContext = () => useContext(ScrollContext)
