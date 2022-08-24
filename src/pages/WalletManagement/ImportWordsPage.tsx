@@ -96,7 +96,7 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? t`Make sure to properly write down the words in a secure location! They form the recovery phrase for your wallet.`
+            ? t`Make sure to properly write down the words in a secure location! They are your wallet's secret recovery phrase.`
             : t`All good? Let's continue!`}
         </Paragraph>
       </PanelContentContainer>

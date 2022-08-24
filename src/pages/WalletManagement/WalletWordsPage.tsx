@@ -64,7 +64,7 @@ const WalletWordsPage = () => {
           <Label>{t`Secret recovery phrase`}</Label>
           <PhraseBox>{renderFormatedMnemonic(mnemonic)}</PhraseBox>
           <InfoBox
-            text={t`Carefully note down the words! They form the recovery phrase for your wallet.`}
+            text={t`Carefully note down the words! They are your wallet's secret recovery phrase.`}
             Icon={Edit3}
             importance="alert"
           />
