@@ -172,13 +172,7 @@ function SelectOptionsPopup<T extends OptionValue>({
     <Popup title={title} onBackgroundClick={onBackgroundClick}>
       <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
         {options.map((o) => (
-          <OptionItem
-            key={o.label}
-            value={o.value}
-            onClick={() => {
-              handleOptionSelect(o)
-            }}
-          >
+          <OptionItem key={o.label} value={o.value} onClick={() => handleOptionSelect(o)}>
             {o.label}
           </OptionItem>
         ))}
