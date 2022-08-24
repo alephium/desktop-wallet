@@ -61,6 +61,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   const onWheelY = useCallback(
     (e: WheelEvent) => {
       if (!scrollerElemRef || !scrollerElemRef.current) return
+
       scrollerElemRef.current.scrollTop += e.deltaY
     },
     [scrollerElemRef]
@@ -103,6 +104,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
     renderer: ({ elementRef, style, ...restProps }: ElementPropsWithElementRef) => {
       const onElementRef = (element: HTMLDivElement | null) => {
         if (!elementRef) return
+
         scrollerElemRef.current = element
         elementRef(element)
       }
