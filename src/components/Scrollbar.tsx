@@ -95,7 +95,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
 
   const wrapperProps = createScrollbarPiece(
     { right: 0 },
-    { position: 'relative' as const, height: '100%', top: !noScrollX ? '-15px' : '' },
+    { position: 'relative' as const, height: '100%', top: !noScrollX ? '-16px' : '' },
     isDynamic
   )
 
@@ -113,7 +113,7 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
           ref={onElementRef}
           style={{
             ...style,
-            ...(isDynamic && { position: 'relative' as const, height: '100%', top: !noScrollX ? '15px' : '' })
+            ...(isDynamic && { position: 'relative' as const, height: '100%', top: !noScrollX ? '16px' : '' })
           }}
         />
       )
