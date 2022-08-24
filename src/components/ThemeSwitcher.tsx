@@ -38,7 +38,7 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
 
   const switchTheme = useCallback(
     (theme: ThemeType) => {
-      ;(window as unknown as AlephiumWindow).electron.changeTheme(theme)
+      ;(window as unknown as AlephiumWindow).electron?.changeTheme(theme)
       updateSettings('general', { theme })
     },
     [updateSettings]

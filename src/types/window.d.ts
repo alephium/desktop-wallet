@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 export interface AlephiumWindow extends Window {
-  electron: {
+  electron?: {
     changeTheme: (type: string) => void
     onUpdateThemeDark: (cb: () => void) => () => void
     onUpdateThemeLight: (cb: () => void) => () => void
