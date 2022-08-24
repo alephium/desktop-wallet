@@ -42,7 +42,7 @@ interface ScrollbarCustomProps extends ScrollbarProps {
   isDynamic?: boolean
 }
 
-const ScrollbarCustom = (props: ScrollbarCustomProps) => {
+const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProps) => {
   const theme = useTheme()
   const [scroll, setScroll] = useState<ScrollState>()
   const [isScrolling, setIsScrolling] = useState(false)
@@ -55,8 +55,6 @@ const ScrollbarCustom = (props: ScrollbarCustomProps) => {
   const onScrollStop = () => setIsScrolling(false)
   const onMouseEnter = () => setIsMouseOver(true)
   const onMouseLeave = () => setIsMouseOver(false)
-
-  const { isDynamic, noScrollX } = props
 
   const onWheelY = useCallback(
     (e: WheelEvent) => {
