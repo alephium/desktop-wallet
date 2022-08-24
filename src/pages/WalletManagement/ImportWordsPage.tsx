@@ -44,7 +44,7 @@ const ImportWordsPage = () => {
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
-  const defaultPlaceholder = t`Type your secret phrase`
+  const defaultPlaceholder = t`Type your recovery phrase`
   const [customPlaceholder, setCustomPlaceholder] = useState(defaultPlaceholder)
   const tagifyRef = useRef<Tagify<TagData> | undefined>()
 
@@ -84,7 +84,7 @@ const ImportWordsPage = () => {
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">{t`Secret phrase`}</PanelTitle>
+      <PanelTitle color="primary">{t`Secret recovery phrase`}</PanelTitle>
       <PanelContentContainer>
         <Section>
           <TextAreaTags
@@ -96,7 +96,7 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? t`Make sure to properly write down the words in a secure location! They are the secret key to your wallet.`
+            ? t`Make sure to properly write down the words in a secure location! They are your wallet's secret recovery phrase.`
             : t`All good? Let's continue!`}
         </Paragraph>
       </PanelContentContainer>
