@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
+import Scrollbar from '../components/Scrollbar'
 import { useGlobalContext } from '../contexts/global'
 import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
 import AddressesPage from '../pages/Wallet/AddressesPage'
@@ -38,13 +39,15 @@ const WalletRoutes = () => {
   }, [navigate, wallet])
 
   return (
-    <WalletLayout>
-      <Routes location={location} key={location.pathname}>
-        <Route path="overview" key="overview" element={<OverviewPage />} />
-        <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
-        <Route path="addresses" key="addresses" element={<AddressesPage />} />
-      </Routes>
-    </WalletLayout>
+    <Scrollbar>
+      <WalletLayout>
+        <Routes location={location} key={location.pathname}>
+          <Route path="overview" key="overview" element={<OverviewPage />} />
+          <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
+          <Route path="addresses" key="addresses" element={<AddressesPage />} />
+        </Routes>
+      </WalletLayout>
+    </Scrollbar>
   )
 }
 

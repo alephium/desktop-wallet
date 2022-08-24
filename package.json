@@ -81,6 +81,7 @@
     "react-qr-code": "^2.0.3",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^4.0.3",
+    "react-scrollbars-custom": "^4.1.1",
     "react-tooltip": "^4.2.21",
     "semver-compare": "^1.0.0",
     "shx": "^0.3.3",
