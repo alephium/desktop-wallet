@@ -54,6 +54,10 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
     const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
     const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
 
+    if (!address) return null
+
+    const addressWithMetadata = getAddress(address)
+
     // There may be a case where a wallet sends funds to the same address, which doesn't
     // make it a change address but a legimitate receiving address.
     const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
@@ -75,8 +79,17 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </TruncateWrap>
     ) : (
       <Addresses>
-        {addressesToShow.map((addressHash) => {
-          const addressComponent = getAddressComponent(addressHash)
+        {addressesToShow.map((address) => {
+          if (!address) return null
+
+          const addressWithMetadata = getAddress(address)
+          const addressComponent = addressWithMetadata ? (
+            <AddressBadge truncate address={addressWithMetadata} />
+          ) : (
+            <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
+              <Ellipsed text={address} />
+            </ClipboardButton>
+          )
 
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>

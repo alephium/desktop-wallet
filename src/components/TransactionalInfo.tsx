@@ -75,6 +75,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
+    outputs = [{ hint: 0, key: '', type: tx.type, attoAlphAmount: '', address: tx.toAddress }]
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
