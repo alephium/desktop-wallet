@@ -93,6 +93,10 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
   transition: padding 0.2s ease-out;
   padding: 0 17px;
 
+  & > div {
+    width: 80%;
+  }
+
   ${({ collapsed }) =>
     !collapsed &&
     css`
@@ -104,7 +108,6 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
-  width: 100%;
   padding: 11px 17px;
   border-radius: 0;
   text-align: center;

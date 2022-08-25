@@ -26,6 +26,7 @@ import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import ActionLink from './ActionLink'
 import AddressBadge from './AddressBadge'
 import Badge from './Badge'
+import ClipboardButton from './Buttons/ClipboardButton'
 import Truncate from './Truncate'
 
 interface IOListProps {
@@ -67,7 +68,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
           <AddressBadge address={addressWithMetadata} />
         ) : (
           <AddressSpan>
-            <Truncate key={key}>{address}</Truncate>
+            <ClipboardButton textToCopy={address ?? ''}>
+              <Truncate key={key}>{address}</Truncate>
+            </ClipboardButton>
           </AddressSpan>
         )}
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
@@ -76,7 +79,11 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       <Addresses>
         {addressesToShow.map((address) => {
           const addressWithMetadata = getAddress(address)
-          const addressComponent = addressWithMetadata ? <AddressBadge address={addressWithMetadata} /> : address
+          const addressComponent = addressWithMetadata ? (
+            <AddressBadge address={addressWithMetadata} />
+          ) : (
+            <ClipboardButton textToCopy={address ?? ''}>address</ClipboardButton>
+          )
 
           return linkToExplorer ? (
             <ActionLink onClick={() => handleShowAddress(address)} key={address}>
