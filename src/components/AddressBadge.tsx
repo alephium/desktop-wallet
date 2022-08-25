@@ -22,6 +22,7 @@ import styled, { useTheme } from 'styled-components'
 import { Address } from '../contexts/addresses'
 import { AddressSettings, isAddress, isAddressSettings } from '../utils/addresses'
 import Badge from './Badge'
+import ClipboardButton from './Buttons/ClipboardButton'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   address: Address | AddressSettings
@@ -32,6 +33,7 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   const theme = useTheme()
 
   let data
+  let textToCopy
 
   if (isAddress(address)) {
     data = {
@@ -39,20 +41,27 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
       isMain: address.settings.isMain,
       label: address.getName()
     }
+    textToCopy = address.hash
   } else if (isAddressSettings(address)) {
     data = address
+    textToCopy = data.label
   } else {
     data = {
       color: theme.font.primary,
       isMain: false,
       label: ''
     }
+    textToCopy = data.label
   }
 
+  textToCopy = textToCopy ?? ''
+
   return (
-    <div className={className}>
-      <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
-    </div>
+    <ClipboardButton textToCopy={textToCopy}>
+      <div className={className}>
+        <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
+      </div>
+    </ClipboardButton>
   )
 }
 
