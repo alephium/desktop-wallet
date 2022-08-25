@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Clipboard } from 'lucide-react'
-import { ReactNode, useEffect, useState } from 'react'
+import { MouseEventHandler, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
@@ -37,7 +37,9 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const handleInput = () => {
+  const handleInput: MouseEventHandler<SVGSVGElement> = (e) => {
+    e.stopPropagation()
+
     navigator.clipboard
       .writeText(textToCopy)
       .catch((e) => {
@@ -97,12 +99,13 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
 }
 
 const CellClipboard = styled.div`
-  position: relative;
   opacity: 0;
+  z-index: 1;
 `
 
 const CellChildren = styled.div`
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
+  margin-right: -15px;
 `
 
 const ClipboardWrapper = styled.div`
@@ -118,17 +121,13 @@ const ClipboardWrapper = styled.div`
 
 export default styled(ClipboardButton)`
   display: flex;
-
-  & ${ClipboardWrapper} {
-    position: absolute;
-    left: -15px;
-  }
+  align-items: center;
 
   &:hover > ${CellClipboard} {
     opacity: 1;
   }
 
   &:hover > ${CellChildren} {
-    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0));
+    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) calc(100% - 15px));
   }
 `
