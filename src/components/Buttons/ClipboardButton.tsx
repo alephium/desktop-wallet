@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Clipboard } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
@@ -28,10 +28,11 @@ import { useGlobalContext } from '../../contexts/global'
 
 interface ClipboardButtonProps {
   textToCopy: string
+  children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
+const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonProps) => {
   const { t } = useTranslation('App')
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
@@ -67,36 +68,67 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
     }
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
-  if (!hasBeenCopied) {
-    return (
-      <div data-tip={t`Copy to clipboard`}>
-        <Clipboard
-          className={`${className} clipboard`}
-          size={15}
-          onClick={handleInput}
-          onKeyPress={handleInput}
-          role="button"
-          aria-label={t`Copy to clipboard`}
-          tabIndex={0}
-        />
-      </div>
-    )
-  } else {
-    return (
-      <div data-tip={t`Copied`}>
-        <Check className={`${className} check`} size={15} />
-      </div>
-    )
-  }
+  const clipboard = !hasBeenCopied ? (
+    <ClipboardWrapper data-tip={t`Copy to clipboard`}>
+      <Clipboard
+        className={`${className} clipboard`}
+        size={15}
+        onClick={handleInput}
+        onKeyPress={handleInput}
+        role="button"
+        aria-label={t`Copy to clipboard`}
+        tabIndex={0}
+      />
+    </ClipboardWrapper>
+  ) : (
+    <ClipboardWrapper data-tip={t`Copied`}>
+      <Check className={`${className} check`} size={15} />
+    </ClipboardWrapper>
+  )
+
+  return children || (Array.isArray(children) && children.length > 0) ? (
+    <div className={className}>
+      <CellChildren>{children}</CellChildren>
+      <CellClipboard>{clipboard}</CellClipboard>
+    </div>
+  ) : (
+    clipboard
+  )
 }
 
-export default styled(ClipboardButton)`
-  &.clipboard {
+const CellClipboard = styled.div`
+  position: relative;
+  opacity: 0;
+`
+
+const CellChildren = styled.div`
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
+`
+
+const ClipboardWrapper = styled.div`
+  & > .clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};
   }
 
   &.check {
     color: ${({ theme }) => theme.font.primary};
+  }
+`
+
+export default styled(ClipboardButton)`
+  display: flex;
+
+  & ${ClipboardWrapper} {
+    position: absolute;
+    left: -15px;
+  }
+
+  &:hover > ${CellClipboard} {
+    opacity: 1;
+  }
+
+  &:hover > ${CellChildren} {
+    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0));
   }
 `
