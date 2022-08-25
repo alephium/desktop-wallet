@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Clipboard } from 'lucide-react'
-import { MouseEventHandler, ReactNode, useEffect, useState } from 'react'
+import { MouseEventHandler, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../../contexts/global'
@@ -37,18 +36,21 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const handleInput: MouseEventHandler<SVGSVGElement> = (e) => {
-    e.stopPropagation()
+  const handleInput: MouseEventHandler<SVGSVGElement> = useCallback(
+    (e) => {
+      e.stopPropagation()
 
-    navigator.clipboard
-      .writeText(textToCopy)
-      .catch((e) => {
-        throw e
-      })
-      .then(() => {
-        setHasBeenCopied(true)
-      })
-  }
+      navigator.clipboard
+        .writeText(textToCopy)
+        .catch((e) => {
+          throw e
+        })
+        .then(() => {
+          setHasBeenCopied(true)
+        })
+    },
+    [setHasBeenCopied, textToCopy]
+  )
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>
@@ -60,8 +62,6 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
         setHasBeenCopied(false)
       }, 3000)
     }
-
-    ReactTooltip.rebuild()
 
     return () => {
       if (interval) {
@@ -83,7 +83,7 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
       />
     </ClipboardWrapper>
   ) : (
-    <ClipboardWrapper data-tip={t`Copied`}>
+    <ClipboardWrapper className={className} data-tip={t`Copied`}>
       <Check className={`${className} check`} size={15} />
     </ClipboardWrapper>
   )
@@ -106,6 +106,7 @@ const CellClipboard = styled.div`
 const CellChildren = styled.div`
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
   margin-right: -15px;
+  overflow: hidden;
 `
 
 const ClipboardWrapper = styled.div`
@@ -122,6 +123,7 @@ const ClipboardWrapper = styled.div`
 export default styled(ClipboardButton)`
   display: flex;
   align-items: center;
+  overflow: hidden;
 
   &:hover > ${CellClipboard} {
     opacity: 1;
