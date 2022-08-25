@@ -18,7 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-export default styled(({ text, ...props }) => <div {...props}>{text}</div>)`
+interface HiddenLabelProps {
+  text: string
+}
+
+const HiddenLabel = ({ text, ...props }: HiddenLabelProps) => <div {...props}>{text}</div>
+
+export default styled(HiddenLabel)`
   position: absolute;
   left: -10000px;
   top: auto;

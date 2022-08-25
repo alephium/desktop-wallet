@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { HTMLAttributes, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -45,13 +46,13 @@ const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
         <TabBarContent>
           {tabItems.map((i) => (
             <TabContainer key={i.value}>
-              <Tab
+              <TabStyled
                 onClick={() => onTabChange(i)}
                 onKeyPress={() => onTabChange(i)}
                 isActive={activeTab.value === i.value}
               >
                 {i.label}
-              </Tab>
+              </TabStyled>
             </TabContainer>
           ))}
         </TabBarContent>
@@ -100,11 +101,18 @@ const TabSelector = styled(motion.div)`
   z-index: -1;
 `
 
-const Tab = styled(({ isActive, onClick, onKeyPress, children, className }) => (
-  <div className={className} onClick={onClick} onKeyPress={onKeyPress} role="tab" tabIndex={0} aria-selected={isActive}>
+interface TabProps extends HTMLAttributes<HTMLDivElement> {
+  isActive: boolean
+  children: ReactNode | ReactNode[]
+}
+
+const Tab = ({ isActive, children, ...props }: TabProps) => (
+  <div {...props} role="tab" tabIndex={0} aria-selected={isActive}>
     {children}
   </div>
-))`
+)
+
+const TabStyled = styled(Tab)`
   flex: 1;
   text-align: center;
   padding: 8px;
