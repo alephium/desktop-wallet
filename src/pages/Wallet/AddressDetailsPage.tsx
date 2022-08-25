@@ -90,11 +90,12 @@ const AddressDetailsPage = () => {
         <DataListRow role="row">
           <DataListCell role="gridcell" tabIndex={0}>{t`Address`}</DataListCell>
           <DataListCell>
-            <Truncate role="gridcell" tabIndex={0}>
-              {addressHash}
-            </Truncate>
             <IconButtons>
-              <ClipboardButton textToCopy={addressHash} />
+              <ClipboardButton textToCopy={addressHash}>
+                <Truncate role="gridcell" tabIndex={0}>
+                  {addressHash}
+                </Truncate>
+              </ClipboardButton>
               <QRCodeButton textToEncode={addressHash} />
               <OpenInExplorerButton address={addressHash} />
             </IconButtons>
@@ -232,7 +233,6 @@ const PageH1Styled = styled(PageH1)`
 
 const IconButtons = styled.div`
   display: flex;
-  margin-left: var(--spacing-2);
 
   > svg {
     margin-left: 10px;
