@@ -28,6 +28,8 @@ contextMenu()
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+let isThemeSetByApp = false
+
 const gotTheLock = app.requestSingleInstanceLock()
 
 // Build menu
@@ -190,9 +192,14 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
+    ipcMain.handle('changeTheme', handleThemeChange)
     createWindow()
-
     nativeTheme.on('updated', (e) => {
+      if (isThemeSetByApp) {
+        isThemeSetByApp = false
+        return
+      }
+
       if (e.sender.themeSource !== 'system') {
         nativeTheme.themeSource = 'system'
         return
@@ -214,4 +221,9 @@ if (!gotTheLock) {
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) createWindow()
   })
+}
+
+const handleThemeChange = (_, theme) => {
+  nativeTheme.themeSource = theme
+  isThemeSetByApp = true
 }

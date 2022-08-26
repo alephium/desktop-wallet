@@ -21,6 +21,7 @@ import { FC, useCallback } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
 import { ThemeType } from '../style/themes'
+import { AlephiumWindow } from '../types/window'
 import Toggle from './Inputs/Toggle'
 
 interface ThemeSwitcherProps {
@@ -37,6 +38,9 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
 
   const switchTheme = useCallback(
     (theme: ThemeType) => {
+      const _window = window as unknown as AlephiumWindow
+      _window.electron?.changeTheme(theme)
+
       updateSettings('general', { theme })
     },
     [updateSettings]
