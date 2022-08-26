@@ -39,8 +39,7 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const switchTheme = useCallback(
     (theme: ThemeType) => {
       const _window = window as unknown as AlephiumWindow
-      _window.electron?.changeTheme(theme)
-
+      _window.electron?.setNativeTheme(theme)
       updateSettings('general', { theme })
     },
     [updateSettings]

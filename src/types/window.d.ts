@@ -16,10 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+interface NativeTheme {
+  shouldUseDarkColors: boolean
+  themeSource: string
+}
+
 export interface AlephiumWindow extends Window {
   electron?: {
-    changeTheme: (type: string) => void
-    onUpdateThemeDark: (cb: () => void) => () => void
-    onUpdateThemeLight: (cb: () => void) => () => void
+    setNativeTheme: (theme: string) => void
+    getNativeTheme: () => void
+    onGetNativeTheme: (cb: (nativeTheme: NativeTheme) => void) => () => void
   }
 }

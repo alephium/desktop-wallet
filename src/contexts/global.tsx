@@ -25,6 +25,7 @@ import { AsyncReturnType, PartialDeep } from 'type-fest'
 import { SnackbarMessage } from '../components/SnackbarManager'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
+import { ThemeType } from '../style/themes'
 import { NetworkStatus } from '../types/network'
 import { AlephiumWindow } from '../types/window'
 import { deleteStoredAddressMetadataOfWallet } from '../utils/addresses'
@@ -232,16 +233,18 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useEffect(
     () => {
-      const removeListeners: (() => void)[] = []
-      const electron = _window.electron
-
-      if (electron) {
-        electron.changeTheme(settings.general.theme)
-        removeListeners.push(electron.onUpdateThemeDark(() => updateSettings('general', { theme: 'dark' })))
-        removeListeners.push(electron.onUpdateThemeLight(() => updateSettings('general', { theme: 'light' })))
-      }
-
-      return () => removeListeners.forEach((r) => r())
+      const removeListener = _window.electron?.onGetNativeTheme((nativeTheme) => {
+        console.log(nativeTheme)
+        const theme =
+          nativeTheme.themeSource === 'system'
+            ? nativeTheme.shouldUseDarkColors
+              ? ('dark' as const)
+              : ('light' as const)
+            : (nativeTheme.themeSource as ThemeType)
+        updateSettings('general', { theme })
+      })
+      _window.electron?.getNativeTheme()
+      return () => removeListener && removeListener()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
