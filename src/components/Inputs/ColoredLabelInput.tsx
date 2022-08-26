@@ -64,7 +64,11 @@ const ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }:
         color={color}
         maxLength={maxLength}
       />
-      {title && <AddressBadgeStyled address={address} />}
+      {title && (
+        <AddressBadgeCell>
+          <AddressBadge address={address} />
+        </AddressBadgeCell>
+      )}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
@@ -92,7 +96,7 @@ const InputStyled = styled(Input)`
   }
 `
 
-const AddressBadgeStyled = styled(AddressBadge)`
+const AddressBadgeCell = styled.div`
   position: absolute;
   left: 12px;
 `
