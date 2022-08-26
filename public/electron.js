@@ -28,8 +28,6 @@ contextMenu()
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-let isThemeSetByApp = false
-
 const gotTheLock = app.requestSingleInstanceLock()
 
 // Build menu
@@ -192,21 +190,18 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
-    ipcMain.handle('changeTheme', handleThemeChange)
+    ipcMain.handle('setNativeTheme', setNativeTheme)
+
+    // nativeTheme must be reassigned like this because its properties are all computed, so
+    // they can't be serialized to be passed over channels.
+    ipcMain.handle('getNativeTheme', (e) =>
+      e.sender.send('getNativeTheme', {
+        shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+        themeSource: nativeTheme.themeSource
+      })
+    )
+
     createWindow()
-    nativeTheme.on('updated', (e) => {
-      if (isThemeSetByApp) {
-        isThemeSetByApp = false
-        return
-      }
-
-      if (e.sender.themeSource !== 'system') {
-        nativeTheme.themeSource = 'system'
-        return
-      }
-
-      mainWindow.webContents.send(`update:theme:${e.sender.shouldUseDarkColors ? 'dark' : 'light'}`)
-    })
   })
 
   // Quit when all windows are closed.
@@ -223,7 +218,4 @@ if (!gotTheLock) {
   })
 }
 
-const handleThemeChange = (_, theme) => {
-  nativeTheme.themeSource = theme
-  isThemeSetByApp = true
-}
+const setNativeTheme = (_, theme) => (nativeTheme.themeSource = theme)
