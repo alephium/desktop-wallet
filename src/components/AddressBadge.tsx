@@ -95,7 +95,7 @@ const Icon = styled.span<{ isMain: boolean; color?: string }>`
       text-align: center;
       margin-right: ${dotStyling.marginRight};
       line-height: 1rem;
-      font-size: ${isMain ? '1.4em' : '1em'};
+      font-size: ${isMain ? '1.0rem' : '0.8rem'};
       vertical-align: middle;
       content: '${isMain ? '★' : '●'}';
       border-radius: 100%;
