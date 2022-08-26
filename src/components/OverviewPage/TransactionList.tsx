@@ -17,7 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactTooltip from 'react-tooltip'
 
 import ActionLink from '../../components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
@@ -43,6 +45,10 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   }
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [addresses])
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">

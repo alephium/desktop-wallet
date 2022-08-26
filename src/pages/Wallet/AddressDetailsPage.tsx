@@ -19,8 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactTooltip from 'react-tooltip'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -54,6 +55,10 @@ const AddressDetailsPage = () => {
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [address?.transactions.pending, address?.transactions.confirmed])
 
   if (!address) return null
 

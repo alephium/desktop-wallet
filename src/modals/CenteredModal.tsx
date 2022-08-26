@@ -28,6 +28,7 @@ import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTi
 import Scrollbar from '../components/Scrollbar'
 import Spinner from '../components/Spinner'
 import useFocusOnMount from '../hooks/useFocusOnMount'
+import Tooltip from '../components/Tooltip'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
@@ -87,6 +88,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
           </>
         )}
       </CenteredBox>
+      <Tooltip />
     </ModalContainer>
   )
 }

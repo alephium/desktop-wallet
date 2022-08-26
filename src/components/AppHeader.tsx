@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import { useAddressesContext } from '../contexts/addresses'
@@ -34,7 +33,6 @@ import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
-import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const { t } = useTranslation('App')
@@ -59,10 +57,6 @@ const AppHeader: FC = ({ children }) => {
     },
     updateSettings
   } = useGlobalContext()
-
-  useEffect(() => {
-    if (isOffline || mainAddress) ReactTooltip.rebuild()
-  }, [isOffline, mainAddress])
 
   return (
     <>
@@ -112,7 +106,6 @@ const AppHeader: FC = ({ children }) => {
       <AnimatePresence>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </AnimatePresence>
-      <Tooltip />
     </>
   )
 }

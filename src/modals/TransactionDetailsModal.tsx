@@ -29,6 +29,7 @@ import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
+import Tooltip from '../components/Tooltip'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
@@ -64,7 +65,6 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
   }
-
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
@@ -153,6 +153,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
         </ExpandableSectionStyled>
       </Details>
+      <Tooltip />
     </SideModal>
   )
 }
