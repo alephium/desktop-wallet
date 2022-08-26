@@ -236,6 +236,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       const electron = _window.electron
 
       if (electron) {
+        electron.changeTheme(settings.general.theme)
         removeListeners.push(electron.onUpdateThemeDark(() => updateSettings('general', { theme: 'dark' })))
         removeListeners.push(electron.onUpdateThemeLight(() => updateSettings('general', { theme: 'light' })))
       }
