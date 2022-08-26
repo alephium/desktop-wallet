@@ -16,12 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import ReactTooltip from 'react-tooltip'
 import styled, { ThemeProvider } from 'styled-components'
 
 import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
+import Tooltip from './components/Tooltip'
+import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
 import Router from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
@@ -29,7 +32,13 @@ import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
-  const { settings, snackbarMessage, isClientLoading } = useGlobalContext()
+  const { networkStatus, settings, snackbarMessage, isClientLoading } = useGlobalContext()
+  const { mainAddress } = useAddressesContext()
+  const isOffline = networkStatus === 'offline'
+
+  useEffect(() => {
+    if (isOffline || mainAddress) ReactTooltip.rebuild()
+  }, [isOffline, mainAddress])
 
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
@@ -40,6 +49,7 @@ const App = () => {
       </AppContainer>
       <ClientLoading>{isClientLoading && <Spinner size="15px" />}</ClientLoading>
       <SnackbarManager message={snackbarMessage} />
+      <Tooltip />
     </ThemeProvider>
   )
 }

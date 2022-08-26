@@ -19,8 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactTooltip from 'react-tooltip'
 import { useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
@@ -76,6 +77,10 @@ const AddressesPage = () => {
   }
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [])
 
   return (
     <MainContent>
