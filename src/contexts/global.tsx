@@ -234,7 +234,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   useEffect(
     () => {
       const removeListener = _window.electron?.onGetNativeTheme((nativeTheme) => {
-        console.log(nativeTheme)
         const theme =
           nativeTheme.themeSource === 'system'
             ? nativeTheme.shouldUseDarkColors
