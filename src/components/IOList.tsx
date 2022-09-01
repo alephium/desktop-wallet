@@ -68,7 +68,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
           <AddressBadge address={addressWithMetadata} />
         ) : (
           <AddressSpan>
-            <ClipboardButton textToCopy={address ?? ''}>
+            <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
               <Truncate key={key}>{address}</Truncate>
             </ClipboardButton>
           </AddressSpan>
@@ -82,7 +82,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
           const addressComponent = addressWithMetadata ? (
             <AddressBadge address={addressWithMetadata} />
           ) : (
-            <ClipboardButton textToCopy={address ?? ''}>{address}</ClipboardButton>
+            <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
+              {address}
+            </ClipboardButton>
           )
 
           return linkToExplorer ? (

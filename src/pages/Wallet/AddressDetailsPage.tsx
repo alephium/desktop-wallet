@@ -96,7 +96,7 @@ const AddressDetailsPage = () => {
           <DataListCell role="gridcell" tabIndex={0}>{t`Address`}</DataListCell>
           <DataListCell>
             <IconButtons>
-              <ClipboardButton textToCopy={addressHash}>
+              <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
                 <Truncate role="gridcell" tabIndex={0}>
                   {addressHash}
                 </Truncate>
