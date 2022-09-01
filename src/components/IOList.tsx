@@ -82,7 +82,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
           const addressComponent = addressWithMetadata ? (
             <AddressBadge address={addressWithMetadata} />
           ) : (
-            <ClipboardButton textToCopy={address ?? ''}>address</ClipboardButton>
+            <ClipboardButton textToCopy={address ?? ''}>{address}</ClipboardButton>
           )
 
           return linkToExplorer ? (
