@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // TODO: Extract to common shared UI library
 
-import { Check, Clipboard } from 'lucide-react'
+import { Check, Copy } from 'lucide-react'
 import { MouseEventHandler, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -27,11 +27,12 @@ import { useGlobalContext } from '../../contexts/global'
 
 interface ClipboardButtonProps {
   textToCopy: string
+  tipText?: string
   children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonProps) => {
+const ClipboardButton = ({ tipText, textToCopy, children, className }: ClipboardButtonProps) => {
   const { t } = useTranslation('App')
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
@@ -71,7 +72,7 @@ const ClipboardButton = ({ textToCopy, children, className }: ClipboardButtonPro
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
   const clipboard = !hasBeenCopied ? (
-    <ClipboardWrapper data-tip={t`Copy to clipboard`}>
+    <ClipboardWrapper data-tip={tipText ?? t`Copy to clipboard`}>
       <Clipboard
         className={`${className} clipboard`}
         size={15}

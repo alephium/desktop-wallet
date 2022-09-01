@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ComponentPropsWithoutRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
@@ -31,6 +32,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 
 const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   const theme = useTheme()
+  const { t } = useTranslation('App')
 
   let data
   let textToCopy
@@ -57,7 +59,7 @@ const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
   textToCopy = textToCopy ?? ''
 
   return (
-    <ClipboardButton textToCopy={textToCopy}>
+    <ClipboardButton textToCopy={textToCopy} tipText={t`Copy address`}>
       <div className={className}>
         <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
       </div>
