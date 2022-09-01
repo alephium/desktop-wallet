@@ -238,6 +238,7 @@ const PageH1Styled = styled(PageH1)`
 
 const IconButtons = styled.div`
   display: flex;
+  overflow: hidden;
 
   > svg {
     margin-left: 10px;
