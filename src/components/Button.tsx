@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
@@ -114,10 +114,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
       transparent
         ? theme.bg.accent
         : secondary
-        ? tinycolor(theme.bg.tertiary).lighten(30).toString()
+        ? colord(theme.bg.tertiary).lighten(30).toRgbString()
         : alert
-        ? tinycolor(theme.global.alert).darken(8).toString()
-        : tinycolor(theme.global.accent).darken(8).toString()};
+        ? colord(theme.global.alert).darken(8).toRgbString()
+        : colord(theme.global.accent).darken(8).toRgbString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
     cursor: pointer;
@@ -126,10 +126,10 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   &:active {
     background-color: ${({ theme, secondary, alert }) =>
       secondary
-        ? tinycolor(theme.bg.tertiary).darken(40).toString()
+        ? colord(theme.bg.tertiary).darken(40).toRgbString()
         : alert
-        ? tinycolor(theme.global.alert).lighten(3).toString()
-        : tinycolor(theme.global.accent).lighten(3).toString()};
+        ? colord(theme.global.alert).lighten(3).toRgbString()
+        : colord(theme.global.accent).lighten(3).toRgbString()};
   }
 
   &:disabled {
@@ -139,6 +139,6 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
+    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(20).toRgbString()};
   }
 `

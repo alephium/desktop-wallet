@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
@@ -264,11 +264,11 @@ const SelectedWord = styled(motion.button)`
   }
 
   &:hover {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.8).toString()};
+    background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.8).toRgbString()};
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
+    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(20).toRgbString()};
   }
 `
 
@@ -312,10 +312,10 @@ const SelectedWordList = styled.div`
 
 const RemainingWord = styled(SelectedWord)`
   background-color: ${({ theme }) => theme.global.accent};
-  background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.1).toString()};
+  background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
   color: ${({ theme }) => theme.global.accent};
 
   &:hover {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.3).toString()};
+    background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.3).toRgbString()};
   }
 `

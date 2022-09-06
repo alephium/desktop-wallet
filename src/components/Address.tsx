@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { useGlobalContext } from '../contexts/global'
 import { openInWebBrowser } from '../utils/misc'
@@ -43,7 +43,7 @@ const StyledAdress = styled.span`
   color: ${({ theme }) => theme.global.accent};
 
   &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+    color: ${({ theme }) => colord(theme.global.accent).darken(10).toRgbString()};
   }
 `
 

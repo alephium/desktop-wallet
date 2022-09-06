@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import AddressBadge, { dotStyling } from '../AddressBadge'
 import { inputStyling } from '.'
@@ -81,7 +81,11 @@ export default styled(ColoredLabelInput)`
 const InputStyled = styled(Input)`
   color: transparent;
   caret-color: ${({ color, theme }) =>
-    theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
+    theme.name === 'dark'
+      ? color
+      : colord(color ?? theme.font.primary).isLight()
+      ? theme.font.primary
+      : theme.font.contrastPrimary};
 
   &:not([value='']) {
     padding-left: calc(${dotStyling.width} + ${dotStyling.marginRight} + ${inputStyling.paddingLeftRight});
