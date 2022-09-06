@@ -242,5 +242,6 @@ const IconButtons = styled.div`
 
   > svg {
     margin-left: 10px;
+    min-width: fit-content;
   }
 `
