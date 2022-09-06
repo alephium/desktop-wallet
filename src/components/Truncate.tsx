@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
-const Truncate = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => <div {...props} />
+const Truncate = ({ ...props }: HTMLAttributes<HTMLDivElement>) => <div {...props} />
 
 export default styled(Truncate)`
   white-space: nowrap;
