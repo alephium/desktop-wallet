@@ -163,12 +163,13 @@ const TokenStyled = styled(Token)`
 
 const CellAmount = styled.div`
   flex-grow: 1;
-  text-align: right;
+  justify-content: right;
+  display: flex;
+  min-width: 6em;
+  flex-basis: 120px;
 `
 
-const CellAmountInner = styled.div`
-  min-width: 6em;
-`
+const CellAmountInner = styled.div``
 
 const BadgeStyled = styled(Badge)`
   min-width: 50px;
