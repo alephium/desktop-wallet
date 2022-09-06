@@ -16,11 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import alephiumLogo from '../../images/alephium_logo_light.svg'
 import { ReactComponent as AtmosphericGlow } from '../../images/athmospheric_glow.svg'
@@ -203,7 +203,7 @@ const StyledCloudGroup = styled(motion.div)`
 
 const Cloud = styled.div`
   position: absolute;
-  background-color: ${({ theme }) => tinycolor(theme.global.complementary).setAlpha(0.3).toString()};
+  background-color: ${({ theme }) => colord(theme.global.complementary).alpha(0.3).toRgbString()};
   height: 3px;
 `
 

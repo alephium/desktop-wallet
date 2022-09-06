@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import arrowDownSvg from '../images/arrow_down.svg'
 import { TransactionDirection } from '../utils/transactions'
@@ -33,8 +33,8 @@ const DirectionalArrow = ({ direction }: DirectionalArrowProps) => {
   const isReceiving = direction === 'in'
   const color = {
     circle: isReceiving
-      ? tinycolor(theme.global.valid).setAlpha(0.11).toString()
-      : tinycolor(theme.font.secondary).setAlpha(0.11).toString(),
+      ? colord(theme.global.valid).alpha(0.11).toRgbString()
+      : colord(theme.font.secondary).alpha(0.11).toRgbString(),
     arrow: isReceiving ? theme.global.valid : theme.font.secondary
   }
 
