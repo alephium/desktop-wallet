@@ -61,13 +61,21 @@ const Circle = styled.span<{ color?: string }>`
 
 const Arrow = styled.span<{ color?: string } & DirectionalArrowProps>`
   display: inline-block;
-  font-size: 1.4em;
-  width: 1em;
-  height: 1em;
+  width: 16px;
+  height: 15px;
   -webkit-mask: url(${arrowDownSvg}) no-repeat 100% 100%;
   mask: url(${arrowDownSvg}) no-repeat 100% 100%;
   -webkit-mask-size: cover;
   mask-size: cover;
   background-color: ${({ color, theme }) => color || theme.font.primary};
-  ${({ direction }) => direction === 'out' && 'transform: rotate(180deg);'}
+  position: relative;
+  ${({ direction }) =>
+    direction === 'out'
+      ? `
+          transform: rotate(180deg);
+          top: -1px;
+        `
+      : `
+          top: 1px;
+        `}
 `
