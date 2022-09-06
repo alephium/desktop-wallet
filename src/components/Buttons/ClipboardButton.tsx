@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Copy } from 'lucide-react'
-import { MouseEventHandler, ReactNode, useCallback, useEffect, useState } from 'react'
+import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -37,8 +37,8 @@ const ClipboardButton = ({ tipText, textToCopy, children, className }: Clipboard
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const handleInput: MouseEventHandler<SVGSVGElement> = useCallback(
-    (e) => {
+  const handleInput = useCallback(
+    (e: SyntheticEvent) => {
       e.stopPropagation()
 
       navigator.clipboard
@@ -73,7 +73,7 @@ const ClipboardButton = ({ tipText, textToCopy, children, className }: Clipboard
 
   const clipboard = !hasBeenCopied ? (
     <ClipboardWrapper data-tip={tipText ?? t`Copy to clipboard`}>
-      <Clipboard
+      <Copy
         className={`${className} clipboard`}
         size={15}
         onClick={handleInput}

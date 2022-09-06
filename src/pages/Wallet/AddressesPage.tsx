@@ -107,6 +107,9 @@ const AddressesPage = () => {
               </ClipboardButton>
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
+              <AddressBadge address={address} truncate />
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
               {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
