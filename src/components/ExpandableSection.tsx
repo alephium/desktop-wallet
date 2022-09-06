@@ -21,6 +21,7 @@ import { ChevronDown } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
+import InputArea from './Inputs/InputArea'
 import { Section } from './PageComponents/PageContainers'
 
 interface ExpandableSectionProps {
@@ -46,35 +47,52 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
   className
 }) => {
   const [isExpanded, setIsExpanded] = useState(open)
+  const [isVisible, setIsVisible] = useState(open)
 
   useEffect(() => {
-    setIsExpanded(open)
+    if (open) {
+      setIsVisible(open)
+      setIsExpanded(open)
+    } else {
+      setIsExpanded(open)
+    }
   }, [open])
 
-  const handleTitleClick = () => {
+  const handleTitleExpansion = () => {
     const newState = !isExpanded
     onOpenChange && onOpenChange(newState)
+    if (newState) {
+      setIsVisible(newState)
+    }
     setIsExpanded(newState)
   }
 
+  const titleText = isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed
+
   return (
     <ExpandableSectionContainer className={className} shrinkWhenOpen={shrinkWhenOpen} isOpen={isExpanded}>
-      <Title onClick={handleTitleClick}>
+      <Title onInput={handleTitleExpansion} aria-expanded={isExpanded}>
         {centered && <LeftDivider />}
         {isCheckbox ? (
-          <input type="checkbox" checked={isExpanded} onChange={() => setIsExpanded(!isExpanded)} />
+          <input type="checkbox" tabIndex={-1} checked={isExpanded} onChange={() => setIsExpanded(!isExpanded)} />
         ) : (
           <Chevron animate={{ rotate: isExpanded ? 180 : 0 }} />
         )}
 
-        <TitleText>{isExpanded && sectionTitleOpen ? sectionTitleOpen : sectionTitleClosed}</TitleText>
+        <TitleText>{titleText}</TitleText>
         <Divider />
       </Title>
-      <ContentWrapper animate={{ height: isExpanded ? 'auto' : 0 }} transition={{ duration: 0.2 }}>
-        <Content>
-          <Section align="stretch">{children}</Section>
-        </Content>
-      </ContentWrapper>
+      {isVisible && (
+        <ContentWrapper
+          onAnimationComplete={() => setIsVisible(isExpanded)}
+          animate={{ height: isExpanded ? 'auto' : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Content>
+            <Section align="stretch">{children}</Section>
+          </Content>
+        </ContentWrapper>
+      )}
     </ExpandableSectionContainer>
   )
 }
@@ -95,9 +113,8 @@ const ExpandableSectionContainer = styled.div<{ shrinkWhenOpen: boolean; isOpen?
     `}
 `
 
-const Title = styled.div`
+const Title = styled(InputArea)`
   display: flex;
-  cursor: pointer;
   align-items: center;
   color: ${({ theme }) => theme.global.accent};
 `

@@ -16,32 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
-import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
+import { useEffect, useRef } from 'react'
 
-interface ActionLinkProps {
-  onClick: () => void
-  className?: string
+export default function <T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  useEffect(() => {
+    ref.current?.focus()
+  }, [ref])
+  return ref
 }
-
-const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
-  <button className={className} onClick={onClick}>
-    {children}
-  </button>
-)
-
-export default styled(ActionLink)`
-  color: ${({ theme }) => theme.global.accent};
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-
-  &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
-  }
-
-  &:focus-visible {
-    text-decoration: underline;
-  }
-`

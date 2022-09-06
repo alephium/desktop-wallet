@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
+import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -28,6 +28,7 @@ import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
+import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
 import TimeSince from './TimeSince'
 import Token from './Token'
@@ -78,6 +79,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
           <DirectionalArrow direction={type} />
         </CellArrow>
         <TokenTimeInner>
+          <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
           <TokenStyled type={token} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
@@ -86,6 +88,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
         <CellAddress>
           {!hideLabel && (
             <CellAddressBadge>
+              <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
               <AddressBadge address={address} truncate />
             </CellAddressBadge>
           )}
@@ -104,7 +107,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
         </CellAddress>
       )}
       {amount && (
-        <CellAmount>
+        <CellAmount aria-hidden="true">
           <CellAmountInner>
             {type === 'out' ? '-' : '+'}
             <Amount value={amount} fadeDecimals />

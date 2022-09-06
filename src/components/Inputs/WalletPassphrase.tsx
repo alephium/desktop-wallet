@@ -91,6 +91,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
         <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
       </ConsentCheckbox>
       <Input
+        id="optional-passphrase"
         value={value}
         label={t`Optional passphrase`}
         type="password"
@@ -98,6 +99,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
         disabled={!isConsentActive}
       />
       <Input
+        id="optional-passphrase-confirm"
         value={confirmValue}
         label={t`Confirm passphrase`}
         type="password"

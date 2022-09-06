@@ -65,9 +65,7 @@ const AddressesPage = () => {
   const { isPassphraseUsed } = useGlobalContext()
   const theme = useTheme()
 
-  const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
-    navigate(`/wallet/addresses/${addressHash}`)
-  }
+  const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
   const handleOneAddressPerGroupClick = () => {
     if (isPassphraseUsed) {
@@ -92,15 +90,23 @@ const AddressesPage = () => {
           <TableRow
             key={address.hash}
             columnWidths={tableColumnWidths}
-            onClick={() => navigateToAddressDetailsPage(address.hash)}
+            role="row"
+            onClick={navigateToAddressDetailsPage(address.hash)}
+            onKeyPress={navigateToAddressDetailsPage(address.hash)}
           >
-            <TableCell>
+            <TableCell role="cell" tabIndex={0}>
               <AddressBadge address={address} truncate />
             </TableCell>
-            <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
-            <TableCell>{address.details?.txNumber ?? 0}</TableCell>
-            <TableCell>{address.group}</TableCell>
-            <TableCellAmount align="end">
+            <TableCell role="cell" tabIndex={0}>
+              {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
+              {address.details?.txNumber ?? 0}
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
+              {address.group}
+            </TableCell>
+            <TableCellAmount role="cell" tabIndex={0} align="end">
               {address.transactions.pending.length > 0 && <Spinner size="12px" />}
               <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
             </TableCellAmount>
@@ -110,7 +116,7 @@ const AddressesPage = () => {
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ {t`Generate new address`}</ActionLink>
           </TableCell>
-          <Summary align="end">
+          <Summary role="cell" tabIndex={0} align="end">
             <Badge border>
               <Amount value={balanceSummary} fadeDecimals />
             </Badge>

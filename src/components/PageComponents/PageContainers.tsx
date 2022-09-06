@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, MotionStyle, Variants } from 'framer-motion'
+import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
@@ -30,12 +30,11 @@ interface MainPanelProps {
 
 type SectionContentAlignment = 'flex-start' | 'center' | 'stretch'
 
-interface SectionProps {
+interface SectionProps extends HTMLMotionProps<'div'> {
   apparitionDelay?: number
   style?: MotionStyle
   inList?: boolean
   align?: SectionContentAlignment
-  className?: string
 }
 
 const sectionVariants: Variants = {
@@ -67,14 +66,7 @@ export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => (
   </StyledFloatingPanel>
 )
 
-export const Section: FC<SectionProps> = ({
-  children,
-  apparitionDelay,
-  inList,
-  align = 'center',
-  style,
-  className
-}) => (
+export const Section = ({ children, apparitionDelay, inList, align = 'center', style, className }: SectionProps) => (
   <SectionContainer
     variants={sectionVariants}
     initial="hidden"
@@ -90,8 +82,10 @@ export const Section: FC<SectionProps> = ({
   </SectionContainer>
 )
 
-export const BoxContainer: FC = ({ children }) => (
-  <StyledBoxContainer variants={sectionChildrenVariants}>{children}</StyledBoxContainer>
+export const BoxContainer = ({ children, ...props }: HTMLMotionProps<'div'>) => (
+  <StyledBoxContainer variants={sectionChildrenVariants} {...props}>
+    {children}
+  </StyledBoxContainer>
 )
 
 const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`

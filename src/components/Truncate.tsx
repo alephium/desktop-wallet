@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
+import { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
-const Truncate: FC<{ className?: string }> = ({ className, children }) => <div className={className}>{children}</div>
+const Truncate = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => <div {...props} />
 
 export default styled(Truncate)`
   white-space: nowrap;

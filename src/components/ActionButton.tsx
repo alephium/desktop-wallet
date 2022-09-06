@@ -19,6 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
 
+import InputArea from './Inputs/InputArea'
+
 interface ActionButtonProps {
   Icon: LucideIconType
   label: string
@@ -31,7 +33,7 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleClick = () => {
+  const handleInput = () => {
     if (link) {
       navigate(link)
     } else if (onClick) {
@@ -40,7 +42,11 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
   }
 
   return (
-    <ActionButtonContainer onClick={handleClick} isActive={link !== undefined && location.pathname.startsWith(link)}>
+    <ActionButtonContainer
+      aria-label={label}
+      onInput={handleInput}
+      isActive={link !== undefined && location.pathname.startsWith(link)}
+    >
       <ActionContent>
         <ActionIcon>
           <Icon color={theme.font.primary} size={18} />
@@ -50,6 +56,8 @@ const ActionButton = ({ Icon, label, link, onClick }: ActionButtonProps) => {
     </ActionButtonContainer>
   )
 }
+
+export default ActionButton
 
 const ActionLabel = styled.label`
   color: ${({ theme }) => theme.font.secondary};
@@ -74,14 +82,13 @@ const ActionIcon = styled.div`
   transition: all 0.1s ease-out;
 `
 
-const ActionButtonContainer = styled.div<{ isActive: boolean }>`
+const ActionButtonContainer = styled(InputArea)<{ isActive: boolean }>`
   display: flex;
   align-items: stretch;
   width: 100%;
   height: 50px;
 
   &:hover {
-    cursor: pointer;
     ${ActionLabel} {
       color: ${({ theme }) => theme.global.accent};
     }
@@ -103,5 +110,3 @@ const ActionButtonContainer = styled.div<{ isActive: boolean }>`
       }
     `}
 `
-
-export default ActionButton

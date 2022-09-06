@@ -16,32 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { FC } from 'react'
+import { motion, MotionProps } from 'framer-motion'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
-interface ActionLinkProps {
-  onClick: () => void
-  className?: string
+interface InputAreaProps extends MotionProps {
+  children: ReactNode | ReactNode[]
+  onInput?: () => void
 }
 
-const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
-  <button className={className} onClick={onClick}>
+const InputArea = ({ onInput, children, ...rest }: InputAreaProps) => (
+  <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} {...rest}>
     {children}
-  </button>
+  </motion.div>
 )
 
-export default styled(ActionLink)`
-  color: ${({ theme }) => theme.global.accent};
+export default styled(InputArea)`
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-
-  &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
-  }
-
-  &:focus-visible {
-    text-decoration: underline;
-  }
 `

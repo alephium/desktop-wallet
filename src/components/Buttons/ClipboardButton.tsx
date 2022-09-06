@@ -36,7 +36,7 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const handleClick = () => {
+  const handleInput = () => {
     navigator.clipboard
       .writeText(textToCopy)
       .catch((e) => {
@@ -70,7 +70,15 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
   if (!hasBeenCopied) {
     return (
       <div data-tip={t`Copy to clipboard`}>
-        <Clipboard className={`${className} clipboard`} size={15} onClick={handleClick} />
+        <Clipboard
+          className={`${className} clipboard`}
+          size={15}
+          onClick={handleInput}
+          onKeyPress={handleInput}
+          role="button"
+          aria-label={t`Copy to clipboard`}
+          tabIndex={0}
+        />
       </div>
     )
   } else {

@@ -86,12 +86,6 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     onClose()
   }
 
-  const onGroupSelect = (newValue: SelectOption<number> | undefined) => {
-    if (newValue !== undefined) {
-      generateNewAddress(newValue.value)
-    }
-  }
-
   let mainAddressMessage = t`Default address for sending transactions.`
 
   if (mainAddress && wallet?.seed) {
@@ -100,6 +94,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       mainAddress.index !== newAddressData?.addressIndex
         ? t(' Note that if activated, "{{ address }}" will not be the main address anymore.', { address })
         : ''
+  }
+
+  function onValueChange(newValue?: SelectOption<number>) {
+    if (newValue === undefined) return
+
+    generateNewAddress(newValue.value)
   }
 
   return (
@@ -133,7 +133,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
             label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-            onValueChange={onGroupSelect}
+            onValueChange={onValueChange}
             title={t`Select group`}
             id="group"
           />

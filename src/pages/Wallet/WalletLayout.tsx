@@ -125,7 +125,7 @@ const WalletLayout: FC = ({ children }) => {
           <InfoBox text={activeWalletName} label={t`WALLET`} />
         ) : (
           <Select
-            label={t`WALLET`}
+            label={t`CURRENT WALLET`}
             options={walletNameSelectOptions}
             controlledValue={{
               label: activeWalletName,
@@ -230,7 +230,7 @@ const WalletSidebar = styled.div`
   }
 `
 
-const WalletActions = styled.div`
+const WalletActions = styled.nav`
   display: flex;
   flex-direction: column;
   flex: 1;
