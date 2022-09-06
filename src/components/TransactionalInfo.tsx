@@ -178,7 +178,7 @@ const BadgeStyled = styled(Badge)`
 const DirectionBadgeOut = styled(BadgeStyled)`
   ${({ theme }) => `
     color: ${theme.font.secondary};
-    background-color: ${theme.bg.secondary};
+    background-color: ${theme.bg.accent};
   `}
 `
 
