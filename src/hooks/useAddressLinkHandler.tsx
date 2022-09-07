@@ -33,7 +33,9 @@ const useAddressLinkHandler = () => {
   const navigate = useNavigate()
 
   return useCallback(
-    (addressHash: AddressHash) => {
+    (addressHash?: AddressHash) => {
+      if (!addressHash) return
+
       const address = getAddress(addressHash)
 
       if (address) {
