@@ -152,6 +152,7 @@ const CellAddressBadge = styled.div`
 const CellAddress = styled.div`
   flex-shrink: 1;
   min-width: 0;
+  align-items: baseline;
   margin-right: 21px;
   display: flex;
   flex-basis: 377px;

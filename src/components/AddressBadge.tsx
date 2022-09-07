@@ -91,6 +91,9 @@ export const dotStyling = {
 
 const Icon = styled.span<{ isMain: boolean; color?: string }>`
   ${({ color, isMain, theme }) => `
+    display: flex;
+    align-items: center;
+
     &::before {
       width: ${dotStyling.width};
       display: block;
