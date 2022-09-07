@@ -169,6 +169,6 @@ export const TableCellPlaceholder = styled(TableCell)`
 const ScrollableWrapper = styled.div`
   width: 100%;
   overflow: auto;
-  border-radius: var(--radius-big);
-  box-shadow: ${({ theme }) => theme.shadow.primary};
+  border-radius: var(--radius-medium);
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
