@@ -27,6 +27,7 @@ import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../uti
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import Badge from './Badge'
+import ClipboardButton from './Buttons/ClipboardButton'
 import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
@@ -147,6 +148,10 @@ const CellAddressBadge = styled.div`
   min-width: 100px;
   max-width: 100px;
   margin-right: 21px;
+
+  & > ${ClipboardButton} {
+    justify-content: right;
+  }
 `
 
 const CellAddress = styled.div`
