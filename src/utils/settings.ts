@@ -69,7 +69,7 @@ export const defaultSettings: Settings = {
   network: clone(networkEndpoints.mainnet)
 }
 
-export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as const
+export const networkNames = ['mainnet', 'testnet', 'localhost', 'custom'] as const
 
 export type NetworkName = typeof networkNames[number]
 
