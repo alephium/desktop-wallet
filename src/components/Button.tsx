@@ -112,24 +112,30 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>
       transparent
-        ? theme.bg.accent
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
+          : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
         : secondary
-        ? colord(theme.bg.tertiary).lighten(30).toRgbString()
+        ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
         : alert
-        ? colord(theme.global.alert).darken(8).toRgbString()
-        : colord(theme.global.accent).darken(8).toRgbString()};
+        ? colord(theme.global.alert).darken(0.08).toRgbString()
+        : colord(theme.global.accent).darken(0.08).toRgbString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
     cursor: pointer;
   }
 
   &:active {
-    background-color: ${({ theme, secondary, alert }) =>
-      secondary
-        ? colord(theme.bg.tertiary).darken(40).toRgbString()
+    background-color: ${({ theme, secondary, transparent, alert }) =>
+      transparent
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).alpha(0.4).toRgbString()
+          : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
+        : secondary
+        ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
         : alert
-        ? colord(theme.global.alert).lighten(3).toRgbString()
-        : colord(theme.global.accent).lighten(3).toRgbString()};
+        ? colord(theme.global.alert).lighten(0.03).toRgbString()
+        : colord(theme.global.accent).lighten(0.03).toRgbString()};
   }
 
   &:disabled {
@@ -139,6 +145,6 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(20).toRgbString()};
+    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
   }
 `
