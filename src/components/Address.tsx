@@ -43,7 +43,7 @@ const StyledAdress = styled.span`
   color: ${({ theme }) => theme.global.accent};
 
   &:hover {
-    color: ${({ theme }) => colord(theme.global.accent).darken(10).toRgbString()};
+    color: ${({ theme }) => colord(theme.global.accent).darken(0.1).toRgbString()};
   }
 `
 
