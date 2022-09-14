@@ -138,7 +138,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <IOs>
               {transaction.inputs?.map((input) => (
                 <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
-                  <Ellipsed text={input.address} />
+                  <Ellipsed text={input.address ?? ''} />
                 </ActionLink>
               ))}
             </IOs>
@@ -147,7 +147,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <IOs>
               {transaction.outputs?.map((output) => (
                 <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
-                  <Ellipsed text={output.address} />
+                  <Ellipsed text={output.address ?? ''} />
                 </ActionLink>
               ))}
             </IOs>
