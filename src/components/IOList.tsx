@@ -126,6 +126,6 @@ const Addresses = styled.div`
 `
 
 const AddressSpan = styled.div`
-  width: 12em;
+  width: 30em;
   min-width: 4em;
 `

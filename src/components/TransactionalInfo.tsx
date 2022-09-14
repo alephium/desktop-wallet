@@ -86,26 +86,28 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
         </TokenTimeInner>
       </CellAmountTokenTime>
       {address && (
-        <CellAddress>
+        <>
           {!hideLabel && (
             <CellAddressBadge>
               <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
               <AddressBadge address={address} truncate />
             </CellAddressBadge>
           )}
-          <DirectionalAddress>
-            {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
-            {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
-            <IOList
-              currentAddress={_addressHash || ''}
-              isOut={type === 'out'}
-              outputs={outputs}
-              inputs={(tx as Transaction).inputs}
-              timestamp={(tx as Transaction).timestamp}
-              truncate
-            />
-          </DirectionalAddress>
-        </CellAddress>
+          {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
+          {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
+          <CellAddress>
+            <DirectionalAddress>
+              <IOList
+                currentAddress={_addressHash || ''}
+                isOut={type === 'out'}
+                outputs={outputs}
+                inputs={(tx as Transaction).inputs}
+                timestamp={(tx as Transaction).timestamp}
+                truncate
+              />
+            </DirectionalAddress>
+          </CellAddress>
+        </>
       )}
       {amount && (
         <CellAmount aria-hidden="true">
@@ -137,7 +139,6 @@ const CellAmountTokenTime = styled.div`
   align-items: center;
   margin-right: 28px;
   text-align: left;
-  flex-grow: 1;
 `
 
 const TokenTimeInner = styled.div`
@@ -145,9 +146,12 @@ const TokenTimeInner = styled.div`
 `
 
 const CellAddressBadge = styled.div`
-  min-width: 100px;
-  max-width: 100px;
+  width: 100%;
   margin-right: 21px;
+  display: flex;
+  flex-grow: 1;
+  justify-content: right;
+  overflow: hidden;
 
   & > ${ClipboardButton} {
     justify-content: right;
@@ -155,12 +159,13 @@ const CellAddressBadge = styled.div`
 `
 
 const CellAddress = styled.div`
-  flex-shrink: 1;
   min-width: 0;
+  flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
+  margin-left: 21px;
   display: flex;
-  flex-basis: 377px;
+  width: 100%;
 `
 
 const TokenStyled = styled(Token)`
