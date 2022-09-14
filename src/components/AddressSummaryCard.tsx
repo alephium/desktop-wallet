@@ -115,13 +115,6 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
     `}
 `
 
-const AddressBadgeStyled = styled(AddressBadge)`
-  padding: 11px 17px;
-  border-radius: 0;
-  text-align: center;
-  justify-content: center;
-`
-
 const AmountsSection = styled.div<{ collapsed: boolean }>`
   flex: 1;
   display: flex;
