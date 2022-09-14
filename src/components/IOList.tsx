@@ -27,7 +27,7 @@ import ActionLink from './ActionLink'
 import AddressBadge from './AddressBadge'
 import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
-import Truncate from './Truncate'
+import Ellipsed from './Ellipsed'
 
 interface IOListProps {
   currentAddress: string
@@ -69,7 +69,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
         ) : (
           <AddressSpan>
             <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
-              <Truncate key={key}>{address}</Truncate>
+              <Ellipsed key={key} text={address} />
             </ClipboardButton>
           </AddressSpan>
         )}
@@ -83,7 +83,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
             <AddressBadge truncate address={addressWithMetadata} />
           ) : (
             <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
-              {address}
+              <Ellipsed text={address} />
             </ClipboardButton>
           )
 
@@ -126,6 +126,5 @@ const Addresses = styled.div`
 `
 
 const AddressSpan = styled.div`
-  width: 30em;
   min-width: 4em;
 `

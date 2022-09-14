@@ -108,6 +108,7 @@ const CellChildren = styled.div`
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
   margin-right: -15px;
   overflow: hidden;
+  width: 100%;
 `
 
 const ClipboardWrapper = styled.div`

@@ -27,6 +27,7 @@ import ActionLink from '../components/ActionLink'
 import AddressBadge from '../components/AddressBadge'
 import Amount from '../components/Amount'
 import Badge from '../components/Badge'
+import Ellipsed from '../components/Ellipsed'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Tooltip from '../components/Tooltip'
@@ -137,7 +138,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <IOs>
               {transaction.inputs?.map((input) => (
                 <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
-                  {input.address}
+                  <Ellipsed text={input.address} />
                 </ActionLink>
               ))}
             </IOs>
@@ -146,7 +147,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <IOs>
               {transaction.outputs?.map((output) => (
                 <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
-                  {output.address}
+                  <Ellipsed text={output.address} />
                 </ActionLink>
               ))}
             </IOs>
