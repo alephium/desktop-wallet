@@ -65,7 +65,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
     return truncate ? (
       <TruncateWrap>
         {addressWithMetadata ? (
-          <AddressBadge address={addressWithMetadata} />
+          <AddressBadge truncate address={addressWithMetadata} />
         ) : (
           <AddressSpan>
             <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
@@ -80,7 +80,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
         {addressesToShow.map((address) => {
           const addressWithMetadata = getAddress(address)
           const addressComponent = addressWithMetadata ? (
-            <AddressBadge address={addressWithMetadata} />
+            <AddressBadge truncate address={addressWithMetadata} />
           ) : (
             <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
               {address}
