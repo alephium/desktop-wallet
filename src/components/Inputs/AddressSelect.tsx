@@ -27,10 +27,10 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../moda
 import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
 import Amount from '../Amount'
+import Ellipsed from '../Ellipsed'
 import InfoBox from '../InfoBox'
 import InputArea from '../Inputs/InputArea'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, InputProps } from '.'
 import { MoreIcon, SelectContainer } from './Select'
 
@@ -93,7 +93,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           <BadgeStyled address={address} truncate />
-          <Truncate>{address?.hash}</Truncate>
+          <Ellipsed text={address?.hash ?? ''} />
         </ClickableInput>
       </AddressSelectContainer>
       <AnimatePresence>

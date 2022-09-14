@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MutableRefObject, useLayoutEffect, useRef, useState } from 'react'
+import { HTMLAttributes, MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
 
 const style = { fontFamily: 'monospace', overflow: 'hidden' }
 
@@ -30,23 +31,23 @@ const createHandleResize =
   () => {
     if (el?.current === null) return
 
-    if (charWidth?.current === undefined) {
+    if (charWidth.current === undefined) {
       charWidth.current = el.current.scrollWidth / text.length
     }
 
-    const visibleChars = Math.floor(el.current.getBoundingClientRect().width / charWidth.current)
-    const half = (visibleChars - 3) / 2
-    setText(text.slice(0, half) + '...' + text.slice(-half))
+    const visibleChars = Math.floor(el.current.clientWidth / charWidth.current)
+    const half = visibleChars / 2
+
+    setText(
+      visibleChars >= text.length
+        ? text
+        : text.slice(0, Math.floor(half)) +
+            (visibleChars == text.length ? '' : '...') +
+            text.slice(-Math.ceil(half) + 3)
+    )
   }
 
-const createLayoutEffectHandler = (handleResize: () => void) => () => {
-  handleResize()
-
-  window.addEventListener('resize', handleResize)
-  return () => window.removeEventListener('resize', handleResize)
-}
-
-interface EllipsedProps {
+interface EllipsedProps extends HTMLAttributes<HTMLDivElement> {
   text: string
 }
 
@@ -55,14 +56,30 @@ const Ellipsed = ({ text }: EllipsedProps) => {
   const charWidth = useRef<number>()
   const [_text, setText] = useState(text)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(createLayoutEffectHandler(createHandleResize(el, charWidth, text, setText)), [])
+  const handleResize = createHandleResize(el, charWidth, text, setText)
+
+  useLayoutEffect(() => {
+    handleResize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div ref={el} style={style}>
-      {_text}
+      <HiddenText>{text}</HiddenText>
+      <div>{_text}</div>
     </div>
   )
 }
 
 export default Ellipsed
+
+const HiddenText = styled.div`
+  visibility: hidden;
+  height: 0;
+`

@@ -34,13 +34,13 @@ import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
+import Ellipsed from '../../components/Ellipsed'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import Tooltip from '../../components/Tooltip'
 import TransactionalInfo from '../../components/TransactionalInfo'
-import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
@@ -97,9 +97,7 @@ const AddressDetailsPage = () => {
           <DataListCell>
             <IconButtons>
               <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
-                <Truncate role="gridcell" tabIndex={0}>
-                  {addressHash}
-                </Truncate>
+                <Ellipsed role="gridcell" tabIndex={0} text={addressHash} />
               </ClipboardButton>
               <QRCodeButton textToEncode={addressHash} />
               <OpenInExplorerButton address={addressHash} />

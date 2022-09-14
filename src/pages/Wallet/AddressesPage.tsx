@@ -31,13 +31,13 @@ import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ClipboardButton from '../../components/Buttons/ClipboardButton'
+import Ellipsed from '../../components/Ellipsed'
 import ExpandableSection from '../../components/ExpandableSection'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
@@ -103,7 +103,7 @@ const AddressesPage = () => {
           >
             <TableCell role="cell" tabIndex={0}>
               <ClipboardButton textToCopy={address.hash ?? ''} tipText={t`Copy address`}>
-                <Truncate>{address.hash}</Truncate>
+                <Ellipsed text={address.hash} />
               </ClipboardButton>
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
