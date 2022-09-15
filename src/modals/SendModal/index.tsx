@@ -42,6 +42,7 @@ export type SendTransactionData = {
   amount: string
   gasAmount?: string
   gasPrice?: string
+  lockTime?: Date
 }
 
 interface SendModalProps {
@@ -91,7 +92,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const buildTransaction = async (transactionData: SendTransactionData) => {
     setTransactionData(transactionData)
 
-    const { fromAddress, toAddress, amount, gasAmount, gasPrice } = transactionData
+    const { fromAddress, toAddress, amount, gasAmount, gasPrice, lockTime } = transactionData
     const amountInSet = convertAlphToSet(amount)
     const isDataComplete = fromAddress && toAddress && isAmountWithinRange(amountInSet, fromAddress.availableBalance)
 
@@ -112,7 +113,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
             fromAddress.publicKey,
             toAddress,
             amountInSet.toString(),
-            undefined,
+            lockTime ? lockTime.getTime() : undefined,
             gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
           )
@@ -162,7 +163,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const handleSend = async () => {
     if (!transactionData || !client) return
 
-    const { fromAddress, toAddress, amount } = transactionData
+    const { fromAddress, toAddress, amount, lockTime } = transactionData
 
     if (toAddress && fromAddress) {
       setIsLoading(true)
@@ -194,7 +195,8 @@ const SendModal = ({ onClose }: SendModalProps) => {
             toAddress,
             'transfer',
             currentNetwork,
-            convertAlphToSet(amount)
+            convertAlphToSet(amount),
+            lockTime
           )
 
           if (data) {

@@ -70,7 +70,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, noMargin, ...
 
 export default Input
 
-const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
+export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
