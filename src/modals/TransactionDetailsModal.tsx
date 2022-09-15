@@ -31,6 +31,7 @@ import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Tooltip from '../components/Tooltip'
+import Lock from '../components/Lock'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
@@ -63,6 +64,13 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const isOutgoingTx = amount < 0
   amount = isOutgoingTx ? amount * -1n : amount
 
+  const outputs = transaction.outputs || []
+  let lockTime: Date | undefined = outputs.reduce(
+    (a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)),
+    new Date(0)
+  )
+  lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
+
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
   }
@@ -70,7 +78,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
+          <Lock unlockAt={lockTime} /> <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
         <HeaderInfo>

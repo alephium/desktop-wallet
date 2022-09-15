@@ -43,6 +43,7 @@ export type PendingTx = {
   type: TransactionType
   network: NetworkName
   amount?: bigint
+  lockTime?: Date
 }
 
 export type AddressHash = string

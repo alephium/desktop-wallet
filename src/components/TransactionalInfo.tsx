@@ -31,6 +31,7 @@ import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
+import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
 
@@ -55,6 +56,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   let type: TransactionDirection
   let outputs: Output[] = []
   let pendingToAddressComponent
+  let lockTime: Date | undefined
 
   const token = 'alph'
 
@@ -65,6 +67,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
+    lockTime = outputs.reduce((a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)), new Date(0))
+    lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
   } else if (isPendingTx(tx)) {
     type = 'out'
     amount = tx.amount
@@ -75,6 +79,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
+    outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+    lockTime = tx.lockTime
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
@@ -114,14 +120,14 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           )}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true">
-        {!!amount && (
-          <div>
-            {type === 'out' ? '-' : '+'}
+      {!!amount && (
+        <CellAmount aria-hidden="true">
+          <CellAmountInner>
+            <Lock unlockAt={lockTime} /> {type === 'out' ? '-' : '+'}
             <Amount value={amount} fadeDecimals />
-          </div>
-        )}
-      </CellAmount>
+          </CellAmountInner>
+        </CellAmount>
+      )}
     </div>
   )
 }
@@ -178,6 +184,12 @@ const CellAmount = styled.div`
   display: flex;
   min-width: 6em;
   flex-basis: 120px;
+  display: flex;
+  align-items: center;
+
+  & > ${Lock} {
+    margin-right: 6px;
+  }
 `
 
 const BadgeStyled = styled(Badge)`
