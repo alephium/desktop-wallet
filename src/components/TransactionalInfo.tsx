@@ -30,6 +30,7 @@ import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
+import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
 
@@ -53,6 +54,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
   let timestamp = 0
   let type: TransactionDirection
   let outputs: Output[] = []
+  let lockTime: Date | undefined
 
   const token = 'alph'
 
@@ -63,11 +65,14 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
     amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
+    lockTime = outputs.reduce((a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)), new Date(0))
+    lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
   } else if (isPendingTx(tx)) {
     type = tx.type === 'transfer' ? 'out' : 'in'
     amount = tx.amount
     timestamp = tx.timestamp
     outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+    lockTime = tx.lockTime
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
@@ -109,7 +114,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
       {amount && (
         <CellAmount aria-hidden="true">
           <CellAmountInner>
-            {type === 'out' ? '-' : '+'}
+            <Lock unlockAt={lockTime} /> {type === 'out' ? '-' : '+'}
             <Amount value={amount} fadeDecimals />
           </CellAmountInner>
         </CellAmount>
@@ -168,6 +173,12 @@ const CellAmount = styled.div`
 
 const CellAmountInner = styled.div`
   min-width: 6em;
+  display: flex;
+  align-items: center;
+
+  & > ${Lock} {
+    margin-right: 6px;
+  }
 `
 
 const BadgeStyled = styled(Badge)`

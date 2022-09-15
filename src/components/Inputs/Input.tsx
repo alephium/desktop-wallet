@@ -69,7 +69,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
 
 export default Input
 
-const InputContainer = styled(motion.div)`
+export const InputContainer = styled(motion.div)`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
