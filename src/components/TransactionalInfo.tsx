@@ -146,7 +146,8 @@ const TokenTimeInner = styled.div`
 `
 
 const CellAddressBadge = styled.div`
-  width: 100%;
+  width: 200px;
+  min-width: 100px;
   margin-right: 21px;
   display: flex;
   flex-grow: 1;
@@ -160,6 +161,7 @@ const CellAddressBadge = styled.div`
 
 const CellAddress = styled.div`
   min-width: 0;
+  max-width: 200px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
