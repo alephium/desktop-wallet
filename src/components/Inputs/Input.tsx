@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import classNames from 'classnames'
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { WheelEvent } from 'react'
@@ -77,5 +78,6 @@ export const InputContainer = styled(motion.div)`
 `
 
 const StyledInput = styled.input<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
+  ${({ isValid }) => inputDefaultStyle(isValid)};
+  color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
