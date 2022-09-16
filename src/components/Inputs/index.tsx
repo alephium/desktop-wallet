@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import { FC, InputHTMLAttributes, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
   label?: ReactNode
@@ -69,7 +69,7 @@ export const inputDefaultStyle = (isValid?: boolean) => css`
 
   &.error {
     border: 1px solid ${({ theme }) => theme.global.alert};
-    background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
+    background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.1).toRgbString()};
   }
 
   &:disabled {

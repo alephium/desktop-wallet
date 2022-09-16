@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
@@ -51,7 +51,7 @@ const AppHeader: FC = ({ children }) => {
   const headerBGColor = useTransform(
     scrollY,
     [0, 100],
-    [tinycolor(theme.bg.primary).setAlpha(0).toString(), theme.bg.primary]
+    [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
   )
   const {
     settings: {

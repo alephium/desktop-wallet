@@ -17,11 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { walletGenerate } from '@alephium/sdk'
+import { colord } from 'colord'
 import { Edit3 } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
@@ -97,7 +97,7 @@ const PhraseBox = styled.div`
   padding: var(--spacing-4);
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: var(--fontWeight-medium);
-  background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.4).toString()};
+  background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.4).toRgbString()};
   border: 1px solid ${({ theme }) => theme.global.alert};
   border-radius: var(--radius);
   margin-bottom: var(--spacing-4);
@@ -117,8 +117,8 @@ const MnemonicNumber = styled.div`
   border-right: 1px ${({ theme }) => theme.bg.secondary};
   background-color: ${({ theme }) =>
     theme.name === 'light'
-      ? tinycolor(theme.bg.primary).setAlpha(0.4).toString()
-      : tinycolor(theme.bg.contrast).setAlpha(0.4).toString()};
+      ? colord(theme.bg.primary).alpha(0.4).toRgbString()
+      : colord(theme.bg.contrast).alpha(0.4).toRgbString()};
   color: ${({ theme }) => theme.font.primary};
 `
 
