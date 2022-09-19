@@ -24,7 +24,7 @@ import Toggle from './Inputs/Toggle'
 
 interface ToggleSectionProps {
   title: string
-  children: ReactNode | ReactNode[]
+  children: ReactNode
   onClick?: (b: boolean) => void
   className?: string
 }
