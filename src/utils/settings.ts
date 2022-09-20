@@ -88,7 +88,10 @@ export const loadSettings = (): Settings => {
   if (!rawSettings) return defaultSettings
 
   try {
-    return JSON.parse(rawSettings) as Settings
+    // Merge default settings with rawSettings in case of new key(s) being added
+    const parsedSettings = JSON.parse(rawSettings) as Settings
+
+    return merge(defaultSettings, parsedSettings)
   } catch (e) {
     console.error(e)
     return defaultSettings // Fallback to default settings if something went wrong
