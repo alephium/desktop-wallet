@@ -29,6 +29,7 @@ import SideBar from '../components/HomePage/SideBar'
 import Input from '../components/Inputs/Input'
 import Select from '../components/Inputs/Select'
 import WalletPassphrase from '../components/Inputs/WalletPassphrase'
+import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
@@ -131,8 +132,10 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
+        <br />
         <WalletPassphrase onPassphraseConfirmed={setPassphrase} setIsPassphraseConfirmed={setIsPassphraseConfirmed} />
       </SectionStyled>
+      <br />
       <SectionStyled>
         <ButtonStyled
           onClick={handleLogin}
