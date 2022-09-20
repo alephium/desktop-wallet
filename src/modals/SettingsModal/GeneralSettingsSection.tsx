@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
@@ -58,10 +58,10 @@ const GeneralSettingsSection = () => {
 
   const onLanguageChange = (language: Language) => updateSettings('general', { language })
 
-  const languageOptions = useRef([
+  const languageOptions = [
     { label: t`English`, value: 'en-US' as Language },
     { label: t`French`, value: 'fr-FR' as Language }
-  ])
+  ]
 
   return (
     <>
@@ -113,9 +113,9 @@ const GeneralSettingsSection = () => {
         InputComponent={
           <Select
             id="language"
-            options={languageOptions.current}
+            options={languageOptions}
             onValueChange={(v) => v?.value && onLanguageChange(v.value)}
-            controlledValue={languageOptions.current.find((l) => l.value === language)}
+            controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
           />
         }
