@@ -23,8 +23,8 @@ import styled from 'styled-components'
 import { links } from '../../utils/links'
 import { openInWebBrowser } from '../../utils/misc'
 import ActionLink from '../ActionLink'
-import ExpandableSection from '../ExpandableSection'
 import InfoBox from '../InfoBox'
+import ToggleSection from '../ToggleSection'
 import Input from './Input'
 
 interface Props {
@@ -61,12 +61,9 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
   }
 
   return (
-    <ExpandableSection
-      sectionTitleClosed={t`Use optional passphrase (advanced)`}
-      centered
-      shrinkWhenOpen
-      isCheckbox
-      onOpenChange={onExpandableSectionToggle}
+    <ToggleSection
+      title={t`Use optional passphrase (advanced)`}
+      onClick={onExpandableSectionToggle}
       className={className}
     >
       <InfoBox importance="alert">
@@ -107,7 +104,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
         disabled={!isConsentActive || !value}
         error={showConfirmError && t`Passphrases don't match`}
       />
-    </ExpandableSection>
+    </ToggleSection>
   )
 }
 
