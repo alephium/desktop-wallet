@@ -22,18 +22,20 @@ import { useTranslation } from 'react-i18next'
 
 import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
 import Input from '../../components/Inputs/Input'
+import Select from '../../components/Inputs/Select'
 import Toggle from '../../components/Inputs/Toggle'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
+import { Language } from '../../types/settings'
 import CenteredModal from '../CenteredModal'
 
 const GeneralSettingsSection = () => {
   const { t } = useTranslation('App')
   const {
     settings: {
-      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement }
+      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement, language }
     },
     updateSettings,
     wallet
@@ -54,6 +56,13 @@ const GeneralSettingsSection = () => {
     setIsPasswordModalOpen(false)
   }, [updateSettings])
 
+  const onLanguageChange = (language: Language) => updateSettings('general', { language })
+
+  const languageOptions = [
+    { label: t`English`, value: 'en-US' as Language },
+    { label: t`French`, value: 'fr-FR' as Language }
+  ]
+
   return (
     <>
       <KeyValueInput
@@ -69,6 +78,7 @@ const GeneralSettingsSection = () => {
             type="number"
             step={1}
             min={1}
+            noMargin
           />
         }
       />
@@ -97,6 +107,19 @@ const GeneralSettingsSection = () => {
           <HorizontalDivider narrow />
         </>
       )}
+      <KeyValueInput
+        label={t`Language`}
+        description={t`Change the wallet language`}
+        InputComponent={
+          <Select
+            id="language"
+            options={languageOptions}
+            onValueChange={(v) => v?.value && onLanguageChange(v.value)}
+            controlledValue={languageOptions.find((l) => l.value === language)}
+            noMargin
+          />
+        }
+      />
       <AnimatePresence>
         {isPasswordModelOpen && (
           <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>

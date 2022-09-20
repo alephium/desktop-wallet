@@ -20,7 +20,7 @@ import { Moon, Sun } from 'lucide-react'
 import { FC, useCallback } from 'react'
 
 import { useGlobalContext } from '../contexts/global'
-import { ThemeType } from '../style/themes'
+import { ThemeType } from '../types/settings'
 import Toggle from './Inputs/Toggle'
 
 interface ThemeSwitcherProps {

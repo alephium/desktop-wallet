@@ -18,7 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import 'styled-components'
 
-import { ThemeType } from './themes'
+export type Language = 'en-US' | 'fr-FR'
+
+export type ThemeType = 'light' | 'dark'
 
 declare module 'styled-components' {
   export interface DefaultTheme {

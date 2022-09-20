@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import SnackbarManager from './components/SnackbarManager'
@@ -29,7 +30,26 @@ import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
+  const [isLanguageChanging, setIsLanguageChanging] = useState(false)
   const { settings, snackbarMessage, isClientLoading } = useGlobalContext()
+
+  const { i18n } = useTranslation()
+
+  useEffect(() => {
+    const handleLanguageChange = async () => {
+      setIsLanguageChanging(true)
+      try {
+        await i18n.changeLanguage(settings.general.language)
+      } catch (e) {
+        console.error(e)
+      }
+      setIsLanguageChanging(false)
+    }
+
+    if (i18n.language !== settings.general.language) {
+      handleLanguageChange()
+    }
+  }, [i18n, settings.general.language])
 
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
@@ -38,7 +58,11 @@ const App = () => {
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Router />
       </AppContainer>
-      <ClientLoading>{isClientLoading && <Spinner size="15px" />}</ClientLoading>
+      {(isClientLoading || isLanguageChanging) && (
+        <ClientLoading>
+          <Spinner size="60px" />
+        </ClientLoading>
+      )}
       <SnackbarManager message={snackbarMessage} />
     </ThemeProvider>
   )
@@ -59,10 +83,17 @@ const AppContainer = styled.div`
 
 const ClientLoading = styled.div`
   position: absolute;
-  top: var(--spacing-3);
-  left: var(--spacing-5);
-  transform: translateX(-50%);
-  color: var(--color-white);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-black);
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  z-index: 1002;
 `
 
 export default App

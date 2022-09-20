@@ -39,12 +39,12 @@ const InlineLabelValueInput = ({ label, InputComponent, description, className }
 const KeyValueInputContainer = styled.div`
   display: flex;
   padding: var(--spacing-4) var(--spacing-3);
-  gap: var(--spacing-4);
+  gap: var(--spacing-8);
   width: 100%;
 `
 
 const KeyContainer = styled.div`
-  flex: 4;
+  flex: 2.5;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { clone, merge } from 'lodash'
 
-import { ThemeType } from '../style/themes'
+import { Language, ThemeType } from '../types/settings'
 
 export interface Settings {
   general: {
@@ -26,6 +26,7 @@ export interface Settings {
     walletLockTimeInMinutes: number | null
     discreetMode: boolean
     passwordRequirement: boolean
+    language: Language
   }
   network: {
     nodeHost: string
@@ -64,7 +65,8 @@ export const defaultSettings: Settings = {
     theme: 'light',
     walletLockTimeInMinutes: 3,
     discreetMode: false,
-    passwordRequirement: false
+    passwordRequirement: false,
+    language: 'en-US'
   },
   network: clone(networkEndpoints.mainnet)
 }
@@ -86,7 +88,10 @@ export const loadSettings = (): Settings => {
   if (!rawSettings) return defaultSettings
 
   try {
-    return JSON.parse(rawSettings) as Settings
+    // Merge default settings with rawSettings in case of new key(s) being added
+    const parsedSettings = JSON.parse(rawSettings) as Settings
+
+    return merge(defaultSettings, parsedSettings)
   } catch (e) {
     console.error(e)
     return defaultSettings // Fallback to default settings if something went wrong
