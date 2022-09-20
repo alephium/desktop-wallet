@@ -26,7 +26,7 @@ import styled from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
-const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
+const Input = ({ label, error, isValid, disabled, onChange, value, noMargin, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -44,6 +44,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
+      noMargin={noMargin}
     >
       <InputLabel inputHasValue={!!value} htmlFor={props.id}>
         {label}
@@ -69,11 +70,11 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
 
 export default Input
 
-const InputContainer = styled(motion.div)`
+const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
   position: relative;
   height: var(--inputHeight);
   width: 100%;
-  margin: 16px 0;
+  margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
 const StyledInput = styled.input<InputProps>`

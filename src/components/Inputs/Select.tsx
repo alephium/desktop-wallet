@@ -41,6 +41,7 @@ interface SelectProps<T> {
   onValueChange: (value: SelectOption<T> | undefined) => void
   raised?: boolean
   skipEqualityCheck?: boolean
+  noMargin?: boolean
   className?: string
 }
 
@@ -50,11 +51,12 @@ function Select<T>({
   label,
   disabled,
   controlledValue,
-  className,
   id,
   onValueChange,
   raised,
-  skipEqualityCheck = false
+  skipEqualityCheck = false,
+  noMargin,
+  className
 }: SelectProps<T>) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
@@ -92,6 +94,7 @@ function Select<T>({
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
         onClick={() => setShowPopup(true)}
+        noMargin={noMargin}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
@@ -168,8 +171,9 @@ export const MoreIcon = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export const SelectContainer = styled(InputContainer)`
+export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin'>>`
   cursor: pointer;
+  margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
 export const OptionItem = styled.div`

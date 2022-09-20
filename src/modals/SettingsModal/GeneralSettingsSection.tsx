@@ -78,6 +78,7 @@ const GeneralSettingsSection = () => {
             type="number"
             step={1}
             min={1}
+            noMargin
           />
         }
       />
@@ -115,6 +116,7 @@ const GeneralSettingsSection = () => {
             options={languageOptions.current}
             onValueChange={(v) => v?.value && onLanguageChange(v.value)}
             controlledValue={languageOptions.current.find((l) => l.value === language)}
+            noMargin
           />
         }
       />
