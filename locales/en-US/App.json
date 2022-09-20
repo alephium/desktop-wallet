@@ -221,5 +221,9 @@
   "Use optional passphrase (advanced)": "Use optional passphrase (advanced)",
   "Optional passphrase": "Optional passphrase",
   "Confirm passphrase": "Confirm passphrase",
-  "Passphrases don't match": "Passphrases don't match"
+  "Passphrases don't match": "Passphrases don't match",
+  "Language": "Language",
+  "Change the wallet language": "Change the wallet language",
+  "English": "English",
+  "French": "French"
 }

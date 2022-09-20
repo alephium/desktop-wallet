@@ -108,9 +108,9 @@
   "Wallet list": "Liste des wallets",
   "Current wallet": "Wallet actif",
   "Wallet name": "Nom du wallet",
-  "Lock current wallet": "Verrouiller le wallet actif",
+  "Lock current wallet": "Verrouiller ce wallet",
   "Show your secret phrase": "Montrer votre phrase secrète",
-  "Remove current wallet": "Supprimer le wallet actif",
+  "Remove current wallet": "Supprimer ce wallet",
   "Version": "Version",
   "General": "Général",
   "Networks": "Réseaux",
@@ -221,5 +221,9 @@
   "Use optional passphrase (advanced)": "Utiliser la phrase de passe optionnelle (avancé)",
   "Optional passphrase": "Phrase de passe optionelle",
   "Confirm passphrase": "Confirmer la phrase de passe",
-  "Passphrases don't match": "Les phrases de passe ne sont pas identiques"
+  "Passphrases don't match": "Les phrases de passe ne sont pas identiques",
+  "Language": "Language",
+  "Change the wallet language": "Changer la langue du wallet",
+  "English": "Anglais",
+  "French": "Français"
 }

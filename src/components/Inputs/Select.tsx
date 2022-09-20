@@ -164,7 +164,7 @@ const InputContainer = styled(motion.div)`
 export const MoreIcon = styled.div`
   position: absolute;
   top: 11px;
-  right: 18px;
+  right: 10px;
   color: ${({ theme }) => theme.font.secondary};
 `
 
@@ -188,7 +188,7 @@ export const OptionItem = styled.div`
 
 const ClickableInput = styled.input<InputProps & { raised: boolean }>`
   ${({ isValid }) => inputDefaultStyle(isValid)}
-  padding-right: 50px;
+  padding-right: 35px;
 
   cursor: pointer;
 
