@@ -16,33 +16,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
-import { FC } from 'react'
-import styled from 'styled-components'
+import { HTMLAttributes } from 'react'
+import { useTranslation } from 'react-i18next'
 
-interface ActionLinkProps {
-  onClick: () => void
-  className?: string
+import { AddressHash } from '../contexts/addresses'
+import ClipboardButton from './Buttons/ClipboardButton'
+import Ellipsed from './Ellipsed'
+
+interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
+  addressHash: AddressHash
 }
 
-const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
-  <button className={className} onClick={onClick}>
-    {children}
-  </button>
-)
+const AddressEllipsed = ({ addressHash, ...props }: AddressEllipsedProps) => {
+  const { t } = useTranslation('App')
 
-export default styled(ActionLink)`
-  color: ${({ theme }) => theme.global.accent};
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  padding: 0;
+  return (
+    <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
+      <Ellipsed text={addressHash} {...props} />
+    </ClipboardButton>
+  )
+}
 
-  &:hover {
-    color: ${({ theme }) => colord(theme.global.accent).darken(0.1).toRgbString()};
-  }
-
-  &:focus-visible {
-    text-decoration: underline;
-  }
-`
+export default AddressEllipsed

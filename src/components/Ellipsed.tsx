@@ -19,8 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { HTMLAttributes, MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-const style = { fontFamily: 'monospace', overflow: 'hidden' }
-
 const createHandleResize =
   (
     el: MutableRefObject<HTMLDivElement | null>,
@@ -49,9 +47,10 @@ const createHandleResize =
 
 interface EllipsedProps extends HTMLAttributes<HTMLDivElement> {
   text: string
+  className?: string
 }
 
-const Ellipsed = ({ text }: EllipsedProps) => {
+const Ellipsed = ({ text, className }: EllipsedProps) => {
   const el = useRef<HTMLDivElement | null>(null)
   const charWidth = useRef<number>()
   const [_text, setText] = useState(text)
@@ -70,14 +69,17 @@ const Ellipsed = ({ text }: EllipsedProps) => {
   }, [])
 
   return (
-    <div ref={el} style={style}>
+    <div ref={el} className={className}>
       <HiddenText>{text}</HiddenText>
       <div>{_text}</div>
     </div>
   )
 }
 
-export default Ellipsed
+export default styled(Ellipsed)`
+  font-family: monospace;
+  overflow: hidden;
+`
 
 const HiddenText = styled.div`
   visibility: hidden;

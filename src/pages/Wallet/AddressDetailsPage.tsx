@@ -27,14 +27,13 @@ import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
+import AddressEllipsed from '../../components/AddressEllipsed'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
-import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
-import Ellipsed from '../../components/Ellipsed'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
@@ -96,9 +95,7 @@ const AddressDetailsPage = () => {
           <DataListCell role="gridcell" tabIndex={0}>{t`Address`}</DataListCell>
           <DataListCell>
             <IconButtons>
-              <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
-                <Ellipsed role="gridcell" tabIndex={0} text={addressHash} />
-              </ClipboardButton>
+              <AddressEllipsed addressHash={addressHash} role="gridcell" tabIndex={0} />
               <QRCodeButton textToEncode={addressHash} />
               <OpenInExplorerButton address={addressHash} />
             </IconButtons>
@@ -154,7 +151,7 @@ const AddressDetailsPage = () => {
           .reverse()
           .map((transaction) => (
             <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
-              {transaction.type === 'transfer' && <TransactionalInfo hideLabel transaction={transaction} />}
+              {transaction.type === 'transfer' && <TransactionalInfo hideLeftAddress transaction={transaction} />}
             </TableRow>
           ))}
         {address.transactions.confirmed.map((transaction) => (
@@ -165,7 +162,7 @@ const AddressDetailsPage = () => {
             onClick={() => onTransactionClick(transaction)}
             onKeyPress={() => onTransactionClick(transaction)}
           >
-            <TransactionalInfo hideLabel transaction={transaction} />
+            <TransactionalInfo hideLeftAddress transaction={transaction} />
           </TableRow>
         ))}
         {address.transactions.confirmed.length !== address.details.txNumber && (

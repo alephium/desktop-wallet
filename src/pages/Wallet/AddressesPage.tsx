@@ -27,11 +27,10 @@ import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
+import AddressEllipsed from '../../components/AddressEllipsed'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
-import ClipboardButton from '../../components/Buttons/ClipboardButton'
-import Ellipsed from '../../components/Ellipsed'
 import ExpandableSection from '../../components/ExpandableSection'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
@@ -102,9 +101,7 @@ const AddressesPage = () => {
             onKeyPress={navigateToAddressDetailsPage(address.hash)}
           >
             <TableCell role="cell" tabIndex={0}>
-              <ClipboardButton textToCopy={address.hash ?? ''} tipText={t`Copy address`}>
-                <Ellipsed text={address.hash} />
-              </ClipboardButton>
+              <AddressEllipsed addressHash={address.hash} />
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
               {address.settings.label ? <AddressBadge address={address} truncate /> : '-'}
