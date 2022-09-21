@@ -32,6 +32,7 @@ import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
+import MainAddressLabel from '../../components/MainAddressLabel'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
@@ -102,6 +103,7 @@ const AddressesPage = () => {
           >
             <TableCell role="cell" tabIndex={0}>
               <AddressEllipsed addressHash={address.hash} />
+              {address.settings.isMain && <MainAddressLabelStyled />}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
               {address.settings.label ? <AddressBadge address={address} truncate /> : '-'}
@@ -219,4 +221,9 @@ const TableCellAmount = styled(TableCell)`
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+`
+
+const MainAddressLabelStyled = styled(MainAddressLabel)`
+  position: absolute;
+  bottom: -15px;
 `
