@@ -164,6 +164,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
             onChange={(e) => handleLocktimeChange(e.target.value)}
             type="datetime-local"
             hint="DD/MM/YYYY hh:mm"
+            min={dayjs().format('YYYY-MM-DDTHH:mm')}
           />
         </ToggleSectionStyled>
         <ToggleSectionStyled title={t`Tweak gas settings`} onClick={onClickClearGasSettings}>
