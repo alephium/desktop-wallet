@@ -18,70 +18,61 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
-import { AddressSettings, isAddress, isAddressSettings } from '../utils/addresses'
+import dotSvg from '../images/dot.svg'
+import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  address: Address | AddressSettings
+  address: Address
   truncate?: boolean
+  showHashWhenNoLabel?: boolean
 }
 
-const AddressBadge = ({ address, className, ...props }: AddressBadgeProps) => {
-  const theme = useTheme()
+const AddressBadge = ({ address, showHashWhenNoLabel, className, ...props }: AddressBadgeProps) => {
   const { t } = useTranslation('App')
 
-  let data
-  let textToCopy
+  if (!address) return null
 
-  if (isAddress(address)) {
-    data = {
-      color: address.settings.color,
-      isMain: address.settings.isMain,
-      label: address.getName()
-    }
-    textToCopy = address.hash
-  } else if (isAddressSettings(address)) {
-    data = address
-    textToCopy = data.label
-  } else {
-    data = {
-      color: theme.font.primary,
-      isMain: false,
-      label: ''
-    }
-    textToCopy = data.label
-  }
-
-  textToCopy = textToCopy ?? ''
-
-  return (
-    <ClipboardButton textToCopy={textToCopy} tipText={t`Copy address`}>
+  return showHashWhenNoLabel && !address.settings.label ? (
+    <Hash className={className}>
+      {address.settings.isMain && '★'}
+      <AddressEllipsed addressHash={address.hash} />
+    </Hash>
+  ) : (
+    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
       <div className={className}>
-        <Icon isMain={data.isMain} color={data.color} /> <Label {...props}>{data.label}</Label>
+        {address.settings.isMain && '★'} <Label {...props}>{address.getName()}</Label>
+        {!!address.settings.label && <DotIcon color={address.settings.color} />}
       </div>
     </ClipboardButton>
   )
 }
 
 export default styled(AddressBadge)`
-  padding: 6px 0 6px 0;
   display: flex;
+  align-items: center;
+  gap: 5px;
 
   ${({ truncate }) =>
     truncate &&
-    `
+    css`
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-  `}
+    `}
 `
 
 const Label = styled.span<AddressBadgeProps>`
-  ${({ truncate }) => truncate && 'overflow: hidden; text-overflow: ellipsis;'}
+  ${({ truncate }) =>
+    truncate &&
+    css`
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `}
 `
 
 export const dotStyling = {
@@ -89,20 +80,18 @@ export const dotStyling = {
   marginRight: '0.2rem'
 }
 
-const Icon = styled.span<{ isMain: boolean; color?: string }>`
-  ${({ color, isMain, theme }) => `
-    display: flex;
-    align-items: center;
+const DotIcon = styled.div<{ color?: string }>`
+  display: inline-block;
+  width: 7px;
+  height: 8px;
+  -webkit-mask: url(${dotSvg}) no-repeat 100% 100%;
+  mask: url(${dotSvg}) no-repeat 100% 100%;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  background-color: ${({ color, theme }) => color || theme.font.primary};
+  flex-shrink: 0;
+`
 
-    &::before {
-      width: ${dotStyling.width};
-      display: block;
-      text-align: center;
-      margin-right: ${dotStyling.marginRight};
-      font-size: 0.8rem;
-      content: '●';
-      border-radius: 100%;
-      color: ${color ?? theme.font.primary};
-    }
-  `}
+const Hash = styled.div`
+  width: 100%;
 `

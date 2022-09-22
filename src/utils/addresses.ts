@@ -32,25 +32,6 @@ export type AddressSettings = {
 
 export type AddressVariant = Address | AddressSettings
 
-export const isAddressSettings = (address: AddressVariant): address is AddressSettings =>
-  (address as AddressSettings).isMain !== undefined
-
-export function isAddress(address: AddressVariant): address is Address {
-  const _a = address as Address
-  return (
-    (_a.hash !== undefined &&
-      _a.shortHash !== undefined &&
-      _a.publicKey !== undefined &&
-      _a.privateKey !== undefined &&
-      _a.group !== undefined &&
-      _a.index !== undefined &&
-      _a.settings !== undefined &&
-      _a.details !== undefined &&
-      _a.transactions !== undefined &&
-      _a.availableBalance !== undefined) === true
-  )
-}
-
 export type AddressMetadata = AddressSettings & {
   index: number
 }

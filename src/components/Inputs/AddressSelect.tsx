@@ -94,8 +94,8 @@ function AddressSelect({
           </MoreIcon>
         )}
         <ClickableInputStyled type="button" className={className} disabled={disabled} id={id}>
-          {address.settings.label && <AddressBadge address={address} truncate />}
-          <AddressEllipsed addressHash={address.hash} />
+          <AddressBadge address={address} truncate showHashWhenNoLabel />
+          {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInputStyled>
       </AddressSelectContainer>
       <AnimatePresence>
@@ -150,7 +150,7 @@ const AddressSelectModal = ({
         {sortAddressList(displayedOptions).map((address) => (
           <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            <AddressBadge address={address} />
+            <AddressBadgeStyled address={address} showHashWhenNoLabel />
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
         ))}
@@ -247,4 +247,8 @@ const ClickableInputStyled = styled(ClickableInput)`
 const AmountStyled = styled(Amount)`
   flex: 1;
   text-align: right;
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: auto;
 `
