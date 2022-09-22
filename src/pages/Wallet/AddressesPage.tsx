@@ -103,7 +103,7 @@ const AddressesPage = () => {
           >
             <TableCell role="cell" tabIndex={0}>
               <AddressEllipsed addressHash={address.hash} />
-              {address.settings.isMain && <MainAddressLabelStyled />}
+              {!isPassphraseUsed && address.settings.isMain && <MainAddressLabelStyled />}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
               {address.settings.label ? <AddressBadge address={address} truncate /> : '-'}
