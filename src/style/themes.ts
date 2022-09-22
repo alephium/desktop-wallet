@@ -65,7 +65,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: colord('#000').alpha(0.2).toRgbString()
+    accent: colord('#101012').alpha(0.32).toRgbString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',

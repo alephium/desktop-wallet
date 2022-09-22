@@ -60,7 +60,7 @@ const ToggleSection = ({ title, onClick = () => null, children, className }: Tog
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.accent};
   border-radius: var(--radius-medium);
   padding-bottom: 21px;
 `
