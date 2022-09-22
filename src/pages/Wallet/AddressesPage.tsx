@@ -106,7 +106,7 @@ const AddressesPage = () => {
               {!isPassphraseUsed && address.settings.isMain && <MainAddressLabelStyled />}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
-              {address.settings.label ? <AddressBadge address={address} truncate /> : '-'}
+              {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
               {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
