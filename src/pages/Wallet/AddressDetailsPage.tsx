@@ -151,7 +151,7 @@ const AddressDetailsPage = () => {
           .reverse()
           .map((transaction) => (
             <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
-              {transaction.type === 'transfer' && <TransactionalInfo hideLeftAddress transaction={transaction} />}
+              <TransactionalInfo hideLeftAddress transaction={transaction} />
             </TableRow>
           ))}
         {address.transactions.confirmed.map((transaction) => (
