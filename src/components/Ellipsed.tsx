@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { HTMLAttributes, MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { HTMLAttributes, MutableRefObject, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 const createHandleResize =
@@ -57,10 +57,10 @@ const Ellipsed = ({ text, className }: EllipsedProps) => {
 
   const handleResize = createHandleResize(el, charWidth, text, setText)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     handleResize()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [text])
 
   useEffect(() => {
     window.addEventListener('resize', handleResize)
