@@ -27,7 +27,7 @@ import styled from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
-const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: InputProps) => {
+const Input = ({ label, error, isValid, disabled, onChange, value, children, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -64,6 +64,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, ...props }: I
         </InputValidIconContainer>
       )}
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
+      {children}
     </InputContainer>
   )
 }
@@ -72,7 +73,7 @@ export default Input
 
 export const InputContainer = styled(motion.div)`
   position: relative;
-  height: var(--inputHeight);
+  min-height: var(--inputHeight);
   width: 100%;
   margin: 16px 0;
 `
