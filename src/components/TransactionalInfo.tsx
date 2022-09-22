@@ -96,7 +96,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       {!hideLeftAddress && (
         <CellAddress alignRight>
           <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
-          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel />
+          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
         </CellAddress>
       )}
       <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>

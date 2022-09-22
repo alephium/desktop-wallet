@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -31,9 +32,10 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   address: Address
   truncate?: boolean
   showHashWhenNoLabel?: boolean
+  withBorders?: boolean
 }
 
-const AddressBadge = ({ address, showHashWhenNoLabel, className, ...props }: AddressBadgeProps) => {
+const AddressBadge = ({ address, showHashWhenNoLabel, withBorders, className, ...props }: AddressBadgeProps) => {
   const { t } = useTranslation('App')
   const { isPassphraseUsed } = useGlobalContext()
 
@@ -41,15 +43,15 @@ const AddressBadge = ({ address, showHashWhenNoLabel, className, ...props }: Add
 
   return showHashWhenNoLabel && !address.settings.label ? (
     <Hash className={className}>
-      {!isPassphraseUsed && address.settings.isMain && '★'}
+      {!isPassphraseUsed && address.settings.isMain && <Star>★</Star>}
       <AddressEllipsed addressHash={address.hash} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
-      <div className={className}>
-        {!isPassphraseUsed && address.settings.isMain && '★'} <Label {...props}>{address.getName()}</Label>
+      <RoundBorders className={className} withBorders={withBorders}>
+        {!isPassphraseUsed && address.settings.isMain && <Star>★</Star>} <Label {...props}>{address.getName()}</Label>
         {!!address.settings.label && <DotIcon color={address.settings.color} />}
-      </div>
+      </RoundBorders>
     </ClipboardButton>
   )
 }
@@ -57,7 +59,7 @@ const AddressBadge = ({ address, showHashWhenNoLabel, className, ...props }: Add
 export default styled(AddressBadge)`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
 
   ${({ truncate }) =>
     truncate &&
@@ -69,6 +71,8 @@ export default styled(AddressBadge)`
 `
 
 const Label = styled.span<AddressBadgeProps>`
+  margin-right: 2px;
+
   ${({ truncate }) =>
     truncate &&
     css`
@@ -96,4 +100,18 @@ const DotIcon = styled.div<{ color?: string }>`
 
 const Hash = styled.div`
   width: 100%;
+`
+
+const Star = styled.span`
+  opacity: 0.6;
+`
+
+const RoundBorders = styled.div<{ withBorders?: boolean }>`
+  ${({ withBorders }) =>
+    withBorders &&
+    css`
+      border: 1px solid ${({ theme }) => colord(theme.border.primary).alpha(0.8).toRgbString()};
+      border-radius: 25px;
+      padding: 5px 10px;
+    `}
 `

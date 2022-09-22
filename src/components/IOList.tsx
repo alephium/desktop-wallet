@@ -62,7 +62,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       const address = getAddress(addressHash)
 
       return address ? (
-        <AddressBadge truncate address={address} showHashWhenNoLabel />
+        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
       ) : (
         <AddressEllipsed addressHash={addressHash} />
       )
