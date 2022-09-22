@@ -27,6 +27,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
+  hint?: string
   className?: string
 }
 
