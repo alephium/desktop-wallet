@@ -26,6 +26,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   error?: ReactNode
   isValid?: boolean
   disabled?: boolean
+  hint?: string
   className?: string
 }
 

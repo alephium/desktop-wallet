@@ -27,7 +27,7 @@ import styled from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
-const Input = ({ label, error, isValid, disabled, onChange, value, children, ...props }: InputProps) => {
+const Input = ({ label, error, isValid, disabled, onChange, value, hint, children, ...props }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -64,6 +64,7 @@ const Input = ({ label, error, isValid, disabled, onChange, value, children, ...
         </InputValidIconContainer>
       )}
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
+      {hint && <Hint>{hint}</Hint>}
       {children}
     </InputContainer>
   )
@@ -81,4 +82,11 @@ export const InputContainer = styled(motion.div)`
 const StyledInput = styled.input<InputProps>`
   ${({ isValid }) => inputDefaultStyle(isValid)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
+`
+
+const Hint = styled.div`
+  font-size: 10px;
+  color: ${({ theme }) => theme.font.secondary};
+  margin-left: 12px;
+  margin-top: 6px;
 `
