@@ -101,7 +101,7 @@ export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
 
 export const sortAddressList = (addresses: Address[]): Address[] =>
   addresses.sort((a, b) => {
-    // Always keep main address to the top of the list
+    // Always keep default address to the top of the list
     if (a.settings.isMain) return -1
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
