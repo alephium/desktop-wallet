@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
 import dotSvg from '../images/dot.svg'
 import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
@@ -34,18 +35,19 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 
 const AddressBadge = ({ address, showHashWhenNoLabel, className, ...props }: AddressBadgeProps) => {
   const { t } = useTranslation('App')
+  const { isPassphraseUsed } = useGlobalContext()
 
   if (!address) return null
 
   return showHashWhenNoLabel && !address.settings.label ? (
     <Hash className={className}>
-      {address.settings.isMain && '★'}
+      {!isPassphraseUsed && address.settings.isMain && '★'}
       <AddressEllipsed addressHash={address.hash} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
       <div className={className}>
-        {address.settings.isMain && '★'} <Label {...props}>{address.getName()}</Label>
+        {!isPassphraseUsed && address.settings.isMain && '★'} <Label {...props}>{address.getName()}</Label>
         {!!address.settings.label && <DotIcon color={address.settings.color} />}
       </div>
     </ClipboardButton>
