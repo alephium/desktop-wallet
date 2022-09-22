@@ -27,6 +27,7 @@ import InfoBox from '../../components/InfoBox'
 import AddressSelect from '../../components/Inputs/AddressSelect'
 import AmountInput from '../../components/Inputs/AmountInput'
 import Input, { InputContainer } from '../../components/Inputs/Input'
+import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import ToggleSection from '../../components/ToggleSection'
 import { useAddressesContext } from '../../contexts/addresses'
 import { checkAddressValidity } from '../../utils/addresses'
@@ -154,41 +155,43 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
             <AlefSymbol />
           </InfoBoxStyled>
         )}
+        <HorizontalDivider />
+        <ToggleSectionStyled title={t`Set lock time`} onClick={onClickClearLockTime}>
+          <Input
+            id="locktime"
+            label={t`Lock time (UTC)`}
+            value={dayjs(lockTime).format('YYYY-MM-DDTHH:mm')}
+            onChange={(e) => handleLocktimeChange(e.target.value)}
+            type="datetime-local"
+            hint="DD/MM/YYYY hh:mm"
+          />
+        </ToggleSectionStyled>
+        <ToggleSectionStyled title={t`Tweak gas settings`} onClick={onClickClearGasSettings}>
+          <Input
+            id="gas-amount"
+            label={t`Gas amount`}
+            value={gasAmount}
+            onChange={(e) => handleGasAmountChange(e.target.value)}
+            type="number"
+            min={MINIMAL_GAS_AMOUNT}
+            error={gasAmountError}
+          />
+          <Input
+            id="gas-price"
+            label={
+              <>
+                {t`Gas price`} (<AlefSymbol color={theme.font.secondary} />)
+              </>
+            }
+            value={gasPrice}
+            type="number"
+            min={minimalGasPriceInALPH}
+            onChange={(e) => handleGasPriceChange(e.target.value)}
+            step={minimalGasPriceInALPH}
+            error={gasPriceError}
+          />
+        </ToggleSectionStyled>
       </ModalContent>
-      <ToggleSectionStyled title={t`Set lock time`} onClick={onClickClearLockTime}>
-        <Input
-          id="locktime"
-          label={t`Lock time`}
-          value={dayjs(lockTime).format('YYYY-MM-DDTHH:mm')}
-          onChange={(e) => handleLocktimeChange(e.target.value)}
-          type="datetime-local"
-        />
-      </ToggleSectionStyled>
-      <ToggleSectionStyled title={t`Tweak gas settings`} onClick={onClickClearGasSettings}>
-        <Input
-          id="gas-amount"
-          label={t`Gas amount`}
-          value={gasAmount}
-          onChange={(e) => handleGasAmountChange(e.target.value)}
-          type="number"
-          min={MINIMAL_GAS_AMOUNT}
-          error={gasAmountError}
-        />
-        <Input
-          id="gas-price"
-          label={
-            <>
-              {t`Gas price`} (<AlefSymbol color={theme.font.secondary} />)
-            </>
-          }
-          value={gasPrice}
-          type="number"
-          min={minimalGasPriceInALPH}
-          onChange={(e) => handleGasPriceChange(e.target.value)}
-          step={minimalGasPriceInALPH}
-          error={gasPriceError}
-        />
-      </ToggleSectionStyled>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
           {t`Cancel`}
