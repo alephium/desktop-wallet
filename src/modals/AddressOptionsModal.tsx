@@ -43,7 +43,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
-    color: address?.settings.color ?? getRandomLabelColor()
+    color: address?.settings.color || getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
   const { wallet, isPassphraseUsed } = useGlobalContext()

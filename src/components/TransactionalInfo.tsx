@@ -25,7 +25,6 @@ import styled, { css } from 'styled-components'
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
-import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
 import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
@@ -90,11 +89,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       {!hideLeftAddress && (
         <CellAddress alignRight>
           <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
-          {address.settings.label ? (
-            <AddressBadge address={address} truncate />
-          ) : (
-            <AddressEllipsed addressHash={address.hash} />
-          )}
+          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel />
         </CellAddress>
       )}
       <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>
@@ -194,4 +189,8 @@ const DirectionalAddress = styled.div`
   gap: var(--spacing-4);
   max-width: 100%;
   min-width: 0;
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  justify-content: flex-end;
 `

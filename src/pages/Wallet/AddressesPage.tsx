@@ -225,5 +225,5 @@ const TableCellAmount = styled(TableCell)`
 
 const MainAddressLabelStyled = styled(MainAddressLabel)`
   position: absolute;
-  bottom: -15px;
+  bottom: -13px;
 `

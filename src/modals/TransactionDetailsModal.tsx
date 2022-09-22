@@ -82,48 +82,40 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       </Header>
       <Details role="table">
         <DetailsRow label={t`From`}>
-          <AddressList>
-            {isOutgoingTx ? (
+          {isOutgoingTx ? (
+            <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                {address.settings.label ? (
-                  <AddressBadge address={address} truncate />
-                ) : (
-                  <AddressEllipsed addressHash={address.hash} />
-                )}
+                <AddressBadge address={address} truncate showHashWhenNoLabel />
               </ActionLinkStyled>
-            ) : (
-              <IOList
-                currentAddress={address.hash}
-                isOut={isOutgoingTx}
-                outputs={transaction.outputs}
-                inputs={transaction.inputs}
-                timestamp={transaction.timestamp}
-                linkToExplorer
-              />
-            )}
-          </AddressList>
+            </AddressList>
+          ) : (
+            <IOList
+              currentAddress={address.hash}
+              isOut={isOutgoingTx}
+              outputs={transaction.outputs}
+              inputs={transaction.inputs}
+              timestamp={transaction.timestamp}
+              linkToExplorer
+            />
+          )}
         </DetailsRow>
         <DetailsRow label={t`To`}>
-          <AddressList>
-            {!isOutgoingTx ? (
+          {!isOutgoingTx ? (
+            <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                {address.settings.label ? (
-                  <AddressBadge address={address} />
-                ) : (
-                  <AddressEllipsed addressHash={address.hash} />
-                )}
+                <AddressBadge address={address} showHashWhenNoLabel />
               </ActionLinkStyled>
-            ) : (
-              <IOList
-                currentAddress={address.hash}
-                isOut={isOutgoingTx}
-                outputs={transaction.outputs}
-                inputs={transaction.inputs}
-                timestamp={transaction.timestamp}
-                linkToExplorer
-              />
-            )}
-          </AddressList>
+            </AddressList>
+          ) : (
+            <IOList
+              currentAddress={address.hash}
+              isOut={isOutgoingTx}
+              outputs={transaction.outputs}
+              inputs={transaction.inputs}
+              timestamp={transaction.timestamp}
+              linkToExplorer
+            />
+          )}
         </DetailsRow>
         <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
@@ -239,10 +231,10 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
 `
 
 const AddressList = styled.div`
-  text-align: right;
   overflow: hidden;
 `
 
 const ActionLinkStyled = styled(ActionLink)`
   width: 100%;
+  justify-content: right;
 `

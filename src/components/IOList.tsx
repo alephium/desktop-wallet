@@ -51,35 +51,35 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       .map((v) => v.address)
       .uniq()
       .value()
-    const address = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
+    const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
     const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
 
     // There may be a case where a wallet sends funds to the same address, which doesn't
     // make it a change address but a legimitate receiving address.
     const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
 
-    const getAddressComponent = (address: AddressHash) => {
-      const addressWithMetadata = getAddress(address)
+    const getAddressComponent = (addressHash: AddressHash) => {
+      const address = getAddress(addressHash)
 
-      return addressWithMetadata && addressWithMetadata.settings.label ? (
-        <AddressBadge truncate address={addressWithMetadata} />
+      return address ? (
+        <AddressBadge truncate address={address} showHashWhenNoLabel />
       ) : (
-        <AddressEllipsed addressHash={address} />
+        <AddressEllipsed addressHash={addressHash} />
       )
     }
 
     return truncate ? (
       <TruncateWrap>
-        {getAddressComponent(address)}
+        {getAddressComponent(addressHash)}
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
-        {addressesToShow.map((address) => {
-          const addressComponent = getAddressComponent(address)
+        {addressesToShow.map((addressHash) => {
+          const addressComponent = getAddressComponent(addressHash)
 
           return linkToExplorer ? (
-            <ActionLinkStyled onClick={() => handleShowAddress(address)} key={address}>
+            <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}
             </ActionLinkStyled>
           ) : (
@@ -114,8 +114,10 @@ const Addresses = styled.div`
   display: flex;
   flex-direction: column;
   align-items: end;
+  overflow: hidden;
 `
 
 const ActionLinkStyled = styled(ActionLink)`
   width: 100%;
+  justify-content: flex-end;
 `
