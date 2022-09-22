@@ -94,7 +94,7 @@ function AddressSelect({
           </MoreIcon>
         )}
         <ClickableInputStyled type="button" className={className} disabled={disabled} id={id}>
-          <AddressBadge address={address} truncate showHashWhenNoLabel />
+          <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
           {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInputStyled>
       </AddressSelectContainer>

@@ -76,7 +76,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <HeaderInfo>
           <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
           <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
-          <AddressBadge address={address} truncate />
+          <AddressBadge address={address} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
@@ -85,7 +85,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {isOutgoingTx ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} truncate showHashWhenNoLabel />
+                <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -103,7 +103,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {!isOutgoingTx ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} showHashWhenNoLabel />
+                <AddressBadge address={address} showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
