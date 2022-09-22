@@ -89,7 +89,7 @@ const ClipboardButton = ({ tipText, textToCopy, children, className }: Clipboard
     </ClipboardWrapper>
   )
 
-  return children && Array.isArray(children) && children.length > 0 ? (
+  return children ? (
     <div className={className}>
       <CellChildren>{children}</CellChildren>
       <CellClipboard>{clipboard}</CellClipboard>
