@@ -25,6 +25,7 @@ import styled, { css } from 'styled-components'
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
+import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
 import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
@@ -53,6 +54,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   let timestamp = 0
   let type: TransactionDirection
   let outputs: Output[] = []
+  let pendingToAddressComponent
 
   const token = 'alph'
 
@@ -64,10 +66,15 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     timestamp = tx.timestamp
     outputs = tx.outputs || []
   } else if (isPendingTx(tx)) {
-    type = tx.type === 'transfer' ? 'out' : 'in'
+    type = 'out'
     amount = tx.amount
     timestamp = tx.timestamp
-    outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+    const pendingToAddress = getAddress(tx.toAddress)
+    pendingToAddressComponent = pendingToAddress ? (
+      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel />
+    ) : (
+      <AddressEllipsed addressHash={tx.toAddress} />
+    )
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
@@ -95,24 +102,26 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          <IOList
-            currentAddress={_addressHash || ''}
-            isOut={type === 'out'}
-            outputs={outputs}
-            inputs={(tx as Transaction).inputs}
-            timestamp={(tx as Transaction).timestamp}
-            truncate
-          />
+          {pendingToAddressComponent || (
+            <IOList
+              currentAddress={_addressHash || ''}
+              isOut={type === 'out'}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+            />
+          )}
         </DirectionalAddress>
       </CellAddress>
-      {!!amount && (
-        <CellAmount aria-hidden="true">
+      <CellAmount aria-hidden="true">
+        {!!amount && (
           <div>
             {type === 'out' ? '-' : '+'}
             <Amount value={amount} fadeDecimals />
           </div>
-        </CellAmount>
-      )}
+        )}
+      </CellAmount>
     </div>
   )
 }

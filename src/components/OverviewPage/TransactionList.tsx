@@ -57,7 +57,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         .reverse()
         .map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
           <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
-            {tx.type === 'transfer' && <TransactionalInfo transaction={tx} addressHash={address.hash} />}
+            <TransactionalInfo transaction={tx} addressHash={address.hash} />
           </TableRow>
         ))}
       {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => (
