@@ -25,9 +25,9 @@ import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
 import AddressBadge from '../components/AddressBadge'
+import AddressEllipsed from '../components/AddressEllipsed'
 import Amount from '../components/Amount'
 import Badge from '../components/Badge'
-import Ellipsed from '../components/Ellipsed'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Tooltip from '../components/Tooltip'
@@ -76,16 +76,18 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <HeaderInfo>
           <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
           <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
-          <AddressBadge address={address} truncate />
+          <AddressBadge address={address} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details role="table">
         <DetailsRow label={t`From`}>
           {isOutgoingTx ? (
-            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-              <AddressBadge address={address} truncate />
-            </ActionLink>
+            <AddressList>
+              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+              </ActionLinkStyled>
+            </AddressList>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -99,9 +101,11 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`To`}>
           {!isOutgoingTx ? (
-            <ActionLink onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-              <AddressBadge address={address} />
-            </ActionLink>
+            <AddressList>
+              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} showHashWhenNoLabel withBorders />
+              </ActionLinkStyled>
+            </AddressList>
           ) : (
             <IOList
               currentAddress={address.hash}
@@ -135,22 +139,22 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
-            <IOs>
+            <AddressList>
               {transaction.inputs?.map((input) => (
-                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
-                  <Ellipsed text={input.address ?? ''} />
-                </ActionLink>
+                <ActionLinkStyled key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
+                  <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
+                </ActionLinkStyled>
               ))}
-            </IOs>
+            </AddressList>
           </DetailsRow>
           <DetailsRow label={t`Outputs`}>
-            <IOs>
+            <AddressList>
               {transaction.outputs?.map((output) => (
-                <ActionLink key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
-                  <Ellipsed text={output.address ?? ''} />
-                </ActionLink>
+                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
+                  <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
+                </ActionLinkStyled>
               ))}
-            </IOs>
+            </AddressList>
           </DetailsRow>
         </ExpandableSectionStyled>
       </Details>
@@ -226,6 +230,11 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 28px;
 `
 
-const IOs = styled.div`
-  text-align: right;
+const AddressList = styled.div`
+  overflow: hidden;
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  width: 100%;
+  justify-content: right;
 `

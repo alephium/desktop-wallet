@@ -16,15 +16,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-const MainAddressLabel = ({ className }: { className?: string }) => {
-  const { t } = useTranslation('App')
-  return <div className={className}>★ {t`Default address`}</div>
+import { AddressHash } from '../contexts/addresses'
+import ClipboardButton from './Buttons/ClipboardButton'
+import Ellipsed from './Ellipsed'
+
+interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
+  addressHash: AddressHash
 }
 
-export default styled(MainAddressLabel)`
-  color: ${({ theme }) => theme.font.highlight};
-  font-size: 10px;
-`
+const AddressEllipsed = ({ addressHash, ...props }: AddressEllipsedProps) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
+      <Ellipsed text={addressHash} {...props} />
+    </ClipboardButton>
+  )
+}
+
+export default AddressEllipsed

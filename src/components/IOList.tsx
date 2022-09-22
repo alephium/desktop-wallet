@@ -21,13 +21,12 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useAddressesContext } from '../contexts/addresses'
+import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import ActionLink from './ActionLink'
 import AddressBadge from './AddressBadge'
+import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
-import ClipboardButton from './Buttons/ClipboardButton'
-import Ellipsed from './Ellipsed'
 
 interface IOListProps {
   currentAddress: string
@@ -52,45 +51,37 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       .map((v) => v.address)
       .uniq()
       .value()
-    const address = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
-    const key = isAllCurrentAddress ? undefined : address
+    const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
     const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
-
-    const addressWithMetadata = getAddress(address)
 
     // There may be a case where a wallet sends funds to the same address, which doesn't
     // make it a change address but a legimitate receiving address.
     const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
 
+    const getAddressComponent = (addressHash: AddressHash) => {
+      const address = getAddress(addressHash)
+
+      return address ? (
+        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
+      ) : (
+        <AddressEllipsed addressHash={addressHash} />
+      )
+    }
+
     return truncate ? (
       <TruncateWrap>
-        {addressWithMetadata ? (
-          <AddressBadge truncate address={addressWithMetadata} />
-        ) : (
-          <AddressSpan>
-            <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
-              <Ellipsed key={key} text={address} />
-            </ClipboardButton>
-          </AddressSpan>
-        )}
+        {getAddressComponent(addressHash)}
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
-        {addressesToShow.map((address) => {
-          const addressWithMetadata = getAddress(address)
-          const addressComponent = addressWithMetadata ? (
-            <AddressBadge truncate address={addressWithMetadata} />
-          ) : (
-            <ClipboardButton textToCopy={address ?? ''} tipText={t`Copy address`}>
-              <Ellipsed text={address} />
-            </ClipboardButton>
-          )
+        {addressesToShow.map((addressHash) => {
+          const addressComponent = getAddressComponent(addressHash)
 
           return linkToExplorer ? (
-            <ActionLink onClick={() => handleShowAddress(address)} key={address}>
+            <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}
-            </ActionLink>
+            </ActionLinkStyled>
           ) : (
             addressComponent
           )
@@ -123,8 +114,10 @@ const Addresses = styled.div`
   display: flex;
   flex-direction: column;
   align-items: end;
+  overflow: hidden;
 `
 
-const AddressSpan = styled.div`
-  min-width: 4em;
+const ActionLinkStyled = styled(ActionLink)`
+  width: 100%;
+  justify-content: flex-end;
 `

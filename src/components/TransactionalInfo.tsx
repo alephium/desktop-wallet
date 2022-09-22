@@ -20,14 +20,14 @@ import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
+import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
 import Badge from './Badge'
-import ClipboardButton from './Buttons/ClipboardButton'
 import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
@@ -37,11 +37,11 @@ import Token from './Token'
 interface TransactionalInfoProps {
   transaction: Transaction | PendingTx
   addressHash?: AddressHash
-  hideLabel?: boolean
+  hideLeftAddress?: boolean
   className?: string
 }
 
-const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel }: TransactionalInfoProps) => {
+const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAddress }: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const _addressHash = addressHash ?? addressHashParam
 
@@ -54,6 +54,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
   let timestamp = 0
   let type: TransactionDirection
   let outputs: Output[] = []
+  let pendingToAddressComponent
 
   const token = 'alph'
 
@@ -65,13 +66,20 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
     timestamp = tx.timestamp
     outputs = tx.outputs || []
   } else if (isPendingTx(tx)) {
-    type = tx.type === 'transfer' ? 'out' : 'in'
+    type = 'out'
     amount = tx.amount
     timestamp = tx.timestamp
-    outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+    const pendingToAddress = getAddress(tx.toAddress)
+    pendingToAddressComponent = pendingToAddress ? (
+      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel />
+    ) : (
+      <AddressEllipsed addressHash={tx.toAddress} />
+    )
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
+
+  if (!address) return null
 
   return (
     <div className={className}>
@@ -85,38 +93,35 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLabel 
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
       </CellAmountTokenTime>
-      {address && (
-        <>
-          {!hideLabel && (
-            <CellAddressBadge>
-              <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
-              <AddressBadge address={address} truncate />
-            </CellAddressBadge>
-          )}
-          {type === 'out' && <DirectionBadgeOut>{t`to`}</DirectionBadgeOut>}
-          {type !== 'out' && <DirectionBadgeIn>{t`from`}</DirectionBadgeIn>}
-          <CellAddress>
-            <DirectionalAddress>
-              <IOList
-                currentAddress={_addressHash || ''}
-                isOut={type === 'out'}
-                outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
-                truncate
-              />
-            </DirectionalAddress>
-          </CellAddress>
-        </>
+      {!hideLeftAddress && (
+        <CellAddress alignRight>
+          <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
+          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
+        </CellAddress>
       )}
-      {amount && (
-        <CellAmount aria-hidden="true">
-          <CellAmountInner>
+      <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>
+      <CellAddress>
+        <DirectionalAddress>
+          {pendingToAddressComponent || (
+            <IOList
+              currentAddress={_addressHash || ''}
+              isOut={type === 'out'}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+            />
+          )}
+        </DirectionalAddress>
+      </CellAddress>
+      <CellAmount aria-hidden="true">
+        {!!amount && (
+          <div>
             {type === 'out' ? '-' : '+'}
             <Amount value={amount} fadeDecimals />
-          </CellAmountInner>
-        </CellAmount>
-      )}
+          </div>
+        )}
+      </CellAmount>
     </div>
   )
 }
@@ -139,35 +144,28 @@ const CellAmountTokenTime = styled.div`
   align-items: center;
   margin-right: 28px;
   text-align: left;
+  flex-grow: 1;
 `
 
 const TokenTimeInner = styled.div`
   width: 9em;
 `
 
-const CellAddressBadge = styled.div`
-  width: 200px;
-  min-width: 100px;
-  margin-right: 21px;
-  display: flex;
-  flex-grow: 1;
-  justify-content: right;
-  overflow: hidden;
-
-  & > ${ClipboardButton} {
-    justify-content: right;
-  }
-`
-
-const CellAddress = styled.div`
+const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 200px;
+  max-width: 400px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
   margin-left: 21px;
   display: flex;
   width: 100%;
+
+  ${({ alignRight }) =>
+    alignRight &&
+    css`
+      justify-content: flex-end;
+    `}
 `
 
 const TokenStyled = styled(Token)`
@@ -182,22 +180,13 @@ const CellAmount = styled.div`
   flex-basis: 120px;
 `
 
-const CellAmountInner = styled.div``
-
 const BadgeStyled = styled(Badge)`
   min-width: 50px;
   text-align: center;
 `
 
-const DirectionBadgeOut = styled(BadgeStyled)`
-  ${({ theme }) => `
-    color: ${theme.font.secondary};
-    background-color: ${theme.bg.accent};
-  `}
-`
-
-const DirectionBadgeIn = styled(BadgeStyled)`
-  ${({ theme }) => `
+const CellDirection = styled(BadgeStyled)`
+  ${({ theme }) => css`
     color: ${theme.font.secondary};
     background-color: ${theme.bg.accent};
   `}
@@ -209,4 +198,8 @@ const DirectionalAddress = styled.div`
   gap: var(--spacing-4);
   max-width: 100%;
   min-width: 0;
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  justify-content: flex-end;
 `

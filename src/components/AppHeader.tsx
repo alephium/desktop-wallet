@@ -87,7 +87,7 @@ const AppHeader: FC = ({ children }) => {
         {mainAddress && !isPassphraseUsed && (
           <>
             <HeaderDivider />
-            <AddressBadge address={mainAddress} data-tip={t`Main address`} />
+            <AddressBadge address={mainAddress} data-tip={t`Default address`} />
           </>
         )}
         <HeaderDivider />

@@ -32,25 +32,6 @@ export type AddressSettings = {
 
 export type AddressVariant = Address | AddressSettings
 
-export const isAddressSettings = (address: AddressVariant): address is AddressSettings =>
-  (address as AddressSettings).isMain !== undefined
-
-export function isAddress(address: AddressVariant): address is Address {
-  const _a = address as Address
-  return (
-    (_a.hash !== undefined &&
-      _a.shortHash !== undefined &&
-      _a.publicKey !== undefined &&
-      _a.privateKey !== undefined &&
-      _a.group !== undefined &&
-      _a.index !== undefined &&
-      _a.settings !== undefined &&
-      _a.details !== undefined &&
-      _a.transactions !== undefined &&
-      _a.availableBalance !== undefined) === true
-  )
-}
-
 export type AddressMetadata = AddressSettings & {
   index: number
 }
@@ -120,7 +101,7 @@ export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
 
 export const sortAddressList = (addresses: Address[]): Address[] =>
   addresses.sort((a, b) => {
-    // Always keep main address to the top of the list
+    // Always keep default address to the top of the list
     if (a.settings.isMain) return -1
     if (b.settings.isMain) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)

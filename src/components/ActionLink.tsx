@@ -36,6 +36,9 @@ export default styled(ActionLink)`
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
 
   &:hover {
     color: ${({ theme }) => colord(theme.global.accent).darken(0.1).toRgbString()};

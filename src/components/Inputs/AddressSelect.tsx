@@ -26,8 +26,8 @@ import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
+import AddressEllipsed from '../AddressEllipsed'
 import Amount from '../Amount'
-import Ellipsed from '../Ellipsed'
 import InfoBox from '../InfoBox'
 import InputArea from '../Inputs/InputArea'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
@@ -73,6 +73,8 @@ function AddressSelect({
     }
   }, [address, defaultAddress, onAddressChange])
 
+  if (!address) return null
+
   return (
     <>
       <AddressSelectContainer
@@ -91,10 +93,10 @@ function AddressSelect({
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInput type="button" className={className} disabled={disabled} id={id}>
-          <BadgeStyled address={address} truncate />
-          <Ellipsed text={address?.hash ?? ''} />
-        </ClickableInput>
+        <ClickableInputStyled type="button" className={className} disabled={disabled} id={id}>
+          <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+          {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
+        </ClickableInputStyled>
       </AddressSelectContainer>
       <AnimatePresence>
         {isAddressSelectModalOpen && (
@@ -148,7 +150,7 @@ const AddressSelectModal = ({
         {sortAddressList(displayedOptions).map((address) => (
           <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            <AddressBadge address={address} />
+            <AddressBadgeStyled address={address} showHashWhenNoLabel />
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
         ))}
@@ -238,11 +240,15 @@ const ClickableInput = styled.div<InputProps>`
   padding-right: 50px;
 `
 
-const BadgeStyled = styled(AddressBadge)`
-  margin-right: var(--spacing-2);
+const ClickableInputStyled = styled(ClickableInput)`
+  gap: var(--spacing-2);
 `
 
 const AmountStyled = styled(Amount)`
   flex: 1;
   text-align: right;
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: auto;
 `

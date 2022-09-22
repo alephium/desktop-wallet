@@ -27,12 +27,12 @@ import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
+import AddressEllipsed from '../../components/AddressEllipsed'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
-import ClipboardButton from '../../components/Buttons/ClipboardButton'
-import Ellipsed from '../../components/Ellipsed'
 import ExpandableSection from '../../components/ExpandableSection'
+import MainAddressLabel from '../../components/MainAddressLabel'
 import OperationBox from '../../components/OperationBox'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
@@ -102,12 +102,11 @@ const AddressesPage = () => {
             onKeyPress={navigateToAddressDetailsPage(address.hash)}
           >
             <TableCell role="cell" tabIndex={0}>
-              <ClipboardButton textToCopy={address.hash ?? ''} tipText={t`Copy address`}>
-                <Ellipsed text={address.hash} />
-              </ClipboardButton>
+              <AddressEllipsed addressHash={address.hash} />
+              {!isPassphraseUsed && address.settings.isMain && <MainAddressLabelStyled />}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
-              <AddressBadge address={address} truncate />
+              {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
             </TableCell>
             <TableCell role="cell" tabIndex={0}>
               {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
@@ -222,4 +221,9 @@ const TableCellAmount = styled(TableCell)`
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
+`
+
+const MainAddressLabelStyled = styled(MainAddressLabel)`
+  position: absolute;
+  bottom: -13px;
 `
