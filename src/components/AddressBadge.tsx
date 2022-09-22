@@ -33,9 +33,17 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   truncate?: boolean
   showHashWhenNoLabel?: boolean
   withBorders?: boolean
+  hideStar?: boolean
 }
 
-const AddressBadge = ({ address, showHashWhenNoLabel, withBorders, className, ...props }: AddressBadgeProps) => {
+const AddressBadge = ({
+  address,
+  showHashWhenNoLabel,
+  withBorders,
+  hideStar,
+  className,
+  ...props
+}: AddressBadgeProps) => {
   const { t } = useTranslation('App')
   const { isPassphraseUsed } = useGlobalContext()
 
@@ -43,13 +51,14 @@ const AddressBadge = ({ address, showHashWhenNoLabel, withBorders, className, ..
 
   return showHashWhenNoLabel && !address.settings.label ? (
     <Hash className={className}>
-      {!isPassphraseUsed && address.settings.isMain && <Star>★</Star>}
+      {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
       <AddressEllipsed addressHash={address.hash} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
       <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.settings.isMain && <Star>★</Star>} <Label {...props}>{address.getName()}</Label>
+        {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
+        <Label {...props}>{address.getName()}</Label>
         {!!address.settings.label && <DotIcon color={address.settings.color} />}
       </RoundBorders>
     </ClipboardButton>
