@@ -27,7 +27,6 @@ import KeyValueInput from '../components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
-import useFocusOnMount from '../hooks/useFocusOnMount'
 import { getRandomLabelColor } from '../utils/colors'
 import AddressSweepModal from './AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
@@ -39,7 +38,6 @@ interface AddressOptionsModal {
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { t } = useTranslation('App')
-  const divRef = useFocusOnMount<HTMLDivElement>()
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
@@ -74,7 +72,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
       : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
-    <div ref={divRef} tabIndex={0}>
+    <>
       <CenteredModal title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
         {!isPassphraseUsed && (
           <>
@@ -125,7 +123,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           />
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }
 
