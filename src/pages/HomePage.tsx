@@ -131,7 +131,10 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase onPassphraseConfirmed={setPassphrase} setIsPassphraseConfirmed={setIsPassphraseConfirmed} />
+        <WalletPassphraseStyled
+          onPassphraseConfirmed={setPassphrase}
+          setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+        />
       </SectionStyled>
       <SectionStyled>
         <ButtonStyled
@@ -205,4 +208,8 @@ const SwitchLink = styled(ActionLink)`
   font-size: 12px;
   font-family: inherit;
   height: var(--inputHeight);
+`
+
+const WalletPassphraseStyled = styled(WalletPassphrase)`
+  margin: 16px 0;
 `
