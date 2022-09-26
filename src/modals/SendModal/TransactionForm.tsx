@@ -159,7 +159,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
         <ToggleSectionStyled title={t`Set lock time`} onClick={onClickClearLockTime}>
           <Input
             id="locktime"
-            label={t`Lock time (UTC)`}
+            label={t`Lock time`}
             value={dayjs(lockTime).format('YYYY-MM-DDTHH:mm')}
             onChange={(e) => handleLocktimeChange(e.target.value)}
             type="datetime-local"
