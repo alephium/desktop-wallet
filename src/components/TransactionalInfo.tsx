@@ -89,16 +89,20 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
 
   return (
     <div className={className}>
-      <CellAmountTokenTime>
+      <CellTime>
         <CellArrow>
           <DirectionalArrow direction={type} />
         </CellArrow>
         <TokenTimeInner>
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
-          <TokenStyled type={token} />
+          {type === 'out' && 'Sent'}
+          {type === 'in' && 'Received'}
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
-      </CellAmountTokenTime>
+      </CellTime>
+      <CellToken>
+        <TokenStyled type={token} />
+      </CellToken>
       {!hideLeftAddress && (
         <CellAddress alignRight>
           <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
@@ -148,16 +152,16 @@ const CellArrow = styled.div`
   margin-right: 25px;
 `
 
-const CellAmountTokenTime = styled.div`
+const CellTime = styled.div`
   display: flex;
   align-items: center;
   margin-right: 28px;
   text-align: left;
-  flex-grow: 1;
 `
 
 const TokenTimeInner = styled.div`
   width: 9em;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
@@ -217,4 +221,9 @@ const AddressBadgeStyled = styled(AddressBadge)`
 
 const LockStyled = styled(Lock)`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const CellToken = styled.div`
+  flex-grow: 1;
+  margin-right: 28px;
 `

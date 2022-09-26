@@ -30,5 +30,5 @@ const TimeSince = ({ timestamp, className }: TimeSinceProps) => (
 )
 
 export default styled(TimeSince)`
-  ${({ faded, theme }) => (faded ? `color: ${theme.font.secondary}` : '')}
+  ${({ faded, theme }) => (faded ? `color: ${theme.font.tertiary}` : '')}
 `
