@@ -51,7 +51,10 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       .map((v) => v.address)
       .uniq()
       .value()
+
     const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
+    if (!addressHash) return null
+
     const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
 
     // There may be a case where a wallet sends funds to the same address, which doesn't
@@ -60,7 +63,6 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
 
     const getAddressComponent = (addressHash: AddressHash) => {
       const address = getAddress(addressHash)
-      if (!address) return null
 
       return address ? (
         <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
@@ -69,8 +71,6 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       )
     }
 
-    if (!addressHash) return null
-
     return truncate ? (
       <TruncateWrap>
         {getAddressComponent(addressHash)}
@@ -78,10 +78,10 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </TruncateWrap>
     ) : (
       <Addresses>
-        {addressesToShow.map((address) => {
-          if (!address) return null
+        {addressesToShow.map((addressHash) => {
+          if (!addressHash) return null
 
-          const addressComponent = getAddressComponent(address)
+          const addressComponent = getAddressComponent(addressHash)
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}

@@ -152,17 +152,23 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
             <AddressList>
-              {transaction.inputs?.map((input) => (
-                <ActionLinkStyled key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address ?? '')}>
-                  <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address ?? ''} />
-                </ActionLinkStyled>
-              ))}
+              {transaction.inputs?.map(
+                (input) =>
+                  input.address && (
+                    <ActionLinkStyled
+                      key={`${input.outputRef.key}`}
+                      onClick={() => handleShowAddress(input.address as string)}
+                    >
+                      <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
+                    </ActionLinkStyled>
+                  )
+              )}
             </AddressList>
           </DetailsRow>
           <DetailsRow label={t`Outputs`}>
             <AddressList>
               {transaction.outputs?.map((output) => (
-                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address ?? '')}>
+                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
                   <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
                 </ActionLinkStyled>
               ))}

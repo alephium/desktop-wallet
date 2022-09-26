@@ -86,10 +86,10 @@ export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
 }
 
 export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolean =>
-  inputs.every((i) => addresses.map((a) => a.hash).indexOf(i.address) >= 0)
+  inputs.every((i) => i?.address && addresses.map((a) => a.hash).indexOf(i.address) >= 0)
 
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
-  outputs.every((o) => addresses.map((a) => a.hash).indexOf(o.address) >= 0)
+  outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
 export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection => {
   const amount = calAmountDelta(tx, address)

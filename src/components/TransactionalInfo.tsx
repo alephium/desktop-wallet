@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
-import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -43,6 +42,8 @@ import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
 import TransactionIcon from './TransactionIcon'
+
+const token = 'alph'
 
 interface TransactionalInfoProps {
   transaction: Transaction | PendingTx
@@ -70,8 +71,6 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   let outputs: Output[] = []
   let pendingToAddressComponent
   let lockTime: Date | undefined
-
-  const token = 'alph'
 
   if (!_addressHash) return null
 
