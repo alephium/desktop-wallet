@@ -123,7 +123,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       <CellAmount aria-hidden="true">
         {!!amount && (
           <>
-            {lockTime && lockTime > new Date() && <Lock unlockAt={lockTime} />}
+            {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {type === 'out' ? '-' : '+'}
               <Amount value={amount} fadeDecimals />
@@ -213,4 +213,8 @@ const DirectionalAddress = styled.div`
 
 const AddressBadgeStyled = styled(AddressBadge)`
   justify-content: flex-end;
+`
+
+const LockStyled = styled(Lock)`
+  color: ${({ theme }) => theme.font.secondary};
 `
