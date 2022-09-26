@@ -21,7 +21,7 @@ import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGlobalContext } from '../contexts/global'
-import { ThemeType } from '../style/themes'
+import { ThemeType } from '../types/settings'
 import { AlephiumWindow } from '../types/window'
 import Toggle from './Inputs/Toggle'
 
