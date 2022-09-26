@@ -120,12 +120,17 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           )}
         </DirectionalAddress>
       </CellAddress>
-      {!!amount && (
-        <CellAmount aria-hidden="true">
-          <Lock unlockAt={lockTime} /> {type === 'out' ? '-' : '+'}
-          <Amount value={amount} fadeDecimals />
-        </CellAmount>
-      )}
+      <CellAmount aria-hidden="true">
+        {!!amount && (
+          <>
+            {lockTime && lockTime > new Date() && <Lock unlockAt={lockTime} />}
+            <div>
+              {type === 'out' ? '-' : '+'}
+              <Amount value={amount} fadeDecimals />
+            </div>
+          </>
+        )}
+      </CellAmount>
     </div>
   )
 }
@@ -182,12 +187,8 @@ const CellAmount = styled.div`
   display: flex;
   min-width: 6em;
   flex-basis: 120px;
-  display: flex;
+  gap: 6px;
   align-items: center;
-
-  & > ${Lock} {
-    margin-right: 6px;
-  }
 `
 
 const BadgeStyled = styled(Badge)`
