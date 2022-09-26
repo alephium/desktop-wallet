@@ -101,10 +101,10 @@ const AddressesPage = () => {
             onClick={navigateToAddressDetailsPage(address.hash)}
             onKeyPress={navigateToAddressDetailsPage(address.hash)}
           >
-            <TableCell role="cell" tabIndex={0}>
+            <TableCellStyled role="cell" tabIndex={0}>
               <AddressEllipsed addressHash={address.hash} />
-              {!isPassphraseUsed && address.settings.isMain && <MainAddressLabelStyled />}
-            </TableCell>
+              {!isPassphraseUsed && address.settings.isMain && <MainAddressLabel />}
+            </TableCellStyled>
             <TableCell role="cell" tabIndex={0}>
               {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
             </TableCell>
@@ -223,7 +223,6 @@ const TableCellAmount = styled(TableCell)`
   gap: var(--spacing-1);
 `
 
-const MainAddressLabelStyled = styled(MainAddressLabel)`
-  position: absolute;
-  bottom: -13px;
+const TableCellStyled = styled(TableCell)`
+  flex-direction: column;
 `
