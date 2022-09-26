@@ -32,7 +32,7 @@ import { PartialDeep } from 'type-fest'
 import { TimeInMs } from '../types/numbers'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
-import { TransactionType } from '../utils/transactions'
+import { fromUnconfirmedTransactionToPendingTx, TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
 export type PendingTx = {
@@ -166,12 +166,17 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
+
+  // Used for showing flashing on the large summary card
   const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
     (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
   )
+
+  const [checkForNewPending, setCheckForNewPending] = useState(addressesWithPendingSentTxs.length > 0 && {})
 
   const constructMapKey = useCallback(
     (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
@@ -195,9 +200,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         return newAddressesState
       })
 
+      setCheckForNewPending({})
+
       console.log('✅ Updated addresses state: ', newAddresses)
     },
-    [constructMapKey, currentNetwork]
+    [constructMapKey, currentNetwork, setCheckForNewPending]
   )
 
   const setAddress = useCallback(
@@ -224,6 +231,36 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       setAddress(address)
     },
     [wallet, activeWalletName, isPassphraseUsed, setAddress]
+  )
+
+  const fetchPendingTxs = useCallback(
+    async (addresses: Address[] = []) => {
+      if (!client) {
+        setSnackbarMessage({
+          text: t`Could not fetch data because the wallet is offline`,
+          type: 'alert',
+          duration: 5000
+        })
+        return
+      }
+
+      // Make a sequence of requests from the addresses to not spam the explorer API
+      return addresses.reduce(
+        (p, address) =>
+          p.then(() =>
+            client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash).then((response) => {
+              const { data: txs } = response
+              txs.forEach((tx) => {
+                if (tx.type !== 'Unconfirmed') return
+                if (address.transactions.pending.some((t: PendingTx) => t.txId == tx.hash)) return
+                address.addPendingTransaction(fromUnconfirmedTransactionToPendingTx(tx, address.hash, currentNetwork))
+              })
+            })
+          ),
+        Promise.resolve()
+      )
+    },
+    [client, setSnackbarMessage, t, currentNetwork]
   )
 
   const fetchAndStoreAddressesData = useCallback(
@@ -362,7 +399,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           return new Address(address, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
-        fetchAndStoreAddressesData(addressesToFetchData)
+        await fetchAndStoreAddressesData(addressesToFetchData)
+        await fetchPendingTxs(addressesToFetchData)
+        setCheckForNewPending({})
       }
     }
 
@@ -393,6 +432,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   useEffect(() => {
     // In case the "to" address of a pending transaction is an address of this wallet, we need to query the API for this
     // one as well
+    const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
+      (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
+    )
+
     const addressesWithPendingReceivingTxs = addressesOfCurrentNetwork.filter((address) =>
       addressesWithPendingSentTxs.some((addressWithPendingTx) =>
         addressWithPendingTx.transactions.pending.some((pendingTx) => pendingTx.toAddress === address.hash)
@@ -413,13 +456,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     return () => {
       clearInterval(interval)
     }
-  }, [
-    addressesState,
-    currentNetwork,
-    fetchAndStoreAddressesData,
-    addressesOfCurrentNetwork,
-    addressesWithPendingSentTxs
-  ])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkForNewPending])
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await fetchPendingTxs(addressesOfCurrentNetwork)
+      setCheckForNewPending({})
+      // MinimumWaitTime + HalfAvgBlockTime
+    }, 1000 + (1000 * 60) / 2)
+    return () => {
+      clearInterval(interval)
+    }
+  }, [addressesOfCurrentNetwork, fetchPendingTxs])
 
   return (
     <AddressesContext.Provider
