@@ -122,10 +122,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       </CellAddress>
       {!!amount && (
         <CellAmount aria-hidden="true">
-          <CellAmountInner>
-            <Lock unlockAt={lockTime} /> {type === 'out' ? '-' : '+'}
-            <Amount value={amount} fadeDecimals />
-          </CellAmountInner>
+          <Lock unlockAt={lockTime} /> {type === 'out' ? '-' : '+'}
+          <Amount value={amount} fadeDecimals />
         </CellAmount>
       )}
     </div>

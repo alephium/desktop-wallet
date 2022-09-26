@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { MoreVertical } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -75,8 +75,6 @@ function AddressSelect({
 
   if (!address) return null
 
-  const onInput = useCallback(() => !disabled && setIsAddressSelectModalOpen(true), [disabled])
-
   return (
     <>
       <AddressSelectContainer
@@ -84,7 +82,7 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onInput={onInput}
+        onInput={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
