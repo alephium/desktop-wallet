@@ -212,4 +212,5 @@ const SwitchLink = styled(ActionLink)`
 
 const WalletPassphraseStyled = styled(WalletPassphrase)`
   margin: 16px 0;
+  width: 100%;
 `

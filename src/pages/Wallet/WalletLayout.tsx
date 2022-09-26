@@ -157,7 +157,7 @@ const WalletLayout: FC = ({ children }) => {
               walletName={switchToWalletName}
               isSubmitDisabled={!isPassphraseConfirmed}
             >
-              <WalletPassphrase
+              <WalletPassphraseStyled
                 onPassphraseConfirmed={setPassphrase}
                 setIsPassphraseConfirmed={setIsPassphraseConfirmed}
               />
@@ -248,3 +248,8 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
+
+const WalletPassphraseStyled = styled(WalletPassphrase)`
+  margin: 16px 0;
+  width: 100%;
+`
