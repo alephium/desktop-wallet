@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import { Lock as LockIcon, Unlock } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 interface LockProps {
@@ -25,13 +26,26 @@ interface LockProps {
   className?: string
 }
 
-const Lock = ({ unlockAt, className }: LockProps) => (
-  <span className={className} data-tip={dayjs(unlockAt).format('MM/DD/YYYY hh:mm A')}>
-    {unlockAt ? new Date() > unlockAt ? <UnlockIconStyled /> : <LockIconStyled /> : null}
-  </span>
-)
+const Lock = ({ unlockAt, className }: LockProps) => {
+  const { t } = useTranslation('App')
 
-export default styled(Lock)``
+  if (!unlockAt) return null
+
+  const lockTimeInPast = unlockAt < new Date()
+
+  return (
+    <span
+      className={className}
+      data-tip={`${lockTimeInPast ? t`Unlocked at` : t`Unlocks at`} ${dayjs(unlockAt).format('DD/MM/YYYY hh:mm A')}`}
+    >
+      {lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}
+    </span>
+  )
+}
+
+export default styled(Lock)`
+  display: flex;
+`
 
 const UnlockIconStyled = styled(Unlock)`
   width: 1em;
