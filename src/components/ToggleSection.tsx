@@ -62,7 +62,7 @@ export default styled(ToggleSection)`
   flex-direction: column;
   background-color: ${({ theme }) => theme.bg.accent};
   border-radius: var(--radius-medium);
-  padding-bottom: 21px;
+  padding-bottom: 16px;
 `
 
 const CellControl = styled.div`
@@ -71,7 +71,7 @@ const CellControl = styled.div`
   display: flex;
   align-items: center;
   font-weight: 400;
-  padding: 21px 21px 0 21px;
+  padding: 16px 21px 0 21px;
 `
 
 const CellChildren = styled(motion.div)`
@@ -83,6 +83,6 @@ const CellChildren = styled(motion.div)`
 
 const CellChildrenInner = styled.div`
   border-top: 1px solid ${({ theme }) => theme.bg.primary};
-  margin-top: 19px;
-  padding: 19px 21px 0 21px;
+  margin-top: 16px;
+  padding: 16px 21px 0 21px;
 `
