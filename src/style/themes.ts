@@ -70,7 +70,7 @@ export const darkTheme: DefaultTheme = {
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
     secondary: '#C0C0C0',
-    tertiary: 'rgba(255, 255, 255, 0.40)',
+    tertiary: '#767679',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
     highlight: '#ffb800'

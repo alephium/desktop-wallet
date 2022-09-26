@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
+import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
@@ -27,7 +28,6 @@ import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../uti
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
-import Badge from './Badge'
 import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
@@ -108,23 +108,45 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       </CellToken>
       {!hideLeftAddress && (
         <CellAddress alignRight>
-          <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
-          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
+          <HiddenLabel text={t`from`} />
+          {type === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
+          {type === 'in' &&
+            (pendingToAddressComponent || (
+              <IOList
+                currentAddress={_addressHash || ''}
+                isOut={false}
+                outputs={outputs}
+                inputs={(tx as Transaction).inputs}
+                timestamp={(tx as Transaction).timestamp}
+                truncate
+              />
+            ))}
         </CellAddress>
       )}
-      <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>
+      <CellDirection>
+        <HiddenLabel text={t`to`} />
+        {!hideLeftAddress ? (
+          <ArrowRightIcon size={16} strokeWidth={3} />
+        ) : (
+          <DirectionText>{type === 'out' ? t`to` : t`from`}</DirectionText>
+        )}
+      </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {pendingToAddressComponent || (
-            <IOList
-              currentAddress={_addressHash || ''}
-              isOut={type === 'out'}
-              outputs={outputs}
-              inputs={(tx as Transaction).inputs}
-              timestamp={(tx as Transaction).timestamp}
-              truncate
-            />
+          {type === 'in' && !hideLeftAddress && (
+            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
           )}
+          {((type === 'in' && hideLeftAddress) || type === 'out') &&
+            (pendingToAddressComponent || (
+              <IOList
+                currentAddress={_addressHash || ''}
+                isOut={type === 'out'}
+                outputs={outputs}
+                inputs={(tx as Transaction).inputs}
+                timestamp={(tx as Transaction).timestamp}
+                truncate
+              />
+            ))}
         </DirectionalAddress>
       </CellAddress>
       <CellAmount aria-hidden="true" color={textColor}>
@@ -169,7 +191,7 @@ const TokenTimeInner = styled.div`
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 400px;
+  max-width: 340px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
@@ -199,16 +221,14 @@ const CellAmount = styled.div<{ color: string }>`
   color: ${({ color }) => color};
 `
 
-const BadgeStyled = styled(Badge)`
+const DirectionText = styled.div`
   min-width: 50px;
-  text-align: center;
+  display: flex;
+  justify-content: flex-end;
 `
 
-const CellDirection = styled(BadgeStyled)`
-  ${({ theme }) => css`
-    color: ${theme.font.secondary};
-    background-color: ${theme.bg.accent};
-  `}
+const CellDirection = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const DirectionalAddress = styled.div`
