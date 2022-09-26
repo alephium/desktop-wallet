@@ -60,6 +60,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
 
     const getAddressComponent = (addressHash: AddressHash) => {
       const address = getAddress(addressHash)
+      if (!address) return null
 
       return address ? (
         <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
@@ -68,6 +69,8 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       )
     }
 
+    if (!addressHash) return null
+
     return truncate ? (
       <TruncateWrap>
         {getAddressComponent(addressHash)}
@@ -75,9 +78,10 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       </TruncateWrap>
     ) : (
       <Addresses>
-        {addressesToShow.map((addressHash) => {
-          const addressComponent = getAddressComponent(addressHash)
+        {addressesToShow.map((address) => {
+          if (!address) return null
 
+          const addressComponent = getAddressComponent(address)
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}
