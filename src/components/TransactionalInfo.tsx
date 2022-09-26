@@ -20,7 +20,7 @@ import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
@@ -45,6 +45,7 @@ interface TransactionalInfoProps {
 const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAddress }: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const _addressHash = addressHash ?? addressHashParam
+  const theme = useTheme()
 
   const { getAddress } = useAddressesContext()
   const { t } = useTranslation('App')
@@ -87,6 +88,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
 
   if (!address) return null
 
+  const textColor = type === 'out' ? theme.global.accent : type === 'in' ? theme.global.valid : theme.font.primary
+
   return (
     <div className={className}>
       <CellTime>
@@ -94,9 +97,9 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           <DirectionalArrow direction={type} />
         </CellArrow>
         <TokenTimeInner>
+          {type === 'out' && t`Sent`}
+          {type === 'in' && t`Received`}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
-          {type === 'out' && 'Sent'}
-          {type === 'in' && 'Received'}
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
       </CellTime>
@@ -124,13 +127,13 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           )}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true">
+      <CellAmount aria-hidden="true" color={textColor}>
         {!!amount && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {type === 'out' ? '-' : '+'}
-              <Amount value={amount} fadeDecimals />
+              {type === 'out' ? '- ' : '+ '}
+              <Amount value={amount} fadeDecimals color={textColor} />
             </div>
           </>
         )}
@@ -185,7 +188,7 @@ const TokenStyled = styled(Token)`
   font-weight: var(--fontWeight-semiBold);
 `
 
-const CellAmount = styled.div`
+const CellAmount = styled.div<{ color: string }>`
   flex-grow: 1;
   justify-content: right;
   display: flex;
@@ -193,6 +196,7 @@ const CellAmount = styled.div`
   flex-basis: 120px;
   gap: 6px;
   align-items: center;
+  color: ${({ color }) => color};
 `
 
 const BadgeStyled = styled(Badge)`
