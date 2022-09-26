@@ -32,9 +32,24 @@ const paddingTop = '6px'
 const height = `calc(6px + ${paddingTop})`
 
 const createScrollbarPiece = (regular: CSSProperties, additional?: CSSProperties, useAdditionalStyling?: boolean) => ({
-  renderer: ({ elementRef, style, ...restProps }: ElementPropsWithElementRef) => (
-    <div {...restProps} ref={elementRef} style={{ ...style, ...regular, ...(useAdditionalStyling && additional) }} />
-  )
+  renderer: ({ elementRef, style, ...restProps }: ElementPropsWithElementRef) => {
+    // The only way to know the scrollbar is being rendered is if bottom > 0...
+    const overflowStyle = {
+      overflow:
+        (restProps.key === 'ScrollbarsCustom-Wrapper' && style?.bottom && style.bottom > 0) ||
+        (style?.right && style.right > 0)
+          ? 'hidden'
+          : 'unset'
+    }
+
+    return (
+      <div
+        {...restProps}
+        ref={elementRef}
+        style={{ ...style, ...regular, ...overflowStyle, ...(useAdditionalStyling && additional) }}
+      />
+    )
+  }
 })
 
 interface ScrollbarCustomProps extends ScrollbarProps {

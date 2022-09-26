@@ -65,13 +65,10 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     onClose()
   }
 
-  let mainAddressMessage = t`Default address for sending transactions.`
-  mainAddressMessage +=
-    ' ' + isMainAddressToggleEnabled
-      ? t('Note that if activated, "{{ name }}" will not be the default address anymore.', {
-          name: mainAddress.getName()
-        })
-      : t`To remove this address from being the default address, you must set another one as main first.`
+  let mainAddressMessage = `${t`Default address for sending transactions.`} `
+  mainAddressMessage += isMainAddressToggleEnabled
+    ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
+    : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
     <>

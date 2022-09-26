@@ -95,6 +95,7 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
 
   & > div {
     width: 80%;
+    justify-content: center;
   }
 
   ${({ collapsed }) =>
