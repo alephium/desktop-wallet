@@ -30,7 +30,6 @@ import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
-import Lock from '../components/Lock'
 import Tooltip from '../components/Tooltip'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
@@ -70,6 +69,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     new Date(0)
   )
   lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
+  const lockTimeInPast = lockTime && lockTime < new Date()
 
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
@@ -78,7 +78,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <Lock unlockAt={lockTime} /> <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
+          <span>{isOutgoingTx ? '-' : '+'}</span>
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
         <HeaderInfo>
@@ -133,8 +133,13 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <DetailsRow label={t`Timestamp`}>
           <span tabIndex={0}>{dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
         </DetailsRow>
+        {lockTime && (
+          <DetailsRow label={lockTimeInPast ? t`Unlocked at` : t`Unlocks at`}>
+            <span tabIndex={0}>{dayjs(lockTime).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
+          </DetailsRow>
+        )}
         <DetailsRow label={t`Fee`}>
-          {<Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amount tabIndex={0} value={amount} fadeDecimals fullPrecision />

@@ -232,5 +232,7 @@
   "into": "into",
   "out from": "out from",
   "Transaction details": "Transaction details",
-  "Copy address": "Copy address"
+  "Copy address": "Copy address",
+  "Unlocks at": "Unlocks at",
+  "Unlocked at": "Unlocked at"
 }
