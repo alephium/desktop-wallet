@@ -25,7 +25,12 @@ import ActionLink from '../../components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, PendingTx, useAddressesContext } from '../../contexts/addresses'
-import { BelongingToAddress, getTransactionsForAddresses } from '../../utils/transactions'
+import {
+  BelongingToAddress,
+  getDirection,
+  getTransactionsForAddresses,
+  hasOnlyInputsWith
+} from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
@@ -64,17 +69,21 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
             <TransactionalInfo transaction={tx} addressHash={address.hash} />
           </TableRow>
         ))}
-      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => (
-        <TableRow
-          key={`${tx.hash}-${address.hash}`}
-          role="row"
-          tabIndex={0}
-          onClick={() => onTransactionClick({ ...tx, address })}
-          onKeyPress={() => onTransactionClick({ ...tx, address })}
-        >
-          <TransactionalInfo transaction={tx} addressHash={address.hash} />
-        </TableRow>
-      ))}
+      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
+        if (hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) && getDirection(tx, address.hash) == 'in')
+          return null
+        return (
+          <TableRow
+            key={`${tx.hash}-${address.hash}`}
+            role="row"
+            tabIndex={0}
+            onClick={() => onTransactionClick({ ...tx, address })}
+            onKeyPress={() => onTransactionClick({ ...tx, address })}
+          >
+            <TransactionalInfo transaction={tx} addressHash={address.hash} />
+          </TableRow>
+        )
+      })}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow role="row">
           <TableCell align="center" role="gridcell">

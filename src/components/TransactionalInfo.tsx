@@ -24,7 +24,13 @@ import { useParams } from 'react-router-dom'
 import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
-import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
+import {
+  getDirection,
+  hasOnlyOutputsWith,
+  isExplorerTransaction,
+  isPendingTx,
+  TransactionDirection
+} from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
@@ -47,7 +53,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   const _addressHash = addressHash ?? addressHashParam
   const theme = useTheme()
 
-  const { getAddress } = useAddressesContext()
+  const { addresses, getAddress } = useAddressesContext()
   const { t } = useTranslation('App')
 
   const address = getAddress(_addressHash)
@@ -58,13 +64,18 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   let outputs: Output[] = []
   let pendingToAddressComponent
   let lockTime: Date | undefined
+  let isMoved = false
 
   const token = 'alph'
 
   if (isExplorerTransaction(tx)) {
     amount = calAmountDelta(tx, _addressHash)
-    const amountIsBigInt = typeof amount === 'bigint'
-    type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
+    type = getDirection(tx, _addressHash)
+
+    if (hasOnlyOutputsWith(tx.outputs ?? [], addresses) && type === 'out') {
+      isMoved = true
+    }
+
     amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
@@ -86,19 +97,24 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
-  if (!address) return null
+  if (!address || !type) return null
 
-  const textColor = type === 'out' ? theme.global.accent : type === 'in' ? theme.global.valid : theme.font.primary
+  const textColor = isMoved
+    ? theme.font.primary
+    : type === 'out'
+    ? theme.global.accent
+    : type === 'in'
+    ? theme.global.valid
+    : theme.font.primary
 
   return (
     <div className={className}>
       <CellTime>
         <CellArrow>
-          <DirectionalArrow direction={type} />
+          <DirectionalArrow isMoved={isMoved} direction={type} />
         </CellArrow>
         <TokenTimeInner>
-          {type === 'out' && t`Sent`}
-          {type === 'in' && t`Received`}
+          {isMoved ? t`Moved` : type === 'out' ? t`Sent` : type === 'in' ? t`Received` : null}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
@@ -154,7 +170,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {type === 'out' ? '- ' : '+ '}
+              {isMoved ? '' : type === 'out' ? '- ' : '+ '}
               <Amount value={amount} fadeDecimals color={textColor} />
             </div>
           </>
