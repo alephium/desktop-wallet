@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -48,6 +49,9 @@ const SendModalCheckTransaction = ({ data, fees, onSend, onCancel }: SendModalCh
         <InfoBox label={t`Amount`}>
           {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
         </InfoBox>
+        {data.lockTime && (
+          <InfoBox label={t`Unlocks at`}>{dayjs(data.lockTime).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</InfoBox>
+        )}
         {fees && (
           <InfoBox label={t`Expected fee`}>
             {formatAmountForDisplay(fees, true)} <AlefSymbol />
