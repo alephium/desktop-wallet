@@ -86,13 +86,6 @@ export default styled(AddressSummaryCard)`
     `}
 `
 
-const AddressBadgeStyled = styled(AddressBadge)`
-  padding: 11px 17px;
-  border-radius: 0;
-  text-align: center;
-  justify-content: center;
-`
-
 const AddressNameSection = styled.div<{ collapsed: boolean }>`
   display: flex;
   flex-direction: column;
@@ -113,6 +106,13 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
       padding: 0;
       overflow: hidden;
     `}
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  padding: 11px 17px;
+  border-radius: 0;
+  text-align: center;
+  justify-content: center;
 `
 
 const AmountsSection = styled.div<{ collapsed: boolean }>`
