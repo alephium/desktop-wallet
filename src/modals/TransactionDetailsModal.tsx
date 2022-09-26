@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
-import dayjs from 'dayjs'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -34,7 +33,7 @@ import Tooltip from '../components/Tooltip'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
-import { openInWebBrowser } from '../utils/misc'
+import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -131,11 +130,11 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </Badge>
         </DetailsRow>
         <DetailsRow label={t`Timestamp`}>
-          <span tabIndex={0}>{dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
+          <span tabIndex={0}>{formatDateForDisplay(transaction.timestamp)}</span>
         </DetailsRow>
         {lockTime && (
           <DetailsRow label={lockTimeInPast ? t`Unlocked at` : t`Unlocks at`}>
-            <span tabIndex={0}>{dayjs(lockTime).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
+            <span tabIndex={0}>{formatDateForDisplay(lockTime)}</span>
           </DetailsRow>
         )}
         <DetailsRow label={t`Fee`}>
