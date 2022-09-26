@@ -26,10 +26,10 @@ export const lightTheme: DefaultTheme = {
   bg: {
     primary: '#ffffff',
     secondary: '#fbfbfb',
-    tertiary: '#ededed',
-    hover: 'rgba(61, 64, 74, 0.035)',
+    tertiary: 'rgba(0, 0, 0, 0.05)',
+    hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
-    accent: colord('#000').alpha(0.08).toRgbString()
+    accent: colord('#000').alpha(0.04).toRgbString()
   },
   font: {
     primary: '#000',
