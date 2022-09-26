@@ -63,7 +63,6 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
 
     const getAddressComponent = (addressHash: AddressHash) => {
       const address = getAddress(addressHash)
-      if (!address) return null
 
       return address ? (
         <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
@@ -71,8 +70,6 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
         <AddressEllipsed addressHash={addressHash} />
       )
     }
-
-    if (!addressHash) return null
 
     return truncate ? (
       <TruncateWrap>

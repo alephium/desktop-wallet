@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
+import { formatAmountForDisplay } from '@alephium/sdk'
 import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -26,6 +26,7 @@ import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import {
+  calculateTotalTxOutput,
   getDirection,
   hasOnlyOutputsWith,
   isExplorerTransaction,
@@ -75,11 +76,10 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   if (!_addressHash) return null
 
   if (isExplorerTransaction(tx)) {
-    amount = calAmountDelta(tx, _addressHash)
+    amount = calculateTotalTxOutput(tx)
     direction = getDirection(tx, _addressHash)
     infoType =
       !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
-    amount = amount && (direction === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
     lockTime = outputs.reduce(

@@ -17,9 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
-import { Input, Output, Transaction } from '@alephium/sdk/api/explorer'
+import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { uniq } from 'lodash'
 
 import { Address, AddressHash, PendingTx } from '../contexts/addresses'
+import { NetworkName } from './settings'
 
 type HasTimestamp = { timestamp: number }
 type TransactionVariant = Transaction | PendingTx
@@ -95,4 +97,53 @@ export const getDirection = (tx: Transaction, address: AddressHash): Transaction
   const amount = calAmountDelta(tx, address)
   const amountIsBigInt = typeof amount === 'bigint'
   return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
+}
+
+export const calculateTotalTxOutput = (tx: Transaction) => {
+  const total = (tx.outputs ?? []).reduce((acc, o) => acc + BigInt(o?.attoAlphAmount ?? 0), BigInt(0))
+
+  // We must do best effort to determine the change addresses. Usually they are the last TXs.
+  const inputs = uniq((tx.inputs ?? []).map((i) => i.address))
+  let change = BigInt(0)
+
+  for (let index = (tx.outputs ?? []).length - 1; index > 0; index--) {
+    const output = (tx.outputs ?? [])[index]
+    const inputIndex = inputs.indexOf(output.address)
+    if (inputs[inputIndex]) {
+      change += BigInt(output.attoAlphAmount)
+      inputs.splice(inputIndex, 1)
+    }
+    if (inputs.length == 0) return total - change
+  }
+
+  return total - change
+}
+
+export const fromUnconfirmedTransactionToPendingTx = (
+  tx: UnconfirmedTransaction,
+  belongingTo: AddressHash,
+  network: NetworkName
+): PendingTx => {
+  let amount = calculateTotalTxOutput(tx as unknown as Transaction)
+  const amountIsBigInt = typeof amount === 'bigint'
+  const type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
+  amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+
+  const fromAddress = type === 'out' ? belongingTo : ((tx.inputs ?? [])[0] ?? {}).address
+  const toAddress = type === 'in' ? ((tx.outputs ?? [])[0] ?? {}).address : belongingTo
+
+  if (!fromAddress) throw new Error('fromAddress is not defined')
+  if (!toAddress) throw new Error('toAddress is not defined')
+
+  return {
+    txId: tx.hash,
+    fromAddress,
+    toAddress,
+    // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
+    timestamp: tx.lastSeen,
+    type: 'transfer',
+    // SUPER important that this is the same as the current network. Lots of debug time used tracking this down.
+    network,
+    amount
+  }
 }
