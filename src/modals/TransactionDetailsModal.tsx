@@ -168,7 +168,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t`Outputs`}>
             <AddressList>
               {transaction.outputs?.map((output) => (
-                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
+                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address ?? '')}>
                   <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
                 </ActionLinkStyled>
               ))}
