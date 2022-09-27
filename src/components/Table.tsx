@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import classNames from 'classnames'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 type AlignType = 'start' | 'center' | 'end'
@@ -38,22 +39,26 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => (
-  <ScrollableWrapper>
-    <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
-      {headers && headers.length > 0 && (
-        <TableHeaderRow role="rowheader" tabIndex={0} columnWidths={headers.map(({ width }) => width)}>
-          {headers.map(({ title, align }) => (
-            <TableHeaderCell role="rowheader" key={title} align={align}>
-              {title}
-            </TableHeaderCell>
-          ))}
-        </TableHeaderRow>
-      )}
-      {children}
-    </div>
-  </ScrollableWrapper>
-)
+const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => {
+  const { t } = useTranslation('App')
+
+  return (
+    <ScrollableWrapper>
+      <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
+        {headers && headers.length > 0 && (
+          <TableHeaderRow role="rowheader" tabIndex={0} columnWidths={headers.map(({ width }) => width)}>
+            {headers.map(({ title, align }) => (
+              <TableHeaderCell role="rowheader" key={title} align={align}>
+                {t(title)}
+              </TableHeaderCell>
+            ))}
+          </TableHeaderRow>
+        )}
+        {children}
+      </div>
+    </ScrollableWrapper>
+  )
+}
 
 export default styled(Table)`
   background-color: ${({ theme }) => theme.bg.primary};
@@ -87,7 +92,12 @@ export const TableCell = styled.div<TableCellProps>`
   &:not(:last-child) {
     padding-right: var(--spacing-5);
   }
-  ${({ align }) => align && `justify-self: ${align}`};
+  ${({ align }) =>
+    align &&
+    css`
+      justify-self: ${align};
+      text-align: ${align === 'end' ? 'right' : 'auto'};
+    `};
 `
 
 const TableHeaderCell = styled(TableCell)`

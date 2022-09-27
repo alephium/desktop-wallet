@@ -240,5 +240,9 @@
   "Custom": "Personnalisé",
   "Moved": "Transféré",
   "Unlocks at": "Sera déverrouillé à",
-  "Unlocked at": "Déverrouillé à"
+  "Unlocked at": "Déverrouillé à",
+  "Label": "Label",
+  "Last used": "Dernier usage",
+  "Transactions": "Transactions",
+  "ALPH amount": "Montant en ALPH"
 }
