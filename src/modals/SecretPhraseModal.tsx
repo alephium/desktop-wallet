@@ -37,7 +37,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text={t`Type your password to show your recovery phrase.`}
+            text={t`Type your password to show the phrase.`}
             buttonText={t`Show`}
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />

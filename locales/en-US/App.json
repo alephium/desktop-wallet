@@ -64,7 +64,7 @@
   "Select group": "Select group",
   "Generate": "Generate",
   "Secret recovery phrase": "Secret recovery phrase",
-  "Type your password to show your secret recovery phrase.": "Type your password to show your secret recovery phrase.",
+  "Type your password to show the phrase.": "Type your password to show the phrase.",
   "Show": "Show",
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Carefully note down the words! They are your wallet's secret recovery phrase.",
   "No recovery phrase was stored along with this wallet": "No recovery phrase was stored along with this wallet",
@@ -233,7 +233,12 @@
   "out from": "out from",
   "Transaction details": "Transaction details",
   "Copy address": "Copy address",
+  "Custom": "Custom",
+  "Moved": "Moved",
   "Unlocks at": "Unlocks at",
   "Unlocked at": "Unlocked at",
-  "Moved": "Moved"
+  "Label": "Label",
+  "Last used": "Last used",
+  "Transactions": "Transactions",
+  "ALPH amount": "ALPH amount"
 }

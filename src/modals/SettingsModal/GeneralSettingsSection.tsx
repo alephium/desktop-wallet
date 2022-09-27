@@ -59,11 +59,11 @@ const GeneralSettingsSection = () => {
   const onLanguageChange = (language: Language) => updateSettings('general', { language })
 
   const languageOptions = [
-    { label: t`English`, value: 'en-US' as Language },
-    { label: t`French`, value: 'fr-FR' as Language }
+    { label: 'English', value: 'en-US' as Language },
+    { label: 'Français', value: 'fr-FR' as Language }
   ]
 
-  const discreteModeText = t`Discrete mode`
+  const discreetModeText = t`Discreet mode`
 
   return (
     <>
@@ -93,11 +93,11 @@ const GeneralSettingsSection = () => {
       />
       <HorizontalDivider narrow />
       <KeyValueInput
-        label={discreteModeText}
+        label={discreetModeText}
         description={t`Toggle discreet mode (hide amounts).`}
         InputComponent={
           <Toggle
-            label={discreteModeText}
+            label={discreetModeText}
             toggled={discreetMode}
             onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
           />
@@ -124,6 +124,7 @@ const GeneralSettingsSection = () => {
             onValueChange={(v) => v?.value && onLanguageChange(v.value)}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
+            title={t`Language`}
           />
         }
       />
