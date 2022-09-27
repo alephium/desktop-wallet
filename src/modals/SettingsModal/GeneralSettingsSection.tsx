@@ -59,8 +59,8 @@ const GeneralSettingsSection = () => {
   const onLanguageChange = (language: Language) => updateSettings('general', { language })
 
   const languageOptions = [
-    { label: t`English`, value: 'en-US' as Language },
-    { label: t`French`, value: 'fr-FR' as Language }
+    { label: 'English', value: 'en-US' as Language },
+    { label: 'Français', value: 'fr-FR' as Language }
   ]
 
   const discreetModeText = t`Discreet mode`
@@ -124,6 +124,7 @@ const GeneralSettingsSection = () => {
             onValueChange={(v) => v?.value && onLanguageChange(v.value)}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
+            title={t`Language`}
           />
         }
       />
