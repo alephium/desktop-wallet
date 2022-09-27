@@ -33,7 +33,7 @@ export const lightTheme: DefaultTheme = {
   },
   font: {
     primary: '#000',
-    secondary: '#797979',
+    secondary: '#4b4b4b',
     tertiary: '#adadad',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
