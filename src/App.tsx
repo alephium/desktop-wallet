@@ -16,6 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import 'dayjs/locale/fr'
+
+import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
@@ -48,6 +51,7 @@ const App = () => {
     const handleLanguageChange = async () => {
       setIsLanguageChanging(true)
       try {
+        dayjs.locale(settings.general.language.slice(0, 2))
         await i18n.changeLanguage(settings.general.language)
       } catch (e) {
         console.error(e)
