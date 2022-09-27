@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
-import { Output, Transaction } from '@alephium/sdk/api/explorer'
 import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
