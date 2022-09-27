@@ -237,5 +237,8 @@
   "out from": "depuis",
   "Transaction details": "Détails de la transaction",
   "Copy address": "Copier l'adresse",
-  "Custom": "Personnalisé"
+  "Custom": "Personnalisé",
+  "Moved": "Transféré",
+  "Unlocks at": "Sera déverrouillé à",
+  "Unlocked at": "Déverrouillé à"
 }
