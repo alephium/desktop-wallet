@@ -16,47 +16,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
 import { ArrowLeftRight, CircleEllipsis } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import arrowDownSvg from '../images/arrow_down.svg'
 import { TransactionInfoType } from '../utils/transactions'
+import { useTransactionalInfoSettings } from './TransactionalInfo'
 
 interface TransactionIconProps {
   type: TransactionInfoType
 }
 
 const TransactionIcon = ({ type }: TransactionIconProps) => {
-  const theme = useTheme()
-  const { t } = useTranslation('App')
+  const { label, iconColor, iconBgColor } = useTransactionalInfoSettings()
 
-  const color = {
-    circle: {
-      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      move: colord(theme.font.secondary).alpha(0.11).toRgbString()
-    },
-    icon: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      pending: theme.font.secondary,
-      move: theme.font.secondary
-    }
-  }
-
-  const ariaLabel = { pending: t`Pending`, in: t`Received`, out: t`Sent`, move: t`Moved` }[type]
   const icon = {
-    in: <Arrow type={type} color={color.icon[type]} />,
-    out: <Arrow type={type} color={color.icon[type]} />,
-    pending: <CircleEllipsis size={16} color={color.icon[type]} />,
-    move: <ArrowLeftRight size={16} color={color.icon[type]} />
+    in: <Arrow type={type} color={iconColor[type]} />,
+    out: <Arrow type={type} color={iconColor[type]} />,
+    pending: <CircleEllipsis size={16} color={iconColor[type]} />,
+    move: <ArrowLeftRight size={16} color={iconColor[type]} />
   }[type]
 
   return (
-    <Circle color={color.circle[type]} aria-label={ariaLabel}>
+    <Circle color={iconBgColor[type]} aria-label={label[type]}>
       {icon}
     </Circle>
   )

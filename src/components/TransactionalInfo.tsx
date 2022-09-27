@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
+import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -52,10 +53,10 @@ interface TransactionalInfoProps {
 const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAddress }: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const _addressHash = addressHash ?? addressHashParam
-  const theme = useTheme()
 
   const { addresses, getAddress } = useAddressesContext()
   const { t } = useTranslation('App')
+  const { label, amountTextColor } = useTransactionalInfoSettings()
 
   const address = getAddress(_addressHash)
 
@@ -97,15 +98,6 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
-  const textColor =
-    infoType === 'move'
-      ? theme.font.primary
-      : infoType === 'out'
-      ? theme.global.accent
-      : infoType === 'in'
-      ? theme.global.valid
-      : theme.font.primary
-
   const token = 'alph'
 
   return (
@@ -115,15 +107,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           <TransactionIcon type={infoType} />
         </CellArrow>
         <TokenTimeInner>
-          {infoType === 'move'
-            ? t`Moved`
-            : infoType === 'pending'
-            ? t`Pending`
-            : infoType === 'out'
-            ? t`Sent`
-            : infoType === 'in'
-            ? t`Received`
-            : null}
+          {label[infoType]}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
@@ -174,20 +158,52 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true" color={textColor}>
+      <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
         {!!amount && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {infoType === 'out' && '- '}
               {infoType === 'in' && '+ '}
-              <Amount value={amount} fadeDecimals color={textColor} />
+              <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
             </div>
           </>
         )}
       </CellAmount>
     </div>
   )
+}
+
+export const useTransactionalInfoSettings = () => {
+  const theme = useTheme()
+  const { t } = useTranslation('App')
+
+  return {
+    label: {
+      in: t`Received`,
+      out: t`Sent`,
+      move: t`Moved`,
+      pending: t`Pending`
+    },
+    amountTextColor: {
+      in: theme.global.valid,
+      out: theme.global.accent,
+      move: theme.font.primary,
+      pending: theme.font.primary
+    },
+    iconColor: {
+      in: theme.global.valid,
+      out: theme.global.accent,
+      move: theme.font.secondary,
+      pending: theme.font.secondary
+    },
+    iconBgColor: {
+      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
+      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
+      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
+      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
+    }
+  }
 }
 
 export default styled(TransactionalInfo)`
