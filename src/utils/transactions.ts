@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { calAmountDelta, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { Input, Output, Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address, PendingTx } from '../contexts/addresses'
+import { Address, AddressHash, PendingTx } from '../contexts/addresses'
 
 type HasTimestamp = { timestamp: number }
 type TransactionVariant = Transaction | PendingTx
@@ -33,7 +33,8 @@ export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTr
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 
-export type TransactionDirection = 'out' | 'in' | 'pending'
+export type TransactionDirection = 'out' | 'in'
+export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 export type TransactionStatus = 'pending' | 'confirmed'
 
@@ -82,4 +83,16 @@ export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
   }
 
   return delta
+}
+
+export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolean =>
+  inputs.every((i) => addresses.map((a) => a.hash).indexOf(i.address) >= 0)
+
+export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
+  outputs.every((o) => addresses.map((a) => a.hash).indexOf(o.address) >= 0)
+
+export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection => {
+  const amount = calAmountDelta(tx, address)
+  const amountIsBigInt = typeof amount === 'bigint'
+  return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
 }

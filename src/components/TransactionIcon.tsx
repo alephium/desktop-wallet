@@ -16,38 +16,35 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
-import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import { ArrowLeftRight, CircleEllipsis } from 'lucide-react'
+import styled, { css } from 'styled-components'
 
 import arrowDownSvg from '../images/arrow_down.svg'
-import { TransactionDirection } from '../utils/transactions'
+import { TransactionInfoType } from '../utils/transactions'
+import { useTransactionalInfoSettings } from './TransactionalInfo'
 
-interface DirectionalArrowProps {
-  direction: TransactionDirection
+interface TransactionIconProps {
+  type: TransactionInfoType
 }
 
-const DirectionalArrow = ({ direction }: DirectionalArrowProps) => {
-  const theme = useTheme()
-  const { t } = useTranslation('App')
-  const isReceiving = direction === 'in'
-  const color = {
-    circle: isReceiving
-      ? colord(theme.global.valid).alpha(0.11).toRgbString()
-      : colord(theme.font.secondary).alpha(0.11).toRgbString(),
-    arrow: isReceiving ? theme.global.valid : theme.font.secondary
-  }
+const TransactionIcon = ({ type }: TransactionIconProps) => {
+  const { label, iconColor, iconBgColor } = useTransactionalInfoSettings()
 
-  const ariaLabel = isReceiving ? t`Received` : t`Sent`
+  const icon = {
+    in: <Arrow type={type} color={iconColor[type]} />,
+    out: <Arrow type={type} color={iconColor[type]} />,
+    pending: <CircleEllipsis size={16} color={iconColor[type]} />,
+    move: <ArrowLeftRight size={16} color={iconColor[type]} />
+  }[type]
 
   return (
-    <Circle color={color.circle} aria-label={ariaLabel}>
-      <Arrow direction={direction} color={color.arrow} />
+    <Circle color={iconBgColor[type]} aria-label={label[type]}>
+      {icon}
     </Circle>
   )
 }
 
-export default DirectionalArrow
+export default TransactionIcon
 
 const Circle = styled.span<{ color?: string }>`
   display: flex;
@@ -59,7 +56,7 @@ const Circle = styled.span<{ color?: string }>`
   background-color: ${({ color, theme }) => color || theme.font.primary};
 `
 
-const Arrow = styled.span<{ color?: string } & DirectionalArrowProps>`
+const Arrow = styled.span<{ color?: string } & TransactionIconProps>`
   display: inline-block;
   width: 16px;
   height: 15px;
@@ -69,13 +66,14 @@ const Arrow = styled.span<{ color?: string } & DirectionalArrowProps>`
   mask-size: cover;
   background-color: ${({ color, theme }) => color || theme.font.primary};
   position: relative;
-  ${({ direction }) =>
-    direction === 'out'
-      ? `
+
+  ${({ type }) =>
+    type === 'out'
+      ? css`
           transform: rotate(180deg);
           top: -1px;
         `
-      : `
+      : css`
           top: 1px;
         `}
 `

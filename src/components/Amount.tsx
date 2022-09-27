@@ -83,8 +83,10 @@ const Amount = ({
   )
 }
 
+export default styled(Amount)`
+  color: ${({ theme, color }) => color ?? theme.font.primary};
+`
+
 const Decimals = styled.span`
   opacity: 0.7;
 `
-
-export default Amount

@@ -18,22 +18,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { Output, Transaction } from '@alephium/sdk/api/explorer'
+import { colord } from 'colord'
+import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
-import { isExplorerTransaction, isPendingTx, TransactionDirection } from '../utils/transactions'
+import {
+  getDirection,
+  hasOnlyOutputsWith,
+  isExplorerTransaction,
+  isPendingTx,
+  TransactionDirection,
+  TransactionInfoType
+} from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
-import Badge from './Badge'
-import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
 import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
+import TransactionIcon from './TransactionIcon'
 
 interface TransactionalInfoProps {
   transaction: Transaction | PendingTx
@@ -46,36 +54,41 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const _addressHash = addressHash ?? addressHashParam
 
-  const { getAddress } = useAddressesContext()
+  const { addresses, getAddress } = useAddressesContext()
   const { t } = useTranslation('App')
+  const { label, amountTextColor } = useTransactionalInfoSettings()
 
   const address = getAddress(_addressHash)
 
+  if (!address) return null
+
   let amount: bigint | undefined = BigInt(0)
   let timestamp = 0
-  let type: TransactionDirection
+  let direction: TransactionDirection
+  let infoType: TransactionInfoType
   let outputs: Output[] = []
   let pendingToAddressComponent
   let lockTime: Date | undefined
 
-  const token = 'alph'
-
   if (isExplorerTransaction(tx)) {
     amount = calAmountDelta(tx, _addressHash)
-    const amountIsBigInt = typeof amount === 'bigint'
-    type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
-    amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+    direction = getDirection(tx, _addressHash)
+    infoType =
+      !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
+    amount = amount && (direction === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
     lockTime = outputs.reduce((a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)), new Date(0))
     lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
   } else if (isPendingTx(tx)) {
-    type = 'out'
+    direction = 'out'
+    infoType = 'pending'
     amount = tx.amount
     timestamp = tx.timestamp
+
     const pendingToAddress = getAddress(tx.toAddress)
     pendingToAddressComponent = pendingToAddress ? (
-      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel />
+      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
@@ -85,54 +98,112 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
-  if (!address) return null
+  const token = 'alph'
 
   return (
     <div className={className}>
-      <CellAmountTokenTime>
+      <CellTime>
         <CellArrow>
-          <DirectionalArrow direction={type} />
+          <TransactionIcon type={infoType} />
         </CellArrow>
         <TokenTimeInner>
+          {label[infoType]}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
-          <TokenStyled type={token} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
-      </CellAmountTokenTime>
+      </CellTime>
+      <CellToken>
+        <TokenStyled type={token} />
+      </CellToken>
       {!hideLeftAddress && (
         <CellAddress alignRight>
-          <HiddenLabel text={type === 'out' ? t`out from` : t`into`} />
-          <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
+          <HiddenLabel text={t`from`} />
+          {direction === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
+          {direction === 'in' &&
+            (pendingToAddressComponent || (
+              <IOList
+                currentAddress={_addressHash || ''}
+                isOut={false}
+                outputs={outputs}
+                inputs={(tx as Transaction).inputs}
+                timestamp={(tx as Transaction).timestamp}
+                truncate
+              />
+            ))}
         </CellAddress>
       )}
-      <CellDirection>{type === 'out' ? t`to` : t`from`}</CellDirection>
+      <CellDirection>
+        <HiddenLabel text={t`to`} />
+        {!hideLeftAddress ? (
+          <ArrowRightIcon size={16} strokeWidth={3} />
+        ) : (
+          <DirectionText>{direction === 'out' ? t`to` : t`from`}</DirectionText>
+        )}
+      </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {pendingToAddressComponent || (
-            <IOList
-              currentAddress={_addressHash || ''}
-              isOut={type === 'out'}
-              outputs={outputs}
-              inputs={(tx as Transaction).inputs}
-              timestamp={(tx as Transaction).timestamp}
-              truncate
-            />
+          {direction === 'in' && !hideLeftAddress && (
+            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
           )}
+          {((direction === 'in' && hideLeftAddress) || direction === 'out') &&
+            (pendingToAddressComponent || (
+              <IOList
+                currentAddress={_addressHash || ''}
+                isOut={direction === 'out'}
+                outputs={outputs}
+                inputs={(tx as Transaction).inputs}
+                timestamp={(tx as Transaction).timestamp}
+                truncate
+              />
+            ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true">
+      <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
         {!!amount && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {type === 'out' ? '-' : '+'}
-              <Amount value={amount} fadeDecimals />
+              {infoType === 'out' && '- '}
+              {infoType === 'in' && '+ '}
+              <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
             </div>
           </>
         )}
       </CellAmount>
     </div>
   )
+}
+
+export const useTransactionalInfoSettings = () => {
+  const theme = useTheme()
+  const { t } = useTranslation('App')
+
+  return {
+    label: {
+      in: t`Received`,
+      out: t`Sent`,
+      move: t`Moved`,
+      pending: t`Pending`
+    },
+    amountTextColor: {
+      in: theme.global.valid,
+      out: theme.global.accent,
+      move: theme.font.primary,
+      pending: theme.font.primary
+    },
+    iconColor: {
+      in: theme.global.valid,
+      out: theme.global.accent,
+      move: theme.font.secondary,
+      pending: theme.font.secondary
+    },
+    iconBgColor: {
+      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
+      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
+      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
+      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
+    }
+  }
 }
 
 export default styled(TransactionalInfo)`
@@ -148,21 +219,21 @@ const CellArrow = styled.div`
   margin-right: 25px;
 `
 
-const CellAmountTokenTime = styled.div`
+const CellTime = styled.div`
   display: flex;
   align-items: center;
   margin-right: 28px;
   text-align: left;
-  flex-grow: 1;
 `
 
 const TokenTimeInner = styled.div`
   width: 9em;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 400px;
+  max-width: 340px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
@@ -181,7 +252,7 @@ const TokenStyled = styled(Token)`
   font-weight: var(--fontWeight-semiBold);
 `
 
-const CellAmount = styled.div`
+const CellAmount = styled.div<{ color: string }>`
   flex-grow: 1;
   justify-content: right;
   display: flex;
@@ -189,18 +260,17 @@ const CellAmount = styled.div`
   flex-basis: 120px;
   gap: 6px;
   align-items: center;
+  color: ${({ color }) => color};
 `
 
-const BadgeStyled = styled(Badge)`
+const DirectionText = styled.div`
   min-width: 50px;
-  text-align: center;
+  display: flex;
+  justify-content: flex-end;
 `
 
-const CellDirection = styled(BadgeStyled)`
-  ${({ theme }) => css`
-    color: ${theme.font.secondary};
-    background-color: ${theme.bg.accent};
-  `}
+const CellDirection = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const DirectionalAddress = styled.div`
@@ -217,4 +287,9 @@ const AddressBadgeStyled = styled(AddressBadge)`
 
 const LockStyled = styled(Lock)`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const CellToken = styled.div`
+  flex-grow: 1;
+  margin-right: 28px;
 `
