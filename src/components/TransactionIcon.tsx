@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
-import { RefreshCcw } from 'lucide-react'
+import { ArrowLeftRight, CircleEllipsis } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -51,8 +51,8 @@ const TransactionIcon = ({ type }: TransactionIconProps) => {
   const icon = {
     in: <Arrow type={type} color={color.icon[type]} />,
     out: <Arrow type={type} color={color.icon[type]} />,
-    pending: null,
-    move: <RefreshCcw size={16} color={color.icon[type]} />
+    pending: <CircleEllipsis size={16} color={color.icon[type]} />,
+    move: <ArrowLeftRight size={16} color={color.icon[type]} />
   }[type]
 
   return (

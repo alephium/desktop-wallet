@@ -87,7 +87,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
 
     const pendingToAddress = getAddress(tx.toAddress)
     pendingToAddressComponent = pendingToAddress ? (
-      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel />
+      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
