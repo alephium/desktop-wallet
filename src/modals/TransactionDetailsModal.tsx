@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
-import dayjs from 'dayjs'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -34,7 +33,7 @@ import Tooltip from '../components/Tooltip'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
-import { openInWebBrowser } from '../utils/misc'
+import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -63,6 +62,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const isOutgoingTx = amount < 0
   amount = isOutgoingTx ? amount * -1n : amount
 
+  const outputs = transaction.outputs || []
+  let lockTime: Date | undefined = outputs.reduce(
+    (a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)),
+    new Date(0)
+  )
+  lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
+  const lockTimeInPast = lockTime && lockTime < new Date()
+
   const handleShowTxInExplorer = () => {
     openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
   }
@@ -70,7 +77,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
+          <span>{isOutgoingTx ? '-' : '+'}</span>
           <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
         </AmountWrapper>
         <HeaderInfo>
@@ -123,10 +130,15 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </Badge>
         </DetailsRow>
         <DetailsRow label={t`Timestamp`}>
-          <span tabIndex={0}>{dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}</span>
+          <span tabIndex={0}>{formatDateForDisplay(transaction.timestamp)}</span>
         </DetailsRow>
+        {lockTime && (
+          <DetailsRow label={lockTimeInPast ? t`Unlocked at` : t`Unlocks at`}>
+            <span tabIndex={0}>{formatDateForDisplay(lockTime)}</span>
+          </DetailsRow>
+        )}
         <DetailsRow label={t`Fee`}>
-          {<Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amount tabIndex={0} value={amount} fadeDecimals fullPrecision />

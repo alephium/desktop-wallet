@@ -27,6 +27,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
+  hint?: string
   className?: string
 }
 
@@ -113,7 +114,7 @@ export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }>
 
 InputLabel = styled(InputLabel)`
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 13px;
   font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};

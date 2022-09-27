@@ -17,16 +17,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import dayjs from 'dayjs'
 import { ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
-import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import AddressSelect from '../../components/Inputs/AddressSelect'
 import AmountInput from '../../components/Inputs/AmountInput'
-import Input from '../../components/Inputs/Input'
+import Input, { InputContainer } from '../../components/Inputs/Input'
+import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
+import ToggleSection from '../../components/ToggleSection'
 import { useAddressesContext } from '../../contexts/addresses'
 import { checkAddressValidity } from '../../utils/addresses'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
@@ -48,6 +50,7 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
   const [amount, setAmount] = useState(data?.amount ?? '')
   const [gasAmount, setGasAmount] = useState(data?.gasAmount ?? '')
   const [gasPrice, setGasPrice] = useState(data?.gasPrice ?? '')
+  const [lockTime, setLockTime] = useState<Date>()
   const [addressError, setToAddressError] = useState('')
   const [gasAmountError, setGasAmountError] = useState<ReactNode>()
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE)
@@ -64,6 +67,17 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
     } else {
       setToAddressError(t`Address format is incorrect`)
     }
+  }
+
+  const handleLocktimeChange = (lockTimeInput: string) => {
+    setLockTime(dayjs(lockTimeInput).toDate())
+  }
+
+  const onClickClearLockTime = (isShown: boolean) => !isShown && setLockTime(undefined)
+  const onClickClearGasSettings = (isShown: boolean) => {
+    if (isShown) return
+    setGasAmount('')
+    setGasPrice('')
   }
 
   const handleGasAmountChange = (newAmount: string) => {
@@ -141,32 +155,44 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
             <AlefSymbol />
           </InfoBoxStyled>
         )}
+        <HorizontalDivider />
+        <ToggleSectionStyled title={t`Set lock time`} onClick={onClickClearLockTime}>
+          <Input
+            id="locktime"
+            label={t`Lock time`}
+            value={dayjs(lockTime).format('YYYY-MM-DDTHH:mm')}
+            onChange={(e) => handleLocktimeChange(e.target.value)}
+            type="datetime-local"
+            hint="DD/MM/YYYY hh:mm"
+            min={dayjs().format('YYYY-MM-DDTHH:mm')}
+          />
+        </ToggleSectionStyled>
+        <ToggleSectionStyled title={t`Tweak gas settings`} onClick={onClickClearGasSettings}>
+          <Input
+            id="gas-amount"
+            label={t`Gas amount`}
+            value={gasAmount}
+            onChange={(e) => handleGasAmountChange(e.target.value)}
+            type="number"
+            min={MINIMAL_GAS_AMOUNT}
+            error={gasAmountError}
+          />
+          <Input
+            id="gas-price"
+            label={
+              <>
+                {t`Gas price`} (<AlefSymbol color={theme.font.secondary} />)
+              </>
+            }
+            value={gasPrice}
+            type="number"
+            min={minimalGasPriceInALPH}
+            onChange={(e) => handleGasPriceChange(e.target.value)}
+            step={minimalGasPriceInALPH}
+            error={gasPriceError}
+          />
+        </ToggleSectionStyled>
       </ModalContent>
-      <ExpandableSectionStyled sectionTitleClosed={t`Advanced settings`}>
-        <Input
-          id="gas-amount"
-          label={t`Gas amount`}
-          value={gasAmount}
-          onChange={(e) => handleGasAmountChange(e.target.value)}
-          type="number"
-          min={MINIMAL_GAS_AMOUNT}
-          error={gasAmountError}
-        />
-        <Input
-          id="gas-price"
-          label={
-            <>
-              {t`Gas price`} (<AlefSymbol color={theme.font.secondary} />)
-            </>
-          }
-          value={gasPrice}
-          type="number"
-          min={minimalGasPriceInALPH}
-          onChange={(e) => handleGasPriceChange(e.target.value)}
-          step={minimalGasPriceInALPH}
-          error={gasPriceError}
-        />
-      </ExpandableSectionStyled>
       <ModalFooterButtons>
         <ModalFooterButton secondary onClick={onCancel}>
           {t`Cancel`}
@@ -178,7 +204,8 @@ const SendModalTransactionForm = ({ data, onSubmit, onCancel }: TransactionFormP
               amount,
               gasAmount,
               gasPrice,
-              fromAddress
+              fromAddress,
+              lockTime
             })
           }
           disabled={!isSubmitButtonActive}
@@ -235,10 +262,18 @@ const ModalContent = styled.div`
   flex-direction: column;
 `
 
-const ExpandableSectionStyled = styled(ExpandableSection)`
-  margin-top: 38px;
-`
-
 const InfoBoxStyled = styled(InfoBox)`
   margin-top: var(--spacing-5);
+`
+
+const ToggleSectionStyled = styled(ToggleSection)`
+  margin-top: 20px;
+
+  & ${InputContainer} {
+    margin-bottom: 32px;
+  }
+
+  & ${InputContainer}:last-of-type {
+    margin-bottom: 0;
+  }
 `

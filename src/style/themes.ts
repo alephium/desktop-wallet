@@ -19,15 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { DefaultTheme } from 'styled-components'
 
+export type ThemeType = 'light' | 'dark'
+
 export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
     secondary: '#fbfbfb',
-    tertiary: '#ededed',
-    hover: 'rgba(61, 64, 74, 0.035)',
+    tertiary: 'rgba(0, 0, 0, 0.05)',
+    hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
-    accent: colord('#000').alpha(0.08).toRgbString()
+    accent: colord('#000').alpha(0.04).toRgbString()
   },
   font: {
     primary: '#000',
@@ -63,7 +65,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: colord('#000').alpha(0.2).toRgbString()
+    accent: colord('#101012').alpha(0.32).toRgbString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',

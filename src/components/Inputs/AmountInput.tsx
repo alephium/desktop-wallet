@@ -81,22 +81,32 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         }
         {...restProps}
         error={error}
-      />
-      {availableAmount && (
-        <>
-          <AvailableAmount tabIndex={0}>
-            {t`Available`}: <Amount value={BigInt(availableAmount)} nbOfDecimalsToShow={4} />
-          </AvailableAmount>
-          <ActionLink onClick={onUseMaxAmountClick}>{t`Use max amount`}</ActionLink>
-        </>
-      )}
+      >
+        {availableAmount && (
+          <AvailableAmountRow>
+            <AvailableAmount tabIndex={0}>
+              {t`Available`}: <Amount value={BigInt(availableAmount)} nbOfDecimalsToShow={4} />
+            </AvailableAmount>
+            <ActionLinkStyled onClick={onUseMaxAmountClick}>{t`Use max amount`}</ActionLinkStyled>
+          </AvailableAmountRow>
+        )}
+      </Input>
     </div>
   )
 }
 
+export default AmountInput
+
 const AvailableAmount = styled.span`
   margin-right: var(--spacing-2);
   margin-left: 12px;
+  font-size: 10px;
 `
 
-export default AmountInput
+const AvailableAmountRow = styled.div`
+  margin-top: 6px;
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  font-size: 10px;
+`

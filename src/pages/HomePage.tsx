@@ -131,16 +131,19 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase onPassphraseConfirmed={setPassphrase} setIsPassphraseConfirmed={setIsPassphraseConfirmed} />
+        <WalletPassphraseStyled
+          onPassphraseConfirmed={setPassphrase}
+          setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+        />
       </SectionStyled>
       <SectionStyled>
-        <Button
+        <ButtonStyled
           onClick={handleLogin}
           submit
           disabled={!credentials.walletName || !credentials.password || !isPassphraseConfirmed}
         >
           {t`Login`}
-        </Button>
+        </ButtonStyled>
       </SectionStyled>
       <SwitchLink onClick={onLinkClick}>{t`Create / import a new wallet`}</SwitchLink>
     </>
@@ -196,9 +199,18 @@ const SectionStyled = styled(Section)`
   min-width: 400px;
 `
 
+const ButtonStyled = styled(Button)`
+  margin-top: 20px;
+`
+
 const SwitchLink = styled(ActionLink)`
   font-weight: var(--fontWeight-medium);
   font-size: 12px;
   font-family: inherit;
   height: var(--inputHeight);
+`
+
+const WalletPassphraseStyled = styled(WalletPassphrase)`
+  margin: 16px 0;
+  width: 100%;
 `

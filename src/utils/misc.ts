@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { createHash } from 'crypto'
+import dayjs from 'dayjs'
 
 // ===================== //
 // ==== RUNNING ENV ==== //
@@ -52,3 +53,5 @@ export const stringToDoubleSHA256HexString = (data: string): string => {
   hash.update(first)
   return hash.digest('hex')
 }
+
+export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD [at] HH:mm')

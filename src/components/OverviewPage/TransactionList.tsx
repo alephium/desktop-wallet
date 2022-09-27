@@ -44,6 +44,10 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [addresses])
+
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
   useEffect(() => {
