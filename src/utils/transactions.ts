@@ -33,7 +33,8 @@ export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTr
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 
-export type TransactionDirection = 'move' | 'out' | 'in' | 'pending'
+export type TransactionDirection = 'out' | 'in'
+export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
 export type TransactionStatus = 'pending' | 'confirmed'
 

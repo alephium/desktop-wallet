@@ -29,17 +29,18 @@ import {
   hasOnlyOutputsWith,
   isExplorerTransaction,
   isPendingTx,
-  TransactionDirection
+  TransactionDirection,
+  TransactionInfoType
 } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
-import DirectionalArrow from './DirectionalArrow'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
 import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
+import TransactionIcon from './TransactionIcon'
 
 interface TransactionalInfoProps {
   transaction: Transaction | PendingTx
@@ -58,33 +59,32 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
 
   const address = getAddress(_addressHash)
 
+  if (!address) return null
+
   let amount: bigint | undefined = BigInt(0)
   let timestamp = 0
-  let type: TransactionDirection
+  let direction: TransactionDirection
+  let infoType: TransactionInfoType
   let outputs: Output[] = []
   let pendingToAddressComponent
   let lockTime: Date | undefined
-  let isMoved = false
-
-  const token = 'alph'
 
   if (isExplorerTransaction(tx)) {
     amount = calAmountDelta(tx, _addressHash)
-    type = getDirection(tx, _addressHash)
-
-    if (hasOnlyOutputsWith(tx.outputs ?? [], addresses) && type === 'out' && !hideLeftAddress) {
-      isMoved = true
-    }
-
-    amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+    direction = getDirection(tx, _addressHash)
+    infoType =
+      !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
+    amount = amount && (direction === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
     lockTime = outputs.reduce((a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)), new Date(0))
     lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
   } else if (isPendingTx(tx)) {
-    type = 'out'
+    direction = 'out'
+    infoType = 'pending'
     amount = tx.amount
     timestamp = tx.timestamp
+
     const pendingToAddress = getAddress(tx.toAddress)
     pendingToAddressComponent = pendingToAddress ? (
       <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel />
@@ -97,24 +97,33 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
-  if (!address || !type) return null
+  const textColor =
+    infoType === 'move'
+      ? theme.font.primary
+      : infoType === 'out'
+      ? theme.global.accent
+      : infoType === 'in'
+      ? theme.global.valid
+      : theme.font.primary
 
-  const textColor = isMoved
-    ? theme.font.primary
-    : type === 'out'
-    ? theme.global.accent
-    : type === 'in'
-    ? theme.global.valid
-    : theme.font.primary
+  const token = 'alph'
 
   return (
     <div className={className}>
       <CellTime>
         <CellArrow>
-          <DirectionalArrow isMoved={isMoved} direction={type} />
+          <TransactionIcon type={infoType} />
         </CellArrow>
         <TokenTimeInner>
-          {isMoved ? t`Moved` : type === 'out' ? t`Sent` : type === 'in' ? t`Received` : null}
+          {infoType === 'move'
+            ? t`Moved`
+            : infoType === 'pending'
+            ? t`Pending`
+            : infoType === 'out'
+            ? t`Sent`
+            : infoType === 'in'
+            ? t`Received`
+            : null}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
           <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
@@ -125,8 +134,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       {!hideLeftAddress && (
         <CellAddress alignRight>
           <HiddenLabel text={t`from`} />
-          {type === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
-          {type === 'in' &&
+          {direction === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
+          {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
                 currentAddress={_addressHash || ''}
@@ -144,19 +153,19 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
         {!hideLeftAddress ? (
           <ArrowRightIcon size={16} strokeWidth={3} />
         ) : (
-          <DirectionText>{type === 'out' ? t`to` : t`from`}</DirectionText>
+          <DirectionText>{direction === 'out' ? t`to` : t`from`}</DirectionText>
         )}
       </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {type === 'in' && !hideLeftAddress && (
+          {direction === 'in' && !hideLeftAddress && (
             <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
           )}
-          {((type === 'in' && hideLeftAddress) || type === 'out') &&
+          {((direction === 'in' && hideLeftAddress) || direction === 'out') &&
             (pendingToAddressComponent || (
               <IOList
                 currentAddress={_addressHash || ''}
-                isOut={type === 'out'}
+                isOut={direction === 'out'}
                 outputs={outputs}
                 inputs={(tx as Transaction).inputs}
                 timestamp={(tx as Transaction).timestamp}
@@ -170,7 +179,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {isMoved ? '' : type === 'out' ? '- ' : '+ '}
+              {infoType === 'out' && '- '}
+              {infoType === 'in' && '+ '}
               <Amount value={amount} fadeDecimals color={textColor} />
             </div>
           </>
