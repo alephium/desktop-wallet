@@ -42,8 +42,8 @@ const TransactionIcon = ({ type }: TransactionIconProps) => {
     icon: {
       in: theme.global.valid,
       out: theme.global.accent,
-      pending: colord(theme.font.primary).darken(0.2).toRgbString(),
-      move: colord(theme.font.primary).darken(0.2).toRgbString()
+      pending: theme.font.secondary,
+      move: theme.font.secondary
     }
   }
 
