@@ -109,7 +109,7 @@
   "Current wallet": "Wallet actif",
   "Wallet name": "Nom du wallet",
   "Lock current wallet": "Verrouiller ce wallet",
-  "Show your recovery phrase": "Montrer votre phrase de récupération",
+  "Show your secret recovery phrase": "Montrer votre phrase de récupération",
   "Remove current wallet": "Supprimer ce wallet",
   "Version": "Version",
   "General": "Général",
