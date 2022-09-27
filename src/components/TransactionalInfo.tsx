@@ -72,7 +72,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     amount = calAmountDelta(tx, _addressHash)
     type = getDirection(tx, _addressHash)
 
-    if (hasOnlyOutputsWith(tx.outputs ?? [], addresses) && type === 'out') {
+    if (hasOnlyOutputsWith(tx.outputs ?? [], addresses) && type === 'out' && !hideLeftAddress) {
       isMoved = true
     }
 
