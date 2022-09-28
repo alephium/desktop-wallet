@@ -32,7 +32,6 @@ import WalletPassphrase from '../components/Inputs/WalletPassphrase'
 import { FloatingPanel, Section } from '../components/PageComponents/PageContainers'
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
-import Scrollbar from '../components/Scrollbar'
 import { useGlobalContext } from '../contexts/global'
 import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
@@ -53,40 +52,38 @@ const HomePage = () => {
   }, [newLatestVersion])
 
   return (
-    <Scrollbar>
-      <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-        <AppHeader />
-        <SideBar />
-        <InteractionArea>
-          <FloatingPanel verticalAlign="center" horizontalAlign="center">
-            {!showInitialActions && !hasWallet && (
-              <>
-                <PanelTitle useLayoutId={false}>{t`Welcome!`}</PanelTitle>
-                <InitialActions />
-              </>
-            )}
-            {!showInitialActions && hasWallet && (
-              <>
-                <PanelTitle useLayoutId={false} isSticky={false}>{t`Welcome back!`}</PanelTitle>
-                <Paragraph centered secondary>
-                  {t`Please choose a wallet and enter your password to continue.`}
-                </Paragraph>
-                <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
-              </>
-            )}
-            {showInitialActions && (
-              <>
-                <PanelTitle useLayoutId={false}>{t`New wallet`}</PanelTitle>
-                <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
-              </>
-            )}
-          </FloatingPanel>
-        </InteractionArea>
-        {isUpdateWalletModalVisible && (
-          <UpdateWalletModal newVersion={newLatestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
-        )}
-      </HomeContainer>
-    </Scrollbar>
+    <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+      <AppHeader />
+      <SideBar />
+      <InteractionArea>
+        <FloatingPanel verticalAlign="center" horizontalAlign="center">
+          {!showInitialActions && !hasWallet && (
+            <>
+              <PanelTitle useLayoutId={false}>{t`Welcome!`}</PanelTitle>
+              <InitialActions />
+            </>
+          )}
+          {!showInitialActions && hasWallet && (
+            <>
+              <PanelTitle useLayoutId={false} isSticky={false}>{t`Welcome back!`}</PanelTitle>
+              <Paragraph centered secondary>
+                {t`Please choose a wallet and enter your password to continue.`}
+              </Paragraph>
+              <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
+            </>
+          )}
+          {showInitialActions && (
+            <>
+              <PanelTitle useLayoutId={false}>{t`New wallet`}</PanelTitle>
+              <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
+            </>
+          )}
+        </FloatingPanel>
+      </InteractionArea>
+      {isUpdateWalletModalVisible && (
+        <UpdateWalletModal newVersion={newLatestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
+      )}
+    </HomeContainer>
   )
 }
 
@@ -181,7 +178,6 @@ export default HomePage
 
 const HomeContainer = styled(motion.main)`
   display: flex;
-  height: 100%;
   flex: 1;
   background-color: ${({ theme }) => theme.bg.secondary};
 
