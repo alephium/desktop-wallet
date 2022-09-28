@@ -210,6 +210,7 @@
   "(current)": "(current)",
   "Default address for sending transactions.": "Default address for sending transactions.",
   "Error while fetching data for address {{ hash }}": "Error while fetching data for address {{ hash }}",
+  "Error while fetching pending transactions for address {{ hash }}": "Error while fetching pending transactions for address {{ hash }}",
   "Open in explorer": "Open in explorer",
   "Reduce": "Reduce",
   "Show addresses": "Show addresses",

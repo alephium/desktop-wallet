@@ -26,7 +26,7 @@ import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import {
-  calculateTotalTxOutput,
+  calculateAmountSent,
   getDirection,
   hasOnlyOutputsWith,
   isExplorerTransaction,
@@ -76,7 +76,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   if (!_addressHash) return null
 
   if (isExplorerTransaction(tx)) {
-    amount = calculateTotalTxOutput(tx)
+    amount = calculateAmountSent(tx)
     direction = getDirection(tx, _addressHash)
     infoType =
       !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
@@ -164,7 +164,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
         </DirectionalAddress>
       </CellAddress>
       <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
-        {!!amount && (
+        {amount !== undefined && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>

@@ -99,35 +99,36 @@ export const getDirection = (tx: Transaction, address: AddressHash): Transaction
   return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
 }
 
-export const calculateTotalTxOutput = (tx: Transaction) => {
-  const total = (tx.outputs ?? []).reduce((acc, o) => acc + BigInt(o?.attoAlphAmount ?? 0), BigInt(0))
+export const calculateAmountSent = (tx: Transaction | UnconfirmedTransaction): bigint => {
+  const outputs = tx.outputs ?? []
+  const total = outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
 
-  // We must do best effort to determine the change addresses. Usually they are the last TXs.
-  const inputs = uniq((tx.inputs ?? []).map((i) => i.address))
-  let change = BigInt(0)
+  if (isConsolidationTx(tx)) return total
 
-  for (let index = (tx.outputs ?? []).length - 1; index > 0; index--) {
-    const output = (tx.outputs ?? [])[index]
-    const inputIndex = inputs.indexOf(output.address)
-    if (inputs[inputIndex]) {
-      change += BigInt(output.attoAlphAmount)
-      inputs.splice(inputIndex, 1)
-    }
-    if (inputs.length == 0) return total - change
-  }
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
+  const change = outputs.reduce(
+    (acc, output) => (inputAddresses.includes(output.address) ? acc + BigInt(output.attoAlphAmount) : acc),
+    BigInt(0)
+  )
 
   return total - change
 }
 
-export const fromUnconfirmedTransactionToPendingTx = (
+const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boolean => {
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
+  const outputAddresses = tx.outputs ? uniq(tx.outputs.map((output) => output.address)) : []
+
+  return inputAddresses.length === 1 && outputAddresses.length === 1 && inputAddresses[0] === outputAddresses[0]
+}
+
+export const convertUnconfirmedTxToPendingTx = (
   tx: UnconfirmedTransaction,
   belongingTo: AddressHash,
   network: NetworkName
 ): PendingTx => {
-  let amount = calculateTotalTxOutput(tx as unknown as Transaction)
-  const amountIsBigInt = typeof amount === 'bigint'
-  const type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
-  amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+  let amount = calculateAmountSent(tx)
+  const type = amount < 0 ? 'out' : 'in'
+  amount = type === 'out' ? amount * BigInt(-1) : amount
 
   const fromAddress = type === 'out' ? belongingTo : ((tx.inputs ?? [])[0] ?? {}).address
   const toAddress = type === 'in' ? ((tx.outputs ?? [])[0] ?? {}).address : belongingTo
