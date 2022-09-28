@@ -100,21 +100,14 @@ export const getDirection = (tx: Transaction, address: AddressHash): Transaction
 }
 
 export const calculateTotalTxOutput = (tx: Transaction) => {
-  const total = (tx.outputs ?? []).reduce((acc, o) => acc + BigInt(o?.attoAlphAmount ?? 0), BigInt(0))
+  const outputs = tx.outputs ?? []
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
 
-  // We must do best effort to determine the change addresses. Usually they are the last TXs.
-  const inputs = uniq((tx.inputs ?? []).map((i) => i.address))
-  let change = BigInt(0)
-
-  for (let index = (tx.outputs ?? []).length - 1; index > 0; index--) {
-    const output = (tx.outputs ?? [])[index]
-    const inputIndex = inputs.indexOf(output.address)
-    if (inputs[inputIndex]) {
-      change += BigInt(output.attoAlphAmount)
-      inputs.splice(inputIndex, 1)
-    }
-    if (inputs.length == 0) return total - change
-  }
+  const total = outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+  const change = outputs.reduce(
+    (acc, output) => (inputAddresses.includes(output.address) ? acc + BigInt(output.attoAlphAmount) : acc),
+    BigInt(0)
+  )
 
   return total - change
 }
