@@ -439,10 +439,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   useEffect(() => {
     // In case the "to" address of a pending transaction is an address of this wallet, we need to query the API for this
     // one as well
-    const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
-      (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
-    )
-
     const addressesWithPendingReceivingTxs = addressesOfCurrentNetwork.filter((address) =>
       addressesWithPendingSentTxs.some((addressWithPendingTx) =>
         addressWithPendingTx.transactions.pending.some((pendingTx) => pendingTx.toAddress === address.hash)
