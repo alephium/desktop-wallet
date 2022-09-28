@@ -171,12 +171,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     (addressState) => addressState.network === currentNetwork
   )
 
-  // Used for showing flashing on the large summary card
   const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
     (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
   )
-
-  const [checkForNewPending, setCheckForNewPending] = useState(addressesWithPendingSentTxs.length > 0 && {})
 
   const constructMapKey = useCallback(
     (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
@@ -200,11 +197,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         return newAddressesState
       })
 
-      setCheckForNewPending({})
-
       console.log('✅ Updated addresses state: ', newAddresses)
     },
-    [constructMapKey, currentNetwork, setCheckForNewPending]
+    [constructMapKey, currentNetwork]
   )
 
   const setAddress = useCallback(
@@ -412,7 +407,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         updateAddressesState(addressesToFetchData)
         await fetchAndStoreAddressesData(addressesToFetchData)
         await fetchPendingTxs(addressesToFetchData)
-        setCheckForNewPending({})
       }
     }
 
@@ -467,20 +461,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     return () => {
       clearInterval(interval)
     }
+  }, [
+    addressesState,
+    currentNetwork,
+    fetchAndStoreAddressesData,
+    addressesOfCurrentNetwork,
+    addressesWithPendingSentTxs
+  ])
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkForNewPending])
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await fetchPendingTxs(addressesOfCurrentNetwork)
-      setCheckForNewPending({})
-      // MinimumWaitTime + HalfAvgBlockTime
-    }, 1000 + (1000 * 60) / 2)
-    return () => {
-      clearInterval(interval)
-    }
-  }, [addressesOfCurrentNetwork, fetchPendingTxs])
+  const refreshAddressesData = useCallback(async () => {
+    await fetchAndStoreAddressesData()
+    await fetchPendingTxs()
+  }, [fetchAndStoreAddressesData, fetchPendingTxs])
 
   return (
     <AddressesContext.Provider
@@ -492,7 +484,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           setAddress,
           saveNewAddress,
           updateAddressSettings,
-          refreshAddressesData: fetchAndStoreAddressesData,
+          refreshAddressesData,
           fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
