@@ -30,21 +30,10 @@ import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
+import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { useGlobalContext } from './global'
-
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
-
-type SimpleTx = {
-  txId: string
-  fromAddress: string
-  toAddress: string
-  timestamp: number
-  type: TransactionType
-  network: NetworkName
-  amount?: bigint
-}
 
 export type AddressHash = string
 
@@ -60,7 +49,7 @@ export class Address {
   details: AddressInfo
   transactions: {
     confirmed: Transaction[]
-    pending: SimpleTx[]
+    pending: PendingTx[]
     loadedPage: number
   }
   availableBalance: bigint
@@ -96,7 +85,7 @@ export class Address {
     return `${this.settings.isMain && showStar ? '★ ' : ''}${this.getName()}`
   }
 
-  addPendingTransaction(transaction: SimpleTx) {
+  addPendingTransaction(transaction: PendingTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
     this.transactions.pending.push(transaction)
@@ -346,9 +335,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       const addressesMetadata = isPassphraseUsed
         ? []
         : loadStoredAddressesMetadataOfWallet({
-            mnemonic: wallet.mnemonic,
-            walletName: activeWalletName
-          })
+          mnemonic: wallet.mnemonic,
+          walletName: activeWalletName
+        })
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(

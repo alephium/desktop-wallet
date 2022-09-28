@@ -16,10 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type Step = 'send' | 'info-check' | 'password-check'
+import { NetworkName } from '../utils/settings'
 
-export const stepToTitle: { [k in Step]: string } = {
-  send: 'Send',
-  'info-check': 'Review',
-  'password-check': 'Password Check'
+export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
+
+export type BaseTx = {
+  txId: string
+  fromAddress: string
+  timestamp: number
+  type: TransactionType
+  network: NetworkName
 }
+
+export type PendingTx = BaseTx & { toAddress?: string; amount?: bigint }

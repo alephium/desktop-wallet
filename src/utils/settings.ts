@@ -29,6 +29,7 @@ export interface Settings {
     language: Language
   }
   network: {
+    networkId: number
     nodeHost: string
     explorerApiHost: string
     explorerUrl: string
@@ -44,16 +45,19 @@ type DeprecatedNetworkSettings = Settings['network']
 
 export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['network']> = {
   mainnet: {
+    networkId: 0,
     nodeHost: 'https://mainnet-wallet.alephium.org',
     explorerApiHost: 'https://mainnet-backend.alephium.org',
     explorerUrl: 'https://explorer.alephium.org'
   },
   testnet: {
+    networkId: 1,
     nodeHost: 'https://testnet-wallet.alephium.org',
     explorerApiHost: 'https://testnet-backend.alephium.org',
     explorerUrl: 'https://testnet.alephium.org'
   },
   localhost: {
+    networkId: 4,
     nodeHost: 'http://localhost:12973',
     explorerApiHost: 'http://localhost:9090',
     explorerUrl: 'http://localhost:3000'
@@ -68,7 +72,7 @@ export const defaultSettings: Settings = {
     passwordRequirement: false,
     language: 'en-US'
   },
-  network: clone(networkEndpoints.mainnet)
+  network: clone(networkEndpoints.mainnet) as Settings['network']
 }
 
 export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as const

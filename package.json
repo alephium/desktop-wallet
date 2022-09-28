@@ -21,24 +21,23 @@
     "lint:fix": "eslint . --fix --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "dependencies": {
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
   "devDependencies": {
     "@alephium/sdk": "0.0.13",
+    "@h0ngcha0/walletconnect-provider": "0.2.0-rc.2",
+    "@json-rpc-tools/utils": "^1.7.6",
+    "@walletconnect/sign-client": "2.0.0-rc.3",
+    "@walletconnect/types": "2.0.0-rc.3",
+    "@walletconnect/utils": "2.0.0-rc.3",
+    "alephium-web3": "0.8.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.0",
     "@types/jest": "^27.0.2",
