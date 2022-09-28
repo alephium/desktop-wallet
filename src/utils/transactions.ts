@@ -93,45 +93,42 @@ export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolea
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => addresses.map((a) => a.hash).indexOf(o?.address ?? '') >= 0)
 
-export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection => {
-  const amount = calAmountDelta(tx, address)
-  const amountIsBigInt = typeof amount === 'bigint'
-  return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
-}
+export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection =>
+  calAmountDelta(tx, address) < 0 ? 'out' : 'in'
 
-export const calculateAmountSent = (tx: Transaction | UnconfirmedTransaction): bigint => {
-  const outputs = tx.outputs ?? []
-  const total = outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, address: AddressHash): bigint => {
+  if (!tx.inputs || !tx.outputs) throw 'Missing transaction details'
 
-  if (isConsolidationTx(tx)) return total
+  const totalOutputAmount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
 
-  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
-  const change = outputs.reduce(
-    (acc, output) => (inputAddresses.includes(output.address) ? acc + BigInt(output.attoAlphAmount) : acc),
+  if (isConsolidationTx(tx)) return totalOutputAmount
+
+  const totalOutputAmountOfAddress = tx.outputs.reduce(
+    (acc, output) => (output.address === address ? acc + BigInt(output.attoAlphAmount) : acc),
     BigInt(0)
   )
 
-  return total - change
+  return totalOutputAmount - totalOutputAmountOfAddress
 }
 
-const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boolean => {
+export const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boolean => {
   const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
   const outputAddresses = tx.outputs ? uniq(tx.outputs.map((output) => output.address)) : []
 
   return inputAddresses.length === 1 && outputAddresses.length === 1 && inputAddresses[0] === outputAddresses[0]
 }
 
+// It can currently only take care of sending transactions.
+// See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (
   tx: UnconfirmedTransaction,
-  belongingTo: AddressHash,
+  fromAddress: AddressHash,
   network: NetworkName
 ): PendingTx => {
-  let amount = calculateAmountSent(tx)
-  const type = amount < 0 ? 'out' : 'in'
-  amount = type === 'out' ? amount * BigInt(-1) : amount
+  if (!tx.outputs) throw 'Missing transaction details'
 
-  const fromAddress = type === 'out' ? belongingTo : ((tx.inputs ?? [])[0] ?? {}).address
-  const toAddress = type === 'in' ? ((tx.outputs ?? [])[0] ?? {}).address : belongingTo
+  const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress)
+  const toAddress = tx.outputs[0].address
 
   if (!fromAddress) throw new Error('fromAddress is not defined')
   if (!toAddress) throw new Error('toAddress is not defined')
