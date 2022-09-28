@@ -243,24 +243,35 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         })
         return
       }
+      setIsLoadingData(true)
 
-      // Make a sequence of requests from the addresses to not spam the explorer API
-      return addresses.reduce(
-        (p, address) =>
-          p.then(() =>
-            client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash).then((response) => {
-              const { data: txs } = response
-              txs.forEach((tx) => {
-                if (tx.type !== 'Unconfirmed') return
-                if (address.transactions.pending.some((t: PendingTx) => t.txId == tx.hash)) return
-                address.addPendingTransaction(convertUnconfirmedTxToPendingTx(tx, address.hash, currentNetwork))
-              })
-            })
-          ),
-        Promise.resolve()
-      )
+      const addressesToCheck = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
+      for (const address of addressesToCheck) {
+        try {
+          console.log('🤷 Fetching unconfirmed txs for', address.hash)
+          const { data: txs } = await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash)
+
+          txs.forEach((tx) => {
+            if (tx.type === 'Unconfirmed' && !address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
+              const pendingTx = convertUnconfirmedTxToPendingTx(tx, address.hash, currentNetwork)
+
+              address.addPendingTransaction(pendingTx)
+            }
+          })
+        } catch (e) {
+          setSnackbarMessage({
+            text: getHumanReadableError(
+              e,
+              t('Error while fetching pending transactions for address {{ hash }}', { hash: address.hash })
+            ),
+            type: 'alert'
+          })
+        }
+      }
+
+      setIsLoadingData(false)
     },
-    [client, setSnackbarMessage, t, currentNetwork]
+    [client, addressesOfCurrentNetwork, setSnackbarMessage, t, currentNetwork]
   )
 
   const fetchAndStoreAddressesData = useCallback(

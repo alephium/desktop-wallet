@@ -213,6 +213,7 @@
   "(current)": "(actif)",
   "Default address for sending transactions.": "Adresse par défaut pour effectuer des transactions.",
   "Error while fetching data for address {{ hash }}": "Erreur lors de la récupération des données de l'adresse {{ hash }}",
+  "Error while fetching pending transactions for address {{ hash }}": "Error while fetching pending transactions for address {{ hash }}",
   "Open in explorer": "Ouvrir dans l'explorer",
   "Reduce": "Réduire",
   "Show addresses": "Montrer les adresses",
