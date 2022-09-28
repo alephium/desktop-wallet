@@ -228,14 +228,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [wallet, activeWalletName, isPassphraseUsed, setAddress]
   )
 
+  const displayDataFetchingError = useCallback(
+    () =>
+      setSnackbarMessage({
+        text: t`Could not fetch data because the wallet is offline`,
+        type: 'alert',
+        duration: 5000
+      }),
+    [setSnackbarMessage, t]
+  )
+
   const fetchPendingTxs = useCallback(
     async (addresses: Address[] = []) => {
       if (!client) {
-        setSnackbarMessage({
-          text: t`Could not fetch data because the wallet is offline`,
-          type: 'alert',
-          duration: 5000
-        })
+        displayDataFetchingError()
         return
       }
       setIsLoadingData(true)
@@ -266,17 +272,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, setSnackbarMessage, t, currentNetwork]
+    [client, addressesOfCurrentNetwork, displayDataFetchingError, currentNetwork, setSnackbarMessage, t]
   )
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
       if (!client) {
-        setSnackbarMessage({
-          text: t`Could not fetch data because the wallet is offline`,
-          type: 'alert',
-          duration: 5000
-        })
+        displayDataFetchingError()
         updateAddressesState(addresses)
         return
       }
@@ -328,7 +330,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState, t]
+    [client, addressesOfCurrentNetwork, displayDataFetchingError, updateAddressesState, setSnackbarMessage, t]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
