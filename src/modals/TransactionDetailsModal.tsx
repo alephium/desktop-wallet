@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes } from '@alephium/sdk'
+import { addApostrophes, calAmountDelta } from '@alephium/sdk'
 import { AssetOutput, Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,7 +34,7 @@ import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
-import { calculateAmountSent, getDirection } from '../utils/transactions'
+import { isConsolidationTx } from '../utils/transactions'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -59,8 +59,17 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
 
-  const isOutgoingTx = getDirection(transaction, address.hash) === 'out'
-  const amount = calculateAmountSent(transaction)
+  let amount = BigInt(0)
+  let isOutgoingTx: boolean
+
+  if (isConsolidationTx(transaction) && transaction.outputs) {
+    amount = transaction.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+    isOutgoingTx = true
+  } else {
+    amount = calAmountDelta(transaction, address.hash)
+    isOutgoingTx = amount < 0
+    amount = amount < 0 ? amount * BigInt(-1) : amount
+  }
 
   const outputs = transaction.outputs || []
   let lockTime: Date | undefined = outputs.reduce(

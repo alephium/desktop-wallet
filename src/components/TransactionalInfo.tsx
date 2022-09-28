@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay } from '@alephium/sdk'
+import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -26,9 +26,8 @@ import styled, { css, useTheme } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
 import {
-  calculateAmountSent,
-  getDirection,
   hasOnlyOutputsWith,
+  isConsolidationTx,
   isExplorerTransaction,
   isPendingTx,
   TransactionDirection,
@@ -76,10 +75,17 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   if (!_addressHash) return null
 
   if (isExplorerTransaction(tx)) {
-    amount = calculateAmountSent(tx)
-    direction = getDirection(tx, _addressHash)
-    infoType =
-      !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
+    if (isConsolidationTx(tx) && tx.outputs) {
+      amount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+      direction = 'out'
+      infoType = 'move'
+    } else {
+      amount = calAmountDelta(tx, _addressHash)
+      direction = amount < 0 ? 'out' : 'in'
+      amount = amount < 0 ? amount * BigInt(-1) : amount
+      infoType =
+        !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
+    }
     timestamp = tx.timestamp
     outputs = tx.outputs || []
     lockTime = outputs.reduce(
