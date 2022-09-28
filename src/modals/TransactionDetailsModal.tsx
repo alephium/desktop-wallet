@@ -30,11 +30,12 @@ import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Tooltip from '../components/Tooltip'
-import { Address } from '../contexts/addresses'
+import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
+import { useTransactionalInfoSettings } from '../hooks/useTransactionInfoSettings'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
-import { isConsolidationTx } from '../utils/transactions'
+import { hasOnlyOutputsWith, isConsolidationTx, TransactionDirection, TransactionInfoType } from '../utils/transactions'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -56,19 +57,24 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       network: { explorerUrl }
     }
   } = useGlobalContext()
+  const { addresses } = useAddressesContext()
+  const { amountTextColor } = useTransactionalInfoSettings()
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
 
   let amount = BigInt(0)
-  let isOutgoingTx: boolean
+  let direction: TransactionDirection
+  let infoType: TransactionInfoType
 
   if (isConsolidationTx(transaction) && transaction.outputs) {
     amount = transaction.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
-    isOutgoingTx = true
+    direction = 'out'
+    infoType = 'move'
   } else {
     amount = calAmountDelta(transaction, address.hash)
-    isOutgoingTx = amount < 0
+    direction = amount < 0 ? 'out' : 'in'
     amount = amount < 0 ? amount * BigInt(-1) : amount
+    infoType = direction === 'out' && hasOnlyOutputsWith(transaction.outputs ?? [], addresses) ? 'move' : direction
   }
 
   const outputs = transaction.outputs || []
@@ -85,20 +91,27 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
-        <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span>
-          <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
+        <AmountWrapper tabIndex={0} color={amountTextColor[infoType]}>
+          <span>
+            {infoType === 'out' && '- '}
+            {infoType === 'in' && '+ '}
+          </span>
+          <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
         </AmountWrapper>
         <HeaderInfo>
-          <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
-          <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
+          <Direction>
+            {infoType === 'out' && '↑ ' + t`Sent`}
+            {infoType === 'in' && '↓ ' + t`Received`}
+            {infoType === 'move' && t`Moved`}
+          </Direction>
+          <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
           <AddressBadge address={address} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details role="table">
         <DetailsRow label={t`From`}>
-          {isOutgoingTx ? (
+          {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
                 <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
@@ -107,7 +120,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={false}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
@@ -116,7 +129,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           )}
         </DetailsRow>
         <DetailsRow label={t`To`}>
-          {!isOutgoingTx ? (
+          {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
                 <AddressBadge address={address} showHashWhenNoLabel withBorders />
@@ -125,7 +138,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={direction === 'out'}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
