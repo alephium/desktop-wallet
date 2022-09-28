@@ -99,7 +99,7 @@ export const getDirection = (tx: Transaction, address: AddressHash): Transaction
   return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
 }
 
-export const calculateTotalTxOutput = (tx: Transaction) => {
+export const calculateAmountSent = (tx: Transaction | UnconfirmedTransaction): bigint => {
   const outputs = tx.outputs ?? []
   const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
 
@@ -117,10 +117,9 @@ export const convertUnconfirmedTxToPendingTx = (
   belongingTo: AddressHash,
   network: NetworkName
 ): PendingTx => {
-  let amount = calculateTotalTxOutput(tx as unknown as Transaction)
-  const amountIsBigInt = typeof amount === 'bigint'
-  const type = amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
-  amount = amount && (type === 'out' ? amount * BigInt(-1) : amount)
+  let amount = calculateAmountSent(tx)
+  const type = amount < 0 ? 'out' : 'in'
+  amount = type === 'out' ? amount * BigInt(-1) : amount
 
   const fromAddress = type === 'out' ? belongingTo : ((tx.inputs ?? [])[0] ?? {}).address
   const toAddress = type === 'in' ? ((tx.outputs ?? [])[0] ?? {}).address : belongingTo
