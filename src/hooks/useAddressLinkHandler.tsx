@@ -34,6 +34,8 @@ const useAddressLinkHandler = () => {
 
   return useCallback(
     (addressHash: AddressHash) => {
+      if (!addressHash) return
+
       const address = getAddress(addressHash)
 
       if (address) {

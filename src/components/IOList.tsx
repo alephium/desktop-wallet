@@ -51,7 +51,10 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       .map((v) => v.address)
       .uniq()
       .value()
+
     const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
+    if (!addressHash) return null
+
     const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
 
     // There may be a case where a wallet sends funds to the same address, which doesn't
@@ -76,8 +79,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
     ) : (
       <Addresses>
         {addressesToShow.map((addressHash) => {
-          const addressComponent = getAddressComponent(addressHash)
+          if (!addressHash) return null
 
+          const addressComponent = getAddressComponent(addressHash)
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}

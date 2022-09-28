@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
-import { Output, Transaction } from '@alephium/sdk/api/explorer'
+import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -42,6 +42,8 @@ import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
 import TransactionIcon from './TransactionIcon'
+
+const token = 'alph'
 
 interface TransactionalInfoProps {
   transaction: Transaction | PendingTx
@@ -70,6 +72,8 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
   let pendingToAddressComponent
   let lockTime: Date | undefined
 
+  if (!_addressHash) return null
+
   if (isExplorerTransaction(tx)) {
     amount = calAmountDelta(tx, _addressHash)
     direction = getDirection(tx, _addressHash)
@@ -78,7 +82,10 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     amount = amount && (direction === 'out' ? amount * BigInt(-1) : amount)
     timestamp = tx.timestamp
     outputs = tx.outputs || []
-    lockTime = outputs.reduce((a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)), new Date(0))
+    lockTime = outputs.reduce(
+      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
+      new Date(0)
+    )
     lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
   } else if (isPendingTx(tx)) {
     direction = 'out'
@@ -92,13 +99,11 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
-    outputs = [{ hint: 0, key: '', amount: '', address: tx.toAddress }]
+    outputs = [{ hint: 0, key: '', type: '', attoAlphAmount: '', address: tx.toAddress }]
     lockTime = tx.lockTime
   } else {
     throw new Error('Could not determine transaction type, all transactions should have a type')
   }
-
-  const token = 'alph'
 
   return (
     <div className={className}>

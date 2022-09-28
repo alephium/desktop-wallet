@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addApostrophes, calAmountDelta } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
+import { AssetOutput, Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -64,7 +64,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
 
   const outputs = transaction.outputs || []
   let lockTime: Date | undefined = outputs.reduce(
-    (a, b) => (a > new Date(b.lockTime ?? 0) ? a : new Date(b.lockTime ?? 0)),
+    (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
     new Date(0)
   )
   lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
@@ -152,11 +152,17 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
             <AddressList>
-              {transaction.inputs?.map((input) => (
-                <ActionLinkStyled key={`${input.outputRef.key}`} onClick={() => handleShowAddress(input.address)}>
-                  <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
-                </ActionLinkStyled>
-              ))}
+              {transaction.inputs?.map(
+                (input) =>
+                  input.address && (
+                    <ActionLinkStyled
+                      key={`${input.outputRef.key}`}
+                      onClick={() => handleShowAddress(input.address as string)}
+                    >
+                      <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
+                    </ActionLinkStyled>
+                  )
+              )}
             </AddressList>
           </DetailsRow>
           <DetailsRow label={t`Outputs`}>
