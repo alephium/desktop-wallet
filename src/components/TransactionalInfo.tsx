@@ -18,13 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
 import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
-import { colord } from 'colord'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
+import { useTransactionalInfoSettings } from '../hooks/useTransactionInfoSettings'
 import {
   hasOnlyOutputsWith,
   isConsolidationTx,
@@ -183,38 +183,6 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       </CellAmount>
     </div>
   )
-}
-
-export const useTransactionalInfoSettings = () => {
-  const theme = useTheme()
-  const { t } = useTranslation('App')
-
-  return {
-    label: {
-      in: t`Received`,
-      out: t`Sent`,
-      move: t`Moved`,
-      pending: t`Pending`
-    },
-    amountTextColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.primary,
-      pending: theme.font.primary
-    },
-    iconColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.secondary,
-      pending: theme.font.secondary
-    },
-    iconBgColor: {
-      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
-      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
-    }
-  }
 }
 
 export default styled(TransactionalInfo)`

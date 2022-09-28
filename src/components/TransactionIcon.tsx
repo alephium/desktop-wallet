@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ArrowLeftRight, CircleEllipsis } from 'lucide-react'
 import styled, { css } from 'styled-components'
 
+import { useTransactionalInfoSettings } from '../hooks/useTransactionInfoSettings'
 import arrowDownSvg from '../images/arrow_down.svg'
 import { TransactionInfoType } from '../utils/transactions'
-import { useTransactionalInfoSettings } from './TransactionalInfo'
 
 interface TransactionIconProps {
   type: TransactionInfoType
