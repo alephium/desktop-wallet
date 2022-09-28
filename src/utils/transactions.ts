@@ -101,15 +101,24 @@ export const getDirection = (tx: Transaction, address: AddressHash): Transaction
 
 export const calculateAmountSent = (tx: Transaction | UnconfirmedTransaction): bigint => {
   const outputs = tx.outputs ?? []
-  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
-
   const total = outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+
+  if (isConsolidationTx(tx)) return total
+
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
   const change = outputs.reduce(
     (acc, output) => (inputAddresses.includes(output.address) ? acc + BigInt(output.attoAlphAmount) : acc),
     BigInt(0)
   )
 
   return total - change
+}
+
+const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boolean => {
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
+  const outputAddresses = tx.outputs ? uniq(tx.outputs.map((output) => output.address)) : []
+
+  return inputAddresses.length === 1 && outputAddresses.length === 1 && inputAddresses[0] === outputAddresses[0]
 }
 
 export const convertUnconfirmedTxToPendingTx = (
