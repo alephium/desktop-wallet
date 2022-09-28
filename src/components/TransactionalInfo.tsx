@@ -164,7 +164,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
         </DirectionalAddress>
       </CellAddress>
       <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
-        {!!amount && (
+        {amount !== undefined && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>

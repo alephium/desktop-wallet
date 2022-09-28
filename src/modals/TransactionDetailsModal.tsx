@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes, calAmountDelta } from '@alephium/sdk'
+import { addApostrophes } from '@alephium/sdk'
 import { AssetOutput, Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,6 +34,7 @@ import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
+import { calculateAmountSent, getDirection } from '../utils/transactions'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -58,9 +59,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
 
-  let amount = calAmountDelta(transaction, address.hash)
-  const isOutgoingTx = amount < 0
-  amount = isOutgoingTx ? amount * -1n : amount
+  const isOutgoingTx = getDirection(transaction, address.hash) === 'out'
+  const amount = calculateAmountSent(transaction)
 
   const outputs = transaction.outputs || []
   let lockTime: Date | undefined = outputs.reduce(
