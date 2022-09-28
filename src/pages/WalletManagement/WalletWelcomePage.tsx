@@ -20,7 +20,7 @@ import { Info } from 'lucide-react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
 import { Trans, useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'

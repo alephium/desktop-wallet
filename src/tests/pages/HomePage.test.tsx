@@ -23,8 +23,8 @@ import HomePage from '../../pages/HomePage'
 import { renderWithGlobalContext } from '..'
 
 const mockedHistoryPush = jest.fn()
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockedHistoryPush
 }))
 
