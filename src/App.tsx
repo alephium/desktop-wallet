@@ -71,7 +71,7 @@ const App = () => {
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Router />
       </AppContainer>
-      {(isClientLoading || isLanguageChanging) && (
+      {((isClientLoading && !isOffline) || isLanguageChanging) && (
         <ClientLoading>
           <Spinner size="60px" />
         </ClientLoading>
