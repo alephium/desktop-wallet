@@ -61,14 +61,11 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
-      {allPendingTxs
-        .slice(0)
-        .reverse()
-        .map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
-          <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
-            <TransactionalInfo transaction={tx} addressHash={address.hash} />
-          </TableRow>
-        ))}
+      {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
+        <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={tx} addressHash={address.hash} />
+        </TableRow>
+      ))}
       {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
         if (hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) && getDirection(tx, address.hash) == 'in')
           return null
