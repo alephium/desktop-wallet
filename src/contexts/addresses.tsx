@@ -32,7 +32,7 @@ import { PartialDeep } from 'type-fest'
 import { TimeInMs } from '../types/numbers'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
-import { fromUnconfirmedTransactionToPendingTx, TransactionType } from '../utils/transactions'
+import { convertUnconfirmedTxToPendingTx, TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
 export type PendingTx = {
@@ -253,7 +253,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
               txs.forEach((tx) => {
                 if (tx.type !== 'Unconfirmed') return
                 if (address.transactions.pending.some((t: PendingTx) => t.txId == tx.hash)) return
-                address.addPendingTransaction(fromUnconfirmedTransactionToPendingTx(tx, address.hash, currentNetwork))
+                address.addPendingTransaction(convertUnconfirmedTxToPendingTx(tx, address.hash, currentNetwork))
               })
             })
           ),

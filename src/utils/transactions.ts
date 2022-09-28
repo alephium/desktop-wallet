@@ -119,7 +119,7 @@ export const calculateTotalTxOutput = (tx: Transaction) => {
   return total - change
 }
 
-export const fromUnconfirmedTransactionToPendingTx = (
+export const convertUnconfirmedTxToPendingTx = (
   tx: UnconfirmedTransaction,
   belongingTo: AddressHash,
   network: NetworkName
