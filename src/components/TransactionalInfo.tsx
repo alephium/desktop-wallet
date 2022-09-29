@@ -23,9 +23,9 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
-import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
+import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import { useTransactionInfo } from '../hooks/useTransactionInfo'
-import { isPendingTx } from '../utils/transactions'
+import { isPendingTx, TransactionVariant } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
@@ -38,7 +38,7 @@ import Token from './Token'
 const token = 'alph'
 
 interface TransactionalInfoProps {
-  transaction: Transaction | PendingTx
+  transaction: TransactionVariant
   addressHash?: AddressHash
   hideLeftAddress?: boolean
   className?: string

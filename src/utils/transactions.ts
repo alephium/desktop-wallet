@@ -23,14 +23,13 @@ import { uniq } from 'lodash'
 import { Address, AddressHash, PendingTx } from '../contexts/addresses'
 import { NetworkName } from './settings'
 
-type HasTimestamp = { timestamp: number }
-type TransactionVariant = Transaction | PendingTx
-type IsTransactionVariant<T extends Transaction | PendingTx> = T extends Transaction
+export type TransactionVariant = Transaction | PendingTx
+type IsTransactionVariant<T extends TransactionVariant> = T extends Transaction
   ? Transaction
   : T extends PendingTx
   ? PendingTx
   : never
-export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTransactionVariant<T>; address: Address }
+export type BelongingToAddress<T extends TransactionVariant> = { data: IsTransactionVariant<T>; address: Address }
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -54,27 +53,9 @@ export const getTransactionsForAddresses = (
     .flat()
     .sort((a, b) => sortTransactions(a.data, b.data))
 
-export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
-  const _tx = tx as Transaction
-  return (
-    (_tx.hash !== undefined &&
-      _tx.blockHash !== undefined &&
-      _tx.timestamp !== undefined &&
-      _tx.gasAmount !== undefined &&
-      _tx.gasPrice !== undefined) === true
-  )
-}
-export function isPendingTx(tx: TransactionVariant): tx is PendingTx {
-  const _tx = tx as PendingTx
-  return (
-    (_tx.txId !== undefined &&
-      _tx.fromAddress !== undefined &&
-      _tx.toAddress !== undefined &&
-      _tx.timestamp !== undefined &&
-      _tx.type !== undefined &&
-      _tx.network !== undefined) === true
-  )
-}
+export const isPendingTx = (tx: TransactionVariant): tx is PendingTx => (tx as PendingTx).status === 'pending'
+
+type HasTimestamp = { timestamp: number }
 
 export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
   const delta = b.timestamp - a.timestamp
@@ -142,6 +123,7 @@ export const convertUnconfirmedTxToPendingTx = (
     type: 'transfer',
     // SUPER important that this is the same as the current network. Lots of debug time used tracking this down.
     network,
-    amount
+    amount,
+    status: 'pending'
   }
 }
