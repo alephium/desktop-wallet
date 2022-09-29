@@ -191,7 +191,7 @@
   "Back": "Retour",
   "Type your recovery phrase": "Taper votre phrase de récupération",
   "Error while importing wallet": "Erreur lors de l'importation du wallet",
-  "Make sure to properly write down the words in a secure location! They are your wallet's secret recovery phrase.": "Assurez-vous de garder les mots dans un lieu sûr. Ils sont les clés pour pouvoir récupérer votre wallet.",
+  "Make sure to store the words in a secure location! They are your wallet's secret recovery phrase.": "Assurez-vous de garder les mots dans un lieu sûr. Ils sont les clés pour pouvoir récupérer votre wallet.",
   "All good? Let's continue!": "Tout bon ? Continuons !",
   "Everything is ready!": "Tout est prêt !",
   "Welcome to Alephium.": "Bienvenue chez Alephium.",
