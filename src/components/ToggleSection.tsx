@@ -39,11 +39,11 @@ const ToggleSection = ({ title, onClick = () => null, children, className }: Tog
 
   return (
     <div className={className}>
-      <CellControl>
+      <Title>
         {title}
         <Toggle onToggle={handleToggle} label={title} toggled={isShown} />
-      </CellControl>
-      <CellChildren
+      </Title>
+      <Content
         animate={{
           height: isShown ? 'auto' : 0,
           opacity: isShown ? 1 : 0,
@@ -51,8 +51,8 @@ const ToggleSection = ({ title, onClick = () => null, children, className }: Tog
         }}
         transition={{ duration: 0.2 }}
       >
-        <CellChildrenInner>{children}</CellChildrenInner>
-      </CellChildren>
+        <Children>{children}</Children>
+      </Content>
     </div>
   )
 }
@@ -65,23 +65,24 @@ export default styled(ToggleSection)`
   padding-bottom: 16px;
 `
 
-const CellControl = styled.div`
-  justify-content: space-between;
-  flex-direction: row;
+const Title = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
   font-weight: 400;
   padding: 16px 21px 0 21px;
 `
 
-const CellChildren = styled(motion.div)`
+const Content = styled(motion.div)`
   overflow: hidden;
   height: 0;
   opacity: 0;
   visibility: hidden;
 `
 
-const CellChildrenInner = styled.div`
+const Children = styled.div`
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid ${({ theme }) => theme.bg.primary};
   margin-top: 16px;
   padding: 16px 21px 0 21px;
