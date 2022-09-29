@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes, calAmountDelta } from '@alephium/sdk'
-import { AssetOutput, Transaction } from '@alephium/sdk/dist/api/api-explorer'
+import { addApostrophes } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -30,12 +30,11 @@ import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
 import Tooltip from '../components/Tooltip'
-import { Address, useAddressesContext } from '../contexts/addresses'
+import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
-import { useTransactionalInfoSettings } from '../hooks/useTransactionInfoSettings'
+import { useTransactionInfo } from '../hooks/useTransactionInfo'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
-import { hasOnlyOutputsWith, isConsolidationTx, TransactionDirection, TransactionInfoType } from '../utils/transactions'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -57,52 +56,26 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       network: { explorerUrl }
     }
   } = useGlobalContext()
-  const { addresses } = useAddressesContext()
-  const { amountTextColor } = useTransactionalInfoSettings()
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
-
-  let amount = BigInt(0)
-  let direction: TransactionDirection
-  let infoType: TransactionInfoType
-
-  if (isConsolidationTx(transaction) && transaction.outputs) {
-    amount = transaction.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
-    direction = 'out'
-    infoType = 'move'
-  } else {
-    amount = calAmountDelta(transaction, address.hash)
-    direction = amount < 0 ? 'out' : 'in'
-    amount = amount < 0 ? amount * BigInt(-1) : amount
-    infoType = direction === 'out' && hasOnlyOutputsWith(transaction.outputs ?? [], addresses) ? 'move' : direction
-  }
-
-  const outputs = transaction.outputs || []
-  let lockTime: Date | undefined = outputs.reduce(
-    (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
-    new Date(0)
+  const { amount, direction, lockTime, amountTextColor, amountSign, label, Icon } = useTransactionInfo(
+    transaction,
+    address.hash
   )
-  lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
-  const lockTimeInPast = lockTime && lockTime < new Date()
 
-  const handleShowTxInExplorer = () => {
-    openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
-  }
+  const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
+
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
-        <AmountWrapper tabIndex={0} color={amountTextColor[infoType]}>
-          <span>
-            {infoType === 'out' && '- '}
-            {infoType === 'in' && '+ '}
-          </span>
-          <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
+        <AmountWrapper tabIndex={0} color={amountTextColor}>
+          {amountSign}
+          <Amount value={amount} fadeDecimals color={amountTextColor} />
         </AmountWrapper>
         <HeaderInfo>
           <Direction>
-            {infoType === 'out' && '↑ ' + t`Sent`}
-            {infoType === 'in' && '↓ ' + t`Received`}
-            {infoType === 'move' && t`Moved`}
+            <Icon size={14} />
+            {label}
           </Direction>
           <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
           <AddressBadge address={address} truncate withBorders />
@@ -155,7 +128,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <span tabIndex={0}>{formatDateForDisplay(transaction.timestamp)}</span>
         </DetailsRow>
         {lockTime && (
-          <DetailsRow label={lockTimeInPast ? t`Unlocked at` : t`Unlocks at`}>
+          <DetailsRow label={lockTime < new Date() ? t`Unlocked at` : t`Unlocks at`}>
             <span tabIndex={0}>{formatDateForDisplay(lockTime)}</span>
           </DetailsRow>
         )}
@@ -223,6 +196,9 @@ DetailsRow = styled(DetailsRow)`
 
 const Direction = styled.span`
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `
 
 const AmountWrapper = styled.div<{ color: string }>`
