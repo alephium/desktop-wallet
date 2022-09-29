@@ -17,22 +17,23 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta } from '@alephium/sdk'
-import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
+import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
 import { ArrowDown, ArrowLeftRight, ArrowUp, CircleEllipsis } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
-import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
+import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import {
   hasOnlyOutputsWith,
   isConsolidationTx,
   isPendingTx,
   TransactionDirection,
-  TransactionInfoType
+  TransactionInfoType,
+  TransactionVariant
 } from '../utils/transactions'
 
-export const useTransactionInfo = (tx: Transaction | PendingTx, addressHash: AddressHash) => {
+export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash) => {
   const { addresses } = useAddressesContext()
   const theme = useTheme()
   const { t } = useTranslation('App')
