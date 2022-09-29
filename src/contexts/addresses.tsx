@@ -247,6 +247,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       setIsLoadingData(true)
 
       const addressesToCheck = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
+
       for (const address of addressesToCheck) {
         try {
           console.log('🤷 Fetching unconfirmed txs for', address.hash)

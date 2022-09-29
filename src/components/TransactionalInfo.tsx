@@ -16,23 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
-import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
+import { formatAmountForDisplay } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
 import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
-import { useTransactionalInfoSettings } from '../hooks/useTransactionInfoSettings'
-import {
-  hasOnlyOutputsWith,
-  isConsolidationTx,
-  isExplorerTransaction,
-  isPendingTx,
-  TransactionDirection,
-  TransactionInfoType
-} from '../utils/transactions'
+import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { isPendingTx } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
@@ -41,7 +34,6 @@ import IOList from './IOList'
 import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
-import TransactionIcon from './TransactionIcon'
 
 const token = 'alph'
 
@@ -52,75 +44,47 @@ interface TransactionalInfoProps {
   className?: string
 }
 
-const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAddress }: TransactionalInfoProps) => {
+const TransactionalInfo = ({
+  transaction: tx,
+  addressHash: addressHashProp,
+  className,
+  hideLeftAddress
+}: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
-  const _addressHash = addressHash ?? addressHashParam
-
-  const { addresses, getAddress } = useAddressesContext()
+  const addressHash = addressHashProp ?? addressHashParam
+  const { getAddress } = useAddressesContext()
+  const { amount, direction, outputs, lockTime, label, amountTextColor, amountSign, Icon, iconColor, iconBgColor } =
+    useTransactionInfo(tx, addressHash)
   const { t } = useTranslation('App')
-  const { label, amountTextColor } = useTransactionalInfoSettings()
 
-  const address = getAddress(_addressHash)
+  const address = getAddress(addressHash)
 
   if (!address) return null
 
-  let amount: bigint | undefined = BigInt(0)
-  let timestamp = 0
-  let direction: TransactionDirection
-  let infoType: TransactionInfoType
-  let outputs: Output[] = []
   let pendingToAddressComponent
-  let lockTime: Date | undefined
 
-  if (!_addressHash) return null
-
-  if (isExplorerTransaction(tx)) {
-    if (isConsolidationTx(tx) && tx.outputs) {
-      amount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
-      direction = 'out'
-      infoType = 'move'
-    } else {
-      amount = calAmountDelta(tx, _addressHash)
-      direction = amount < 0 ? 'out' : 'in'
-      amount = amount < 0 ? amount * BigInt(-1) : amount
-      infoType =
-        !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
-    }
-    timestamp = tx.timestamp
-    outputs = tx.outputs || []
-    lockTime = outputs.reduce(
-      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
-      new Date(0)
-    )
-    lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
-  } else if (isPendingTx(tx)) {
-    direction = 'out'
-    infoType = 'pending'
-    amount = tx.amount
-    timestamp = tx.timestamp
-
+  if (isPendingTx(tx)) {
     const pendingToAddress = getAddress(tx.toAddress)
+
     pendingToAddressComponent = pendingToAddress ? (
       <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
-    outputs = [{ hint: 0, key: '', type: '', attoAlphAmount: '', address: tx.toAddress }]
-    lockTime = tx.lockTime
-  } else {
-    throw new Error('Could not determine transaction type, all transactions should have a type')
   }
 
   return (
     <div className={className}>
       <CellTime>
         <CellArrow>
-          <TransactionIcon type={infoType} />
+          <TransactionIcon color={iconBgColor} aria-label={label}>
+            <Icon size={16} strokeWidth={3} color={iconColor} />
+          </TransactionIcon>
         </CellArrow>
         <TokenTimeInner>
-          {label[infoType]}
+          {label}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
-          <TimeSince timestamp={timestamp} faded />
+          <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>
       <CellToken>
@@ -133,7 +97,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
-                currentAddress={_addressHash || ''}
+                currentAddress={addressHash}
                 isOut={false}
                 outputs={outputs}
                 inputs={(tx as Transaction).inputs}
@@ -159,7 +123,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
           {((direction === 'in' && hideLeftAddress) || direction === 'out') &&
             (pendingToAddressComponent || (
               <IOList
-                currentAddress={_addressHash || ''}
+                currentAddress={addressHash}
                 isOut={direction === 'out'}
                 outputs={outputs}
                 inputs={(tx as Transaction).inputs}
@@ -169,14 +133,13 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
+      <CellAmount aria-hidden="true" color={amountTextColor}>
         {amount !== undefined && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {infoType === 'out' && '- '}
-              {infoType === 'in' && '+ '}
-              <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
+              {amountSign}
+              <Amount value={amount} fadeDecimals color={amountTextColor} />
             </div>
           </>
         )}
@@ -271,4 +234,14 @@ const LockStyled = styled(Lock)`
 const CellToken = styled.div`
   flex-grow: 1;
   margin-right: 28px;
+`
+
+const TransactionIcon = styled.span<{ color?: string }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: ${({ color, theme }) => color || theme.font.primary};
 `
