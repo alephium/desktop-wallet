@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { SignResult } from 'alephium-web3'
+import { SignResult } from '@alephium/web3'
 import { AnimatePresence } from 'framer-motion'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
+import { Number256 } from '@alephium/web3'
 
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
@@ -26,9 +27,9 @@ export interface BuildScriptTxData {
   fromAddress: Address
   bytecode: string
 
-  alphAmount?: string
+  attoAlphAmount?: Number256
   gasAmount?: number
-  gasPrice?: string
+  gasPrice?: Number256
 }
 
 export interface BuildScriptTxProps {
@@ -38,8 +39,8 @@ export interface BuildScriptTxProps {
 }
 
 const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.attoAlphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -50,7 +51,7 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
   const isSubmitButtonActive =
     isCommonReady &&
     bytecode &&
-    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
+    (!attoAlphAmount || isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance))
 
   return (
     <>
@@ -65,7 +66,7 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
           onSubmit({
             fromAddress: data.fromAddress,
             bytecode: bytecode,
-            alphAmount: alphAmount ? alphAmount : undefined,
+            attoAlphAmount: attoAlphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
-import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from 'alephium-web3'
+import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
 import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
@@ -168,7 +168,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildTransferTxData = {
               fromAddress: extractAddress(p.signerAddress),
               toAddress: p.destinations[0].address,
-              alphAmount: p.destinations[0].alphAmount,
+              attoAlphAmount: p.destinations[0].attoAlphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice
             }
@@ -180,7 +180,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildDeployContractTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              initialAlphAmount: p.initialAlphAmount,
+              initialAttoAlphAmount: p.initialAttoAlphAmount,
               issueTokenAmount: p.issueTokenAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice
@@ -193,7 +193,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildScriptTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              alphAmount: p.alphAmount,
+              attoAlphAmount: p.attoAlphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice
             }

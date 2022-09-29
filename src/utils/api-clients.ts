@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
-import { NodeProvider as Web3Client } from 'alephium-web3'
+import { NodeProvider as Web3Client } from '@alephium/web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
 import { TransactionType } from '../types/transactions'

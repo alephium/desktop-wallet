@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
-import { SignTransferTxResult } from 'alephium-web3'
+import { SignTransferTxResult } from '@alephium/web3'
 
 import { Client } from '../../contexts/global'
 import BuildTransferTx, { BuildTransferTxData, BuildTransferTxProps } from './BuildTransferTx'
@@ -31,9 +31,8 @@ export type TransferTxModalProps = {
 
 const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   const buildTransaction = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
-    const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice } = transactionData
-    const amountInSet = convertAlphToSet(alphAmount)
-    const sweep = amountInSet === fromAddress.availableBalance
+    const { fromAddress, toAddress, attoAlphAmount, gasAmount, gasPrice } = transactionData
+    const sweep = attoAlphAmount === fromAddress.availableBalance
     context.setIsSweeping(sweep)
     if (sweep) {
       const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, toAddress)
@@ -44,10 +43,10 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
         fromAddress.hash,
         fromAddress.publicKey,
         toAddress,
-        amountInSet.toString(),
+        attoAlphAmount.toString(),
         undefined,
         gasAmount ? gasAmount : undefined,
-        gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
+        gasPrice?.toString()
       )
       context.setUnsignedTransaction(data)
       context.setUnsignedTxId(data.txId)
@@ -56,7 +55,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   }
 
   const handleSend = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
-    const { fromAddress, toAddress, alphAmount } = transactionData
+    const { fromAddress, toAddress, attoAlphAmount } = transactionData
 
     if (toAddress && context.unsignedTransaction) {
       if (context.isSweeping) {
@@ -85,7 +84,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
           toAddress,
           'transfer',
           context.currentNetwork,
-          convertAlphToSet(alphAmount)
+          BigInt(attoAlphAmount)
         )
         return data.signature
       }

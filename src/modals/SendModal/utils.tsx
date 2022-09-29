@@ -17,7 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
-import { node, toApiVal } from 'alephium-web3'
+import { Number256 } from '@alephium/web3'
+import { node, toApiVal } from '@alephium/web3'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
@@ -154,20 +155,20 @@ export function useBytecode(initialBytecode: string) {
 
 export function useBuildTxCommon(
   initialFromAddress: Address,
-  initialAlphAmount: string | undefined,
+  initialAttoAlphAmount: Number256 | undefined,
   initialGasAmount: number | undefined,
-  initialGasPrice: string | undefined
+  initialGasPrice: Number256 | undefined
 ) {
   const theme = useTheme()
   const [fromAddress, FromAddress] = useFromAddress(initialFromAddress)
-  const [alphAmount, setAlphAmount] = useState(initialAlphAmount ?? '')
+  const [attoAlphAmount, setAttoAlphAmount] = useState(initialAttoAlphAmount ?? '')
   const [gasAmount, setGasAmount] = useStateWithParsed<number | undefined>(
     initialGasAmount,
     typeof initialGasAmount !== 'undefined' ? initialGasAmount.toString() : ''
   )
-  const [gasPrice, setGasPrice] = useStateWithParsed<string | undefined>(
+  const [gasPrice, setGasPrice] = useStateWithParsed<Number256 | undefined>(
     initialGasPrice,
-    typeof initialGasPrice !== 'undefined' ? initialGasPrice : ''
+    typeof initialGasPrice !== 'undefined' ? initialGasPrice.toString() : ''
   )
 
   const handleGasAmountChange = (newGasAmount: string) => {
@@ -198,13 +199,13 @@ export function useBuildTxCommon(
 
   const expectedFeeInALPH =
     typeof gasAmount.parsed !== 'undefined' && typeof gasPrice.parsed !== 'undefined'
-      ? formatAmountForDisplay(BigInt(gasAmount.parsed) * convertAlphToSet(gasPrice.parsed), true)
+      ? formatAmountForDisplay(BigInt(gasAmount.parsed) * BigInt(gasPrice.parsed), true)
       : ''
 
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress!.availableBalance} />
+    <TxAmount attoAlphAmount={attoAlphAmount} setAttoAlphAmount={setAttoAlphAmount} availableBalance={fromAddress!.availableBalance} />
   )
 
   const GasSettings = (
@@ -221,7 +222,7 @@ export function useBuildTxCommon(
     </ExpandableSectionStyled>
   )
 
-  return [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] as const
+  return [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] as const
 }
 
 export const FromAddressSelect = ({
@@ -265,14 +266,14 @@ export const ToAddress = ({
 )
 
 export const TxAmount = ({
-  alphAmount,
-  setAlphAmount,
+  attoAlphAmount,
+  setAttoAlphAmount,
   availableBalance
 }: {
-  alphAmount: string
-  setAlphAmount: (amount: string) => void
+  attoAlphAmount: Number256
+  setAttoAlphAmount: (amount: Number256) => void
   availableBalance: bigint
-}) => <AmountInput value={alphAmount} onChange={setAlphAmount} availableAmount={availableBalance} />
+}) => <AmountInput value={attoAlphAmount.toString()} onChange={setAttoAlphAmount} availableAmount={availableBalance} />
 
 export const GasAmount = ({
   gasAmount,
@@ -298,7 +299,7 @@ export const GasPrice = ({
   handleGasPriceChange
 }: {
   theme: DefaultTheme
-  gasPrice: WithParsed<string | undefined>
+  gasPrice: WithParsed<Number256 | undefined>
   handleGasPriceChange: (error: string) => void
 }) => (
   <Input
@@ -388,13 +389,13 @@ export const InitialFields = ({
   />
 )
 
-export function useIssueTokenAmount(initialTokenAmount: string | undefined) {
+export function useIssueTokenAmount(initialTokenAmount: Number256 | undefined) {
   const [issueTokenAmount, setIssueTokenAmount] = useState(initialTokenAmount ?? '')
   const IssueTokenAmount = (
     <Input
       id="issue-token-amount"
       label="Tokens to issue (optional)"
-      value={issueTokenAmount}
+      value={issueTokenAmount.toString()}
       type="number"
       onChange={(e) => setIssueTokenAmount(e.target.value)}
     />
@@ -445,8 +446,8 @@ export const BytecodeInfo = ({ bytecode }: { bytecode: string }) => (
 export const FieldsInfo = ({ fields }: { fields: node.Val[] }) =>
   fields.length > 0 ? <InfoBox text={encodeFields(fields)} label="Contract Fields" wordBreak /> : null
 
-export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: string }) =>
-  issueTokenAmount ? <InfoBox text={issueTokenAmount} label="Issue token amount" wordBreak /> : null
+export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: Number256 }) =>
+  issueTokenAmount ? <InfoBox text={issueTokenAmount?.toString()} label="Issue token amount" wordBreak /> : null
 
 export const CheckTxFooter = ({ onSend, onCancel }: { onSend: () => void; onCancel: () => void }) => (
   <ModalFooterButtons>

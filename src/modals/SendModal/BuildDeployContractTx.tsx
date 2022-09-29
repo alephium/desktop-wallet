@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
+import { Number256 } from '@alephium/web3'
 
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
@@ -33,10 +34,10 @@ export interface BuildDeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAlphAmount?: string
-  issueTokenAmount?: string
+  initialAttoAlphAmount?: Number256
+  issueTokenAmount?: Number256
   gasAmount?: number
-  gasPrice?: string
+  gasPrice?: Number256
 }
 
 export interface BuildDeployContractTxProps {
@@ -46,8 +47,8 @@ export interface BuildDeployContractTxProps {
 }
 
 const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContractTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.initialAttoAlphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
 
@@ -59,7 +60,7 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   const isSubmitButtonActive =
     isCommonReady &&
     bytecode &&
-    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
+    (!attoAlphAmount || isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance))
 
   return (
     <>
@@ -75,8 +76,8 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
           onSubmit({
             fromAddress: data.fromAddress,
             bytecode: bytecode,
-            issueTokenAmount: issueTokenAmount ? issueTokenAmount : undefined,
-            initialAlphAmount: alphAmount ? alphAmount : undefined,
+            issueTokenAmount: issueTokenAmount,
+            initialAttoAlphAmount: attoAlphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

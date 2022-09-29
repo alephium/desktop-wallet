@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
-import { SignExecuteScriptTxResult } from 'alephium-web3'
+import { SignExecuteScriptTxResult } from '@alephium/web3'
 
 import { Client } from '../../contexts/global'
 import { BuildScriptTxData, BuildScriptTxProps } from './BuildScriptTx'
@@ -35,10 +35,10 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
     const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
       fromPublicKey: txData.fromAddress.publicKey,
       bytecode: txData.bytecode,
-      alphAmount: txData.alphAmount,
+      attoAlphAmount: txData.attoAlphAmount?.toString(),
       tokens: undefined,
       gasAmount: txData.gasAmount,
-      gasPrice: txData.gasPrice ? convertAlphToSet(txData.gasPrice).toString() : undefined
+      gasPrice: txData.gasPrice?.toString()
     })
     ctx.setUnsignedTransaction(response)
     ctx.setUnsignedTxId(response.txId)

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet } from '@alephium/sdk'
+import { Number256 } from '@alephium/web3'
 
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
@@ -25,9 +26,9 @@ import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, use
 export interface BuildTransferTxData {
   fromAddress: Address
   toAddress: string
-  alphAmount: string
+  attoAlphAmount: Number256
   gasAmount?: number
-  gasPrice?: string
+  gasPrice?: Number256
 }
 
 export interface BuildTransferTxProps {
@@ -37,8 +38,8 @@ export interface BuildTransferTxProps {
 }
 
 const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => {
-  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.attoAlphAmount, data.gasAmount, data.gasPrice)
   const [toAddress, handleAddressChange] = useAddress(data?.toAddress ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -50,8 +51,8 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     isCommonReady &&
     toAddress.value &&
     !toAddress.error &&
-    alphAmount &&
-    isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
+    (!!attoAlphAmount) &&
+    isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance)
 
   return (
     <>
@@ -66,7 +67,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
-            alphAmount: alphAmount,
+            attoAlphAmount: attoAlphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })
