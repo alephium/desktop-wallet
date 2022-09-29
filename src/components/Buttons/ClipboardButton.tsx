@@ -115,6 +115,14 @@ const ClipboardWrapper = styled.div`
   & > .clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: auto;
+    }
   }
 
   &.check {
