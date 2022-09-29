@@ -25,7 +25,7 @@ import styled, { css } from 'styled-components'
 
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import { useTransactionInfo } from '../hooks/useTransactionInfo'
-import { isPendingTx, TransactionVariant } from '../utils/transactions'
+import { isConsolidationTx, isPendingTx, TransactionVariant } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
@@ -40,7 +40,7 @@ const token = 'alph'
 interface TransactionalInfoProps {
   transaction: TransactionVariant
   addressHash?: AddressHash
-  hideLeftAddress?: boolean
+  isDisplayedInAddressDetailsPage?: boolean
   className?: string
 }
 
@@ -48,13 +48,24 @@ const TransactionalInfo = ({
   transaction: tx,
   addressHash: addressHashProp,
   className,
-  hideLeftAddress
+  isDisplayedInAddressDetailsPage
 }: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
   const { getAddress } = useAddressesContext()
-  const { amount, direction, outputs, lockTime, label, amountTextColor, amountSign, Icon, iconColor, iconBgColor } =
-    useTransactionInfo(tx, addressHash)
+  const {
+    amount,
+    direction,
+    outputs,
+    lockTime,
+    label,
+    amountTextColor,
+    amountSign: amountSignDefault,
+    Icon,
+    iconColor,
+    iconBgColor,
+    infoType
+  } = useTransactionInfo(tx, addressHash)
   const { t } = useTranslation('App')
 
   const address = getAddress(addressHash)
@@ -73,6 +84,11 @@ const TransactionalInfo = ({
     )
   }
 
+  const amountSign =
+    isDisplayedInAddressDetailsPage && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx)
+      ? '- '
+      : amountSignDefault
+
   return (
     <div className={className}>
       <CellTime>
@@ -90,7 +106,7 @@ const TransactionalInfo = ({
       <CellToken>
         <TokenStyled type={token} />
       </CellToken>
-      {!hideLeftAddress && (
+      {!isDisplayedInAddressDetailsPage && (
         <CellAddress alignRight>
           <HiddenLabel text={t`from`} />
           {direction === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
@@ -109,7 +125,7 @@ const TransactionalInfo = ({
       )}
       <CellDirection>
         <HiddenLabel text={t`to`} />
-        {!hideLeftAddress ? (
+        {!isDisplayedInAddressDetailsPage ? (
           <ArrowRightIcon size={16} strokeWidth={3} />
         ) : (
           <DirectionText>{direction === 'out' ? t`to` : t`from`}</DirectionText>
@@ -117,10 +133,10 @@ const TransactionalInfo = ({
       </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {direction === 'in' && !hideLeftAddress && (
+          {direction === 'in' && !isDisplayedInAddressDetailsPage && (
             <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
           )}
-          {((direction === 'in' && hideLeftAddress) || direction === 'out') &&
+          {((direction === 'in' && isDisplayedInAddressDetailsPage) || direction === 'out') &&
             (pendingToAddressComponent || (
               <IOList
                 currentAddress={addressHash}
