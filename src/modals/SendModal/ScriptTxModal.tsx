@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
 
 import { Client } from '../../contexts/global'
@@ -32,6 +31,9 @@ export type ScriptTxModalProps = {
 
 const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
   const buildTransaction = async (client: Client, txData: BuildScriptTxData, ctx: TxContext) => {
+    if (!txData.attoAlphAmount) {
+      txData.attoAlphAmount = undefined
+    }
     const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
       fromPublicKey: txData.fromAddress.publicKey,
       bytecode: txData.bytecode,

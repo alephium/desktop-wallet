@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
 import { Number256 } from '@alephium/web3'
 
 import { Address } from '../../contexts/addresses'
@@ -51,7 +50,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     isCommonReady &&
     toAddress.value &&
     !toAddress.error &&
-    (!!attoAlphAmount) &&
+    !!attoAlphAmount &&
     isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance)
 
   return (

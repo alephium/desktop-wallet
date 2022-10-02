@@ -29,8 +29,7 @@ import {
   ModalContent
 } from './utils'
 
-const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) =>
-(
+const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildDeployContractTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

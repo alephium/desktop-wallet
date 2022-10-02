@@ -28,8 +28,7 @@ import {
   ModalContent
 } from './utils'
 
-const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) =>
-(
+const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScriptTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

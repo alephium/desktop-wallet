@@ -117,7 +117,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
-  const [txModalType, setTxModalType] = useState<TxModalType | false>(false)
+  const [txModalType, setTxModalType] = useState<TxModalType | undefined>(undefined)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)

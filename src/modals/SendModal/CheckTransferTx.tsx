@@ -28,8 +28,7 @@ import {
   ToAddressInfo
 } from './utils'
 
-const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) =>
-(
+const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => (
   <>
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />

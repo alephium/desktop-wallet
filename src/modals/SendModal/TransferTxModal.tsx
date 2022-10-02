@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 
 import { Client } from '../../contexts/global'

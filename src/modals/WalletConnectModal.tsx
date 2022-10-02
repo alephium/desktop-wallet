@@ -16,7 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { addressToGroup } from '@alephium/sdk'
 import { formatChain, parseChain } from '@h0ngcha0/walletconnect-provider'
+import { ALEPHIUM_NAMESPACE, ChainInfo } from '@h0ngcha0/walletconnect-provider'
 import { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -48,35 +50,23 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const [state, setState] = useState(addresses.length > 0 ? State.InitiateSession : State.RequireUnlock)
 
   const [proposal, setProposal] = useState<SignClientTypes.EventArguments['session_proposal']>()
-  const [permittedChain, setPermittedChain] = useState({
-    chainId: formatChain(0, -1),
-    networkId: 0,
-    permittedGroup: -1
-  })
 
-  const [fromAddress, FromAddress] = useSignerAddress(permittedChain.permittedGroup)
+  const [requiredChainInfo, setRequiredChainInfo] = useState<ChainInfo[]>([])
+
+  const [fromAddresses, FromAddress] = useSignerAddress(undefined)
   const [error, setError] = useState('')
 
   const onProposal = useCallback(
     async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      const { id, requiredNamespaces, relays } = proposal.params
-      const permittedChain = requiredNamespaces['alephium'].chains[0]
-
-      if (typeof permittedChain === 'undefined') {
-        setErrorState('No chain is permitted')
-        return
-      }
-
-      const [permittedNetworkId, permittedChainGroup] = parseChain(permittedChain)
-
-      setPermittedChain({
-        chainId: permittedChain,
-        networkId: permittedNetworkId,
-        permittedGroup: permittedChainGroup ? permittedChainGroup : -1
+      const { requiredNamespaces } = proposal.params
+      const requiredChains = requiredNamespaces[ALEPHIUM_NAMESPACE].chains
+      const requiredChainInfo = requiredChains.map((requiredChain) => {
+        const [networkId, chainGroup] = parseChain(requiredChain)
+        return { networkId, chainGroup }
       })
 
+      setRequiredChainInfo(requiredChainInfo)
       setProposal(proposal)
-
       setState(State.Proposal)
     },
     [setProposal, setState]
@@ -84,12 +74,8 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
   useEffect(() => {
     walletConnect?.on('session_proposal', onProposal)
-    //walletConnect?.on(CLIENT_EVENTS.session.created, onClose)
-    //TODO: What should trigger onClose?
-    //walletConnect?.on("session_delete", onClose)
     return () => {
       walletConnect?.removeListener('session_proposal', onProposal)
-      //walletConnect?.removeListener("session_delete", onClose)
     }
   }, [onClose, onProposal, walletConnect])
 
@@ -105,40 +91,77 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       })
   }, [walletConnect, uri, onConnect])
 
+  function chainAccounts(addresses: Address[], chains: string[]): string[] {
+    return chains.flatMap((chain) => {
+      const [_networkId, chainGroup] = parseChain(chain)
+
+      return addresses
+        .filter((address) => {
+          const group = addressToGroup(address.hash, 4)
+          return group === (chainGroup as number)
+        })
+        .map((address) => `${chain}:${address.publicKey}`)
+    })
+  }
+
+  function formatChains(chains: ChainInfo[]): string {
+    return chains
+      .flatMap((chain) => (chain.chainGroup !== undefined ? [formatChain(chain.networkId, chain.chainGroup)] : []))
+      .join('; ')
+  }
+
+  function areAccountsCompatible(accounts: string[], requiredChains: string[]): boolean {
+    const accountChains = accounts.map((account) => {
+      const [_namespace, networkId, group, _publicKey] = account.replace(/\//g, ':').split(':')
+      return formatChain(parseInt(networkId, 10), parseInt(group, 10))
+    })
+    for (const requiredChain in requiredChains) {
+      if (!accountChains.includes(requiredChain)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   const onApprove = useCallback(
-    async (signerAddress: Address) => {
+    async (signerAddresses: Address[]) => {
       if (proposal === undefined) {
         setState(State.InitiateSession)
         return
       }
 
       const { id, requiredNamespaces, relays } = proposal.params
-
-      // TODO: This logic should be moved to approve
-      const namespaces: SessionTypes.Namespaces = {}
-      Object.entries(requiredNamespaces).forEach(([key, value]) => {
-        namespaces[key] = {
-          methods: value.methods,
-          events: value.events,
-          accounts: value.chains.map((chain) => `${chain}:${signerAddress.hash}`),
-          extension: value.extension?.map((ext) => ({
+      const permittedChain = requiredNamespaces[ALEPHIUM_NAMESPACE]
+      const namespaces: SessionTypes.Namespaces = {
+        alephium: {
+          methods: permittedChain.methods,
+          events: permittedChain.events,
+          accounts: chainAccounts(signerAddresses, permittedChain.chains),
+          extension: permittedChain.extension?.map((ext) => ({
             methods: ext.methods,
             events: ext.events,
-            accounts: ext.chains.map((chain) => `${chain}:${signerAddress.hash}`)
+            accounts: chainAccounts(signerAddresses, ext.chains)
           }))
         }
-      })
+      }
 
-      console.log('on approve, before approve')
+      if (!areAccountsCompatible(namespaces.alephium.accounts, permittedChain.chains)) {
+        setErrorState(
+          `Not all chain requested has at least one corresponding account. Chains requested: ${formatChains(
+            requiredChainInfo
+          )}. Available accounts: ${namespaces.alephium.accounts}`
+        )
+      }
+
       if (walletConnect) {
         const { acknowledged } = await walletConnect.approve({
           id,
           relayProtocol: relays[0].protocol,
           namespaces
         })
-        console.log('on approve, after approve')
-        const session = await acknowledged()
-        console.log('on approve, after acknowledged', session)
+
+        await acknowledged()
       }
 
       onClose()
@@ -211,8 +234,8 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const url = proposal?.params.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.params.proposer.metadata.description ?? 'No description given'
 
-      if (typeof fromAddress === 'undefined') {
-        setErrorState(`No address with balance for group ${permittedChain.permittedGroup}`)
+      if (fromAddresses.length === 0) {
+        setErrorState(`No address with balance for required chains ${formatChains(requiredChainInfo)}`)
         return null
       }
 
@@ -227,17 +250,14 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
             <Name>{name}</Name>
             <Url>{url}</Url>
             <Desc>{description}</Desc>
-            <Desc>
-              NetworkId: {permittedChain.networkId}, Group:{' '}
-              {permittedChain.permittedGroup == -1 ? 'all' : permittedChain.permittedGroup}
-            </Desc>
+            <Desc>Chains: {formatChains(requiredChainInfo)}</Desc>
           </List>
           {FromAddress}
           <ModalFooterButtons>
             <ModalFooterButton secondary onClick={onReject}>
               Reject
             </ModalFooterButton>
-            <ModalFooterButton onClick={() => onApprove(fromAddress)}>Approve</ModalFooterButton>
+            <ModalFooterButton onClick={() => onApprove(fromAddresses)}>Approve</ModalFooterButton>
           </ModalFooterButtons>
         </CenteredModal>
       )

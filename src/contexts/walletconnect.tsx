@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
-import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
 import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '../contexts/addresses'
@@ -34,10 +34,10 @@ export interface ContextType {
   walletConnect?: SignClient
   setWalletConnect: Dispatch<SetStateAction<SignClient | undefined>>
   dappTransactionData?:
-  | ['transfer', BuildTransferTxData]
-  | ['deploy-contract', BuildDeployContractTxData]
-  | ['script', BuildScriptTxData]
-  | undefined
+    | ['transfer', BuildTransferTxData]
+    | ['deploy-contract', BuildDeployContractTxData]
+    | ['script', BuildScriptTxData]
+    | undefined
   requestEvent?: SignClientTypes.EventArguments['session_request']
   onError: (error: string) => void
 }
@@ -100,8 +100,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   useEffect(() => {
     if (walletConnect === undefined) {
       SignClient.init({
-        // controller: true,
-
         // TODO: add as an advanced settings option "WalletConnect Project Id"
         projectId: '6e2562e43678dd68a9070a62b6d52207',
         relayUrl: 'wss://relay.walletconnect.com',
@@ -146,7 +144,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       const { params } = requestEvent
       const { chainId, request } = params
 
-      console.log('onSessionRequest, chainId', chainId)
       setRequestEvent(requestEvent)
 
       try {

@@ -36,8 +36,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'no-use-before-define': 'off',
     'react/react-in-jsx-scope': 'off',
-    //'react/jsx-no-useless-fragment': 'error',
-    'react/jsx-no-useless-fragment': 'off',
+    'react/jsx-no-useless-fragment': 'warn',
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
     'unused-imports/no-unused-imports-ts': 'warn',
@@ -58,13 +57,12 @@ module.exports = {
         }
       }
     ],
-    'prettier/prettier': 0
-    //    'prettier/prettier': [
-    //      'error',
-    //      {
-    //        endOfLine: 'auto'
-    //      }
-    //    ]
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto'
+      }
+    ]
   },
   env: {
     browser: true,

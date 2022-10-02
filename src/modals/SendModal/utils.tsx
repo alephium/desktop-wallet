@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { Number256 } from '@alephium/web3'
 import { node, toApiVal } from '@alephium/web3'
+import { ChainGroup } from '@h0ngcha0/walletconnect-provider'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
@@ -93,33 +94,29 @@ export function useStateWithParsed<T>(initialValue: T, stringified: string) {
   return [value, setValueWithError] as const
 }
 
-const filter = (group: number, address?: Address): Address | undefined =>
-  group === -1 ? address : address?.group === group ? address : undefined
-
-export function useSignerAddress(group: number) {
+export function useSignerAddress(group: ChainGroup) {
   const { t } = useTranslation('App')
   const { addresses, mainAddress } = useAddressesContext()
-  const [signerAddress, setSignerAddress] = useState<Address>()
+  const [signerAddresses, setSignerAddresses] = useState<Address[]>()
 
-  const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
+  const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
   useEffect(() => {
-    const defaultAddress = filter(group, mainAddress) ?? addressOptions.at(0)
-    setSignerAddress(defaultAddress)
+    setSignerAddresses(addressOptions)
   }, [group, addressOptions, mainAddress])
 
-  const SignerAddress = signerAddress ? (
-    <AddressSelect
-      label={t`From address`}
-      title={t`Select the address to sweep the funds from.`}
-      options={addressOptions}
-      defaultAddress={signerAddress}
-      onAddressChange={(newAddress) => setSignerAddress(newAddress)}
-      id="from-address"
-      hideEmptyAvailableBalance
-    />
-  ) : null
-
-  return [signerAddress, SignerAddress] as const
+  const SignerAddress =
+    signerAddresses && signerAddresses.length === 0 ? (
+      <AddressSelect
+        label={t`From address`}
+        title={t`Select the address to sweep the funds from.`}
+        options={addressOptions}
+        defaultAddress={signerAddresses[0]}
+        onAddressChange={(newAddress) => setSignerAddresses([newAddress])}
+        id="from-address"
+        hideEmptyAvailableBalance
+      />
+    ) : null
+  return [signerAddresses || [], SignerAddress] as const
 }
 
 export function useFromAddress(initialAddress: Address) {
@@ -205,7 +202,11 @@ export function useBuildTxCommon(
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount attoAlphAmount={attoAlphAmount} setAttoAlphAmount={setAttoAlphAmount} availableBalance={fromAddress!.availableBalance} />
+    <TxAmount
+      attoAlphAmount={attoAlphAmount}
+      setAttoAlphAmount={setAttoAlphAmount}
+      availableBalance={fromAddress!.availableBalance}
+    />
   )
 
   const GasSettings = (
@@ -222,7 +223,16 @@ export function useBuildTxCommon(
     </ExpandableSectionStyled>
   )
 
-  return [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] as const
+  return [
+    fromAddress,
+    FromAddress,
+    attoAlphAmount,
+    AlphAmount,
+    gasAmount,
+    gasPrice,
+    GasSettings,
+    isCommonReady
+  ] as const
 }
 
 export const FromAddressSelect = ({

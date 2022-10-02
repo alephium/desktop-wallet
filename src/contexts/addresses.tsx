@@ -335,9 +335,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       const addressesMetadata = isPassphraseUsed
         ? []
         : loadStoredAddressesMetadataOfWallet({
-          mnemonic: wallet.mnemonic,
-          walletName: activeWalletName
-        })
+            mnemonic: wallet.mnemonic,
+            walletName: activeWalletName
+          })
 
       if (addressesMetadata.length === 0) {
         saveNewAddress(
