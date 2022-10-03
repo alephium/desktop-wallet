@@ -66,7 +66,7 @@ const AppHeader: FC = ({ children }) => {
         {isOffline && (
           <>
             <OfflineIcon data-tip={t`The wallet is offline.`}>
-              <WifiOff size={20} color={theme.font.secondary} />
+              <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />
             </OfflineIcon>
             <HeaderDivider />
           </>
