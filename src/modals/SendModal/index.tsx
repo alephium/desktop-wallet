@@ -226,6 +226,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   return (
     <>
       <CenteredModal
+        key={step}
         title={title}
         onClose={onClose}
         isLoading={isLoading}
