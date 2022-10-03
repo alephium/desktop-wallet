@@ -65,10 +65,6 @@ const WalletLayout: FC = ({ children }) => {
     value: walletName
   }))
 
-  const refreshData = () => {
-    refreshAddressesData()
-  }
-
   const handleWalletNameChange = (option: WalletNameSelectOptions | undefined) => {
     if (option) {
       setSwitchToWalletName(option.value)
@@ -104,7 +100,7 @@ const WalletLayout: FC = ({ children }) => {
           <RefreshButton
             transparent
             squared
-            onClick={refreshData}
+            onClick={refreshAddressesData}
             disabled={isLoadingData}
             aria-label={t`Refresh`}
             data-tip={t`Refresh data`}

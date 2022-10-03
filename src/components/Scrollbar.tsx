@@ -136,7 +136,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
   }
 
   const contentProps = createScrollbarPiece(
-    { display: 'block' },
+    { display: 'block', height: '100%' },
     { position: 'unset' as const, height: '100%' },
     isDynamic
   )

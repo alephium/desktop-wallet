@@ -16,23 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta, formatAmountForDisplay } from '@alephium/sdk'
-import { AssetOutput, Output, Transaction } from '@alephium/sdk/api/explorer'
-import { colord } from 'colord'
+import { formatAmountForDisplay } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
-import { AddressHash, PendingTx, useAddressesContext } from '../contexts/addresses'
-import {
-  getDirection,
-  hasOnlyOutputsWith,
-  isExplorerTransaction,
-  isPendingTx,
-  TransactionDirection,
-  TransactionInfoType
-} from '../utils/transactions'
+import { AddressHash, useAddressesContext } from '../contexts/addresses'
+import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { useTransactionUI } from '../hooks/useTransactionUI'
+import { isConsolidationTx, isPendingTx, TransactionVariant } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
@@ -41,93 +35,74 @@ import IOList from './IOList'
 import Lock from './Lock'
 import TimeSince from './TimeSince'
 import Token from './Token'
-import TransactionIcon from './TransactionIcon'
 
 const token = 'alph'
 
 interface TransactionalInfoProps {
-  transaction: Transaction | PendingTx
+  transaction: TransactionVariant
   addressHash?: AddressHash
-  hideLeftAddress?: boolean
+  isDisplayedInAddressDetailsPage?: boolean
   className?: string
 }
 
-const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAddress }: TransactionalInfoProps) => {
+const TransactionalInfo = ({
+  transaction: tx,
+  addressHash: addressHashProp,
+  className,
+  isDisplayedInAddressDetailsPage
+}: TransactionalInfoProps) => {
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
-  const _addressHash = addressHash ?? addressHashParam
+  const addressHash = addressHashProp ?? addressHashParam
+  const { getAddress } = useAddressesContext()
+  const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash)
+  const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
-  const { addresses, getAddress } = useAddressesContext()
   const { t } = useTranslation('App')
-  const { label, amountTextColor } = useTransactionalInfoSettings()
 
-  const address = getAddress(_addressHash)
+  const address = getAddress(addressHash)
 
   if (!address) return null
 
-  let amount: bigint | undefined = BigInt(0)
-  let timestamp = 0
-  let direction: TransactionDirection
-  let infoType: TransactionInfoType
-  let outputs: Output[] = []
   let pendingToAddressComponent
-  let lockTime: Date | undefined
 
-  if (!_addressHash) return null
-
-  if (isExplorerTransaction(tx)) {
-    amount = calAmountDelta(tx, _addressHash)
-    direction = getDirection(tx, _addressHash)
-    infoType =
-      !hideLeftAddress && direction === 'out' && hasOnlyOutputsWith(tx.outputs ?? [], addresses) ? 'move' : direction
-    amount = amount && (direction === 'out' ? amount * BigInt(-1) : amount)
-    timestamp = tx.timestamp
-    outputs = tx.outputs || []
-    lockTime = outputs.reduce(
-      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
-      new Date(0)
-    )
-    lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
-  } else if (isPendingTx(tx)) {
-    direction = 'out'
-    infoType = 'pending'
-    amount = tx.amount
-    timestamp = tx.timestamp
-
+  if (isPendingTx(tx)) {
     const pendingToAddress = getAddress(tx.toAddress)
+
     pendingToAddressComponent = pendingToAddress ? (
       <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
     ) : (
       <AddressEllipsed addressHash={tx.toAddress} />
     )
-    outputs = [{ hint: 0, key: '', type: '', attoAlphAmount: '', address: tx.toAddress }]
-    lockTime = tx.lockTime
-  } else {
-    throw new Error('Could not determine transaction type, all transactions should have a type')
   }
+
+  const amountSign =
+    isDisplayedInAddressDetailsPage && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
 
   return (
     <div className={className}>
       <CellTime>
         <CellArrow>
-          <TransactionIcon type={infoType} />
+          <TransactionIcon color={iconBgColor} aria-label={label}>
+            <Icon size={16} strokeWidth={3} color={iconColor} />
+          </TransactionIcon>
         </CellArrow>
         <TokenTimeInner>
-          {label[infoType]}
+          {label}
           <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
-          <TimeSince timestamp={timestamp} faded />
+          <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>
       <CellToken>
         <TokenStyled type={token} />
       </CellToken>
-      {!hideLeftAddress && (
+      {!isDisplayedInAddressDetailsPage && (
         <CellAddress alignRight>
           <HiddenLabel text={t`from`} />
           {direction === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
-                currentAddress={_addressHash || ''}
+                currentAddress={addressHash}
                 isOut={false}
                 outputs={outputs}
                 inputs={(tx as Transaction).inputs}
@@ -139,7 +114,7 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       )}
       <CellDirection>
         <HiddenLabel text={t`to`} />
-        {!hideLeftAddress ? (
+        {!isDisplayedInAddressDetailsPage ? (
           <ArrowRightIcon size={16} strokeWidth={3} />
         ) : (
           <DirectionText>{direction === 'out' ? t`to` : t`from`}</DirectionText>
@@ -147,13 +122,13 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
       </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {direction === 'in' && !hideLeftAddress && (
+          {direction === 'in' && !isDisplayedInAddressDetailsPage && (
             <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
           )}
-          {((direction === 'in' && hideLeftAddress) || direction === 'out') &&
+          {((direction === 'in' && isDisplayedInAddressDetailsPage) || direction === 'out') &&
             (pendingToAddressComponent || (
               <IOList
-                currentAddress={_addressHash || ''}
+                currentAddress={addressHash}
                 isOut={direction === 'out'}
                 outputs={outputs}
                 inputs={(tx as Transaction).inputs}
@@ -163,52 +138,19 @@ const TransactionalInfo = ({ transaction: tx, addressHash, className, hideLeftAd
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true" color={amountTextColor[infoType]}>
-        {!!amount && (
+      <CellAmount aria-hidden="true" color={amountTextColor}>
+        {amount !== undefined && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
-              {infoType === 'out' && '- '}
-              {infoType === 'in' && '+ '}
-              <Amount value={amount} fadeDecimals color={amountTextColor[infoType]} />
+              {amountSign}
+              <Amount value={amount} fadeDecimals color={amountTextColor} />
             </div>
           </>
         )}
       </CellAmount>
     </div>
   )
-}
-
-export const useTransactionalInfoSettings = () => {
-  const theme = useTheme()
-  const { t } = useTranslation('App')
-
-  return {
-    label: {
-      in: t`Received`,
-      out: t`Sent`,
-      move: t`Moved`,
-      pending: t`Pending`
-    },
-    amountTextColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.primary,
-      pending: theme.font.primary
-    },
-    iconColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.secondary,
-      pending: theme.font.secondary
-    },
-    iconBgColor: {
-      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
-      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
-    }
-  }
 }
 
 export default styled(TransactionalInfo)`
@@ -297,4 +239,14 @@ const LockStyled = styled(Lock)`
 const CellToken = styled.div`
   flex-grow: 1;
   margin-right: 28px;
+`
+
+const TransactionIcon = styled.span<{ color?: string }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: ${({ color, theme }) => color || theme.font.primary};
 `

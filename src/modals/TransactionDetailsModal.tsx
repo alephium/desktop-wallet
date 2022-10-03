@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes, calAmountDelta } from '@alephium/sdk'
-import { AssetOutput, Transaction } from '@alephium/sdk/dist/api/api-explorer'
+import { addApostrophes } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -33,6 +33,8 @@ import Tooltip from '../components/Tooltip'
 import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
+import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { useTransactionUI } from '../hooks/useTransactionUI'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
@@ -57,39 +59,31 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   } = useGlobalContext()
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
+  const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
-  let amount = calAmountDelta(transaction, address.hash)
-  const isOutgoingTx = amount < 0
-  amount = isOutgoingTx ? amount * -1n : amount
+  const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
 
-  const outputs = transaction.outputs || []
-  let lockTime: Date | undefined = outputs.reduce(
-    (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
-    new Date(0)
-  )
-  lockTime = lockTime.toISOString() == new Date(0).toISOString() ? undefined : lockTime
-  const lockTimeInPast = lockTime && lockTime < new Date()
-
-  const handleShowTxInExplorer = () => {
-    openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
-  }
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
-        <AmountWrapper tabIndex={0} color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span>
-          <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
+        <AmountWrapper tabIndex={0} color={amountTextColor}>
+          {amountSign}
+          <Amount value={amount} fadeDecimals color={amountTextColor} />
         </AmountWrapper>
         <HeaderInfo>
-          <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
-          <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
+          <Direction>
+            <Icon size={14} />
+            {label}
+          </Direction>
+          <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
           <AddressBadge address={address} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
       <Details role="table">
         <DetailsRow label={t`From`}>
-          {isOutgoingTx ? (
+          {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
                 <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
@@ -98,7 +92,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={false}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
@@ -107,7 +101,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           )}
         </DetailsRow>
         <DetailsRow label={t`To`}>
-          {!isOutgoingTx ? (
+          {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
                 <AddressBadge address={address} showHashWhenNoLabel withBorders />
@@ -116,7 +110,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={direction === 'out'}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
@@ -133,7 +127,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <span tabIndex={0}>{formatDateForDisplay(transaction.timestamp)}</span>
         </DetailsRow>
         {lockTime && (
-          <DetailsRow label={lockTimeInPast ? t`Unlocked at` : t`Unlocks at`}>
+          <DetailsRow label={lockTime < new Date() ? t`Unlocked at` : t`Unlocks at`}>
             <span tabIndex={0}>{formatDateForDisplay(lockTime)}</span>
           </DetailsRow>
         )}
@@ -168,7 +162,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t`Outputs`}>
             <AddressList>
               {transaction.outputs?.map((output) => (
-                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address)}>
+                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address ?? '')}>
                   <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
                 </ActionLinkStyled>
               ))}
@@ -207,6 +201,9 @@ DetailsRow = styled(DetailsRow)`
 
 const Direction = styled.span`
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `
 
 const AmountWrapper = styled.div<{ color: string }>`

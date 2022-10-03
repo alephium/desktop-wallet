@@ -124,7 +124,8 @@ export async function createClient(settings: Settings['network']) {
           amount,
           type,
           network,
-          lockTime
+          lockTime,
+          status: 'pending'
         })
       }
 

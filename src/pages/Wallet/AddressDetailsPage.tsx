@@ -151,7 +151,7 @@ const AddressDetailsPage = () => {
           .reverse()
           .map((transaction) => (
             <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
-              <TransactionalInfo hideLeftAddress transaction={transaction} />
+              <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
             </TableRow>
           ))}
         {address.transactions.confirmed.map((transaction) => (
@@ -162,7 +162,7 @@ const AddressDetailsPage = () => {
             onClick={() => onTransactionClick(transaction)}
             onKeyPress={() => onTransactionClick(transaction)}
           >
-            <TransactionalInfo hideLeftAddress transaction={transaction} />
+            <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
           </TableRow>
         ))}
         {address.transactions.confirmed.length !== address.details.txNumber && (

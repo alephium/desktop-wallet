@@ -17,18 +17,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
-import { Input, Output, Transaction } from '@alephium/sdk/api/explorer'
+import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { uniq } from 'lodash'
 
 import { Address, AddressHash, PendingTx } from '../contexts/addresses'
+import { NetworkName } from './settings'
 
-type HasTimestamp = { timestamp: number }
-type TransactionVariant = Transaction | PendingTx
-type IsTransactionVariant<T extends Transaction | PendingTx> = T extends Transaction
+export type TransactionVariant = Transaction | PendingTx
+type IsTransactionVariant<T extends TransactionVariant> = T extends Transaction
   ? Transaction
   : T extends PendingTx
   ? PendingTx
   : never
-export type BelongingToAddress<T extends Transaction | PendingTx> = { data: IsTransactionVariant<T>; address: Address }
+export type BelongingToAddress<T extends TransactionVariant> = { data: IsTransactionVariant<T>; address: Address }
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -52,27 +53,9 @@ export const getTransactionsForAddresses = (
     .flat()
     .sort((a, b) => sortTransactions(a.data, b.data))
 
-export function isExplorerTransaction(tx: TransactionVariant): tx is Transaction {
-  const _tx = tx as Transaction
-  return (
-    (_tx.hash !== undefined &&
-      _tx.blockHash !== undefined &&
-      _tx.timestamp !== undefined &&
-      _tx.gasAmount !== undefined &&
-      _tx.gasPrice !== undefined) === true
-  )
-}
-export function isPendingTx(tx: TransactionVariant): tx is PendingTx {
-  const _tx = tx as PendingTx
-  return (
-    (_tx.txId !== undefined &&
-      _tx.fromAddress !== undefined &&
-      _tx.toAddress !== undefined &&
-      _tx.timestamp !== undefined &&
-      _tx.type !== undefined &&
-      _tx.network !== undefined) === true
-  )
-}
+export const isPendingTx = (tx: TransactionVariant): tx is PendingTx => (tx as PendingTx).status === 'pending'
+
+type HasTimestamp = { timestamp: number }
 
 export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
   const delta = b.timestamp - a.timestamp
@@ -91,8 +74,56 @@ export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolea
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
-export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection => {
-  const amount = calAmountDelta(tx, address)
-  const amountIsBigInt = typeof amount === 'bigint'
-  return amount && amountIsBigInt && amount < 0 ? 'out' : 'in'
+export const getDirection = (tx: Transaction, address: AddressHash): TransactionDirection =>
+  calAmountDelta(tx, address) < 0 ? 'out' : 'in'
+
+export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, address: AddressHash): bigint => {
+  if (!tx.inputs || !tx.outputs) throw 'Missing transaction details'
+
+  const totalOutputAmount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+
+  if (isConsolidationTx(tx)) return totalOutputAmount
+
+  const totalOutputAmountOfAddress = tx.outputs.reduce(
+    (acc, output) => (output.address === address ? acc + BigInt(output.attoAlphAmount) : acc),
+    BigInt(0)
+  )
+
+  return totalOutputAmount - totalOutputAmountOfAddress
+}
+
+export const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boolean => {
+  const inputAddresses = tx.inputs ? uniq(tx.inputs.map((input) => input.address)) : []
+  const outputAddresses = tx.outputs ? uniq(tx.outputs.map((output) => output.address)) : []
+
+  return inputAddresses.length === 1 && outputAddresses.length === 1 && inputAddresses[0] === outputAddresses[0]
+}
+
+// It can currently only take care of sending transactions.
+// See: https://github.com/alephium/explorer-backend/issues/360
+export const convertUnconfirmedTxToPendingTx = (
+  tx: UnconfirmedTransaction,
+  fromAddress: AddressHash,
+  network: NetworkName
+): PendingTx => {
+  if (!tx.outputs) throw 'Missing transaction details'
+
+  const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress)
+  const toAddress = tx.outputs[0].address
+
+  if (!fromAddress) throw new Error('fromAddress is not defined')
+  if (!toAddress) throw new Error('toAddress is not defined')
+
+  return {
+    txId: tx.hash,
+    fromAddress,
+    toAddress,
+    // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
+    timestamp: tx.lastSeen,
+    type: 'transfer',
+    // SUPER important that this is the same as the current network. Lots of debug time used tracking this down.
+    network,
+    amount,
+    status: 'pending'
+  }
 }
