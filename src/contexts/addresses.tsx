@@ -365,8 +365,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         )
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
+      fetchPendingTxs([newAddress])
     },
-    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData]
+    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
   )
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
