@@ -18,10 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calAmountDelta } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
-import { colord } from 'colord'
-import { ArrowDown, ArrowLeftRight, ArrowUp, CircleEllipsis } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { useTheme } from 'styled-components'
 
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import {
@@ -35,8 +31,6 @@ import {
 
 export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash) => {
   const { addresses } = useAddressesContext()
-  const theme = useTheme()
-  const { t } = useTranslation('App')
 
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
@@ -74,42 +68,6 @@ export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressH
     direction,
     infoType,
     outputs,
-    lockTime,
-    label: {
-      in: t`Received`,
-      out: t`Sent`,
-      move: t`Moved`,
-      pending: t`Pending`
-    }[infoType],
-    amountTextColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.primary,
-      pending: theme.font.primary
-    }[infoType],
-    amountSign: {
-      in: '+ ',
-      out: '- ',
-      move: '',
-      pending: ''
-    }[infoType],
-    Icon: {
-      in: ArrowDown,
-      out: ArrowUp,
-      move: ArrowLeftRight,
-      pending: CircleEllipsis
-    }[infoType],
-    iconColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.secondary,
-      pending: theme.font.secondary
-    }[infoType],
-    iconBgColor: {
-      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
-      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
-    }[infoType]
+    lockTime
   }
 }

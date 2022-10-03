@@ -34,6 +34,7 @@ import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { useTransactionUI } from '../hooks/useTransactionUI'
 import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
@@ -58,10 +59,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   } = useGlobalContext()
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
-  const { amount, direction, lockTime, amountTextColor, amountSign, label, Icon } = useTransactionInfo(
-    transaction,
-    address.hash
-  )
+  const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
   const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
 

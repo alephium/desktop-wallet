@@ -25,6 +25,7 @@ import styled, { css } from 'styled-components'
 
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { useTransactionUI } from '../hooks/useTransactionUI'
 import { isConsolidationTx, isPendingTx, TransactionVariant } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
@@ -53,19 +54,9 @@ const TransactionalInfo = ({
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
   const { getAddress } = useAddressesContext()
-  const {
-    amount,
-    direction,
-    outputs,
-    lockTime,
-    label,
-    amountTextColor,
-    amountSign: amountSignDefault,
-    Icon,
-    iconColor,
-    iconBgColor,
-    infoType
-  } = useTransactionInfo(tx, addressHash)
+  const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash)
+  const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+
   const { t } = useTranslation('App')
 
   const address = getAddress(addressHash)
@@ -85,9 +76,7 @@ const TransactionalInfo = ({
   }
 
   const amountSign =
-    isDisplayedInAddressDetailsPage && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx)
-      ? '- '
-      : amountSignDefault
+    isDisplayedInAddressDetailsPage && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
 
   return (
     <div className={className}>
