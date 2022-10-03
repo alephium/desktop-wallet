@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
 import Amount from './Amount'
 
 interface WalletSummaryCardProps {
@@ -31,25 +32,27 @@ interface WalletSummaryCardProps {
 const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => {
   const { t } = useTranslation('App')
   const { addresses } = useAddressesContext()
+  const { networkStatus } = useGlobalContext()
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
+  const isOnline = networkStatus === 'online'
 
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading })}>
       <div>
-        <AmountStyled tabIndex={0} value={totalBalance} />
+        <AmountStyled tabIndex={0} value={isOnline ? totalBalance : undefined} />
         <BalanceLabel tabIndex={0} role="representation">{t`TOTAL BALANCE`}</BalanceLabel>
       </div>
       <Divider />
       <Balances>
         <Balance>
-          <Amount tabIndex={0} value={totalAvailableBalance} />
+          <Amount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
           <BalanceLabel tabIndex={0} role="representation">{t`AVAILABLE`}</BalanceLabel>
         </Balance>
         <Balance>
-          <Amount tabIndex={0} value={totalLockedBalance} />
+          <Amount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
           <BalanceLabel tabIndex={0} role="representation">{t`LOCKED`}</BalanceLabel>
         </Balance>
       </Balances>

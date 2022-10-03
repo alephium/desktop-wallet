@@ -65,9 +65,9 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         {isOffline && (
           <>
-            <div data-tip={t`The wallet is offline.`}>
-              <OfflineIcon size={20} />
-            </div>
+            <OfflineIcon data-tip={t`The wallet is offline.`}>
+              <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />
+            </OfflineIcon>
             <HeaderDivider />
           </>
         )}
@@ -140,7 +140,12 @@ const HeaderContainer = styled(motion.header)`
   }
 `
 
-const OfflineIcon = styled(WifiOff)`
-  color: ${({ theme }) => theme.font.secondary};
-  margin: 0 10px;
+const OfflineIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  background-color: ${({ theme }) => theme.global.alert};
 `
