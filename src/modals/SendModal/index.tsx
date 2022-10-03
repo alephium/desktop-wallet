@@ -72,6 +72,7 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState('')
   const [fees, setFees] = useState<bigint>()
+  const [isRequestingPassword, setIsRequestingPassword] = useState(false)
   const theme = useTheme()
 
   useEffect(() => {
@@ -79,14 +80,12 @@ const SendModal = ({ onClose }: SendModalProps) => {
       setTitle(t`Send`)
     } else if (step === 2) {
       setTitle(t`Info Check`)
-    } else if (step === 3) {
-      setTitle(t`Password Check`)
     }
   }, [setStep, setTitle, step, t])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
-    setStep(3)
+    setIsRequestingPassword(true)
   }
 
   const buildTransaction = async (transactionData: SendTransactionData) => {
@@ -225,39 +224,46 @@ const SendModal = ({ onClose }: SendModalProps) => {
   const modalHeader = theme.name === 'dark' ? <PaperPlaneDarkSVG width="315px" /> : <PaperPlaneLightSVG width="315px" />
 
   return (
-    <CenteredModal
-      title={title}
-      onClose={onClose}
-      isLoading={isLoading}
-      header={step !== 3 && modalHeader}
-      narrow={step === 3}
-    >
-      {step === 1 && <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />}
-      {step === 2 && transactionData && fees && (
-        <SendModalCheckTransaction
-          data={transactionData}
-          fees={fees}
-          onSend={passwordRequirement ? confirmPassword : handleSend}
-          onCancel={() => setStep(1)}
-        />
-      )}
-      {step === 3 && passwordRequirement && (
-        <PasswordConfirmation
-          text={t`Enter your password to send the transaction.`}
-          buttonText={t`Send`}
-          onCorrectPasswordEntered={handleSend}
-        />
-      )}
-      <AnimatePresence>
-        {isConsolidateUTXOsModalVisible && (
-          <ConsolidateUTXOsModal
-            onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-            onConsolidateClick={passwordRequirement ? confirmPassword : handleSend}
-            fee={fees}
+    <>
+      <CenteredModal
+        key={step}
+        title={title}
+        onClose={onClose}
+        isLoading={isLoading}
+        header={step !== 3 && modalHeader}
+        narrow={step === 3}
+      >
+        {step === 1 && (
+          <SendModalTransactionForm data={transactionData} onSubmit={buildTransaction} onCancel={onClose} />
+        )}
+        {step === 2 && transactionData && fees && (
+          <SendModalCheckTransaction
+            data={transactionData}
+            fees={fees}
+            onSend={passwordRequirement ? confirmPassword : handleSend}
+            onCancel={() => setStep(1)}
           />
         )}
-      </AnimatePresence>
-    </CenteredModal>
+        <AnimatePresence>
+          {isConsolidateUTXOsModalVisible && (
+            <ConsolidateUTXOsModal
+              onClose={() => setIsConsolidateUTXOsModalVisible(false)}
+              onConsolidateClick={passwordRequirement ? confirmPassword : handleSend}
+              fee={fees}
+            />
+          )}
+        </AnimatePresence>
+      </CenteredModal>
+      {isRequestingPassword && passwordRequirement && (
+        <CenteredModal title={t`Password`} onClose={() => setIsRequestingPassword(false)} focusMode narrow>
+          <PasswordConfirmation
+            text={t`Enter your password to send the transaction.`}
+            buttonText={t`Send`}
+            onCorrectPasswordEntered={handleSend}
+          />
+        </CenteredModal>
+      )}
+    </>
   )
 }
 
