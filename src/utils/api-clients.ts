@@ -46,10 +46,13 @@ export async function createClient(settings: Settings['network']) {
       console.log('⬇️ Fetching address details: ', address.hash)
 
       const { data } = await explorerClient.getAddressDetails(address.hash)
-      address.details = data
 
-      if (data.balance) address.availableBalance = BigInt(data.balance)
-      if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      if (data) {
+        address.details = data
+
+        if (data.balance) address.availableBalance = BigInt(data.balance)
+        if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      }
 
       return data
     }

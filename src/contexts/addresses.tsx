@@ -241,7 +241,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const fetchPendingTxs = useCallback(
     async (addresses: Address[] = []) => {
-      if (!client) {
+      if (!client || networkStatus === 'offline') {
         displayDataFetchingError()
         return
       }
@@ -274,12 +274,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, displayDataFetchingError, currentNetwork, setSnackbarMessage, t]
+    [client, networkStatus, addressesOfCurrentNetwork, displayDataFetchingError, currentNetwork, setSnackbarMessage, t]
   )
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
-      if (!client) {
+      if (!client || networkStatus === 'offline') {
         displayDataFetchingError()
         updateAddressesState(addresses)
         return
@@ -332,11 +332,19 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, displayDataFetchingError, updateAddressesState, setSnackbarMessage, t]
+    [
+      client,
+      networkStatus,
+      addressesOfCurrentNetwork,
+      displayDataFetchingError,
+      updateAddressesState,
+      setSnackbarMessage,
+      t
+    ]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
-    if (!client) return
+    if (!client || networkStatus === 'offline') return
     setIsLoadingData(true)
     await client.fetchAddressConfirmedTransactionsNextPage(address)
     setIsLoadingData(false)
