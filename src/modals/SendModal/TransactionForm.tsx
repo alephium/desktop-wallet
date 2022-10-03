@@ -274,6 +274,6 @@ const ToggleSectionStyled = styled(ToggleSection)`
   }
 
   & ${InputContainer}:last-of-type {
-    margin-bottom: 0;
+    margin-bottom: 16px;
   }
 `
