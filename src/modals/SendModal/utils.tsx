@@ -99,7 +99,7 @@ export function useSignerAddress(group: ChainGroup) {
   const { addresses, mainAddress } = useAddressesContext()
   const [signerAddresses, setSignerAddresses] = useState<Address[]>()
 
-  const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
+  const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
   useEffect(() => {
     setSignerAddresses(addressOptions)
   }, [group, addressOptions, mainAddress])

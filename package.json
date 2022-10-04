@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@alephium/sdk": "0.0.13",
-    "@h0ngcha0/walletconnect-provider": "0.2.0-rc.6",
+    "@h0ngcha0/walletconnect-provider": "0.2.0-rc.9",
     "@json-rpc-tools/utils": "^1.7.6",
     "@walletconnect/sign-client": "2.0.0-rc.3",
     "@walletconnect/types": "2.0.0-rc.3",

@@ -53,7 +53,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
   const [requiredChainInfo, setRequiredChainInfo] = useState<ChainInfo[]>([])
 
-  const [fromAddresses, FromAddress] = useSignerAddress(undefined)
+  const [fromAddresses, FromAddress] = useSignerAddress(-1)
   const [error, setError] = useState('')
 
   const onProposal = useCallback(
@@ -98,16 +98,14 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return addresses
         .filter((address) => {
           const group = addressToGroup(address.hash, 4)
-          return group === (chainGroup as number)
+          return chainGroup === -1 || group === (chainGroup as number)
         })
         .map((address) => `${chain}:${address.publicKey}`)
     })
   }
 
   function formatChains(chains: ChainInfo[]): string {
-    return chains
-      .flatMap((chain) => (chain.chainGroup !== undefined ? [formatChain(chain.networkId, chain.chainGroup)] : []))
-      .join('; ')
+    return chains.map((chain) => formatChain(chain.networkId, chain.chainGroup)).join('; ')
   }
 
   function areAccountsCompatible(accounts: string[], requiredChains: string[]): boolean {
