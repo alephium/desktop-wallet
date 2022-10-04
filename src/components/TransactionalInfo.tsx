@@ -174,7 +174,7 @@ const CellTime = styled.div`
 `
 
 const TokenTimeInner = styled.div`
-  width: 9em;
+  width: 11em;
   color: ${({ theme }) => theme.font.secondary};
 `
 

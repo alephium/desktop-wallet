@@ -54,4 +54,4 @@ export const stringToDoubleSHA256HexString = (data: string): string => {
   return hash.digest('hex')
 }
 
-export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD [at] HH:mm')
+export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')

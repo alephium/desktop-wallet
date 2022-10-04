@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calAmountDelta, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { AssetOutput } from '@alephium/sdk/api/alephium'
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { uniq } from 'lodash'
 
@@ -82,7 +83,7 @@ export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, add
 
   const totalOutputAmount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
 
-  if (isConsolidationTx(tx)) return totalOutputAmount
+  if (isConsolidationTx(tx)) return removeConsolidationChangeAmount(totalOutputAmount, tx.outputs)
 
   const totalOutputAmountOfAddress = tx.outputs.reduce(
     (acc, output) => (output.address === address ? acc + BigInt(output.attoAlphAmount) : acc),
@@ -98,6 +99,13 @@ export const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boo
 
   return inputAddresses.length === 1 && outputAddresses.length === 1 && inputAddresses[0] === outputAddresses[0]
 }
+
+export const removeConsolidationChangeAmount = (totalOutputAmount: bigint, outputs: AssetOutput[] | Output[]) =>
+  outputs.length > 1
+    ? // If there are multiple outputs, the last one must be the change amount (this is a heuristic and not guaranteed)
+      totalOutputAmount - BigInt(outputs[outputs.length - 1].attoAlphAmount)
+    : // otherwise, it's a sweep transaction that consolidates all funds
+      totalOutputAmount
 
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
