@@ -24,6 +24,7 @@ import {
   hasOnlyOutputsWith,
   isConsolidationTx,
   isPendingTx,
+  removeConsolidationChangeAmount,
   TransactionDirection,
   TransactionInfoType,
   TransactionVariant
@@ -47,7 +48,8 @@ export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressH
     outputs = tx.outputs ?? outputs
 
     if (isConsolidationTx(tx) && tx.outputs) {
-      amount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+      const totalOutputamount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
+      amount = removeConsolidationChangeAmount(totalOutputamount, tx.outputs)
       direction = 'out'
       infoType = 'move'
     } else {
