@@ -102,7 +102,7 @@ export const isConsolidationTx = (tx: Transaction | UnconfirmedTransaction): boo
 
 export const removeConsolidationChangeAmount = (totalOutputAmount: bigint, outputs: AssetOutput[] | Output[]) =>
   outputs.length > 1
-    ? // If there are multiple outputs, the last one must be the change amount
+    ? // If there are multiple outputs, the last one must be the change amount (this is a heuristic and not guaranteed)
       totalOutputAmount - BigInt(outputs[outputs.length - 1].attoAlphAmount)
     : // otherwise, it's a sweep transaction that consolidates all funds
       totalOutputAmount
