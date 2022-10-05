@@ -16,43 +16,111 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { ComponentPropsWithoutRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
+import { Address } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
+import dotSvg from '../images/dot.svg'
+import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
+import ClipboardButton from './Buttons/ClipboardButton'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  addressName: string
-  opaqueBg?: boolean
+  address: Address
+  truncate?: boolean
+  showHashWhenNoLabel?: boolean
+  withBorders?: boolean
+  hideStar?: boolean
 }
 
-const AddressBadge = ({ addressName, className, ...props }: AddressBadgeProps) => (
-  <Badge className={className} rounded {...props}>
-    {addressName}
-  </Badge>
-)
+const AddressBadge = ({
+  address,
+  showHashWhenNoLabel,
+  withBorders,
+  hideStar,
+  className,
+  ...props
+}: AddressBadgeProps) => {
+  const { t } = useTranslation('App')
+  const { isPassphraseUsed } = useGlobalContext()
+
+  if (!address) return null
+
+  return showHashWhenNoLabel && !address.settings.label ? (
+    <Hash className={className}>
+      {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
+      <AddressEllipsed addressHash={address.hash} />
+    </Hash>
+  ) : (
+    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
+      <RoundBorders className={className} withBorders={withBorders}>
+        {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
+        <Label {...props}>{address.getName()}</Label>
+        {!!address.settings.label && <DotIcon color={address.settings.color} />}
+      </RoundBorders>
+    </ClipboardButton>
+  )
+}
 
 export default styled(AddressBadge)`
-  ${({ color, opaqueBg, theme }) => {
-    const usedColor = color || theme.font.secondary
-    const isBright = tinycolor(usedColor).getBrightness() > 160
+  display: flex;
+  align-items: center;
+  gap: 3px;
 
-    return css`
-      color: ${opaqueBg
-        ? isBright
-          ? theme.font.primary
-          : theme.font.contrastPrimary
-        : isBright
-        ? tinycolor(usedColor).darken(5).toString()
-        : usedColor};
-      background-color: ${({ theme }) =>
-        opaqueBg
-          ? tinycolor(usedColor).setAlpha(0.8).toString()
-          : theme.name === 'dark'
-          ? tinycolor(usedColor).setAlpha(0.08).toString()
-          : tinycolor(usedColor).setAlpha(0.1).toString()};
-      padding: 6px 10px;
-    `
-  }}
+  ${({ truncate }) =>
+    truncate &&
+    css`
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `}
+`
+
+const Label = styled.span<AddressBadgeProps>`
+  margin-right: 2px;
+
+  ${({ truncate }) =>
+    truncate &&
+    css`
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `}
+`
+
+export const dotStyling = {
+  width: '1rem',
+  marginRight: '0.2rem'
+}
+
+const DotIcon = styled.div<{ color?: string }>`
+  display: inline-block;
+  width: 7px;
+  height: 8px;
+  -webkit-mask: url(${dotSvg}) no-repeat 100% 100%;
+  mask: url(${dotSvg}) no-repeat 100% 100%;
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  background-color: ${({ color, theme }) => color || theme.font.primary};
+  flex-shrink: 0;
+`
+
+const Hash = styled.div`
+  width: 100%;
+`
+
+const Star = styled.span`
+  opacity: 0.6;
+`
+
+const RoundBorders = styled.div<{ withBorders?: boolean }>`
+  ${({ withBorders }) =>
+    withBorders &&
+    css`
+      border: 1px solid ${({ theme }) => colord(theme.border.primary).alpha(0.8).toRgbString()};
+      border-radius: 25px;
+      padding: 5px 10px;
+    `}
 `

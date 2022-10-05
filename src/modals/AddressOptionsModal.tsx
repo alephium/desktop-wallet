@@ -41,7 +41,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
-    color: address?.settings.color ?? getRandomLabelColor()
+    color: address?.settings.color || getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
   const { wallet, isPassphraseUsed } = useGlobalContext()
@@ -65,11 +65,10 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     onClose()
   }
 
-  let mainAddressMessage = t`Default address for sending transactions.`
-  mainAddressMessage +=
-    ' ' + isMainAddressToggleEnabled
-      ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
-      : t`To remove this address from being the main address, you must set another one as main first.`
+  let mainAddressMessage = `${t`Default address for sending transactions.`} `
+  mainAddressMessage += isMainAddressToggleEnabled
+    ? t('Note that if activated, "{{ name }}" will not be the main address anymore.', { name: mainAddress.getName() })
+    : t`To remove this address from being the main address, you must set another one as main first.`
 
   return (
     <>
@@ -100,7 +99,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
               >
                 {t`Sweep`}
               </ModalFooterButton>
-              <AvailableAmount>
+              <AvailableAmount tabIndex={0}>
                 {t`Available`}: <Amount value={address.availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
             </SweepButton>

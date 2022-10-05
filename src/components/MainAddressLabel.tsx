@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 const MainAddressLabel = ({ className }: { className?: string }) => {
   const { t } = useTranslation('App')
-  return <div className={className}>★ {t`Main address`}</div>
+  return <div className={className}>★ {t`Default address`}</div>
 }
 
 export default styled(MainAddressLabel)`

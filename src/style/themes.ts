@@ -16,22 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { DefaultTheme } from 'styled-components'
-import tinycolor from 'tinycolor2'
+
+export type ThemeType = 'light' | 'dark'
 
 export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
     secondary: '#fbfbfb',
-    tertiary: '#ededed',
-    hover: 'rgba(61, 64, 74, 0.035)',
+    tertiary: 'rgba(0, 0, 0, 0.05)',
+    hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
-    accent: tinycolor('#000').setAlpha(0.08).toString()
+    accent: colord('#000').alpha(0.04).toRgbString()
   },
   font: {
     primary: '#000',
-    secondary: '#797979',
+    secondary: '#4b4b4b',
     tertiary: '#adadad',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
@@ -50,7 +52,7 @@ export const lightTheme: DefaultTheme = {
     accent: '#5981f3',
     complementary: '#FF5D51',
     alert: '#ed4a34',
-    valid: '#4ebf08',
+    valid: '#3ed282',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }
@@ -63,12 +65,12 @@ export const darkTheme: DefaultTheme = {
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: tinycolor('#000').setAlpha(0.2).toString()
+    accent: colord('#101012').alpha(0.32).toRgbString()
   },
   font: {
     primary: 'rgba(255, 255, 255, 0.95)',
-    secondary: 'rgba(255, 255, 255, 0.65)',
-    tertiary: 'rgba(255, 255, 255, 0.40)',
+    secondary: '#C0C0C0',
+    tertiary: '#767679',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
     highlight: '#ffb800'
@@ -86,7 +88,7 @@ export const darkTheme: DefaultTheme = {
     accent: '#6083FF',
     complementary: '#FF5D51',
     alert: '#ed4a34',
-    valid: '#4ebf08',
+    valid: '#3ed282',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }

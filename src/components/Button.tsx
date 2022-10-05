@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
@@ -112,24 +112,30 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   &:hover {
     background-color: ${({ theme, secondary, transparent, alert }) =>
       transparent
-        ? theme.bg.accent
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
+          : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
         : secondary
-        ? tinycolor(theme.bg.tertiary).lighten(30).toString()
+        ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
         : alert
-        ? tinycolor(theme.global.alert).darken(8).toString()
-        : tinycolor(theme.global.accent).darken(8).toString()};
+        ? colord(theme.global.alert).darken(0.08).toRgbString()
+        : colord(theme.global.accent).darken(0.08).toRgbString()};
 
     color: ${({ theme, transparent }) => transparent && theme.font.primary};
     cursor: pointer;
   }
 
   &:active {
-    background-color: ${({ theme, secondary, alert }) =>
-      secondary
-        ? tinycolor(theme.bg.tertiary).darken(40).toString()
+    background-color: ${({ theme, secondary, transparent, alert }) =>
+      transparent
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).alpha(0.4).toRgbString()
+          : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
+        : secondary
+        ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
         : alert
-        ? tinycolor(theme.global.alert).lighten(3).toString()
-        : tinycolor(theme.global.accent).lighten(3).toString()};
+        ? colord(theme.global.alert).lighten(0.03).toRgbString()
+        : colord(theme.global.accent).lighten(0.03).toRgbString()};
   }
 
   &:disabled {
@@ -139,6 +145,6 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => tinycolor(theme.global.accent).darken(20).toString()};
+    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
   }
 `

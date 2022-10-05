@@ -18,34 +18,40 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // TODO: Extract to common shared UI library
 
-import { Check, Clipboard } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Check, Copy } from 'lucide-react'
+import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../../contexts/global'
 
 interface ClipboardButtonProps {
   textToCopy: string
+  tipText?: string
+  children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
+const ClipboardButton = ({ tipText, textToCopy, children, className }: ClipboardButtonProps) => {
   const { t } = useTranslation('App')
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const handleClick = () => {
-    navigator.clipboard
-      .writeText(textToCopy)
-      .catch((e) => {
-        throw e
-      })
-      .then(() => {
-        setHasBeenCopied(true)
-      })
-  }
+  const handleInput = useCallback(
+    (e: SyntheticEvent) => {
+      e.stopPropagation()
+
+      navigator.clipboard
+        .writeText(textToCopy)
+        .catch((e) => {
+          throw e
+        })
+        .then(() => {
+          setHasBeenCopied(true)
+        })
+    },
+    [setHasBeenCopied, textToCopy]
+  )
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>
@@ -58,8 +64,6 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
       }, 3000)
     }
 
-    ReactTooltip.rebuild()
-
     return () => {
       if (interval) {
         clearInterval(interval)
@@ -67,28 +71,75 @@ const ClipboardButton = ({ textToCopy, className }: ClipboardButtonProps) => {
     }
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
-  if (!hasBeenCopied) {
-    return (
-      <div data-tip={t`Copy to clipboard`}>
-        <Clipboard className={`${className} clipboard`} size={15} onClick={handleClick} />
-      </div>
-    )
-  } else {
-    return (
-      <div data-tip={t`Copied`}>
-        <Check className={`${className} check`} size={15} />
-      </div>
-    )
-  }
+  const clipboard = !hasBeenCopied ? (
+    <ClipboardWrapper data-tip={tipText ?? t`Copy to clipboard`}>
+      <Copy
+        className={`${className} clipboard`}
+        size={15}
+        onClick={handleInput}
+        onKeyPress={handleInput}
+        role="button"
+        aria-label={t`Copy to clipboard`}
+        tabIndex={0}
+      />
+    </ClipboardWrapper>
+  ) : (
+    <ClipboardWrapper className={className} data-tip={t`Copied`}>
+      <Check className={`${className} check`} size={15} />
+    </ClipboardWrapper>
+  )
+
+  return children ? (
+    <div className={className}>
+      <CellChildren>{children}</CellChildren>
+      <CellClipboard>{clipboard}</CellClipboard>
+    </div>
+  ) : (
+    clipboard
+  )
 }
 
-export default styled(ClipboardButton)`
-  &.clipboard {
+const CellClipboard = styled.div`
+  opacity: 0;
+  z-index: 1;
+`
+
+const CellChildren = styled.div`
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
+  margin-right: -15px;
+  overflow: hidden;
+  width: 100%;
+`
+
+const ClipboardWrapper = styled.div`
+  & > .clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: auto;
+    }
   }
 
   &.check {
     color: ${({ theme }) => theme.font.primary};
+  }
+`
+
+export default styled(ClipboardButton)`
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  &:hover > ${CellClipboard} {
+    opacity: 1;
+  }
+
+  &:hover > ${CellChildren} {
+    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) calc(100% - 15px));
   }
 `

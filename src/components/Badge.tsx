@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { FC } from 'react'
 import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { HasTooltip } from './Tooltip'
 import Truncate from './Truncate'
@@ -51,10 +51,10 @@ export default styled(Badge)`
       padding: 5px 10px;
       color: ${usedColor};
       border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
-      background-color: ${tinycolor(usedColor).setAlpha(0.08).toString()};
+      background-color: ${colord(usedColor).alpha(0.08).toRgbString()};
       ${border &&
       css`
-        border: 1px solid ${tinycolor(usedColor).setAlpha(0.2).toString()};
+        border: 1px solid ${colord(usedColor).alpha(0.2).toRgbString()};
       `};
       ${truncate &&
       css`

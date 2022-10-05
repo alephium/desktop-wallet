@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,15 +26,12 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
-import { deleteStoredAddressMetadataOfWallet } from '../../utils/addresses'
 import SecretPhraseModal from '../SecretPhraseModal'
 import WalletRemovalModal from '../WalletRemovalModal'
 
-const Storage = getStorage()
-
 const WalletsSettingsSection = () => {
   const { t } = useTranslation('App')
-  const { activeWalletName, wallet, lockWallet } = useGlobalContext()
+  const { activeWalletName, wallet, walletNames, deleteWallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
 
@@ -44,13 +40,10 @@ const WalletsSettingsSection = () => {
   const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
 
   const handleRemoveWallet = (walletName: string) => {
-    Storage.remove(walletName)
-    deleteStoredAddressMetadataOfWallet(walletName)
+    deleteWallet(walletName)
 
     walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
   }
-
-  const walletNames = Storage.list()
 
   return (
     <>
@@ -63,11 +56,11 @@ const WalletsSettingsSection = () => {
           onWalletRemove={() => handleRemoveWallet(walletToRemove)}
         />
       )}
-      <Section align="flex-start">
-        <h2>
+      <Section align="flex-start" role="table">
+        <h2 tabIndex={0} role="label">
           {t`Wallet list`} ({walletNames.length})
         </h2>
-        <BoxContainer>
+        <BoxContainer role="rowgroup">
           {walletNames.map((n) => (
             <WalletItem
               key={n}
@@ -90,7 +83,7 @@ const WalletsSettingsSection = () => {
               {t`Lock current wallet`}
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
-              {t`Show your secret phrase`}
+              {t`Show your secret recovery phrase`}
             </Button>
             <Button alert onClick={() => openRemoveWalletModal(activeWalletName)}>
               {t`Remove current wallet`}
@@ -114,15 +107,23 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
 
   return (
     <WalletItemContainer
+      role="row"
       onMouseEnter={() => setIsShowingDeleteButton(true)}
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
-      <WalletName>
+      <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {walletName}
         {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
-        <WalletDeleteButton squared transparent onClick={() => onWalletDelete(walletName)}>
+        <WalletDeleteButton
+          aria-label={t`Delete`}
+          tabIndex={0}
+          squared
+          transparent
+          onClick={() => onWalletDelete(walletName)}
+          onBlur={() => setIsShowingDeleteButton(false)}
+        >
           <Trash size={15} />
         </WalletDeleteButton>
       )}

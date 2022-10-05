@@ -44,14 +44,14 @@ type DeprecatedNetworkSettings = Settings['network']
 
 export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['network']> = {
   mainnet: {
-    nodeHost: 'https://mainnet-wallet.alephium.org',
-    explorerApiHost: 'https://mainnet-backend.alephium.org',
-    explorerUrl: 'https://explorer.alephium.org'
+    nodeHost: 'https://wallet-v18.mainnet.alephium.org',
+    explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
+    explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
   },
   testnet: {
-    nodeHost: 'https://testnet-wallet.alephium.org',
-    explorerApiHost: 'https://testnet-backend.alephium.org',
-    explorerUrl: 'https://testnet.alephium.org'
+    nodeHost: 'https://wallet-v18.testnet.alephium.org',
+    explorerApiHost: 'https://backend-v18.testnet.alephium.org',
+    explorerUrl: 'https://explorer-v18.testnet.alephium.org'
   },
   localhost: {
     nodeHost: 'http://localhost:12973',
@@ -71,7 +71,7 @@ export const defaultSettings: Settings = {
   network: clone(networkEndpoints.mainnet)
 }
 
-export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as const
+export const networkNames = ['mainnet', 'testnet', 'localhost', 'custom'] as const
 
 export type NetworkName = typeof networkNames[number]
 

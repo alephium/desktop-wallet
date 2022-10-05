@@ -16,13 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import 'dayjs/locale/fr'
+
+import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactTooltip from 'react-tooltip'
 import styled, { ThemeProvider } from 'styled-components'
 
 import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
+import Tooltip from './components/Tooltip'
+import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
 import Router from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
@@ -31,7 +37,13 @@ import { darkTheme, lightTheme } from './style/themes'
 const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isLanguageChanging, setIsLanguageChanging] = useState(false)
-  const { settings, snackbarMessage, isClientLoading } = useGlobalContext()
+  const { networkStatus, settings, snackbarMessage, isClientLoading } = useGlobalContext()
+  const { mainAddress } = useAddressesContext()
+  const isOffline = networkStatus === 'offline'
+
+  useEffect(() => {
+    if (isOffline || mainAddress) ReactTooltip.rebuild()
+  }, [isOffline, mainAddress])
 
   const { i18n } = useTranslation()
 
@@ -39,6 +51,7 @@ const App = () => {
     const handleLanguageChange = async () => {
       setIsLanguageChanging(true)
       try {
+        dayjs.locale(settings.general.language.slice(0, 2))
         await i18n.changeLanguage(settings.general.language)
       } catch (e) {
         console.error(e)
@@ -58,12 +71,13 @@ const App = () => {
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Router />
       </AppContainer>
-      {(isClientLoading || isLanguageChanging) && (
+      {((isClientLoading && !isOffline) || isLanguageChanging) && (
         <ClientLoading>
           <Spinner size="60px" />
         </ClientLoading>
       )}
       <SnackbarManager message={snackbarMessage} />
+      <Tooltip />
     </ThemeProvider>
   )
 }

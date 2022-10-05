@@ -18,7 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 
-import { Address, AddressHash, TransactionType } from '../contexts/addresses'
+import { Address, AddressHash } from '../contexts/addresses'
+import { TransactionType } from '../utils/transactions'
 import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {
@@ -45,10 +46,13 @@ export async function createClient(settings: Settings['network']) {
       console.log('⬇️ Fetching address details: ', address.hash)
 
       const { data } = await explorerClient.getAddressDetails(address.hash)
-      address.details = data
 
-      if (data.balance) address.availableBalance = BigInt(data.balance)
-      if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      if (data) {
+        address.details = data
+
+        if (data.balance) address.availableBalance = BigInt(data.balance)
+        if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      }
 
       return data
     }
@@ -108,7 +112,8 @@ export async function createClient(settings: Settings['network']) {
       toAddressHash: AddressHash,
       type: TransactionType,
       network: NetworkName,
-      amount?: bigint
+      amount?: bigint,
+      lockTime?: Date
     ) => {
       const signature = cliqueClient.transactionSign(txId, fromAddress.privateKey)
       const response = await cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
@@ -121,7 +126,9 @@ export async function createClient(settings: Settings['network']) {
           timestamp: new Date().getTime(),
           amount,
           type,
-          network
+          network,
+          lockTime,
+          status: 'pending'
         })
       }
 

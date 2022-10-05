@@ -32,11 +32,10 @@ import { PartialDeep } from 'type-fest'
 import { TimeInMs } from '../types/numbers'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
+import { convertUnconfirmedTxToPendingTx, TransactionType } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
-
-type SimpleTx = {
+export type PendingTx = {
   txId: string
   fromAddress: string
   toAddress: string
@@ -44,6 +43,8 @@ type SimpleTx = {
   type: TransactionType
   network: NetworkName
   amount?: bigint
+  lockTime?: Date
+  status: 'pending'
 }
 
 export type AddressHash = string
@@ -60,7 +61,7 @@ export class Address {
   details: AddressInfo
   transactions: {
     confirmed: Transaction[]
-    pending: SimpleTx[]
+    pending: PendingTx[]
     loadedPage: number
   }
   availableBalance: bigint
@@ -92,11 +93,7 @@ export class Address {
     return this.settings.label || this.shortHash
   }
 
-  getLabelName(showStar = true) {
-    return `${this.settings.isMain && showStar ? '★ ' : ''}${this.getName()}`
-  }
-
-  addPendingTransaction(transaction: SimpleTx) {
+  addPendingTransaction(transaction: PendingTx) {
     console.log('🔵 Adding pending transaction sent from address: ', transaction.fromAddress)
 
     this.transactions.pending.push(transaction)
@@ -170,9 +167,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
   )
+
   const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
     (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
   )
@@ -230,14 +229,58 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [wallet, activeWalletName, isPassphraseUsed, setAddress]
   )
 
+  const displayDataFetchingError = useCallback(
+    () =>
+      setSnackbarMessage({
+        text: t`Could not fetch data because the wallet is offline`,
+        type: 'alert',
+        duration: 5000
+      }),
+    [setSnackbarMessage, t]
+  )
+
+  const fetchPendingTxs = useCallback(
+    async (addresses: Address[] = []) => {
+      if (!client || networkStatus === 'offline') {
+        displayDataFetchingError()
+        return
+      }
+      setIsLoadingData(true)
+
+      const addressesToCheck = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
+
+      for (const address of addressesToCheck) {
+        try {
+          console.log('🤷 Fetching unconfirmed txs for', address.hash)
+          const { data: txs } = await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash)
+
+          txs.forEach((tx) => {
+            if (tx.type === 'Unconfirmed' && !address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
+              const pendingTx = convertUnconfirmedTxToPendingTx(tx, address.hash, currentNetwork)
+
+              address.addPendingTransaction(pendingTx)
+            }
+          })
+        } catch (e) {
+          setSnackbarMessage({
+            text: getHumanReadableError(
+              e,
+              t('Error while fetching pending transactions for address {{ hash }}', { hash: address.hash })
+            ),
+            type: 'alert'
+          })
+        }
+      }
+
+      setIsLoadingData(false)
+    },
+    [client, networkStatus, addressesOfCurrentNetwork, displayDataFetchingError, currentNetwork, setSnackbarMessage, t]
+  )
+
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
-      if (!client) {
-        setSnackbarMessage({
-          text: t`Could not fetch data because the wallet is offline`,
-          type: 'alert',
-          duration: 5000
-        })
+      if (!client || networkStatus === 'offline') {
+        displayDataFetchingError()
         updateAddressesState(addresses)
         return
       }
@@ -289,11 +332,19 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       }
       setIsLoadingData(false)
     },
-    [client, addressesOfCurrentNetwork, setSnackbarMessage, updateAddressesState, t]
+    [
+      client,
+      networkStatus,
+      addressesOfCurrentNetwork,
+      displayDataFetchingError,
+      updateAddressesState,
+      setSnackbarMessage,
+      t
+    ]
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
-    if (!client) return
+    if (!client || networkStatus === 'offline') return
     setIsLoadingData(true)
     await client.fetchAddressConfirmedTransactionsNextPage(address)
     setIsLoadingData(false)
@@ -314,8 +365,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         )
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
+      fetchPendingTxs([newAddress])
     },
-    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData]
+    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
   )
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
@@ -366,7 +418,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           return new Address(address, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
-        fetchAndStoreAddressesData(addressesToFetchData)
+        await fetchAndStoreAddressesData(addressesToFetchData)
+        await fetchPendingTxs(addressesToFetchData)
       }
     }
 
@@ -425,6 +478,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     addressesWithPendingSentTxs
   ])
 
+  const refreshAddressesData = useCallback(async () => {
+    await fetchAndStoreAddressesData()
+    await fetchPendingTxs()
+  }, [fetchAndStoreAddressesData, fetchPendingTxs])
+
   return (
     <AddressesContext.Provider
       value={merge(
@@ -435,7 +493,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           setAddress,
           saveNewAddress,
           updateAddressSettings,
-          refreshAddressesData: fetchAndStoreAddressesData,
+          refreshAddressesData,
           fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0

@@ -28,10 +28,19 @@ interface AmountProps {
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
+  tabIndex?: number
   className?: string
 }
 
-const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color, nbOfDecimalsToShow }: AmountProps) => {
+const Amount = ({
+  value,
+  className,
+  fadeDecimals,
+  fullPrecision = false,
+  color,
+  nbOfDecimalsToShow,
+  tabIndex
+}: AmountProps) => {
   const {
     settings: {
       general: { discreetMode }
@@ -53,7 +62,7 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color, 
   }
 
   return (
-    <span className={className}>
+    <span className={className} tabIndex={tabIndex ?? -1}>
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (
@@ -74,8 +83,10 @@ const Amount = ({ value, className, fadeDecimals, fullPrecision = false, color, 
   )
 }
 
+export default styled(Amount)`
+  color: ${({ theme, color }) => color ?? theme.font.primary};
+`
+
 const Decimals = styled.span`
   opacity: 0.7;
 `
-
-export default Amount

@@ -16,26 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import dayjs from 'dayjs'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import ReactTooltip from 'react-tooltip'
 
 import ActionLink from '../../components/ActionLink'
-import AddressBadge from '../../components/AddressBadge'
-import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-
-const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction', width: '100px' },
-  { title: 'Timestamp', width: '100px' },
-  { title: 'Address', width: '100px' },
-  { title: 'Amount', align: 'end', width: '100px' }
-]
-
-const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
+import { Address, PendingTx, useAddressesContext } from '../../contexts/addresses'
+import {
+  BelongingToAddress,
+  getDirection,
+  getTransactionsForAddresses,
+  hasOnlyInputsWith
+} from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
@@ -46,87 +41,55 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   const { t } = useTranslation('App')
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
-  const { isPassphraseUsed } = useGlobalContext()
 
-  const allConfirmedTxs = addresses
-    .map((address) => address.transactions.confirmed.map((tx) => ({ ...tx, address })))
-    .flat()
-    .sort((a, b) => b.timestamp - a.timestamp)
-
-  const allPendingTxs = addresses
-    .map((address) => address.transactions.pending.map((tx) => ({ ...tx, address })))
-    .flat()
-    .sort((a, b) => b.timestamp - a.timestamp)
+  const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
+  const allPendingTxs = getTransactionsForAddresses('pending', addresses)
 
   const loadNextTransactionsPage = async () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
 
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [addresses])
+
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  const transactionsTableHeadersI18n = transactionsTableHeaders.map((el) => ({ ...el, title: t(el.title) }))
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [addresses])
 
   return (
-    <Table headers={transactionsTableHeadersI18n} isLoading={showSkeletonLoading} className={className}>
-      {allPendingTxs
-        .slice(0)
-        .reverse()
-        .map(({ txId, timestamp, address, amount, type }) => (
-          <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-            <TableCell>
-              <TransactionalInfo content={t`Pending`} type="pending" />
-            </TableCell>
-            <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-            <TableCell>
-              <AddressBadge color={address.settings.color} addressName={address.getLabelName(!isPassphraseUsed)} />
-            </TableCell>
-            <TableCell align="end">
-              {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
-            </TableCell>
-          </TableRow>
-        ))}
-      {allConfirmedTxs.map((transaction) => {
-        const amount = calAmountDelta(transaction, transaction.address.hash)
-        const amountIsBigInt = typeof amount === 'bigint'
-        const isOut = amountIsBigInt && amount < 0
-
+    <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
+      {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
+        <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={tx} addressHash={address.hash} />
+        </TableRow>
+      ))}
+      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
+        if (hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) && getDirection(tx, address.hash) == 'in')
+          return null
         return (
           <TableRow
-            key={`${transaction.hash}-${transaction.address.hash}`}
-            columnWidths={tableColumnWidths}
-            onClick={() => onTransactionClick(transaction)}
+            key={`${tx.hash}-${address.hash}`}
+            role="row"
+            tabIndex={0}
+            onClick={() => onTransactionClick({ ...tx, address })}
+            onKeyPress={() => onTransactionClick({ ...tx, address })}
           >
-            <TableCell>
-              <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
-            </TableCell>
-            <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-            <TableCell>
-              <AddressBadge
-                color={transaction.address.settings.color}
-                truncate
-                addressName={transaction.address.getLabelName(!isPassphraseUsed)}
-              />
-            </TableCell>
-            <TableCell align="end">
-              <TransactionalInfo
-                type={isOut ? 'out' : 'in'}
-                prefix={isOut ? '- ' : '+ '}
-                content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                amount
-              />
-            </TableCell>
+            <TransactionalInfo transaction={tx} addressHash={address.hash} />
           </TableRow>
         )
       })}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
-        <TableRow>
-          <TableCell align="center">
+        <TableRow role="row">
+          <TableCell align="center" role="gridcell">
             <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
           </TableCell>
         </TableRow>
       )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
-        <TableRow>
+        <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
       )}

@@ -44,7 +44,7 @@ const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemov
       <Section>
         <InfoBox
           importance="alert"
-          text={t`Please make sure to have your secret phrase saved and stored somewhere secure to restore your wallet in the future. Without the secret phrase, your wallet will be unrecoverable and permanently lost.`}
+          text={t`Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.`}
         />
         <Paragraph secondary centered>
           <b>{t`Not your keys, not your coins.`}</b>

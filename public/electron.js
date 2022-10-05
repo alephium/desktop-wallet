@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, Menu, shell } = require('electron')
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
@@ -104,17 +104,18 @@ const template = [
         ? []
         : isWindows
         ? [{ role: 'about' }, { type: 'separator' }]
-        : [{
-          label: 'About',
-          click: async () => {
-            dialog.showMessageBox(mainWindow, {
-              message: `Version ${app.getVersion()}`,
-              title: 'About',
-              type: 'info'
-            })
-          }
-        }]
-      ),
+        : [
+            {
+              label: 'About',
+              click: async () => {
+                dialog.showMessageBox(mainWindow, {
+                  message: `Version ${app.getVersion()}`,
+                  title: 'About',
+                  type: 'info'
+                })
+              }
+            }
+          ]),
       {
         label: 'Report an issue',
         click: async () => {
@@ -142,6 +143,7 @@ function createWindow() {
     minHeight: 700,
     titleBarStyle: isWindows ? 'default' : 'hidden',
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       spellcheck: true
     }
   })
@@ -188,6 +190,17 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
+    ipcMain.handle('setNativeTheme', setNativeTheme)
+
+    // nativeTheme must be reassigned like this because its properties are all computed, so
+    // they can't be serialized to be passed over channels.
+    ipcMain.handle('getNativeTheme', (e) =>
+      e.sender.send('getNativeTheme', {
+        shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+        themeSource: nativeTheme.themeSource
+      })
+    )
+
     createWindow()
   })
 
@@ -204,3 +217,5 @@ if (!gotTheLock) {
     if (mainWindow === null) createWindow()
   })
 }
+
+const setNativeTheme = (_, theme) => (nativeTheme.themeSource = theme)

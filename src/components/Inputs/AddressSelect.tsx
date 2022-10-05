@@ -26,12 +26,13 @@ import { Address } from '../../contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../../modals/CenteredModal'
 import { sortAddressList } from '../../utils/addresses'
 import AddressBadge from '../AddressBadge'
+import AddressEllipsed from '../AddressEllipsed'
 import Amount from '../Amount'
 import InfoBox from '../InfoBox'
+import InputArea from '../Inputs/InputArea'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import Truncate from '../Truncate'
 import { inputDefaultStyle, InputLabel, InputProps } from '.'
-import { MoreIcon, OptionItem, SelectContainer } from './Select'
+import { MoreIcon, SelectContainer } from './Select'
 
 interface AddressSelectProps {
   id: string
@@ -72,6 +73,8 @@ function AddressSelect({
     }
   }, [address, defaultAddress, onAddressChange])
 
+  if (!address) return null
+
   return (
     <>
       <AddressSelectContainer
@@ -79,7 +82,7 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onClick={() => !disabled && setIsAddressSelectModalOpen(true)}
+        onInput={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
@@ -90,12 +93,10 @@ function AddressSelect({
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInput type="button" className={className} disabled={disabled} id={id}>
-          {address?.settings.label && (
-            <BadgeStyled color={address?.settings.color} addressName={address?.getLabelName()} truncate />
-          )}
-          <Truncate>{address?.hash}</Truncate>
-        </ClickableInput>
+        <ClickableInputStyled type="button" className={className} disabled={disabled} id={id}>
+          <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+          {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
+        </ClickableInputStyled>
       </AddressSelectContainer>
       <AnimatePresence>
         {isAddressSelectModalOpen && (
@@ -147,12 +148,9 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {sortAddressList(displayedOptions).map((address) => (
-          <AddressOption key={address.hash} onClick={() => setSelectedAddress(address)}>
+          <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
             <Circle filled={selectedAddress?.hash === address.hash} />
-            {address?.settings.label && (
-              <AddressBadge color={address?.settings.color} addressName={address?.getLabelName()} />
-            )}
-            {address.shortHash}
+            <AddressBadgeStyled address={address} showHashWhenNoLabel />
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
           </AddressOption>
         ))}
@@ -217,10 +215,22 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const AddressOption = styled(OptionItem)`
+const AddressOption = styled(InputArea)`
   display: flex;
   gap: 12px;
   align-items: center;
+
+  padding: var(--spacing-3);
+  background-color: ${({ theme }) => theme.bg.primary};
+  color: inherit;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.secondary};
+  }
 `
 
 const ClickableInput = styled.div<InputProps>`
@@ -230,11 +240,15 @@ const ClickableInput = styled.div<InputProps>`
   padding-right: 50px;
 `
 
-const BadgeStyled = styled(AddressBadge)`
-  margin-right: var(--spacing-2);
+const ClickableInputStyled = styled(ClickableInput)`
+  gap: var(--spacing-2);
 `
 
 const AmountStyled = styled(Amount)`
   flex: 1;
   text-align: right;
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: auto;
 `

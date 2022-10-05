@@ -18,9 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
-import AddressBadge from '../AddressBadge'
 import ColorPicker from './ColorPicker'
 import Input from './Input'
 
@@ -42,7 +40,6 @@ interface ColoredLabelInputProps {
 const ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }: ColoredLabelInputProps) => {
   const [title, setTitle] = useState(value.title)
   const [color, setColor] = useState(value.color)
-  const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
     onChange({ title, color })
@@ -50,7 +47,7 @@ const ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }:
 
   return (
     <div className={className}>
-      <InputStyled
+      <Input
         label={label}
         autoComplete="off"
         onChange={(e) => setTitle(e.target.value)}
@@ -58,10 +55,7 @@ const ColoredLabelInput = ({ label, onChange, value, className, id, maxLength }:
         id={id}
         color={color}
         maxLength={maxLength}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
       />
-      {title && <AddressBadgeStyled color={color} rounded addressName={title} seeThroughBg={isFocused} />}
       <ColorPicker onChange={setColor} value={color} />
     </div>
   )
@@ -73,19 +67,4 @@ export default styled(ColoredLabelInput)`
   width: 100%;
   align-items: center;
   position: relative;
-`
-
-const InputStyled = styled(Input)`
-  color: transparent;
-  caret-color: ${({ color, theme }) =>
-    theme.name === 'dark' ? color : tinycolor(color).isLight() ? theme.font.primary : theme.font.contrastPrimary};
-
-  &:not([value='']) {
-    padding-left: 20px;
-  }
-`
-
-const AddressBadgeStyled = styled(AddressBadge)`
-  position: absolute;
-  left: 12px;
 `
