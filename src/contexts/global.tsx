@@ -32,9 +32,7 @@ import { deleteStoredAddressMetadataOfWallet } from '../utils/addresses'
 import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
 import {
-  deprecatedSettingsExist,
   getNetworkName,
-  loadSettings,
   migrateDeprecatedSettings,
   NetworkName,
   Settings,
@@ -43,11 +41,7 @@ import {
   updateStoredSettings
 } from '../utils/settings'
 
-let localStorageSettings = loadSettings()
-
-if (deprecatedSettingsExist()) {
-  localStorageSettings = migrateDeprecatedSettings()
-}
+const localStorageSettings = migrateDeprecatedSettings()
 
 export interface GlobalContextProps {
   walletNames: string[]
