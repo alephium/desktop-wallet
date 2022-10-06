@@ -27,16 +27,28 @@ interface ToggleProps {
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
   label?: string
+  hasDarkerBgOnLightTheme?: boolean
   className?: string
 }
 
-const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors, label }: ToggleProps) => {
+const Toggle = ({
+  toggled,
+  onToggle,
+  className,
+  disabled,
+  ToggleIcons,
+  handleColors,
+  label,
+  hasDarkerBgOnLightTheme
+}: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
 
   const toggleBackgroundVariants = {
-    off: { backgroundColor: theme.bg.tertiary },
+    off: {
+      backgroundColor: theme.name === 'light' && hasDarkerBgOnLightTheme ? 'rgba(0, 0, 0, 0.15)' : theme.bg.tertiary
+    },
     on: { backgroundColor: handleColors ? theme.bg.tertiary : theme.global.accent }
   }
 
