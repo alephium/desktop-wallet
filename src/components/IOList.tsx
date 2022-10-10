@@ -23,6 +23,7 @@ import styled from 'styled-components'
 
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
+import { GENESIS_TIMESTAMP } from '../utils/constants'
 import ActionLink from './ActionLink'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
@@ -43,7 +44,6 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
   const { getAddress } = useAddressesContext()
   const handleShowAddress = useAddressLinkHandler()
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
-  const genesisTimestamp = 1231006505000
 
   if (io && io.length > 0) {
     const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
@@ -92,7 +92,7 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
         })}
       </Addresses>
     )
-  } else if (timestamp === genesisTimestamp) {
+  } else if (timestamp === GENESIS_TIMESTAMP) {
     return <Badge truncate={truncate}>{t`Genesis TX`}</Badge>
   } else {
     return <Badge truncate={truncate}>{t`Mining Rewards`}</Badge>
