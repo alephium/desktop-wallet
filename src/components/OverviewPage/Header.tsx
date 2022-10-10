@@ -25,7 +25,6 @@ import styled from 'styled-components'
 
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Button from '../../components/Button'
-import GradientCanvas from '../../components/GradientCanvas'
 import Scrollbar from '../../components/Scrollbar'
 import WalletSummaryCard from '../../components/WalletSummaryCard'
 import { useAddressesContext } from '../../contexts/addresses'
@@ -75,7 +74,6 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
   return (
     <Header className={className}>
       <TopGradient />
-      <GradientCanvas />
       <Summaries>
         <WalletSummaryCardStyled isLoading={isLoadingData} />
         <Scrollbar noScrollY isDynamic elementRef={onElementRef} noScrollX={!areAddressSummariesExpanded}>
