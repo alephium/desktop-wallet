@@ -25,6 +25,7 @@ import ActionLink from '../../components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, PendingTx, useAddressesContext } from '../../contexts/addresses'
+import { GENESIS_TIMESTAMP } from '../../utils/constants'
 import {
   BelongingToAddress,
   getDirection,
@@ -67,7 +68,11 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         </TableRow>
       ))}
       {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
-        if (hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) && getDirection(tx, address.hash) == 'in')
+        if (
+          hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) &&
+          getDirection(tx, address.hash) == 'in' &&
+          tx.timestamp !== GENESIS_TIMESTAMP
+        )
           return null
         return (
           <TableRow

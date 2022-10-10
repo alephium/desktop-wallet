@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Language, ThemeType } from '../types/settings'
 import {
   defaultSettings,
-  deprecatedSettingsExist,
   getNetworkName,
   loadSettings,
   migrateDeprecatedSettings,
@@ -84,10 +83,4 @@ it('Should update stored settings', () => {
   }
   updateStoredSettings('network', newNetworkSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify({ ...mockSettings, network: newNetworkSettings }))
-})
-
-it('Should indicate that there are deprecated settings stored in local storage', () => {
-  expect(deprecatedSettingsExist()).toBeFalsy()
-  localStorage.setItem('theme', 'pink')
-  expect(deprecatedSettingsExist()).toBeTruthy()
 })

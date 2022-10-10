@@ -41,7 +41,7 @@ const ToggleSection = ({ title, onClick = () => null, children, className }: Tog
     <div className={className}>
       <Title>
         {title}
-        <Toggle onToggle={handleToggle} label={title} toggled={isShown} />
+        <Toggle onToggle={handleToggle} label={title} toggled={isShown} hasDarkerBgOnLightTheme />
       </Title>
       <Content
         animate={{
