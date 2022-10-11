@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "colord": "^2.9.3",
+    "compare-versions": "^5.0.1",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
