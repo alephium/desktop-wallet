@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getDirection } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,12 +27,7 @@ import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../componen
 import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, PendingTx, useAddressesContext } from '../../contexts/addresses'
 import { GENESIS_TIMESTAMP } from '../../utils/constants'
-import {
-  BelongingToAddress,
-  getDirection,
-  getTransactionsForAddresses,
-  hasOnlyInputsWith
-} from '../../utils/transactions'
+import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
