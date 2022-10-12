@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay } from '@alephium/sdk'
+import { formatAmountForDisplay, isConsolidationTx } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,7 @@ import styled, { css } from 'styled-components'
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
 import { useTransactionInfo } from '../hooks/useTransactionInfo'
 import { useTransactionUI } from '../hooks/useTransactionUI'
-import { isConsolidationTx, isPendingTx, TransactionVariant } from '../utils/transactions'
+import { isPendingTx, TransactionVariant } from '../utils/transactions'
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
