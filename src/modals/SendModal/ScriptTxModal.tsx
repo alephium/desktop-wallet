@@ -68,7 +68,9 @@ const ScriptTxModal = ({ initialTxData, onClose }: ScriptTxModalProps) => {
         toGroup: context.unsignedTransaction.toGroup,
         unsignedTx: context.unsignedTransaction.unsignedTx,
         txId: context.unsignedTxId,
-        signature: signature
+        signature: signature,
+        gasAmount: context.unsignedTransaction.gasAmount,
+        gasPrice: BigInt(context.unsignedTransaction.gasPrice)
       }
     } else {
       throw Error('No unsignedTransaction available')

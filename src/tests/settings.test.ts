@@ -36,6 +36,7 @@ const mockSettings = {
     language: 'en-US' as Language
   },
   network: {
+    networkId: 123,
     nodeHost: 'https://node',
     explorerApiHost: 'https://explorer-backend',
     explorerUrl: 'https://explorer'
@@ -77,6 +78,7 @@ it('Should save settings in local storage', () => {
 
 it('Should update stored settings', () => {
   const newNetworkSettings = {
+    networkId: 1,
     nodeHost: 'https://node1',
     explorerApiHost: 'https://explorer-backend1',
     explorerUrl: 'https://explorer1'

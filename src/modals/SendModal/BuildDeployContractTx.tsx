@@ -16,8 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Number256 } from '@alephium/web3'
-
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import {
@@ -33,10 +31,10 @@ export interface BuildDeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAttoAlphAmount?: Number256
-  issueTokenAmount?: Number256
+  initialAttoAlphAmount?: string
+  issueTokenAmount?: string
   gasAmount?: number
-  gasPrice?: Number256
+  gasPrice?: string
 }
 
 export interface BuildDeployContractTxProps {
@@ -49,7 +47,7 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
     useBuildTxCommon(data.fromAddress, data.initialAttoAlphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
-  const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount ?? '')
+  const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount?.toString() ?? undefined)
 
   if (typeof fromAddress === 'undefined') {
     onCancel()

@@ -16,8 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Number256 } from '@alephium/web3'
-
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, useBuildTxCommon } from './utils'
@@ -25,9 +23,9 @@ import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, use
 export interface BuildTransferTxData {
   fromAddress: Address
   toAddress: string
-  attoAlphAmount: Number256
+  attoAlphAmount: string
   gasAmount?: number
-  gasPrice?: Number256
+  gasPrice?: string
 }
 
 export interface BuildTransferTxProps {

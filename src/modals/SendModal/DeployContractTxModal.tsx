@@ -71,7 +71,9 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
         txId: context.unsignedTxId,
         signature: signature,
         contractAddress: contractAddress,
-        contractId: contractId
+        contractId: contractId,
+        gasAmount: context.unsignedTransaction.gasAmount,
+        gasPrice: BigInt(context.unsignedTransaction.gasPrice)
       }
     } else {
       throw Error('No unsignedTransaction available')

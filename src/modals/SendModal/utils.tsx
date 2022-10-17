@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { ChainGroup } from '@alephium/walletconnect-provider'
-import { Number256 } from '@alephium/web3'
 import { node, toApiVal } from '@alephium/web3'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -152,9 +151,9 @@ export function useBytecode(initialBytecode: string) {
 
 export function useBuildTxCommon(
   initialFromAddress: Address,
-  initialAttoAlphAmount: Number256 | undefined,
+  initialAttoAlphAmount: string | undefined,
   initialGasAmount: number | undefined,
-  initialGasPrice: Number256 | undefined
+  initialGasPrice: string | undefined
 ) {
   const theme = useTheme()
   const [fromAddress, FromAddress] = useFromAddress(initialFromAddress)
@@ -163,7 +162,7 @@ export function useBuildTxCommon(
     initialGasAmount,
     typeof initialGasAmount !== 'undefined' ? initialGasAmount.toString() : ''
   )
-  const [gasPrice, setGasPrice] = useStateWithParsed<Number256 | undefined>(
+  const [gasPrice, setGasPrice] = useStateWithParsed<string | undefined>(
     initialGasPrice,
     typeof initialGasPrice !== 'undefined' ? initialGasPrice.toString() : ''
   )
@@ -280,8 +279,8 @@ export const TxAmount = ({
   setAttoAlphAmount,
   availableBalance
 }: {
-  attoAlphAmount: Number256
-  setAttoAlphAmount: (amount: Number256) => void
+  attoAlphAmount: string
+  setAttoAlphAmount: (amount: string) => void
   availableBalance: bigint
 }) => <AmountInput value={attoAlphAmount.toString()} onChange={setAttoAlphAmount} availableAmount={availableBalance} />
 
@@ -309,7 +308,7 @@ export const GasPrice = ({
   handleGasPriceChange
 }: {
   theme: DefaultTheme
-  gasPrice: WithParsed<Number256 | undefined>
+  gasPrice: WithParsed<string | undefined>
   handleGasPriceChange: (error: string) => void
 }) => (
   <Input
@@ -399,7 +398,7 @@ export const InitialFields = ({
   />
 )
 
-export function useIssueTokenAmount(initialTokenAmount: Number256 | undefined) {
+export function useIssueTokenAmount(initialTokenAmount: string | undefined) {
   const [issueTokenAmount, setIssueTokenAmount] = useState(initialTokenAmount ?? '')
   const IssueTokenAmount = (
     <Input
@@ -456,7 +455,7 @@ export const BytecodeInfo = ({ bytecode }: { bytecode: string }) => (
 export const FieldsInfo = ({ fields }: { fields: node.Val[] }) =>
   fields.length > 0 ? <InfoBox text={encodeFields(fields)} label="Contract Fields" wordBreak /> : null
 
-export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: Number256 }) =>
+export const IssueTokenAmountInfo = ({ issueTokenAmount }: { issueTokenAmount?: string }) =>
   issueTokenAmount ? <InfoBox text={issueTokenAmount?.toString()} label="Issue token amount" wordBreak /> : null
 
 export const CheckTxFooter = ({ onSend, onCancel }: { onSend: () => void; onCancel: () => void }) => (

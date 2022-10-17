@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { SignResult } from '@alephium/web3'
 import { AnimatePresence } from 'framer-motion'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useTheme } from 'styled-components'
@@ -44,6 +43,8 @@ export type UnsignedTx = {
   fromGroup: number
   toGroup: number
   unsignedTx: string
+  gasAmount: number
+  gasPrice: string
 }
 
 export type TxContext = {
@@ -74,10 +75,10 @@ export type TxModalFactoryProps<PT extends { fromAddress: Address }, T extends P
   CheckTx: (props: { data: T; fees: bigint; onSend: () => void; onCancel: () => void }) => JSX.Element
   buildTransaction: (client: Client, data: T, context: TxContext) => Promise<void>
   handleSend: (client: Client, data: T, context: TxContext) => Promise<string | undefined>
-  getWalletConnectResult: (context: TxContext, signature: string) => SignResult
+  getWalletConnectResult: (context: TxContext, signature: string) => any
 }
 
-export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT>({
+export function TxModalFactory<PT extends { fromAddress: Address }, T extends PT, SignResult>({
   buildTitle,
   initialTxData,
   onClose,

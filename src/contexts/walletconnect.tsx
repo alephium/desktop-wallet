@@ -166,9 +166,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildTransferTxData = {
               fromAddress: extractAddress(p.signerAddress),
               toAddress: p.destinations[0].address,
-              attoAlphAmount: p.destinations[0].attoAlphAmount,
+              attoAlphAmount: p.destinations[0].attoAlphAmount?.toString(),
               gasAmount: p.gasAmount,
-              gasPrice: p.gasPrice
+              gasPrice: p.gasPrice?.toString()
             }
             setTxData(['transfer', txData])
             break
@@ -178,10 +178,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildDeployContractTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              initialAttoAlphAmount: p.initialAttoAlphAmount,
-              issueTokenAmount: p.issueTokenAmount,
+              initialAttoAlphAmount: p.initialAttoAlphAmount?.toString(),
+              issueTokenAmount: p.issueTokenAmount?.toString(),
               gasAmount: p.gasAmount,
-              gasPrice: p.gasPrice
+              gasPrice: p.gasPrice?.toString()
             }
             setTxData(['deploy-contract', txData])
             break
@@ -191,9 +191,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const txData: BuildScriptTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              attoAlphAmount: p.attoAlphAmount,
+              attoAlphAmount: p.attoAlphAmount?.toString(),
               gasAmount: p.gasAmount,
-              gasPrice: p.gasPrice
+              gasPrice: p.gasPrice?.toString()
             }
             setTxData(['script', txData])
             break

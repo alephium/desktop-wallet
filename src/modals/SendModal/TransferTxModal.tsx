@@ -31,7 +31,7 @@ export type TransferTxModalProps = {
 const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   const buildTransaction = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
     const { fromAddress, toAddress, attoAlphAmount, gasAmount, gasPrice } = transactionData
-    const sweep = attoAlphAmount === fromAddress.availableBalance
+    const sweep = attoAlphAmount === fromAddress.availableBalance.toString()
     context.setIsSweeping(sweep)
     if (sweep) {
       const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, toAddress)
@@ -97,7 +97,9 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
         toGroup: context.unsignedTransaction.toGroup,
         unsignedTx: context.unsignedTransaction.unsignedTx,
         txId: context.unsignedTxId,
-        signature: signature
+        signature: signature,
+        gasAmount: context.unsignedTransaction.gasAmount,
+        gasPrice: BigInt(context.unsignedTransaction.gasPrice)
       }
     } else {
       throw Error('No unsignedTransaction available')
