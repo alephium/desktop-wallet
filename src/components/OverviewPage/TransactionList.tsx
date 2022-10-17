@@ -86,6 +86,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
           </TableRow>
         ))}
       {allConfirmedTxs.map((transaction) => {
+        console.log(`=== outputs: ${JSON.stringify(transaction.outputs)}`)
         const amount = calAmountDelta(transaction, transaction.address.hash)
         const amountIsBigInt = typeof amount === 'bigint'
         const isOut = amountIsBigInt && amount < 0

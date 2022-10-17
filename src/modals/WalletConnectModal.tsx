@@ -17,8 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup } from '@alephium/sdk'
-import { formatChain, parseChain } from '@h0ngcha0/walletconnect-provider'
-import { ALEPHIUM_NAMESPACE, ChainInfo } from '@h0ngcha0/walletconnect-provider'
+import { formatChain, parseChain } from '@alephium/walletconnect-provider'
+import { ChainInfo, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -59,7 +59,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   const onProposal = useCallback(
     async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       const { requiredNamespaces } = proposal.params
-      const requiredChains = requiredNamespaces[ALEPHIUM_NAMESPACE].chains
+      const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
       const requiredChainInfo = requiredChains.map((requiredChain) => {
         const [networkId, chainGroup] = parseChain(requiredChain)
         return { networkId, chainGroup }
@@ -130,7 +130,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       }
 
       const { id, requiredNamespaces, relays } = proposal.params
-      const permittedChain = requiredNamespaces[ALEPHIUM_NAMESPACE]
+      const permittedChain = requiredNamespaces[PROVIDER_NAMESPACE]
       const namespaces: SessionTypes.Namespaces = {
         alephium: {
           methods: permittedChain.methods,

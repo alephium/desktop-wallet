@@ -17,9 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import { ChainGroup } from '@alephium/walletconnect-provider'
 import { Number256 } from '@alephium/web3'
 import { node, toApiVal } from '@alephium/web3'
-import { ChainGroup } from '@h0ngcha0/walletconnect-provider'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
