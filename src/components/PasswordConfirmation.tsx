@@ -67,9 +67,9 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         {children && <Children>{children}</Children>}
       </Section>
       <Section>
-        <Button onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
+        <ButtonStyled onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
           {buttonText || t`Submit`}
-        </Button>
+        </ButtonStyled>
       </Section>
     </>
   )
@@ -79,4 +79,8 @@ export default PasswordConfirmation
 
 const Children = styled.div`
   width: 100%;
+`
+
+const ButtonStyled = styled(Button)`
+  margin-top: 20px;
 `

@@ -49,10 +49,13 @@ export async function createClient(settings: Settings['network']) {
       console.log('⬇️ Fetching address details: ', address.hash)
 
       const { data } = await explorerClient.getAddressDetails(address.hash)
-      address.details = data
 
-      if (data.balance) address.availableBalance = BigInt(data.balance)
-      if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      if (data) {
+        address.details = data
+
+        if (data.balance) address.availableBalance = BigInt(data.balance)
+        if (data.lockedBalance) address.availableBalance -= BigInt(data.lockedBalance)
+      }
 
       return data
     }
@@ -112,7 +115,8 @@ export async function createClient(settings: Settings['network']) {
       toAddressHash: AddressHash,
       type: TransactionType,
       network: NetworkName,
-      amount?: bigint
+      amount?: bigint,
+      lockTime?: Date
     ) => {
       const signature = cliqueClient.transactionSign(txId, fromAddress.privateKey)
       const response = await cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
@@ -125,7 +129,9 @@ export async function createClient(settings: Settings['network']) {
           timestamp: new Date().getTime(),
           amount,
           type,
-          network
+          network,
+          lockTime,
+          status: 'pending'
         })
       }
 
@@ -145,9 +151,11 @@ export async function createClient(settings: Settings['network']) {
         address.addPendingTransaction({
           txId: response.data.txId,
           fromAddress: address.hash,
+          toAddress: '',
           timestamp: new Date().getTime(),
           type: 'contract',
-          network
+          network,
+          status: 'pending'
         })
       }
 

@@ -17,15 +17,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
 import { Address } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'
 import QRCodeButton from './Buttons/QRCodeButton'
+import InputArea from './Inputs/InputArea'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -36,13 +37,16 @@ interface AddressSummaryCardProps {
   className?: string
 }
 
-export const addressSummaryCardWidthPx = 100
+export const addressSummaryCardWidthPx = 150
 
 const AddressSummaryCard = ({ address, clickable, className, index, totalCards }: AddressSummaryCardProps) => {
   const navigate = useNavigate()
-  const { isPassphraseUsed } = useGlobalContext()
 
-  const collapsedPosition = !clickable ? (totalCards - index) * -109 + 5 : 0
+  const collapsedPosition = !clickable ? (totalCards - index) * -159 + 5 : 0
+  const onInput = useCallback(
+    () => clickable && navigate(`/wallet/addresses/${address.hash}`),
+    [clickable, address.hash, navigate]
+  )
 
   return (
     <motion.div
@@ -51,18 +55,14 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       animate={{ x: collapsedPosition }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <ClickableArea onClick={() => clickable && navigate(`/wallet/addresses/${address.hash}`)} clickable={clickable}>
-        <AddressNameSection collapsed={!clickable}>
-          <AddressBadgeStyled
-            color={address.settings.color}
-            addressName={address.getLabelName(!isPassphraseUsed)}
-            truncate
-          />
+      <InputAreaStyled onInput={onInput} clickable={clickable}>
+        <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">
+          <AddressBadgeStyled address={address} truncate />
         </AddressNameSection>
         <AmountsSection collapsed={!clickable}>
           <AmountHighlighted value={BigInt(address.details.balance)} fadeDecimals />
         </AmountsSection>
-      </ClickableArea>
+      </InputAreaStyled>
       <ButtonsSection collapsed={!clickable}>
         <ClipboardButton textToCopy={address.hash} />
         <QRCodeButton textToEncode={address.hash} />
@@ -93,6 +93,11 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
   transition: padding 0.2s ease-out;
   padding: 0 17px;
 
+  & > div {
+    width: 80%;
+    justify-content: center;
+  }
+
   ${({ collapsed }) =>
     !collapsed &&
     css`
@@ -104,10 +109,10 @@ const AddressNameSection = styled.div<{ collapsed: boolean }>`
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
-  width: 100%;
   padding: 11px 17px;
   border-radius: 0;
   text-align: center;
+  justify-content: center;
 `
 
 const AmountsSection = styled.div<{ collapsed: boolean }>`
@@ -145,7 +150,7 @@ const ButtonsSection = styled.div<{ collapsed: boolean }>`
     `}
 `
 
-const ClickableArea = styled.div<{ clickable?: boolean }>`
+const InputAreaStyled = styled(InputArea)<{ clickable?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;

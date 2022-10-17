@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { createHash } from 'crypto'
+import dayjs from 'dayjs'
 
 // ===================== //
 // ==== RUNNING ENV ==== //
@@ -64,3 +65,5 @@ export const extractErrorMsg = (e: unknown): string => {
   }
   return error
 }
+
+export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')

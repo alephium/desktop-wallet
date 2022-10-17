@@ -83,4 +83,4 @@ it('has all valid links in the UI', async () => {
   )
 
   await sequencedPromises
-})
+}, 60000)

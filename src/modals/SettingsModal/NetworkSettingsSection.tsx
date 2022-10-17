@@ -47,7 +47,7 @@ const NetworkSettingsSection = () => {
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
-    label: capitalize(networkName),
+    label: t(capitalize(networkName)),
     value: networkName
   }))
 
@@ -129,16 +129,19 @@ const NetworkSettingsSection = () => {
       >
         <UrlInputs>
           <Input
+            id="node-host"
             label={t`Node host`}
             value={tempAdvancedSettings.nodeHost}
             onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
           />
           <Input
+            id="explorer-api-host"
             label={t`Explorer API host`}
             value={tempAdvancedSettings.explorerApiHost}
             onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
           />
           <Input
+            id="explorer-url"
             label={t`Explorer URL`}
             value={tempAdvancedSettings.explorerUrl}
             onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}

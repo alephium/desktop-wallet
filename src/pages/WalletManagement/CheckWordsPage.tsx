@@ -16,14 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
+import { colord } from 'colord'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import Button from '../../components/Button'
 import InfoBox from '../../components/InfoBox'
@@ -39,8 +38,6 @@ import { useGlobalContext } from '../../contexts/global'
 import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
-const Storage = getStorage()
-
 interface WordKey {
   word: string
   key: string // Used to build layout and ensure anims are working when duplicates exist
@@ -50,9 +47,8 @@ const CheckWordsPage = () => {
   const { t } = useTranslation('App')
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage } = useGlobalContext()
+  const { setSnackbarMessage, saveWallet } = useGlobalContext()
 
-  const { setWallet } = useGlobalContext()
   const splitMnemonic = mnemonic.split(' ')
 
   const wordList = useRef<WordKey[]>(
@@ -184,9 +180,7 @@ const CheckWordsPage = () => {
 
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
-      const walletEncrypted = plainWallet.encrypt(password)
-      Storage.save(walletName, walletEncrypted)
-      setWallet(plainWallet)
+      saveWallet(walletName, plainWallet, password)
       return true
     }
   }
@@ -231,7 +225,7 @@ const CheckWordsPage = () => {
           <Button secondary onClick={onButtonBack}>
             {t`Cancel`}
           </Button>
-          <Button onClick={handleButtonNext} disabled={!areWordsValid} submit>
+          <Button onClick={handleButtonNext} disabled={!areWordsValid}>
             {t`Continue`}
           </Button>
         </FooterActionsContainer>
@@ -254,7 +248,7 @@ const RemainingWordList = styled.div`
   align-content: flex-start;
 `
 
-const SelectedWord = styled(motion.div)`
+const SelectedWord = styled(motion.button)`
   padding: 6px var(--spacing-2);
   border-radius: 5px;
   background-color: ${({ theme }) => theme.global.accent};
@@ -270,7 +264,11 @@ const SelectedWord = styled(motion.div)`
   }
 
   &:hover {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.8).toString()};
+    background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.8).toRgbString()};
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(20).toRgbString()};
   }
 `
 
@@ -314,10 +312,10 @@ const SelectedWordList = styled.div`
 
 const RemainingWord = styled(SelectedWord)`
   background-color: ${({ theme }) => theme.global.accent};
-  background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.1).toString()};
+  background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
   color: ${({ theme }) => theme.global.accent};
 
   &:hover {
-    background-color: ${({ theme }) => tinycolor(theme.global.accent).setAlpha(0.3).toString()};
+    background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.3).toRgbString()};
   }
 `

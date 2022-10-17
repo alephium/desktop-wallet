@@ -19,13 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
+import AddressEllipsed from '../../components/AddressEllipsed'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
@@ -36,7 +38,6 @@ import { MainContent, PageTitleRow } from '../../components/PageComponents/PageC
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
 import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
-import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressSweepModal from '../../modals/AddressSweepModal'
@@ -67,9 +68,7 @@ const AddressesPage = () => {
   const { isPassphraseUsed } = useGlobalContext()
   const theme = useTheme()
 
-  const navigateToAddressDetailsPage = (addressHash: AddressHash) => {
-    navigate(`/wallet/addresses/${addressHash}`)
-  }
+  const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
   const handleOneAddressPerGroupClick = () => {
     if (isPassphraseUsed) {
@@ -80,6 +79,10 @@ const AddressesPage = () => {
   }
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [])
 
   return (
     <MainContent>
@@ -94,29 +97,27 @@ const AddressesPage = () => {
           <TableRow
             key={address.hash}
             columnWidths={tableColumnWidths}
-            onClick={() => navigateToAddressDetailsPage(address.hash)}
+            role="row"
+            onClick={navigateToAddressDetailsPage(address.hash)}
+            onKeyPress={navigateToAddressDetailsPage(address.hash)}
           >
-            <TableCell>
-              {address.settings.isMain ? (
-                <MainAddressWrapper>
-                  <Truncate>{address.hash}</Truncate>
-                  {!isPassphraseUsed && <StyledMainAddressLabel />}
-                </MainAddressWrapper>
-              ) : (
-                <Truncate>{address.hash}</Truncate>
-              )}
+            <TableCellStyled role="cell" tabIndex={0}>
+              <AddressEllipsed addressHash={address.hash} />
+              {!isPassphraseUsed && address.settings.isMain && <MainAddressLabel />}
+            </TableCellStyled>
+            <TableCell role="cell" tabIndex={0}>
+              {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
             </TableCell>
-            <TableCell>
-              {address.settings.label ? (
-                <AddressBadge color={address.settings.color} addressName={address.getLabelName()} truncate />
-              ) : (
-                '-'
-              )}
+            <TableCell role="cell" tabIndex={0}>
+              {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
             </TableCell>
-            <TableCell>{address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}</TableCell>
-            <TableCell>{address.details?.txNumber ?? 0}</TableCell>
-            <TableCell>{address.group}</TableCell>
-            <TableCellAmount align="end">
+            <TableCell role="cell" tabIndex={0}>
+              {address.details?.txNumber ?? 0}
+            </TableCell>
+            <TableCell role="cell" tabIndex={0}>
+              {address.group}
+            </TableCell>
+            <TableCellAmount role="cell" tabIndex={0} align="end">
               {address.transactions.pending.length > 0 && <Spinner size="12px" />}
               <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
             </TableCellAmount>
@@ -126,7 +127,7 @@ const AddressesPage = () => {
           <TableCell>
             <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>+ {t`Generate new address`}</ActionLink>
           </TableCell>
-          <Summary align="end">
+          <Summary role="cell" tabIndex={0} align="end">
             <Badge border>
               <Amount value={balanceSummary} fadeDecimals />
             </Badge>
@@ -222,10 +223,6 @@ const TableCellAmount = styled(TableCell)`
   gap: var(--spacing-1);
 `
 
-const StyledMainAddressLabel = styled(MainAddressLabel)`
-  margin-top: 2px;
-`
-
-const MainAddressWrapper = styled.div`
-  max-width: 100%;
+const TableCellStyled = styled(TableCell)`
+  flex-direction: column;
 `

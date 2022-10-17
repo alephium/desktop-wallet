@@ -33,11 +33,11 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
   return (
-    <CenteredModal title={t`Secret phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
+    <CenteredModal title={t`Secret recovery phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text={t`Type your password to show your secret phrase.`}
+            text={t`Type your password to show the phrase.`}
             buttonText={t`Show`}
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />
@@ -45,11 +45,11 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
       ) : (
         <Section>
           <InfoBox
-            text={t`Carefully note down the words! They are the secret keys to your wallet.`}
+            text={t`Carefully note down the words! They are your wallet's secret recovery phrase.`}
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || t`No secret phrase was stored along with this wallet`}</PhraseBox>
+          <PhraseBox>{wallet?.mnemonic || t`No recovery phrase was stored along with this wallet`}</PhraseBox>
         </Section>
       )}
     </CenteredModal>

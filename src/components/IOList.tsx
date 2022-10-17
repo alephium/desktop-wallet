@@ -19,13 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import { AddressHash } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { openInWebBrowser } from '../utils/misc'
+import { AddressHash, useAddressesContext } from '../contexts/addresses'
+import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
+import { GENESIS_TIMESTAMP } from '../utils/constants'
 import ActionLink from './ActionLink'
+import AddressBadge from './AddressBadge'
+import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
-import Truncate from './Truncate'
 
 interface IOListProps {
   currentAddress: string
@@ -39,47 +41,58 @@ interface IOListProps {
 
 const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer, truncate }: IOListProps) => {
   const { t } = useTranslation('App')
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { getAddress } = useAddressesContext()
+  const handleShowAddress = useAddressLinkHandler()
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
-  const genesisTimestamp = 1231006505000
-
-  const handleShowAddressInExplorer = (address: AddressHash) => {
-    openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
-  }
 
   if (io && io.length > 0) {
-    return io.every((o) => o.address === currentAddress) ? (
-      linkToExplorer ? (
-        <ActionLink onClick={() => handleShowAddressInExplorer(currentAddress)}>{currentAddress}</ActionLink>
-      ) : truncate ? (
-        <Truncate>{currentAddress}</Truncate>
+    const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
+    const notCurrentAddresses = _(io.filter((o) => o.address !== currentAddress))
+      .map((v) => v.address)
+      .uniq()
+      .value()
+
+    const addressHash = isAllCurrentAddress ? currentAddress : notCurrentAddresses[0]
+    if (!addressHash) return null
+
+    const extraAddressesText = notCurrentAddresses.length > 1 ? `(+${notCurrentAddresses.length - 1})` : ''
+
+    // There may be a case where a wallet sends funds to the same address, which doesn't
+    // make it a change address but a legimitate receiving address.
+    const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
+
+    const getAddressComponent = (addressHash: AddressHash) => {
+      const address = getAddress(addressHash)
+
+      return address ? (
+        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
       ) : (
-        <span>{currentAddress}</span>
+        <AddressEllipsed addressHash={addressHash} />
       )
+    }
+
+    return truncate ? (
+      <TruncateWrap>
+        {getAddressComponent(addressHash)}
+        {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
+      </TruncateWrap>
     ) : (
-      <>
-        {_(io.filter((o) => o.address !== currentAddress))
-          .map((v) => v.address)
-          .uniq()
-          .value()
-          .map((address) =>
-            linkToExplorer ? (
-              <ActionLink onClick={() => handleShowAddressInExplorer(address)} key={address}>
-                {address}
-              </ActionLink>
-            ) : truncate ? (
-              <Truncate key={address}>{address}</Truncate>
-            ) : (
-              <span key={address}>{address}</span>
-            )
-          )}
-      </>
+      <Addresses>
+        {addressesToShow.map((addressHash) => {
+          if (!addressHash) return null
+
+          const addressComponent = getAddressComponent(addressHash)
+          return linkToExplorer ? (
+            <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
+              {addressComponent}
+            </ActionLinkStyled>
+          ) : (
+            addressComponent
+          )
+        })}
+      </Addresses>
     )
-  } else if (timestamp === genesisTimestamp) {
+  } else if (timestamp === GENESIS_TIMESTAMP) {
     return <Badge truncate={truncate}>{t`Genesis TX`}</Badge>
   } else {
     return <Badge truncate={truncate}>{t`Mining Rewards`}</Badge>
@@ -87,3 +100,28 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
 }
 
 export default IOList
+
+const TruncateWrap = styled.div`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  text-align: left;
+`
+
+const AddressesHidden = styled.div`
+  margin-left: 0.5em;
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const Addresses = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  overflow: hidden;
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  width: 100%;
+  justify-content: flex-end;
+`

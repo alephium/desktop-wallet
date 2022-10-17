@@ -18,7 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { NetworkName } from '../utils/settings'
 
+export type TransactionDirection = 'out' | 'in'
+export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
 export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
+export type TransactionStatus = 'pending' | 'confirmed'
 
 export type BaseTx = {
   txId: string
@@ -28,4 +31,14 @@ export type BaseTx = {
   network: NetworkName
 }
 
-export type PendingTx = BaseTx & { toAddress?: string; amount?: bigint }
+export type PendingTx = {
+  txId: string
+  fromAddress: string
+  toAddress: string
+  timestamp: number
+  type: TransactionType
+  network: NetworkName
+  amount?: bigint
+  lockTime?: Date
+  status: 'pending'
+}

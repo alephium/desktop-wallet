@@ -16,22 +16,26 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addApostrophes, calAmountDelta } from '@alephium/sdk'
+import { addApostrophes } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
-import dayjs from 'dayjs'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '../components/ActionLink'
 import AddressBadge from '../components/AddressBadge'
+import AddressEllipsed from '../components/AddressEllipsed'
 import Amount from '../components/Amount'
 import Badge from '../components/Badge'
 import ExpandableSection from '../components/ExpandableSection'
 import IOList from '../components/IOList'
-import { Address, AddressHash } from '../contexts/addresses'
+import Tooltip from '../components/Tooltip'
+import { Address } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
-import { openInWebBrowser } from '../utils/misc'
+import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
+import { useTransactionInfo } from '../hooks/useTransactionInfo'
+import { useTransactionUI } from '../hooks/useTransactionUI'
+import { formatDateForDisplay, openInWebBrowser } from '../utils/misc'
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
@@ -51,46 +55,44 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const {
     settings: {
       network: { explorerUrl }
-    },
-    isPassphraseUsed
+    }
   } = useGlobalContext()
   const theme = useTheme()
-  let amount = calAmountDelta(transaction, address.hash)
-  const isOutgoingTx = amount < 0
-  amount = isOutgoingTx ? amount * -1n : amount
-  const addressName = address.getLabelName(!isPassphraseUsed)
-  const addressColor = address.settings.color
+  const handleShowAddress = useAddressLinkHandler()
+  const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
-  const handleShowTxInExplorer = () => {
-    openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
-  }
-
-  const handleShowAddressInExplorer = (address: AddressHash) => {
-    openInWebBrowser(`${explorerUrl}/#/addresses/${address}`)
-  }
+  const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
 
   return (
-    <SideModal onClose={onClose}>
+    <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
-        <AmountWrapper color={isOutgoingTx ? theme.font.secondary : theme.global.valid}>
-          <span>{isOutgoingTx ? '-' : '+'}</span>{' '}
-          <Amount value={amount} fadeDecimals color={isOutgoingTx ? theme.font.secondary : theme.global.valid} />
+        <AmountWrapper tabIndex={0} color={amountTextColor}>
+          {amountSign}
+          <Amount value={amount} fadeDecimals color={amountTextColor} />
         </AmountWrapper>
         <HeaderInfo>
-          <Direction>{isOutgoingTx ? '↑ ' + t`Sent` : '↓ ' + t`Received`}</Direction>
-          <FromIn>{isOutgoingTx ? t`from` : t`in`}</FromIn>
-          <AddressBadge color={addressColor} addressName={addressName} truncate />
+          <Direction>
+            <Icon size={14} />
+            {label}
+          </Direction>
+          <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
+          <AddressBadge address={address} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
-      <Details>
+      <Details role="table">
         <DetailsRow label={t`From`}>
-          {isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} truncate />
+          {direction === 'out' ? (
+            <AddressList>
+              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+              </ActionLinkStyled>
+            </AddressList>
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={false}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
@@ -99,12 +101,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           )}
         </DetailsRow>
         <DetailsRow label={t`To`}>
-          {!isOutgoingTx ? (
-            <AddressBadge color={addressColor} addressName={addressName} />
+          {direction !== 'out' ? (
+            <AddressList>
+              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                <AddressBadge address={address} showHashWhenNoLabel withBorders />
+              </ActionLinkStyled>
+            </AddressList>
           ) : (
             <IOList
               currentAddress={address.hash}
-              isOut={isOutgoingTx}
+              isOut={direction === 'out'}
               outputs={transaction.outputs}
               inputs={transaction.inputs}
               timestamp={transaction.timestamp}
@@ -114,41 +120,57 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
-            {t`Confirmed`}
+            <span tabIndex={0}>{t`Confirmed`}</span>
           </Badge>
         </DetailsRow>
         <DetailsRow label={t`Timestamp`}>
-          {dayjs(transaction.timestamp).format('YYYY-MM-DD [at] HH:mm:ss [UTC]Z')}
+          <span tabIndex={0}>{formatDateForDisplay(transaction.timestamp)}</span>
         </DetailsRow>
+        {lockTime && (
+          <DetailsRow label={lockTime < new Date() ? t`Unlocked at` : t`Unlocks at`}>
+            <span tabIndex={0}>{formatDateForDisplay(lockTime)}</span>
+          </DetailsRow>
+        )}
         <DetailsRow label={t`Fee`}>
-          {<Amount value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />}
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
         </DetailsRow>
-        <DetailsRow label={t`Total value`}>{<Amount value={amount} fadeDecimals fullPrecision />}</DetailsRow>
+        <DetailsRow label={t`Total value`}>
+          <Amount tabIndex={0} value={amount} fadeDecimals fullPrecision />
+        </DetailsRow>
         <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
-          <DetailsRow label={t`Gas amount`}>{addApostrophes(transaction.gasAmount.toString())}</DetailsRow>
+          <DetailsRow label={t`Gas amount`}>
+            <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
+          </DetailsRow>
           <DetailsRow label={t`Gas price`}>
-            <Amount value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+            <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
-            <IOs>
-              {transaction.inputs?.map((input) => (
-                <ActionLink key={`${input.outputRef.key}`} onClick={() => handleShowAddressInExplorer(input.address)}>
-                  {input.address}
-                </ActionLink>
-              ))}
-            </IOs>
+            <AddressList>
+              {transaction.inputs?.map(
+                (input) =>
+                  input.address && (
+                    <ActionLinkStyled
+                      key={`${input.outputRef.key}`}
+                      onClick={() => handleShowAddress(input.address as string)}
+                    >
+                      <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
+                    </ActionLinkStyled>
+                  )
+              )}
+            </AddressList>
           </DetailsRow>
           <DetailsRow label={t`Outputs`}>
-            <IOs>
+            <AddressList>
               {transaction.outputs?.map((output) => (
-                <ActionLink key={`${output.key}`} onClick={() => handleShowAddressInExplorer(output.address)}>
-                  {output.address}
-                </ActionLink>
+                <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address ?? '')}>
+                  <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
+                </ActionLinkStyled>
               ))}
-            </IOs>
+            </AddressList>
           </DetailsRow>
         </ExpandableSectionStyled>
       </Details>
+      <Tooltip />
     </SideModal>
   )
 }
@@ -156,8 +178,10 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
 export default TransactionDetailsModal
 
 let DetailsRow: FC<DetailsRowProps> = ({ children, label, className }) => (
-  <div className={className}>
-    <DetailsRowLabel>{label}</DetailsRowLabel>
+  <div className={className} role="row">
+    <DetailsRowLabel tabIndex={0} role="cell">
+      {label}
+    </DetailsRowLabel>
     {children}
   </div>
 )
@@ -177,6 +201,9 @@ DetailsRow = styled(DetailsRow)`
 
 const Direction = styled.span`
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `
 
 const AmountWrapper = styled.div<{ color: string }>`
@@ -218,6 +245,11 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 28px;
 `
 
-const IOs = styled.div`
-  text-align: right;
+const AddressList = styled.div`
+  overflow: hidden;
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  width: 100%;
+  justify-content: right;
 `

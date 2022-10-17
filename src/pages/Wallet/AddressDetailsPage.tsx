@@ -16,46 +16,34 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
 import ActionLink from '../../components/ActionLink'
 import AddressBadge from '../../components/AddressBadge'
+import AddressEllipsed from '../../components/AddressEllipsed'
 import Amount from '../../components/Amount'
 import Badge from '../../components/Badge'
 import Button from '../../components/Button'
-import ClipboardButton from '../../components/Buttons/ClipboardButton'
 import OpenInExplorerButton from '../../components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '../../components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '../../components/DataList'
-import IOList from '../../components/IOList'
 import MainAddressLabel from '../../components/MainAddressLabel'
 import { MainContent, PageTitleRow } from '../../components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '../../components/PageComponents/PageHeadings'
-import Table, { TableCell, TableCellPlaceholder, TableProps, TableRow } from '../../components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
 import Tooltip from '../../components/Tooltip'
 import TransactionalInfo from '../../components/TransactionalInfo'
-import Truncate from '../../components/Truncate'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
 import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
-
-const transactionsTableHeaders: TableProps['headers'] = [
-  { title: 'Direction', width: '100px' },
-  { title: 'Timestamp', width: '100px' },
-  { title: 'Address(es)', width: '150px' },
-  { title: 'Amount', align: 'end', width: '100px' }
-]
-
-const tableColumnWidths = transactionsTableHeaders.map(({ width }) => width)
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation('App')
@@ -67,6 +55,10 @@ const AddressDetailsPage = () => {
   const address = getAddress(addressHash)
   const navigate = useNavigate()
 
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [address?.transactions.pending, address?.transactions.confirmed])
+
   if (!address) return null
 
   const loadNextTransactionsPage = () => {
@@ -77,17 +69,17 @@ const AddressDetailsPage = () => {
     setSelectedTransaction(transaction)
   }
 
+  const goBack = () => navigate(-1)
+
   return (
     <MainContent>
       <PageTitleRow>
         <Title>
-          <ArrowLeftStyled onClick={() => navigate(-1)} />
+          <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
           <PageH1Styled>
             {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
-          {address.settings.label && (
-            <AddressBadgeStyled color={address.settings.color} addressName={address.getLabelName()} />
-          )}
+          {address.settings.label && <AddressBadgeStyled address={address} hideStar />}
           <OptionsButton
             transparent
             squared
@@ -98,45 +90,50 @@ const AddressDetailsPage = () => {
           </OptionsButton>
         </Title>
       </PageTitleRow>
-      <DataList>
-        <DataListRow>
-          <DataListCell>{t`Address`}</DataListCell>
+      <DataList role="grid" tabIndex={0}>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>{t`Address`}</DataListCell>
           <DataListCell>
-            <Truncate>{addressHash}</Truncate>
             <IconButtons>
-              <ClipboardButton textToCopy={addressHash} />
+              <AddressEllipsed addressHash={addressHash} role="gridcell" tabIndex={0} />
               <QRCodeButton textToEncode={addressHash} />
               <OpenInExplorerButton address={addressHash} />
             </IconButtons>
           </DataListCell>
         </DataListRow>
-        <DataListRow>
-          <DataListCell>Label</DataListCell>
-          <DataListCell>
-            {address.settings.label ? (
-              <AddressBadge truncate color={address.settings.color} addressName={address.getLabelName()} />
-            ) : (
-              '-'
-            )}
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            Label
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
+            {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
           </DataListCell>
         </DataListRow>
-        <DataListRow>
-          <DataListCell>{t`Number of transactions`}</DataListCell>
-          <DataListCell>{address.details?.txNumber}</DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            {t`Number of transactions`}
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
+            {address.details?.txNumber}
+          </DataListCell>
         </DataListRow>
         {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
-          <DataListRow>
-            <DataListCell>{t`Locked ALPH balance`}</DataListCell>
-            <DataListCell>
+          <DataListRow role="row">
+            <DataListCell role="gridcell" tabIndex={0}>
+              {t`Locked ALPH balance`}
+            </DataListCell>
+            <DataListCell role="gridcell" tabIndex={0}>
               <Badge>
                 <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
               </Badge>
             </DataListCell>
           </DataListRow>
         )}
-        <DataListRow>
-          <DataListCell>{t`Total ALPH balance`}</DataListCell>
-          <DataListCell>
+        <DataListRow role="row">
+          <DataListCell role="gridcell" tabIndex={0}>
+            {t`Total ALPH balance`}
+          </DataListCell>
+          <DataListCell role="gridcell" tabIndex={0}>
             {address.details?.balance ? (
               <Badge border>
                 <Amount value={BigInt(address.details.balance)} fadeDecimals />
@@ -148,76 +145,38 @@ const AddressDetailsPage = () => {
         </DataListRow>
       </DataList>
       <PageH2>{t`Transaction history`}</PageH2>
-      <Table headers={transactionsTableHeaders} minWidth="500px">
+      <Table minWidth="500px">
         {address.transactions.pending
           .slice(0)
           .reverse()
-          .map(({ txId, timestamp, toAddress, amount, type }) => (
-            <TableRow key={txId} columnWidths={tableColumnWidths} blinking>
-              <TableCell>
-                <TransactionalInfo content={t`Pending`} type="pending" />
-              </TableCell>
-              <TableCell>{dayjs(timestamp).fromNow()}</TableCell>
-              <TableCell>
-                <DirectionalAddress>
-                  <DirectionBadge>{t`To`}</DirectionBadge>
-                  <Truncate>{toAddress}</Truncate>
-                </DirectionalAddress>
-              </TableCell>
-              <TableCell align="end">
-                {type === 'transfer' && amount && <TransactionalInfo type="out" prefix="-" content={amount} amount />}
-              </TableCell>
+          .map((transaction) => (
+            <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
+              <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
             </TableRow>
           ))}
-        {address.transactions.confirmed.map((transaction) => {
-          const amount = calAmountDelta(transaction, addressHash)
-          const amountIsBigInt = typeof amount === 'bigint'
-          const isOut = amountIsBigInt && amount < 0
-
-          return (
-            <TableRow
-              key={transaction.hash}
-              columnWidths={tableColumnWidths}
-              onClick={() => onTransactionClick(transaction)}
-            >
-              <TableCell>
-                <TransactionalInfo content={isOut ? '↑ ' + t`Sent` : '↓ ' + t`Received`} type={isOut ? 'out' : 'in'} />
-              </TableCell>
-              <TableCell>{dayjs(transaction.timestamp).fromNow()}</TableCell>
-              <TableCell>
-                <DirectionalAddress>
-                  <DirectionBadge>{isOut ? t`To` : t`From`}</DirectionBadge>
-                  <IOList
-                    currentAddress={addressHash}
-                    isOut={isOut}
-                    outputs={transaction.outputs}
-                    inputs={transaction.inputs}
-                    timestamp={transaction.timestamp}
-                    truncate
-                  />
-                </DirectionalAddress>
-              </TableCell>
-              <TableCell align="end">
-                <TransactionalInfo
-                  type={isOut ? 'out' : 'in'}
-                  prefix={isOut ? '- ' : '+ '}
-                  content={amountIsBigInt && amount < 0 ? (amount * -1n).toString() : amount.toString()}
-                  amount
-                />
-              </TableCell>
-            </TableRow>
-          )
-        })}
+        {address.transactions.confirmed.map((transaction) => (
+          <TableRow
+            role="row"
+            tabIndex={0}
+            key={transaction.hash}
+            onClick={() => onTransactionClick(transaction)}
+            onKeyPress={() => onTransactionClick(transaction)}
+          >
+            <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
+          </TableRow>
+        ))}
         {address.transactions.confirmed.length !== address.details.txNumber && (
-          <TableRow>
-            <TableCell align="center">
+          <TableRow role="row">
+            <TableCell align="center" role="gridcell">
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
         {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
-          <TableRow>
-            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+          <TableRow role="row" tabIndex={0}>
+            <TableCellPlaceholder align="center" role="gridcell">
+              {t`No transactions to display`}
+            </TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
@@ -274,22 +233,10 @@ const PageH1Styled = styled(PageH1)`
 
 const IconButtons = styled.div`
   display: flex;
-  margin-left: var(--spacing-2);
+  overflow: hidden;
 
   > svg {
     margin-left: 10px;
+    min-width: fit-content;
   }
-`
-
-const DirectionBadge = styled(Badge)`
-  background-color: ${({ theme }) => theme.bg.secondary};
-  min-width: 50px;
-  text-align: center;
-`
-
-const DirectionalAddress = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-4);
-  max-width: 100%;
 `

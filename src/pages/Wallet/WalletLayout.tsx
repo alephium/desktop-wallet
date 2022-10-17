@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -49,11 +48,18 @@ interface WalletNameSelectOptions {
 
 dayjs.extend(relativeTime)
 
-const Storage = getStorage()
-
 const WalletLayout: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const { wallet, lockWallet, activeWalletName, login, networkStatus, txModalType, setTxModalType } = useGlobalContext()
+  const {
+    wallet,
+    walletNames,
+    lockWallet,
+    activeWalletName,
+    unlockWallet,
+    networkStatus,
+    txModalType,
+    setTxModalType
+  } = useGlobalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -62,14 +68,10 @@ const WalletLayout: FC = ({ children }) => {
   const location = useLocation()
   const theme = useTheme()
   const [switchToWalletName, setSwitchToWalletName] = useState(activeWalletName)
-  const walletNameSelectOptions = Storage.list().map((walletName) => ({
+  const walletNameSelectOptions = walletNames.map((walletName) => ({
     label: walletName,
     value: walletName
   }))
-
-  const refreshData = () => {
-    refreshAddressesData()
-  }
 
   const handleWalletNameChange = (option: WalletNameSelectOptions | undefined) => {
     if (option) {
@@ -80,7 +82,7 @@ const WalletLayout: FC = ({ children }) => {
 
   const onLoginClick = (password: string) => {
     setIsPasswordModalOpen(false)
-    login(
+    unlockWallet(
       switchToWalletName,
       password,
       () => {
@@ -106,7 +108,7 @@ const WalletLayout: FC = ({ children }) => {
           <RefreshButton
             transparent
             squared
-            onClick={refreshData}
+            onClick={refreshAddressesData}
             disabled={isLoadingData}
             aria-label={t`Refresh`}
             data-tip={t`Refresh data`}
@@ -127,7 +129,7 @@ const WalletLayout: FC = ({ children }) => {
           <InfoBox text={activeWalletName} label={t`WALLET`} />
         ) : (
           <Select
-            label={t`WALLET`}
+            label={t`CURRENT WALLET`}
             options={walletNameSelectOptions}
             controlledValue={{
               label: activeWalletName,
@@ -161,7 +163,7 @@ const WalletLayout: FC = ({ children }) => {
               walletName={switchToWalletName}
               isSubmitDisabled={!isPassphraseConfirmed}
             >
-              <WalletPassphrase
+              <WalletPassphraseStyled
                 onPassphraseConfirmed={setPassphrase}
                 setIsPassphraseConfirmed={setIsPassphraseConfirmed}
               />
@@ -234,7 +236,7 @@ const WalletSidebar = styled.div`
   }
 `
 
-const WalletActions = styled.div`
+const WalletActions = styled.nav`
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -252,3 +254,8 @@ const ActionsTitle = styled.h3`
 `
 
 const RefreshButton = styled(Button)``
+
+const WalletPassphraseStyled = styled(WalletPassphrase)`
+  margin: 16px 0;
+  width: 100%;
+`

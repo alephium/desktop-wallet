@@ -17,17 +17,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC, useCallback, useEffect } from 'react'
+import { ReactNode, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 
 export interface ModalContainerProps {
   onClose: () => void
+  children?: ReactNode | ReactNode[]
   focusMode?: boolean
   hasPadding?: boolean
   className?: string
 }
 
-const ModalContainer: FC<ModalContainerProps> = ({ children, onClose, focusMode, className }) => {
+const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
   // Prevent body scroll on mount
   useEffect(() => {
     document.body.style.overflow = 'hidden'

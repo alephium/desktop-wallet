@@ -16,16 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion, useTransform, useViewportScroll } from 'framer-motion'
+import { colord } from 'colord'
+import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import { useScrollContext } from '../contexts/scroll'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
@@ -36,22 +36,24 @@ import Button from './Button'
 import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
-import Tooltip from './Tooltip'
 
 const AppHeader: FC = ({ children }) => {
   const { t } = useTranslation('App')
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const { isWalletConnectModalOpen, setIsWalletConnectModalOpen } = useWalletConnectContext()
-  const { scrollY } = useViewportScroll()
+  const { scroll } = useScrollContext()
+  const scrollY = useMotionValue(0)
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
   const { networkStatus, isPassphraseUsed } = useGlobalContext()
   const isOffline = networkStatus === 'offline'
 
+  scrollY.set(scroll?.scrollTop ?? 0)
+
   const headerBGColor = useTransform(
     scrollY,
     [0, 100],
-    [tinycolor(theme.bg.primary).setAlpha(0).toString(), theme.bg.primary]
+    [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
   )
   const {
     settings: {
@@ -60,10 +62,6 @@ const AppHeader: FC = ({ children }) => {
     updateSettings
   } = useGlobalContext()
 
-  useEffect(() => {
-    if (isOffline || mainAddress) ReactTooltip.rebuild()
-  }, [isOffline, mainAddress])
-
   return (
     <>
       <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
@@ -71,9 +69,9 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         {isOffline && (
           <>
-            <div data-tip={t`The wallet is offline.`}>
-              <OfflineIcon size={20} />
-            </div>
+            <OfflineIcon data-tip={t`The wallet is offline.`}>
+              <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />
+            </OfflineIcon>
             <HeaderDivider />
           </>
         )}
@@ -93,12 +91,7 @@ const AppHeader: FC = ({ children }) => {
         {mainAddress && !isPassphraseUsed && (
           <>
             <HeaderDivider />
-            <AddressBadge
-              color={mainAddress?.settings.color}
-              addressName={mainAddress?.getLabelName()}
-              data-tip={t`Main address`}
-              opaqueBg
-            />
+            <AddressBadge address={mainAddress} data-tip={t`Default address`} />
           </>
         )}
         <HeaderDivider />
@@ -130,7 +123,6 @@ const AppHeader: FC = ({ children }) => {
       <AnimatePresence>
         {isWalletConnectModalOpen && <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />}
       </AnimatePresence>
-      <Tooltip />
     </>
   )
 }
@@ -165,7 +157,12 @@ const HeaderContainer = styled(motion.header)`
   }
 `
 
-const OfflineIcon = styled(WifiOff)`
-  color: ${({ theme }) => theme.font.secondary};
-  margin: 0 10px;
+const OfflineIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  background-color: ${({ theme }) => theme.global.alert};
 `

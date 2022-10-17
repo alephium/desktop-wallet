@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { FC } from 'react'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 interface ActionLinkProps {
   onClick: () => void
@@ -26,9 +26,9 @@ interface ActionLinkProps {
 }
 
 const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
-  <a className={className} onClick={onClick}>
+  <button className={className} onClick={onClick}>
     {children}
-  </a>
+  </button>
 )
 
 export default styled(ActionLink)`
@@ -36,8 +36,15 @@ export default styled(ActionLink)`
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
 
   &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
+    color: ${({ theme }) => colord(theme.global.accent).darken(0.1).toRgbString()};
+  }
+
+  &:focus-visible {
+    text-decoration: underline;
   }
 `

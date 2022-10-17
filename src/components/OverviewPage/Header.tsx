@@ -18,13 +18,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ElementRef } from 'react-scrollbars-custom/dist/types/types'
 import styled from 'styled-components'
 
 import AddressSummaryCard, { addressSummaryCardWidthPx } from '../../components/AddressSummaryCard'
 import Button from '../../components/Button'
-import GradientCanvas from '../../components/GradientCanvas'
+import Scrollbar from '../../components/Scrollbar'
 import WalletSummaryCard from '../../components/WalletSummaryCard'
 import { useAddressesContext } from '../../contexts/addresses'
 import DayskyImageSrc from '../../images/daysky.jpeg'
@@ -36,55 +37,60 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
   const { t } = useTranslation('App')
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, isLoadingData } = useAddressesContext()
-  const addressSummaryCardsRef = useRef<HTMLDivElement>(null)
+  const scrollbarRef = useRef<HTMLDivElement | null>(null)
+
+  const onElementRef: ElementRef<HTMLDivElement> = useCallback(
+    (element) => {
+      const scrollbar = element?.querySelector('.ScrollbarsCustom-Scroller')
+      if (!scrollbar) return
+
+      scrollbarRef.current = scrollbar as HTMLDivElement
+
+      const onWheel = (event: Event) => {
+        const _event = event as WheelEvent
+        const delta = _event.deltaY
+
+        if (delta > 3 || delta < -3) {
+          _event.preventDefault()
+          scrollbar.scrollLeft = scrollbar.scrollLeft + delta
+        }
+      }
+
+      scrollbar.addEventListener('wheel', onWheel)
+
+      return () => {
+        scrollbar.removeEventListener('wheel', onWheel)
+      }
+    },
+    [scrollbarRef]
+  )
 
   useEffect(() => {
-    if (!areAddressSummariesExpanded && addressSummaryCardsRef.current) {
-      addressSummaryCardsRef.current.scrollLeft = 0
+    if (!areAddressSummariesExpanded && scrollbarRef.current) {
+      scrollbarRef.current.scrollLeft = 0
     }
   }, [areAddressSummariesExpanded])
-
-  useEffect(() => {
-    const cards = addressSummaryCardsRef.current
-    if (!cards || !areAddressSummariesExpanded) return
-
-    const onWheel = (event: WheelEvent) => {
-      const delta = event.deltaY
-      if (delta > 3 || delta < -3) {
-        event.preventDefault()
-        cards.scrollLeft += delta
-      }
-    }
-    cards.addEventListener('wheel', onWheel)
-
-    return () => {
-      cards.removeEventListener('wheel', onWheel)
-    }
-  })
 
   return (
     <Header className={className}>
       <TopGradient />
-      <GradientCanvas />
       <Summaries>
         <WalletSummaryCardStyled isLoading={isLoadingData} />
-        <AddressSummaryCards
-          collapsed={!areAddressSummariesExpanded}
-          totalAddresses={addresses.length}
-          ref={addressSummaryCardsRef}
-        >
-          <AnimatePresence>
-            {sortAddressList(addresses).map((address, index) => (
-              <AddressSummaryCardStyled
-                key={address.hash}
-                address={address}
-                index={index}
-                clickable={areAddressSummariesExpanded}
-                totalCards={addresses.length}
-              />
-            ))}
-          </AnimatePresence>
-        </AddressSummaryCards>
+        <Scrollbar noScrollY isDynamic elementRef={onElementRef} noScrollX={!areAddressSummariesExpanded}>
+          <AddressSummaryCards collapsed={!areAddressSummariesExpanded} totalAddresses={addresses.length}>
+            <AnimatePresence>
+              {sortAddressList(addresses).map((address, index) => (
+                <AddressSummaryCardStyled
+                  key={address.hash}
+                  address={address}
+                  index={index}
+                  clickable={areAddressSummariesExpanded}
+                  totalCards={addresses.length}
+                />
+              ))}
+            </AnimatePresence>
+          </AddressSummaryCards>
+        </Scrollbar>
         <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
           {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
           {areAddressSummariesExpanded ? t`Reduce` : t`Show addresses`}
@@ -135,8 +141,9 @@ const Summaries = styled.div`
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
   gap: ${addressSummaryCardsGapPx}px;
-  overflow: ${({ collapsed }) => (collapsed ? 'hidden' : 'auto')};
   margin-left: calc(var(--spacing-2) * -1);
+  overflow: hidden;
+  height: 100%;
   padding-left: var(--spacing-4);
   align-items: center;
   width: ${({ collapsed, totalAddresses }) =>

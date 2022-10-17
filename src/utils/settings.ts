@@ -46,15 +46,15 @@ type DeprecatedNetworkSettings = Settings['network']
 export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['network']> = {
   mainnet: {
     networkId: 0,
-    nodeHost: 'https://mainnet-wallet.alephium.org',
-    explorerApiHost: 'https://mainnet-backend.alephium.org',
-    explorerUrl: 'https://explorer.alephium.org'
+    nodeHost: 'https://wallet-v18.mainnet.alephium.org',
+    explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
+    explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
   },
   testnet: {
     networkId: 1,
-    nodeHost: 'https://testnet-wallet.alephium.org',
-    explorerApiHost: 'https://testnet-backend.alephium.org',
-    explorerUrl: 'https://testnet.alephium.org'
+    nodeHost: 'https://wallet-v18.testnet.alephium.org',
+    explorerApiHost: 'https://backend-v18.testnet.alephium.org',
+    explorerUrl: 'https://explorer-v18.testnet.alephium.org'
   },
   localhost: {
     networkId: 4,
@@ -75,7 +75,7 @@ export const defaultSettings: Settings = {
   network: clone(networkEndpoints.mainnet) as Settings['network']
 }
 
-export const networkNames = ['testnet', 'mainnet', 'localhost', 'custom'] as const
+export const networkNames = ['mainnet', 'testnet', 'localhost', 'custom'] as const
 
 export type NetworkName = typeof networkNames[number]
 
@@ -102,8 +102,6 @@ export const loadSettings = (): Settings => {
   }
 }
 
-export const deprecatedSettingsExist = (): boolean => !!window.localStorage.getItem('theme')
-
 export const migrateDeprecatedSettings = (): Settings => {
   const settings = loadSettings()
 
@@ -116,6 +114,23 @@ export const migrateDeprecatedSettings = (): Settings => {
       ? { ...settings.general, theme: deprecatedThemeSetting as ThemeType }
       : settings.general
   }
+
+  if (settings.network.explorerApiHost === 'https://mainnet-backend.alephium.org') {
+    migratedSettings.network.explorerApiHost = 'https://backend-v18.mainnet.alephium.org'
+  } else if (settings.network.explorerApiHost === 'https://testnet-backend.alephium.org') {
+    migratedSettings.network.explorerApiHost = 'https://backend-v18.testnet.alephium.org'
+  }
+  if (settings.network.explorerUrl === 'https://explorer.alephium.org') {
+    migratedSettings.network.explorerUrl = 'https://explorer-v18.mainnet.alephium.org'
+  } else if (settings.network.explorerUrl === 'https://testnet.alephium.org') {
+    migratedSettings.network.explorerUrl = 'https://explorer-v18.testnet.alephium.org'
+  }
+  if (settings.network.nodeHost === 'https://mainnet-wallet.alephium.org') {
+    migratedSettings.network.nodeHost = 'https://wallet-v18.mainnet.alephium.org'
+  } else if (settings.network.nodeHost === 'https://testnet-wallet.alephium.org') {
+    migratedSettings.network.nodeHost = 'https://wallet-v18.testnet.alephium.org'
+  }
+
   const newSettings = merge({}, defaultSettings, migratedSettings)
   storeSettings(newSettings)
 

@@ -19,10 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import tinycolor from 'tinycolor2'
 
+import ActionLink from '../components/ActionLink'
 import AppHeader from '../components/AppHeader'
 import Button from '../components/Button'
 import SideBar from '../components/HomePage/SideBar'
@@ -36,16 +36,13 @@ import { useGlobalContext } from '../contexts/global'
 import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
-interface HomeProps {
-  hasWallet: boolean
-  walletNames: string[]
-}
-
-const HomePage = ({ hasWallet, walletNames }: HomeProps) => {
+const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const { newLatestVersion } = useGlobalContext()
+  const { newLatestVersion, walletNames } = useGlobalContext()
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
   const { t } = useTranslation('App')
+
+  const hasWallet = walletNames.length > 0
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
@@ -100,7 +97,7 @@ interface LoginProps {
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
   const { t } = useTranslation('App')
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
-  const { login } = useGlobalContext()
+  const { unlockWallet } = useGlobalContext()
   const navigate = useNavigate()
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -111,7 +108,7 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    login(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+    unlockWallet(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
 
     if (passphrase) setPassphrase('')
   }
@@ -134,27 +131,28 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphrase onPassphraseConfirmed={setPassphrase} setIsPassphraseConfirmed={setIsPassphraseConfirmed} />
+        <WalletPassphraseStyled
+          onPassphraseConfirmed={setPassphrase}
+          setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+        />
       </SectionStyled>
       <SectionStyled>
-        <Button
+        <ButtonStyled
           onClick={handleLogin}
           submit
           disabled={!credentials.walletName || !credentials.password || !isPassphraseConfirmed}
         >
           {t`Login`}
-        </Button>
+        </ButtonStyled>
       </SectionStyled>
-      <SwitchLink onClick={onLinkClick} centered>
-        {t`Create / import a new wallet`}
-      </SwitchLink>
+      <SwitchLink onClick={onLinkClick}>{t`Create / import a new wallet`}</SwitchLink>
     </>
   )
 }
 
 const InitialActions = ({
   showLinkToExistingWallets,
-  onLinkClick
+  onLinkClick = () => ({})
 }: {
   showLinkToExistingWallets?: boolean
   onLinkClick?: () => void
@@ -170,11 +168,7 @@ const InitialActions = ({
       <Section inList>
         <Button onClick={() => navigate('/create/0')}>{t`New wallet`}</Button>
         <Button onClick={() => navigate('/import/0')}>{t`Import wallet`}</Button>
-        {showLinkToExistingWallets && (
-          <SwitchLink onClick={onLinkClick} centered>
-            {t`Use an existing wallet`}
-          </SwitchLink>
-        )}
+        {showLinkToExistingWallets && <SwitchLink onClick={onLinkClick}>{t`Use an existing wallet`}</SwitchLink>}
       </Section>
     </>
   )
@@ -201,17 +195,22 @@ const InteractionArea = styled.div`
   padding: var(--spacing-5);
 `
 
-const SwitchLink = styled(Paragraph)`
-  color: ${({ theme }) => theme.global.accent};
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: var(--spacing-1);
-  cursor: pointer;
-
-  &:hover {
-    color: ${({ theme }) => tinycolor(theme.global.accent).darken(10).toString()};
-  }
-`
-
 const SectionStyled = styled(Section)`
   min-width: 400px;
+`
+
+const ButtonStyled = styled(Button)`
+  margin-top: 20px;
+`
+
+const SwitchLink = styled(ActionLink)`
+  font-weight: var(--fontWeight-medium);
+  font-size: 12px;
+  font-family: inherit;
+  height: var(--inputHeight);
+`
+
+const WalletPassphraseStyled = styled(WalletPassphrase)`
+  margin: 16px 0;
+  width: 100%;
 `

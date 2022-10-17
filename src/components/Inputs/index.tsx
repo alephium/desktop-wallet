@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import { FC, InputHTMLAttributes, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
-import tinycolor from 'tinycolor2'
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
   label?: ReactNode
@@ -27,6 +27,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
+  hint?: string
   className?: string
 }
 
@@ -41,6 +42,11 @@ export const inputPlaceHolderVariants: Variants = {
   down: { y: 0, scale: 1 }
 }
 
+export const inputStyling = {
+  paddingRight: '12px',
+  paddingLeftRight: '12px'
+}
+
 export const inputDefaultStyle = (isValid?: boolean) => css`
   background-image: none;
   height: var(--inputHeight);
@@ -49,7 +55,7 @@ export const inputDefaultStyle = (isValid?: boolean) => css`
   background-color: ${({ theme }) => theme.bg.secondary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
-  padding: ${isValid ? '0 45px 0 12px' : '0 12px'};
+  padding: ${isValid ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
   font-weight: var(--fontWeight-medium);
   font-size: 1em;
   text-align: left;
@@ -65,7 +71,7 @@ export const inputDefaultStyle = (isValid?: boolean) => css`
 
   &.error {
     border: 1px solid ${({ theme }) => theme.global.alert};
-    background-color: ${({ theme }) => tinycolor(theme.global.alert).setAlpha(0.1).toString()};
+    background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.1).toRgbString()};
   }
 
   &:disabled {
@@ -108,12 +114,13 @@ export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }>
 
 InputLabel = styled(InputLabel)`
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 13px;
   font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
   transform-origin: left;
+  font-size: 12px;
 `
 
 export const InputValidIconContainer = styled(motion.div)`

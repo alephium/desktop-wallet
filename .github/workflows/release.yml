@@ -32,7 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: master
           fetch-depth: 0
       - id: get-os
         run: |

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 interface ToggleProps {
@@ -26,16 +26,29 @@ interface ToggleProps {
   disabled?: boolean
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
+  label?: string
+  hasDarkerBgOnLightTheme?: boolean
   className?: string
 }
 
-const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors }: ToggleProps) => {
+const Toggle = ({
+  toggled,
+  onToggle,
+  className,
+  disabled,
+  ToggleIcons,
+  handleColors,
+  label,
+  hasDarkerBgOnLightTheme
+}: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
 
   const toggleBackgroundVariants = {
-    off: { backgroundColor: theme.bg.tertiary },
+    off: {
+      backgroundColor: theme.name === 'light' && hasDarkerBgOnLightTheme ? 'rgba(0, 0, 0, 0.15)' : theme.bg.tertiary
+    },
     on: { backgroundColor: handleColors ? theme.bg.tertiary : theme.global.accent }
   }
 
@@ -57,18 +70,23 @@ const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleCol
 
   const transition: Transition = { duration: 0.2, type: 'tween' }
 
-  const onClick = () => {
+  const handleSwitch = useCallback(() => {
     if (!disabled) {
       onToggle(!toggled)
     }
-  }
+  }, [disabled, toggled, onToggle])
 
   const getToggleIconColor = (isActive: boolean) => (isActive ? 'var(--color-white)' : theme.font.tertiary)
 
   return (
     <StyledToggle
-      onClick={onClick}
+      onClick={handleSwitch}
+      onKeyPress={handleSwitch}
       className={className}
+      aria-label={label}
+      aria-checked={toggled}
+      role="checkbox"
+      tabIndex={0}
       toggled={toggled}
       variants={toggleBackgroundVariants}
       animate={toggleState}

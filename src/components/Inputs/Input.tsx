@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import classNames from 'classnames'
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { WheelEvent } from 'react'
@@ -26,7 +27,18 @@ import styled from 'styled-components'
 import { sectionChildrenVariants } from '../PageComponents/PageContainers'
 import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
 
-const Input = ({ label, error, isValid, disabled, onChange, value, noMargin, ...props }: InputProps) => {
+const Input = ({
+  label,
+  error,
+  isValid,
+  disabled,
+  onChange,
+  value,
+  noMargin,
+  hint,
+  children,
+  ...props
+}: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -64,19 +76,29 @@ const Input = ({ label, error, isValid, disabled, onChange, value, noMargin, ...
         </InputValidIconContainer>
       )}
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
+      {hint && <Hint>{hint}</Hint>}
+      {children}
     </InputContainer>
   )
 }
 
 export default Input
 
-const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
+export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
   position: relative;
-  height: var(--inputHeight);
+  min-height: var(--inputHeight);
   width: 100%;
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
 const StyledInput = styled.input<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
+  ${({ isValid }) => inputDefaultStyle(isValid)};
+  color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
+`
+
+const Hint = styled.div`
+  font-size: 10px;
+  color: ${({ theme }) => theme.font.secondary};
+  margin-left: 12px;
+  margin-top: 6px;
 `
