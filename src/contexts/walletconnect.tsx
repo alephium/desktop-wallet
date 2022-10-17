@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { RelayMethod } from '@alephium/walletconnect-provider'
 import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
@@ -159,8 +160,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         //          );
         //        }
 
-        switch (request.method) {
-          case 'alph_signTransferTx': {
+        switch (request.method as RelayMethod) {
+          case 'alph_signAndSubmitTransferTx': {
             const p = request.params as any as SignTransferTxParams
             const txData: BuildTransferTxData = {
               fromAddress: extractAddress(p.signerAddress),
@@ -172,7 +173,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             setTxData(['transfer', txData])
             break
           }
-          case 'alph_signContractCreationTx': {
+          case 'alph_signAndSubmitDeployContractTx': {
             const p = request.params as any as SignDeployContractTxParams
             const txData: BuildDeployContractTxData = {
               fromAddress: extractAddress(p.signerAddress),
@@ -185,7 +186,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             setTxData(['deploy-contract', txData])
             break
           }
-          case 'alph_signScriptTx': {
+          case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as any as SignExecuteScriptTxParams
             const txData: BuildScriptTxData = {
               fromAddress: extractAddress(p.signerAddress),
@@ -198,6 +199,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             break
           }
           default:
+            // TODO: support all of the other SignerProvider methods
             throw new Error(`Method not supported: ${request.method}`)
         }
       } catch (e) {
