@@ -98,7 +98,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return addresses
         .filter((address) => {
           const group = addressToGroup(address.hash, 4)
-          return chainGroup === -1 || group === (chainGroup as number)
+          return chainGroup === undefined || group === chainGroup
         })
         .map((address) => `${chain}:${address.publicKey}`)
     })
@@ -111,7 +111,9 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
   function areAccountsCompatible(accounts: string[], requiredChains: string[]): boolean {
     const accountChains = accounts.map((account) => {
       const [_namespace, networkId, group, _publicKey] = account.replace(/\//g, ':').split(':')
-      return formatChain(parseInt(networkId, 10), parseInt(group, 10))
+      const chainGroupDecoded = parseInt(group, 10)
+      const chainGroup = chainGroupDecoded === -1 ? undefined : chainGroupDecoded
+      return formatChain(parseInt(networkId, 10), chainGroup)
     })
     for (const requiredChain in requiredChains) {
       if (!accountChains.includes(requiredChain)) {
