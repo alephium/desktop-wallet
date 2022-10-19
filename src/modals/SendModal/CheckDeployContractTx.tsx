@@ -34,7 +34,7 @@ const CheckDeployContractTx = ({ data, fees, onSend, onCancel }: CheckTxProps<Bu
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
       <BytecodeInfo bytecode={data.bytecode} />
-      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.initialAlphAmount, fees)} />
       <IssueTokenAmountInfo issueTokenAmount={data.issueTokenAmount} />
       <FeeInfo fees={fees} />
     </ModalContent>

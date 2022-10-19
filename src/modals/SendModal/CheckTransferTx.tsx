@@ -33,7 +33,7 @@ const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTra
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
       <ToAddressInfo toAddress={data.toAddress} />
-      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.alphAmount, fees)} />
       <FeeInfo fees={fees} />
     </ModalContent>
     <CheckTxFooter onSend={onSend} onCancel={onCancel} />

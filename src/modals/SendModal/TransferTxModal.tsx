@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertAlphToSet } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 
 import { Client } from '../../contexts/global'
@@ -30,19 +31,20 @@ export type TransferTxModalProps = {
 
 const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   const buildTransaction = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
-    const { fromAddress, toAddress, attoAlphAmount, gasAmount, gasPrice } = transactionData
-    const sweep = attoAlphAmount === fromAddress.availableBalance.toString()
+    const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice } = transactionData
+    const sweep = convertAlphToSet(alphAmount) === fromAddress.availableBalance
     context.setIsSweeping(sweep)
     if (sweep) {
       const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, toAddress)
       context.setSweepUnsignedTxs(unsignedTxs)
       context.setFees(fees)
     } else {
+      const attoAlphAmount = convertAlphToSet(alphAmount).toString()
       const { data } = await client.clique.transactionCreate(
         fromAddress.hash,
         fromAddress.publicKey,
         toAddress,
-        attoAlphAmount.toString(),
+        attoAlphAmount,
         undefined,
         gasAmount ? gasAmount : undefined,
         gasPrice?.toString()
@@ -54,7 +56,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
   }
 
   const handleSend = async (client: Client, transactionData: BuildTransferTxData, context: TxContext) => {
-    const { fromAddress, toAddress, attoAlphAmount } = transactionData
+    const { fromAddress, toAddress, alphAmount } = transactionData
 
     if (toAddress && context.unsignedTransaction) {
       if (context.isSweeping) {
@@ -83,7 +85,7 @@ const TransferTxModal = ({ initialTxData, onClose }: TransferTxModalProps) => {
           toAddress,
           'transfer',
           context.currentNetwork,
-          BigInt(attoAlphAmount)
+          convertAlphToSet(alphAmount)
         )
         return data.signature
       }

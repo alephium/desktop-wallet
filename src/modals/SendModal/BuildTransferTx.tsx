@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertAlphToSet } from '@alephium/sdk'
+
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, useBuildTxCommon } from './utils'
@@ -23,7 +25,7 @@ import { ModalContent, PartialTxData, SubmitOrCancel, ToAddress, useAddress, use
 export interface BuildTransferTxData {
   fromAddress: Address
   toAddress: string
-  attoAlphAmount: string
+  alphAmount: string
   gasAmount?: number
   gasPrice?: string
 }
@@ -35,8 +37,8 @@ export interface BuildTransferTxProps {
 }
 
 const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => {
-  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.attoAlphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [toAddress, handleAddressChange] = useAddress(data?.toAddress ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -48,8 +50,8 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
     isCommonReady &&
     toAddress.value &&
     !toAddress.error &&
-    !!attoAlphAmount &&
-    isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance)
+    !!alphAmount &&
+    isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
 
   return (
     <>
@@ -64,7 +66,7 @@ const BuildTransferTx = ({ data, onSubmit, onCancel }: BuildTransferTxProps) => 
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
-            attoAlphAmount: attoAlphAmount,
+            alphAmount: alphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

@@ -24,7 +24,7 @@ export interface BuildScriptTxData {
   fromAddress: Address
   bytecode: string
 
-  attoAlphAmount?: string
+  alphAmount?: string
   gasAmount?: number
   gasPrice?: string
 }
@@ -36,8 +36,8 @@ export interface BuildScriptTxProps {
 }
 
 const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
-  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.attoAlphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.alphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
 
   if (typeof fromAddress === 'undefined') {
@@ -46,9 +46,7 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
   }
 
   const isSubmitButtonActive =
-    isCommonReady &&
-    bytecode &&
-    (!attoAlphAmount || isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance))
+    isCommonReady && bytecode && (!alphAmount || isAmountWithinRange(BigInt(alphAmount), fromAddress.availableBalance))
 
   return (
     <>
@@ -63,7 +61,7 @@ const BuildScriptTx = ({ data, onSubmit, onCancel }: BuildScriptTxProps) => {
           onSubmit({
             fromAddress: data.fromAddress,
             bytecode: bytecode,
-            attoAlphAmount: attoAlphAmount,
+            alphAmount: alphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

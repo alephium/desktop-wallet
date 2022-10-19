@@ -151,13 +151,13 @@ export function useBytecode(initialBytecode: string) {
 
 export function useBuildTxCommon(
   initialFromAddress: Address,
-  initialAttoAlphAmount: string | undefined,
+  initialAlphAmount: string | undefined,
   initialGasAmount: number | undefined,
   initialGasPrice: string | undefined
 ) {
   const theme = useTheme()
   const [fromAddress, FromAddress] = useFromAddress(initialFromAddress)
-  const [attoAlphAmount, setAttoAlphAmount] = useState(initialAttoAlphAmount ?? '')
+  const [alphAmount, setAlphAmount] = useState(initialAlphAmount ?? '')
   const [gasAmount, setGasAmount] = useStateWithParsed<number | undefined>(
     initialGasAmount,
     typeof initialGasAmount !== 'undefined' ? initialGasAmount.toString() : ''
@@ -201,11 +201,7 @@ export function useBuildTxCommon(
   const isCommonReady = !gasAmount.error && !gasPrice.error
 
   const AlphAmount = (
-    <TxAmount
-      attoAlphAmount={attoAlphAmount}
-      setAttoAlphAmount={setAttoAlphAmount}
-      availableBalance={fromAddress!.availableBalance}
-    />
+    <TxAmount alphAmount={alphAmount} setAlphAmount={setAlphAmount} availableBalance={fromAddress!.availableBalance} />
   )
 
   const GasSettings = (
@@ -222,16 +218,7 @@ export function useBuildTxCommon(
     </ExpandableSectionStyled>
   )
 
-  return [
-    fromAddress,
-    FromAddress,
-    attoAlphAmount,
-    AlphAmount,
-    gasAmount,
-    gasPrice,
-    GasSettings,
-    isCommonReady
-  ] as const
+  return [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] as const
 }
 
 export const FromAddressSelect = ({
@@ -275,14 +262,14 @@ export const ToAddress = ({
 )
 
 export const TxAmount = ({
-  attoAlphAmount,
-  setAttoAlphAmount,
+  alphAmount,
+  setAlphAmount,
   availableBalance
 }: {
-  attoAlphAmount: string
-  setAttoAlphAmount: (amount: string) => void
+  alphAmount: string
+  setAlphAmount: (amount: string) => void
   availableBalance: bigint
-}) => <AmountInput value={attoAlphAmount.toString()} onChange={setAttoAlphAmount} availableAmount={availableBalance} />
+}) => <AmountInput value={alphAmount.toString()} onChange={setAlphAmount} availableAmount={availableBalance} />
 
 export const GasAmount = ({
   gasAmount,
@@ -413,11 +400,11 @@ export function useIssueTokenAmount(initialTokenAmount: string | undefined) {
   return [issueTokenAmount, IssueTokenAmount] as const
 }
 
-export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint) => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
+export const expectedAmount = (fromAddress: Address, alphAmount: string | undefined, fees: bigint) => {
+  const amountInSet = alphAmount ? convertAlphToSet(alphAmount) : 0n
   const amountIncludingFees = amountInSet + fees
-  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
-  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
+  const exceededBy = amountIncludingFees - fromAddress.availableBalance
+  const expectedAmount = exceededBy > 0 ? fromAddress.availableBalance - exceededBy : amountInSet
   return expectedAmount
 }
 

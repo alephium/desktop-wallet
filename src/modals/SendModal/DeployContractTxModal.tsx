@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertAlphToSet } from '@alephium/sdk'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
 import { useState } from 'react'
 
@@ -33,10 +34,12 @@ const DeployContractTxModal = ({ initialTxData, onClose }: DeployContractTxModal
   const [contractAddress, setContractAddress] = useState<string>('')
 
   const buildTransaction = async (client: Client, data: BuildDeployContractTxData, context: TxContext) => {
+    const initialAttoAlphAmount =
+      data.initialAlphAmount !== undefined ? convertAlphToSet(data.initialAlphAmount).toString() : undefined
     const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
-      initialAttoAlphAmount: data.initialAttoAlphAmount?.toString(),
+      initialAttoAlphAmount: initialAttoAlphAmount,
       issueTokenAmount: data.issueTokenAmount?.toString(),
       gasAmount: data.gasAmount,
       gasPrice: data.gasPrice?.toString()

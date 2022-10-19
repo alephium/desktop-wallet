@@ -31,7 +31,7 @@ export interface BuildDeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAttoAlphAmount?: string
+  initialAlphAmount?: string
   issueTokenAmount?: string
   gasAmount?: number
   gasPrice?: string
@@ -44,8 +44,8 @@ export interface BuildDeployContractTxProps {
 }
 
 const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContractTxProps) => {
-  const [fromAddress, FromAddress, attoAlphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
-    useBuildTxCommon(data.fromAddress, data.initialAttoAlphAmount, data.gasAmount, data.gasPrice)
+  const [fromAddress, FromAddress, alphAmount, AlphAmount, gasAmount, gasPrice, GasSettings, isCommonReady] =
+    useBuildTxCommon(data.fromAddress, data.initialAlphAmount, data.gasAmount, data.gasPrice)
   const [bytecode, Bytecode] = useBytecode(data.bytecode ?? '')
   const [issueTokenAmount, IssueTokenAmount] = useIssueTokenAmount(data.issueTokenAmount?.toString() ?? undefined)
 
@@ -55,9 +55,7 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   }
 
   const isSubmitButtonActive =
-    isCommonReady &&
-    bytecode &&
-    (!attoAlphAmount || isAmountWithinRange(BigInt(attoAlphAmount), fromAddress.availableBalance))
+    isCommonReady && bytecode && (!alphAmount || isAmountWithinRange(BigInt(alphAmount), fromAddress.availableBalance))
 
   return (
     <>
@@ -74,7 +72,7 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
             fromAddress: data.fromAddress,
             bytecode: bytecode,
             issueTokenAmount: issueTokenAmount,
-            initialAttoAlphAmount: attoAlphAmount,
+            initialAlphAmount: alphAmount,
             gasAmount: gasAmount.parsed,
             gasPrice: gasPrice.parsed
           })

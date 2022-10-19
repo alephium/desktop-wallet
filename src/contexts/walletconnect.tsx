@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertSetToAlph } from '@alephium/sdk'
 import { RelayMethod } from '@alephium/walletconnect-provider'
 import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
@@ -163,10 +164,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as any as SignTransferTxParams
+            const alphAmount = convertSetToAlph(p.destinations[0].attoAlphAmount)
             const txData: BuildTransferTxData = {
               fromAddress: extractAddress(p.signerAddress),
               toAddress: p.destinations[0].address,
-              attoAlphAmount: p.destinations[0].attoAlphAmount?.toString(),
+              alphAmount: alphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
@@ -175,10 +177,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitDeployContractTx': {
             const p = request.params as any as SignDeployContractTxParams
+            const initialAlphAmount =
+              p.initialAttoAlphAmount !== undefined ? convertSetToAlph(p.initialAttoAlphAmount) : undefined
             const txData: BuildDeployContractTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              initialAttoAlphAmount: p.initialAttoAlphAmount?.toString(),
+              initialAlphAmount: initialAlphAmount,
               issueTokenAmount: p.issueTokenAmount?.toString(),
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
@@ -188,10 +192,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as any as SignExecuteScriptTxParams
+            const alphAmount = p.attoAlphAmount !== undefined ? convertSetToAlph(p.attoAlphAmount) : undefined
             const txData: BuildScriptTxData = {
               fromAddress: extractAddress(p.signerAddress),
               bytecode: p.bytecode,
-              attoAlphAmount: p.attoAlphAmount?.toString(),
+              alphAmount: alphAmount,
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }

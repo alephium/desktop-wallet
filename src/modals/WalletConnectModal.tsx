@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup } from '@alephium/sdk'
-import { formatChain, parseChain } from '@alephium/walletconnect-provider'
+import { formatChain, isCompatibleChainGroup, parseChain } from '@alephium/walletconnect-provider'
 import { ChainInfo, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
@@ -98,7 +98,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       return addresses
         .filter((address) => {
           const group = addressToGroup(address.hash, 4)
-          return chainGroup === -1 || group === (chainGroup as number)
+          return isCompatibleChainGroup(group, chainGroup)
         })
         .map((address) => `${chain}:${address.publicKey}`)
     })
@@ -130,13 +130,13 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       }
 
       const { id, requiredNamespaces, relays } = proposal.params
-      const permittedChain = requiredNamespaces[PROVIDER_NAMESPACE]
+      const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
       const namespaces: SessionTypes.Namespaces = {
         alephium: {
-          methods: permittedChain.methods,
-          events: permittedChain.events,
-          accounts: chainAccounts(signerAddresses, permittedChain.chains),
-          extension: permittedChain.extension?.map((ext) => ({
+          methods: requiredNamespace.methods,
+          events: requiredNamespace.events,
+          accounts: chainAccounts(signerAddresses, requiredNamespace.chains),
+          extension: requiredNamespace.extension?.map((ext) => ({
             methods: ext.methods,
             events: ext.events,
             accounts: chainAccounts(signerAddresses, ext.chains)
@@ -144,7 +144,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         }
       }
 
-      if (!areAccountsCompatible(namespaces.alephium.accounts, permittedChain.chains)) {
+      if (!areAccountsCompatible(namespaces.alephium.accounts, requiredNamespace.chains)) {
         setErrorState(
           `Not all chain requested has at least one corresponding account. Chains requested: ${formatChains(
             requiredChainInfo

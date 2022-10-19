@@ -33,7 +33,7 @@ const CheckScriptTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildScrip
     <ModalContent>
       <FromAddressInfo fromAddress={data.fromAddress} />
       <BytecodeInfo bytecode={data.bytecode} />
-      <AlphAmountInfo expectedAmount={expectedAmount(data, fees)} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.alphAmount, fees)} />
       <FeeInfo fees={fees} />
     </ModalContent>
     <CheckTxFooter onSend={onSend} onCancel={onCancel} />
