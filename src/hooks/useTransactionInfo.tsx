@@ -16,19 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calAmountDelta } from '@alephium/sdk'
+import {
+  calcTxAmountDeltaForAddress,
+  getDirection,
+  isConsolidationTx,
+  TransactionDirection,
+  TransactionInfoType
+} from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { AddressHash, useAddressesContext } from '../contexts/addresses'
-import {
-  hasOnlyOutputsWith,
-  isConsolidationTx,
-  isPendingTx,
-  removeConsolidationChangeAmount,
-  TransactionDirection,
-  TransactionInfoType,
-  TransactionVariant
-} from '../utils/transactions'
+import { hasOnlyOutputsWith, isPendingTx, TransactionVariant } from '../utils/transactions'
 
 export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash) => {
   const { addresses } = useAddressesContext()
@@ -46,18 +44,17 @@ export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressH
     lockTime = tx.lockTime
   } else {
     outputs = tx.outputs ?? outputs
+    amount = calcTxAmountDeltaForAddress(tx, addressHash)
+    amount = amount < 0 ? amount * BigInt(-1) : amount
 
-    if (isConsolidationTx(tx) && tx.outputs) {
-      const totalOutputamount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
-      amount = removeConsolidationChangeAmount(totalOutputamount, tx.outputs)
+    if (isConsolidationTx(tx)) {
       direction = 'out'
       infoType = 'move'
     } else {
-      amount = calAmountDelta(tx, addressHash)
-      direction = amount < 0 ? 'out' : 'in'
-      amount = amount < 0 ? amount * BigInt(-1) : amount
+      direction = getDirection(tx, addressHash)
       infoType = direction === 'out' && hasOnlyOutputsWith(outputs, addresses) ? 'move' : direction
     }
+
     lockTime = outputs.reduce(
       (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
       new Date(0)
