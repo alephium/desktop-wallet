@@ -16,10 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup } from '@alephium/sdk'
 import { formatChain, isCompatibleChainGroup, parseChain } from '@alephium/walletconnect-provider'
 import { ChainInfo, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
-import { SessionTypes, SignClientTypes } from '@walletconnect/types'
+import { ProposalTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
@@ -51,19 +50,16 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
   const [proposal, setProposal] = useState<SignClientTypes.EventArguments['session_proposal']>()
 
-  const [requiredChainInfo, setRequiredChainInfo] = useState<ChainInfo[]>([])
+  const [requiredChainInfo, setRequiredChainInfo] = useState<ChainInfo>()
 
-  const [fromAddresses, FromAddress] = useSignerAddress(-1)
+  const [signerAddress, SignerAddress] = useSignerAddress(requiredChainInfo?.chainGroup)
   const [error, setError] = useState('')
 
   const onProposal = useCallback(
     async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       const { requiredNamespaces } = proposal.params
       const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
-      const requiredChainInfo = requiredChains.map((requiredChain) => {
-        const [networkId, chainGroup] = parseChain(requiredChain)
-        return { networkId, chainGroup }
-      })
+      const requiredChainInfo = parseChain(requiredChains[0])
 
       setRequiredChainInfo(requiredChainInfo)
       setProposal(proposal)
@@ -91,39 +87,24 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       })
   }, [walletConnect, uri, onConnect])
 
-  function chainAccounts(addresses: Address[], chains: string[]): string[] {
-    return chains.flatMap((chain) => {
-      const [_networkId, chainGroup] = parseChain(chain)
-
-      return addresses
-        .filter((address) => {
-          const group = addressToGroup(address.hash, 4)
-          return isCompatibleChainGroup(group, chainGroup)
-        })
-        .map((address) => `${chain}:${address.publicKey}`)
-    })
-  }
-
-  function formatChains(chains: ChainInfo[]): string {
-    return chains.map((chain) => formatChain(chain.networkId, chain.chainGroup)).join('; ')
-  }
-
-  function areAccountsCompatible(accounts: string[], requiredChains: string[]): boolean {
-    const accountChains = accounts.map((account) => {
-      const [_namespace, networkId, group, _publicKey] = account.replace(/\//g, ':').split(':')
-      return formatChain(parseInt(networkId, 10), parseInt(group, 10))
-    })
-    for (const requiredChain in requiredChains) {
-      if (!accountChains.includes(requiredChain)) {
-        return false
-      }
+  function chainAccounts(address: Address, chain: ChainInfo): string[] {
+    if (!isCompatibleChainGroup(address.group, chain.chainGroup)) {
+      setErrorState('Invalid address group for the WallectConnect connection')
     }
 
-    return true
+    return [`${formatChain(chain.networkId, chain.chainGroup)}:${address.publicKey}`]
+  }
+
+  function validateNamespace(requested: ProposalTypes.RequiredNamespace): ChainInfo {
+    if (requested.chains.length !== 1) {
+      setErrorState('Too many chains in the WalletConnect proposal')
+    }
+
+    return parseChain(requested.chains[0])
   }
 
   const onApprove = useCallback(
-    async (signerAddresses: Address[]) => {
+    async (signerAddress: Address) => {
       if (proposal === undefined) {
         setState(State.InitiateSession)
         return
@@ -131,22 +112,18 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
       const { id, requiredNamespaces, relays } = proposal.params
       const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
+      const requiredChain = validateNamespace(requiredNamespace)
       const namespaces: SessionTypes.Namespaces = {
         alephium: {
           methods: requiredNamespace.methods,
           events: requiredNamespace.events,
-          accounts: chainAccounts(signerAddresses, requiredNamespace.chains),
-          extension: requiredNamespace.extension?.map((ext) => ({
-            methods: ext.methods,
-            events: ext.events,
-            accounts: chainAccounts(signerAddresses, ext.chains)
-          }))
+          accounts: chainAccounts(signerAddress, requiredChain)
         }
       }
 
-      if (!areAccountsCompatible(namespaces.alephium.accounts, requiredNamespace.chains)) {
+      if (!isCompatibleChainGroup(signerAddress.group, requiredChain.chainGroup)) {
         setErrorState(
-          `Not all chain requested has at least one corresponding account. Chains requested: ${formatChains(
+          `Not all chain requested has at least one corresponding account. Chains requested: ${JSON.stringify(
             requiredChainInfo
           )}. Available accounts: ${namespaces.alephium.accounts}`
         )
@@ -164,7 +141,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
       onClose()
     },
-    [walletConnect, proposal, addresses, onClose, addresses]
+    [walletConnect, proposal, requiredChainInfo, addresses, onClose, addresses]
   )
 
   const onReject = useCallback(async () => {
@@ -232,11 +209,6 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       const url = proposal?.params.proposer.metadata.url ?? 'No URL specified'
       const description = proposal?.params.proposer.metadata.description ?? 'No description given'
 
-      if (fromAddresses.length === 0) {
-        setErrorState(`No address with balance for required chains ${formatChains(requiredChainInfo)}`)
-        return null
-      }
-
       return (
         <CenteredModal
           title={<WalletConnectTitle src={walletConnectFull} />}
@@ -248,14 +220,15 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
             <Name>{name}</Name>
             <Url>{url}</Url>
             <Desc>{description}</Desc>
-            <Desc>Chains: {formatChains(requiredChainInfo)}</Desc>
+            <Desc>NetworkId: {requiredChainInfo?.networkId}</Desc>
+            <Desc>Address group: {requiredChainInfo?.chainGroup ?? 'all'}</Desc>
           </List>
-          {FromAddress}
+          {SignerAddress}
           <ModalFooterButtons>
             <ModalFooterButton secondary onClick={onReject}>
               Reject
             </ModalFooterButton>
-            <ModalFooterButton onClick={() => onApprove(fromAddresses)}>Approve</ModalFooterButton>
+            <ModalFooterButton onClick={() => onApprove(signerAddress)}>Approve</ModalFooterButton>
           </ModalFooterButtons>
         </CenteredModal>
       )

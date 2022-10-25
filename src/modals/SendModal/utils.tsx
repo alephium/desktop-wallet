@@ -93,29 +93,28 @@ export function useStateWithParsed<T>(initialValue: T, stringified: string) {
   return [value, setValueWithError] as const
 }
 
-export function useSignerAddress(group: ChainGroup) {
+export function useSignerAddress(group: ChainGroup): readonly [Address, JSX.Element | null] {
   const { t } = useTranslation('App')
   const { addresses, mainAddress } = useAddressesContext()
-  const [signerAddresses, setSignerAddresses] = useState<Address[]>()
+  const [signerAddress, setSignerAddress] = useState<Address>()
 
-  const addressOptions = group === -1 ? addresses : addresses.filter((a) => a.group === group)
+  const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
   useEffect(() => {
-    setSignerAddresses(addressOptions)
+    setSignerAddress(addressOptions[0])
   }, [group, addressOptions, mainAddress])
 
-  const SignerAddress =
-    signerAddresses && signerAddresses.length === 0 ? (
-      <AddressSelect
-        label={t`From address`}
-        title={t`Select the address to sweep the funds from.`}
-        options={addressOptions}
-        defaultAddress={signerAddresses[0]}
-        onAddressChange={(newAddress) => setSignerAddresses([newAddress])}
-        id="from-address"
-        hideEmptyAvailableBalance
-      />
-    ) : null
-  return [signerAddresses || [], SignerAddress] as const
+  const SignerAddress = (
+    <AddressSelect
+      label={t`Signer address`}
+      title={t`Select the signer address for WalletConnect.`}
+      options={addressOptions}
+      defaultAddress={addressOptions[0]}
+      onAddressChange={(newAddress) => setSignerAddress(newAddress)}
+      id="signer-address"
+      hideEmptyAvailableBalance
+    />
+  )
+  return [signerAddress as Address, SignerAddress] as const
 }
 
 export function useFromAddress(initialAddress: Address) {

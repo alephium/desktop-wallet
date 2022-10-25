@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@alephium/sdk": "0.1.0",
-    "@alephium/walletconnect-provider": "0.2.0-rc.3",
+    "@alephium/walletconnect-provider": "0.2.0-rc.4",
     "@alephium/web3": "0.2.0-rc.36",
     "@json-rpc-tools/utils": "^1.7.6",
     "@testing-library/jest-dom": "^5.14.1",

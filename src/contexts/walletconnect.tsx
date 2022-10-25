@@ -18,7 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertSetToAlph } from '@alephium/sdk'
 import { RelayMethod } from '@alephium/walletconnect-provider'
-import { SignDeployContractTxParams, SignExecuteScriptTxParams, SignTransferTxParams } from '@alephium/web3'
+import {
+  ApiRequestArguments,
+  SignDeployContractTxParams,
+  SignExecuteScriptTxParams,
+  SignTransferTxParams
+} from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
 import { createContext, Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
@@ -74,8 +79,23 @@ const respondError = (
   })
 }
 
+const respondResult = (
+  signClient: SignClient,
+  requestEvent: SignClientTypes.EventArguments['session_request'],
+  result: any
+) => {
+  signClient.respond({
+    topic: requestEvent.topic,
+    response: {
+      id: requestEvent.id,
+      jsonrpc: '2.0',
+      result: result
+    }
+  })
+}
+
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { setTxModalType, settings } = useGlobalContext()
+  const { setTxModalType, settings, client } = useGlobalContext()
   const { addresses } = useAddressesContext()
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const [walletConnect, setWalletConnect] = useState<SignClient>()
@@ -130,37 +150,13 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       return address
     }
 
-    const disconnectWithError = (topic: string, error: string) => {
-      walletConnect.disconnect({
-        topic: topic,
-        reason: {
-          code: -32000,
-          message: error
-        }
-      })
-      setRequestEvent(undefined)
-      setDappTransactionData(undefined)
-    }
-
     const onSessionRequest = async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
       const { params } = requestEvent
-      const { chainId, request } = params
+      const { request } = params
 
       setRequestEvent(requestEvent)
 
       try {
-        // reject if no present target chain
-        //        if (typeof chainId === "undefined") {
-        //          throw new Error("Missing target chain");
-        //        }
-        //
-        //        // reject if unmatched chain
-        //        if (this.currentChain != chainId) {
-        //          throw new Error(
-        //            `Target chain (${chainId}) does not match current chain (${this.currentChain})`,
-        //          );
-        //        }
-
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as any as SignTransferTxParams
@@ -203,13 +199,25 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             setTxData(['script', txData])
             break
           }
+          case 'alph_requestNodeApi': {
+            const p = request.params as any as ApiRequestArguments
+            const result = await client!.web3.request(p)
+            await respondResult(walletConnect, requestEvent, result)
+            break
+          }
+          case 'alph_requestExplorerApi': {
+            const p = request.params as any as ApiRequestArguments
+            const result = await client!.explorer.request(p)
+            await respondResult(walletConnect, requestEvent, result)
+            break
+          }
           default:
             // TODO: support all of the other SignerProvider methods
             throw new Error(`Method not supported: ${request.method}`)
         }
       } catch (e) {
-        console.warn(e)
         const error = extractErrorMsg(e)
+        console.warn(error)
         respondError(walletConnect, requestEvent, error)
       }
     }
