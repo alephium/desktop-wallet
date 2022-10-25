@@ -42,7 +42,7 @@
   "LOCKED": "KHOÁ",
   "Could not fetch data because the wallet is offline": "Không thể đẩy dữ liệu vì ví đang ngoại tuyến",
   "Unknown wallet name": "Tên ví không xác định",
-  "To remove this address from being the default address, you must set another one as main first.": "Bạn cần phải đặt một địa chỉ ví mặc định mới trước khi thay đổi địa chỉ ví mặc định này.",
+  "To remove this address from being the default address, you must set another one as default first.": "Bạn cần phải đặt một địa chỉ ví mặc định mới trước khi thay đổi địa chỉ ví mặc định này.",
   "Address options": "Tuỳ chọn địa chỉ",
   "Sweep address": "Sweep địa chỉ",
   "Sweep all the unlocked funds of this address to another address.": "Sweep tất cả tài sản khả dụng từ ví này sang ví khác.",
