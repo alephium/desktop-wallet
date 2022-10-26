@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { convertAlphToSet } from '@alephium/sdk'
+
 import { Address } from '../../contexts/addresses'
 import { isAmountWithinRange } from '../../utils/transactions'
 import {
@@ -55,7 +57,9 @@ const BuildDeployContractTx = ({ data, onSubmit, onCancel }: BuildDeployContract
   }
 
   const isSubmitButtonActive =
-    isCommonReady && bytecode && (!alphAmount || isAmountWithinRange(BigInt(alphAmount), fromAddress.availableBalance))
+    isCommonReady &&
+    bytecode &&
+    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
 
   return (
     <>
