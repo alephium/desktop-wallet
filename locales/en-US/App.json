@@ -42,7 +42,7 @@
   "LOCKED": "LOCKED",
   "Could not fetch data because the wallet is offline": "Could not fetch data because the wallet is offline",
   "Unknown wallet name": "Unknown wallet name",
-  "To remove this address from being the default address, you must set another one as main first.": "To remove this address from being the default address, you must set another one as main first.",
+  "To remove this address from being the default address, you must set another one as default first.": "To remove this address from being the default address, you must set another one as default first.",
   "Address options": "Address options",
   "Sweep address": "Sweep address",
   "Sweep all the unlocked funds of this address to another address.": "Sweep all the unlocked funds of this address to another address.",
