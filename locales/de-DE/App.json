@@ -54,7 +54,7 @@
   "Select the address to sweep the funds from.": "Wählen Sie die Adresse aus, von der aus das Geld geleert werden soll.",
   "To address": "Empfänger Adresse",
   "Select the address to sweep the funds to.": "Wählen Sie die Adresse aus, an die der Geldbetrag überwiesen werden soll.",
-  "sweepOperationFromTo": "sweepOperationFromTo",
+  "sweepOperationFromTo": "Bei dieser Operation werden alle Gelder von <1>{{ from }}</1> auf <3>{{ to }}</3> übertragen.",
   "Consolidate UTXOs": "UTXOs konsolidieren",
   "Fee": "Gebühr",
   "Consolidate": "Konsolidieren",
