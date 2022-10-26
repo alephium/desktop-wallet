@@ -20,7 +20,7 @@ import { isConsolidationTx, MIN_UTXO_SET_AMOUNT, removeConsolidationChangeAmount
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '../contexts/addresses'
-import { PendingTx, TransactionDirection, TransactionStatus } from '../types/transactions'
+import { PendingTx, TransactionStatus } from '../types/transactions'
 import { NetworkName } from './settings'
 
 export type TransactionVariant = Transaction | PendingTx

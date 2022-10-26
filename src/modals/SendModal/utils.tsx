@@ -422,8 +422,8 @@ export const ToAddressInfo = ({ toAddress }: { toAddress: string }) => (
   <InfoBox text={toAddress} label="To address" wordBreak />
 )
 
-export const AlphAmountInfo = ({ expectedAmount }: { expectedAmount: bigint }) => (
-  <InfoBox label="Amount">
+export const AlphAmountInfo = ({ expectedAmount, label }: { expectedAmount: bigint; label?: string }) => (
+  <InfoBox label={label ?? 'ALPH Amount'}>
     {formatAmountForDisplay(expectedAmount, false, 7)} <AlefSymbol />
   </InfoBox>
 )

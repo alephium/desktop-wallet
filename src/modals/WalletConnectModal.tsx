@@ -18,12 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { formatChain, isCompatibleChainGroup, parseChain } from '@alephium/walletconnect-provider'
 import { ChainInfo, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
-import { ProposalTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
+import { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import Input from '../components/Inputs/Input'
 import { Address, useAddressesContext } from '../contexts/addresses'
+import { useGlobalContext } from '../contexts/global'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
 import { extractErrorMsg } from '../utils/misc'
@@ -43,6 +44,7 @@ enum State {
 }
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
+  const { client } = useGlobalContext()
   const { addresses } = useAddressesContext()
   const { walletConnect } = useWalletConnectContext()
   const [uri, setUri] = useState('')
@@ -95,14 +97,6 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     return [`${formatChain(chain.networkId, chain.chainGroup)}:${address.publicKey}`]
   }
 
-  function validateNamespace(requested: ProposalTypes.RequiredNamespace): ChainInfo {
-    if (requested.chains.length !== 1) {
-      setErrorState('Too many chains in the WalletConnect proposal')
-    }
-
-    return parseChain(requested.chains[0])
-  }
-
   const onApprove = useCallback(
     async (signerAddress: Address) => {
       if (proposal === undefined) {
@@ -112,7 +106,16 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
 
       const { id, requiredNamespaces, relays } = proposal.params
       const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
-      const requiredChain = validateNamespace(requiredNamespace)
+      if (requiredNamespace.chains.length !== 1) {
+        setErrorState('Too many chains in the WalletConnect proposal')
+        return
+      }
+      const requiredChain = parseChain(requiredNamespace.chains[0])
+      if (requiredChain.networkId !== (await client?.web3.infos.getInfosChainParams())?.networkId) {
+        setErrorState('The current network is unmatched with the network requested by WalletConnect')
+        return
+      }
+
       const namespaces: SessionTypes.Namespaces = {
         alephium: {
           methods: requiredNamespace.methods,
@@ -127,6 +130,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
             requiredChainInfo
           )}. Available accounts: ${namespaces.alephium.accounts}`
         )
+        return
       }
 
       if (walletConnect) {
