@@ -193,7 +193,7 @@
   "Everything is ready!": "Alles ist bereit!",
   "Welcome to Alephium.": "Willkommen in Alephium.",
   "Let's go!": "Los geht's!",
-  "welcomeScreenOneAddressPerGroupMessage": "welcomeScreenOneAddressPerGroupMessage",
+  "welcomeScreenOneAddressPerGroupMessage": "Fortgeschrittener Benutzer: Möchten Sie mit <1>einer Adresse pro Gruppe für Mining oder DeFi beginnen?</1>",
   "Show advanced options": "Erweiterte Optionen anzeigen",
   "Hide advanced options": "Erweiterte Optionen ausblenden",
   "For mining or DeFi use.": "Für Bergbau oder DeFi verwenden.",
