@@ -1,7 +1,7 @@
 {
   "name": "alephium-wallet",
   "description": "The official Alephium wallet",
-  "version": "1.4.0",
+  "version": "1.4.1-rc.1",
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
@@ -26,11 +26,12 @@
   ],
   "dependencies": {
     "colord": "^2.9.3",
+    "compare-versions": "^5.0.1",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0"
   },
   "devDependencies": {
-    "@alephium/sdk": "0.1.0",
+    "@alephium/sdk": "0.2.0",
     "@alephium/walletconnect-provider": "0.2.0-rc.4",
     "@alephium/web3": "0.2.0-rc.36",
     "@json-rpc-tools/utils": "^1.7.6",

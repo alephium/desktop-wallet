@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getDirection } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,12 +28,7 @@ import TransactionalInfo from '../../components/TransactionalInfo'
 import { Address, useAddressesContext } from '../../contexts/addresses'
 import { PendingTx } from '../../types/transactions'
 import { GENESIS_TIMESTAMP } from '../../utils/constants'
-import {
-  BelongingToAddress,
-  getDirection,
-  getTransactionsForAddresses,
-  hasOnlyInputsWith
-} from '../../utils/transactions'
+import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '../../utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
@@ -61,6 +57,13 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
     ReactTooltip.rebuild()
   }, [addresses])
 
+  const shouldHideTx = (tx: Transaction, address: Address) =>
+    tx.inputs &&
+    tx.inputs.length > 0 &&
+    hasOnlyInputsWith(tx.inputs, addresses) &&
+    getDirection(tx, address.hash) == 'in' &&
+    tx.timestamp !== GENESIS_TIMESTAMP
+
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
       {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
@@ -69,12 +72,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
         </TableRow>
       ))}
       {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
-        if (
-          hasOnlyInputsWith((tx as Transaction).inputs ?? [], addresses) &&
-          getDirection(tx, address.hash) == 'in' &&
-          tx.timestamp !== GENESIS_TIMESTAMP
-        )
-          return null
+        if (shouldHideTx(tx, address)) return null
         return (
           <TableRow
             key={`${tx.hash}-${address.hash}`}

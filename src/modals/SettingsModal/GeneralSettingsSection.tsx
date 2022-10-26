@@ -60,7 +60,8 @@ const GeneralSettingsSection = () => {
 
   const languageOptions = [
     { label: 'English', value: 'en-US' as Language },
-    { label: 'Français', value: 'fr-FR' as Language }
+    { label: 'Français', value: 'fr-FR' as Language },
+    { label: 'Tiếng Việt', value: 'vi-VN' as Language }
   ]
 
   const discreetModeText = t`Discreet mode`
