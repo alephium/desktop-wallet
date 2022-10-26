@@ -238,5 +238,7 @@
   "Label": "Nhãn",
   "Last used": "Lần cuối cập nhật",
   "Transactions": "Giao dịch",
-  "ALPH amount": "Số lượng ALPH"
+  "ALPH amount": "Số lượng ALPH",
+  "Set lock time": "Đặt thời gian khoá",
+  "Tweak gas settings": "Tuỳ chỉnh cài đặt gas"
 }

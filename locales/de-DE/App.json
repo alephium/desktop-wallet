@@ -238,5 +238,7 @@
   "Label": "Etikett",
   "Last used": "Zuletzt benutzt",
   "Transactions": "Vorgänge",
-  "ALPH amount": "ALPH-Betrag"
+  "ALPH amount": "ALPH-Betrag",
+  "Set lock time": "Sperrdauer einstellen",
+  "Tweak gas settings": "Gas Einstellungen optimieren"
 }

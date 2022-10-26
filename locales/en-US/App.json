@@ -238,5 +238,7 @@
   "Label": "Label",
   "Last used": "Last used",
   "Transactions": "Transactions",
-  "ALPH amount": "ALPH amount"
+  "ALPH amount": "ALPH amount",
+  "Set lock time": "Set lock time",
+  "Tweak gas settings": "Tweak gas settings"
 }

@@ -242,5 +242,7 @@
   "Label": "Label",
   "Last used": "Dernier usage",
   "Transactions": "Transactions",
-  "ALPH amount": "Montant en ALPH"
+  "ALPH amount": "Montant en ALPH",
+  "Set lock time": "Régler le temps de verrouillage",
+  "Tweak gas settings": "Ajuster les paramètres du gaz"
 }
