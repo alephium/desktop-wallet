@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Layers, List, Lock, RefreshCw, Send } from 'lucide-react'
-import { FC, useState } from 'react'
+import { FileCode, Layers, List, Lock, RefreshCw, Send, TerminalSquare } from 'lucide-react'
+import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
@@ -38,7 +38,7 @@ import { useGlobalContext } from '../../contexts/global'
 import LogoDarkSrc from '../../images/alephium_logo_dark.svg'
 import LogoLightSrc from '../../images/alephium_logo_light.svg'
 import CenteredModal from '../../modals/CenteredModal'
-import SendModal from '../../modals/SendModal'
+import { TxModal } from '../../modals/SendModal/TxModal'
 import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
 
 interface WalletNameSelectOptions {
@@ -50,8 +50,16 @@ dayjs.extend(relativeTime)
 
 const WalletLayout: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const { wallet, walletNames, lockWallet, activeWalletName, unlockWallet, networkStatus } = useGlobalContext()
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const {
+    wallet,
+    walletNames,
+    lockWallet,
+    activeWalletName,
+    unlockWallet,
+    networkStatus,
+    txModalType,
+    setTxModalType
+  } = useGlobalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -138,12 +146,14 @@ const WalletLayout: FC = ({ children }) => {
           <ActionsTitle>{t`MENU`}</ActionsTitle>
           <ActionButton Icon={Layers} label={t`Overview`} link="/wallet/overview" />
           <ActionButton Icon={List} label={t`Addresses`} link="/wallet/addresses" />
-          <ActionButton Icon={Send} label={t`Send`} onClick={() => setIsSendModalOpen(true)} />
+          <ActionButton Icon={Send} label={t`Send`} onClick={() => setTxModalType('transfer')} />
+          <ActionButton Icon={TerminalSquare} label="Call Contract" onClick={() => setTxModalType('script')} />
+          <ActionButton Icon={FileCode} label="Deploy Contract" onClick={() => setTxModalType('deploy-contract')} />
           <ActionButton Icon={Lock} label={t`Lock`} onClick={lockWallet} />
         </WalletActions>
       </WalletSidebar>
       <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && <SendModal onClose={() => setIsSendModalOpen(false)} />}
+        {txModalType && <TxModal txModalType={txModalType} onClose={() => setTxModalType(false)} />}
         {isPasswordModalOpen && (
           <CenteredModal narrow title={t`Enter password`} onClose={onPasswordModalClose}>
             <PasswordConfirmation

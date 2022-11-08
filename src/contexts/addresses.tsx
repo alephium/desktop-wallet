@@ -30,22 +30,11 @@ import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { TimeInMs } from '../types/numbers'
+import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
-import { convertUnconfirmedTxToPendingTx, TransactionType } from '../utils/transactions'
+import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
-
-export type PendingTx = {
-  txId: string
-  fromAddress: string
-  toAddress: string
-  timestamp: number
-  type: TransactionType
-  network: NetworkName
-  amount?: bigint
-  lockTime?: Date
-  status: 'pending'
-}
 
 export type AddressHash = string
 

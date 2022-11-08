@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
+import { NodeProvider as Web3Client } from '@alephium/web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
-import { TransactionType } from '../utils/transactions'
+import { TransactionType } from '../types/transactions'
 import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {
@@ -27,6 +28,8 @@ export async function createClient(settings: Settings['network']) {
     const cliqueClient = new CliqueClient({
       baseUrl: settings.nodeHost
     })
+
+    const web3Client = new Web3Client(settings.nodeHost)
 
     const explorerClient = new ExplorerClient({
       baseUrl: settings.explorerApiHost
@@ -132,20 +135,46 @@ export async function createClient(settings: Settings['network']) {
         })
       }
 
-      return response.data
+      return { ...response.data, signature: signature }
+    }
+
+    const signAndSendContractOrScript = async (
+      address: Address,
+      txId: string,
+      unsignedTx: string,
+      network: NetworkName
+    ) => {
+      const signature = cliqueClient.transactionSign(txId, address.privateKey)
+      const response = await cliqueClient.transactionSend(address.hash, unsignedTx, signature)
+
+      if (response.data) {
+        address.addPendingTransaction({
+          txId: response.data.txId,
+          fromAddress: address.hash,
+          toAddress: '',
+          timestamp: new Date().getTime(),
+          type: 'contract',
+          network,
+          status: 'pending'
+        })
+      }
+
+      return { ...response.data, signature: signature }
     }
 
     return {
       clique: cliqueClient,
+      web3: web3Client,
       explorer: explorerClient,
       fetchAddressDetails,
       fetchAddressConfirmedTransactions,
       fetchAddressConfirmedTransactionsNextPage,
       buildSweepTransactions,
-      signAndSendTransaction
+      signAndSendTransaction,
+      signAndSendContractOrScript
     }
   } catch (error) {
     console.error(error)
-    return false
+    return undefined
   }
 }

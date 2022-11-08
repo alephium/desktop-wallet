@@ -19,7 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { isConsolidationTx, MIN_UTXO_SET_AMOUNT, removeConsolidationChangeAmount } from '@alephium/sdk'
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { Address, AddressHash, PendingTx } from '../contexts/addresses'
+import { Address, AddressHash } from '../contexts/addresses'
+import { PendingTx, TransactionStatus } from '../types/transactions'
 import { NetworkName } from './settings'
 
 export type TransactionVariant = Transaction | PendingTx
@@ -32,9 +33,6 @@ export type BelongingToAddress<T extends TransactionVariant> = { data: IsTransac
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
-
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep'
-export type TransactionStatus = 'pending' | 'confirmed'
 
 export const getTransactionsForAddresses = (
   txStatus: TransactionStatus,

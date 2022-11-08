@@ -32,7 +32,7 @@ import useFocusOnMount from '../hooks/useFocusOnMount'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
-  title?: string
+  title?: ReactNode
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode

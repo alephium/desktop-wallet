@@ -26,7 +26,7 @@ import Button from '../../components/Button'
 import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import Select, { SelectOption } from '../../components/Inputs/Select'
+import Select from '../../components/Inputs/Select'
 import { Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
 import { useMountEffect } from '../../utils/hooks'
@@ -41,7 +41,7 @@ type NetworkSettings = Settings['network']
 
 const NetworkSettingsSection = () => {
   const { t } = useTranslation('App')
-  const { settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
+  const { client, settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
@@ -72,21 +72,29 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    (option?: SelectOption<NetworkName>) => {
-      if (option === undefined || option.value === selectedNetwork) return
+    async (option: typeof networkSelectOptions[number] | undefined) => {
+      if (option && option.value !== selectedNetwork) {
+        setSelectedNetwork(option.value)
 
-      setSelectedNetwork(option.value)
-
-      if (option.value === 'custom') {
-        // Make sure to open expandable advanced section
-        setAdvancedSectionOpen(true)
-      } else {
-        const newNetworkSettings = networkEndpoints[option.value]
-        updateNetworkSettings(newNetworkSettings)
-        setTempAdvancedSettings(newNetworkSettings)
+        if (option.value === 'custom') {
+          // Make sure to open expandable advanced section
+          setAdvancedSectionOpen(true)
+        } else {
+          const newNetworkSettings = networkEndpoints[option.value]
+          let networkId = newNetworkSettings.networkId
+          if (typeof networkId === 'undefined' && typeof client !== 'undefined') {
+            const response = await client.web3.infos.getInfosChainParams()
+            networkId = response.networkId
+          }
+          if (typeof networkId !== 'undefined') {
+            const settings = { ...newNetworkSettings, networkId: networkId }
+            updateNetworkSettings(settings)
+            setTempAdvancedSettings(settings)
+          }
+        }
       }
     },
-    [selectedNetwork, updateNetworkSettings]
+    [selectedNetwork, updateNetworkSettings, client]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {

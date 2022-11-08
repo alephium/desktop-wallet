@@ -16,10 +16,28 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type Step = 'send' | 'info-check' | 'password-check'
+import { BuildTransferTxData } from './BuildTransferTx'
+import {
+  AlphAmountInfo,
+  CheckTxFooter,
+  CheckTxProps,
+  expectedAmount,
+  FeeInfo,
+  FromAddressInfo,
+  ModalContent,
+  ToAddressInfo
+} from './utils'
 
-export const stepToTitle: { [k in Step]: string } = {
-  send: 'Send',
-  'info-check': 'Review',
-  'password-check': 'Password Check'
-}
+const CheckTransferTx = ({ data, fees, onSend, onCancel }: CheckTxProps<BuildTransferTxData>) => (
+  <>
+    <ModalContent>
+      <FromAddressInfo fromAddress={data.fromAddress} />
+      <ToAddressInfo toAddress={data.toAddress} />
+      <AlphAmountInfo expectedAmount={expectedAmount(data.fromAddress, data.alphAmount, fees)} />
+      <FeeInfo fees={fees} />
+    </ModalContent>
+    <CheckTxFooter onSend={onSend} onCancel={onCancel} />
+  </>
+)
+
+export default CheckTransferTx
