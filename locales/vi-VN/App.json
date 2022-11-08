@@ -6,9 +6,8 @@
   "Import wallet": "Thêm ví đã có sẳn",
   "Amount must be greater than {{ minAmountInAlph }}": "Số lượng phải lớn hơn {{ minAmountInAlph }}",
   "Could not connect to the {{ currentNetwork }} network.": "Không thể kết nối đến mạng {{ currentNetwork }}.",
-  "Note that if activated, \"{{ name }}\" will not be the default address anymore.": "Lưu ý, nếu đã kích hoạt, \"{{ name }}\" sẽ không còn là địa chỉ mặc định nữa.",
+  "Note that if activated, \"{{ address }}\" will not be the default address anymore.": "Lưu ý, nếu đã kích hoạt, \"{{ address }}\" sẽ không còn là địa chỉ mặc định nữa.",
   "Error while sweeping address {{ from }}": "Lỗi khi sweep từ địa chỉ {{ from }}",
-  " Note that if activated, \"{{ address }}\" will not be the default address anymore.": " Lưu ý, nếu đã kích hoạt, \"{{ address }}\" sẽ không còn là địa chỉ mặc định nữa.",
   "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.": "Số lượng Gas phải lớn hơn {{ MINIMAL_GAS_AMOUNT }}.",
   "Gas price must be greater than {{ amount }}": "Giá Gas phải lớn hơn {{ amount }}",
   "Remove wallet \"{{ walletName }}\"": "Gỡ bỏ ví \"{{ walletName }}\"",
@@ -223,10 +222,6 @@
   "Passphrases don't match": "Cụm từ khôi phục không trùng khớp",
   "Language": "Ngôn ngữ",
   "Change the wallet language": "Thay đổi ngôn ngữ",
-  "English": "Tiếng Anh",
-  "French": "Tiếng Pháp",
-  "Vietnamese": "Tiếng Việt",
-  "German": "Tiếng Đức",
   "Activate dark mode": "Bật giao diện tối",
   "Pick a color": "Chọn màu",
   "Close": "Đóng",
@@ -243,5 +238,7 @@
   "Label": "Nhãn",
   "Last used": "Lần cuối cập nhật",
   "Transactions": "Giao dịch",
-  "ALPH amount": "Số lượng ALPH"
+  "ALPH amount": "Số lượng ALPH",
+  "Set lock time": "Đặt thời gian khoá",
+  "Tweak gas settings": "Tuỳ chỉnh cài đặt gas"
 }

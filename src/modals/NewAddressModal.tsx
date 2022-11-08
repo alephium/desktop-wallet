@@ -92,7 +92,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
     mainAddressMessage +=
       mainAddress.index !== newAddressData?.addressIndex
-        ? t(' Note that if activated, "{{ address }}" will not be the default address anymore.', { address })
+        ? ' ' + t('Note that if activated, "{{ address }}" will not be the default address anymore.', { address })
         : ''
   }
 

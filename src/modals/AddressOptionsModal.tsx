@@ -67,8 +67,8 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
 
   let mainAddressMessage = `${t`Default address for sending transactions.`} `
   mainAddressMessage += isMainAddressToggleEnabled
-    ? t('Note that if activated, "{{ name }}" will not be the default address anymore.', {
-        name: mainAddress.getName()
+    ? t('Note that if activated, "{{ address }}" will not be the default address anymore.', {
+        address: mainAddress.getName()
       })
     : t`To remove this address from being the default address, you must set another one as default first.`
 

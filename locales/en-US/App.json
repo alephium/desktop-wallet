@@ -6,9 +6,8 @@
   "Import wallet": "Import wallet",
   "Amount must be greater than {{ minAmountInAlph }}": "Amount must be greater than {{ minAmountInAlph }}",
   "Could not connect to the {{ currentNetwork }} network.": "Could not connect to the {{ currentNetwork }} network.",
-  "Note that if activated, \"{{ name }}\" will not be the default address anymore.": "Note that if activated, \"{{ name }}\" will not be the default address anymore.",
+  "Note that if activated, \"{{ address }}\" will not be the default address anymore.": "Note that if activated, \"{{ address }}\" will not be the default address anymore.",
   "Error while sweeping address {{ from }}": "Error while sweeping address {{ from }}",
-  " Note that if activated, \"{{ address }}\" will not be the default address anymore.": " Note that if activated, \"{{ address }}\" will not be the default address anymore.",
   "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.": "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.",
   "Gas price must be greater than {{ amount }}": "Gas price must be greater than {{ amount }}",
   "Remove wallet \"{{ walletName }}\"": "Remove wallet \"{{ walletName }}\"",
@@ -223,10 +222,6 @@
   "Passphrases don't match": "Passphrases don't match",
   "Language": "Language",
   "Change the wallet language": "Change the wallet language",
-  "English": "English",
-  "French": "French",
-  "Vietnamese": "Vietnamese",
-  "German": "German",
   "Activate dark mode": "Activate dark mode",
   "Pick a color": "Pick a color",
   "Close": "Close",
@@ -243,5 +238,7 @@
   "Label": "Label",
   "Last used": "Last used",
   "Transactions": "Transactions",
-  "ALPH amount": "ALPH amount"
+  "ALPH amount": "ALPH amount",
+  "Set lock time": "Set lock time",
+  "Tweak gas settings": "Tweak gas settings"
 }
