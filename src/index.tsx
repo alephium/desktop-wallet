@@ -28,6 +28,7 @@ import { ThemeProvider } from 'styled-components'
 import App from './App'
 import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
+import { SendModalContextProvider } from './contexts/sendModal'
 import { WalletConnectContextProvider } from './contexts/walletconnect'
 import * as serviceWorker from './serviceWorker'
 import { GlobalStyle } from './style/globalStyles'
@@ -40,10 +41,12 @@ ReactDOM.render(
         <Suspense fallback="loading">
           <GlobalContextProvider>
             <AddressesContextProvider>
-              <WalletConnectContextProvider>
-                <GlobalStyle />
-                <App />
-              </WalletConnectContextProvider>
+              <SendModalContextProvider>
+                <WalletConnectContextProvider>
+                  <GlobalStyle />
+                  <App />
+                </WalletConnectContextProvider>
+              </SendModalContextProvider>
             </AddressesContextProvider>
           </GlobalContextProvider>
         </Suspense>

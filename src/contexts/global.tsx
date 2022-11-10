@@ -41,7 +41,7 @@ import {
   updateStoredSettings
 } from '../utils/settings'
 
-export type TxModalType = 'transfer' | 'deploy-contract' | 'script'
+export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 const localStorageSettings = migrateDeprecatedSettings()
 
@@ -61,16 +61,11 @@ export interface GlobalContextProps {
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   isClientLoading: boolean
   currentNetwork: NetworkName | 'custom'
-  currentNetworkId: number
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
   isPassphraseUsed: boolean
-  txModalType: TxModalType | false
-  setTxModalType: (a: TxModalType | false) => void
 }
-
-export type Client = Exclude<AsyncReturnType<typeof createClient>, false | undefined>
 
 export const initialGlobalContext: GlobalContextProps = {
   walletNames: [],
@@ -88,13 +83,10 @@ export const initialGlobalContext: GlobalContextProps = {
   setSnackbarMessage: () => null,
   isClientLoading: false,
   currentNetwork: 'mainnet',
-  currentNetworkId: 0,
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
   newLatestVersion: '',
-  isPassphraseUsed: false,
-  txModalType: false,
-  setTxModalType: () => false
+  isPassphraseUsed: false
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -120,7 +112,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
-  const [txModalType, setTxModalType] = useState<TxModalType | undefined>(undefined)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -281,9 +272,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
-          isPassphraseUsed,
-          txModalType,
-          setTxModalType
+          isPassphraseUsed
         },
         overrideContextValue as GlobalContextProps
       )}

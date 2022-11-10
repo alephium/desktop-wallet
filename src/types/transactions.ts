@@ -16,29 +16,118 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+
+import { Address } from '../contexts/addresses'
 import { NetworkName } from '../utils/settings'
+import { WithParsed } from './data'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
-export type TransactionType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
 export type TransactionStatus = 'pending' | 'confirmed'
-
-export type BaseTx = {
-  txId: string
-  fromAddress: string
-  timestamp: number
-  type: TransactionType
-  network: NetworkName
+export enum TxType {
+  TRANSFER,
+  DEPLOY_CONTRACT,
+  SCRIPT
 }
+
+export type PendingTxType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
 
 export type PendingTx = {
   txId: string
   fromAddress: string
   toAddress: string
   timestamp: number
-  type: TransactionType
+  type: PendingTxType
   network: NetworkName
   amount?: bigint
   lockTime?: Date
   status: 'pending'
+}
+
+export type DappTxData = TransferTxData | DeployContractTxData | ScriptTxData
+
+export type TxDataToModalType =
+  | {
+      modalType: TxType.TRANSFER
+      txData: TransferTxData
+    }
+  | {
+      modalType: TxType.DEPLOY_CONTRACT
+      txData: DeployContractTxData
+    }
+  | {
+      modalType: TxType.SCRIPT
+      txData: ScriptTxData
+    }
+
+export interface DeployContractTxData {
+  fromAddress: Address
+  bytecode: string
+
+  initialAlphAmount?: string
+  issueTokenAmount?: string
+  gasAmount?: number
+  gasPrice?: string
+}
+
+export interface ScriptTxData {
+  fromAddress: Address
+  bytecode: string
+
+  alphAmount?: string
+  gasAmount?: number
+  gasPrice?: string
+}
+
+export interface TransferTxData {
+  fromAddress: Address
+  toAddress: string
+  alphAmount: string
+  gasAmount?: number
+  gasPrice?: string
+}
+
+export interface GasInfo {
+  gasAmount: WithParsed<number | undefined>
+  gasPrice: WithParsed<string | undefined>
+}
+
+export interface TxPreparation extends GasInfo {
+  fromAddress: Address
+  bytecode?: string
+  issueTokenAmount?: string
+  alphAmount?: string
+}
+
+export type PartialTxData<T, K extends keyof T> = {
+  [P in keyof Omit<T, K>]?: T[P]
+} & Pick<T, K>
+
+export type CheckTxProps<T> = {
+  data: T
+  fees: bigint
+}
+
+export type UnsignedTx = {
+  fromGroup: number
+  toGroup: number
+  unsignedTx: string
+  gasAmount: number
+  gasPrice: string
+}
+
+export type TxContext = {
+  setIsSweeping: (isSweeping: boolean) => void
+  sweepUnsignedTxs: SweepAddressTransaction[]
+  setSweepUnsignedTxs: (txs: SweepAddressTransaction[]) => void
+  setFees: (fees: bigint | undefined) => void
+  unsignedTransaction: UnsignedTx | undefined
+  setUnsignedTransaction: (tx: UnsignedTx | undefined) => void
+  unsignedTxId: string
+  setUnsignedTxId: (txId: string) => void
+  isSweeping: boolean
+  consolidationRequired: boolean
+  currentNetwork: NetworkName
+  setAddress: (address: Address) => void
 }

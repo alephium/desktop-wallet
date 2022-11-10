@@ -16,10 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type Step = 'send' | 'info-check' | 'password-check'
+import styled from 'styled-components'
 
-export const stepToTitle: { [k in Step]: string } = {
-  send: 'Send',
-  'info-check': 'Review',
-  'password-check': 'Password Check'
-}
+export const ModalInputFields = styled.div`
+  display: flex;
+  flex-direction: column;
+`

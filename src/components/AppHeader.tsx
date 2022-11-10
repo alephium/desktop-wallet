@@ -26,7 +26,6 @@ import styled, { useTheme } from 'styled-components'
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { useScrollContext } from '../contexts/scroll'
-import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
 import WalletConnectModal from '../modals/WalletConnectModal'
@@ -37,10 +36,13 @@ import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
+// This shall be removed once v2.0.0 is released
+const hideWalletConnectButton = true
+
 const AppHeader: FC = ({ children }) => {
   const { t } = useTranslation('App')
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const { isWalletConnectModalOpen, setIsWalletConnectModalOpen } = useWalletConnectContext()
+  const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
   const theme = useTheme()
@@ -97,16 +99,20 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         <NetworkBadge />
         <HeaderDivider />
-        <Button
-          transparent
-          squared
-          onClick={() => setIsWalletConnectModalOpen(true)}
-          aria-label="WalletConnect"
-          data-tip="Connect wallet to dApp"
-        >
-          <img src={walletConnectIcon} style={{ width: '100%' }} />
-        </Button>
-        <HeaderDivider />
+        {mainAddress && !hideWalletConnectButton && (
+          <>
+            <Button
+              transparent
+              squared
+              onClick={() => setIsWalletConnectModalOpen(true)}
+              aria-label="WalletConnect"
+              data-tip="Connect wallet to dApp"
+            >
+              <img src={walletConnectIcon} style={{ width: '100%' }} />
+            </Button>
+            <HeaderDivider />
+          </>
+        )}
         <Button
           transparent
           squared
