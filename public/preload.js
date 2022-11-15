@@ -19,12 +19,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electron', {
-  setNativeTheme: (theme) => ipcRenderer.invoke('setNativeTheme', theme),
-  getNativeTheme: () => ipcRenderer.invoke('getNativeTheme'),
-  onGetNativeTheme: (cb) => {
-    const fn = (_, e) => cb(e)
-    ipcRenderer.on('getNativeTheme', fn)
-    return () => ipcRenderer.removeListener('getNativeTheme', fn)
+  theme: {
+    setNativeTheme: (theme) => ipcRenderer.invoke('setNativeTheme', theme),
+    getNativeTheme: () => ipcRenderer.invoke('getNativeTheme'),
+    onGetNativeTheme: (callback) => {
+      const fn = (_, e) => callback(e)
+      ipcRenderer.on('getNativeTheme', fn)
+      return () => ipcRenderer.removeListener('getNativeTheme', fn)
+    }
   },
   updater: {
     checkForUpdates: async () => ipcRenderer.invoke('updater:checkForUpdates'),

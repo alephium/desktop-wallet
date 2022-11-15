@@ -99,6 +99,7 @@ export const GlobalContext = createContext<GlobalContextProps>(initialGlobalCont
 
 const Storage = getStorage()
 const _window = window as unknown as AlephiumWindow
+const electron = _window.electron
 
 export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<GlobalContextProps> }> = ({
   children,
@@ -235,23 +236,26 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     }
   }, [currentNetwork, networkStatus, t])
 
-  useEffect(
-    () => {
-      const removeListener = _window.electron?.onGetNativeTheme((nativeTheme) => {
-        const theme =
-          nativeTheme.themeSource === 'system'
-            ? nativeTheme.shouldUseDarkColors
-              ? ('dark' as const)
-              : ('light' as const)
-            : (nativeTheme.themeSource as ThemeType)
+  useEffect(() => {
+    const removeListener = electron?.theme.onGetNativeTheme((nativeTheme) => {
+      const theme =
+        nativeTheme.themeSource === 'system'
+          ? nativeTheme.shouldUseDarkColors
+            ? ('dark' as const)
+            : ('light' as const)
+          : (nativeTheme.themeSource as ThemeType)
+
+      if (!settings.general.theme) {
         updateSettings('general', { theme })
-      })
-      _window.electron?.getNativeTheme()
-      return () => removeListener && removeListener()
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+      }
+    })
+
+    if (!settings.general.theme) {
+      electron?.theme.getNativeTheme()
+    }
+
+    return () => removeListener && removeListener()
+  }, [settings.general.theme])
 
   // Save settings to local storage
   useEffect(() => {

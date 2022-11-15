@@ -27,9 +27,11 @@ interface NativeTheme {
 
 export interface AlephiumWindow extends Window {
   electron?: {
-    setNativeTheme: (theme: string) => void
-    getNativeTheme: () => void
-    onGetNativeTheme: (cb: (nativeTheme: NativeTheme) => void) => () => void
+    theme: {
+      setNativeTheme: (theme: string) => void
+      getNativeTheme: () => void
+      onGetNativeTheme: (cb: (nativeTheme: NativeTheme) => void) => () => void
+    }
     updater: {
       checkForUpdates: () => Promise<string>
       startUpdateDownload: () => void

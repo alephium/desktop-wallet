@@ -29,6 +29,9 @@ interface ThemeSwitcherProps {
   className?: string
 }
 
+const _window = window as unknown as AlephiumWindow
+const electron = _window.electron
+
 const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const { t } = useTranslation('App')
 
@@ -41,8 +44,7 @@ const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
 
   const switchTheme = useCallback(
     (theme: ThemeType) => {
-      const _window = window as unknown as AlephiumWindow
-      _window.electron?.setNativeTheme(theme)
+      electron?.theme.setNativeTheme(theme)
       updateSettings('general', { theme })
     },
     [updateSettings]

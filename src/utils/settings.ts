@@ -22,7 +22,7 @@ import { Language, ThemeType } from '../types/settings'
 
 export interface Settings {
   general: {
-    theme: ThemeType
+    theme?: ThemeType
     walletLockTimeInMinutes: number | null
     discreetMode: boolean
     passwordRequirement: boolean
@@ -66,7 +66,7 @@ export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['
 
 export const defaultSettings: Settings = {
   general: {
-    theme: 'light',
+    theme: undefined,
     walletLockTimeInMinutes: 3,
     discreetMode: false,
     passwordRequirement: false,

@@ -199,12 +199,12 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
-    ipcMain.handle('setNativeTheme', setNativeTheme)
+    ipcMain.handle('setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))
 
     // nativeTheme must be reassigned like this because its properties are all computed, so
     // they can't be serialized to be passed over channels.
-    ipcMain.handle('getNativeTheme', (e) =>
-      e.sender.send('getNativeTheme', {
+    ipcMain.handle('getNativeTheme', ({ sender }) =>
+      sender.send('getNativeTheme', {
         shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
         themeSource: nativeTheme.themeSource
       })
@@ -236,5 +236,3 @@ if (!gotTheLock) {
     if (mainWindow === null) createWindow()
   })
 }
-
-const setNativeTheme = (_, theme) => (nativeTheme.themeSource = theme)
