@@ -27,12 +27,13 @@ import { useGlobalContext } from '../../contexts/global'
 
 interface ClipboardButtonProps {
   textToCopy: string
+  disableA11y?: boolean
   tipText?: string
   children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ tipText, textToCopy, children, className }: ClipboardButtonProps) => {
+const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
   const { t } = useTranslation('App')
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
@@ -79,8 +80,8 @@ const ClipboardButton = ({ tipText, textToCopy, children, className }: Clipboard
         onClick={handleInput}
         onKeyPress={handleInput}
         role="button"
-        aria-label={t`Copy to clipboard`}
-        tabIndex={0}
+        aria-label={disableA11y ? undefined : t`Copy to clipboard`}
+        tabIndex={disableA11y ? undefined : 0}
       />
     </ClipboardWrapper>
   ) : (

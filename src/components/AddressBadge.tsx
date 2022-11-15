@@ -34,6 +34,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   showHashWhenNoLabel?: boolean
   withBorders?: boolean
   hideStar?: boolean
+  disableA11y?: boolean
 }
 
 const AddressBadge = ({
@@ -42,6 +43,7 @@ const AddressBadge = ({
   withBorders,
   hideStar,
   className,
+  disableA11y = false,
   ...props
 }: AddressBadgeProps) => {
   const { t } = useTranslation('App')
@@ -52,10 +54,10 @@ const AddressBadge = ({
   return showHashWhenNoLabel && !address.settings.label ? (
     <Hash className={className}>
       {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
-      <AddressEllipsed addressHash={address.hash} />
+      <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
-    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`}>
+    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
         {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
         <Label {...props}>{address.getName()}</Label>

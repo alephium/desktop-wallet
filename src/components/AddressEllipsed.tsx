@@ -25,13 +25,14 @@ import Ellipsed from './Ellipsed'
 
 interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
   addressHash: AddressHash
+  disableA11y?: boolean
 }
 
-const AddressEllipsed = ({ addressHash, ...props }: AddressEllipsedProps) => {
+const AddressEllipsed = ({ addressHash, disableA11y = false, ...props }: AddressEllipsedProps) => {
   const { t } = useTranslation('App')
 
   return (
-    <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`}>
+    <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`} disableA11y={disableA11y}>
       <Ellipsed text={addressHash} {...props} />
     </ClipboardButton>
   )

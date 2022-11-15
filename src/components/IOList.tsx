@@ -37,9 +37,19 @@ interface IOListProps {
   inputs?: Input[]
   linkToExplorer?: boolean
   truncate?: boolean
+  disableA11y?: boolean
 }
 
-const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplorer, truncate }: IOListProps) => {
+const IOList = ({
+  currentAddress,
+  isOut,
+  outputs,
+  inputs,
+  timestamp,
+  linkToExplorer,
+  truncate,
+  disableA11y = false
+}: IOListProps) => {
   const { t } = useTranslation('App')
   const { getAddress } = useAddressesContext()
   const handleShowAddress = useAddressLinkHandler()
@@ -65,9 +75,9 @@ const IOList = ({ currentAddress, isOut, outputs, inputs, timestamp, linkToExplo
       const address = getAddress(addressHash)
 
       return address ? (
-        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders />
+        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders disableA11y={disableA11y} />
       ) : (
-        <AddressEllipsed addressHash={addressHash} />
+        <AddressEllipsed addressHash={addressHash} disableA11y={disableA11y} />
       )
     }
 

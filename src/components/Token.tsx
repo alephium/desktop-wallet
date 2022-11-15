@@ -20,9 +20,14 @@ export type TokenType = 'alph'
 
 interface TokenProps {
   type: TokenType
+  disableA11y?: boolean
   className?: string
 }
 
-const Token = ({ type, className }: TokenProps) => <div className={className}>{type.toUpperCase()}</div>
+const Token = ({ type, disableA11y = false, className }: TokenProps) => (
+  <div className={className} aria-hidden={disableA11y}>
+    {type.toUpperCase()}
+  </div>
+)
 
 export default Token
