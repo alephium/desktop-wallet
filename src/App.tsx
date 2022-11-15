@@ -30,15 +30,20 @@ import SplashScreen from './components/SplashScreen'
 import Tooltip from './components/Tooltip'
 import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
+import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
+  const { networkStatus, settings, snackbarMessage, isClientLoading, newLatestVersion, newVersionDownloadTriggered } =
+    useGlobalContext()
+  const { mainAddress } = useAddressesContext()
+
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isLanguageChanging, setIsLanguageChanging] = useState(false)
-  const { networkStatus, settings, snackbarMessage, isClientLoading } = useGlobalContext()
-  const { mainAddress } = useAddressesContext()
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+
   const isOffline = networkStatus === 'offline'
 
   useEffect(() => {
@@ -64,6 +69,14 @@ const App = () => {
     }
   }, [i18n, settings.general.language])
 
+  useEffect(() => {
+    if (newLatestVersion) setUpdateWalletModalVisible(true)
+  }, [newLatestVersion])
+
+  useEffect(() => {
+    if (newVersionDownloadTriggered) setUpdateWalletModalVisible(true)
+  }, [newVersionDownloadTriggered])
+
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
@@ -78,6 +91,13 @@ const App = () => {
       )}
       <SnackbarManager message={snackbarMessage} />
       <Tooltip />
+      {isUpdateWalletModalVisible && (
+        <UpdateWalletModal
+          newVersion={newLatestVersion}
+          startDownload={newVersionDownloadTriggered}
+          onClose={() => setUpdateWalletModalVisible(false)}
+        />
+      )}
     </ThemeProvider>
   )
 }

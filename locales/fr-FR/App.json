@@ -124,7 +124,7 @@
   "Inputs": "Entrants",
   "Outputs": "Sortants",
   "New version": "Nouvelle version",
-  "Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.": "La nouvelle version {{ newVersion }} est disponible. Téléchargez et installez la pour éviter les problèmes de fonctionnement.",
+  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "La nouvelle version {{ newVersion }} est disponible. Téléchargez et installez la pour éviter les problèmes de fonctionnement.",
   "Download": "Télécharger",
   "Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.": "Assurez-vous de garder votre phrase de récupération en lieu sûr pour pouvoir restorer votre wallet dans le futur. Sans la phrase, votre wallet sera perdu pour toujours.",
   "Not your keys, not your coins.": "Pas vos clés, pas votre argent.",
@@ -268,5 +268,9 @@
   "Reject": "Reject",
   "Approve": "Approve",
   "Unable to convert the amount": "Unable to convert the amount",
-  "The amount must be greater than {{ minAmount }}": "The amount must be greater than {{ minAmount }}"
+  "The amount must be greater than {{ minAmount }}": "The amount must be greater than {{ minAmount }}",
+  "Restart the application to install the new update.": "Restart the application to install the new update.",
+  "Downloaded {{ percent }}%": "Downloaded {{ percent }}%",
+  "Update": "Update",
+  "Download failed, try again later.": "Download failed, try again later."
 }

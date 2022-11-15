@@ -21,8 +21,11 @@ const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } = requir
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
+const { autoUpdater } = require('electron-updater')
 
 contextMenu()
+
+autoUpdater.autoDownload = false
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -165,6 +168,12 @@ function createWindow() {
   })
 
   mainWindow.on('closed', () => (mainWindow = null))
+
+  autoUpdater.on('download-progress', (info) => mainWindow.webContents.send('updater:download-progress', info))
+
+  autoUpdater.on('error', (error) => mainWindow.webContents.send('updater:error', error))
+
+  autoUpdater.on('update-downloaded', (event) => mainWindow.webContents.send('updater:updateDownloaded', event))
 }
 
 // Activate the window of primary instance when a second instance starts
@@ -200,6 +209,16 @@ if (!gotTheLock) {
         themeSource: nativeTheme.themeSource
       })
     )
+
+    ipcMain.handle('updater:checkForUpdates', async () => {
+      const result = await autoUpdater.checkForUpdates()
+
+      return result?.updateInfo?.version
+    })
+
+    ipcMain.handle('updater:startUpdateDownload', () => autoUpdater.downloadUpdate())
+
+    ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
     createWindow()
   })

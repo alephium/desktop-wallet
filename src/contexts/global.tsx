@@ -64,6 +64,9 @@ export interface GlobalContextProps {
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
+  newVersionDownloadTriggered: boolean
+  triggerNewVersionDownload: () => void
+  resetNewVersionDownloadTrigger: () => void
   isPassphraseUsed: boolean
 }
 
@@ -86,6 +89,9 @@ export const initialGlobalContext: GlobalContextProps = {
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
   newLatestVersion: '',
+  newVersionDownloadTriggered: false,
+  triggerNewVersionDownload: () => null,
+  resetNewVersionDownloadTrigger: () => null,
   isPassphraseUsed: false
 }
 
@@ -112,6 +118,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
+  const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
+
+  const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
+  const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
   const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
     const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
@@ -272,6 +282,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           networkStatus,
           updateNetworkSettings,
           newLatestVersion,
+          newVersionDownloadTriggered,
+          triggerNewVersionDownload,
+          resetNewVersionDownloadTrigger,
           isPassphraseUsed
         },
         overrideContextValue as GlobalContextProps

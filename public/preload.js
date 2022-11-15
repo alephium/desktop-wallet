@@ -25,5 +25,13 @@ contextBridge.exposeInMainWorld('electron', {
     const fn = (_, e) => cb(e)
     ipcRenderer.on('getNativeTheme', fn)
     return () => ipcRenderer.removeListener('getNativeTheme', fn)
+  },
+  updater: {
+    checkForUpdates: async () => ipcRenderer.invoke('updater:checkForUpdates'),
+    startUpdateDownload: () => ipcRenderer.invoke('updater:startUpdateDownload'),
+    onUpdateDownloadProgress: (callback) => ipcRenderer.on('updater:download-progress', callback),
+    onUpdateDownloaded: (callback) => ipcRenderer.on('updater:updateDownloaded', callback),
+    quitAndInstallUpdate: () => ipcRenderer.invoke('updater:quitAndInstallUpdate'),
+    onError: (callback) => ipcRenderer.on('updater:error', callback)
   }
 })
