@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { useCallback, useEffect, useState } from 'react'
+import { KeyboardEvent, useCallback, useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 interface ToggleProps {
@@ -78,10 +78,17 @@ const Toggle = ({
 
   const getToggleIconColor = (isActive: boolean) => (isActive ? 'var(--color-white)' : theme.font.tertiary)
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.stopPropagation()
+      handleSwitch()
+    }
+  }
+
   return (
     <StyledToggle
       onClick={handleSwitch}
-      onKeyPress={handleSwitch}
+      onKeyDown={handleKeyDown}
       className={className}
       aria-label={label}
       aria-checked={toggled}

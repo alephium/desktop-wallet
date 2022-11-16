@@ -64,6 +64,8 @@ const AppHeader: FC = ({ children }) => {
     updateSettings
   } = useGlobalContext()
 
+  const offlineText = t`The wallet is offline.`
+
   return (
     <>
       <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
@@ -71,7 +73,7 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         {isOffline && (
           <>
-            <OfflineIcon data-tip={t`The wallet is offline.`}>
+            <OfflineIcon data-tip={offlineText} tabIndex={0} aria-label={offlineText}>
               <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />
             </OfflineIcon>
             <HeaderDivider />

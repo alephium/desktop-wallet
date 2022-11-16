@@ -82,23 +82,25 @@ const TransactionalInfo = ({
     <div className={className}>
       <CellTime>
         <CellArrow>
-          <TransactionIcon color={iconBgColor} aria-label={label}>
+          <TransactionIcon color={iconBgColor}>
             <Icon size={16} strokeWidth={3} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
         <TokenTimeInner>
           {label}
-          <HiddenLabel text={formatAmountForDisplay(BigInt(amount ?? 0))} />
+          <HiddenLabel text={`${formatAmountForDisplay(BigInt(amount ?? 0))} ${token}`} />
           <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>
       <CellToken>
-        <TokenStyled type={token} />
+        <TokenStyled type={token} disableA11y />
       </CellToken>
       {!isDisplayedInAddressDetailsPage && (
         <CellAddress alignRight>
           <HiddenLabel text={t`from`} />
-          {direction === 'out' && <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />}
+          {direction === 'out' && (
+            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
+          )}
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
@@ -108,6 +110,7 @@ const TransactionalInfo = ({
                 inputs={(tx as Transaction).inputs}
                 timestamp={(tx as Transaction).timestamp}
                 truncate
+                disableA11y
               />
             ))}
         </CellAddress>
@@ -123,7 +126,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !isDisplayedInAddressDetailsPage && (
-            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders />
+            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
           )}
           {((direction === 'in' && isDisplayedInAddressDetailsPage) || direction === 'out') &&
             (pendingToAddressComponent || (
@@ -134,6 +137,7 @@ const TransactionalInfo = ({
                 inputs={(tx as Transaction).inputs}
                 timestamp={(tx as Transaction).timestamp}
                 truncate
+                disableA11y
               />
             ))}
         </DirectionalAddress>
