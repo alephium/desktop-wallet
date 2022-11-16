@@ -16,29 +16,33 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay } from '@alephium/sdk'
+import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
 import AlefSymbol from './AlefSymbol'
 
 interface AmountProps {
-  value: bigint | undefined
+  value?: bigint | number
+  isFiat?: boolean
   fadeDecimals?: boolean
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
   tabIndex?: number
+  suffix?: string
   className?: string
 }
 
 const Amount = ({
   value,
+  isFiat,
   className,
   fadeDecimals,
   fullPrecision = false,
   color,
   nbOfDecimalsToShow,
+  suffix,
   tabIndex
 }: AmountProps) => {
   const {
@@ -48,17 +52,24 @@ const Amount = ({
   } = useGlobalContext()
   let integralPart = ''
   let fractionalPart = ''
-  let suffix = ''
+  let quantitySymbol = ''
 
-  if (!discreetMode && value !== undefined) {
-    let amount = formatAmountForDisplay(value, fullPrecision, nbOfDecimalsToShow)
-    if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
-      suffix = amount.slice(-1)
-      amount = amount.slice(0, -1)
+  if (!discreetMode) {
+    let amount =
+      value !== undefined
+        ? isFiat && typeof value === 'number'
+          ? formatFiatAmountForDisplay(value)
+          : formatAmountForDisplay(value as bigint, fullPrecision, nbOfDecimalsToShow)
+        : ''
+    if (amount) {
+      if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
+        quantitySymbol = amount.slice(-1)
+        amount = amount.slice(0, -1)
+      }
+      const amountParts = amount.split('.')
+      integralPart = amountParts[0]
+      fractionalPart = amountParts[1]
     }
-    const amountParts = amount.split('.')
-    integralPart = amountParts[0]
-    fractionalPart = amountParts[1]
   }
 
   return (
@@ -70,7 +81,7 @@ const Amount = ({
           <>
             <span>{integralPart}</span>
             <Decimals>.{fractionalPart}</Decimals>
-            {suffix && <span>{suffix}</span>}
+            {quantitySymbol && <span>{quantitySymbol}</span>}
           </>
         ) : (
           `${integralPart}.${fractionalPart}`
@@ -78,7 +89,7 @@ const Amount = ({
       ) : (
         '-'
       )}
-      <AlefSymbol color={color} />
+      {suffix ?? <AlefSymbol color={color} />}
     </span>
   )
 }

@@ -16,23 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { configureStore } from '@reduxjs/toolkit'
-import { setupListeners } from '@reduxjs/toolkit/dist/query'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-import activeWalletSlice from './activeWalletSlice'
-import appSlice from './appSlice'
-import { priceApi } from './priceApiSlice'
+import { Currency } from '../types/settings'
 
-export const store = configureStore({
-  reducer: {
-    app: appSlice.reducer,
-    activeWallet: activeWalletSlice.reducer,
-    [priceApi.reducerPath]: priceApi.reducer
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(priceApi.middleware)
+export const priceApi = createApi({
+  reducerPath: 'priceApi',
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coingecko.com/api/v3/simple/' }),
+  endpoints: (builder) => ({
+    getPrice: builder.query<string, Currency>({
+      query: (currency) => `/price?ids=alephium&vs_currencies=${currency.toLowerCase()}`,
+      transformResponse: (response: { alephium: { [key: string]: string } }, meta, arg) =>
+        response.alephium[arg.toLowerCase()]
+    })
+  })
 })
 
-setupListeners(store.dispatch)
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export const { useGetPriceQuery } = priceApi
