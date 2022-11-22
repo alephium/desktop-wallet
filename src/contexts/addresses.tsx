@@ -23,7 +23,7 @@ import {
   TOTAL_NUMBER_OF_GROUPS,
   Wallet
 } from '@alephium/sdk'
-import { AddressInfo, Transaction } from '@alephium/sdk/api/explorer'
+import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -245,7 +245,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
           txs.forEach((tx) => {
             if (tx.type === 'Unconfirmed' && !address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
-              const pendingTx = convertUnconfirmedTxToPendingTx(tx, address.hash, currentNetwork)
+              const pendingTx = convertUnconfirmedTxToPendingTx(
+                tx as UnconfirmedTransaction,
+                address.hash,
+                currentNetwork
+              )
 
               address.addPendingTransaction(pendingTx)
             }

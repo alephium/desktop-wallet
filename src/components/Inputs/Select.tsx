@@ -104,6 +104,12 @@ function Select<T extends OptionValue>({
     }
   }, [options, setInputValue, value])
 
+  useEffect(() => {
+    if (value && !options.find((option) => option.value === value.value)) {
+      setValue(undefined)
+    }
+  }, [options, value])
+
   return (
     <>
       <SelectContainer
