@@ -33,10 +33,10 @@ export interface AlephiumWindow extends Window {
     updater: {
       checkForUpdates: () => Promise<string>
       startUpdateDownload: () => void
-      onUpdateDownloadProgress: (callback: (event: any, info: ProgressInfo) => void) => void
-      onUpdateDownloaded: (callback: (event: any, updateDownloadedEvent: UpdateDownloadedEvent) => void) => void
+      onUpdateDownloadProgress: (callback: (event: any, info: ProgressInfo) => void) => () => void
+      onUpdateDownloaded: (callback: (event: any, updateDownloadedEvent: UpdateDownloadedEvent) => void) => () => void
       quitAndInstallUpdate: () => void
-      onError: (callback: (event: any, error: Error) => void) => void
+      onError: (callback: (event: any, error: Error) => void) => () => void
     }
   }
 }
