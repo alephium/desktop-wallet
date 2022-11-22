@@ -32,7 +32,7 @@ interface UpdateWalletModalProps {
   startDownload?: boolean
 }
 
-type Status = 'download-available' | 'downloading' | 'download-finished' | 'download-failed'
+type UpdateStatus = 'download-available' | 'downloading' | 'download-finished' | 'download-failed'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
@@ -41,7 +41,7 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
   const { t } = useTranslation('App')
   const { resetNewVersionDownloadTrigger } = useGlobalContext()
 
-  const [status, setStatus] = useState<Status>('download-available')
+  const [status, setStatus] = useState<UpdateStatus>('download-available')
   const [percent, setPercent] = useState(0)
   const [error, setError] = useState('')
 
