@@ -167,6 +167,10 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  nativeTheme.on('updated', () =>
+    mainWindow.webContents.send('theme:shouldUseDarkColors', nativeTheme.shouldUseDarkColors)
+  )
+
   mainWindow.on('closed', () => (mainWindow = null))
 
   autoUpdater.on('download-progress', (info) => mainWindow.webContents.send('updater:download-progress', info))
@@ -199,12 +203,12 @@ if (!gotTheLock) {
       await installExtension(REACT_DEVELOPER_TOOLS)
     }
 
-    ipcMain.handle('setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))
+    ipcMain.handle('theme:setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))
 
     // nativeTheme must be reassigned like this because its properties are all computed, so
     // they can't be serialized to be passed over channels.
-    ipcMain.handle('getNativeTheme', ({ sender }) =>
-      sender.send('getNativeTheme', {
+    ipcMain.handle('theme:getNativeTheme', ({ sender }) =>
+      sender.send('theme:getNativeTheme', {
         shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
         themeSource: nativeTheme.themeSource
       })

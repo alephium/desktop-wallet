@@ -20,20 +20,26 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electron', {
   theme: {
-    setNativeTheme: (theme) => ipcRenderer.invoke('setNativeTheme', theme),
-    getNativeTheme: () => ipcRenderer.invoke('getNativeTheme'),
+    setNativeTheme: (theme) => ipcRenderer.invoke('theme:setNativeTheme', theme),
+    getNativeTheme: () => ipcRenderer.invoke('theme:getNativeTheme'),
     onGetNativeTheme: (callback) => {
-      const fn = (_, e) => callback(e)
-      ipcRenderer.on('getNativeTheme', fn)
-      return () => ipcRenderer.removeListener('getNativeTheme', fn)
+      const callbackWithEventArg = (_, arg2) => callback(arg2)
+      ipcRenderer.on('theme:getNativeTheme', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('theme:getNativeTheme', callbackWithEventArg)
+    },
+    onShouldUseDarkColors: (callback) => {
+      const callbackWithEventArg = (_, arg2) => callback(arg2)
+      ipcRenderer.on('theme:shouldUseDarkColors', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('theme:shouldUseDarkColors', callbackWithEventArg)
     }
   },
   updater: {
     checkForUpdates: async () => ipcRenderer.invoke('updater:checkForUpdates'),
     startUpdateDownload: () => ipcRenderer.invoke('updater:startUpdateDownload'),
     onUpdateDownloadProgress: (callback) => {
-      ipcRenderer.on('updater:download-progress', callback)
-      return () => ipcRenderer.removeListener('updater:download-progress', callback)
+      const callbackWithEventArg = (_, arg2) => callback(arg2)
+      ipcRenderer.on('updater:download-progress', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('updater:download-progress', callbackWithEventArg)
     },
     onUpdateDownloaded: (callback) => {
       ipcRenderer.on('updater:updateDownloaded', callback)
@@ -41,8 +47,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     quitAndInstallUpdate: () => ipcRenderer.invoke('updater:quitAndInstallUpdate'),
     onError: (callback) => {
-      ipcRenderer.on('updater:error', callback)
-      return () => ipcRenderer.removeListener('updater:error', callback)
+      const callbackWithEventArg = (_, arg2) => callback(arg2)
+      ipcRenderer.on('updater:error', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('updater:error', callbackWithEventArg)
     }
   }
 })

@@ -19,8 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { DefaultTheme } from 'styled-components'
 
-export type ThemeType = 'light' | 'dark'
-
 export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {

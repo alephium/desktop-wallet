@@ -17,48 +17,35 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Moon, Sun } from 'lucide-react'
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGlobalContext } from '../contexts/global'
-import { ThemeType } from '../types/settings'
-import { AlephiumWindow } from '../types/window'
+import useSwitchTheme from '../hooks/useSwitchTheme'
 import Toggle from './Inputs/Toggle'
 
 interface ThemeSwitcherProps {
   className?: string
 }
 
-const _window = window as unknown as AlephiumWindow
-const electron = _window.electron
-
 const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const { t } = useTranslation('App')
-
+  const switchTheme = useSwitchTheme()
   const {
     settings: {
       general: { theme: currentTheme }
-    },
-    updateSettings
+    }
   } = useGlobalContext()
 
-  const switchTheme = useCallback(
-    (theme: ThemeType) => {
-      electron?.theme.setNativeTheme(theme)
-      updateSettings('general', { theme })
-    },
-    [updateSettings]
-  )
-
-  const handleThemeToggle = () => switchTheme(currentTheme === 'light' ? 'dark' : 'light')
+  const isDark = currentTheme === 'dark'
 
   return (
     <Toggle
       label={t`Activate dark mode`}
       ToggleIcons={[Sun, Moon]}
       handleColors={['var(--color-orange)', 'var(--color-purple)']}
-      toggled={currentTheme === 'dark'}
-      onToggle={handleThemeToggle}
+      toggled={isDark}
+      onToggle={() => switchTheme(isDark ? 'light' : 'dark')}
     />
   )
 }
