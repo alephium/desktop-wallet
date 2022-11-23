@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
@@ -33,23 +33,17 @@ import { FloatingPanel, Section } from '../components/PageComponents/PageContain
 import PanelTitle from '../components/PageComponents/PanelTitle'
 import Paragraph from '../components/Paragraph'
 import { useGlobalContext } from '../contexts/global'
-import UpdateWalletModal from '../modals/UpdateWalletModal'
 import { deviceBreakPoints } from '../style/globalStyles'
 
 const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
-  const { newLatestVersion, walletNames } = useGlobalContext()
-  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const { walletNames } = useGlobalContext()
   const { t } = useTranslation('App')
 
   const hasWallet = walletNames.length > 0
 
   const hideInitialActions = () => setShowInitialActions(false)
   const displayInitialActions = () => setShowInitialActions(true)
-
-  useEffect(() => {
-    if (newLatestVersion) setUpdateWalletModalVisible(true)
-  }, [newLatestVersion])
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
@@ -80,9 +74,6 @@ const HomePage = () => {
           )}
         </FloatingPanel>
       </InteractionArea>
-      {isUpdateWalletModalVisible && (
-        <UpdateWalletModal newVersion={newLatestVersion} onClose={() => setUpdateWalletModalVisible(false)} />
-      )}
     </HomeContainer>
   )
 }

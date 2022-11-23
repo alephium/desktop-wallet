@@ -16,6 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Error, ProgressInfo, UpdateDownloadedEvent } from 'electron-updater'
+
 interface NativeTheme {
   shouldUseDarkColors: boolean
   themeSource: string
@@ -26,5 +30,13 @@ export interface AlephiumWindow extends Window {
     setNativeTheme: (theme: string) => void
     getNativeTheme: () => void
     onGetNativeTheme: (cb: (nativeTheme: NativeTheme) => void) => () => void
+    updater: {
+      checkForUpdates: () => Promise<string>
+      startUpdateDownload: () => void
+      onUpdateDownloadProgress: (callback: (event: any, info: ProgressInfo) => void) => () => void
+      onUpdateDownloaded: (callback: (event: any, updateDownloadedEvent: UpdateDownloadedEvent) => void) => () => void
+      quitAndInstallUpdate: () => void
+      onError: (callback: (event: any, error: Error) => void) => () => void
+    }
   }
 }

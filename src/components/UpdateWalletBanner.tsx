@@ -19,8 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { links } from '../utils/links'
-import { openInWebBrowser } from '../utils/misc'
+import { useGlobalContext } from '../contexts/global'
 import Banner from './Banner'
 import Button from './Button'
 
@@ -31,17 +30,15 @@ interface UpdateWalletBannerProps {
 
 const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) => {
   const { t } = useTranslation('App')
+  const { triggerNewVersionDownload } = useGlobalContext()
 
   return (
     <Banner className={className}>
       <UpdateMessage>
-        {t(
-          'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.',
-          { newVersion }
-        )}
+        {t('Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.', { newVersion })}
       </UpdateMessage>
-      <ButtonStyled short onClick={() => openInWebBrowser(links.latestRelease)}>
-        {t`Download`}
+      <ButtonStyled short onClick={triggerNewVersionDownload}>
+        {t`Update`}
       </ButtonStyled>
     </Banner>
   )
