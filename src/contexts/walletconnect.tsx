@@ -37,6 +37,7 @@ import {
   TxDataToModalType,
   TxType
 } from '../types/transactions'
+import { AlephiumWindow } from '../types/window'
 import { extractErrorMsg } from '../utils/misc'
 import { useGlobalContext } from './global'
 import { useSendModalContext } from './sendModal'
@@ -47,6 +48,7 @@ export interface WalletConnectContextProps {
   dappTxData?: DappTxData
   setDappTxData: (data?: DappTxData) => void
   onError: (error: string) => void
+  deepLinkUri: string
 }
 
 const initialContext: WalletConnectContextProps = {
@@ -54,7 +56,8 @@ const initialContext: WalletConnectContextProps = {
   dappTxData: undefined,
   setDappTxData: () => null,
   requestEvent: undefined,
-  onError: () => null
+  onError: () => null,
+  deepLinkUri: ''
 }
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
@@ -66,6 +69,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
   const [dappTxData, setDappTxData] = useState<DappTxData>()
   const [requestEvent, setRequestEvent] = useState<SignClientTypes.EventArguments['session_request']>()
+  const [deepLinkUri, setDeepLinkUri] = useState('')
 
   const initializeWalletConnectClient = useCallback(async () => {
     try {
@@ -225,6 +229,13 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     }
   }, [onSessionRequest, walletConnectClient])
 
+  useEffect(() => {
+    const _window = window as unknown as AlephiumWindow
+    _window.electron?.walletConnect.onSetDeepLinkUri((deepLinkUri) => {
+      setDeepLinkUri(deepLinkUri)
+    })
+  }, [])
+
   return (
     <WalletConnectContext.Provider
       value={{
@@ -232,7 +243,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         walletConnectClient,
         dappTxData,
         setDappTxData,
-        onError
+        onError,
+        deepLinkUri
       }}
     >
       {children}

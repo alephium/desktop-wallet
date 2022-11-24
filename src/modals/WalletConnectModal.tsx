@@ -36,6 +36,7 @@ import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectFull from '../images/wallet-connect-full.svg'
+import { AlephiumWindow } from '../types/window'
 import { extractErrorMsg } from '../utils/misc'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
@@ -44,14 +45,18 @@ type WalletConnectSessionState = 'uninitialized' | 'proposal' | 'require-unlock'
 interface Props {
   onClose: () => void
   onConnect?: () => void
+  uri: string
 }
 
-const WalletConnectModal = ({ onClose, onConnect }: Props) => {
+const _window = window as unknown as AlephiumWindow
+const electron = _window.electron
+
+const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   const { t } = useTranslation('App')
   const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
   const { addresses } = useAddressesContext()
-  const [uri, setUri] = useState('')
+  const [uri, setUri] = useState(uriProp)
   const [error, setError] = useState('')
   const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>(
     addresses.length > 0 ? 'uninitialized' : 'require-unlock'
@@ -84,15 +89,22 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
     }
   }, [onProposal, walletConnectClient])
 
-  const handleConnect = useCallback(async () => {
-    try {
-      await walletConnectClient?.pair({ uri })
-      if (onConnect) onConnect()
-    } catch (e) {
-      setUri('')
-      setError(`${t('Error in pairing')}: ${extractErrorMsg(e)}`)
-    }
-  }, [walletConnectClient, uri, onConnect, t])
+  const handleConnect = useCallback(
+    async (uri: string) => {
+      try {
+        await walletConnectClient?.pair({ uri })
+        if (onConnect) onConnect()
+      } catch (e) {
+        setUri('')
+        setError(`${t('Error in pairing')}: ${extractErrorMsg(e)}`)
+      }
+    },
+    [walletConnectClient, onConnect, t]
+  )
+
+  useEffect(() => {
+    if (uriProp) handleConnect(uriProp)
+  }, [handleConnect, uriProp])
 
   const setErrorState = useCallback((error: string): void => {
     setWcSessionState('error')
@@ -160,6 +172,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       await acknowledged()
 
       onClose()
+      electron?.walletConnect.hideApp()
     },
     [chainAccounts, client?.web3.infos, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
   )
@@ -178,6 +191,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
       }
     })
     onClose()
+    electron?.walletConnect.hideApp()
   }
 
   if (!walletConnectClient) return null
@@ -210,7 +224,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
           <ModalFooterButton secondary onClick={onClose}>
             {t`Cancel`}
           </ModalFooterButton>
-          <ModalFooterButton onClick={handleConnect} disabled={uri === ''}>
+          <ModalFooterButton onClick={() => handleConnect(uri)} disabled={uri === ''}>
             {t`Connect`}
           </ModalFooterButton>
         </ModalFooterButtons>

@@ -41,5 +41,9 @@ export interface AlephiumWindow extends Window {
       quitAndInstallUpdate: () => void
       onError: (callback: (error: Error) => void) => () => void
     }
+    walletConnect: {
+      onSetDeepLinkUri: (callback: (uri: string) => void) => () => void
+      hideApp: () => void
+    }
   }
 }

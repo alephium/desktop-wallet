@@ -23,6 +23,15 @@ const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
 const { autoUpdater } = require('electron-updater')
 
+// Handle deep linking for alephium-desktop://
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('alephium-desktop', process.execPath, [path.resolve(process.argv[1])])
+  }
+} else {
+  app.setAsDefaultProtocolClient('alephium-desktop')
+}
+
 contextMenu()
 
 autoUpdater.autoDownload = false
@@ -156,6 +165,7 @@ function createWindow() {
   }
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+
   if (isDev) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
@@ -224,6 +234,8 @@ if (!gotTheLock) {
 
     ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
+    ipcMain.handle('wc:hideApp', () => app.hide())
+
     createWindow()
   })
 
@@ -238,5 +250,10 @@ if (!gotTheLock) {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) createWindow()
+  })
+
+  app.on('open-url', (event, url) => {
+    const wcUri = url.replace('alephium-desktop://wc?uri=', '')
+    mainWindow.webContents.send('wc:setDeepLinkUri', wcUri)
   })
 }

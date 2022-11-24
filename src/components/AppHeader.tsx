@@ -19,13 +19,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { useScrollContext } from '../contexts/scroll'
+import { useWalletConnectContext } from '../contexts/walletconnect'
 import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
 import WalletConnectModal from '../modals/WalletConnectModal'
@@ -37,7 +38,7 @@ import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
 // This shall be removed once v2.0.0 is released
-const hideWalletConnectButton = true
+const hideWalletConnectButton = false
 
 const AppHeader: FC = ({ children }) => {
   const { t } = useTranslation('App')
@@ -47,8 +48,17 @@ const AppHeader: FC = ({ children }) => {
   const scrollY = useMotionValue(0)
   const theme = useTheme()
   const { mainAddress } = useAddressesContext()
-  const { networkStatus, isPassphraseUsed } = useGlobalContext()
+  const {
+    networkStatus,
+    isPassphraseUsed,
+    settings: {
+      general: { discreetMode }
+    },
+    updateSettings
+  } = useGlobalContext()
+  const { deepLinkUri } = useWalletConnectContext()
   const isOffline = networkStatus === 'offline'
+  const isAuthenticated = !!mainAddress
 
   scrollY.set(scroll?.scrollTop ?? 0)
 
@@ -57,12 +67,10 @@ const AppHeader: FC = ({ children }) => {
     [0, 100],
     [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
   )
-  const {
-    settings: {
-      general: { discreetMode }
-    },
-    updateSettings
-  } = useGlobalContext()
+
+  useEffect(() => {
+    if (deepLinkUri && isAuthenticated) setIsWalletConnectModalOpen(true)
+  }, [isAuthenticated, deepLinkUri])
 
   const offlineText = t`The wallet is offline.`
 
@@ -101,7 +109,7 @@ const AppHeader: FC = ({ children }) => {
         <HeaderDivider />
         <NetworkBadge />
         <HeaderDivider />
-        {mainAddress && !hideWalletConnectButton && (
+        {isAuthenticated && !hideWalletConnectButton && (
           <>
             <Button
               transparent
@@ -129,7 +137,9 @@ const AppHeader: FC = ({ children }) => {
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </AnimatePresence>
       <AnimatePresence>
-        {isWalletConnectModalOpen && <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />}
+        {isWalletConnectModalOpen && (
+          <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
+        )}
       </AnimatePresence>
     </>
   )
