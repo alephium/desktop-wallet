@@ -57,7 +57,9 @@ contextBridge.exposeInMainWorld('electron', {
       const callbackWithEventArg = (_, arg2) => callback(arg2)
       ipcRenderer.on('wc:setDeepLinkUri', callbackWithEventArg)
       return () => ipcRenderer.removeListener('wc:setDeepLinkUri', callbackWithEventArg)
-    },
-    hideApp: () => ipcRenderer.invoke('wc:hideApp')
+    }
+  },
+  app: {
+    hide: () => ipcRenderer.invoke('app:hide')
   }
 })

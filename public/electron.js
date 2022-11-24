@@ -234,7 +234,7 @@ if (!gotTheLock) {
 
     ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
-    ipcMain.handle('wc:hideApp', () => app.hide())
+    ipcMain.handle('app:hide', () => app.hide())
 
     createWindow()
   })
