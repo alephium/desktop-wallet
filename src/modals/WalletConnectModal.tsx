@@ -172,7 +172,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       await acknowledged()
 
       onClose()
-      electron?.walletConnect.hideApp()
+      electron?.app.hide()
     },
     [chainAccounts, client?.web3.infos, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
   )
@@ -191,7 +191,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       }
     })
     onClose()
-    electron?.walletConnect.hideApp()
+    electron?.app.hide()
   }
 
   if (!walletConnectClient) return null
