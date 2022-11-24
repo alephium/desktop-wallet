@@ -66,7 +66,7 @@ export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['
 
 export const defaultSettings: Settings = {
   general: {
-    theme: 'light',
+    theme: 'system',
     walletLockTimeInMinutes: 3,
     discreetMode: false,
     passwordRequirement: false,

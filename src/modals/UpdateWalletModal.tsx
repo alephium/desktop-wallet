@@ -51,14 +51,14 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
   }
 
   useEffect(() => {
-    const removeUpdateDownloadProgressListener = electron?.updater.onUpdateDownloadProgress((_, info) =>
+    const removeUpdateDownloadProgressListener = electron?.updater.onUpdateDownloadProgress((info) =>
       setPercent(info.percent)
     )
     const removeUpdateDownloadedListener = electron?.updater.onUpdateDownloaded(() => {
       // Delay success message to give time for download validation errors to arise if any
       setTimeout(() => setStatus('download-finished'), 1000)
     })
-    const removeonErrorListener = electron?.updater.onError((_, error) => {
+    const removeonErrorListener = electron?.updater.onError((error) => {
       setStatus('download-failed')
       setError(error.toString())
     })

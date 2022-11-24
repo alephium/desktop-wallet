@@ -26,13 +26,28 @@ import Select from '../../components/Inputs/Select'
 import Toggle from '../../components/Inputs/Toggle'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
-import ThemeSwitcher from '../../components/ThemeSwitcher'
 import { useGlobalContext } from '../../contexts/global'
-import { Language } from '../../types/settings'
+import useSwitchTheme from '../../hooks/useSwitchTheme'
+import { Language, ThemeType } from '../../types/settings'
+import { loadSettings } from '../../utils/settings'
 import CenteredModal from '../CenteredModal'
+
+const languageOptions = [
+  { label: 'English', value: 'en-US' as Language },
+  { label: 'Français', value: 'fr-FR' as Language },
+  { label: 'Tiếng Việt', value: 'vi-VN' as Language },
+  { label: 'Deutsch', value: 'de-DE' as Language }
+]
+
+const themeOptions = [
+  { label: 'System', value: 'system' as ThemeType },
+  { label: 'Light', value: 'light' as ThemeType },
+  { label: 'Dark', value: 'dark' as ThemeType }
+]
 
 const GeneralSettingsSection = () => {
   const { t } = useTranslation('App')
+  const switchTheme = useSwitchTheme()
   const {
     settings: {
       general: { walletLockTimeInMinutes, discreetMode, passwordRequirement, language }
@@ -40,6 +55,8 @@ const GeneralSettingsSection = () => {
     updateSettings,
     wallet
   } = useGlobalContext()
+
+  const storedSettings = loadSettings()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 
@@ -57,13 +74,6 @@ const GeneralSettingsSection = () => {
   }, [updateSettings])
 
   const onLanguageChange = (language: Language) => updateSettings('general', { language })
-
-  const languageOptions = [
-    { label: 'English', value: 'en-US' as Language },
-    { label: 'Français', value: 'fr-FR' as Language },
-    { label: 'Tiếng Việt', value: 'vi-VN' as Language },
-    { label: 'Deutsch', value: 'de-DE' as Language }
-  ]
 
   const discreetModeText = t`Discreet mode`
 
@@ -91,7 +101,16 @@ const GeneralSettingsSection = () => {
       <KeyValueInput
         label={t`Theme`}
         description={t`Select the theme and please your eyes.`}
-        InputComponent={<ThemeSwitcher />}
+        InputComponent={
+          <Select
+            id="theme"
+            options={themeOptions}
+            onValueChange={(v) => v?.value && switchTheme(v.value)}
+            controlledValue={themeOptions.find((l) => l.value === storedSettings.general.theme)}
+            noMargin
+            title={t`Theme`}
+          />
+        }
       />
       <HorizontalDivider narrow />
       <KeyValueInput

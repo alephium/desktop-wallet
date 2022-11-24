@@ -20,7 +20,7 @@ import 'styled-components'
 
 export type Language = 'en-US' | 'fr-FR'
 
-export type ThemeType = 'light' | 'dark'
+export type ThemeType = 'light' | 'dark' | 'system'
 
 declare module 'styled-components' {
   export interface DefaultTheme {

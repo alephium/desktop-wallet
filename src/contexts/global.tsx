@@ -33,10 +33,10 @@ import { createClient } from '../utils/api-clients'
 import { migrateUserData } from '../utils/migration'
 import {
   getNetworkName,
+  loadSettings,
   migrateDeprecatedSettings,
   NetworkName,
   Settings,
-  storeSettings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings
 } from '../utils/settings'
@@ -99,6 +99,7 @@ export const GlobalContext = createContext<GlobalContextProps>(initialGlobalCont
 
 const Storage = getStorage()
 const _window = window as unknown as AlephiumWindow
+const electron = _window.electron
 
 export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<GlobalContextProps> }> = ({
   children,
@@ -235,28 +236,37 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     }
   }, [currentNetwork, networkStatus, t])
 
-  useEffect(
-    () => {
-      const removeListener = _window.electron?.onGetNativeTheme((nativeTheme) => {
-        const theme =
-          nativeTheme.themeSource === 'system'
-            ? nativeTheme.shouldUseDarkColors
-              ? ('dark' as const)
-              : ('light' as const)
-            : (nativeTheme.themeSource as ThemeType)
-        updateSettings('general', { theme })
-      })
-      _window.electron?.getNativeTheme()
-      return () => removeListener && removeListener()
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
+  const switchTheme = useCallback((theme: ThemeType) => {
+    setSettings((prevState) => ({
+      ...prevState,
+      general: {
+        ...prevState.general,
+        theme
+      }
+    }))
+  }, [])
 
-  // Save settings to local storage
   useEffect(() => {
-    storeSettings(settings)
-  }, [settings])
+    const storedSettings = loadSettings()
+    const shouldListenToOSThemeChanges = storedSettings.general.theme === 'system'
+
+    if (!shouldListenToOSThemeChanges) return
+
+    const removeOSThemeChangeListener = electron?.theme.onShouldUseDarkColors((useDark: boolean) =>
+      switchTheme(useDark ? 'dark' : 'light')
+    )
+
+    const removeGetNativeThemeListener = electron?.theme.onGetNativeTheme((nativeTheme) =>
+      switchTheme(nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
+    )
+
+    electron?.theme.getNativeTheme()
+
+    return () => {
+      removeGetNativeThemeListener && removeGetNativeThemeListener()
+      removeOSThemeChangeListener && removeOSThemeChangeListener()
+    }
+  }, [settings.general.theme, switchTheme])
 
   return (
     <GlobalContext.Provider
