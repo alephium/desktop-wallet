@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { walletEncrypt } from '@alephium/sdk'
+import { simpleEncrypt } from '@alephium/sdk'
 import { ScanLine } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -41,7 +41,7 @@ const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {
   if (!mnemonic) return null
 
   const handleCorrectPasswordEntered = (password: string) => {
-    const encryptedDataToEncode = walletEncrypt(password, mnemonic)
+    const encryptedDataToEncode = simpleEncrypt(password, mnemonic)
 
     setQrCodeTextToEncode(encryptedDataToEncode)
   }
