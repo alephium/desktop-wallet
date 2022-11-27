@@ -30,6 +30,7 @@ import SplashScreen from './components/SplashScreen'
 import Tooltip from './components/Tooltip'
 import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
+import { useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
@@ -43,6 +44,7 @@ const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isLanguageChanging, setIsLanguageChanging] = useState(false)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const isAppLoading = useAppSelector((state) => state.app.loading)
 
   const isOffline = networkStatus === 'offline'
 
@@ -84,7 +86,7 @@ const App = () => {
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Router />
       </AppContainer>
-      {((isClientLoading && !isOffline) || isLanguageChanging) && (
+      {((isClientLoading && !isOffline) || isLanguageChanging || isAppLoading) && (
         <ClientLoading>
           <Spinner size="60px" />
         </ClientLoading>

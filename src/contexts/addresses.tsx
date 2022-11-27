@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import {
   addressToGroup,
   deriveNewAddressData,
+  discoverActiveAddresses,
   getHumanReadableError,
   TOTAL_NUMBER_OF_GROUPS,
   Wallet
@@ -29,6 +30,8 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
+import { useAppDispatch } from '../hooks/redux'
+import { appLoadingToggled } from '../store/appSlice'
 import { TimeInMs } from '../types/numbers'
 import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
@@ -116,6 +119,7 @@ export interface AddressesContextProps {
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
   generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
+  discoverAndSaveActiveAddresses: () => void
   isLoadingData: boolean
 }
 
@@ -129,6 +133,7 @@ export const initialAddressesContext: AddressesContextProps = {
   refreshAddressesData: () => null,
   fetchAddressTransactionsNextPage: () => null,
   generateOneAddressPerGroup: () => null,
+  discoverAndSaveActiveAddresses: () => null,
   isLoadingData: false
 }
 
@@ -156,6 +161,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+  const dispatch = useAppDispatch()
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -343,6 +349,31 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     setIsLoadingData(false)
   }
 
+  const discoverAndSaveActiveAddresses = async () => {
+    if (!client || !wallet) return
+
+    dispatch(appLoadingToggled(true))
+
+    console.profile('DISCOVERY')
+
+    const skipIndexes = addressesOfCurrentNetwork.map((address) => address.index)
+    const newActiveAddresses = await discoverActiveAddresses(wallet.seed, skipIndexes, client.explorer)
+
+    newActiveAddresses.forEach((address) =>
+      saveNewAddress(
+        new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+          isMain: false,
+          label: '',
+          color: ''
+        })
+      )
+    )
+
+    console.profileEnd('DISCOVERY')
+
+    dispatch(appLoadingToggled(false))
+  }
+
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
       if (!wallet) return
@@ -489,6 +520,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           refreshAddressesData,
           fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
+          discoverAndSaveActiveAddresses,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

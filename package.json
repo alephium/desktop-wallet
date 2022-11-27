@@ -25,12 +25,15 @@
     "not op_mini all"
   ],
   "dependencies": {
+    "@alephium/sdk": "file:../js-sdk/alephium-sdk-0.3.0.tgz",
+    "@reduxjs/toolkit": "^1.9.0",
     "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0",
-    "electron-updater": "^5.3.0"
+    "electron-updater": "^5.3.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.0"
   },
   "devDependencies": {
-    "@alephium/sdk": "file:../js-sdk/alephium-sdk-0.3.0.tgz",
     "@alephium/walletconnect-provider": "0.2.0",
     "@alephium/web3": "0.2.0",
     "@json-rpc-tools/utils": "^1.7.6",
