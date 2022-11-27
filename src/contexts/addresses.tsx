@@ -17,15 +17,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
+  AddressAndKeys,
   addressToGroup,
   deriveNewAddressData,
-  discoverActiveAddresses,
   getHumanReadableError,
   TOTAL_NUMBER_OF_GROUPS,
   Wallet
 } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
+import path from 'path'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
@@ -38,6 +39,8 @@ import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetad
 import { NetworkName } from '../utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
+
+const addressDiscoveryWorker = new Worker(path.join(__dirname, 'workers', 'addressDiscovery.js'))
 
 export type AddressHash = string
 
@@ -349,31 +352,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     setIsLoadingData(false)
   }
 
-  const discoverAndSaveActiveAddresses = async () => {
-    if (!client || !wallet) return
-
-    dispatch(appLoadingToggled(true))
-
-    console.profile('DISCOVERY')
-
-    const skipIndexes = addressesOfCurrentNetwork.map((address) => address.index)
-    const newActiveAddresses = await discoverActiveAddresses(wallet.seed, skipIndexes, client.explorer)
-
-    newActiveAddresses.forEach((address) =>
-      saveNewAddress(
-        new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
-          isMain: false,
-          label: '',
-          color: ''
-        })
-      )
-    )
-
-    console.profileEnd('DISCOVERY')
-
-    dispatch(appLoadingToggled(false))
-  }
-
   const saveNewAddress = useCallback(
     (newAddress: Address) => {
       if (!wallet) return
@@ -393,6 +371,33 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     },
     [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
   )
+
+  const discoverAndSaveActiveAddresses = async () => {
+    if (!client || !wallet) return
+
+    dispatch(appLoadingToggled(true))
+
+    addressDiscoveryWorker.postMessage({
+      mnemonic: wallet.mnemonic,
+      skipIndexes: addressesOfCurrentNetwork.map((address) => address.index),
+      clientUrl: client.explorer.baseUrl
+    })
+  }
+
+  useEffect(() => {
+    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
+      data.forEach(({ address, publicKey, privateKey, addressIndex }) =>
+        saveNewAddress(
+          new Address(address, publicKey, privateKey, addressIndex, {
+            isMain: false,
+            label: '',
+            color: ''
+          })
+        )
+      )
+      dispatch(appLoadingToggled(false))
+    }
+  }, [dispatch, saveNewAddress])
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
     if (!wallet?.seed) return
