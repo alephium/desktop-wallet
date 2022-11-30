@@ -48,12 +48,12 @@ export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['
     networkId: 0,
     nodeHost: 'https://wallet-v15.mainnet.alephium.org',
     explorerApiHost: 'https://backend-v19.mainnet.alephium.org',
-    explorerUrl: 'https://explorer-v19.mainnet.alephium.org'
+    explorerUrl: 'https://explorer.alephium.org'
   },
   testnet: {
     networkId: 1,
-    nodeHost: 'https://wallet.testnet.alephium.org',
-    explorerApiHost: 'https://backend.testnet.alephium.org',
+    nodeHost: 'https://wallet-v15.testnet.alephium.org',
+    explorerApiHost: 'https://backend-v19.testnet.alephium.org',
     explorerUrl: 'https://explorer.testnet.alephium.org'
   },
   localhost: {
