@@ -16,16 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import Scrollbar from '../components/Scrollbar'
+import { useAppSelector } from '../hooks/redux'
 import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
 import AddressesPage from '../pages/Wallet/AddressesPage'
 import OverviewPage from '../pages/Wallet/OverviewPage'
 import WalletLayout from '../pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
+  const navigate = useNavigate()
   const location = useLocation()
+  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+
+  useEffect(() => {
+    if (!isAuthenticated) navigate('/')
+  }, [isAuthenticated, navigate])
 
   return (
     <Scrollbar>

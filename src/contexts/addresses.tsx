@@ -17,25 +17,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
+  AddressAndKeys,
   addressToGroup,
-  deriveNewAddressData,
   getHumanReadableError,
   getWalletFromMnemonic,
   TOTAL_NUMBER_OF_GROUPS
 } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
+import path from 'path'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
-import { useAppSelector } from '../hooks/redux'
+import { useAppDispatch, useAppSelector } from '../hooks/redux'
+import { appLoadingToggled } from '../store/appSlice'
 import { TimeInMs } from '../types/numbers'
 import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
+
+const deriveAddressesFromIndexesWorker = new Worker(path.join(__dirname, 'workers', 'deriveAddressesFromIndexes.js'))
+const deriveAddressesInGroupsWorker = new Worker(path.join(__dirname, 'workers', 'deriveAddressesInGroups.js'))
 
 export type AddressHash = string
 
@@ -157,6 +162,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousMnemonic = useRef<string | undefined>(activeWalletMnemonic)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+  const dispatch = useAppDispatch()
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -368,22 +374,33 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
     if (!activeWalletMnemonic) throw new Error('Could not generate addresses, mnemonic not found')
 
-    const { masterKey } = getWalletFromMnemonic(activeWalletMnemonic)
+    dispatch(appLoadingToggled(true))
+
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
     const hasLabel = !!labelPrefix && !!labelColor
+    const groups = Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group).filter(
+      (group) => !skipGroups.includes(group)
+    )
 
-    Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
-      .filter((group) => !skipGroups.includes(group))
-      .map((group) => ({ ...deriveNewAddressData(masterKey, group, undefined, skipAddressIndexes), group }))
-      .forEach((address) => {
+    deriveAddressesInGroupsWorker.onmessage = ({ data }: { data: (AddressAndKeys & { group: number })[] }) => {
+      data.forEach(({ address, publicKey, privateKey, addressIndex, group }) =>
         saveNewAddress(
-          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+          new Address(address, publicKey, privateKey, addressIndex, {
             isMain: false,
-            label: hasLabel ? `${labelPrefix} ${address.group}` : '',
+            label: hasLabel ? `${labelPrefix} ${group}` : '',
             color: hasLabel ? labelColor : ''
           })
         )
-      })
+      )
+
+      dispatch(appLoadingToggled(false))
+    }
+
+    deriveAddressesInGroupsWorker.postMessage({
+      mnemonic: activeWalletMnemonic,
+      groups,
+      skipIndexes: skipAddressIndexes
+    })
   }
 
   // Initialize addresses state using the locally stored address metadata
@@ -392,7 +409,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletMnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
 
-      const { address, publicKey, privateKey, masterKey } = getWalletFromMnemonic(activeWalletMnemonic)
+      dispatch(appLoadingToggled(true))
 
       const addressesMetadata = isPassphraseUsed
         ? []
@@ -402,6 +419,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           })
 
       if (addressesMetadata.length === 0) {
+        const { address, publicKey, privateKey } = getWalletFromMnemonic(activeWalletMnemonic)
+
         saveNewAddress(
           new Address(address, publicKey, privateKey, 0, {
             isMain: true,
@@ -409,18 +428,31 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
             color: undefined
           })
         )
+        dispatch(appLoadingToggled(false))
       } else {
         console.log('👀 Found addresses metadata in local storage')
 
-        const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
-          const { address, publicKey, privateKey } = deriveNewAddressData(masterKey, undefined, index)
+        deriveAddressesFromIndexesWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
+          const addressesToFetchData = data.map(({ address, publicKey, privateKey, addressIndex }) => {
+            const metadata = addressesMetadata.find((metadata) => metadata.index === addressIndex)
 
-          return new Address(address, publicKey, privateKey, index, settings)
+            return new Address(address, publicKey, privateKey, addressIndex, {
+              isMain: metadata?.isMain || false,
+              label: metadata?.label,
+              color: metadata?.color
+            })
+          })
+
+          updateAddressesState(addressesToFetchData)
+          fetchAndStoreAddressesData(addressesToFetchData)
+          fetchPendingTxs(addressesToFetchData)
+          dispatch(appLoadingToggled(false))
+        }
+
+        deriveAddressesFromIndexesWorker.postMessage({
+          mnemonic: activeWalletMnemonic,
+          indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
         })
-
-        updateAddressesState(addressesToFetchData)
-        await fetchAndStoreAddressesData(addressesToFetchData)
-        await fetchPendingTxs(addressesToFetchData)
       }
     }
 

@@ -21,7 +21,6 @@ import 'dayjs/locale/fr'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 import styled, { ThemeProvider } from 'styled-components'
 
@@ -41,7 +40,6 @@ const App = () => {
   const { networkStatus, settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
   const { i18n } = useTranslation()
   const [isAppLoading, isAuthenticated] = useAppSelector((s) => [s.app.loading, !!s.activeWallet.mnemonic])
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -77,10 +75,6 @@ const App = () => {
   useEffect(() => {
     if (newVersionDownloadTriggered) setUpdateWalletModalVisible(true)
   }, [newVersionDownloadTriggered])
-
-  useEffect(() => {
-    if (!isAuthenticated) navigate('/')
-  }, [isAuthenticated, navigate])
 
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
