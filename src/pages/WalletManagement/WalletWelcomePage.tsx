@@ -54,7 +54,7 @@ const WalletWelcomePage = () => {
   }, 3000)
 
   const onButtonClick = () => {
-    if (shouldGenerateOneAddressPerGroup && wallet?.seed && mainAddress) {
+    if (shouldGenerateOneAddressPerGroup && wallet?.masterKey && mainAddress) {
       const labelPrefix = 'Address'
       const labelColor = getRandomLabelColor()
 

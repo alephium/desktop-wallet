@@ -50,8 +50,8 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   const generateNewAddress = useCallback(
     (group?: number) => {
-      if (!wallet?.seed) return
-      const data = deriveNewAddressData(wallet.seed, group, undefined, currentAddressIndexes.current)
+      if (!wallet?.masterKey) return
+      const data = deriveNewAddressData(wallet.masterKey, group, undefined, currentAddressIndexes.current)
       setNewAddressData(data)
       setNewAddressGroup(group ?? addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
     },
@@ -88,7 +88,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   let mainAddressMessage = t`Default address for sending transactions.`
 
-  if (mainAddress && wallet?.seed) {
+  if (mainAddress && wallet?.masterKey) {
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
     mainAddressMessage +=
       mainAddress.index !== newAddressData?.addressIndex

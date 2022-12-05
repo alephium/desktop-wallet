@@ -19,13 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 const { ExplorerClient, walletImport, discoverActiveAddresses } = require('@alephium/sdk')
 
 self.onmessage = ({ data: { mnemonic, clientUrl, skipIndexes } }) => {
-  const wallet = walletImport(mnemonic)
+  const { masterKey } = walletImport(mnemonic)
   const client = new ExplorerClient({ baseUrl: clientUrl })
 
-  discover(wallet.seed, skipIndexes, client)
+  discover(masterKey, client, skipIndexes)
 }
 
-const discover = async (seed, skipIndexes, client) => {
-  const activeAddresses = await discoverActiveAddresses(seed, skipIndexes, client)
+const discover = async (masterKey, client, skipIndexes) => {
+  const activeAddresses = await discoverActiveAddresses(masterKey, client, skipIndexes)
   self.postMessage(activeAddresses)
 }

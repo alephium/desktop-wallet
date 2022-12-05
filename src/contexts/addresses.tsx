@@ -400,13 +400,13 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }, [dispatch, saveNewAddress])
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
-    if (!wallet?.seed) return
+    if (!wallet?.masterKey) return
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
     const hasLabel = !!labelPrefix && !!labelColor
     Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
       .filter((group) => !skipGroups.includes(group))
-      .map((group) => ({ ...deriveNewAddressData(wallet.seed, group, undefined, skipAddressIndexes), group }))
+      .map((group) => ({ ...deriveNewAddressData(wallet.masterKey, group, undefined, skipAddressIndexes), group }))
       .forEach((address) => {
         saveNewAddress(
           new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
@@ -443,7 +443,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         console.log('👀 Found addresses metadata in local storage')
 
         const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
-          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
+          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.masterKey, undefined, index)
           return new Address(address, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
