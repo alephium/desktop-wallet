@@ -27,6 +27,7 @@ import { useAppDispatch } from '../hooks/redux'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
 import { activeWalletChanged, activeWalletFlushed } from '../store/activeWalletSlice'
+import { appLoadingToggled } from '../store/appSlice'
 import { NetworkStatus } from '../types/network'
 import { ThemeType } from '../types/settings'
 import { AlephiumWindow } from '../types/window'
@@ -60,7 +61,6 @@ export interface GlobalContextProps {
   updateSettings: UpdateSettingsFunctionSignature
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  isClientLoading: boolean
   currentNetwork: NetworkName | 'custom'
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
@@ -84,7 +84,6 @@ export const initialGlobalContext: GlobalContextProps = {
   updateSettings: () => null,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
-  isClientLoading: false,
   currentNetwork: 'mainnet',
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
@@ -111,7 +110,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const [settings, setSettings] = useState<Settings>(localStorageSettings)
-  const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
@@ -195,7 +193,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   const getClient = useCallback(async () => {
-    setIsClientLoading(true)
+    if (networkStatus !== 'offline') dispatch(appLoadingToggled(true))
 
     const clientResp = await createClient(settings.network)
     setClient(clientResp)
@@ -213,8 +211,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         duration: 4000
       })
     }
-    setIsClientLoading(false)
-  }, [currentNetwork, settings.network, t])
+
+    dispatch(appLoadingToggled(false))
+  }, [currentNetwork, dispatch, networkStatus, settings.network, t])
 
   useEffect(() => {
     const networkSettingsHaveChanged =
@@ -295,7 +294,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           setSnackbarMessage,
           settings,
           updateSettings,
-          isClientLoading,
           currentNetwork,
           networkStatus,
           updateNetworkSettings,
