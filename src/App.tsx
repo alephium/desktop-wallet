@@ -29,7 +29,6 @@ import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
 import Tooltip from './components/Tooltip'
-import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
@@ -40,7 +39,6 @@ import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
   const { networkStatus, settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
-  const { mainAddress } = useAddressesContext()
   const { i18n } = useTranslation()
   const [isAppLoading, isAuthenticated] = useAppSelector((s) => [s.app.loading, !!s.activeWallet.mnemonic])
   const navigate = useNavigate()
@@ -49,11 +47,9 @@ const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
 
-  const isOffline = networkStatus === 'offline'
-
   useEffect(() => {
-    if (isOffline || mainAddress) ReactTooltip.rebuild()
-  }, [isOffline, mainAddress])
+    if (networkStatus === 'offline' || isAuthenticated) ReactTooltip.rebuild()
+  }, [isAuthenticated, networkStatus])
 
   useEffect(() => {
     const handleLanguageChange = async () => {
