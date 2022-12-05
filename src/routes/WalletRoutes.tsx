@@ -16,27 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import Scrollbar from '../components/Scrollbar'
-import { useGlobalContext } from '../contexts/global'
 import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
 import AddressesPage from '../pages/Wallet/AddressesPage'
 import OverviewPage from '../pages/Wallet/OverviewPage'
 import WalletLayout from '../pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
-  const { wallet } = useGlobalContext()
-  const navigate = useNavigate()
   const location = useLocation()
-
-  // Redirect if wallet is not set
-  useEffect(() => {
-    if (!wallet) {
-      navigate('/')
-    }
-  }, [navigate, wallet])
 
   return (
     <Scrollbar>

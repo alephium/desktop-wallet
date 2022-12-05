@@ -63,7 +63,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const {
     currentNetwork,
     client,
-    wallet,
     settings: {
       general: { passwordRequirement }
     },
@@ -131,7 +130,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const buildTransactionExtended = async (data: T) => {
     setTransactionData(data)
 
-    if (!wallet || !client) return
+    if (!client) return
     setIsLoading(true)
 
     try {

@@ -40,6 +40,8 @@ import Spinner from '../../components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '../../components/Table'
 import { AddressHash, useAddressesContext } from '../../contexts/addresses'
 import { useGlobalContext } from '../../contexts/global'
+import { useAppSelector } from '../../hooks/redux'
+import useAddressDiscovery from '../../hooks/useAddressDiscovery'
 import AddressSweepModal from '../../modals/AddressSweepModal'
 import NewAddressModal from '../../modals/NewAddressModal'
 import { sortAddressList } from '../../utils/addresses'
@@ -60,13 +62,15 @@ const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 const AddressesPage = () => {
   const { t } = useTranslation('App')
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addresses, generateOneAddressPerGroup, discoverAndSaveActiveAddresses } = useAddressesContext()
+  const { addresses, generateOneAddressPerGroup } = useAddressesContext()
   const navigate = useNavigate()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
   const { isPassphraseUsed } = useGlobalContext()
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
   const theme = useTheme()
+  const discoverAndSaveActiveAddresses = useAddressDiscovery()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
@@ -83,6 +87,8 @@ const AddressesPage = () => {
   useEffect(() => {
     ReactTooltip.rebuild()
   }, [])
+
+  if (!activeWalletMnemonic) return null
 
   return (
     <MainContent>
@@ -169,7 +175,7 @@ const AddressesPage = () => {
             Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
             description={t`Scan the blockchain for addresses you used in the past.`}
             buttonText={t`Search`}
-            onButtonClick={discoverAndSaveActiveAddresses}
+            onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
             infoLink={links.miningWallet}
           />
           <OperationBox

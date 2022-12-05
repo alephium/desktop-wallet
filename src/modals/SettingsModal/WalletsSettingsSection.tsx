@@ -26,12 +26,15 @@ import InfoBox from '../../components/InfoBox'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
 import { useGlobalContext } from '../../contexts/global'
+import { useAppSelector } from '../../hooks/redux'
 import SecretPhraseModal from '../SecretPhraseModal'
 import WalletRemovalModal from '../WalletRemovalModal'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation('App')
-  const { activeWalletName, wallet, walletNames, deleteWallet, lockWallet } = useGlobalContext()
+  const { activeWalletName, walletNames, deleteWallet, lockWallet } = useGlobalContext()
+  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
 
@@ -71,7 +74,7 @@ const WalletsSettingsSection = () => {
           ))}
         </BoxContainer>
       </Section>
-      {wallet && (
+      {isAuthenticated && (
         <>
           <HorizontalDivider />
           <Section align="flex-start">

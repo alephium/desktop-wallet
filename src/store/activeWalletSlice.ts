@@ -16,17 +16,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { configureStore } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import activeWalletSlice from './activeWalletSlice'
-import appSlice from './appSlice'
+const sliceName = 'activeWallet'
 
-export const store = configureStore({
-  reducer: {
-    app: appSlice.reducer,
-    activeWallet: activeWalletSlice.reducer
+interface ActiveWalletState {
+  name?: string
+  mnemonic?: string
+}
+
+const initialState: ActiveWalletState = {
+  name: undefined,
+  mnemonic: undefined
+}
+
+const activeWalletSlice = createSlice({
+  name: sliceName,
+  initialState,
+  reducers: {
+    activeWalletChanged: (state, action: PayloadAction<ActiveWalletState>) => action.payload,
+    activeWalletFlushed: () => initialState
   }
 })
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export const { activeWalletChanged, activeWalletFlushed } = activeWalletSlice.actions
+
+export default activeWalletSlice

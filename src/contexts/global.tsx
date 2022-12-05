@@ -23,8 +23,10 @@ import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '../components/SnackbarManager'
+import { useAppDispatch } from '../hooks/redux'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
+import { activeWalletChanged, activeWalletFlushed } from '../store/activeWalletSlice'
 import { NetworkStatus } from '../types/network'
 import { ThemeType } from '../types/settings'
 import { AlephiumWindow } from '../types/window'
@@ -49,7 +51,6 @@ export interface GlobalContextProps {
   walletNames: string[]
   activeWalletName: string
   setCurrentWalletName: (walletName: string) => void
-  wallet?: Wallet
   saveWallet: (walletName: string, wallet: Wallet, password: string) => void
   deleteWallet: (w: string) => void
   lockWallet: () => void
@@ -74,7 +75,6 @@ export const initialGlobalContext: GlobalContextProps = {
   walletNames: [],
   activeWalletName: '',
   setCurrentWalletName: () => null,
-  wallet: undefined,
   saveWallet: () => null,
   deleteWallet: () => null,
   lockWallet: () => null,
@@ -107,7 +107,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 }) => {
   const { t } = useTranslation('App')
   const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
-  const [wallet, setWallet] = useState<Wallet>()
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
@@ -120,6 +119,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
+  const dispatch = useAppDispatch()
 
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
@@ -139,7 +139,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     const walletEncrypted = wallet.encrypt(password)
     Storage.save(walletName, walletEncrypted)
     setWalletNames(Storage.list())
-    setWallet(wallet)
+    dispatch(
+      activeWalletChanged({
+        name: walletName,
+        mnemonic: wallet.mnemonic
+      })
+    )
   }
 
   const deleteWallet = (walletName: string) => {
@@ -151,7 +156,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const lockWallet = () => {
     setCurrentWalletName('')
     setIsPassphraseUsed(false)
-    setWallet(undefined)
+    dispatch(activeWalletFlushed())
   }
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
@@ -174,7 +179,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       migrateUserData(wallet.mnemonic, walletName)
 
       setIsPassphraseUsed(!!passphrase)
-      setWallet(wallet)
+      dispatch(
+        activeWalletChanged({
+          name: walletName,
+          mnemonic: wallet.mnemonic
+        })
+      )
       setCurrentWalletName(walletName)
       callback()
     } catch (e) {
@@ -276,8 +286,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           setWalletNames,
           activeWalletName,
           setCurrentWalletName,
-          wallet,
-          setWallet,
           saveWallet,
           deleteWallet,
           lockWallet,

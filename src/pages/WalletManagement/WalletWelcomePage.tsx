@@ -32,7 +32,6 @@ import Toggle from '../../components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '../../components/PageComponents/PageContainers'
 import Paragraph from '../../components/Paragraph'
 import { useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
 import { getRandomLabelColor } from '../../utils/colors'
 import { useTimeout, useWindowSize } from '../../utils/hooks'
 import { links } from '../../utils/links'
@@ -44,7 +43,6 @@ const WalletWelcomePage = () => {
   const { t } = useTranslation('App')
   const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
-  const { wallet } = useGlobalContext()
   const { width, height } = useWindowSize()
   const navigate = useNavigate()
   const { mainAddress, updateAddressSettings, generateOneAddressPerGroup } = useAddressesContext()
@@ -54,7 +52,7 @@ const WalletWelcomePage = () => {
   }, 3000)
 
   const onButtonClick = () => {
-    if (shouldGenerateOneAddressPerGroup && wallet?.masterKey && mainAddress) {
+    if (shouldGenerateOneAddressPerGroup && mainAddress) {
       const labelPrefix = 'Address'
       const labelColor = getRandomLabelColor()
 

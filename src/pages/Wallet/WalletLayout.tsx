@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FileCode, Layers, List, Lock, RefreshCw, Send, TerminalSquare } from 'lucide-react'
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
@@ -57,7 +57,7 @@ const hideContractButtons = true
 
 const WalletLayout: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const { wallet, walletNames, lockWallet, activeWalletName, unlockWallet, networkStatus } = useGlobalContext()
+  const { walletNames, lockWallet, activeWalletName, unlockWallet, networkStatus } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
@@ -97,8 +97,6 @@ const WalletLayout: FC = ({ children }) => {
     setSwitchToWalletName('')
     setIsPasswordModalOpen(false)
   }
-
-  if (!wallet) return null
 
   return (
     <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>

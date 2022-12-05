@@ -16,7 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressAndKeys, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import {
+  AddressAndKeys,
+  addressToGroup,
+  deriveNewAddressData,
+  getWalletFromMnemonic,
+  TOTAL_NUMBER_OF_GROUPS
+} from '@alephium/sdk'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +34,7 @@ import Select, { SelectOption } from '../components/Inputs/Select'
 import { Section } from '../components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
+import { useAppSelector } from '../hooks/redux'
 import { getRandomLabelColor } from '../utils/colors'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
@@ -38,7 +45,7 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const { wallet, isPassphraseUsed } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
@@ -47,15 +54,19 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
   const { t } = useTranslation('App')
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 
   const generateNewAddress = useCallback(
     (group?: number) => {
-      if (!wallet?.masterKey) return
-      const data = deriveNewAddressData(wallet.masterKey, group, undefined, currentAddressIndexes.current)
+      if (!activeWalletMnemonic) throw new Error('Could not generate address, mnemonic not found')
+
+      const { masterKey } = getWalletFromMnemonic(activeWalletMnemonic)
+
+      const data = deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes.current)
       setNewAddressData(data)
       setNewAddressGroup(group ?? addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
     },
-    [wallet]
+    [activeWalletMnemonic]
   )
 
   useEffect(() => {
@@ -88,7 +99,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   let mainAddressMessage = t`Default address for sending transactions.`
 
-  if (mainAddress && wallet?.masterKey) {
+  if (mainAddress) {
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
     mainAddressMessage +=
       mainAddress.index !== newAddressData?.addressIndex
