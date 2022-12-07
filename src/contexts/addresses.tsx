@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
+  AddressAndKeys,
   addressToGroup,
   deriveNewAddressData,
   getHumanReadableError,
@@ -25,16 +26,21 @@ import {
 } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
+import path from 'path'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
+import { useAppDispatch } from '../hooks/redux'
+import { appLoadingToggled } from '../store/appSlice'
 import { TimeInMs } from '../types/numbers'
 import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
 import { NetworkName } from '../utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
+
+const addressDiscoveryWorker = new Worker(path.join(__dirname, 'workers', 'addressDiscovery.js'))
 
 export type AddressHash = string
 
@@ -116,6 +122,7 @@ export interface AddressesContextProps {
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
   generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
+  discoverAndSaveActiveAddresses: () => void
   isLoadingData: boolean
 }
 
@@ -129,6 +136,7 @@ export const initialAddressesContext: AddressesContextProps = {
   refreshAddressesData: () => null,
   fetchAddressTransactionsNextPage: () => null,
   generateOneAddressPerGroup: () => null,
+  discoverAndSaveActiveAddresses: () => null,
   isLoadingData: false
 }
 
@@ -156,6 +164,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+  const dispatch = useAppDispatch()
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -363,14 +372,41 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
   )
 
+  const discoverAndSaveActiveAddresses = async () => {
+    if (!client || !wallet) return
+
+    dispatch(appLoadingToggled(true))
+
+    addressDiscoveryWorker.postMessage({
+      mnemonic: wallet.mnemonic,
+      skipIndexes: addressesOfCurrentNetwork.map((address) => address.index),
+      clientUrl: client.explorer.baseUrl
+    })
+  }
+
+  useEffect(() => {
+    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
+      data.forEach(({ address, publicKey, privateKey, addressIndex }) =>
+        saveNewAddress(
+          new Address(address, publicKey, privateKey, addressIndex, {
+            isMain: false,
+            label: '',
+            color: ''
+          })
+        )
+      )
+      dispatch(appLoadingToggled(false))
+    }
+  }, [dispatch, saveNewAddress])
+
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
-    if (!wallet?.seed) return
+    if (!wallet?.masterKey) return
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
     const hasLabel = !!labelPrefix && !!labelColor
     Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
       .filter((group) => !skipGroups.includes(group))
-      .map((group) => ({ ...deriveNewAddressData(wallet.seed, group, undefined, skipAddressIndexes), group }))
+      .map((group) => ({ ...deriveNewAddressData(wallet.masterKey, group, undefined, skipAddressIndexes), group }))
       .forEach((address) => {
         saveNewAddress(
           new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
@@ -407,7 +443,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         console.log('👀 Found addresses metadata in local storage')
 
         const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
-          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.seed, undefined, index)
+          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.masterKey, undefined, index)
           return new Address(address, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
@@ -489,6 +525,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           refreshAddressesData,
           fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
+          discoverAndSaveActiveAddresses,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

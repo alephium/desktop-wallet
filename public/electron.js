@@ -155,6 +155,7 @@ function createWindow() {
     minHeight: 700,
     titleBarStyle: isWindows ? 'default' : 'hidden',
     webPreferences: {
+      nodeIntegrationInWorker: true,
       preload: path.join(__dirname, 'preload.js'),
       spellcheck: true
     }

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { Codesandbox, HardHat, Lightbulb } from 'lucide-react'
+import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -60,7 +60,7 @@ const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 const AddressesPage = () => {
   const { t } = useTranslation('App')
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const { addresses, generateOneAddressPerGroup } = useAddressesContext()
+  const { addresses, generateOneAddressPerGroup, discoverAndSaveActiveAddresses } = useAddressesContext()
   const navigate = useNavigate()
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
@@ -162,6 +162,14 @@ const AddressesPage = () => {
             description={t`Useful for miners or DeFi use.`}
             buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
             onButtonClick={handleOneAddressPerGroupClick}
+            infoLink={links.miningWallet}
+          />
+          <OperationBox
+            title={t`Discover active addresses`}
+            Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
+            description={t`Scan the blockchain for addresses you used in the past.`}
+            buttonText={t`Search`}
+            onButtonClick={discoverAndSaveActiveAddresses}
             infoLink={links.miningWallet}
           />
           <OperationBox

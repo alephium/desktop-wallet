@@ -22,6 +22,7 @@ import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after
 
 import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
@@ -31,27 +32,30 @@ import { GlobalContextProvider } from './contexts/global'
 import { SendModalContextProvider } from './contexts/sendModal'
 import { WalletConnectContextProvider } from './contexts/walletconnect'
 import * as serviceWorker from './serviceWorker'
+import { store } from './store/store'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 
 ReactDOM.render(
   <StrictMode>
-    <Router>
-      <ThemeProvider theme={lightTheme}>
-        <Suspense fallback="loading">
-          <GlobalContextProvider>
-            <AddressesContextProvider>
-              <SendModalContextProvider>
-                <WalletConnectContextProvider>
-                  <GlobalStyle />
-                  <App />
-                </WalletConnectContextProvider>
-              </SendModalContextProvider>
-            </AddressesContextProvider>
-          </GlobalContextProvider>
-        </Suspense>
-      </ThemeProvider>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <ThemeProvider theme={lightTheme}>
+          <Suspense fallback="loading">
+            <GlobalContextProvider>
+              <AddressesContextProvider>
+                <SendModalContextProvider>
+                  <WalletConnectContextProvider>
+                    <GlobalStyle />
+                    <App />
+                  </WalletConnectContextProvider>
+                </SendModalContextProvider>
+              </AddressesContextProvider>
+            </GlobalContextProvider>
+          </Suspense>
+        </ThemeProvider>
+      </Router>
+    </Provider>
   </StrictMode>,
   document.getElementById('root')
 )
