@@ -16,13 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  AddressAndKeys,
-  addressToGroup,
-  getHumanReadableError,
-  getWalletFromMnemonic,
-  TOTAL_NUMBER_OF_GROUPS
-} from '@alephium/sdk'
+import { AddressAndKeys, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import path from 'path'
@@ -419,18 +413,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
             walletName: activeWalletName
           })
 
-      if (addressesMetadata.length === 0) {
-        const { address, publicKey, privateKey } = getWalletFromMnemonic(activeWalletMnemonic)
-
-        saveNewAddress(
-          new Address(address, publicKey, privateKey, 0, {
-            isMain: true,
-            label: undefined,
-            color: undefined
-          })
-        )
-        dispatch(appLoadingToggled(false))
-      } else {
+      if (addressesMetadata.length > 0) {
         console.log('👀 Found addresses metadata in local storage')
 
         deriveAddressesFromIndexesWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
