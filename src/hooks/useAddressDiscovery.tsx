@@ -47,6 +47,7 @@ const useAddressDiscovery = (enableLoading = true) => {
       )
 
       if (enableLoading) dispatch(appLoadingToggled(false))
+      addressDiscoveryWorker.terminate()
     }
 
     if (enableLoading) dispatch(appLoadingToggled(true))

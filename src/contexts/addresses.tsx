@@ -394,6 +394,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       )
 
       dispatch(appLoadingToggled(false))
+      deriveAddressesInGroupsWorker.terminate()
     }
 
     deriveAddressesInGroupsWorker.postMessage({
@@ -447,6 +448,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           fetchAndStoreAddressesData(addressesToFetchData)
           fetchPendingTxs(addressesToFetchData)
           dispatch(appLoadingToggled(false))
+          deriveAddressesFromIndexesWorker.terminate()
         }
 
         deriveAddressesFromIndexesWorker.postMessage({
