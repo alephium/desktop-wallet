@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import fs from 'fs/promises'
-import http from 'http'
+import http, { IncomingMessage } from 'http'
 import https from 'https'
 import { uniq } from 'lodash'
 import path from 'path'
@@ -31,12 +31,12 @@ const pathsToUIRelatedCode = [
   path.resolve(__dirname, '..', '..', 'public')
 ]
 
-async function findLinksInSource(file) {
+async function findLinksInSource(file: string) {
   const source = await fs.readFile(file, { encoding: 'utf-8' })
   return source.match(/http(s)?:\/\/[^ <>\n'"${}]+/g)
 }
 
-async function getFilesRecursively(dir) {
+async function getFilesRecursively(dir: string): Promise<string[]> {
   const dirents = await fs.readdir(dir, { withFileTypes: true })
   const files = await Promise.all(
     dirents.map((dirent) => {
@@ -53,7 +53,7 @@ const httpClientOptions = {
   headers: { 'User-Agent': userAgent }
 }
 
-function request(link: string, callback) {
+function request(link: string, callback: (res: IncomingMessage) => void) {
   const client = link.match(/^https:\/\//) ? https : http
   return client.get(link, httpClientOptions, callback)
 }
@@ -66,21 +66,12 @@ it('has all valid links in the UI', async () => {
   const links = linksFound
     .flatMap((x) => x)
     .filter((link) => link !== null)
-    .filter((link) => link.match(/localhost/) === null)
-  const linksDedup = uniq(links)
+    .filter((link) => link && link.match(/localhost/) === null)
+  const linksDedup = uniq(links).filter((link) => link !== null) as string[]
 
-  const sequencedPromises = linksDedup.reduce(
-    (promise, link) =>
-      promise.then(
-        () =>
-          new Promise((resolve, reject) =>
-            request(link, ({ statusCode }) =>
-              statusCode < 200 || statusCode >= 400 ? reject({ statusCode, link }) : resolve(link)
-            ).on('error', (e) => reject({ e, link }))
-          )
-      ),
-    Promise.resolve()
-  )
-
-  await sequencedPromises
+  linksDedup.forEach((link) => {
+    request(link, ({ statusCode }) =>
+      statusCode && (statusCode < 200 || statusCode >= 400) ? console.error({ statusCode, link }) : console.log(link)
+    ).on('error', (e) => console.error({ e, link }))
+  })
 }, 60000)
