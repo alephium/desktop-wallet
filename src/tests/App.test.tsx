@@ -24,8 +24,8 @@ import App from '../App'
 import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
 
-vi.mock('@alephium/sdk', () => ({
-  ...vi.importActual('@alephium/sdk'),
+vi.mock('@alephium/sdk', async () => ({
+  ...(await vi.importActual<typeof import('@alephium/sdk')>('@alephium/sdk')),
   getStorage: vi.fn().mockImplementation(() => ({
     list: () => ['Wallet 1', 'Wallet 2'],
     load: () => 'walletEncrypted'

@@ -22,8 +22,8 @@ import HomePage from '../../pages/HomePage'
 import { renderWithGlobalContext } from '..'
 
 const mockedHistoryPush = vi.fn()
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual<typeof import('react-router-dom')>('react-router-dom')),
   useNavigate: () => mockedHistoryPush
 }))
 
