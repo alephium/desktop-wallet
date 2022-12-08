@@ -122,7 +122,7 @@ export const convertUnconfirmedTxToPendingTx = (
 export const hasNoGasErrors = ({ gasAmount, gasPrice }: GasInfo) => !gasAmount.error && !gasPrice.error
 
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : 0n
+  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)
   const amountIncludingFees = amountInSet + fees
   const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
   const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet

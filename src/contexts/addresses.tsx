@@ -75,7 +75,7 @@ export class Address {
       pending: [],
       loadedPage: 0
     }
-    this.availableBalance = 0n
+    this.availableBalance = BigInt(0)
   }
 
   getName() {
