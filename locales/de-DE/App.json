@@ -271,5 +271,10 @@
   "Download failed, try again later.": "Download failed, try again later.",
   "Discover active addresses": "Discover active addresses",
   "Scan the blockchain for addresses you used in the past.": "Scan the blockchain for addresses you used in the past.",
-  "Search": "Search"
+  "Search": "Search",
+  "Export current wallet": "Export current wallet",
+  "Export wallet": "Export wallet",
+  "Type your password to export your wallet.": "Type your password to export your wallet.",
+  "Show QR code": "Show QR code",
+  "Scan this QR code with your mobile wallet.": "Scan this QR code with your mobile wallet."
 }

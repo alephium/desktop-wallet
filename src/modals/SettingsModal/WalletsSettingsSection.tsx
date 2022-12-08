@@ -28,6 +28,7 @@ import { BoxContainer, Section } from '../../components/PageComponents/PageConta
 import { useGlobalContext } from '../../contexts/global'
 import { useAppSelector } from '../../hooks/redux'
 import SecretPhraseModal from '../SecretPhraseModal'
+import WalletQRCodeExportModal from '../WalletQRCodeExportModal'
 import WalletRemovalModal from '../WalletRemovalModal'
 
 const WalletsSettingsSection = () => {
@@ -37,6 +38,7 @@ const WalletsSettingsSection = () => {
 
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
+  const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false)
 
   const openRemoveWalletModal = (walletName: string) => setWalletToRemove(walletName)
   const openSecretPhraseModal = () => setIsDisplayingSecretModal(true)
@@ -51,6 +53,7 @@ const WalletsSettingsSection = () => {
   return (
     <>
       {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
+      {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
 
       {walletToRemove && (
         <WalletRemovalModal
@@ -84,6 +87,9 @@ const WalletsSettingsSection = () => {
           <Section>
             <Button secondary onClick={lockWallet}>
               {t`Lock current wallet`}
+            </Button>
+            <Button secondary alert onClick={() => setIsQRCodeModalVisible(true)}>
+              {t`Export current wallet`}
             </Button>
             <Button secondary alert onClick={openSecretPhraseModal}>
               {t`Show your secret recovery phrase`}
