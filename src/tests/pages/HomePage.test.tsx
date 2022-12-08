@@ -80,6 +80,7 @@ describe('Button correctly links to', () => {
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
     expect(mockedHistoryPush).toHaveBeenCalledWith('/create/0')
+    mockedHistoryPush.mockClear()
   })
 
   it('the new wallet import page', () => {
@@ -87,6 +88,7 @@ describe('Button correctly links to', () => {
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
     expect(mockedHistoryPush).toHaveBeenCalledWith('/import/0')
+    mockedHistoryPush.mockClear()
   })
 })
 
