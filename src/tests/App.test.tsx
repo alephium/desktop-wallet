@@ -94,7 +94,6 @@ it('should display available wallets to login with when clicking the Wallet inpu
 
 it('should lock the wallet when idle for too long after successful login', async () => {
   vi.useFakeTimers()
-  vi.spyOn(global, 'setInterval')
 
   // 1. Login
   fireEvent.click(screen.getByLabelText('Wallet'))
