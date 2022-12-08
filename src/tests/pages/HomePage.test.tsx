@@ -15,16 +15,15 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import '@testing-library/jest-dom'
 
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 import HomePage from '../../pages/HomePage'
 import { renderWithGlobalContext } from '..'
 
-const mockedHistoryPush = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const mockedHistoryPush = vi.fn()
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockedHistoryPush
 }))
 
@@ -92,5 +91,5 @@ describe('Button correctly links to', () => {
 })
 
 afterAll(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })

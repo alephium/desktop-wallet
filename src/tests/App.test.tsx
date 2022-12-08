@@ -18,14 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { HashRouter as Router } from 'react-router-dom'
 import { PartialDeep } from 'type-fest'
+import { vi } from 'vitest'
 
 import App from '../App'
 import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
 
-jest.mock('@alephium/sdk', () => ({
-  ...jest.requireActual('@alephium/sdk'),
-  getStorage: jest.fn().mockImplementation(() => ({
+vi.mock('@alephium/sdk', () => ({
+  ...vi.importActual('@alephium/sdk'),
+  getStorage: vi.fn().mockImplementation(() => ({
     list: () => ['Wallet 1', 'Wallet 2'],
     load: () => 'walletEncrypted'
   })),
@@ -33,7 +34,7 @@ jest.mock('@alephium/sdk', () => ({
   CliqueClient: function () {
     return {
       baseUrl: 'https://mock-node',
-      init: jest.fn()
+      init: vi.fn()
     }
   },
   ExplorerClient: function () {
@@ -43,7 +44,7 @@ jest.mock('@alephium/sdk', () => ({
   }
 }))
 
-jest.mock('../utils/migration', () => ({
+vi.mock('../utils/migration', () => ({
   migrateUserData: () => ({})
 }))
 
@@ -80,8 +81,8 @@ it('should display available wallets to login with when clicking the Wallet inpu
 })
 
 it('should lock the wallet when idle for too long after successful login', async () => {
-  jest.useFakeTimers('modern')
-  jest.spyOn(global, 'setInterval')
+  vi.useFakeTimers()
+  vi.spyOn(global, 'setInterval')
 
   // 1. Login
   fireEvent.click(screen.getByLabelText('Wallet'))
@@ -94,14 +95,14 @@ it('should lock the wallet when idle for too long after successful login', async
 
   // 3. Advance time so that the interval that checks if we need to lock out runs
   act(() => {
-    jest.runOnlyPendingTimers()
+    vi.runOnlyPendingTimers()
   })
 
   // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 1 minute less)
   const stayIdleTimeoutInMinutes = walletLockTimeInMinutes - 1
-  jest.setSystemTime(new Date(new Date().getTime() + stayIdleTimeoutInMinutes * 60 * 1000))
+  vi.setSystemTime(new Date(new Date().getTime() + stayIdleTimeoutInMinutes * 60 * 1000))
   act(() => {
-    jest.runOnlyPendingTimers()
+    vi.runOnlyPendingTimers()
   })
   expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
@@ -111,22 +112,22 @@ it('should lock the wallet when idle for too long after successful login', async
   })
 
   // 6. Advance time and ensure that we are still not locked out, since the mouse moved (ex: another 3 minutes)
-  jest.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
+  vi.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
   act(() => {
-    jest.runOnlyPendingTimers()
+    vi.runOnlyPendingTimers()
   })
   expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
   // 8. Finally, advance time without any interaction and expect to be locked out
-  jest.setSystemTime(new Date(new Date().getTime() + 4 * 60 * 1000))
+  vi.setSystemTime(new Date(new Date().getTime() + 4 * 60 * 1000))
   act(() => {
-    jest.runOnlyPendingTimers()
+    vi.runOnlyPendingTimers()
   })
   expect(screen.getByRole('main')).toHaveTextContent('Welcome back!')
   expect(screen.getByRole('main')).toHaveTextContent('Please choose a wallet and enter your password to continue')
 })
 
 afterAll(() => {
-  jest.clearAllMocks()
-  jest.useRealTimers()
+  vi.clearAllMocks()
+  vi.useRealTimers()
 })
