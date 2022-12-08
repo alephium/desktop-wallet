@@ -21,6 +21,16 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import HomePage from '../../pages/HomePage'
 import { renderWithGlobalContext } from '..'
 
+vi.mock('react-i18next', async () => ({
+  ...(await vi.importActual<typeof import('react-i18next')>('react-i18next')),
+  useTranslation: () => ({
+    t: (str: string) => str,
+    i18n: {
+      changeLanguage: () => new Promise(() => null)
+    }
+  })
+}))
+
 const mockedHistoryPush = vi.fn()
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual<typeof import('react-router-dom')>('react-router-dom')),

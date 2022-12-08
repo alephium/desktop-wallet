@@ -24,6 +24,16 @@ import App from '../App'
 import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
 
+vi.mock('react-i18next', async () => ({
+  ...(await vi.importActual<typeof import('react-i18next')>('react-i18next')),
+  useTranslation: () => ({
+    t: (str: string) => str,
+    i18n: {
+      changeLanguage: () => new Promise(() => null)
+    }
+  })
+}))
+
 vi.mock('@alephium/sdk', async () => ({
   ...(await vi.importActual<typeof import('@alephium/sdk')>('@alephium/sdk')),
   getStorage: vi.fn().mockImplementation(() => ({
