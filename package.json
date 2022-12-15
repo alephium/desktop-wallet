@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@alephium/sdk": "0.4.1",
-    "@alephium/walletconnect-provider": "0.2.0",
+    "@alephium/walletconnect-provider": "0.2.1",
     "@alephium/web3": "0.2.0",
     "@json-rpc-tools/utils": "^1.7.6",
     "@testing-library/jest-dom": "^5.14.1",
@@ -53,9 +53,9 @@
     "@types/zxcvbn": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@vitejs/plugin-react": "^2.2.0",
-    "@walletconnect/sign-client": "2.0.0-rc.3",
-    "@walletconnect/types": "2.0.0-rc.3",
-    "@walletconnect/utils": "2.0.0-rc.3",
+    "@walletconnect/sign-client": "2.1.4",
+    "@walletconnect/types": "2.1.4",
+    "@walletconnect/utils": "2.1.4",
     "@yaireo/tagify": "^4.12.0",
     "better-sqlite3": "^7.6.2",
     "bip39": "^3.0.4",
@@ -110,7 +110,8 @@
     "files": [
       "build/**/*",
       "public/electron.js",
-      "public/preload.js"
+      "public/preload.js",
+      "node_modules/**/*"
     ],
     "linux": {
       "category": "Finance",
