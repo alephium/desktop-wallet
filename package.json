@@ -108,7 +108,7 @@
     "appId": "org.alephium.alephium-wallet",
     "files": [
       "build/**/*",
-      "node_modules/**/*"
+      "public/electron.js"
     ],
     "linux": {
       "category": "Finance",

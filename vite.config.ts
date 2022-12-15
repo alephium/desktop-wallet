@@ -55,5 +55,8 @@ export default defineConfig({
       reporter: ['text', 'html'],
       exclude: ['node_modules/', 'src/setupTests.js']
     }
+  },
+  build: {
+    outDir: 'build'
   }
 })
