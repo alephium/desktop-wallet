@@ -15,16 +15,26 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import '@testing-library/jest-dom'
+import '../../i18n'
 
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 import HomePage from '../../pages/HomePage'
 import { renderWithGlobalContext } from '..'
 
-const mockedHistoryPush = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-i18next', async () => ({
+  ...(await vi.importActual<typeof import('react-i18next')>('react-i18next')),
+  useTranslation: () => ({
+    t: (str: string) => str,
+    i18n: {
+      changeLanguage: () => new Promise(() => null)
+    }
+  })
+}))
+
+const mockedHistoryPush = vi.fn()
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual<typeof import('react-router-dom')>('react-router-dom')),
   useNavigate: () => mockedHistoryPush
 }))
 
@@ -81,6 +91,7 @@ describe('Button correctly links to', () => {
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
     expect(mockedHistoryPush).toHaveBeenCalledWith('/create/0')
+    mockedHistoryPush.mockClear()
   })
 
   it('the new wallet import page', () => {
@@ -88,9 +99,10 @@ describe('Button correctly links to', () => {
     fireEvent.click(button)
     expect(mockedHistoryPush).toHaveBeenCalledTimes(1)
     expect(mockedHistoryPush).toHaveBeenCalledWith('/import/0')
+    mockedHistoryPush.mockClear()
   })
 })
 
 afterAll(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })

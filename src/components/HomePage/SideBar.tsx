@@ -39,7 +39,9 @@ const SideBar = () => {
         initial={{ bottom: '-10vh', opacity: 0 }}
         animate={{ bottom: 0, opacity: 0.6 }}
         transition={{ delay: 1, duration: 1.2 }}
-      />
+      >
+        <AtmosphericGlow />
+      </AtmosphericGlowBackground>
       <SidebarContents>
         <AlephiumLogo />
         <HeaderText>
@@ -114,7 +116,7 @@ const IllustrationsContainer = styled.div`
   }
 `
 
-const AtmosphericGlowBackground = styled(motion(AtmosphericGlow))`
+const AtmosphericGlowBackground = styled(motion.div)`
   position: absolute;
   bottom: 0;
   right: 0;
