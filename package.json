@@ -6,7 +6,7 @@
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
   "scripts": {
-    "build": "cross-env INLINE_RUNTIME_CHUNK=false tsc && VITE_VERSION=$npm_package_version vite build",
+    "build": "tsc && cross-env INLINE_RUNTIME_CHUNK=false VITE_VERSION=$npm_package_version vite build",
     "electron-dev": "concurrently \"BROWSER=none npm run start\" \"electron .\"",
     "electron-pack": "npm run build && electron-builder",
     "electron-pack-windows": "npm run build && electron-builder -w",
