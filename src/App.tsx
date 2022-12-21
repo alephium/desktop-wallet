@@ -32,7 +32,7 @@ import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
-import { appLoadingToggled } from './store/appSlice'
+import { languageChanged, languageChangeStarted } from './store/actions'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
@@ -51,7 +51,7 @@ const App = () => {
 
   useEffect(() => {
     const handleLanguageChange = async () => {
-      dispatch(appLoadingToggled(true))
+      dispatch(languageChangeStarted())
 
       try {
         dayjs.locale(settings.general.language.slice(0, 2))
@@ -59,7 +59,7 @@ const App = () => {
       } catch (e) {
         console.error(e)
       } finally {
-        dispatch(appLoadingToggled(false))
+        dispatch(languageChanged())
       }
     }
 

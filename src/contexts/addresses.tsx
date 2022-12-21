@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
-import { appLoadingToggled } from '../store/appSlice'
+import { addressesGenerated, addressGenerationStarted } from '../store/actions'
 import { TimeInMs } from '../types/numbers'
 import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
@@ -372,7 +372,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
     if (!activeWalletMnemonic) throw new Error('Could not generate addresses, mnemonic not found')
 
-    dispatch(appLoadingToggled(true))
+    dispatch(addressGenerationStarted())
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
     const hasLabel = !!labelPrefix && !!labelColor
@@ -391,7 +391,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         )
       )
 
-      dispatch(appLoadingToggled(false))
+      dispatch(addressesGenerated())
       deriveAddressesInGroupsWorker.terminate()
     }
 
@@ -408,8 +408,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletMnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
 
-      dispatch(appLoadingToggled(true))
-
       const addressesMetadata = isPassphraseUsed
         ? []
         : loadStoredAddressesMetadataOfWallet({
@@ -418,9 +416,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           })
 
       if (addressesMetadata.length > 0) {
+        dispatch(addressGenerationStarted())
+
         console.log('👀 Found addresses metadata in local storage')
 
-        deriveAddressesFromIndexesWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
+        deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
           const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
             const metadata = addressesMetadata.find((metadata) => metadata.index === index)
 
@@ -432,10 +432,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           })
 
           updateAddressesState(addressesToFetchData)
-          fetchAndStoreAddressesData(addressesToFetchData)
-          fetchPendingTxs(addressesToFetchData)
-          dispatch(appLoadingToggled(false))
-          deriveAddressesFromIndexesWorker.terminate()
+          await fetchAndStoreAddressesData(addressesToFetchData)
+          await fetchPendingTxs(addressesToFetchData)
+          dispatch(addressesGenerated())
         }
 
         deriveAddressesFromIndexesWorker.postMessage({

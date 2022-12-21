@@ -26,7 +26,7 @@ import { SnackbarMessage } from '../components/SnackbarManager'
 import { useAppDispatch } from '../hooks/redux'
 import useIdleForTooLong from '../hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
-import { activeWalletChanged, activeWalletFlushed } from '../store/activeWalletSlice'
+import { walletLocked, walletSaved, walletUnlocked } from '../store/activeWalletSlice'
 import { appLoadingToggled } from '../store/appSlice'
 import { NetworkStatus } from '../types/network'
 import { ThemeType } from '../types/settings'
@@ -138,7 +138,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     Storage.save(walletName, walletEncrypted)
     setWalletNames(Storage.list())
     dispatch(
-      activeWalletChanged({
+      walletSaved({
         name: walletName,
         mnemonic: wallet.mnemonic
       })
@@ -154,7 +154,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const lockWallet = () => {
     setCurrentWalletName('')
     setIsPassphraseUsed(false)
-    dispatch(activeWalletFlushed())
+    dispatch(walletLocked())
   }
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
@@ -178,7 +178,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       setIsPassphraseUsed(!!passphrase)
       dispatch(
-        activeWalletChanged({
+        walletUnlocked({
           name: walletName,
           mnemonic: wallet.mnemonic
         })

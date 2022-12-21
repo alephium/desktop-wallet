@@ -18,7 +18,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { addressDiscoveryFinished, addressDiscoveryStarted } from './actions'
+import {
+  addressDiscoveryFinished,
+  addressDiscoveryStarted,
+  addressesGenerated,
+  addressGenerationStarted,
+  languageChanged,
+  languageChangeStarted
+} from './actions'
 
 const sliceName = 'app'
 
@@ -42,6 +49,18 @@ const appSlice = createSlice({
     builder
       .addCase(addressDiscoveryStarted, (state, action) => toggleLoading(state, true, action.payload))
       .addCase(addressDiscoveryFinished, (state, action) => toggleLoading(state, false, action.payload))
+      .addCase(languageChangeStarted, (state) => {
+        state.loading = true
+      })
+      .addCase(languageChanged, (state) => {
+        state.loading = false
+      })
+      .addCase(addressGenerationStarted, (state) => {
+        state.loading = true
+      })
+      .addCase(addressesGenerated, (state) => {
+        state.loading = false
+      })
   }
 })
 

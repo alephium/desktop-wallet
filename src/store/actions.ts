@@ -22,3 +22,9 @@ type EnableLoading = boolean | undefined
 
 export const addressDiscoveryStarted = createAction<EnableLoading>('discovery/addressDiscoveryStarted')
 export const addressDiscoveryFinished = createAction<EnableLoading>('discovery/addressDiscoveryFinished')
+
+export const languageChangeStarted = createAction('app/languageChangeStarted')
+export const languageChanged = createAction('app/languageChanged')
+
+export const addressGenerationStarted = createAction('address/addressGenerationStarted')
+export const addressesGenerated = createAction('address/addressesGenerated')

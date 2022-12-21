@@ -48,7 +48,6 @@ const useAddressDiscovery = (enableLoading = true) => {
       )
 
       dispatch(addressDiscoveryFinished(enableLoading))
-      addressDiscoveryWorker.terminate()
     }
 
     dispatch(addressDiscoveryStarted(enableLoading))
