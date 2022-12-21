@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getStorage } from '@alephium/sdk'
-import { encrypt } from '@alephium/sdk/dist/lib/password-crypto'
+import { encrypt } from '@alephium/sdk'
 
 import { stringToDoubleSHA256HexString } from './misc'
 

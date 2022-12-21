@@ -47,13 +47,13 @@ export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['
   mainnet: {
     networkId: 0,
     nodeHost: 'https://wallet-v15.mainnet.alephium.org',
-    explorerApiHost: 'https://backend-v19.mainnet.alephium.org',
+    explorerApiHost: 'https://backend-v110.mainnet.alephium.org',
     explorerUrl: 'https://explorer.alephium.org'
   },
   testnet: {
     networkId: 1,
     nodeHost: 'https://wallet-v15.testnet.alephium.org',
-    explorerApiHost: 'https://backend-v19.testnet.alephium.org',
+    explorerApiHost: 'https://backend-v110.testnet.alephium.org',
     explorerUrl: 'https://explorer.testnet.alephium.org'
   },
   localhost: {
@@ -119,12 +119,12 @@ export const migrateDeprecatedSettings = (): Settings => {
     settings.network.explorerApiHost === 'https://mainnet-backend.alephium.org' ||
     settings.network.explorerApiHost === 'https://backend-v18.mainnet.alephium.org'
   ) {
-    migratedSettings.network.explorerApiHost = 'https://backend-v19.mainnet.alephium.org'
+    migratedSettings.network.explorerApiHost = 'https://backend-v110.mainnet.alephium.org'
   } else if (
     settings.network.explorerApiHost === 'https://testnet-backend.alephium.org' ||
     settings.network.explorerApiHost === 'https://backend-v18.testnet.alephium.org'
   ) {
-    migratedSettings.network.explorerApiHost = 'https://backend-v19.testnet.alephium.org'
+    migratedSettings.network.explorerApiHost = 'https://backend-v110.testnet.alephium.org'
   }
 
   if (settings.network.explorerUrl === 'https://explorer-v18.mainnet.alephium.org') {

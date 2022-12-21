@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
-  AddressAndKeys,
+  AddressKeyPair,
   addressToGroup,
   deriveNewAddressData,
   getHumanReadableError,
@@ -81,7 +81,7 @@ export class Address {
       pending: [],
       loadedPage: 0
     }
-    this.availableBalance = 0n
+    this.availableBalance = BigInt(0)
   }
 
   getName() {
@@ -385,10 +385,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }
 
   useEffect(() => {
-    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
-      data.forEach(({ address, publicKey, privateKey, addressIndex }) =>
+    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
+      data.forEach(({ hash, publicKey, privateKey, index }) =>
         saveNewAddress(
-          new Address(address, publicKey, privateKey, addressIndex, {
+          new Address(hash, publicKey, privateKey, index, {
             isMain: false,
             label: '',
             color: ''
@@ -409,7 +409,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       .map((group) => ({ ...deriveNewAddressData(wallet.masterKey, group, undefined, skipAddressIndexes), group }))
       .forEach((address) => {
         saveNewAddress(
-          new Address(address.address, address.publicKey, address.privateKey, address.addressIndex, {
+          new Address(address.hash, address.publicKey, address.privateKey, address.index, {
             isMain: false,
             label: hasLabel ? `${labelPrefix} ${address.group}` : '',
             color: hasLabel ? labelColor : ''
@@ -443,8 +443,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         console.log('👀 Found addresses metadata in local storage')
 
         const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
-          const { address, publicKey, privateKey } = deriveNewAddressData(wallet.masterKey, undefined, index)
-          return new Address(address, publicKey, privateKey, index, settings)
+          const { hash, publicKey, privateKey } = deriveNewAddressData(wallet.masterKey, undefined, index)
+          return new Address(hash, publicKey, privateKey, index, settings)
         })
         updateAddressesState(addressesToFetchData)
         await fetchAndStoreAddressesData(addressesToFetchData)

@@ -50,7 +50,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
         {tabsI18n.find((t) => t.value === currentTab.value)?.component}
         <Section>
           <VersionNumber>
-            {t`Version`}: {process.env.REACT_APP_VERSION}
+            {t`Version`}: {import.meta.env.VITE_VERSION}
           </VersionNumber>
         </Section>
       </PanelContentContainer>
