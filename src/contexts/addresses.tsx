@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressAndKeys, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { AddressKeyPair, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import path from 'path'
@@ -75,7 +75,7 @@ export class Address {
       pending: [],
       loadedPage: 0
     }
-    this.availableBalance = 0n
+    this.availableBalance = BigInt(0)
   }
 
   getName() {
@@ -376,10 +376,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       (group) => !skipGroups.includes(group)
     )
 
-    deriveAddressesInGroupsWorker.onmessage = ({ data }: { data: (AddressAndKeys & { group: number })[] }) => {
-      data.forEach(({ address, publicKey, privateKey, addressIndex, group }) =>
+    deriveAddressesInGroupsWorker.onmessage = ({ data }: { data: (AddressKeyPair & { group: number })[] }) => {
+      data.forEach(({ hash, publicKey, privateKey, index, group }) =>
         saveNewAddress(
-          new Address(address, publicKey, privateKey, addressIndex, {
+          new Address(hash, publicKey, privateKey, index, {
             isMain: false,
             label: hasLabel ? `${labelPrefix} ${group}` : '',
             color: hasLabel ? labelColor : ''
@@ -416,11 +416,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (addressesMetadata.length > 0) {
         console.log('👀 Found addresses metadata in local storage')
 
-        deriveAddressesFromIndexesWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
-          const addressesToFetchData = data.map(({ address, publicKey, privateKey, addressIndex }) => {
-            const metadata = addressesMetadata.find((metadata) => metadata.index === addressIndex)
+        deriveAddressesFromIndexesWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
+          const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
+            const metadata = addressesMetadata.find((metadata) => metadata.index === index)
 
-            return new Address(address, publicKey, privateKey, addressIndex, {
+            return new Address(hash, publicKey, privateKey, index, {
               isMain: metadata?.isMain || false,
               label: metadata?.label,
               color: metadata?.color

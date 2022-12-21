@@ -26,7 +26,7 @@ import { useTimeout } from '../utils/hooks'
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
-const currentVersion = process.env.REACT_APP_VERSION
+const currentVersion = import.meta.env.VITE_VERSION
 const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 
 const ONE_HOUR = 1000 * 60 * 60

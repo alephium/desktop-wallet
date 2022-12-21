@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
-  AddressAndKeys,
+  AddressKeyPair,
   addressToGroup,
   deriveNewAddressData,
   getWalletFromMnemonic,
@@ -48,7 +48,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const { isPassphraseUsed } = useGlobalContext()
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
-  const [newAddressData, setNewAddressData] = useState<AddressAndKeys>()
+  const [newAddressData, setNewAddressData] = useState<AddressKeyPair>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
@@ -64,7 +64,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
       const data = deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes.current)
       setNewAddressData(data)
-      setNewAddressGroup(group ?? addressToGroup(data.address, TOTAL_NUMBER_OF_GROUPS))
+      setNewAddressGroup(group ?? addressToGroup(data.hash, TOTAL_NUMBER_OF_GROUPS))
     },
     [activeWalletMnemonic]
   )
@@ -76,19 +76,13 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const onGenerateClick = () => {
     if (newAddressData) {
       saveNewAddress(
-        new Address(
-          newAddressData.address,
-          newAddressData.publicKey,
-          newAddressData.privateKey,
-          newAddressData.addressIndex,
-          {
-            isMain: isMainAddress,
-            label: addressLabel.title,
-            color: addressLabel.color
-          }
-        )
+        new Address(newAddressData.hash, newAddressData.publicKey, newAddressData.privateKey, newAddressData.index, {
+          isMain: isMainAddress,
+          label: addressLabel.title,
+          color: addressLabel.color
+        })
       )
-      if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.addressIndex) {
+      if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.index) {
         updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
       }
     } else {
@@ -102,7 +96,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   if (mainAddress) {
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
     mainAddressMessage +=
-      mainAddress.index !== newAddressData?.addressIndex
+      mainAddress.index !== newAddressData?.index
         ? ' ' + t('Note that if activated, "{{ address }}" will not be the default address anymore.', { address })
         : ''
   }

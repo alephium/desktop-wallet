@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { decrypt, encrypt } from '@alephium/sdk/dist/lib/password-crypto'
+import { decrypt, encrypt } from '@alephium/sdk'
 
 import { Address } from '../contexts/addresses'
 import { latestUserDataVersion } from './migration'

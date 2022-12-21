@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressAndKeys } from '@alephium/sdk'
+import { AddressKeyPair } from '@alephium/sdk'
 import path from 'path'
 
 import { Address, useAddressesContext } from '../contexts/addresses'
@@ -34,10 +34,10 @@ const useAddressDiscovery = (enableLoading = true) => {
   const discoverAndSaveActiveAddresses = async (mnemonic: string, skipIndexes?: number[]) => {
     if (!client) throw new Error('Could not discover active addresses, client not found')
 
-    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressAndKeys[] }) => {
-      data.forEach(({ address, publicKey, privateKey, addressIndex }) =>
+    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
+      data.forEach(({ hash, publicKey, privateKey, index }) =>
         saveNewAddress(
-          new Address(address, publicKey, privateKey, addressIndex, {
+          new Address(hash, publicKey, privateKey, index, {
             isMain: false,
             label: '',
             color: ''
