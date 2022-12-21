@@ -17,14 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressKeyPair } from '@alephium/sdk'
-import path from 'path'
 
 import { Address, useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
-import { appLoadingToggled } from '../store/appSlice'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '../store/actions'
 import { useAppDispatch } from './redux'
 
-const addressDiscoveryWorker = new Worker(path.join(__dirname, 'workers', 'addressDiscovery.js'))
+const addressDiscoveryWorker = new Worker(new URL('../workers/addressDiscovery.ts', import.meta.url), {
+  type: 'module'
+})
 
 const useAddressDiscovery = (enableLoading = true) => {
   const { client } = useGlobalContext()
@@ -46,11 +47,11 @@ const useAddressDiscovery = (enableLoading = true) => {
         )
       )
 
-      if (enableLoading) dispatch(appLoadingToggled(false))
+      dispatch(addressDiscoveryFinished(enableLoading))
       addressDiscoveryWorker.terminate()
     }
 
-    if (enableLoading) dispatch(appLoadingToggled(true))
+    dispatch(addressDiscoveryStarted(enableLoading))
 
     addressDiscoveryWorker.postMessage({
       mnemonic,

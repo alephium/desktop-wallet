@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
-import path from 'path'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
@@ -33,8 +32,13 @@ import { NetworkName } from '../utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
-const deriveAddressesFromIndexesWorker = new Worker(path.join(__dirname, 'workers', 'deriveAddressesFromIndexes.js'))
-const deriveAddressesInGroupsWorker = new Worker(path.join(__dirname, 'workers', 'deriveAddressesInGroups.js'))
+const deriveAddressesFromIndexesWorker = new Worker(
+  new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
+  { type: 'module' }
+)
+const deriveAddressesInGroupsWorker = new Worker(new URL('../workers/deriveAddressesInGroups.ts', import.meta.url), {
+  type: 'module'
+})
 
 export type AddressHash = string
 
