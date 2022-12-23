@@ -17,9 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { render } from '@testing-library/react'
+import { Provider } from 'react-redux'
+import { store } from 'src/store/store'
 import { PartialDeep } from 'type-fest'
 
 import { GlobalContextProps, GlobalContextProvider } from '../contexts/global'
 
 export const renderWithGlobalContext = (el: JSX.Element, contextObject?: PartialDeep<GlobalContextProps>) =>
-  render(<GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>)
+  render(
+    <Provider store={store}>
+      <GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>
+    </Provider>
+  )

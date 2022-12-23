@@ -50,7 +50,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/setupTests.js',
+    setupFiles: ['./src/setupTests.js', '@vitest/web-worker'],
     coverage: {
       reporter: ['text', 'html'],
       exclude: ['node_modules/', 'src/setupTests.js']
