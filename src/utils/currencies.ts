@@ -16,23 +16,33 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { configureStore } from '@reduxjs/toolkit'
-import { setupListeners } from '@reduxjs/toolkit/dist/query'
+import { Currency } from '../types/settings'
 
-import activeWalletSlice from './activeWalletSlice'
-import appSlice from './appSlice'
-import { priceApi } from './priceApiSlice'
+type CurrencyData = {
+  name: string
+  ticker: Currency
+  symbol: string
+}
 
-export const store = configureStore({
-  reducer: {
-    [appSlice.name]: appSlice.reducer,
-    [activeWalletSlice.name]: activeWalletSlice.reducer,
-    [priceApi.reducerPath]: priceApi.reducer
+export const currencies: Record<Currency, CurrencyData> = {
+  CHF: {
+    name: 'Swiss francs',
+    ticker: 'CHF',
+    symbol: 'CHF'
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(priceApi.middleware)
-})
-
-setupListeners(store.dispatch)
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+  EUR: {
+    name: 'Euro',
+    ticker: 'EUR',
+    symbol: '€'
+  },
+  GBP: {
+    name: 'Great Britain Pound',
+    ticker: 'GBP',
+    symbol: '£'
+  },
+  USD: {
+    name: 'United States Dollar',
+    ticker: 'USD',
+    symbol: '$'
+  }
+}

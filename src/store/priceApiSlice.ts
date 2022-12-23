@@ -24,10 +24,14 @@ export const priceApi = createApi({
   reducerPath: 'priceApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coingecko.com/api/v3/simple/' }),
   endpoints: (builder) => ({
-    getPrice: builder.query<string, Currency>({
+    getPrice: builder.query<number, Currency>({
       query: (currency) => `/price?ids=alephium&vs_currencies=${currency.toLowerCase()}`,
-      transformResponse: (response: { alephium: { [key: string]: string } }, meta, arg) =>
-        response.alephium[arg.toLowerCase()]
+      transformResponse: (response: { alephium: { [key: string]: string } }, meta, arg) => {
+        const currency = arg.toLowerCase()
+        const price = response.alephium[currency]
+
+        return parseFloat(price)
+      }
     })
   })
 })

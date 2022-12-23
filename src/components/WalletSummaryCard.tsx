@@ -24,6 +24,7 @@ import styled from 'styled-components'
 import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { useGetPriceQuery } from '../store/priceApiSlice'
+import { currencies } from '../utils/currencies'
 import Amount from './Amount'
 
 interface WalletSummaryCardProps {
@@ -35,21 +36,23 @@ const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => 
   const { t } = useTranslation('App')
   const { addresses } = useAddressesContext()
   const { networkStatus } = useGlobalContext()
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery('USD', {
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
-  const balanceInFiat = convertSetToFiat(totalBalance, price ? parseFloat(price) : 0)
+  const balanceInFiat = convertSetToFiat(totalBalance, price ?? 0)
   const isOnline = networkStatus === 'online'
 
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading })}>
       <div>
         <AmountStyled tabIndex={0} value={isOnline ? totalBalance : undefined} />
-        {!isPriceLoading && <AmountStyled tabIndex={0} value={balanceInFiat} isFiat suffix="$" />}
+        {!isPriceLoading && (
+          <AmountStyled tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+        )}
         <BalanceLabel tabIndex={0} role="representation">{t`TOTAL BALANCE`}</BalanceLabel>
       </div>
       <Divider />
