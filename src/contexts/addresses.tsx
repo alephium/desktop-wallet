@@ -16,23 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  AddressKeyPair,
-  addressToGroup,
-  deriveNewAddressData,
-  getHumanReadableError,
-  TOTAL_NUMBER_OF_GROUPS,
-  Wallet
-} from '@alephium/sdk'
+import { AddressKeyPair, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
-import path from 'path'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
-import { useAppDispatch } from '../hooks/redux'
-import { appLoadingToggled } from '../store/appSlice'
+import { useAppDispatch, useAppSelector } from '../hooks/redux'
+import { addressesGenerated, addressGenerationStarted } from '../store/actions'
 import { TimeInMs } from '../types/numbers'
 import { PendingTx } from '../types/transactions'
 import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
@@ -40,7 +32,13 @@ import { NetworkName } from '../utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
 import { useGlobalContext } from './global'
 
-const addressDiscoveryWorker = new Worker(path.join(__dirname, 'workers', 'addressDiscovery.js'))
+const deriveAddressesFromIndexesWorker = new Worker(
+  new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
+  { type: 'module' }
+)
+const deriveAddressesInGroupsWorker = new Worker(new URL('../workers/deriveAddressesInGroups.ts', import.meta.url), {
+  type: 'module'
+})
 
 export type AddressHash = string
 
@@ -117,12 +115,11 @@ export interface AddressesContextProps {
   mainAddress?: Address
   getAddress: (hash: AddressHash) => Address | undefined
   setAddress: (address: Address) => void
-  saveNewAddress: (address: Address) => void
+  saveNewAddress: (address: Address, mnemonic?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
   generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
-  discoverAndSaveActiveAddresses: () => void
   isLoadingData: boolean
 }
 
@@ -136,7 +133,6 @@ export const initialAddressesContext: AddressesContextProps = {
   refreshAddressesData: () => null,
   fetchAddressTransactionsNextPage: () => null,
   generateOneAddressPerGroup: () => null,
-  discoverAndSaveActiveAddresses: () => null,
   isLoadingData: false
 }
 
@@ -151,7 +147,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const [isLoadingData, setIsLoadingData] = useState(false)
   const {
     activeWalletName,
-    wallet,
     client,
     currentNetwork,
     setSnackbarMessage,
@@ -161,7 +156,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     networkStatus,
     isPassphraseUsed
   } = useGlobalContext()
-  const previousWallet = useRef<Wallet | undefined>(wallet)
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
+  const previousMnemonic = useRef<string | undefined>(activeWalletMnemonic)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
   const dispatch = useAppDispatch()
@@ -210,12 +206,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const updateAddressSettings = useCallback(
     (address: Address, settings: AddressSettings) => {
-      if (!wallet) return
+      if (!activeWalletMnemonic) throw new Error('Could not update address settings, mnemonic not found')
 
       if (!isPassphraseUsed)
         storeAddressMetadataOfWallet(
           {
-            mnemonic: wallet.mnemonic,
+            mnemonic: activeWalletMnemonic,
             walletName: activeWalletName
           },
           address.index,
@@ -224,7 +220,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       address.settings = settings
       setAddress(address)
     },
-    [wallet, activeWalletName, isPassphraseUsed, setAddress]
+    [activeWalletMnemonic, isPassphraseUsed, activeWalletName, setAddress]
   )
 
   const displayDataFetchingError = useCallback(
@@ -353,13 +349,14 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }
 
   const saveNewAddress = useCallback(
-    (newAddress: Address) => {
-      if (!wallet) return
+    (newAddress: Address, mnemonic?: string) => {
+      const _mnemonic = mnemonic || activeWalletMnemonic
+      if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
 
       if (!isPassphraseUsed)
         storeAddressMetadataOfWallet(
           {
-            mnemonic: wallet.mnemonic,
+            mnemonic: _mnemonic,
             walletName: activeWalletName
           },
           newAddress.index,
@@ -369,110 +366,105 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       fetchAndStoreAddressesData([newAddress])
       fetchPendingTxs([newAddress])
     },
-    [wallet, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
+    [activeWalletMnemonic, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
   )
 
-  const discoverAndSaveActiveAddresses = async () => {
-    if (!client || !wallet) return
-
-    dispatch(appLoadingToggled(true))
-
-    addressDiscoveryWorker.postMessage({
-      mnemonic: wallet.mnemonic,
-      skipIndexes: addressesOfCurrentNetwork.map((address) => address.index),
-      clientUrl: client.explorer.baseUrl
-    })
-  }
-
-  useEffect(() => {
-    addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
-      data.forEach(({ hash, publicKey, privateKey, index }) =>
-        saveNewAddress(
-          new Address(hash, publicKey, privateKey, index, {
-            isMain: false,
-            label: '',
-            color: ''
-          })
-        )
-      )
-      dispatch(appLoadingToggled(false))
-    }
-  }, [dispatch, saveNewAddress])
-
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
-    if (!wallet?.masterKey) return
+    if (!activeWalletMnemonic) throw new Error('Could not generate addresses, mnemonic not found')
+
+    dispatch(addressGenerationStarted())
 
     const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
     const hasLabel = !!labelPrefix && !!labelColor
-    Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group)
-      .filter((group) => !skipGroups.includes(group))
-      .map((group) => ({ ...deriveNewAddressData(wallet.masterKey, group, undefined, skipAddressIndexes), group }))
-      .forEach((address) => {
+    const groups = Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group).filter(
+      (group) => !skipGroups.includes(group)
+    )
+
+    deriveAddressesInGroupsWorker.onmessage = ({ data }: { data: (AddressKeyPair & { group: number })[] }) => {
+      data.forEach(({ hash, publicKey, privateKey, index, group }) =>
         saveNewAddress(
-          new Address(address.hash, address.publicKey, address.privateKey, address.index, {
+          new Address(hash, publicKey, privateKey, index, {
             isMain: false,
-            label: hasLabel ? `${labelPrefix} ${address.group}` : '',
+            label: hasLabel ? `${labelPrefix} ${group}` : '',
             color: hasLabel ? labelColor : ''
           })
         )
-      })
+      )
+
+      dispatch(addressesGenerated())
+      deriveAddressesInGroupsWorker.terminate()
+    }
+
+    deriveAddressesInGroupsWorker.postMessage({
+      mnemonic: activeWalletMnemonic,
+      groups,
+      skipIndexes: skipAddressIndexes
+    })
   }
 
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
       console.log('🥇 Initializing current network addresses')
-      if (!activeWalletName || !wallet) return
+      if (!activeWalletMnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
 
       const addressesMetadata = isPassphraseUsed
         ? []
         : loadStoredAddressesMetadataOfWallet({
-            mnemonic: wallet.mnemonic,
+            mnemonic: activeWalletMnemonic,
             walletName: activeWalletName
           })
 
-      if (addressesMetadata.length === 0) {
-        saveNewAddress(
-          new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, {
-            isMain: true,
-            label: undefined,
-            color: undefined
-          })
-        )
-      } else {
+      if (addressesMetadata.length > 0) {
+        dispatch(addressGenerationStarted())
+
         console.log('👀 Found addresses metadata in local storage')
 
-        const addressesToFetchData = addressesMetadata.map(({ index, ...settings }) => {
-          const { hash, publicKey, privateKey } = deriveNewAddressData(wallet.masterKey, undefined, index)
-          return new Address(hash, publicKey, privateKey, index, settings)
+        deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
+          const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
+            const metadata = addressesMetadata.find((metadata) => metadata.index === index)
+
+            return new Address(hash, publicKey, privateKey, index, {
+              isMain: metadata?.isMain || false,
+              label: metadata?.label,
+              color: metadata?.color
+            })
+          })
+
+          updateAddressesState(addressesToFetchData)
+          await fetchAndStoreAddressesData(addressesToFetchData)
+          await fetchPendingTxs(addressesToFetchData)
+          dispatch(addressesGenerated())
+        }
+
+        deriveAddressesFromIndexesWorker.postMessage({
+          mnemonic: activeWalletMnemonic,
+          indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
         })
-        updateAddressesState(addressesToFetchData)
-        await fetchAndStoreAddressesData(addressesToFetchData)
-        await fetchPendingTxs(addressesToFetchData)
       }
     }
 
-    const walletHasChanged = previousWallet.current !== wallet
+    const walletHasChanged = previousMnemonic.current !== activeWalletMnemonic
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
 
     if (networkStatus === 'connecting' || networkStatus === 'uninitialized') return
 
     // Clean state when locking the wallet or changing wallets
-    if (wallet === undefined || wallet !== previousWallet.current) {
+    if (activeWalletMnemonic === undefined || activeWalletMnemonic !== previousMnemonic.current) {
       console.log('🧽 Cleaning state.')
       setAddressesState(new Map())
-      previousWallet.current = wallet
+      previousMnemonic.current = activeWalletMnemonic
     }
 
-    if (wallet && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
-      previousWallet.current = wallet
+    if (activeWalletMnemonic && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
+      previousMnemonic.current = activeWalletMnemonic
       previousNodeApiHost.current = nodeHost
       previousExplorerApiHost.current = explorerApiHost
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, activeWalletName, wallet, explorerApiHost, nodeHost])
+  }, [currentNetwork, networkStatus, client, activeWalletName, activeWalletMnemonic, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
@@ -525,7 +517,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           refreshAddressesData,
           fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
-          discoverAndSaveActiveAddresses,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

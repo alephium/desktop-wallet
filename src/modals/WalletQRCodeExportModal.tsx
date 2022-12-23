@@ -26,22 +26,20 @@ import { useTheme } from 'styled-components'
 import InfoBox from '../components/InfoBox'
 import { Section } from '../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../components/PasswordConfirmation'
-import { useGlobalContext } from '../contexts/global'
+import { useAppSelector } from '../hooks/redux'
 import CenteredModal from './CenteredModal'
 
 const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation('App')
-  const { wallet } = useGlobalContext()
   const theme = useTheme()
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 
   const [qrCodeTextToEncode, setQrCodeTextToEncode] = useState('')
 
-  const mnemonic = wallet?.mnemonic
-
-  if (!mnemonic) return null
+  if (!activeWalletMnemonic) return null
 
   const handleCorrectPasswordEntered = (password: string) => {
-    const encryptedDataToEncode = encrypt(password, mnemonic, 'sha512')
+    const encryptedDataToEncode = encrypt(password, activeWalletMnemonic, 'sha512')
 
     setQrCodeTextToEncode(encryptedDataToEncode)
   }

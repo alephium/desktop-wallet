@@ -27,6 +27,7 @@ import { useAddressesContext } from '../contexts/addresses'
 import { useGlobalContext } from '../contexts/global'
 import { useScrollContext } from '../contexts/scroll'
 import { useWalletConnectContext } from '../contexts/walletconnect'
+import { useAppSelector } from '../hooks/redux'
 import walletConnectIcon from '../images/wallet-connect-logo.svg'
 import SettingsModal from '../modals/SettingsModal'
 import WalletConnectModal from '../modals/WalletConnectModal'
@@ -42,11 +43,11 @@ const hideWalletConnectButton = false
 
 const AppHeader: FC = ({ children }) => {
   const { t } = useTranslation('App')
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
   const theme = useTheme()
+  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+  const { deepLinkUri } = useWalletConnectContext()
   const { mainAddress } = useAddressesContext()
   const {
     networkStatus,
@@ -56,9 +57,9 @@ const AppHeader: FC = ({ children }) => {
     },
     updateSettings
   } = useGlobalContext()
-  const { deepLinkUri } = useWalletConnectContext()
-  const isOffline = networkStatus === 'offline'
-  const isAuthenticated = !!mainAddress
+
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
   scrollY.set(scroll?.scrollTop ?? 0)
 
@@ -79,7 +80,7 @@ const AppHeader: FC = ({ children }) => {
       <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
         <ThemeSwitcher />
         <HeaderDivider />
-        {isOffline && (
+        {networkStatus === 'offline' && (
           <>
             <OfflineIcon data-tip={offlineText} tabIndex={0} aria-label={offlineText}>
               <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />

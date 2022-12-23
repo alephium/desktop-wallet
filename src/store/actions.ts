@@ -16,17 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { configureStore } from '@reduxjs/toolkit'
+import { createAction } from '@reduxjs/toolkit'
 
-import activeWalletSlice from './activeWalletSlice'
-import appSlice from './appSlice'
+type EnableLoading = boolean | undefined
 
-export const store = configureStore({
-  reducer: {
-    app: appSlice.reducer,
-    activeWallet: activeWalletSlice.reducer
-  }
-})
+export const addressDiscoveryStarted = createAction<EnableLoading>('discovery/addressDiscoveryStarted')
+export const addressDiscoveryFinished = createAction<EnableLoading>('discovery/addressDiscoveryFinished')
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export const languageChangeStarted = createAction('app/languageChangeStarted')
+export const languageChanged = createAction('app/languageChanged')
+
+export const addressGenerationStarted = createAction('address/addressGenerationStarted')
+export const addressesGenerated = createAction('address/addressesGenerated')

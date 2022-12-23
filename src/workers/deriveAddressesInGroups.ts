@@ -16,16 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-const { ExplorerClient, walletImport, discoverActiveAddresses } = require('@alephium/sdk')
+import { deriveNewAddressData, Wallet, walletImport } from '@alephium/sdk'
 
-self.onmessage = ({ data: { mnemonic, clientUrl, skipIndexes } }) => {
-  const { masterKey } = walletImport(mnemonic)
-  const client = new ExplorerClient({ baseUrl: clientUrl })
-
-  discover(masterKey, client, skipIndexes)
+interface WorkerPayload {
+  data: {
+    mnemonic: Wallet['mnemonic']
+    groups: number[]
+    skipIndexes?: number[]
+  }
 }
 
-const discover = async (masterKey, client, skipIndexes) => {
-  const activeAddresses = await discoverActiveAddresses(masterKey, client, skipIndexes)
-  self.postMessage(activeAddresses)
+self.onmessage = ({ data: { mnemonic, groups, skipIndexes } }: WorkerPayload) => {
+  const { masterKey } = walletImport(mnemonic)
+
+  derive(masterKey, groups, skipIndexes)
+}
+
+const derive = (masterKey: Wallet['masterKey'], groups: number[], skipIndexes?: number[]) => {
+  self.postMessage(
+    groups.map((group) => ({ ...deriveNewAddressData(masterKey, group, undefined, skipIndexes), group }))
+  )
 }

@@ -54,6 +54,7 @@
     "@types/zxcvbn": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@vitejs/plugin-react": "^2.2.0",
+    "@vitest/web-worker": "^0.25.5",
     "@walletconnect/sign-client": "2.1.4",
     "@walletconnect/types": "2.1.4",
     "@walletconnect/utils": "2.1.4",

@@ -18,6 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import {
+  addressDiscoveryFinished,
+  addressDiscoveryStarted,
+  addressesGenerated,
+  addressGenerationStarted,
+  languageChanged,
+  languageChangeStarted
+} from './actions'
+
 const sliceName = 'app'
 
 interface AppState {
@@ -35,9 +44,30 @@ const appSlice = createSlice({
     appLoadingToggled: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     }
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(addressDiscoveryStarted, (state, action) => toggleLoading(state, true, action.payload))
+      .addCase(addressDiscoveryFinished, (state, action) => toggleLoading(state, false, action.payload))
+      .addCase(languageChangeStarted, (state) => {
+        state.loading = true
+      })
+      .addCase(languageChanged, (state) => {
+        state.loading = false
+      })
+      .addCase(addressGenerationStarted, (state) => {
+        state.loading = true
+      })
+      .addCase(addressesGenerated, (state) => {
+        state.loading = false
+      })
   }
 })
 
 export const { appLoadingToggled } = appSlice.actions
 
 export default appSlice
+
+const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean) => {
+  if (enableLoading !== false) state.loading = toggle
+}

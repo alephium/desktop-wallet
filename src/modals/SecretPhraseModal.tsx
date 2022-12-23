@@ -24,13 +24,15 @@ import styled from 'styled-components'
 import InfoBox from '../components/InfoBox'
 import { Section } from '../components/PageComponents/PageContainers'
 import PasswordConfirmation from '../components/PasswordConfirmation'
-import { useGlobalContext } from '../contexts/global'
+import { useAppSelector } from '../hooks/redux'
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation('App')
-  const { wallet } = useGlobalContext()
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
+
+  if (!activeWalletMnemonic) return null
 
   return (
     <CenteredModal title={t`Secret recovery phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
@@ -49,7 +51,7 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || t`No recovery phrase was stored along with this wallet`}</PhraseBox>
+          <PhraseBox>{activeWalletMnemonic}</PhraseBox>
         </Section>
       )}
     </CenteredModal>

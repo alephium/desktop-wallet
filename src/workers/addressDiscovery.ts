@@ -16,17 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { configureStore } from '@reduxjs/toolkit'
+import { discoverActiveAddresses, ExplorerClient, Wallet, walletImport } from '@alephium/sdk'
 
-import activeWalletSlice from './activeWalletSlice'
-import appSlice from './appSlice'
-
-export const store = configureStore({
-  reducer: {
-    app: appSlice.reducer,
-    activeWallet: activeWalletSlice.reducer
+interface WorkerPayload {
+  data: {
+    mnemonic: Wallet['mnemonic']
+    clientUrl: string
+    skipIndexes?: number[]
   }
-})
+}
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+self.onmessage = ({ data: { mnemonic, clientUrl, skipIndexes } }: WorkerPayload) => {
+  const { masterKey } = walletImport(mnemonic)
+  const client = new ExplorerClient({ baseUrl: clientUrl })
+
+  discover(masterKey, client, skipIndexes)
+}
+
+const discover = async (masterKey: Wallet['masterKey'], client: ExplorerClient, skipIndexes?: number[]) => {
+  const activeAddresses = await discoverActiveAddresses(masterKey, client, skipIndexes)
+  self.postMessage(activeAddresses)
+}

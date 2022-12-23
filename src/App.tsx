@@ -28,48 +28,45 @@ import SnackbarManager from './components/SnackbarManager'
 import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
 import Tooltip from './components/Tooltip'
-import { useAddressesContext } from './contexts/addresses'
 import { useGlobalContext } from './contexts/global'
-import { useAppSelector } from './hooks/redux'
+import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
+import { languageChanged, languageChangeStarted } from './store/actions'
 import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
-  const { networkStatus, settings, snackbarMessage, isClientLoading, newLatestVersion, newVersionDownloadTriggered } =
-    useGlobalContext()
-  const { mainAddress } = useAddressesContext()
+  const { networkStatus, settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
+  const { i18n } = useTranslation()
+  const [isAppLoading, isAuthenticated] = useAppSelector((s) => [s.app.loading, !!s.activeWallet.mnemonic])
+  const dispatch = useAppDispatch()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
-  const [isLanguageChanging, setIsLanguageChanging] = useState(false)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
-  const isAppLoading = useAppSelector((state) => state.app.loading)
-
-  const isOffline = networkStatus === 'offline'
 
   useEffect(() => {
-    if (isOffline || mainAddress) ReactTooltip.rebuild()
-  }, [isOffline, mainAddress])
-
-  const { i18n } = useTranslation()
+    if (networkStatus === 'offline' || isAuthenticated) ReactTooltip.rebuild()
+  }, [isAuthenticated, networkStatus])
 
   useEffect(() => {
     const handleLanguageChange = async () => {
-      setIsLanguageChanging(true)
+      dispatch(languageChangeStarted())
+
       try {
         dayjs.locale(settings.general.language.slice(0, 2))
         await i18n.changeLanguage(settings.general.language)
       } catch (e) {
         console.error(e)
+      } finally {
+        dispatch(languageChanged())
       }
-      setIsLanguageChanging(false)
     }
 
     if (i18n.language !== settings.general.language) {
       handleLanguageChange()
     }
-  }, [i18n, settings.general.language])
+  }, [dispatch, i18n, settings.general.language])
 
   useEffect(() => {
     if (newLatestVersion) setUpdateWalletModalVisible(true)
@@ -86,7 +83,7 @@ const App = () => {
         {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
         <Router />
       </AppContainer>
-      {((isClientLoading && !isOffline) || isLanguageChanging || isAppLoading) && (
+      {isAppLoading && (
         <ClientLoading>
           <Spinner size="60px" />
         </ClientLoading>

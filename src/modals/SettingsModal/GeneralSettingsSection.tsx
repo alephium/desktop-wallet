@@ -27,6 +27,7 @@ import Toggle from '../../components/Inputs/Toggle'
 import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '../../components/PasswordConfirmation'
 import { useGlobalContext } from '../../contexts/global'
+import { useAppSelector } from '../../hooks/redux'
 import useSwitchTheme from '../../hooks/useSwitchTheme'
 import { Language, ThemeType } from '../../types/settings'
 import { loadSettings } from '../../utils/settings'
@@ -52,9 +53,9 @@ const GeneralSettingsSection = () => {
     settings: {
       general: { walletLockTimeInMinutes, discreetMode, passwordRequirement, language }
     },
-    updateSettings,
-    wallet
+    updateSettings
   } = useGlobalContext()
+  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
 
   const storedSettings = loadSettings()
 
@@ -125,7 +126,7 @@ const GeneralSettingsSection = () => {
         }
       />
       <HorizontalDivider narrow />
-      {wallet && (
+      {isAuthenticated && (
         <>
           <KeyValueInput
             label={t`Password requirement`}

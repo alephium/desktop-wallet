@@ -44,11 +44,11 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
     color: address?.settings.color || getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
-  const { wallet, isPassphraseUsed } = useGlobalContext()
+  const { isPassphraseUsed } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
   const theme = useTheme()
 
-  if (!address || !wallet || !mainAddress) return null
+  if (!address || !mainAddress) return null
 
   const isMainAddressToggleEnabled = mainAddress.hash !== address.hash
   const isSweepButtonEnabled = addresses.length > 1 && address.availableBalance > 0

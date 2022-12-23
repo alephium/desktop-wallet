@@ -25,6 +25,7 @@ import { vi } from 'vitest'
 import App from '../App'
 import { GlobalContextProps } from '../contexts/global'
 import { renderWithGlobalContext } from '.'
+import mockWallet from './fixtures/wallet.json'
 
 vi.mock('react-i18next', async () => ({
   ...(await vi.importActual<typeof import('react-i18next')>('react-i18next')),
@@ -42,7 +43,9 @@ vi.mock('@alephium/sdk', async () => ({
     list: () => ['Wallet 1', 'Wallet 2'],
     load: () => 'walletEncrypted'
   })),
-  walletOpen: () => ({}),
+  walletOpen: () => ({
+    mnemonic: mockWallet.mnemonic
+  }),
   CliqueClient: function () {
     return {
       baseUrl: 'https://mock-node',
