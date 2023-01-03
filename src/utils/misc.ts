@@ -67,3 +67,12 @@ export const extractErrorMsg = (e: unknown): string => {
 }
 
 export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')
+
+export const getInitials = (str: string) => {
+  if (!str) return ''
+
+  const words = str.split(' ')
+  const initials = words.length > 1 ? `${words[0][0]}${words[1][0]}` : str.length > 1 ? str.substring(0, 2) : str[0]
+
+  return initials.toUpperCase()
+}
