@@ -22,20 +22,20 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import zxcvbn from 'zxcvbn'
 
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
-import Input from '../../components/Inputs/Input'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import Input from '@/components/Inputs/Input'
 import {
   FloatingPanel,
   FooterActionsContainer,
   PanelContentContainer,
   Section
-} from '../../components/PageComponents/PageContainers'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
-import Paragraph from '../../components/Paragraph'
-import { useGlobalContext } from '../../contexts/global'
-import { useStepsContext } from '../../contexts/steps'
-import { useWalletContext } from '../../contexts/wallet'
+} from '@/components/PageComponents/PageContainers'
+import PanelTitle from '@/components/PageComponents/PanelTitle'
+import Paragraph from '@/components/Paragraph'
+import { useGlobalContext } from '@/contexts/global'
+import { useStepsContext } from '@/contexts/steps'
+import { useWalletContext } from '@/contexts/wallet'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation('App')

@@ -23,6 +23,7 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import svgrPlugin from 'vite-plugin-svgr'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -46,7 +47,7 @@ export default defineConfig({
     },
     include: ['@alephium/sdk'] // To allow for using npm link https://vitejs.dev/guide/dep-pre-bundling.html#monorepos-and-linked-dependencies
   },
-  plugins: [react(), svgrPlugin()],
+  plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   test: {
     globals: true,
     environment: 'jsdom',

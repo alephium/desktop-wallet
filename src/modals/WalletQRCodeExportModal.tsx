@@ -23,10 +23,11 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import { useTheme } from 'styled-components'
 
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import PasswordConfirmation from '../components/PasswordConfirmation'
-import { useAppSelector } from '../hooks/redux'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useAppSelector } from '@/hooks/redux'
+
 import CenteredModal from './CenteredModal'
 
 const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {

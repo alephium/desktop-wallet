@@ -28,7 +28,7 @@ import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
 
-import { useAddressesContext } from '../contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
 import {
   DappTxData,
   DeployContractTxData,
@@ -36,9 +36,10 @@ import {
   TransferTxData,
   TxDataToModalType,
   TxType
-} from '../types/transactions'
-import { AlephiumWindow } from '../types/window'
-import { extractErrorMsg } from '../utils/misc'
+} from '@/types/transactions'
+import { AlephiumWindow } from '@/types/window'
+import { extractErrorMsg } from '@/utils/misc'
+
 import { useGlobalContext } from './global'
 import { useSendModalContext } from './sendModal'
 

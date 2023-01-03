@@ -24,9 +24,10 @@ import {
 } from '@alephium/sdk'
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { Address, AddressHash } from '../contexts/addresses'
-import { GasInfo } from '../types/transactions'
-import { PendingTx, TransactionStatus } from '../types/transactions'
+import { Address, AddressHash } from '@/contexts/addresses'
+import { GasInfo } from '@/types/transactions'
+import { PendingTx, TransactionStatus } from '@/types/transactions'
+
 import { NetworkName } from './settings'
 
 export type TransactionVariant = Transaction | PendingTx

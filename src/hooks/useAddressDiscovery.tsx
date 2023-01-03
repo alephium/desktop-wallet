@@ -18,9 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AddressKeyPair } from '@alephium/sdk'
 
-import { Address, useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { addressDiscoveryFinished, addressDiscoveryStarted } from '../store/actions'
+import { Address, useAddressesContext } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/store/actions'
+
 import { useAppDispatch } from './redux'
 
 const addressDiscoveryWorker = new Worker(new URL('../workers/addressDiscovery.ts', import.meta.url), {

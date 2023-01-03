@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useTranslation } from 'react-i18next'
 
-import AddressSelect from '../../components/Inputs/AddressSelect'
-import { Address } from '../../contexts/addresses'
+import AddressSelect from '@/components/Inputs/AddressSelect'
+import { Address } from '@/contexts/addresses'
 
 export interface AddressSelectFromProps {
   addresses: Address[]

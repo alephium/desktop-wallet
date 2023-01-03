@@ -20,18 +20,18 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '../../components/Button'
+import Button from '@/components/Button'
 import {
   FloatingPanel,
   FooterActionsContainer,
   PanelContentContainer,
   Section
-} from '../../components/PageComponents/PageContainers'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
-import Paragraph from '../../components/Paragraph'
-import { useStepsContext } from '../../contexts/steps'
-import { ReactComponent as LockBodySVG } from '../../images/lock_body.svg'
-import { ReactComponent as LockHandleSVG } from '../../images/lock_handle.svg'
+} from '@/components/PageComponents/PageContainers'
+import PanelTitle from '@/components/PageComponents/PanelTitle'
+import Paragraph from '@/components/Paragraph'
+import { useStepsContext } from '@/contexts/steps'
+import { ReactComponent as LockBodySVG } from '@/images/lock_body.svg'
+import { ReactComponent as LockHandleSVG } from '@/images/lock_handle.svg'
 
 const CheckWordsIntroPage = () => {
   const { t } = useTranslation('App')

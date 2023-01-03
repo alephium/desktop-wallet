@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useTranslation } from 'react-i18next'
 
-import { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
+import { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 
 interface BuildTxFooterButtons {
   onSubmit: () => void

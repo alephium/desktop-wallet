@@ -20,8 +20,8 @@ import { ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../../contexts/global'
-import { openInWebBrowser } from '../../utils/misc'
+import { useGlobalContext } from '@/contexts/global'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface OpenInExplorerButtonProps {
   address: string

@@ -23,12 +23,13 @@ import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Amount from '../components/Amount'
-import InfoBox from '../components/InfoBox'
-import AddressSelect from '../components/Inputs/AddressSelect'
-import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
+import Amount from '@/components/Amount'
+import InfoBox from '@/components/InfoBox'
+import AddressSelect from '@/components/Inputs/AddressSelect'
+import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import { Address, useAddressesContext } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type SweepAddress = Address | undefined

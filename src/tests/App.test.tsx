@@ -15,17 +15,17 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import '../i18n'
+import '@/i18n'
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { HashRouter as Router } from 'react-router-dom'
 import { PartialDeep } from 'type-fest'
 import { vi } from 'vitest'
 
-import App from '../App'
-import { GlobalContextProps } from '../contexts/global'
-import { renderWithGlobalContext } from '.'
-import mockWallet from './fixtures/wallet.json'
+import App from '@/App'
+import { GlobalContextProps } from '@/contexts/global'
+import { renderWithGlobalContext } from '@/tests'
+import mockWallet from '@/tests/fixtures/wallet.json'
 
 vi.mock('react-i18next', async () => ({
   ...(await vi.importActual<typeof import('react-i18next')>('react-i18next')),

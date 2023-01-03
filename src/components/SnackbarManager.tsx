@@ -20,8 +20,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import { deviceBreakPoints } from '../style/globalStyles'
+import { useGlobalContext } from '@/contexts/global'
+import { deviceBreakPoints } from '@/style/globalStyles'
 
 export interface SnackbarMessage {
   text: string

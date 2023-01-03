@@ -20,12 +20,12 @@ import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { links } from '../../utils/links'
-import { openInWebBrowser } from '../../utils/misc'
-import ActionLink from '../ActionLink'
-import InfoBox from '../InfoBox'
-import ToggleSection from '../ToggleSection'
-import Input from './Input'
+import ActionLink from '@/components/ActionLink'
+import InfoBox from '@/components/InfoBox'
+import Input from '@/components/Inputs/Input'
+import ToggleSection from '@/components/ToggleSection'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface Props {
   onPassphraseConfirmed: (passphrase: string) => void

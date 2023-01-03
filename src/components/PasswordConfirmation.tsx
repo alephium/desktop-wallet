@@ -21,7 +21,8 @@ import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
+import { useGlobalContext } from '@/contexts/global'
+
 import Button from './Button'
 import Input from './Inputs/Input'
 import { Section } from './PageComponents/PageContainers'

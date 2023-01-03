@@ -22,10 +22,10 @@ import { MoreVertical } from 'lucide-react'
 import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
-import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import Popup from '../Popup'
-import { inputDefaultStyle, InputLabel, InputProps } from './'
-import InputArea from './InputArea'
+import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
+import InputArea from '@/components/Inputs/InputArea'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
+import Popup from '@/components/Popup'
 
 type Writable<T> = T extends string
   ? string

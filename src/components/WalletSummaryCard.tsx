@@ -21,10 +21,11 @@ import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { useGetPriceQuery } from '../store/priceApiSlice'
-import { currencies } from '../utils/currencies'
+import { useAddressesContext } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+import { useGetPriceQuery } from '@/store/priceApiSlice'
+import { currencies } from '@/utils/currencies'
+
 import Amount from './Amount'
 
 interface WalletSummaryCardProps {

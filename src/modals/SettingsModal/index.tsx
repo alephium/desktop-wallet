@@ -20,12 +20,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
-import TabBar, { TabItem } from '../../components/TabBar'
-import CenteredModal from '../CenteredModal'
-import GeneralSettingsSection from './GeneralSettingsSection'
-import NetworkSettingsSection from './NetworkSettingsSection'
-import WalletsSettingsSection from './WalletsSettingsSection'
+import { PanelContentContainer, Section } from '@/components/PageComponents/PageContainers'
+import TabBar, { TabItem } from '@/components/TabBar'
+import CenteredModal from '@/modals/CenteredModal'
+import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
+import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
+import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
 
 const tabs = [
   { value: 'general', label: 'General', component: <GeneralSettingsSection /> },

@@ -23,7 +23,7 @@ import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'rea
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../../contexts/global'
+import { useGlobalContext } from '@/contexts/global'
 
 interface ClipboardButtonProps {
   textToCopy: string

@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { compareVersions } from 'compare-versions'
 import { useState } from 'react'
 
-import { AlephiumWindow } from '../types/window'
-import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
-import { useTimeout } from '../utils/hooks'
+import { AlephiumWindow } from '@/types/window'
+import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '@/utils/app-data'
+import { useTimeout } from '@/utils/hooks'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron

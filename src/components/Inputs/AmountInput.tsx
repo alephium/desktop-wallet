@@ -21,11 +21,11 @@ import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import ActionLink from '../ActionLink'
-import AlefSymbol from '../AlefSymbol'
-import Amount from '../Amount'
-import { InputProps } from '.'
-import Input from './Input'
+import ActionLink from '@/components/ActionLink'
+import AlefSymbol from '@/components/AlefSymbol'
+import Amount from '@/components/Amount'
+import { InputProps } from '@/components/Inputs'
+import Input from '@/components/Inputs/Input'
 
 interface AmountInputProps extends Omit<InputProps, 'onChange'> {
   availableAmount: bigint

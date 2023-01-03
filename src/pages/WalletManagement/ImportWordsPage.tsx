@@ -21,22 +21,22 @@ import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Button from '../../components/Button'
-import TextAreaTags from '../../components/Inputs/TextAreaTags'
+import Button from '@/components/Button'
+import TextAreaTags from '@/components/Inputs/TextAreaTags'
 import {
   FloatingPanel,
   FooterActionsContainer,
   PanelContentContainer,
   Section
-} from '../../components/PageComponents/PageContainers'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
-import Paragraph from '../../components/Paragraph'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { useGlobalContext } from '../../contexts/global'
-import { useStepsContext } from '../../contexts/steps'
-import { useWalletContext } from '../../contexts/wallet'
-import useAddressDiscovery from '../../hooks/useAddressDiscovery'
-import { bip39Words } from '../../utils/bip39'
+} from '@/components/PageComponents/PageContainers'
+import PanelTitle from '@/components/PageComponents/PanelTitle'
+import Paragraph from '@/components/Paragraph'
+import { Address, useAddressesContext } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+import { useStepsContext } from '@/contexts/steps'
+import { useWalletContext } from '@/contexts/wallet'
+import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
   const { t } = useTranslation('App')

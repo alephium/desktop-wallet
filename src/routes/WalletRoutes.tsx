@@ -19,12 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
-import Scrollbar from '../components/Scrollbar'
-import { useAppSelector } from '../hooks/redux'
-import AddressDetailsPage from '../pages/Wallet/AddressDetailsPage'
-import AddressesPage from '../pages/Wallet/AddressesPage'
-import OverviewPage from '../pages/Wallet/OverviewPage'
-import WalletLayout from '../pages/Wallet/WalletLayout'
+import Scrollbar from '@/components/Scrollbar'
+import { useAppSelector } from '@/hooks/redux'
+import AddressDetailsPage from '@/pages/Wallet/AddressDetailsPage'
+import AddressesPage from '@/pages/Wallet/AddressesPage'
+import OverviewPage from '@/pages/Wallet/OverviewPage'
+import WalletLayout from '@/pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
   const navigate = useNavigate()

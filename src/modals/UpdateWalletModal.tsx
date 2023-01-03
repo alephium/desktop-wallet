@@ -20,10 +20,11 @@ import { BellPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import { useGlobalContext } from '../contexts/global'
-import { AlephiumWindow } from '../types/window'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import { useGlobalContext } from '@/contexts/global'
+import { AlephiumWindow } from '@/types/window'
+
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface UpdateWalletModalProps {

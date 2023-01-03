@@ -21,7 +21,7 @@ import { ArrowDown, ArrowLeftRight, ArrowUp, CircleEllipsis } from 'lucide-react
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
-import { TransactionInfoType } from '../types/transactions'
+import { TransactionInfoType } from '@/types/transactions'
 
 export const useTransactionUI = (infoType: TransactionInfoType) => {
   const theme = useTheme()

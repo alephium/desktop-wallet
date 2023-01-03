@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import AppHeader from '../components/AppHeader'
-import FloatingLogo from '../components/FloatingLogo'
-import { StepsContextProvider } from '../contexts/steps'
-import { WalletContextProvider } from '../contexts/wallet'
-import CreateWalletPage from '../pages/WalletManagement/CreateWalletPage'
-import ImportWordsPage from '../pages/WalletManagement/ImportWordsPage'
-import WalletWelcomePage from '../pages/WalletManagement/WalletWelcomePage'
+import AppHeader from '@/components/AppHeader'
+import FloatingLogo from '@/components/FloatingLogo'
+import { StepsContextProvider } from '@/contexts/steps'
+import { WalletContextProvider } from '@/contexts/wallet'
+import CreateWalletPage from '@/pages/WalletManagement/CreateWalletPage'
+import ImportWordsPage from '@/pages/WalletManagement/ImportWordsPage'
+import WalletWelcomePage from '@/pages/WalletManagement/WalletWelcomePage'
 
 const ImportWalletRoutes = () => {
   const importWalletSteps: JSX.Element[] = [

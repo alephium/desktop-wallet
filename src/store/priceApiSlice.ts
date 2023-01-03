@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-import { Currency } from '../types/settings'
+import { Currency } from '@/types/settings'
 
 export const priceApi = createApi({
   reducerPath: 'priceApi',

@@ -21,7 +21,8 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import { openInWebBrowser } from '../utils/misc'
+import { openInWebBrowser } from '@/utils/misc'
+
 import ActionLink from './ActionLink'
 import Button from './Button'
 
