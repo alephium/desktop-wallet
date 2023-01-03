@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
 import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -122,7 +121,7 @@ const RoundBorders = styled.div<{ withBorders?: boolean }>`
   ${({ withBorders }) =>
     withBorders &&
     css`
-      border: 1px solid ${({ theme }) => colord(theme.border.primary).alpha(0.8).toRgbString()};
+      border: 1px solid ${({ theme }) => theme.border.primary};
       border-radius: 25px;
       padding: 5px 10px;
     `}

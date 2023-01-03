@@ -20,12 +20,14 @@ import { AnimatePresence } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
 import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
-import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
+import { InputLabel, InputProps } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
+
+import { InputBase } from './Input'
 
 type Writable<T> = T extends string
   ? string
@@ -135,8 +137,8 @@ function Select<T extends OptionValue>({
           disabled={disabled}
           id={id}
           value={value?.label ?? ''}
-          raised={raised ?? false}
           readOnly
+          label={label}
         />
       </SelectContainer>
       <AnimatePresence>
@@ -202,7 +204,7 @@ const InputContainer = styled(InputArea)`
 
 export const MoreIcon = styled.div`
   position: absolute;
-  top: 11px;
+  top: 14px;
   right: 10px;
   color: ${({ theme }) => theme.font.secondary};
 `
@@ -236,17 +238,8 @@ export const OptionItem = styled.option`
   }
 `
 
-const ClickableInput = styled.input<InputProps & { raised: boolean }>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
+const ClickableInput = styled(InputBase)`
   padding-right: 35px;
-
+  font-weight: var(--fontWeight-semiBold);
   cursor: pointer;
-
-  ${({ raised }) =>
-    raised &&
-    css`
-      background-color: ${({ theme }) => theme.bg.primary};
-      border: 1px solid ${({ theme }) => theme.border.secondary};
-      box-shadow: ${({ theme }) => theme.shadow.secondary};
-    `}
 `

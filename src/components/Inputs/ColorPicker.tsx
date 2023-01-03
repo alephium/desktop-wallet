@@ -75,11 +75,12 @@ const ColorPickerContainer = styled.div<InputProps>`
 `
 
 const InputAreaStyled = styled(InputArea)<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
+  ${({ isValid, value, label }) => inputDefaultStyle(isValid, !!value, !!label)}
   position: relative;
   display: inline-flex;
   align-items: center;
   width: auto;
+  cursor: pointer;
 `
 
 const Popup = styled(motion.div)`

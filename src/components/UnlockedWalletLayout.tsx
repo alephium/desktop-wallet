@@ -27,6 +27,7 @@ import styled from 'styled-components'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
+import NotificationsModal from '@/modals/NotificationsModal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
@@ -52,6 +53,7 @@ const WalletLayout: FC = ({ children }) => {
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
 
   const activeWalletNameInitials = getInitials(activeWalletName)
 
@@ -72,11 +74,16 @@ const WalletLayout: FC = ({ children }) => {
         )}
       </AppHeader>
       <WalletSidebar>
-        <CurrentWalletInitials>{activeWalletNameInitials}</CurrentWalletInitials>
+        <CurrentWalletInitials
+          onClick={() => setIsNotificationsModalOpen(true)}
+          style={{ zIndex: isNotificationsModalOpen ? 1002 : 'auto' }}
+        >
+          {activeWalletNameInitials}
+        </CurrentWalletInitials>
         <SideNavigation>
-          <NavItem Icon={Layers} label={t`Overview`} link="/wallet/overview" />
+          <NavItem Icon={Layers} label={t`Overview`} to="/wallet/overview" />
           <NavItem Icon={ArrowLeftRight} label={t`Send`} onClick={() => openSendModal(TxType.TRANSFER)} />
-          <NavItem Icon={Album} label={t`Addresses`} link="/wallet/addresses" />
+          <NavItem Icon={Album} label={t`Addresses`} to="/wallet/addresses" />
           {!hideContractButtons && (
             <>
               <NavItem Icon={TerminalSquare} label={t`Call contract`} onClick={() => openSendModal(TxType.SCRIPT)} />
@@ -97,13 +104,14 @@ const WalletLayout: FC = ({ children }) => {
         >
           <Settings />
         </Button>
+        <AnimatePresence exitBeforeEnter initial={true}>
+          {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
+          {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
+          {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
+          {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
+          {isNotificationsModalOpen && <NotificationsModal onClose={() => setIsNotificationsModalOpen(false)} />}
+        </AnimatePresence>
       </WalletSidebar>
-      <AnimatePresence exitBeforeEnter initial={true}>
-        {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
-        {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
-        {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
-        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-      </AnimatePresence>
       {children}
     </WalletContainer>
   )
@@ -122,7 +130,7 @@ const WalletContainer = styled(motion.div)`
 `
 
 const WalletSidebar = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
   display: flex;
@@ -153,4 +161,5 @@ const CurrentWalletInitials = styled.div`
   font-weight: var(--fontWeight-semiBold);
   font-size: 12px;
   background-color: ${({ theme }) => theme.bg.secondary};
+  cursor: pointer;
 `

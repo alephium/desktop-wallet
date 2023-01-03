@@ -93,10 +93,10 @@ function AddressSelect({
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInputStyled type="button" className={className} disabled={disabled} id={id}>
+        <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
           {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
-        </ClickableInputStyled>
+        </ClickableInput>
       </AddressSelectContainer>
       <AnimatePresence>
         {isAddressSelectModalOpen && (
@@ -234,14 +234,12 @@ const AddressOption = styled(InputArea)`
 `
 
 const ClickableInput = styled.div<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
+  ${({ isValid }) => inputDefaultStyle(isValid, true, true)};
   display: flex;
   align-items: center;
   padding-right: 50px;
-`
-
-const ClickableInputStyled = styled(ClickableInput)`
   gap: var(--spacing-2);
+  cursor: pointer;
 `
 
 const AmountStyled = styled(Amount)`

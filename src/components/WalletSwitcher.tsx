@@ -79,10 +79,10 @@ const WalletSwitcher = () => {
   return (
     <>
       {walletNameSelectOptions.length === 0 ? (
-        <InfoBox text={activeWalletName} label={t`WALLET`} />
+        <InfoBox text={activeWalletName} label={t`Wallet`} />
       ) : (
         <Select
-          label={t`CURRENT WALLET`}
+          label={t`Current wallet`}
           options={walletNameSelectOptions}
           controlledValue={{
             label: activeWalletName,

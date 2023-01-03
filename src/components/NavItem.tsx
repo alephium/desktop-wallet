@@ -17,63 +17,48 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useLocation, useNavigate } from 'react-router-dom'
-import styled, { css, useTheme } from 'styled-components'
+import { useTheme } from 'styled-components'
+
+import Button from './Button'
 
 interface NavItemProps {
   Icon: LucideIconType
   label: string
-  link?: string
+  to?: string
   onClick?: () => void
-  className?: string
 }
 
-const NavItem = ({ Icon, label, link, onClick, className }: NavItemProps) => {
+const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
   const theme = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const isActive = link !== undefined && location.pathname.startsWith(link)
+  const isActive = to !== undefined && location.pathname.startsWith(to)
 
   const handleClick = () => {
-    if (link) {
-      navigate(link)
+    if (to) {
+      navigate(to)
     } else if (onClick) {
       onClick()
     }
   }
 
   return (
-    <NavItemContainer className={className} aria-label={label} onClick={handleClick} isActive={isActive}>
-      <Icon color={theme.font.primary} size={18} />
-    </NavItemContainer>
+    <Button
+      aria-label={label}
+      data-tip={label}
+      onClick={handleClick}
+      Icon={Icon}
+      borderless={!isActive}
+      squared
+      transparent
+      style={{
+        backgroundColor: isActive ? theme.bg.primary : undefined,
+        boxShadow: isActive ? theme.shadow.primary : undefined,
+        cursor: isActive ? 'default' : undefined
+      }}
+    />
   )
 }
 
 export default NavItem
-
-const NavItemContainer = styled.button<{ isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-medium);
-  background-color: transparent;
-  opacity: 0.5;
-  transition: all 0.1s ease-out;
-  cursor: pointer;
-
-  ${({ isActive }) =>
-    isActive &&
-    css`
-      background-color: ${({ theme }) => theme.bg.primary};
-      border-color: ${({ theme }) => theme.border.primary};
-      box-shadow: ${({ theme }) => theme.shadow.primary};
-      opacity: 1;
-    `}
-
-  &:hover {
-    opacity: 1;
-  }
-`

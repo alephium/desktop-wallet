@@ -32,6 +32,7 @@ declare module 'styled-components' {
       hover: string
       contrast: string
       accent: string
+      background1: string
     }
     font: {
       primary: string
