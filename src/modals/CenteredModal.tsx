@@ -112,16 +112,18 @@ export const HeaderLogo = styled.div`
 const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   display: flex;
   flex-direction: column;
-  margin: auto;
+
+  position: relative;
+  overflow: hidden;
+
   width: 100%;
+  margin: auto;
   max-width: ${({ narrow }) => (narrow ? '380px' : '600px')};
   max-height: 95vh;
+
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.primary};
-  z-index: 1;
-  position: relative;
-  overflow: hidden;
 
   ${TitleContainer} {
     flex: 1;

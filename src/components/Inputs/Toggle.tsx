@@ -100,6 +100,9 @@ const Toggle = ({
       transition={transition}
       disabled={disabled}
     >
+      <ToggleHandleContainer variants={handleContainerVariants} animate={toggleState} transition={transition}>
+        <ToggleHandle variants={handleVariants} animate={toggleState} transition={transition} />
+      </ToggleHandleContainer>
       {ToggleIconRight && ToggleIconLeft && (
         <ToggleContent>
           <ToggleIconContainer>
@@ -110,9 +113,6 @@ const Toggle = ({
           </ToggleIconContainer>
         </ToggleContent>
       )}
-      <ToggleHandleContainer variants={handleContainerVariants} animate={toggleState} transition={transition}>
-        <ToggleHandle variants={handleVariants} animate={toggleState} transition={transition} />
-      </ToggleHandleContainer>
     </StyledToggle>
   )
 }
@@ -146,7 +146,6 @@ const ToggleHandleContainer = styled(motion.div)`
   position: absolute;
   width: calc(var(--toggleWidth) / 2);
   height: calc(var(--toggleWidth) / 2);
-  z-index: 0;
   padding: 2px;
 `
 
@@ -165,7 +164,6 @@ const ToggleContent = styled.div`
   top: 0;
   bottom: 0;
   display: flex;
-  z-index: 1;
 `
 
 const ToggleIconContainer = styled.div`

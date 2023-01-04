@@ -47,7 +47,6 @@ it('welcomes the new user and displays initial actions', async () => {
   expect(main).toHaveTextContent('Please choose whether you want to create a new wallet or import an existing one.')
   expect(screen.queryByRole('button', { name: 'New wallet' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Import wallet' })).toBeInTheDocument()
-  expect(screen.getByTestId('sidebar')).toBeInTheDocument()
 })
 
 it('welcomes the user back and displays the login form', async () => {
@@ -62,7 +61,6 @@ it('welcomes the user back and displays the login form', async () => {
   expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'New wallet' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Import wallet' })).not.toBeInTheDocument()
-  expect(screen.getByTestId('sidebar')).toBeInTheDocument()
 })
 
 it('navigates correctly between "New wallet" and login pages', async () => {

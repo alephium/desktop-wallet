@@ -33,9 +33,9 @@ const ImportWalletRoutes = () => {
 
   return (
     <WalletContextProvider>
-      <AppHeader />
       <FloatingLogo />
       <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
+      <AppHeader />
     </WalletContextProvider>
   )
 }

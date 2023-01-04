@@ -121,6 +121,7 @@ function Select<T extends OptionValue>({
         custom={disabled}
         noMargin={noMargin}
         onInput={onContainerInput}
+        style={{ zIndex: raised && showPopup ? 2 : undefined }}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}

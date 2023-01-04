@@ -48,16 +48,15 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
   )
 
   useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress, false)
+    document.addEventListener('keydown', handleEscapeKeyPress)
 
     return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress, false)
+      document.removeEventListener('keydown', handleEscapeKeyPress)
     }
   }, [handleEscapeKeyPress, onClose])
 
   return (
     <div className={className}>
-      {children}
       <ModalBackdrop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -66,6 +65,7 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
         onClick={onClose}
         focusMode={focusMode}
       />
+      {children}
     </div>
   )
 }
@@ -78,7 +78,7 @@ export default styled(ModalContainer)<{ hasPadding?: boolean }>`
   left: 0;
   display: flex;
   padding: ${({ hasPadding }) => hasPadding && 'var(--spacing-4)'};
-  z-index: 1001;
+  z-index: 1;
 `
 
 export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: boolean }>`

@@ -34,7 +34,7 @@ import Button from '@/components/Button'
 import ExpandableSection from '@/components/ExpandableSection'
 import MainAddressLabel from '@/components/MainAddressLabel'
 import OperationBox from '@/components/OperationBox'
-import { MainContent, PageTitleRow } from '@/components/PageComponents/PageContainers'
+import { PageTitleRow } from '@/components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Spinner from '@/components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '@/components/Table'
@@ -91,7 +91,7 @@ const AddressesPage = () => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <MainContent>
+    <>
       <PageTitleRow>
         <PageH1>{t`Addresses`}</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
@@ -204,7 +204,7 @@ const AddressesPage = () => {
           />
         )}
       </AnimatePresence>
-    </MainContent>
+    </>
   )
 }
 

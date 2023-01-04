@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
-import Scrollbar from '@/components/Scrollbar'
 import UnlockedWalletLayout from '@/components/UnlockedWalletLayout'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsPage from '@/pages/Wallet/AddressDetailsPage'
@@ -36,15 +35,13 @@ const WalletRoutes = () => {
   }, [isAuthenticated, navigate])
 
   return (
-    <Scrollbar>
-      <UnlockedWalletLayout>
-        <Routes location={location} key={location.pathname}>
-          <Route path="overview" key="overview" element={<OverviewPage />} />
-          <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
-          <Route path="addresses" key="addresses" element={<AddressesPage />} />
-        </Routes>
-      </UnlockedWalletLayout>
-    </Scrollbar>
+    <UnlockedWalletLayout>
+      <Routes location={location} key={location.pathname}>
+        <Route path="overview" key="overview" element={<OverviewPage />} />
+        <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
+        <Route path="addresses" key="addresses" element={<AddressesPage />} />
+      </Routes>
+    </UnlockedWalletLayout>
   )
 }
 

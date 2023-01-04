@@ -19,6 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Wallet } from '@alephium/sdk'
 import { createContext, FC, useContext, useState } from 'react'
 
+import { CenteredSection } from '@/components/PageComponents/PageContainers'
+
 export interface WalletContextType {
   plainWallet?: Wallet | undefined
   setPlainWallet: (w: Wallet | undefined) => void
@@ -61,7 +63,7 @@ export const WalletContextProvider: FC = ({ children }) => {
         setPlainWallet
       }}
     >
-      {children}
+      <CenteredSection>{children}</CenteredSection>
     </WalletContext.Provider>
   )
 }

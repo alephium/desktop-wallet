@@ -60,7 +60,6 @@ const Sidebar = styled(motion.div)`
   max-width: 476px;
   height: 100vh;
   background-color: ${({ theme }) => theme.bg.primary};
-  z-index: 1;
   position: relative;
   overflow: auto;
 `

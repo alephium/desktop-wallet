@@ -30,7 +30,7 @@ import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import WalletConnectModal from '@/modals/WalletConnectModal'
-import { deviceBreakPoints } from '@/style/globalStyles'
+import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 import AddressBadge from './AddressBadge'
 import Button from './Button'
@@ -38,10 +38,14 @@ import CompactToggle from './Inputs/CompactToggle'
 import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
+interface AppHeader {
+  className?: string
+}
+
 // This shall be removed once v2.0.0 is released
 const hideWalletConnectButton = false
 
-const AppHeader: FC = ({ children }) => {
+const AppHeader: FC<AppHeader> = ({ children, className }) => {
   const { t } = useTranslation('App')
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
@@ -76,7 +80,7 @@ const AppHeader: FC = ({ children }) => {
 
   return (
     <>
-      <HeaderContainer id="app-header" style={{ backgroundColor: headerBGColor }}>
+      <motion.header id="app-header" style={{ backgroundColor: headerBGColor }} className={className}>
         <ThemeSwitcher />
         <HeaderDivider />
         {networkStatus === 'offline' && (
@@ -108,9 +112,9 @@ const AppHeader: FC = ({ children }) => {
         )}
         <HeaderDivider />
         <NetworkBadge />
-        <HeaderDivider />
         {isAuthenticated && !hideWalletConnectButton && (
           <>
+            <HeaderDivider />
             <Button
               transparent
               squared
@@ -120,10 +124,9 @@ const AppHeader: FC = ({ children }) => {
             >
               <img src={walletConnectIcon} style={{ width: '100%' }} />
             </Button>
-            <HeaderDivider />
           </>
         )}
-      </HeaderContainer>
+      </motion.header>
       <AnimatePresence>
         {isWalletConnectModalOpen && (
           <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
@@ -133,34 +136,29 @@ const AppHeader: FC = ({ children }) => {
   )
 }
 
-export default AppHeader
-
-export const HeaderDivider = styled.div`
-  width: 1px;
-  height: var(--spacing-2);
-  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
-`
-
-const HeaderContainer = styled(motion.header)`
-  height: 50px;
+export default styled(AppHeader)`
   position: fixed;
   top: 0;
   right: 0;
-  left: 0;
-  z-index: 900;
+  left: ${walletSidebarWidthPx}px;
+
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
+  height: ${appHeaderHeightPx}px;
   padding: 0 var(--spacing-4);
   gap: var(--spacing-1);
 
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
+`
 
-  @media ${deviceBreakPoints.mobile} {
-    background-color: ${({ theme }) => theme.bg.primary};
-  }
+const HeaderDivider = styled.div`
+  width: 1px;
+  height: var(--spacing-2);
+  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
 `
 
 const OfflineIcon = styled.div`

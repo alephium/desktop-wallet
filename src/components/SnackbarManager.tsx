@@ -70,7 +70,7 @@ const SnackbarManagerContainer = styled.div`
   right: 0;
   display: flex;
   justify-content: flex-end;
-  z-index: 10001;
+  z-index: 1;
 
   @media ${deviceBreakPoints.mobile} {
     justify-content: center;
@@ -85,7 +85,6 @@ const SnackbarPopup = styled(motion.div)`
   color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius);
-  z-index: 1000;
   box-shadow: var(--shadow-3);
 
   &.alert {

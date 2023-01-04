@@ -20,7 +20,8 @@ import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
+import { deviceBreakPoints } from '@/style/globalStyles'
+
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
   horizontalAlign?: 'center' | 'stretch'
@@ -142,34 +143,17 @@ export const FooterActionsContainer = styled(Section)`
   width: 100%;
 `
 
-export let MainContent: FC = ({ children, ...props }) => (
-  <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
-    {children}
-  </motion.main>
-)
-
-MainContent = styled(MainContent)`
-  position: absolute;
-  left: ${walletSidebarWidthPx}px;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 56px;
-  padding-top: ${appHeaderHeightPx}px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  min-height: 100vh;
-
-  @media ${deviceBreakPoints.mobile} {
-    position: relative;
-    overflow: initial;
-    padding: var(--spacing-5);
-    left: 0;
-  }
-`
-
 export const PageTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-3);
+`
+
+export const CenteredSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
 `

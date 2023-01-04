@@ -49,7 +49,7 @@ const StyledSplashScreen = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10002;
+  z-index: 1;
   background-color: ${({ theme }) => theme.bg.primary};
 `
 

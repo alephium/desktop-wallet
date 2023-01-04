@@ -32,21 +32,26 @@ import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract
 import SendModalScript from '@/modals/SendModals/SendModalScript'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SettingsModal from '@/modals/SettingsModal'
-import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
+import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { TxType } from '@/types/transactions'
 import { getInitials } from '@/utils/misc'
 
 import AppHeader from './AppHeader'
 import Button from './Button'
 import NavItem from './NavItem'
+import Scrollbar from './Scrollbar'
 import Spinner from './Spinner'
+
+interface WalletLayout {
+  className?: string
+}
 
 dayjs.extend(relativeTime)
 
 // This shall be removed once v2.0.0 is released
 const hideContractButtons = true
 
-const WalletLayout: FC = ({ children }) => {
+const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
   const { t } = useTranslation('App')
   const { networkStatus, activeWalletName } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
@@ -58,88 +63,105 @@ const WalletLayout: FC = ({ children }) => {
   const activeWalletNameInitials = getInitials(activeWalletName)
 
   return (
-    <WalletContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader>
-        {networkStatus === 'online' && (
-          <RefreshButton
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className={className}
+      >
+        <WalletSidebar>
+          <CurrentWalletInitials
+            onClick={() => setIsNotificationsModalOpen(true)}
+            style={{ zIndex: isNotificationsModalOpen ? 2 : undefined }}
+          >
+            {activeWalletNameInitials}
+          </CurrentWalletInitials>
+          <SideNavigation>
+            <NavItem Icon={Layers} label={t`Overview`} to="/wallet/overview" />
+            <NavItem Icon={ArrowLeftRight} label={t`Send`} onClick={() => openSendModal(TxType.TRANSFER)} />
+            <NavItem Icon={Album} label={t`Addresses`} to="/wallet/addresses" />
+            {!hideContractButtons && (
+              <>
+                <NavItem Icon={TerminalSquare} label={t`Call contract`} onClick={() => openSendModal(TxType.SCRIPT)} />
+                <NavItem
+                  Icon={FileCode}
+                  label={t`Deploy contract`}
+                  onClick={() => openSendModal(TxType.DEPLOY_CONTRACT)}
+                />
+              </>
+            )}
+          </SideNavigation>
+          <Button
             transparent
             squared
-            onClick={refreshAddressesData}
-            disabled={isLoadingData}
-            aria-label={t`Refresh`}
-            data-tip={t`Refresh data`}
+            onClick={() => setIsSettingsModalOpen(true)}
+            aria-label={t`Settings`}
+            data-tip={t`Settings`}
           >
-            {isLoadingData ? <Spinner /> : <RefreshCw />}
-          </RefreshButton>
-        )}
-      </AppHeader>
-      <WalletSidebar>
-        <CurrentWalletInitials
-          onClick={() => setIsNotificationsModalOpen(true)}
-          style={{ zIndex: isNotificationsModalOpen ? 1002 : 'auto' }}
-        >
-          {activeWalletNameInitials}
-        </CurrentWalletInitials>
-        <SideNavigation>
-          <NavItem Icon={Layers} label={t`Overview`} to="/wallet/overview" />
-          <NavItem Icon={ArrowLeftRight} label={t`Send`} onClick={() => openSendModal(TxType.TRANSFER)} />
-          <NavItem Icon={Album} label={t`Addresses`} to="/wallet/addresses" />
-          {!hideContractButtons && (
-            <>
-              <NavItem Icon={TerminalSquare} label={t`Call contract`} onClick={() => openSendModal(TxType.SCRIPT)} />
-              <NavItem
-                Icon={FileCode}
-                label={t`Deploy contract`}
-                onClick={() => openSendModal(TxType.DEPLOY_CONTRACT)}
-              />
-            </>
-          )}
-        </SideNavigation>
-        <Button
-          transparent
-          squared
-          onClick={() => setIsSettingsModalOpen(true)}
-          aria-label={t`Settings`}
-          data-tip={t`Settings`}
-        >
-          <Settings />
-        </Button>
-        <AnimatePresence exitBeforeEnter initial={true}>
-          {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
-          {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
-          {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
-          {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-          {isNotificationsModalOpen && <NotificationsModal onClose={() => setIsNotificationsModalOpen(false)} />}
-        </AnimatePresence>
-      </WalletSidebar>
-      {children}
-    </WalletContainer>
+            <Settings />
+          </Button>
+        </WalletSidebar>
+
+        <Scrollbar>
+          <MainContent initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+            {children}
+          </MainContent>
+          <AppHeader>
+            {networkStatus === 'online' && (
+              <RefreshButton
+                transparent
+                squared
+                onClick={refreshAddressesData}
+                disabled={isLoadingData}
+                aria-label={t`Refresh`}
+                data-tip={t`Refresh data`}
+              >
+                {isLoadingData ? <Spinner /> : <RefreshCw />}
+              </RefreshButton>
+            )}
+          </AppHeader>
+        </Scrollbar>
+      </motion.div>
+      <AnimatePresence exitBeforeEnter initial={true}>
+        {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
+        {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
+        {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
+        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
+        {isNotificationsModalOpen && <NotificationsModal onClose={() => setIsNotificationsModalOpen(false)} />}
+      </AnimatePresence>
+    </>
   )
 }
 
-export default WalletLayout
-
-const WalletContainer = styled(motion.div)`
+export default styled(WalletLayout)`
   display: flex;
-  flex: 1;
-
-  @media ${deviceBreakPoints.mobile} {
-    flex-direction: column;
-    overflow: initial;
-  }
+  width: 100%;
+  height: 100%;
 `
 
 const WalletSidebar = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   width: ${walletSidebarWidthPx}px;
+  padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
+
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.tertiary};
-  padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
+`
+
+const MainContent = styled(motion.main)`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  padding: 56px;
+  padding-top: ${appHeaderHeightPx}px;
+  min-height: 100vh;
+
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const SideNavigation = styled.nav`

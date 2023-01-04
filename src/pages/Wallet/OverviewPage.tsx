@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 
 import OverviewPageHeader from '@/components/OverviewPage/Header'
 import OverviewPageTransactionList from '@/components/OverviewPage/TransactionList'
-import { MainContent } from '@/components/PageComponents/PageContainers'
 import { PageH2 } from '@/components/PageComponents/PageHeadings'
 import { Address } from '@/contexts/addresses'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
@@ -33,7 +32,7 @@ const OverviewPage = () => {
   const { t } = useTranslation('App')
 
   return (
-    <MainContent>
+    <>
       <OverviewPageHeader />
       <PageH2>{t`Transaction history`}</PageH2>
       <OverviewPageTransactionList onTransactionClick={setSelectedTransaction} />
@@ -46,7 +45,7 @@ const OverviewPage = () => {
           />
         )}
       </AnimatePresence>
-    </MainContent>
+    </>
   )
 }
 
