@@ -209,9 +209,10 @@ if (!gotTheLock) {
   app.on('ready', async function () {
     if (isDev) {
       const {
-        default: { default: installExtension, REACT_DEVELOPER_TOOLS }
+        default: { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS }
       } = await import('electron-devtools-installer')
       await installExtension(REACT_DEVELOPER_TOOLS)
+      await installExtension(REDUX_DEVTOOLS)
     }
 
     ipcMain.handle('theme:setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))

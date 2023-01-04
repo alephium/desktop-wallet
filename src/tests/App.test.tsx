@@ -69,7 +69,7 @@ beforeEach(async () => {
   const context: PartialDeep<GlobalContextProps> = {
     settings: {
       general: {
-        walletLockTimeInMinutes: walletLockTimeInMinutes
+        walletLockTimeInMinutes
       }
     }
   }
@@ -98,42 +98,36 @@ it('should display available wallets to login with when clicking the Wallet inpu
 it('should lock the wallet when idle for too long after successful login', async () => {
   vi.useFakeTimers()
 
-  // 1. Login
+  // 1. Unlock wallet
   fireEvent.click(screen.getByLabelText('Wallet'))
   fireEvent.click(screen.getByText('Wallet 1'))
   fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'fake-password' } })
   fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
-  // 2. Check that we have successfully logged in
+  // 2. Check that we have successfully unlocked the wallet
   expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
-  // 3. Advance time so that the interval that checks if we need to lock out runs
-  act(() => {
-    vi.runOnlyPendingTimers()
-  })
-
-  // 4. Ensure that we are not locked out if we are idle for less than the lock time (ex: 1 minute less)
-  const stayIdleTimeoutInMinutes = walletLockTimeInMinutes - 1
-  vi.setSystemTime(new Date(new Date().getTime() + stayIdleTimeoutInMinutes * 60 * 1000))
+  // 3. Ensure that the wallet hasn't locked if it's been idle for less than the lock time (ex: 1min less)
+  vi.advanceTimersByTime((walletLockTimeInMinutes - 1) * 60 * 1000)
   act(() => {
     vi.runOnlyPendingTimers()
   })
   expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
-  // 5. Move the mouse
+  // 4. Move the mouse
   act(() => {
     fireEvent.mouseMove(screen.getByRole('main'))
   })
 
-  // 6. Advance time and ensure that we are still not locked out, since the mouse moved (ex: another 3 minutes)
-  vi.setSystemTime(new Date(new Date().getTime() + 3 * 60 * 1000))
+  // 5. Advance time to 1min before locking time and ensure that the wallet is still not locked, since the mouse moved
+  vi.advanceTimersByTime((walletLockTimeInMinutes - 1) * 60 * 1000)
   act(() => {
     vi.runOnlyPendingTimers()
   })
   expect(screen.getByText('Transaction history')).toBeInTheDocument()
 
-  // 8. Finally, advance time without any interaction and expect to be locked out
-  vi.setSystemTime(new Date(new Date().getTime() + 4 * 60 * 1000))
+  // 6. Finally, advance time by 1 more minute without any interaction and expect the wallet to lock
+  vi.advanceTimersByTime(1 * 60 * 1000)
   act(() => {
     vi.runOnlyPendingTimers()
   })
@@ -141,7 +135,10 @@ it('should lock the wallet when idle for too long after successful login', async
   expect(screen.getByRole('main')).toHaveTextContent('Please choose a wallet and enter your password to continue')
 })
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 afterAll(() => {
   vi.clearAllMocks()
-  vi.useRealTimers()
 })

@@ -32,7 +32,7 @@ const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) =
   }, [])
 
   useEffect(() => {
-    let checkIfIdleForTooLong: ReturnType<typeof setInterval> | null = null
+    let checkIfIdleForTooLong: ReturnType<typeof setInterval>
 
     if (timeoutInMs) {
       checkIfIdleForTooLong = setInterval(() => {
