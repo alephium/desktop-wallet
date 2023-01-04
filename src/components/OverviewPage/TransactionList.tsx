@@ -22,13 +22,13 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 
-import ActionLink from '../../components/ActionLink'
-import Table, { TableCell, TableCellPlaceholder, TableRow } from '../../components/Table'
-import TransactionalInfo from '../../components/TransactionalInfo'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { PendingTx } from '../../types/transactions'
-import { GENESIS_TIMESTAMP } from '../../utils/constants'
-import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '../../utils/transactions'
+import ActionLink from '@/components/ActionLink'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
+import TransactionalInfo from '@/components/TransactionalInfo'
+import { Address, useAddressesContext } from '@/contexts/addresses'
+import { PendingTx } from '@/types/transactions'
+import { GENESIS_TIMESTAMP } from '@/utils/constants'
+import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '@/utils/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void

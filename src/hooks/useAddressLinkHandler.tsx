@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { AddressHash, useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { openInWebBrowser } from '../utils/misc'
+import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+import { openInWebBrowser } from '@/utils/misc'
 
 const useAddressLinkHandler = () => {
   const {

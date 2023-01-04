@@ -23,9 +23,9 @@ import { useDetectClickOutside } from 'react-detect-click-outside'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { getRandomLabelColor, labelColorPalette } from '../../utils/colors'
-import InputArea from '../Inputs/InputArea'
-import { inputDefaultStyle, InputProps } from '.'
+import { inputDefaultStyle, InputProps } from '@/components/Inputs'
+import InputArea from '@/components/Inputs/InputArea'
+import { getRandomLabelColor, labelColorPalette } from '@/utils/colors'
 
 interface ColorPickerProps {
   value: string

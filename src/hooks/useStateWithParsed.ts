@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useState } from 'react'
 
-import { WithParsed } from '../types/data'
+import { WithParsed } from '@/types/data'
 
 export function useStateWithParsed<T>(initialValue: T, stringified: string) {
   const [value, setValue] = useState<WithParsed<T>>({

@@ -24,19 +24,19 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
 import {
   FloatingPanel,
   FooterActionsContainer,
   PanelContentContainer,
   Section
-} from '../../components/PageComponents/PageContainers'
-import PanelTitle from '../../components/PageComponents/PanelTitle'
-import Paragraph from '../../components/Paragraph'
-import { useGlobalContext } from '../../contexts/global'
-import { useStepsContext } from '../../contexts/steps'
-import { useWalletContext } from '../../contexts/wallet'
+} from '@/components/PageComponents/PageContainers'
+import PanelTitle from '@/components/PageComponents/PanelTitle'
+import Paragraph from '@/components/Paragraph'
+import { useGlobalContext } from '@/contexts/global'
+import { useStepsContext } from '@/contexts/steps'
+import { useWalletContext } from '@/contexts/wallet'
 
 interface WordKey {
   word: string

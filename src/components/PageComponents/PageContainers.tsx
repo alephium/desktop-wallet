@@ -20,7 +20,7 @@ import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
+import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
   horizontalAlign?: 'center' | 'stretch'

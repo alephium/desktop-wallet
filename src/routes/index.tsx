@@ -19,9 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimateSharedLayout } from 'framer-motion'
 import { Route, Routes } from 'react-router-dom'
 
-import UpdateWalletBanner from '../components/UpdateWalletBanner'
-import { useGlobalContext } from '../contexts/global'
-import HomePage from '../pages/HomePage'
+import UpdateWalletBanner from '@/components/UpdateWalletBanner'
+import { useGlobalContext } from '@/contexts/global'
+import HomePage from '@/pages/HomePage'
+
 import CreateWalletRoutes from './CreateWalletRoutes'
 import ImportWalletRoutes from './ImportWalletRoutes'
 import WalletRoutes from './WalletRoutes'

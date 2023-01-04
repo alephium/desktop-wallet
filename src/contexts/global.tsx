@@ -22,18 +22,18 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
-import { SnackbarMessage } from '../components/SnackbarManager'
-import { useAppDispatch } from '../hooks/redux'
-import useIdleForTooLong from '../hooks/useIdleForTooLong'
-import useLatestGitHubRelease from '../hooks/useLatestGitHubRelease'
-import { walletLocked, walletSaved, walletUnlocked } from '../store/activeWalletSlice'
-import { appLoadingToggled } from '../store/appSlice'
-import { NetworkStatus } from '../types/network'
-import { ThemeType } from '../types/settings'
-import { AlephiumWindow } from '../types/window'
-import { deleteStoredAddressMetadataOfWallet } from '../utils/addresses'
-import { createClient } from '../utils/api-clients'
-import { migrateUserData } from '../utils/migration'
+import { SnackbarMessage } from '@/components/SnackbarManager'
+import { useAppDispatch } from '@/hooks/redux'
+import useIdleForTooLong from '@/hooks/useIdleForTooLong'
+import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
+import { appLoadingToggled } from '@/store/appSlice'
+import { NetworkStatus } from '@/types/network'
+import { ThemeType } from '@/types/settings'
+import { AlephiumWindow } from '@/types/window'
+import { deleteStoredAddressMetadataOfWallet } from '@/utils/addresses'
+import { createClient } from '@/utils/api-clients'
+import { migrateUserData } from '@/utils/migration'
 import {
   getNetworkName,
   loadSettings,
@@ -42,7 +42,7 @@ import {
   Settings,
   UpdateSettingsFunctionSignature,
   updateStoredSettings
-} from '../utils/settings'
+} from '@/utils/settings'
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 

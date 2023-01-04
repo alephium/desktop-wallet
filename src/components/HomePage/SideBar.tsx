@@ -22,12 +22,12 @@ import { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import alephiumLogo from '../../images/alephium_logo_light.svg'
-import { ReactComponent as AtmosphericGlow } from '../../images/athmospheric_glow.svg'
-import { ReactComponent as MountainSVG } from '../../images/mountain.svg'
-import { deviceBreakPoints } from '../../style/globalStyles'
-import { PanelContentContainer } from '../PageComponents/PageContainers'
-import PanelTitle from '../PageComponents/PanelTitle'
+import { PanelContentContainer } from '@/components/PageComponents/PageContainers'
+import PanelTitle from '@/components/PageComponents/PanelTitle'
+import alephiumLogo from '@/images/alephium_logo_light.svg'
+import { ReactComponent as AtmosphericGlow } from '@/images/athmospheric_glow.svg'
+import { ReactComponent as MountainSVG } from '@/images/mountain.svg'
+import { deviceBreakPoints } from '@/style/globalStyles'
 
 const SideBar = () => {
   const { t } = useTranslation('App')

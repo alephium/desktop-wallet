@@ -25,8 +25,8 @@ import {
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
-import { AddressHash, useAddressesContext } from '../contexts/addresses'
-import { hasOnlyOutputsWith, isPendingTx, TransactionVariant } from '../utils/transactions'
+import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { hasOnlyOutputsWith, isPendingTx, TransactionVariant } from '@/utils/transactions'
 
 export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash) => {
   const { addresses } = useAddressesContext()

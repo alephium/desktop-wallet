@@ -20,8 +20,9 @@ import { Moon, Sun } from 'lucide-react'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useGlobalContext } from '../contexts/global'
-import useSwitchTheme from '../hooks/useSwitchTheme'
+import { useGlobalContext } from '@/contexts/global'
+import useSwitchTheme from '@/hooks/useSwitchTheme'
+
 import Toggle from './Inputs/Toggle'
 
 interface ThemeSwitcherProps {

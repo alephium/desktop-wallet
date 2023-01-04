@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Address, useAddressesContext } from '../contexts/addresses'
-import { useWalletConnectContext } from '../contexts/walletconnect'
+import { Address, useAddressesContext } from '@/contexts/addresses'
+import { useWalletConnectContext } from '@/contexts/walletconnect'
 
 const useDappTxData = () => {
   const { mainAddress } = useAddressesContext()

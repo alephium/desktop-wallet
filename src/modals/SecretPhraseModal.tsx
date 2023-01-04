@@ -21,10 +21,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import PasswordConfirmation from '../components/PasswordConfirmation'
-import { useAppSelector } from '../hooks/redux'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useAppSelector } from '@/hooks/redux'
+
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {

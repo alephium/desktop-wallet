@@ -21,9 +21,10 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import { Address } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import dotSvg from '../images/dot.svg'
+import { Address } from '@/contexts/addresses'
+import { useGlobalContext } from '@/contexts/global'
+import dotSvg from '@/images/dot.svg'
+
 import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'

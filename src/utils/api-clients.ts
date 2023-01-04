@@ -19,8 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 import { NodeProvider as Web3Client } from '@alephium/web3'
 
-import { Address, AddressHash } from '../contexts/addresses'
-import { PendingTxType } from '../types/transactions'
+import { Address, AddressHash } from '@/contexts/addresses'
+import { PendingTxType } from '@/types/transactions'
+
 import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {

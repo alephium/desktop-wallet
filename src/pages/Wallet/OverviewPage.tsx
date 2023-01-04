@@ -21,12 +21,12 @@ import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import OverviewPageHeader from '../../components/OverviewPage/Header'
-import OverviewPageTransactionList from '../../components/OverviewPage/TransactionList'
-import { MainContent } from '../../components/PageComponents/PageContainers'
-import { PageH2 } from '../../components/PageComponents/PageHeadings'
-import { Address } from '../../contexts/addresses'
-import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
+import OverviewPageHeader from '@/components/OverviewPage/Header'
+import OverviewPageTransactionList from '@/components/OverviewPage/TransactionList'
+import { MainContent } from '@/components/PageComponents/PageContainers'
+import { PageH2 } from '@/components/PageComponents/PageHeadings'
+import { Address } from '@/contexts/addresses'
+import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()

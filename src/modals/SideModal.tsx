@@ -19,8 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-import Scrollbar from '../components/Scrollbar'
-import useFocusOnMount from '../hooks/useFocusOnMount'
+import Scrollbar from '@/components/Scrollbar'
+import useFocusOnMount from '@/hooks/useFocusOnMount'
+
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
 interface SideModalProps extends ModalContainerProps {

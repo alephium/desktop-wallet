@@ -20,11 +20,12 @@ import { Codesandbox } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import Amount from '../components/Amount'
-import Button from '../components/Button'
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import Spinner from '../components/Spinner'
+import Amount from '@/components/Amount'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import Spinner from '@/components/Spinner'
+
 import CenteredModal, { HeaderContent, HeaderLogo } from './CenteredModal'
 
 interface ConsolidateUTXOsModalProps {

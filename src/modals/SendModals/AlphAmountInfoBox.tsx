@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
 
-import AlefSymbol from '../../components/AlefSymbol'
-import InfoBox from '../../components/InfoBox'
+import AlefSymbol from '@/components/AlefSymbol'
+import InfoBox from '@/components/InfoBox'
 
 interface AlphAmountInfoBoxProps {
   amount: bigint

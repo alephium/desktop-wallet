@@ -19,7 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
+import { useGlobalContext } from '@/contexts/global'
+
 import AlefSymbol from './AlefSymbol'
 
 interface AmountProps {

@@ -105,6 +105,7 @@
     "typescript": "^4.4.3",
     "vite": "^3.2.5",
     "vite-plugin-svgr": "^2.2.2",
+    "vite-tsconfig-paths": "^4.0.3",
     "vitest": "^0.25.5",
     "wait-on": "^6.0.0",
     "zxcvbn": "^4.4.2"

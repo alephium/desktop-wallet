@@ -21,7 +21,7 @@ import { Provider } from 'react-redux'
 import { store } from 'src/store/store'
 import { PartialDeep } from 'type-fest'
 
-import { GlobalContextProps, GlobalContextProvider } from '../contexts/global'
+import { GlobalContextProps, GlobalContextProvider } from '@/contexts/global'
 
 export const renderWithGlobalContext = (el: JSX.Element, contextObject?: PartialDeep<GlobalContextProps>) =>
   render(

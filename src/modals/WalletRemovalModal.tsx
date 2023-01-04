@@ -20,10 +20,11 @@ import { AlertTriangle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
-import Button from '../components/Button'
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import Paragraph from '../components/Paragraph'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import Paragraph from '@/components/Paragraph'
+
 import CenteredModal from './CenteredModal'
 
 interface WalletRemovalModalProps {

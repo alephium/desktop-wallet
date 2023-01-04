@@ -23,7 +23,7 @@ import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
 
-import { ScrollContextProvider } from '../contexts/scroll'
+import { ScrollContextProvider } from '@/contexts/scroll'
 
 const paddingRight = '6px'
 const width = `calc(6px + ${paddingRight})`

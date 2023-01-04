@@ -22,13 +22,14 @@ import { FC, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import Button from '../components/Button'
-import { Section } from '../components/PageComponents/PageContainers'
-import PanelTitle, { TitleContainer } from '../components/PageComponents/PanelTitle'
-import Scrollbar from '../components/Scrollbar'
-import Spinner from '../components/Spinner'
-import Tooltip from '../components/Tooltip'
-import useFocusOnMount from '../hooks/useFocusOnMount'
+import Button from '@/components/Button'
+import { Section } from '@/components/PageComponents/PageContainers'
+import PanelTitle, { TitleContainer } from '@/components/PageComponents/PanelTitle'
+import Scrollbar from '@/components/Scrollbar'
+import Spinner from '@/components/Spinner'
+import Tooltip from '@/components/Tooltip'
+import useFocusOnMount from '@/hooks/useFocusOnMount'
+
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {

@@ -21,7 +21,8 @@ import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
-import { Address } from '../contexts/addresses'
+import { Address } from '@/contexts/addresses'
+
 import AddressBadge from './AddressBadge'
 import Amount from './Amount'
 import ClipboardButton from './Buttons/ClipboardButton'

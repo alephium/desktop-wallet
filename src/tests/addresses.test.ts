@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { isAddressValid } from '../utils/addresses'
+import { isAddressValid } from '@/utils/addresses'
 
 it('Should return address string if correct', () => {
   expect(isAddressValid('1EfGPJaeHYN8MQfZmUT58HNbAWkJAbuJ7hCLoAaQwHFXz')).toEqual(

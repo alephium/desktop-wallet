@@ -24,8 +24,14 @@ import { WheelEvent } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
+import {
+  inputDefaultStyle,
+  InputErrorMessage,
+  InputLabel,
+  InputProps,
+  InputValidIconContainer
+} from '@/components/Inputs'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 const Input = ({
   label,

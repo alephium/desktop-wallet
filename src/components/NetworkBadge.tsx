@@ -19,7 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
+import { useGlobalContext } from '@/contexts/global'
+
 import Badge from './Badge'
 
 const NetworkBadge = ({ className }: { className?: string }) => {

@@ -23,13 +23,14 @@ import { createContext, FC, useCallback, useContext, useEffect, useRef, useState
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
-import { useAppDispatch, useAppSelector } from '../hooks/redux'
-import { addressesGenerated, addressGenerationStarted } from '../store/actions'
-import { TimeInMs } from '../types/numbers'
-import { PendingTx } from '../types/transactions'
-import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '../utils/addresses'
-import { NetworkName } from '../utils/settings'
-import { convertUnconfirmedTxToPendingTx } from '../utils/transactions'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
+import { TimeInMs } from '@/types/numbers'
+import { PendingTx } from '@/types/transactions'
+import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '@/utils/addresses'
+import { NetworkName } from '@/utils/settings'
+import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
+
 import { useGlobalContext } from './global'
 
 const deriveAddressesFromIndexesWorker = new Worker(

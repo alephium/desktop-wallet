@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createContext, FC, useCallback, useContext, useState } from 'react'
 
-import { TxType } from '../types/transactions'
+import { TxType } from '@/types/transactions'
 
 interface SendModalContextProps {
   txType?: TxType

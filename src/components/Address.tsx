@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import { openInWebBrowser } from '../utils/misc'
+import { useGlobalContext } from '@/contexts/global'
+import { openInWebBrowser } from '@/utils/misc'
 
 const Address = ({ hash }: { hash: string }) => {
   const {
