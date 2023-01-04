@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
-import { Eye, EyeOff, Settings as SettingsIcon, WifiOff } from 'lucide-react'
+import { Eye, EyeOff, WifiOff } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -29,7 +29,6 @@ import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
-import SettingsModal from '@/modals/SettingsModal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
 import { deviceBreakPoints } from '@/style/globalStyles'
 
@@ -59,7 +58,6 @@ const AppHeader: FC = ({ children }) => {
     updateSettings
   } = useGlobalContext()
 
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
   scrollY.set(scroll?.scrollTop ?? 0)
@@ -125,19 +123,7 @@ const AppHeader: FC = ({ children }) => {
             <HeaderDivider />
           </>
         )}
-        <Button
-          transparent
-          squared
-          onClick={() => setIsSettingsModalOpen(true)}
-          aria-label={t`Settings`}
-          data-tip={t`Settings`}
-        >
-          <SettingsIcon />
-        </Button>
       </HeaderContainer>
-      <AnimatePresence>
-        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-      </AnimatePresence>
       <AnimatePresence>
         {isWalletConnectModalOpen && (
           <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />

@@ -20,11 +20,11 @@ import { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import Scrollbar from '@/components/Scrollbar'
+import UnlockedWalletLayout from '@/components/UnlockedWalletLayout'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsPage from '@/pages/Wallet/AddressDetailsPage'
 import AddressesPage from '@/pages/Wallet/AddressesPage'
 import OverviewPage from '@/pages/Wallet/OverviewPage'
-import WalletLayout from '@/pages/Wallet/WalletLayout'
 
 const WalletRoutes = () => {
   const navigate = useNavigate()
@@ -37,13 +37,13 @@ const WalletRoutes = () => {
 
   return (
     <Scrollbar>
-      <WalletLayout>
+      <UnlockedWalletLayout>
         <Routes location={location} key={location.pathname}>
           <Route path="overview" key="overview" element={<OverviewPage />} />
           <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
           <Route path="addresses" key="addresses" element={<AddressesPage />} />
         </Routes>
-      </WalletLayout>
+      </UnlockedWalletLayout>
     </Scrollbar>
   )
 }

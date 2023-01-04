@@ -25,7 +25,7 @@ import HomePage from '@/pages/HomePage'
 
 import CreateWalletRoutes from './CreateWalletRoutes'
 import ImportWalletRoutes from './ImportWalletRoutes'
-import WalletRoutes from './WalletRoutes'
+import UnlockedWalletRoutes from './UnlockedWalletRoutes'
 
 const Router = () => {
   const { newLatestVersion } = useGlobalContext()
@@ -36,7 +36,7 @@ const Router = () => {
       <Routes>
         <Route path="/create/:step" element={<CreateWalletRoutes />} />
         <Route path="/import/:step" element={<ImportWalletRoutes />} />
-        <Route path="/wallet/*" element={<WalletRoutes />} />
+        <Route path="/wallet/*" element={<UnlockedWalletRoutes />} />
         <Route path="" element={<HomePage />} />
       </Routes>
     </AnimateSharedLayout>

@@ -25,7 +25,7 @@ import tags from './tags'
 
 export const appHeaderHeightPx = 60
 
-export const walletSidebarWidthPx = 250
+export const walletSidebarWidthPx = 80
 
 const extensionWindowDimensions = `
   height: 600px;
@@ -58,14 +58,14 @@ export const GlobalStyle = createGlobalStyle`
     --radius-small: 4px;
     --radius: 7px;
     --radius-medium: 9px;
-    --radius-big: 14px;
+    --radius-big: 12px;
     --radius-full: 100%;
 
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
     --fontWeight-bold: 800;
 
-    --inputHeight: 45px;
+    --inputHeight: 50px;
     --tableCellHeight: 47px;
     --toggleWidth: 52px;
   }

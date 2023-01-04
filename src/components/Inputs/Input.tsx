@@ -67,8 +67,9 @@ const Input = ({
       <InputLabel inputHasValue={!!value} htmlFor={props.id}>
         {label}
       </InputLabel>
-      <StyledInput
+      <InputBase
         {...props}
+        label={label}
         value={value}
         onChange={onChange}
         className={className}
@@ -97,8 +98,8 @@ export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
-const StyledInput = styled.input<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)};
+export const InputBase = styled.input<InputProps>`
+  ${({ isValid, value, label }) => inputDefaultStyle(isValid, !!value, !!label)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 

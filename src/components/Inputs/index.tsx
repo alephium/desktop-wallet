@@ -38,7 +38,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { y: -35, x: -5, scale: 0.8 },
+  up: { y: -9, fontSize: '9px' },
   down: { y: 0, scale: 1 }
 }
 
@@ -47,12 +47,12 @@ export const inputStyling = {
   paddingLeftRight: '12px'
 }
 
-export const inputDefaultStyle = (isValid?: boolean) => css`
+export const inputDefaultStyle = (isValid?: boolean, hasValue?: boolean, hasLabel?: boolean) => css`
   background-image: none;
   height: var(--inputHeight);
   width: 100%;
-  border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.secondary};
+  border-radius: var(--radius-medium);
+  background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
   padding: ${isValid ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
@@ -60,7 +60,12 @@ export const inputDefaultStyle = (isValid?: boolean) => css`
   font-size: 1em;
   text-align: left;
   font-family: inherit;
-  box-shadow: inset ${({ theme }) => theme.shadow.primary};
+
+  ${hasValue &&
+  hasLabel &&
+  css`
+    padding-top: 10px;
+  `}
 
   transition: 0.2s ease-out;
 
@@ -114,13 +119,12 @@ export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }>
 
 InputLabel = styled(InputLabel)`
   position: absolute;
-  top: 16px;
-  left: 13px;
-  font-weight: var(--fontWeight-medium);
+  top: 17px;
+  left: 12px;
+  font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;
   transform-origin: left;
-  font-size: 12px;
 `
 
 export const InputValidIconContainer = styled(motion.div)`
