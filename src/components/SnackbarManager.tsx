@@ -82,8 +82,8 @@ const SnackbarPopup = styled(motion.div)`
   text-align: center;
   min-width: 200px;
   padding: var(--spacing-4) var(--spacing-3);
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: ${({ theme }) => theme.font.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
   box-shadow: var(--shadow-3);
 
@@ -92,7 +92,7 @@ const SnackbarPopup = styled(motion.div)`
   }
 
   &.info {
-    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
+    background-color: ${({ theme }) => theme.bg.primary};
   }
 
   &.success {

@@ -28,7 +28,7 @@ export const lightTheme: DefaultTheme = {
     hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
     accent: colord('#000').alpha(0.04).toRgbString(),
-    background1: '#121215'
+    background1: '#F0F0F0'
   },
   font: {
     primary: '#000',
@@ -39,7 +39,7 @@ export const lightTheme: DefaultTheme = {
     highlight: '#ffb800'
   },
   border: {
-    primary: '#ebebeb',
+    primary: 'rgba(31, 29, 26, 0.07)',
     secondary: '#f1f1f1'
   },
   shadow: {
