@@ -17,8 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { KeyboardEvent, ReactNode, useEffect, useRef } from 'react'
 import styled from 'styled-components'
+
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import useFocusOnMount from '@/hooks/useFocusOnMount'
+import { modalClosed, modalOpened } from '@/store/appSlice'
 
 export interface ModalContainerProps {
   onClose: () => void
@@ -29,40 +33,46 @@ export interface ModalContainerProps {
 }
 
 const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
+  const dispatch = useAppDispatch()
+  const visibleModals = useAppSelector((state) => state.app.visibleModals)
+  const modalRef = useFocusOnMount<HTMLDivElement>()
+  const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
+
+  const previouslyOpenedModal = visibleModals.at(-2)
+
   // Prevent body scroll on mount
   useEffect(() => {
     document.body.style.overflow = 'hidden'
+    dispatch(modalOpened(modalId.current))
+
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [])
+  }, [dispatch, modalId])
 
   // Handle escape key press
-  const handleEscapeKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress)
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress)
+  const handleEscapeKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      closeModal()
+      e.stopPropagation()
     }
-  }, [handleEscapeKeyPress, onClose])
+  }
+
+  const closeModal = () => {
+    onClose()
+    dispatch(modalClosed())
+
+    if (previouslyOpenedModal) document.getElementById(previouslyOpenedModal)?.focus()
+  }
 
   return (
-    <div className={className}>
+    <div className={className} onKeyDown={handleEscapeKeyPress} tabIndex={0} id={modalId.current} ref={modalRef}>
       <ModalBackdrop
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
-        onClick={onClose}
+        onClick={closeModal}
         focusMode={focusMode}
       />
       {children}
@@ -79,6 +89,10 @@ export default styled(ModalContainer)<{ hasPadding?: boolean }>`
   display: flex;
   padding: ${({ hasPadding }) => hasPadding && 'var(--spacing-4)'};
   z-index: 1;
+
+  &:focus {
+    outline: none;
+  }
 `
 
 export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: boolean }>`
