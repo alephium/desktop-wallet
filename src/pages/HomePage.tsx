@@ -45,7 +45,6 @@ const HomePage = () => {
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader />
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
@@ -71,6 +70,7 @@ const HomePage = () => {
           )}
         </FloatingPanel>
       </InteractionArea>
+      <AppHeader />
     </HomeContainer>
   )
 }
