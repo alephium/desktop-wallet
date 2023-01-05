@@ -39,10 +39,11 @@ import Spinner from '@/components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '@/components/Table'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import NewAddressModal from '@/modals/NewAddressModal'
+import { addressesPageInfoMessageClosed } from '@/store/appSlice'
 import { sortAddressList } from '@/utils/addresses'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
@@ -62,16 +63,19 @@ const AddressesPage = () => {
   const { t } = useTranslation('App')
   const navigate = useNavigate()
   const theme = useTheme()
+  const dispatch = useAppDispatch()
   const { addresses, generateOneAddressPerGroup } = useAddressesContext()
   const { isPassphraseUsed } = useGlobalContext()
-  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
+  const [activeWalletMnemonic, infoMessageClosed] = useAppSelector((s) => [
+    s.activeWallet.mnemonic,
+    s.app.addressesPageInfoMessageClosed
+  ])
   const discoverAndSaveActiveAddresses = useAddressDiscovery()
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
-  const [isInfoMessageVisible, setIsInfoMessageVisible] = useState(true)
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
@@ -82,6 +86,8 @@ const AddressesPage = () => {
       setIsAddressesGenerationModalOpen(true)
     }
   }
+
+  const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
 
   const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
 
@@ -101,8 +107,8 @@ const AddressesPage = () => {
           </div>
           <div>
             <AnimatePresence>
-              {isInfoMessageVisible && (
-                <InfoMessage link={links.faq} onClose={() => setIsInfoMessageVisible(false)}>
+              {!infoMessageClosed && (
+                <InfoMessage link={links.faq} onClose={closeInfoMessage}>
                   {t`Want to know more? Click here to take a look at our FAQ!`}
                 </InfoMessage>
               )}

@@ -32,11 +32,13 @@ const sliceName = 'app'
 interface AppState {
   loading: boolean
   visibleModals: string[]
+  addressesPageInfoMessageClosed: boolean
 }
 
 const initialState: AppState = {
   loading: false,
-  visibleModals: []
+  visibleModals: [],
+  addressesPageInfoMessageClosed: false
 }
 
 const appSlice = createSlice({
@@ -53,6 +55,9 @@ const appSlice = createSlice({
     },
     modalClosed: (state) => {
       state.visibleModals.pop()
+    },
+    addressesPageInfoMessageClosed: (state) => {
+      state.addressesPageInfoMessageClosed = true
     }
   },
   extraReducers(builder) {
@@ -74,7 +79,7 @@ const appSlice = createSlice({
   }
 })
 
-export const { appLoadingToggled, modalOpened, modalClosed } = appSlice.actions
+export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed } = appSlice.actions
 
 export default appSlice
 
