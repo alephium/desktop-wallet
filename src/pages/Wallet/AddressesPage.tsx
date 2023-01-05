@@ -16,55 +16,35 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dayjs from 'dayjs'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
-import ActionLink from '@/components/ActionLink'
-import AddressBadge from '@/components/AddressBadge'
-import AddressEllipsed from '@/components/AddressEllipsed'
-import Amount from '@/components/Amount'
-import Badge from '@/components/Badge'
+import AddressesTabContent from '@/components/AddressesTabContent'
+import ContactsTabContent from '@/components/ContactsTabContent'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
-import MainAddressLabel from '@/components/MainAddressLabel'
 import OperationBox from '@/components/OperationBox'
-import Spinner from '@/components/Spinner'
-import Table, { TableCell, TableFooter, TableProps, TableRow } from '@/components/Table'
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import TabBar, { TabItem } from '@/components/TabBar'
+import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { addressesPageInfoMessageClosed } from '@/store/appSlice'
-import { sortAddressList } from '@/utils/addresses'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
-const addressesTableHeaders: TableProps['headers'] = [
-  { title: 'Address', width: '96px' },
-  { title: 'Label', width: '100px' },
-  { title: 'Last used', width: '100px' },
-  { title: 'Transactions', width: '105px' },
-  { title: 'Group', width: '50px' },
-  { title: 'ALPH amount', align: 'end', width: '80px' }
-]
-
-const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
-
 const AddressesPage = () => {
   const { t } = useTranslation('App')
-  const navigate = useNavigate()
   const theme = useTheme()
   const dispatch = useAppDispatch()
-  const { addresses, generateOneAddressPerGroup } = useAddressesContext()
+  const { generateOneAddressPerGroup } = useAddressesContext()
   const { isPassphraseUsed } = useGlobalContext()
   const [activeWalletMnemonic, infoMessageClosed] = useAppSelector((s) => [
     s.activeWallet.mnemonic,
@@ -77,7 +57,11 @@ const AddressesPage = () => {
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
 
-  const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
+  const tabs = [
+    { value: 'addresses', label: t`Addresses`, component: <AddressesTabContent /> },
+    { value: 'contacts', label: t`Contacts`, component: <ContactsTabContent /> }
+  ]
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   const handleOneAddressPerGroupClick = () => {
     if (isPassphraseUsed) {
@@ -88,8 +72,6 @@ const AddressesPage = () => {
   }
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
-
-  const balanceSummary = addresses.reduce((acc, row) => acc + BigInt(row.details ? row.details.balance : 0), BigInt(0))
 
   useEffect(() => {
     ReactTooltip.rebuild()
@@ -115,50 +97,10 @@ const AddressesPage = () => {
             </AnimatePresence>
           </div>
         </Header>
-        <Table headers={addressesTableHeaders} minWidth="580px">
-          {sortAddressList(addresses).map((address) => (
-            <TableRow
-              key={address.hash}
-              columnWidths={tableColumnWidths}
-              role="row"
-              onClick={navigateToAddressDetailsPage(address.hash)}
-              onKeyPress={navigateToAddressDetailsPage(address.hash)}
-            >
-              <TableCellStyled role="cell" tabIndex={0}>
-                <AddressEllipsed addressHash={address.hash} />
-                {!isPassphraseUsed && address.settings.isMain && <MainAddressLabel />}
-              </TableCellStyled>
-              <TableCell role="cell" tabIndex={0}>
-                {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
-              </TableCell>
-              <TableCell role="cell" tabIndex={0}>
-                {address.lastUsed ? dayjs(address.lastUsed).fromNow() : '-'}
-              </TableCell>
-              <TableCell role="cell" tabIndex={0}>
-                {address.details?.txNumber ?? 0}
-              </TableCell>
-              <TableCell role="cell" tabIndex={0}>
-                {address.group}
-              </TableCell>
-              <TableCellAmount role="cell" tabIndex={0} align="end">
-                {address.transactions.pending.length > 0 && <Spinner size="12px" />}
-                <Amount value={BigInt(address.details?.balance ?? 0)} fadeDecimals />
-              </TableCellAmount>
-            </TableRow>
-          ))}
-          <TableFooterStyled>
-            <TableCell>
-              <ActionLink onClick={() => setIsGenerateNewAddressModalOpen(true)}>
-                + {t`Generate new address`}
-              </ActionLink>
-            </TableCell>
-            <Summary role="cell" tabIndex={0} align="end">
-              <Badge border>
-                <Amount value={balanceSummary} fadeDecimals />
-              </Badge>
-            </Summary>
-          </TableFooterStyled>
-        </Table>
+        <Tabs>
+          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+          <TabContent>{tabs.find((t) => t.value === currentTab.value)?.component}</TabContent>
+        </Tabs>
       </MainPanel>
       <AdvancedOperationsPanel>
         <AdvancedOperationsHeader>
@@ -241,14 +183,6 @@ const AddressesPage = () => {
 
 export default AddressesPage
 
-const TableFooterStyled = styled(TableFooter)`
-  grid-auto-columns: 1fr;
-`
-
-const Summary = styled(TableCell)`
-  color: ${({ theme }) => theme.font.highlight};
-`
-
 const Collapsable = styled(motion.div)`
   overflow: hidden;
   height: 0;
@@ -264,16 +198,6 @@ const AdvancedOperations = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
-`
-
-const TableCellAmount = styled(TableCell)`
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
-`
-
-const TableCellStyled = styled(TableCell)`
-  flex-direction: column;
 `
 
 const Panel = styled.div`
@@ -325,4 +249,14 @@ const AdvancedOperationsTitle = styled.h2`
 `
 const AdvancedOperationsToggle = styled(InlineLabelValueInput)`
   width: 370px;
+`
+
+const Tabs = styled.div``
+
+const TabContent = styled.div`
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border-radius: var(--radius-big);
+
+  padding: 30px 25px 45px 25px;
 `

@@ -16,8 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
-import { HTMLAttributes, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -27,96 +25,57 @@ export interface TabItem {
 }
 
 interface TabBarProps {
-  tabItems: TabItem[]
+  items: TabItem[]
   onTabChange: (tab: TabItem) => void
   activeTab: TabItem
+  className?: string
 }
 
-const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
+const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
   const { t } = useTranslation('App')
 
   return (
-    <Wrapper>
-      <TabBarContainer role="tablist" aria-label={t('Tab navigation')}>
-        <TabSelector
-          animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
-          transition={{ duration: 0.2 }}
-          style={{ width: `${100 / tabItems.length}%` }}
-        />
-        <TabBarContent>
-          {tabItems.map((i) => (
-            <TabContainer key={i.value}>
-              <TabStyled
-                onClick={() => onTabChange(i)}
-                onKeyPress={() => onTabChange(i)}
-                isActive={activeTab.value === i.value}
-              >
-                {i.label}
-              </TabStyled>
-            </TabContainer>
-          ))}
-        </TabBarContent>
-      </TabBarContainer>
-    </Wrapper>
+    <div className={className} role="tablist" aria-label={t`Tab navigation`}>
+      {items.map((item) => {
+        const isActive = activeTab.value === item.value
+
+        return (
+          <Tab
+            key={item.value}
+            onClick={() => onTabChange(item)}
+            onKeyPress={() => onTabChange(item)}
+            role="tab"
+            tabIndex={0}
+            aria-selected={isActive}
+            isActive={isActive}
+          >
+            {item.label}
+          </Tab>
+        )
+      })}
+    </div>
   )
 }
 
-export default TabBar
-
-const Wrapper = styled.div`
-  margin: var(--spacing-2) 0;
-  position: sticky;
-  top: 0;
-  background-color: ${({ theme }) => theme.bg.primary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-`
-
-const TabBarContainer = styled.div`
-  width: 100%;
-  border-radius: var(--radius);
-  height: 40px;
-`
-
-const TabBarContent = styled.div`
-  position: relative;
+export default styled(TabBar)`
+  margin-left: 22px;
   display: flex;
-  width: 100%;
-  height: 100%;
+  justify-content: flex-start;
+  gap: 10px;
 `
 
-const TabContainer = styled.div`
-  position: relative;
-  flex: 1;
-  display: flex;
-`
-
-const TabSelector = styled(motion.div)`
-  position: absolute;
-  bottom: 0;
-  height: 2px;
-  border-radius: var(--radius);
-  flex: 1;
-  background-color: ${({ theme }) => theme.global.accent};
-`
-
-interface TabProps extends HTMLAttributes<HTMLDivElement> {
-  isActive: boolean
-  children: ReactNode | ReactNode[]
-}
-
-const Tab = ({ isActive, children, ...props }: TabProps) => (
-  <div {...props} role="tab" tabIndex={0} aria-selected={isActive}>
-    {children}
-  </div>
-)
-
-const TabStyled = styled(Tab)`
-  flex: 1;
+const Tab = styled.div<{ isActive: boolean }>`
+  min-width: 50px;
   text-align: center;
-  padding: 8px;
-  color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
-  font-weight: var(--fontWeight-semiBold);
+  padding: 16px 36px;
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border-top-left-radius: var(--radius-big);
+  border-top-right-radius: var(--radius-big);
+  border-bottom: none;
   cursor: pointer;
+
+  color: ${({ isActive, theme }) => (isActive ? theme.font.primary : theme.font.tertiary)};
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : theme.bg.background1)};
 
   &:hover {
     color: ${({ theme }) => theme.font.primary};

@@ -46,7 +46,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
   return (
     <CenteredModal title={t`Settings`} onClose={onClose}>
       <PanelContentContainer>
-        <TabBar tabItems={tabsI18n} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+        <TabBar items={tabsI18n} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
         {tabsI18n.find((t) => t.value === currentTab.value)?.component}
         <Section>
           <VersionNumber>
