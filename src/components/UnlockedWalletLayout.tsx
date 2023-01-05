@@ -104,9 +104,8 @@ const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
         </WalletSidebar>
 
         <Scrollbar>
-          <MainContent initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-            {children}
-          </MainContent>
+          <MainContent>{children}</MainContent>
+
           <AppHeader>
             {networkStatus === 'online' && (
               <RefreshButton
@@ -152,7 +151,7 @@ const WalletSidebar = styled.div`
   background-color: ${({ theme }) => theme.bg.tertiary};
 `
 
-const MainContent = styled(motion.main)`
+const MainContent = styled.main`
   display: flex;
   flex-direction: column;
   flex-grow: 1;

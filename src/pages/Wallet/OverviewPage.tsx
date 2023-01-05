@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -32,7 +32,7 @@ const OverviewPage = () => {
   const { t } = useTranslation('App')
 
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       <OverviewPageHeader />
       <PageH2>{t`Transaction history`}</PageH2>
       <OverviewPageTransactionList onTransactionClick={setSelectedTransaction} />
@@ -45,7 +45,7 @@ const OverviewPage = () => {
           />
         )}
       </AnimatePresence>
-    </>
+    </motion.div>
   )
 }
 

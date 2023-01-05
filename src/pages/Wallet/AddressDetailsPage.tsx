@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -72,7 +72,7 @@ const AddressDetailsPage = () => {
   const goBack = () => navigate(-1)
 
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
@@ -195,7 +195,7 @@ const AddressDetailsPage = () => {
         )}
       </AnimatePresence>
       <Tooltip />
-    </>
+    </motion.div>
   )
 }
 

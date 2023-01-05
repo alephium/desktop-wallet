@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dayjs from 'dayjs'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -91,7 +91,7 @@ const AddressesPage = () => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       <PageTitleRow>
         <PageH1>{t`Addresses`}</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
@@ -204,7 +204,7 @@ const AddressesPage = () => {
           />
         )}
       </AnimatePresence>
-    </>
+    </motion.div>
   )
 }
 

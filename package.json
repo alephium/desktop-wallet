@@ -79,7 +79,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "events": "^3.3.0",
-    "framer-motion": "^4.1.17",
+    "framer-motion": "^5.6.0",
     "i18next": "^21.8.10",
     "i18next-resources-to-backend": "^1.0.0",
     "jsdom": "^20.0.3",

@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimateSharedLayout } from 'framer-motion'
 import { Route, Routes } from 'react-router-dom'
 
 import HomePage from '@/pages/HomePage'
@@ -26,14 +25,12 @@ import ImportWalletRoutes from './ImportWalletRoutes'
 import UnlockedWalletRoutes from './UnlockedWalletRoutes'
 
 const Router = () => (
-  <AnimateSharedLayout type="crossfade">
-    <Routes>
-      <Route path="/create/:step" element={<CreateWalletRoutes />} />
-      <Route path="/import/:step" element={<ImportWalletRoutes />} />
-      <Route path="/wallet/*" element={<UnlockedWalletRoutes />} />
-      <Route path="" element={<HomePage />} />
-    </Routes>
-  </AnimateSharedLayout>
+  <Routes>
+    <Route path="/create/:step" element={<CreateWalletRoutes />} />
+    <Route path="/import/:step" element={<ImportWalletRoutes />} />
+    <Route path="/wallet/*" element={<UnlockedWalletRoutes />} />
+    <Route path="" element={<HomePage />} />
+  </Routes>
 )
 
 export default Router
