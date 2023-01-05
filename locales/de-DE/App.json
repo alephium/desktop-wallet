@@ -138,11 +138,6 @@
   "Received": "Empfangen",
   "Receive": "Empfangen",
   "To": "An",
-  "Addresses": "Adressen",
-  "Generate new address": "Neue Adresse generieren",
-  "Advanced management": "Erweiterte Verwaltung",
-  "Show operations": "Vorgänge anzeigen",
-  "Hide operations": "Vorgänge ausblenden",
   "Consolidate (merge) your UTXOs into one.": "Ihre UTXOs in einem konsolidieren (zusammenführen).",
   "Start": "Starten",
   "Generate one address per group": "Eine Adresse pro Gruppe generieren",
@@ -194,7 +189,6 @@
   "Your Wallet": "Ihre Brieftasche",
   "Your address": "Ihre Adresse",
   "I've copied the words, continue": "Ich habe die Worte kopiert, fahren Sie fort",
-  "Advanced operations reserved to more experienced users. A \"normal\" user should not need to use them very often, if not at all.": "Fortgeschrittene Operationen, die erfahreneren Benutzern vorbehalten sind. Ein \"normaler\" Benutzer sollte sie nicht sehr oft, wenn überhaupt, verwenden müssen.",
   "It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.": "Es scheint, dass Ihre Brieftasche zu viele UTXOs hat, um diese Transaktion senden zu können. Bitte konsolidieren (fusionieren) Sie zunächst Ihre UTXOs. Dies wird eine kleine Gebühr kosten.",
   "Welcome!": "Willkommen!",
   "Welcome back!": "Willkommen zurück!",
@@ -273,5 +267,12 @@
   "Export wallet": "Export wallet",
   "Type your password to export your wallet.": "Type your password to export your wallet.",
   "Show QR code": "Show QR code",
-  "Scan this QR code with your mobile wallet.": "Scan this QR code with your mobile wallet."
+  "Scan this QR code with your mobile wallet.": "Scan this QR code with your mobile wallet.",
+  "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.": "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.",
+  "Want to know more? Click here to take a look at our FAQ!": "Want to know more? Click here to take a look at our FAQ!",
+  "Addresses & contacts": "Adressen & Kontakte",
+  "Contacts": "Kontakte",
+  "Advanced operations": "Advanced operations",
+  "Show advanced operations": "Show advanced operations",
+  "Open the advanced feature panel.": "Open the advanced feature panel."
 }

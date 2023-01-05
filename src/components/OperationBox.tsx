@@ -76,9 +76,9 @@ const OperationBox = ({
 
 export default styled(OperationBox)`
   padding: var(--spacing-3) var(--spacing-5);
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius);
+  background-color: ${({ theme }) => theme.bg.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-huge);
   max-width: 228px;
   display: flex;
   flex-direction: column;

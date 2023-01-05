@@ -138,11 +138,6 @@
   "Received": "Đã nhận",
   "Receive": "Nhận",
   "To": "Đến",
-  "Addresses": "Các địa chỉ ví",
-  "Generate new address": "Tạo địa chỉ ví mới",
-  "Advanced management": "Quản lý nâng cao",
-  "Show operations": "Hiện các thao tác",
-  "Hide operations": "Ẩn các thao tác",
   "Consolidate (merge) your UTXOs into one.": "Hợp nhất (merge) UTXOs của bạn.",
   "Start": "Bắt đầu",
   "Generate one address per group": "Tạo một địa chỉ trên một group",
@@ -194,7 +189,6 @@
   "Your Wallet": "Ví của bạn",
   "Your address": "Địa chỉ ví của bạn",
   "I've copied the words, continue": "Tôi đã sao chép các cụm từ khôi phục, tiếp tục",
-  "Advanced operations reserved to more experienced users. A \"normal\" user should not need to use them very often, if not at all.": "Các thao tác nâng cao được dành riêng để cải thiện thêm về trải nghiệm người dùng. Nếu bạn là một người dùng \"bình thường\", chúng tối không khuyến khích bạn sử dụng các tính năng nâng cao này thường xuyên.",
   "It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.": "Ví của bạn có quá nhiều các UTXOs để có thể thực hiện được giao dịch. Vui lòng hợp nhất (merge) các UTXOs. Thao tác này sẽ cần một ít phí.",
   "Welcome!": "Chào mừng!",
   "Welcome back!": "Chào mừng bạn quay trở lại!",
@@ -273,5 +267,12 @@
   "Export wallet": "Export wallet",
   "Type your password to export your wallet.": "Type your password to export your wallet.",
   "Show QR code": "Show QR code",
-  "Scan this QR code with your mobile wallet.": "Scan this QR code with your mobile wallet."
+  "Scan this QR code with your mobile wallet.": "Scan this QR code with your mobile wallet.",
+  "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.": "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.",
+  "Want to know more? Click here to take a look at our FAQ!": "Want to know more? Click here to take a look at our FAQ!",
+  "Addresses & contacts": "Addresses & contacts",
+  "Contacts": "Contacts",
+  "Advanced operations": "Advanced operations",
+  "Show advanced operations": "Show advanced operations",
+  "Open the advanced feature panel.": "Open the advanced feature panel."
 }

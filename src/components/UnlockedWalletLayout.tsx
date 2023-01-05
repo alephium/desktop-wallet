@@ -156,11 +156,10 @@ const MainContent = styled.main`
   flex-direction: column;
   flex-grow: 1;
 
-  padding: 56px;
   padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
 
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.background1};
 `
 
 const SideNavigation = styled.nav`
