@@ -93,7 +93,7 @@ const App = () => {
 
       <SnackbarManager message={snackbarMessage} />
 
-      <Tooltip />
+      <Tooltip place="right" />
 
       {isUpdateWalletModalVisible && (
         <UpdateWalletModal
