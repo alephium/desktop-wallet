@@ -20,6 +20,8 @@ import { motion } from 'framer-motion'
 import { ReactNode, useState } from 'react'
 import styled from 'styled-components'
 
+import { fastTransition } from '@/animations'
+
 import Toggle from './Inputs/Toggle'
 
 interface ToggleSectionProps {
@@ -49,7 +51,7 @@ const ToggleSection = ({ title, onClick = () => null, children, className }: Tog
           opacity: isShown ? 1 : 0,
           visibility: isShown ? 'visible' : 'hidden'
         }}
-        transition={{ duration: 0.2 }}
+        {...fastTransition}
       >
         <Children>{children}</Children>
       </Content>

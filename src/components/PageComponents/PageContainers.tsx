@@ -20,6 +20,7 @@ import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
 import { FC } from 'react'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import { deviceBreakPoints } from '@/style/globalStyles'
 
 interface MainPanelProps {
@@ -62,7 +63,7 @@ export const sectionChildrenVariants: Variants = {
 }
 
 export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => (
-  <StyledFloatingPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+  <StyledFloatingPanel {...fadeIn} {...props}>
     {children}
   </StyledFloatingPanel>
 )

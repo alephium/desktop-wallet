@@ -19,6 +19,7 @@ import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import styled from 'styled-components'
 
+import { fadeInOutBottomFast } from '@/animations'
 import ModalContainer from '@/modals/ModalContainer'
 
 interface PopupProps {
@@ -29,14 +30,7 @@ interface PopupProps {
 
 const Popup = ({ children, onBackgroundClick, title }: PopupProps) => (
   <ModalContainer onClose={onBackgroundClick}>
-    <Content
-      onClick={(e) => e.stopPropagation()}
-      role="dialog"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-    >
+    <Content onClick={(e) => e.stopPropagation()} role="dialog" {...fadeInOutBottomFast}>
       {title && (
         <Header>
           <h2>{title}</h2>

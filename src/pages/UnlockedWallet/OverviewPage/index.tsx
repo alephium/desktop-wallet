@@ -21,6 +21,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { fadeIn } from '@/animations'
 import { PageH2 } from '@/components/PageComponents/PageHeadings'
 import { Address } from '@/contexts/addresses'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
@@ -33,7 +34,7 @@ const OverviewPage = () => {
   const { t } = useTranslation('App')
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+    <motion.div {...fadeIn}>
       <Header />
       <PageH2>{t`Transaction history`}</PageH2>
       <TransactionList onTransactionClick={setSelectedTransaction} />

@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { sortAddressList } from '@/utils/addresses'
 
@@ -35,7 +36,7 @@ const AddressesTabContent = () => {
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+    <motion.div {...fadeIn}>
       <Addresses>
         {sortAddressList(addresses).map((address) => (
           <AddressCard

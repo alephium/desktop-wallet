@@ -24,6 +24,7 @@ import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeInSlowly } from '@/animations'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
@@ -64,12 +65,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayout> = ({ children, className })
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className={className}
-      >
+      <motion.div {...fadeInSlowly} className={className}>
         <WalletSidebar>
           <CurrentWalletInitials
             onClick={() => setIsNotificationsModalOpen(true)}

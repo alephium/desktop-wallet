@@ -21,6 +21,8 @@ import { ChevronDown } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
+import { fastTransition } from '@/animations'
+
 import InputArea from './Inputs/InputArea'
 import { Section } from './PageComponents/PageContainers'
 
@@ -86,7 +88,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
         <ContentWrapper
           onAnimationComplete={() => setIsVisible(isExpanded)}
           animate={{ height: isExpanded ? 'auto' : 0 }}
-          transition={{ duration: 0.2 }}
+          {...fastTransition}
         >
           <Content>
             <Section align="stretch">{children}</Section>

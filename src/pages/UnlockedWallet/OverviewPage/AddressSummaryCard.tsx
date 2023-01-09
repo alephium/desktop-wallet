@@ -21,6 +21,7 @@ import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
+import { fastTransition } from '@/animations'
 import { Address } from '@/contexts/addresses'
 
 import AddressBadge from '../../../components/AddressBadge'
@@ -54,7 +55,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       className={className}
       initial={{ x: collapsedPosition - 20 }}
       animate={{ x: collapsedPosition }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+      {...fastTransition}
     >
       <InputAreaStyled onInput={onInput} clickable={clickable}>
         <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">

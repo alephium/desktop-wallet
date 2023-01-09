@@ -18,10 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 
-const ContactsTabContent = () => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-    Contacts
-  </motion.div>
-)
+import { fadeIn } from '@/animations'
+
+const ContactsTabContent = () => <motion.div {...fadeIn}>Contacts</motion.div>
 
 export default ContactsTabContent

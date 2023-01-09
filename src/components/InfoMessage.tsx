@@ -21,6 +21,7 @@ import { Info, X } from 'lucide-react'
 import { FC, MouseEvent } from 'react'
 import styled, { css } from 'styled-components'
 
+import { fadeOutFast } from '@/animations'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface InfoMessageProps {
@@ -38,12 +39,7 @@ const InfoMessage: FC<InfoMessageProps> = ({ link, onClose, className, children 
   }
 
   return (
-    <motion.div
-      className={className}
-      onClick={handleClick}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-    >
+    <motion.div className={className} onClick={handleClick} {...fadeOutFast}>
       <InfoIcon size={27} />
 
       <div>{children}</div>

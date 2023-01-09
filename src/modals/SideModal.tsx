@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
+import { fastTransition } from '@/animations'
 import Scrollbar from '@/components/Scrollbar'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
 
@@ -33,13 +34,7 @@ const SideModal = ({ onClose, children, label }: SideModalProps) => {
 
   return (
     <ModalContainer onClose={onClose}>
-      <Sidebar
-        role="dialog"
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
+      <Sidebar role="dialog" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} {...fastTransition}>
         <Scrollbar>
           <div ref={elRef} tabIndex={0} aria-label={label}>
             {children}

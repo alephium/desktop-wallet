@@ -22,6 +22,7 @@ import { FC, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import { fadeInOutBottomFast } from '@/animations'
 import Button from '@/components/Button'
 import { Section } from '@/components/PageComponents/PageContainers'
 import PanelTitle, { TitleContainer } from '@/components/PageComponents/PanelTitle'
@@ -55,14 +56,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
-      <CenteredBox
-        role="dialog"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        narrow={narrow}
-      >
+      <CenteredBox role="dialog" {...fadeInOutBottomFast} narrow={narrow}>
         <ModalHeader contrast={!!header}>
           <TitleRow>
             <PanelTitle smaller useLayoutId={false}>

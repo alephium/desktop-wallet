@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
+import { fadeIn, fastTransition } from '@/animations'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
@@ -81,7 +82,7 @@ const AddressesPage = () => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+    <motion.div {...fadeIn}>
       <MainPanel>
         <Header>
           <div>
@@ -124,7 +125,7 @@ const AddressesPage = () => {
             opacity: isAdvancedSectionOpen ? 1 : 0,
             visibility: isAdvancedSectionOpen ? 'visible' : 'hidden'
           }}
-          transition={{ duration: 0.2 }}
+          {...fastTransition}
         >
           <AdvancedOperations>
             <OperationBox

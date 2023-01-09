@@ -23,6 +23,7 @@ import { useDetectClickOutside } from 'react-detect-click-outside'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeInOut } from '@/animations'
 import { inputDefaultStyle, InputProps } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { getRandomLabelColor, labelColorPalette } from '@/utils/colors'
@@ -51,7 +52,7 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
       </InputAreaStyled>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isPopupOpen && (
-          <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <Popup {...fadeInOut}>
             <TwitterPickerStyled
               color={color}
               onChangeComplete={onChangeComplete}

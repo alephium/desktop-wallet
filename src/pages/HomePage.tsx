@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
+import { fadeInSlowly } from '@/animations'
 import ActionLink from '@/components/ActionLink'
 import AppHeader from '@/components/AppHeader'
 import Button from '@/components/Button'
@@ -44,7 +45,7 @@ const HomePage = () => {
   const displayInitialActions = () => setShowInitialActions(true)
 
   return (
-    <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+    <HomeContainer {...fadeInSlowly}>
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
