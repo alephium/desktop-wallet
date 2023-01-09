@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createContext, FC, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 
 import { TxType } from '@/types/transactions'
 

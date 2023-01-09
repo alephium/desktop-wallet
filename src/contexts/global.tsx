@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
-import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 

@@ -45,7 +45,7 @@ const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps)
   return (
     <ExternalLink
       className={className}
-      data-tip={t`Open in explorer`}
+      data-tooltip-content={t`Open in explorer`}
       size={15}
       onClick={handleShowInExplorer}
       onKeyPress={handleShowInExplorer}

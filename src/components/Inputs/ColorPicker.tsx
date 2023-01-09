@@ -50,7 +50,7 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
       <InputAreaStyled aria-label={t`Pick a color`} onInput={handlePopupOpen}>
         <Circle color={color} />
       </InputAreaStyled>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence mode="wait" initial={true}>
         {isPopupOpen && (
           <Popup {...fadeInOut}>
             <TwitterPickerStyled

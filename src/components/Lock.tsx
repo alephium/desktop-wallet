@@ -36,7 +36,9 @@ const Lock = ({ unlockAt, className }: LockProps) => {
   return (
     <span
       className={className}
-      data-tip={`${lockTimeInPast ? t`Unlocked at` : t`Unlocks at`} ${dayjs(unlockAt).format('DD/MM/YYYY hh:mm A')}`}
+      data-tooltip-content={`${lockTimeInPast ? t`Unlocked at` : t`Unlocks at`} ${dayjs(unlockAt).format(
+        'DD/MM/YYYY hh:mm A'
+      )}`}
     >
       {lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}
     </span>

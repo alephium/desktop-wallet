@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Info, X } from 'lucide-react'
-import { FC, MouseEvent } from 'react'
+import { MouseEvent } from 'react'
 import styled, { css } from 'styled-components'
 
 import { fadeOutFast } from '@/animations'

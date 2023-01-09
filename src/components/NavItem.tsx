@@ -46,7 +46,7 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
   return (
     <Button
       aria-label={label}
-      data-tip={label}
+      data-tooltip-content={label}
       onClick={handleClick}
       Icon={Icon}
       borderless={!isActive}

@@ -73,7 +73,7 @@ const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
   const clipboard = !hasBeenCopied ? (
-    <ClipboardWrapper data-tip={tipText ?? t`Copy to clipboard`}>
+    <ClipboardWrapper data-tooltip-content={tipText ?? t`Copy to clipboard`}>
       <Copy
         className={`${className} clipboard`}
         size={15}
@@ -85,7 +85,7 @@ const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y
       />
     </ClipboardWrapper>
   ) : (
-    <ClipboardWrapper className={className} data-tip={t`Copied`}>
+    <ClipboardWrapper className={className} data-tooltip-content={t`Copied`}>
       <Check className={`${className} check`} size={15} />
     </ClipboardWrapper>
   )

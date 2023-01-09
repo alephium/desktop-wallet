@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
-import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 

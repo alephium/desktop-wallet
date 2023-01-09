@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
-import { FC } from 'react'
 import styled from 'styled-components'
 
 interface ActionLinkProps {

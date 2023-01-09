@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, WifiOff } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -85,7 +85,7 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
         <HeaderDivider />
         {networkStatus === 'offline' && (
           <>
-            <OfflineIcon data-tip={offlineText} tabIndex={0} aria-label={offlineText}>
+            <OfflineIcon data-tooltip-content={offlineText} tabIndex={0} aria-label={offlineText}>
               <WifiOff size={20} color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary} />
             </OfflineIcon>
             <HeaderDivider />
@@ -102,12 +102,12 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
           onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
           IconOn={EyeOff}
           IconOff={Eye}
-          data-tip={t`Discreet mode`}
+          data-tooltip-content={t`Discreet mode`}
         />
         {mainAddress && !isPassphraseUsed && (
           <>
             <HeaderDivider />
-            <AddressBadge address={mainAddress} data-tip={t`Default address`} />
+            <AddressBadge address={mainAddress} data-tooltip-content={t`Default address`} />
           </>
         )}
         <HeaderDivider />
@@ -120,7 +120,7 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
               squared
               onClick={() => setIsWalletConnectModalOpen(true)}
               aria-label="WalletConnect"
-              data-tip="Connect wallet to dApp"
+              data-tooltip-content="Connect wallet to dApp"
             >
               <img src={walletConnectIcon} style={{ width: '100%' }} />
             </Button>

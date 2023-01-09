@@ -21,7 +21,7 @@ import './i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
 import { StrictMode, Suspense } from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
@@ -36,7 +36,10 @@ import { store } from './store/store'
 import { GlobalStyle } from './style/globalStyles'
 import { lightTheme } from './style/themes'
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById('root')!)
+
+root.render(
   <StrictMode>
     <Provider store={store}>
       <Router>
@@ -56,8 +59,7 @@ ReactDOM.render(
         </ThemeProvider>
       </Router>
     </Provider>
-  </StrictMode>,
-  document.getElementById('root')
+  </StrictMode>
 )
 
 //

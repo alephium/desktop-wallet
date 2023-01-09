@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Used as reference: https://github.com/xobotyi/react-scrollbars-custom/issues/46#issuecomment-897506147
 
-import React, { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
+import { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'

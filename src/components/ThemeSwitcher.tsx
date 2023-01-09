@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Moon, Sun } from 'lucide-react'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGlobalContext } from '@/contexts/global'

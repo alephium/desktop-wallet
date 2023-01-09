@@ -19,10 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
@@ -55,10 +54,6 @@ const AddressDetailsPage = () => {
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
   const address = getAddress(addressHash)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [address?.transactions.pending, address?.transactions.confirmed])
 
   if (!address) return null
 
@@ -181,7 +176,7 @@ const AddressDetailsPage = () => {
           </TableRow>
         )}
       </Table>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence mode="wait" initial={true}>
         {isAddressOptionsModalOpen && (
           <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}

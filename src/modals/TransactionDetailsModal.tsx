@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { addApostrophes } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 

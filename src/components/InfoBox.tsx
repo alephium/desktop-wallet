@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { FC } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from './PageComponents/PageContainers'

@@ -18,9 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import { fadeIn } from '@/animations'
@@ -77,10 +76,6 @@ const AddressesPage = () => {
   }
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [])
 
   if (!activeWalletMnemonic) return null
 
@@ -170,7 +165,7 @@ const AddressesPage = () => {
           />
         </AdvancedOperationsHeader>
       </AdvancedOperationsPanel>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence mode="wait" initial={true}>
         {isGenerateNewAddressModalOpen && (
           <NewAddressModal
             singleAddress

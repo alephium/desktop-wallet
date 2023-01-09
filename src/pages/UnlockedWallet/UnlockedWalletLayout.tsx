@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Album, ArrowLeftRight, FileCode, Layers, RefreshCw, Settings, TerminalSquare } from 'lucide-react'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -92,7 +92,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
             squared
             onClick={() => setIsSettingsModalOpen(true)}
             aria-label={t`Settings`}
-            data-tip={t`Settings`}
+            data-tooltip-content={t`Settings`}
           >
             <Settings />
           </Button>
@@ -109,7 +109,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
                 onClick={refreshAddressesData}
                 disabled={isLoadingData}
                 aria-label={t`Refresh`}
-                data-tip={t`Refresh data`}
+                data-tooltip-content={t`Refresh data`}
               >
                 {isLoadingData ? <Spinner /> : <RefreshCw />}
               </RefreshButton>
@@ -117,7 +117,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
           </AppHeader>
         </Scrollbar>
       </motion.div>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence mode="wait" initial={true}>
         {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
         {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
         {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
