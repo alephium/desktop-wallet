@@ -150,11 +150,8 @@ const WalletSidebar = styled.div`
 const MainContent = styled.main`
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-
   padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
-
   background-color: ${({ theme }) => theme.bg.background1};
 `
 

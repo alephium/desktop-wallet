@@ -23,18 +23,21 @@ import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
-import { fadeIn, fastTransition } from '@/animations'
+import { fadeIn } from '@/animations'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
+import Scrollbar from '@/components/Scrollbar'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import AddressSweepModal from '@/modals/AddressSweepModal'
+import BottomModal from '@/modals/BottomModal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { addressesPageInfoMessageClosed } from '@/store/appSlice'
+import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
@@ -82,29 +85,76 @@ const AddressesPage = () => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <motion.div {...fadeIn}>
-      <MainPanel>
-        <Header>
-          <div>
-            <Title>{t`Addresses & contacts`}</Title>
-            <Subtitle>{t`Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.`}</Subtitle>
-          </div>
-          <div>
-            <AnimatePresence>
-              {!infoMessageClosed && (
-                <InfoMessage link={links.faq} onClose={closeInfoMessage}>
-                  {t`Want to know more? Click here to take a look at our FAQ!`}
-                </InfoMessage>
-              )}
-            </AnimatePresence>
-          </div>
-        </Header>
-        <Tabs>
-          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-          <TabContent>{tabs.find((t) => t.value === currentTab.value)?.component}</TabContent>
-        </Tabs>
-      </MainPanel>
+    <ScreenHeight {...fadeIn}>
+      <Scrollbar>
+        <MainPanel>
+          <Header>
+            <div>
+              <Title>{t`Addresses & contacts`}</Title>
+              <Subtitle>{t`Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.`}</Subtitle>
+            </div>
+            <div>
+              <AnimatePresence>
+                {!infoMessageClosed && (
+                  <InfoMessage link={links.faq} onClose={closeInfoMessage}>
+                    {t`Want to know more? Click here to take a look at our FAQ!`}
+                  </InfoMessage>
+                )}
+              </AnimatePresence>
+            </div>
+          </Header>
+          <Tabs>
+            <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+            <TabContent>{tabs.find((t) => t.value === currentTab.value)?.component}</TabContent>
+          </Tabs>
+        </MainPanel>
+      </Scrollbar>
       <AdvancedOperationsPanel>
+        <AnimatePresence>
+          {isAdvancedSectionOpen && (
+            <BottomModalStyled
+              onClose={() => setIsAdvancedSectionOpen(false)}
+              label={t`Advanced operations`}
+              // TODO: Is there a better way than passing a hardcoded height?
+              contentHeight={344}
+            >
+              <AdvancedOperations>
+                <OperationBox
+                  title={t`Consolidate UTXOs`}
+                  Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
+                  description={t`Consolidate (merge) your UTXOs into one.`}
+                  buttonText={t`Start`}
+                  onButtonClick={() => setIsConsolidationModalOpen(true)}
+                  infoLink={links.utxoConsolidation}
+                />
+                <OperationBox
+                  title={t`Generate one address per group`}
+                  Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
+                  description={t`Useful for miners or DeFi use.`}
+                  buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
+                  onButtonClick={handleOneAddressPerGroupClick}
+                  infoLink={links.miningWallet}
+                />
+                <OperationBox
+                  title={t`Discover active addresses`}
+                  Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
+                  description={t`Scan the blockchain for addresses you used in the past.`}
+                  buttonText={t`Search`}
+                  onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
+                  infoLink={links.miningWallet}
+                />
+                <OperationBox
+                  placeholder
+                  title={t`More to come...`}
+                  Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
+                  description={t`You have great ideas you want to share?`}
+                  buttonText={t`Tell us!`}
+                  onButtonClick={() => openInWebBrowser(links.discord)}
+                />
+              </AdvancedOperations>
+            </BottomModalStyled>
+          )}
+        </AnimatePresence>
         <AdvancedOperationsHeader>
           <AdvancedOperationsTitle>{t`Advanced operations`}</AdvancedOperationsTitle>
           <AdvancedOperationsToggle
@@ -119,49 +169,6 @@ const AddressesPage = () => {
             }
           />
         </AdvancedOperationsHeader>
-        <Collapsable
-          animate={{
-            height: isAdvancedSectionOpen ? 'auto' : 0,
-            opacity: isAdvancedSectionOpen ? 1 : 0,
-            visibility: isAdvancedSectionOpen ? 'visible' : 'hidden'
-          }}
-          {...fastTransition}
-        >
-          <AdvancedOperations>
-            <OperationBox
-              title={t`Consolidate UTXOs`}
-              Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
-              description={t`Consolidate (merge) your UTXOs into one.`}
-              buttonText={t`Start`}
-              onButtonClick={() => setIsConsolidationModalOpen(true)}
-              infoLink={links.utxoConsolidation}
-            />
-            <OperationBox
-              title={t`Generate one address per group`}
-              Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
-              description={t`Useful for miners or DeFi use.`}
-              buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
-              onButtonClick={handleOneAddressPerGroupClick}
-              infoLink={links.miningWallet}
-            />
-            <OperationBox
-              title={t`Discover active addresses`}
-              Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
-              description={t`Scan the blockchain for addresses you used in the past.`}
-              buttonText={t`Search`}
-              onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
-              infoLink={links.miningWallet}
-            />
-            <OperationBox
-              placeholder
-              title={t`More to come...`}
-              Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
-              description={t`You have great ideas you want to share?`}
-              buttonText={t`Tell us!`}
-              onButtonClick={() => openInWebBrowser(links.discord)}
-            />
-          </AdvancedOperations>
-        </Collapsable>
       </AdvancedOperationsPanel>
       <AnimatePresence exitBeforeEnter initial={true}>
         {isGenerateNewAddressModalOpen && (
@@ -179,27 +186,16 @@ const AddressesPage = () => {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </ScreenHeight>
   )
 }
 
 export default AddressesPage
 
-const Collapsable = styled(motion.div)`
-  overflow: hidden;
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
-`
+const advancedOperationsHeaderHeightPx = 80
 
-const AdvancedOperations = styled.div`
-  border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  padding: 26px 30px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
+const ScreenHeight = styled(motion.div)`
+  height: calc(100vh - ${appHeaderHeightPx}px);
 `
 
 const Panel = styled.div`
@@ -208,13 +204,7 @@ const Panel = styled.div`
 `
 
 const MainPanel = styled(Panel)`
-  padding-bottom: 30px;
-`
-
-const AdvancedOperationsPanel = styled(Panel)`
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border-top: 1px solid ${({ theme }) => theme.border.secondary};
+  padding-bottom: 130px;
 `
 
 const Header = styled.div`
@@ -237,10 +227,37 @@ const Subtitle = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
 `
 
-const AdvancedOperationsHeader = styled.div`
+const AdvancedOperationsPanel = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: ${({ theme }) => theme.bg.background1};
+`
+
+const BottomModalStyled = styled(BottomModal)`
+  left: ${walletSidebarWidthPx}px;
+  bottom: ${advancedOperationsHeaderHeightPx}px;
+`
+
+const AdvancedOperations = styled(Panel)`
+  background-color: ${({ theme }) => theme.bg.background1};
+
+  padding-top: 26px;
+  padding-bottom: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+`
+
+const AdvancedOperationsHeader = styled(Panel)`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: ${advancedOperationsHeaderHeightPx}px;
+  border-top: 1px solid ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.bg.background1};
+  position: relative;
+  z-index: 1;
 `
 
 const AdvancedOperationsTitle = styled.h2`
@@ -251,6 +268,7 @@ const AdvancedOperationsTitle = styled.h2`
 `
 const AdvancedOperationsToggle = styled(InlineLabelValueInput)`
   width: 370px;
+  padding: 0;
 `
 
 const Tabs = styled.div``
