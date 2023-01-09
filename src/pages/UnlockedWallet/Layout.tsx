@@ -36,13 +36,13 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { TxType } from '@/types/transactions'
 import { getInitials } from '@/utils/misc'
 
-import AppHeader from './AppHeader'
-import Button from './Button'
-import NavItem from './NavItem'
-import Scrollbar from './Scrollbar'
-import Spinner from './Spinner'
+import AppHeader from '../../components/AppHeader'
+import Button from '../../components/Button'
+import NavItem from '../../components/NavItem'
+import Scrollbar from '../../components/Scrollbar'
+import Spinner from '../../components/Spinner'
 
-interface WalletLayout {
+interface UnlockedWalletLayout {
   className?: string
 }
 
@@ -51,7 +51,7 @@ dayjs.extend(relativeTime)
 // This shall be removed once v2.0.0 is released
 const hideContractButtons = true
 
-const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayout> = ({ children, className }) => {
   const { t } = useTranslation('App')
   const { networkStatus, activeWalletName } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
@@ -133,7 +133,7 @@ const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
   )
 }
 
-export default styled(WalletLayout)`
+export default styled(UnlockedWalletLayout)`
   display: flex;
   width: 100%;
   height: 100%;

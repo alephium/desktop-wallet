@@ -23,8 +23,8 @@ import styled, { css } from 'styled-components'
 
 import { openInWebBrowser } from '@/utils/misc'
 
-import ActionLink from './ActionLink'
-import Button from './Button'
+import ActionLink from '../../../components/ActionLink'
+import Button from '../../../components/Button'
 
 interface OperationBoxProps {
   title: string

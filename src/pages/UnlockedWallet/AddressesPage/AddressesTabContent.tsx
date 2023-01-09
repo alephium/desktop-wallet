@@ -25,7 +25,7 @@ import styled from 'styled-components'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { sortAddressList } from '@/utils/addresses'
 
-import AddressEllipsed from './AddressEllipsed'
+import AddressEllipsed from '../../../components/AddressEllipsed'
 
 const AddressesTabContent = () => {
   const navigate = useNavigate()

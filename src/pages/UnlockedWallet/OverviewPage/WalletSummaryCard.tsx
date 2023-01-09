@@ -26,7 +26,7 @@ import { useGlobalContext } from '@/contexts/global'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
 import { currencies } from '@/utils/currencies'
 
-import Amount from './Amount'
+import Amount from '../../../components/Amount'
 
 interface WalletSummaryCardProps {
   isLoading?: boolean

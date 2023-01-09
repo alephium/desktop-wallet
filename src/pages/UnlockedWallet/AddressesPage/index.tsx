@@ -23,12 +23,9 @@ import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
-import AddressesTabContent from '@/components/AddressesTabContent'
-import ContactsTabContent from '@/components/ContactsTabContent'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
-import OperationBox from '@/components/OperationBox'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
@@ -39,6 +36,10 @@ import NewAddressModal from '@/modals/NewAddressModal'
 import { addressesPageInfoMessageClosed } from '@/store/appSlice'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
+
+import AddressesTabContent from './AddressesTabContent'
+import ContactsTabContent from './ContactsTabContent'
+import OperationBox from './OperationBox'
 
 const AddressesPage = () => {
   const { t } = useTranslation('App')

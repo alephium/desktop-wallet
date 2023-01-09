@@ -20,11 +20,11 @@ import AppHeader from '@/components/AppHeader'
 import FloatingLogo from '@/components/FloatingLogo'
 import { StepsContextProvider } from '@/contexts/steps'
 import { WalletContextProvider } from '@/contexts/wallet'
-import CheckWordsIntroPage from '@/pages/WalletManagement/CheckWordsIntroPage'
-import CheckWordsPage from '@/pages/WalletManagement/CheckWordsPage'
-import CreateWalletPage from '@/pages/WalletManagement/CreateWalletPage'
-import WalletWelcomePage from '@/pages/WalletManagement/WalletWelcomePage'
-import WalletWordsPage from '@/pages/WalletManagement/WalletWordsPage'
+import CheckWordsIntroPage from '@/pages/NewWallet/CheckWordsIntroPage'
+import CheckWordsPage from '@/pages/NewWallet/CheckWordsPage'
+import CreateWalletPage from '@/pages/NewWallet/CreateWalletPage'
+import WalletWelcomePage from '@/pages/NewWallet/WalletWelcomePage'
+import WalletWordsPage from '@/pages/NewWallet/WalletWordsPage'
 
 const CreateWalletRoutes = () => {
   const createWalletSteps: JSX.Element[] = [
