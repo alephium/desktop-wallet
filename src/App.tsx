@@ -24,16 +24,18 @@ import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
 import styled, { ThemeProvider } from 'styled-components'
 
+import AppSpinner from './components/AppSpinner'
+import { CenteredSection } from './components/PageComponents/PageContainers'
 import SnackbarManager from './components/SnackbarManager'
-import Spinner from './components/Spinner'
 import SplashScreen from './components/SplashScreen'
 import Tooltip from './components/Tooltip'
+import UpdateWalletBanner from './components/UpdateWalletBanner'
 import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
 import { languageChanged, languageChangeStarted } from './store/actions'
-import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
+import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
@@ -79,17 +81,20 @@ const App = () => {
   return (
     <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
+
+      {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
+
       <AppContainer>
-        {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
-        <Router />
+        <CenteredSection>
+          <Router />
+        </CenteredSection>
+        <BannerSection>{newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}</BannerSection>
       </AppContainer>
-      {isAppLoading && (
-        <ClientLoading>
-          <Spinner size="60px" />
-        </ClientLoading>
-      )}
+
       <SnackbarManager message={snackbarMessage} />
-      <Tooltip />
+
+      <Tooltip place="right" />
+
       {isUpdateWalletModalVisible && (
         <UpdateWalletModal
           newVersion={newLatestVersion}
@@ -97,36 +102,22 @@ const App = () => {
           onClose={() => setUpdateWalletModalVisible(false)}
         />
       )}
+
+      {isAppLoading && <AppSpinner />}
     </ThemeProvider>
   )
 }
 
 const AppContainer = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.bg.secondary};
+  flex: 1;
 
-  @media ${deviceBreakPoints.mobile} {
-    background-color: ${({ theme }) => theme.bg.primary};
-    justify-content: initial;
-  }
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
-const ClientLoading = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--color-black);
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(3px);
-  z-index: 1002;
+const BannerSection = styled.div`
+  flex-shrink: 0;
 `
 
 export default App

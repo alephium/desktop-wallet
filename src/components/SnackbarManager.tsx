@@ -70,7 +70,7 @@ const SnackbarManagerContainer = styled.div`
   right: 0;
   display: flex;
   justify-content: flex-end;
-  z-index: 10001;
+  z-index: 1;
 
   @media ${deviceBreakPoints.mobile} {
     justify-content: center;
@@ -82,10 +82,9 @@ const SnackbarPopup = styled(motion.div)`
   text-align: center;
   min-width: 200px;
   padding: var(--spacing-4) var(--spacing-3);
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: ${({ theme }) => theme.font.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
-  z-index: 1000;
   box-shadow: var(--shadow-3);
 
   &.alert {
@@ -93,7 +92,7 @@ const SnackbarPopup = styled(motion.div)`
   }
 
   &.info {
-    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
+    background-color: ${({ theme }) => theme.bg.primary};
   }
 
   &.success {

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -35,7 +35,7 @@ import OpenInExplorerButton from '@/components/Buttons/OpenInExplorerButton'
 import QRCodeButton from '@/components/Buttons/QRCodeButton'
 import DataList, { DataListCell, DataListRow } from '@/components/DataList'
 import MainAddressLabel from '@/components/MainAddressLabel'
-import { MainContent, PageTitleRow } from '@/components/PageComponents/PageContainers'
+import { PageTitleRow } from '@/components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import Tooltip from '@/components/Tooltip'
@@ -72,7 +72,7 @@ const AddressDetailsPage = () => {
   const goBack = () => navigate(-1)
 
   return (
-    <MainContent>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
@@ -195,7 +195,7 @@ const AddressDetailsPage = () => {
         )}
       </AnimatePresence>
       <Tooltip />
-    </MainContent>
+    </motion.div>
   )
 }
 

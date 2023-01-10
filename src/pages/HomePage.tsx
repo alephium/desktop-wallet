@@ -25,7 +25,6 @@ import styled from 'styled-components'
 import ActionLink from '@/components/ActionLink'
 import AppHeader from '@/components/AppHeader'
 import Button from '@/components/Button'
-import SideBar from '@/components/HomePage/SideBar'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import WalletPassphrase from '@/components/Inputs/WalletPassphrase'
@@ -33,7 +32,6 @@ import { FloatingPanel, Section } from '@/components/PageComponents/PageContaine
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
-import { deviceBreakPoints } from '@/style/globalStyles'
 
 const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
@@ -47,8 +45,6 @@ const HomePage = () => {
 
   return (
     <HomeContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-      <AppHeader />
-      <SideBar />
       <InteractionArea>
         <FloatingPanel verticalAlign="center" horizontalAlign="center">
           {!showInitialActions && !hasWallet && (
@@ -74,6 +70,7 @@ const HomePage = () => {
           )}
         </FloatingPanel>
       </InteractionArea>
+      <AppHeader />
     </HomeContainer>
   )
 }
@@ -170,11 +167,8 @@ export default HomePage
 const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
+  height: 100%;
   background-color: ${({ theme }) => theme.bg.secondary};
-
-  @media ${deviceBreakPoints.mobile} {
-    flex-direction: column;
-  }
 `
 
 const InteractionArea = styled.div`

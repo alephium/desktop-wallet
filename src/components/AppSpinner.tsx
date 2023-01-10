@@ -18,13 +18,28 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-export default styled.div`
+import Spinner from './Spinner'
+
+interface AppSpinnerProps {
+  className?: string
+}
+
+const AppSpinner = ({ className }: AppSpinnerProps) => (
+  <div className={className}>
+    <Spinner size="60px" />
+  </div>
+)
+
+export default styled(AppSpinner)`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  height: 50px;
-
-  color: var(--color-white);
-  background-color: ${({ theme }) => theme.global.accent};
+  align-items: center;
+  color: var(--color-black);
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
 `

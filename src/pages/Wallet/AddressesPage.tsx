@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dayjs from 'dayjs'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,7 +34,7 @@ import Button from '@/components/Button'
 import ExpandableSection from '@/components/ExpandableSection'
 import MainAddressLabel from '@/components/MainAddressLabel'
 import OperationBox from '@/components/OperationBox'
-import { MainContent, PageTitleRow } from '@/components/PageComponents/PageContainers'
+import { PageTitleRow } from '@/components/PageComponents/PageContainers'
 import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Spinner from '@/components/Spinner'
 import Table, { TableCell, TableFooter, TableProps, TableRow } from '@/components/Table'
@@ -91,7 +91,7 @@ const AddressesPage = () => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <MainContent>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       <PageTitleRow>
         <PageH1>{t`Addresses`}</PageH1>
         <Button short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
@@ -204,7 +204,7 @@ const AddressesPage = () => {
           />
         )}
       </AnimatePresence>
-    </MainContent>
+    </motion.div>
   )
 }
 

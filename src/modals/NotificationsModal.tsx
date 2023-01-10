@@ -55,6 +55,7 @@ const NotificationsBox = styled(motion.div)`
   position: absolute;
   left: ${walletSidebarWidthPx}px;
   top: ${appHeaderHeightPx}px;
+  overflow: hidden;
 
   padding: 27px 19px;
   width: 304px;
@@ -64,9 +65,6 @@ const NotificationsBox = styled(motion.div)`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.background1};
-
-  overflow: hidden;
-  z-index: 1;
 `
 
 export default NotificationsModal

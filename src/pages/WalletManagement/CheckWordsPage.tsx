@@ -279,7 +279,6 @@ const DragCursor = styled(motion.div)`
   bottom: 0;
   width: 4px;
   background-color: ${({ theme }) => theme.global.accent};
-  z-index: 100;
 `
 
 const SelectedWordList = styled.div`

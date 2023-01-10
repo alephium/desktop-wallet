@@ -140,12 +140,10 @@ const Summaries = styled.div`
 
 const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: number }>`
   display: flex;
-  gap: ${addressSummaryCardsGapPx}px;
-  margin-left: calc(var(--spacing-2) * -1);
-  overflow: hidden;
-  height: 100%;
-  padding-left: var(--spacing-4);
   align-items: center;
+  gap: ${addressSummaryCardsGapPx}px;
+
+  height: 100%;
   width: ${({ collapsed, totalAddresses }) =>
     collapsed
       ? `${totalAddresses * collapsedaddressSummaryCardWidthPx + addressSummaryCardsGapPx}px`
@@ -153,13 +151,15 @@ const AddressSummaryCards = styled.div<{ collapsed: boolean; totalAddresses: num
           totalAddresses * (addressSummaryCardWidthPx + addressSummaryCardsGapPx) +
           (expandButtonLeftMarginPx - addressSummaryCardsGapPx)
         }px`};
+  margin-left: calc(var(--spacing-2) * -1);
+  padding-left: var(--spacing-4);
+
+  overflow: hidden;
   transition: width 0.2s ease-out;
-  z-index: 1;
 `
 
 const WalletSummaryCardStyled = styled(WalletSummaryCard)`
   flex-shrink: 0;
-  z-index: 2;
 `
 
 const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; clickable: boolean }>`
@@ -168,10 +168,11 @@ const AddressSummaryCardStyled = styled(AddressSummaryCard)<{ index: number; cli
 
 const ExpandButton = styled(Button)`
   flex-shrink: 0;
+  align-self: center;
+  gap: var(--spacing-1);
+
+  margin-left: ${expandButtonLeftMarginPx}px;
+
   background-color: ${({ theme }) => theme.bg.accent};
   color: ${({ theme }) => theme.font.primary};
-  margin-left: ${expandButtonLeftMarginPx}px;
-  gap: var(--spacing-1);
-  z-index: 0;
-  align-self: center;
 `

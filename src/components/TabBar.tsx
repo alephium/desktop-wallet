@@ -67,7 +67,6 @@ const Wrapper = styled.div`
   margin: var(--spacing-2) 0;
   position: sticky;
   top: 0;
-  z-index: 2;
   background-color: ${({ theme }) => theme.bg.primary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 `
@@ -98,7 +97,6 @@ const TabSelector = styled(motion.div)`
   border-radius: var(--radius);
   flex: 1;
   background-color: ${({ theme }) => theme.global.accent};
-  z-index: -1;
 `
 
 interface TabProps extends HTMLAttributes<HTMLDivElement> {
@@ -118,7 +116,6 @@ const TabStyled = styled(Tab)`
   padding: 8px;
   color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
   font-weight: var(--fontWeight-semiBold);
-  z-index: 1;
   cursor: pointer;
 
   &:hover {

@@ -31,10 +31,12 @@ const sliceName = 'app'
 
 interface AppState {
   loading: boolean
+  visibleModals: string[]
 }
 
 const initialState: AppState = {
-  loading: false
+  loading: false,
+  visibleModals: []
 }
 
 const appSlice = createSlice({
@@ -43,6 +45,14 @@ const appSlice = createSlice({
   reducers: {
     appLoadingToggled: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
+    },
+    modalOpened: (state, action: PayloadAction<string>) => {
+      const modalId = action.payload
+
+      state.visibleModals.push(modalId)
+    },
+    modalClosed: (state) => {
+      state.visibleModals.pop()
     }
   },
   extraReducers(builder) {
@@ -64,7 +74,7 @@ const appSlice = createSlice({
   }
 })
 
-export const { appLoadingToggled } = appSlice.actions
+export const { appLoadingToggled, modalOpened, modalClosed } = appSlice.actions
 
 export default appSlice
 

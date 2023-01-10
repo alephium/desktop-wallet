@@ -16,8 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import { motion } from 'framer-motion'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
+
+import ModalContainer from '@/modals/ModalContainer'
 
 interface PopupProps {
   onBackgroundClick: () => void
@@ -25,63 +27,43 @@ interface PopupProps {
   title?: string
 }
 
-const Popup = ({ children, onBackgroundClick, title }: PopupProps) => {
-  const handleEscapeKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onBackgroundClick()
-      }
-    },
-    [onBackgroundClick]
-  )
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress, false)
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress, false)
-    }
-  }, [handleEscapeKeyPress, onBackgroundClick])
-
-  return (
-    <PopupContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onBackgroundClick}>
-      <PopupContent onClick={(e) => e.stopPropagation()} initial={{ y: -10 }} animate={{ y: 0 }} exit={{ y: -10 }}>
-        {title && (
-          <PopupHeader>
-            <h2>{title}</h2>
-          </PopupHeader>
-        )}
-        {children}
-      </PopupContent>
-    </PopupContainer>
-  )
-}
+const Popup = ({ children, onBackgroundClick, title }: PopupProps) => (
+  <ModalContainer onClose={onBackgroundClick}>
+    <Content
+      onClick={(e) => e.stopPropagation()}
+      role="dialog"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      {title && (
+        <Header>
+          <h2>{title}</h2>
+        </Header>
+      )}
+      {children}
+    </Content>
+  </ModalContainer>
+)
 
 export default Popup
 
-const PopupContainer = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-`
+const Content = styled(motion.div)`
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
 
-const PopupContent = styled(motion.div)`
-  border-radius: var(--radius);
-  margin: auto;
   width: 30vw;
   min-width: 300px;
   max-height: 500px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  box-shadow: var(--shadow-3);
+  margin: auto;
+
+  border-radius: var(--radius);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 
-const PopupHeader = styled.div`
+const Header = styled.div`
   padding: var(--spacing-1) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.secondary};

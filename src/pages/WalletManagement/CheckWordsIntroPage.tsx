@@ -95,13 +95,12 @@ const Lock = styled(motion.div)`
 const LockHandleContainer = styled(motion.div)`
   width: 70%;
   flex: 1;
-  z-index: 0;
 `
 
 const LockBodyContainer = styled(motion.div)`
   width: 100%;
   flex: 1;
-  z-index: 1;
+  isolation: isolate;
 `
 
 const LockHandle = styled(LockHandleSVG)`

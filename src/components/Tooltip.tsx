@@ -19,16 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { FC } from 'react'
-import ReactTooltip from 'react-tooltip'
+import ReactTooltip, { TooltipProps as ReactTooltipProps } from 'react-tooltip'
 
-interface TooltipProps {
+interface TooltipProps extends ReactTooltipProps {
   id?: string
 }
 
 export type HasTooltip<T> = T & { 'data-tip'?: string }
 
-const Tooltip: FC<TooltipProps> = ({ id, children }) => (
-  <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" id={id}>
+const Tooltip: FC<TooltipProps> = ({ children, ...props }) => (
+  <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" {...props}>
     {children}
   </ReactTooltip>
 )
