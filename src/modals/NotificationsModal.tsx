@@ -21,10 +21,10 @@ import { Lock } from 'lucide-react'
 import styled from 'styled-components'
 
 import { fadeInOutBottomFast } from '@/animations'
+import Button from '@/components/Button'
+import WalletSwitcher from '@/components/WalletSwitcher'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
-import Button from '../components/Button'
-import WalletSwitcher from '../components/WalletSwitcher'
 import { useGlobalContext } from '../contexts/global'
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 

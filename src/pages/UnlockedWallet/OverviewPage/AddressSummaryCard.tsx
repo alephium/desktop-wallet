@@ -22,13 +22,12 @@ import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
 import { fastTransition } from '@/animations'
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import ClipboardButton from '@/components/Buttons/ClipboardButton'
+import QRCodeButton from '@/components/Buttons/QRCodeButton'
+import InputArea from '@/components/Inputs/InputArea'
 import { Address } from '@/contexts/addresses'
-
-import AddressBadge from '../../../components/AddressBadge'
-import Amount from '../../../components/Amount'
-import ClipboardButton from '../../../components/Buttons/ClipboardButton'
-import QRCodeButton from '../../../components/Buttons/QRCodeButton'
-import InputArea from '../../../components/Inputs/InputArea'
 
 interface AddressSummaryCardProps {
   address: Address

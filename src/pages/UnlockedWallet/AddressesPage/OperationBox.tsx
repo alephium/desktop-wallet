@@ -21,10 +21,9 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
+import Button from '@/components/Button'
 import { openInWebBrowser } from '@/utils/misc'
-
-import ActionLink from '../../../components/ActionLink'
-import Button from '../../../components/Button'
 
 interface OperationBoxProps {
   title: string

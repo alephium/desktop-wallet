@@ -23,10 +23,9 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
+import AddressEllipsed from '@/components/AddressEllipsed'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { sortAddressList } from '@/utils/addresses'
-
-import AddressEllipsed from '../../../components/AddressEllipsed'
 
 const AddressesTabContent = () => {
   const navigate = useNavigate()

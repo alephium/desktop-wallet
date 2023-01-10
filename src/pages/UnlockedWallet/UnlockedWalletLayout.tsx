@@ -25,6 +25,11 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
+import AppHeader from '@/components/AppHeader'
+import Button from '@/components/Button'
+import NavItem from '@/components/NavItem'
+import Scrollbar from '@/components/Scrollbar'
+import Spinner from '@/components/Spinner'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
@@ -36,12 +41,6 @@ import SettingsModal from '@/modals/SettingsModal'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { TxType } from '@/types/transactions'
 import { getInitials } from '@/utils/misc'
-
-import AppHeader from '../../components/AppHeader'
-import Button from '../../components/Button'
-import NavItem from '../../components/NavItem'
-import Scrollbar from '../../components/Scrollbar'
-import Spinner from '../../components/Spinner'
 
 interface UnlockedWalletLayoutProps {
   className?: string
