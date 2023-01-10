@@ -43,7 +43,7 @@ import NavItem from '../../components/NavItem'
 import Scrollbar from '../../components/Scrollbar'
 import Spinner from '../../components/Spinner'
 
-interface UnlockedWalletLayout {
+interface UnlockedWalletLayoutProps {
   className?: string
 }
 
@@ -52,7 +52,7 @@ dayjs.extend(relativeTime)
 // This shall be removed once v2.0.0 is released
 const hideContractButtons = true
 
-const UnlockedWalletLayout: FC<UnlockedWalletLayout> = ({ children, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, className }) => {
   const { t } = useTranslation('App')
   const { networkStatus, activeWalletName } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()

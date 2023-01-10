@@ -22,8 +22,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsPage from '@/pages/UnlockedWallet/AddressDetailsPage'
 import AddressesPage from '@/pages/UnlockedWallet/AddressesPage'
-import UnlockedWalletLayout from '@/pages/UnlockedWallet/Layout'
 import OverviewPage from '@/pages/UnlockedWallet/OverviewPage'
+import UnlockedWalletLayout from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
 const WalletRoutes = () => {
   const navigate = useNavigate()
