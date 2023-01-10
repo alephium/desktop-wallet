@@ -47,7 +47,7 @@ const NetworkSettingsSection = () => {
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
-    label: t(capitalize(networkName)),
+    label: t(capitalize(networkName) as 'Mainnet' | 'Testnet' | 'Localhost' | 'Custom'),
     value: networkName
   }))
 

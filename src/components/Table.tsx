@@ -17,17 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import classNames from 'classnames'
-import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 type AlignType = 'start' | 'center' | 'end'
 
 export interface TableProps {
-  headers?: {
-    title: string
-    align?: AlignType
-    width?: string
-  }[]
   isLoading?: boolean
   minWidth?: string
   className?: string
@@ -38,26 +32,13 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => {
-  const { t } = useTranslation()
-
-  return (
-    <ScrollableWrapper>
-      <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
-        {headers && headers.length > 0 && (
-          <TableHeaderRow role="rowheader" tabIndex={0} columnWidths={headers.map(({ width }) => width)}>
-            {headers.map(({ title, align }) => (
-              <TableHeaderCell role="rowheader" key={title} align={align}>
-                {t(title)}
-              </TableHeaderCell>
-            ))}
-          </TableHeaderRow>
-        )}
-        {children}
-      </div>
-    </ScrollableWrapper>
-  )
-}
+const Table: FC<TableProps> = ({ className, children, isLoading }) => (
+  <ScrollableWrapper>
+    <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
+      {children}
+    </div>
+  </ScrollableWrapper>
+)
 
 export default styled(Table)`
   background-color: ${({ theme }) => theme.bg.primary};
@@ -99,10 +80,6 @@ export const TableCell = styled.div<TableCellProps>`
     `};
 `
 
-const TableHeaderCell = styled(TableCell)`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
 const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
   display: grid;
   ${({ columnWidths }) =>
@@ -118,12 +95,6 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
   align-items: center;
   padding: 8px 20px;
   min-height: 52px;
-`
-
-const TableHeaderRow = styled(TableColumns)`
-  background-color: ${({ theme }) => theme.bg.tertiary};
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
 `
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`

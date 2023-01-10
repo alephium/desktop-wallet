@@ -92,7 +92,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     onClose()
   }
 
-  let mainAddressMessage = t`Default address for sending transactions.`
+  let mainAddressMessage = t('Default address for sending transactions.')
 
   if (mainAddress) {
     const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
