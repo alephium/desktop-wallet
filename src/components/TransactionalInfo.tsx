@@ -57,7 +57,7 @@ const TransactionalInfo = ({
   const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   const address = getAddress(addressHash)
 

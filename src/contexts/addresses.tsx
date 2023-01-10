@@ -138,7 +138,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   children,
   overrideContextValue
 }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
   const {

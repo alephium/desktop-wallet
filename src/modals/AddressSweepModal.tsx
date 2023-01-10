@@ -40,7 +40,7 @@ interface AddressSweepModal {
 }
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses, mainAddress } = useAddressesContext()
   const fromAddress = sweepAddress || mainAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses

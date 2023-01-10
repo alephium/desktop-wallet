@@ -34,7 +34,7 @@ interface ClipboardButtonProps {
 }
 
 const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
 

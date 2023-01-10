@@ -38,7 +38,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal = ({ onClose }: SettingsModalProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   const tabsI18n = tabs.map((tab) => ({ ...tab, label: t(tab.label) }))

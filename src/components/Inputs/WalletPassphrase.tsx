@@ -34,7 +34,7 @@ interface Props {
 }
 
 const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, className }: Props) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isConsentActive, setIsConsentActive] = useState(false)
   const [value, setValue] = useState('')
   const [confirmValue, setConfirmValue] = useState('')

@@ -46,7 +46,7 @@ import AddressOptionsModal from '../../modals/AddressOptionsModal'
 import TransactionDetailsModal from '../../modals/TransactionDetailsModal'
 
 const AddressDetailsPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
   const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()

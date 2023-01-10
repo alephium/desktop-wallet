@@ -30,7 +30,7 @@ interface WalletSummaryCardProps {
 }
 
 const WalletSummaryCard = ({ className, isLoading }: WalletSummaryCardProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses } = useAddressesContext()
   const { networkStatus } = useGlobalContext()
 

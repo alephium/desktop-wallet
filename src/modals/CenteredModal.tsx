@@ -49,7 +49,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   narrow = false,
   children
 }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const elRef = useFocusOnMount<HTMLSpanElement>()
 
   return (

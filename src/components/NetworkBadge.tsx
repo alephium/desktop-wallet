@@ -23,7 +23,7 @@ import { useGlobalContext } from '../contexts/global'
 import Badge from './Badge'
 
 const NetworkBadge = ({ className }: { className?: string }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { currentNetwork } = useGlobalContext()
 
   return (

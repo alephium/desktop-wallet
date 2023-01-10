@@ -42,7 +42,7 @@ const AddressMetadataForm = ({
   setIsMain,
   isMainAddressToggleEnabled
 }: AddressMetadataFormProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <>

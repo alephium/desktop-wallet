@@ -34,7 +34,7 @@ import { appHeaderHeightPx } from '../../style/globalStyles'
 import { sortAddressList } from '../../utils/addresses'
 
 const OverviewPageHeader = ({ className }: { className?: string }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, isLoadingData } = useAddressesContext()
   const scrollbarRef = useRef<HTMLDivElement | null>(null)

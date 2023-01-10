@@ -33,7 +33,7 @@ interface ColorPickerProps {
 }
 
 const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const color = value?.toString() || getRandomLabelColor()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const ref = useDetectClickOutside({ onTriggered: () => setIsPopupOpen(false) })

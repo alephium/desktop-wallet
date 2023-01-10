@@ -47,7 +47,7 @@ interface Props {
 }
 
 const WalletConnectModal = ({ onClose, onConnect }: Props) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
   const { addresses } = useAddressesContext()
