@@ -21,6 +21,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Check, Copy } from 'lucide-react'
 import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '@/contexts/global'
@@ -28,12 +29,12 @@ import { useGlobalContext } from '@/contexts/global'
 interface ClipboardButtonProps {
   textToCopy: string
   disableA11y?: boolean
-  tipText?: string
+  tooltip?: string
   children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
+const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
   const { t } = useTranslation()
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
   const { setSnackbarMessage } = useGlobalContext()
@@ -72,22 +73,26 @@ const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y
     }
   }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
 
-  const clipboard = !hasBeenCopied ? (
-    <ClipboardWrapper data-tooltip-content={tipText ?? t`Copy to clipboard`}>
-      <Copy
-        className={`${className} clipboard`}
-        size={15}
-        onClick={handleInput}
-        onKeyPress={handleInput}
-        role="button"
-        aria-label={disableA11y ? undefined : t`Copy to clipboard`}
-        tabIndex={disableA11y ? undefined : 0}
-      />
-    </ClipboardWrapper>
-  ) : (
-    <ClipboardWrapper className={className} data-tooltip-content={t`Copied`}>
-      <Check className={`${className} check`} size={15} />
-    </ClipboardWrapper>
+  const clipboard = (
+    <TooltipWrapper content={!hasBeenCopied ? tooltip ?? t`Copy to clipboard` : t`Copied`} tooltipId="copy">
+      {!hasBeenCopied ? (
+        <ClipboardWrapper>
+          <Copy
+            className={`${className} clipboard`}
+            size={15}
+            onClick={handleInput}
+            onKeyPress={handleInput}
+            role="button"
+            aria-label={disableA11y ? undefined : t`Copy to clipboard`}
+            tabIndex={disableA11y ? undefined : 0}
+          />
+        </ClipboardWrapper>
+      ) : (
+        <ClipboardWrapper className={className}>
+          <Check className={`${className} check`} size={15} />
+        </ClipboardWrapper>
+      )}
+    </TooltipWrapper>
   )
 
   return children ? (

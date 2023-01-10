@@ -24,9 +24,11 @@ import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
+import { TooltipProvider } from 'react-tooltip'
 import { ThemeProvider } from 'styled-components'
 
 import App from './App'
+import Tooltips from './components/Tooltips'
 import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
 import { SendModalContextProvider } from './contexts/sendModal'
@@ -52,7 +54,10 @@ ReactDOM.render(
                 <SendModalContextProvider>
                   <WalletConnectContextProvider>
                     <GlobalStyle />
-                    <App />
+                    <TooltipProvider>
+                      <App />
+                      <Tooltips />
+                    </TooltipProvider>
                   </WalletConnectContextProvider>
                 </SendModalContextProvider>
               </AddressesContextProvider>

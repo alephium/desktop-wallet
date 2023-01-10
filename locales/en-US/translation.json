@@ -283,5 +283,6 @@
   "Testnet": "Testnet",
   "Localhost": "Localhost",
   "Delete": "Delete",
-  "Timestamp": "Timestamp"
+  "Timestamp": "Timestamp",
+  "Connect wallet to dApp": "Connect wallet to dApp"
 }

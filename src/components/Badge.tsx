@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
+import { TooltipWrapper } from 'react-tooltip'
 import styled, { css } from 'styled-components'
 
 import { HasTooltip } from './Tooltip'
@@ -30,16 +31,11 @@ interface BadgeProps {
   className?: string
 }
 
-const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'data-tooltip-content': dataTip }) =>
-  truncate ? (
-    <Truncate className={className} data-tooltip-content={dataTip}>
-      {children}
-    </Truncate>
-  ) : (
-    <span className={className} data-tooltip-content={dataTip}>
-      {children}
-    </span>
-  )
+const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tooltip }) => (
+  <TooltipWrapper content={tooltip}>
+    {truncate ? <Truncate className={className}>{children}</Truncate> : <span className={className}>{children}</span>}
+  </TooltipWrapper>
+)
 
 export default styled(Badge)`
   ${({ color, theme, rounded, border, truncate }) => {

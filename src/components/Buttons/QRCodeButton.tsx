@@ -34,8 +34,8 @@ const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => {
 
   return (
     <>
-      <QRCodeIcon className={className} data-tooltip-content data-for={qrCodeId} data-event="click" size={15} />
-      <TooltipStyled id={qrCodeId} events={['click']} place="right">
+      <QRCodeIcon id={qrCodeId} className={className} size={15} />
+      <TooltipStyled anchorId={qrCodeId} place="right" id="qrcode" events={['click']}>
         <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
       </TooltipStyled>
     </>
@@ -50,5 +50,6 @@ const QRCodeIcon = styled(QrCode)`
 `
 
 const TooltipStyled = styled(Tooltip)`
-  opacity: 1 !important;
+  background-color: black;
+  opacity: 1;
 `

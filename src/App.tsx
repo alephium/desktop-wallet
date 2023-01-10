@@ -27,7 +27,6 @@ import AppSpinner from './components/AppSpinner'
 import { CenteredSection } from './components/PageComponents/PageContainers'
 import SnackbarManager from './components/SnackbarManager'
 import SplashScreen from './components/SplashScreen'
-import Tooltip from './components/Tooltip'
 import UpdateWalletBanner from './components/UpdateWalletBanner'
 import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
@@ -87,8 +86,6 @@ const App = () => {
       </AppContainer>
 
       <SnackbarManager message={snackbarMessage} />
-
-      <Tooltip place="right" />
 
       {isUpdateWalletModalVisible && (
         <UpdateWalletModal

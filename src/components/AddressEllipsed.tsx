@@ -33,7 +33,7 @@ const AddressEllipsed = ({ addressHash, disableA11y = false, ...props }: Address
   const { t } = useTranslation()
 
   return (
-    <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`} disableA11y={disableA11y}>
+    <ClipboardButton textToCopy={addressHash} tooltip={t`Copy address`} disableA11y={disableA11y}>
       <Ellipsed text={addressHash} {...props} />
     </ClipboardButton>
   )

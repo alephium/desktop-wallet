@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useLocation, useNavigate } from 'react-router-dom'
+import { TooltipWrapper } from 'react-tooltip'
 import { useTheme } from 'styled-components'
 
 import Button from './Button'
@@ -44,20 +45,21 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
   }
 
   return (
-    <Button
-      aria-label={label}
-      data-tooltip-content={label}
-      onClick={handleClick}
-      Icon={Icon}
-      borderless={!isActive}
-      squared
-      transparent
-      style={{
-        backgroundColor: isActive ? theme.bg.primary : undefined,
-        boxShadow: isActive ? theme.shadow.primary : undefined,
-        cursor: isActive ? 'default' : undefined
-      }}
-    />
+    <TooltipWrapper content={label} tooltipId="sidenav">
+      <Button
+        aria-label={label}
+        onClick={handleClick}
+        Icon={Icon}
+        borderless={!isActive}
+        squared
+        transparent
+        style={{
+          backgroundColor: isActive ? theme.bg.primary : undefined,
+          boxShadow: isActive ? theme.shadow.primary : undefined,
+          cursor: isActive ? 'default' : undefined
+        }}
+      />
+    </TooltipWrapper>
   )
 }
 
