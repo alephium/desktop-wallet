@@ -30,9 +30,7 @@
   "Use max amount": "Utiliser le montant max",
   "Current network": "Réseau actif",
   "Direction": "Direction",
-  "Timestamp": "Date",
   "Amount": "Montant",
-  "Pending": "En attente",
   "Show more": "Montrer plus",
   "No transactions to display": "Aucune transaction à afficher",
   "Invalid password": "Mot de passe invalide",
@@ -218,7 +216,6 @@
   "welcomeScreenPassphraseMessage": "Si vous désirez utiliser une <1>phrase de passe</1>, verrouillez votre wallet fraîchement créé.",
   "I have read and understood the documentation": "J'ai lu et compris la documentation",
   "Use optional passphrase (advanced)": "Utiliser la phrase de passe optionnelle (avancé)",
-  "Optional passphrase": "Phrase de passe optionelle",
   "Confirm passphrase": "Confirmer la phrase de passe",
   "Passphrases don't match": "Les phrases de passe ne sont pas identiques",
   "Language": "Langue",
@@ -272,5 +269,12 @@
   "Restart the application to install the new update.": "Restart the application to install the new update.",
   "Downloaded {{ percent }}%": "Downloaded {{ percent }}%",
   "Update": "Update",
-  "Download failed, try again later.": "Download failed, try again later."
+  "Download failed, try again later.": "Download failed, try again later.",
+  "Optional passphrase": "Phrase de passe optionelle",
+  "Pending": "En attente",
+  "Mainnet": "Mainnet",
+  "Testnet": "Testnet",
+  "Localhost": "Localhost",
+  "Delete": "Delete",
+  "Timestamp": "Date"
 }
