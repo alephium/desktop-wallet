@@ -140,13 +140,16 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           id="to-address"
         />
         <InfoBox Icon={Info} contrast noBorders>
-          <Trans t={t} i18nKey="sweepOperationFromTo">
-            This operation will sweep all funds from
-            <ColoredWord color={sweepAddresses.from.settings.color}>
-              {{ from: sweepAddresses.from.getName() }}
-            </ColoredWord>
-            and transfer them to
-            <ColoredWord color={sweepAddresses.to.settings.color}>{{ to: sweepAddresses.to.getName() }}</ColoredWord>.
+          <Trans
+            t={t}
+            i18nKey="sweepOperationFromTo"
+            values={{ from: sweepAddresses.from.getName(), to: sweepAddresses.to.getName() }}
+            components={{
+              1: <ColoredWord color={sweepAddresses.from.settings.color} />,
+              3: <ColoredWord color={sweepAddresses.to.settings.color} />
+            }}
+          >
+            {'This operation will sweep all funds from <1>{{ from }}</1> and transfer them to <3>{{ to }}</3>.'}
           </Trans>
         </InfoBox>
         <Fee>
