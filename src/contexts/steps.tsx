@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createContext, FC, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 type RouteParams = {

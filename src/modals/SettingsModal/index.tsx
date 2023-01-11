@@ -27,21 +27,20 @@ import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSectio
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
 
-const tabs = [
-  { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
-  { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
-  { value: 'wallets', label: 'Wallets', component: <WalletsSettingsSection /> }
-]
-
 interface SettingsModalProps {
   onClose: () => void
 }
 
 const SettingsModal = ({ onClose }: SettingsModalProps) => {
   const { t } = useTranslation()
+  const tabs = [
+    { value: 'general', label: t('General'), component: <GeneralSettingsSection /> },
+    { value: 'client', label: t('Networks'), component: <NetworkSettingsSection /> },
+    { value: 'wallets', label: t('Wallets'), component: <WalletsSettingsSection /> }
+  ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
-  const tabsI18n = tabs.map((tab) => ({ ...tab, label: t(tab.label) }))
+  const tabsI18n = tabs.map((tab) => ({ ...tab, label: tab.label }))
 
   return (
     <CenteredModal title={t`Settings`} onClose={onClose}>

@@ -16,9 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, useTransform, useViewportScroll } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
 interface PanelTitleProps {
@@ -37,7 +36,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
   useLayoutId = true,
   isSticky = true
 }) => {
-  const { scrollY } = useViewportScroll()
+  const { scrollY } = useScroll()
 
   const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
 

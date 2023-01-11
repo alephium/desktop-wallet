@@ -20,8 +20,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { QrCode } from 'lucide-react'
 import QRCode from 'react-qr-code'
-import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
+
+import Tooltip from '../Tooltip'
 
 interface QRCodeButtonProps {
   textToEncode: string
@@ -33,10 +34,10 @@ const QRCodeButton = ({ textToEncode, className }: QRCodeButtonProps) => {
 
   return (
     <>
-      <QRCodeIcon className={className} data-tip data-for={qrCodeId} data-event="click" size={15} />
-      <Tooltip id={qrCodeId} backgroundColor="black" globalEventOff="click" place="right">
+      <QRCodeIcon id={qrCodeId} className={className} size={15} />
+      <TooltipStyled anchorId={qrCodeId} place="right" id="qrcode" events={['click']}>
         <QRCode size={150} value={textToEncode} bgColor="black" fgColor="white" />
-      </Tooltip>
+      </TooltipStyled>
     </>
   )
 }
@@ -48,6 +49,7 @@ const QRCodeIcon = styled(QrCode)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const Tooltip = styled(ReactTooltip)`
-  opacity: 1 !important;
+const TooltipStyled = styled(Tooltip)`
+  background-color: black;
+  opacity: 1;
 `

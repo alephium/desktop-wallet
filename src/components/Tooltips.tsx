@@ -16,15 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'react-tooltip/dist/react-tooltip.css'
+import Tooltip from './Tooltip'
 
-import { Tooltip } from 'react-tooltip'
-import styled from 'styled-components'
+const Tooltips = () => (
+  <>
+    <Tooltip />
+    <Tooltip id="sidenav" place="right" />
+    <Tooltip id="copy" place="bottom" />
+  </>
+)
 
-export type HasTooltip<T> = T & { tooltip?: string }
-
-export default styled(Tooltip)`
-  background-color: rgb(34, 34, 38);
-  color: #fff;
-  z-index: 1;
-`
+export default Tooltips

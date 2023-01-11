@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import { Lock as LockIcon, Unlock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 interface LockProps {
@@ -32,14 +33,14 @@ const Lock = ({ unlockAt, className }: LockProps) => {
   if (!unlockAt) return null
 
   const lockTimeInPast = unlockAt < new Date()
+  const tooltipContent = `${lockTimeInPast ? t`Unlocked at` : t`Unlocks at`} ${dayjs(unlockAt).format(
+    'DD/MM/YYYY hh:mm A'
+  )}`
 
   return (
-    <span
-      className={className}
-      data-tip={`${lockTimeInPast ? t`Unlocked at` : t`Unlocks at`} ${dayjs(unlockAt).format('DD/MM/YYYY hh:mm A')}`}
-    >
-      {lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}
-    </span>
+    <TooltipWrapper content={tooltipContent}>
+      <span className={className}>{lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}</span>
+    </TooltipWrapper>
   )
 }
 

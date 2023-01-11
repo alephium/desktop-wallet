@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wallet } from '@alephium/sdk'
-import { createContext, FC, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 import { CenteredSection } from '@/components/PageComponents/PageContainers'
 

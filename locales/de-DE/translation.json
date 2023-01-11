@@ -199,7 +199,7 @@
   "Error while fetching data for address {{ hash }}": "Fehler beim Abrufen von Daten für Adresse {{ hash }}",
   "Error while fetching pending transactions for address {{ hash }}": "Fehler beim Abrufen von ausstehenden Transaktionen für Adresse {{ hash }}",
   "Open in explorer": "Im Explorer öffnen",
-  "Reduce": "Verkleinern:",
+  "Reduce": "Verkleinern",
   "Show addresses": "Adressen anzeigen",
   "More info": "Mehr Infos",
   "passphraseWarningMessage": "<0>Dies ist eine fortgeschrittene Funktion!</0><br />Verwenden Sie sie nur, wenn Sie wissen, was Sie tun.<br />Bitte lesen Sie unsere <5>Dokumentation</5>, um mehr darüber zu erfahren.",
@@ -283,5 +283,6 @@
   "Testnet": "Testnet",
   "Localhost": "Localhost",
   "Delete": "Delete",
-  "Timestamp": "Timestamp"
+  "Timestamp": "Timestamp",
+  "Connect wallet to dApp": "Connect wallet to dApp"
 }

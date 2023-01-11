@@ -82,7 +82,7 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
         {...restProps}
         error={error}
       >
-        {availableAmount && (
+        {!!availableAmount && (
           <AvailableAmountRow>
             <AvailableAmount tabIndex={0}>
               {t`Available`}: <Amount value={BigInt(availableAmount)} nbOfDecimalsToShow={4} />

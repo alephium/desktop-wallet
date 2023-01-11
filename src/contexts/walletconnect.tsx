@@ -26,7 +26,7 @@ import {
 } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
-import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '@/contexts/addresses'
 import {

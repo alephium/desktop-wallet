@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
-import { FC, InputHTMLAttributes, ReactNode } from 'react'
+import { InputHTMLAttributes, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {

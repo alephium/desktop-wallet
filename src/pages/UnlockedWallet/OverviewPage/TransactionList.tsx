@@ -18,9 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getDirection } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
@@ -46,16 +44,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   const loadNextTransactionsPage = async () => {
     addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
   }
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [addresses])
-
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [addresses])
 
   const shouldHideTx = (tx: Transaction, address: Address) =>
     tx.inputs &&

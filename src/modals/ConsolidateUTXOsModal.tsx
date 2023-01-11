@@ -48,8 +48,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
           <InfoBox
             importance="accent"
             text={t(
-              'It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate ' +
-                '(merge) your UTXOs first. This will cost a small fee.'
+              'It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.'
             )}
           />
           <Fee>

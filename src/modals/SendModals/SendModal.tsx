@@ -218,7 +218,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           onCancel={onCloseExtended}
         />
       )}
-      {step === 'info-check' && transactionData && fees && (
+      {step === 'info-check' && !!transactionData && !!fees && (
         <>
           <CheckTxModalContent data={transactionData} fees={fees} />
           <ModalFooterButtons>

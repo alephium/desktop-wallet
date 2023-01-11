@@ -26,7 +26,7 @@ const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void
   <StyledSplashScreen
     initial={{ opacity: 1 }}
     animate={{ opacity: 0 }}
-    transition={{ delay: 1 }}
+    transition={{ duration: 0.3, delay: 1 }}
     onAnimationComplete={onSplashScreenShown}
   >
     <AlephiumLogoContainer initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1 }} {...slowTransition}>

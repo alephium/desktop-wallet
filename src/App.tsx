@@ -21,14 +21,12 @@ import 'dayjs/locale/fr'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
 import styled, { ThemeProvider } from 'styled-components'
 
 import AppSpinner from './components/AppSpinner'
 import { CenteredSection } from './components/PageComponents/PageContainers'
 import SnackbarManager from './components/SnackbarManager'
 import SplashScreen from './components/SplashScreen'
-import Tooltip from './components/Tooltip'
 import UpdateWalletBanner from './components/UpdateWalletBanner'
 import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
@@ -39,17 +37,13 @@ import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
-  const { networkStatus, settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
+  const { settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
   const { i18n } = useTranslation()
-  const [isAppLoading, isAuthenticated] = useAppSelector((s) => [s.app.loading, !!s.activeWallet.mnemonic])
+  const isAppLoading = useAppSelector((state) => state.app.loading)
   const dispatch = useAppDispatch()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
-
-  useEffect(() => {
-    if (networkStatus === 'offline' || isAuthenticated) ReactTooltip.rebuild()
-  }, [isAuthenticated, networkStatus])
 
   useEffect(() => {
     const handleLanguageChange = async () => {
@@ -92,8 +86,6 @@ const App = () => {
       </AppContainer>
 
       <SnackbarManager message={snackbarMessage} />
-
-      <Tooltip place="right" />
 
       {isUpdateWalletModalVisible && (
         <UpdateWalletModal

@@ -57,7 +57,7 @@ const AddressBadge = ({
       <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
-    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`} disableA11y={disableA11y}>
+    <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
         {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
         <Label {...props}>{address.getName()}</Label>

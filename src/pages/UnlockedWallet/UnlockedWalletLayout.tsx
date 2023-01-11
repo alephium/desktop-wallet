@@ -20,8 +20,9 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Album, ArrowLeftRight, FileCode, Layers, RefreshCw, Settings, TerminalSquare } from 'lucide-react'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
@@ -87,15 +88,11 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
               </>
             )}
           </SideNavigation>
-          <Button
-            transparent
-            squared
-            onClick={() => setIsSettingsModalOpen(true)}
-            aria-label={t`Settings`}
-            data-tip={t`Settings`}
-          >
-            <Settings />
-          </Button>
+          <TooltipWrapper content={t`Settings`} tooltipId="sidenav">
+            <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label={t`Settings`}>
+              <Settings />
+            </Button>
+          </TooltipWrapper>
         </WalletSidebar>
 
         <Scrollbar>
@@ -103,21 +100,22 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
 
           <AppHeader>
             {networkStatus === 'online' && (
-              <RefreshButton
-                transparent
-                squared
-                onClick={refreshAddressesData}
-                disabled={isLoadingData}
-                aria-label={t`Refresh`}
-                data-tip={t`Refresh data`}
-              >
-                {isLoadingData ? <Spinner /> : <RefreshCw />}
-              </RefreshButton>
+              <TooltipWrapper content={t`Refresh data`}>
+                <RefreshButton
+                  transparent
+                  squared
+                  onClick={refreshAddressesData}
+                  disabled={isLoadingData}
+                  aria-label={t`Refresh`}
+                >
+                  {isLoadingData ? <Spinner /> : <RefreshCw />}
+                </RefreshButton>
+              </TooltipWrapper>
             )}
           </AppHeader>
         </Scrollbar>
       </motion.div>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence mode="wait" initial={true}>
         {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
         {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
         {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}

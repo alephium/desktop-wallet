@@ -16,15 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'react-tooltip/dist/react-tooltip.css'
+import 'i18next'
 
-import { Tooltip } from 'react-tooltip'
-import styled from 'styled-components'
+import de from '../../locales/de-DE/translation.json'
+import en from '../../locales/en-US/translation.json'
+import fr from '../../locales/fr-FR/translation.json'
+import vi from '../../locales/vi-VN/translation.json'
 
-export type HasTooltip<T> = T & { tooltip?: string }
-
-export default styled(Tooltip)`
-  background-color: rgb(34, 34, 38);
-  color: #fff;
-  z-index: 1;
-`
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    resources: {
+      translation: typeof en | typeof de | typeof fr | typeof vi
+    }
+  }
+}

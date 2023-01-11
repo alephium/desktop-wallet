@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { HTMLMotionProps, motion } from 'framer-motion'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
 interface ParagraphProps {

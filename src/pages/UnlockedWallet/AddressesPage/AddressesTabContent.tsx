@@ -30,7 +30,7 @@ import { sortAddressList } from '@/utils/addresses'
 const AddressesTabContent = () => {
   const navigate = useNavigate()
   const { addresses } = useAddressesContext()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
 
