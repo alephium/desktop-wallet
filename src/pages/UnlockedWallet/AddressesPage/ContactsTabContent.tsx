@@ -16,13 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export const links = {
-  passphrase:
-    'https://docs.alephium.org/wallet/desktop-wallet/advanced-features#2-passphrase-advanced-security-feature',
-  latestRelease: 'https://github.com/alephium/desktop-wallet/releases/latest',
-  latestReleaseApi: 'https://api.github.com/repos/alephium/desktop-wallet/releases/latest',
-  utxoConsolidation: 'https://docs.alephium.org/wallet/desktop-wallet/advanced-features#1-utxo-consolidation',
-  miningWallet: 'https://docs.alephium.org/wallet/desktop-wallet/configure-mining-wallet',
-  discord: 'https://discord.com/channels/747741246667227157/930164826418860032',
-  faq: 'https://docs.alephium.org/frequently-asked-questions'
-}
+import { motion } from 'framer-motion'
+
+import { fadeIn } from '@/animations'
+
+const ContactsTabContent = () => <motion.div {...fadeIn}>Contacts</motion.div>
+
+export default ContactsTabContent

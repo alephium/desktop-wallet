@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import ActionLink from '@/components/ActionLink'
 import AddressBadge from '@/components/AddressBadge'
 import AddressEllipsed from '@/components/AddressEllipsed'
@@ -72,7 +73,7 @@ const AddressDetailsPage = () => {
   const goBack = () => navigate(-1)
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+    <motion.div {...fadeIn}>
       <PageTitleRow>
         <Title>
           <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />

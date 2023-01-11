@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
+import { slowTransition } from '@/animations'
 import alephiumLogo from '@/images/alephium_logo_light.svg'
 
 const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void }) => (
@@ -28,11 +29,7 @@ const SplashScreen = ({ onSplashScreenShown }: { onSplashScreenShown: () => void
     transition={{ delay: 1 }}
     onAnimationComplete={onSplashScreenShown}
   >
-    <AlephiumLogoContainer
-      initial={{ opacity: 0, scale: 1.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8 }}
-    >
+    <AlephiumLogoContainer initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1 }} {...slowTransition}>
       <AlephiumLogo />
     </AlephiumLogoContainer>
   </StyledSplashScreen>

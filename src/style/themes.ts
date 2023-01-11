@@ -59,12 +59,12 @@ export const lightTheme: DefaultTheme = {
 export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
-    primary: '#19191E',
-    secondary: '#141417',
+    primary: '#1B1B1F',
+    secondary: '#17171A',
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: colord('#101012').alpha(0.32).toRgbString(),
+    accent: colord('#598BED').alpha(0.07).toRgbString(),
     background1: '#121215'
   },
   font: {

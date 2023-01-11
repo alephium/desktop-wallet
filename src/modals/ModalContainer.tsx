@@ -20,6 +20,7 @@ import { motion } from 'framer-motion'
 import { KeyboardEvent, ReactNode, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
+import { fadeInOutFast } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
 import { modalClosed, modalOpened } from '@/store/appSlice'
@@ -67,14 +68,7 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
 
   return (
     <div className={className} onKeyDown={handleEscapeKeyPress} tabIndex={0} id={modalId.current} ref={modalRef}>
-      <ModalBackdrop
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        onClick={closeModal}
-        focusMode={focusMode}
-      />
+      <ModalBackdrop {...fadeInOutFast} onClick={closeModal} focusMode={focusMode} />
       {children}
     </div>
   )

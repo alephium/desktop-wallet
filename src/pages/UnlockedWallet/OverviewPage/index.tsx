@@ -21,21 +21,23 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import OverviewPageHeader from '@/components/OverviewPage/Header'
-import OverviewPageTransactionList from '@/components/OverviewPage/TransactionList'
+import { fadeIn } from '@/animations'
 import { PageH2 } from '@/components/PageComponents/PageHeadings'
 import { Address } from '@/contexts/addresses'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+
+import Header from './Header'
+import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()
   const { t } = useTranslation('App')
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-      <OverviewPageHeader />
+    <motion.div {...fadeIn}>
+      <Header />
       <PageH2>{t`Transaction history`}</PageH2>
-      <OverviewPageTransactionList onTransactionClick={setSelectedTransaction} />
+      <TransactionList onTransactionClick={setSelectedTransaction} />
       <AnimatePresence>
         {selectedTransaction && (
           <TransactionDetailsModal

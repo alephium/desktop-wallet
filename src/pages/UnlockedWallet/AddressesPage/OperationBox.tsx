@@ -21,10 +21,9 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
+import Button from '@/components/Button'
 import { openInWebBrowser } from '@/utils/misc'
-
-import ActionLink from './ActionLink'
-import Button from './Button'
 
 interface OperationBoxProps {
   title: string
@@ -76,9 +75,9 @@ const OperationBox = ({
 
 export default styled(OperationBox)`
   padding: var(--spacing-3) var(--spacing-5);
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius);
+  background-color: ${({ theme }) => theme.bg.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-huge);
   max-width: 228px;
   display: flex;
   flex-direction: column;

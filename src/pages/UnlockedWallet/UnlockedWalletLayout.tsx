@@ -24,6 +24,12 @@ import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeInSlowly } from '@/animations'
+import AppHeader from '@/components/AppHeader'
+import Button from '@/components/Button'
+import NavItem from '@/components/NavItem'
+import Scrollbar from '@/components/Scrollbar'
+import Spinner from '@/components/Spinner'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
@@ -36,13 +42,7 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { TxType } from '@/types/transactions'
 import { getInitials } from '@/utils/misc'
 
-import AppHeader from './AppHeader'
-import Button from './Button'
-import NavItem from './NavItem'
-import Scrollbar from './Scrollbar'
-import Spinner from './Spinner'
-
-interface WalletLayout {
+interface UnlockedWalletLayoutProps {
   className?: string
 }
 
@@ -51,7 +51,7 @@ dayjs.extend(relativeTime)
 // This shall be removed once v2.0.0 is released
 const hideContractButtons = true
 
-const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, className }) => {
   const { t } = useTranslation('App')
   const { networkStatus, activeWalletName } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
@@ -64,12 +64,7 @@ const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className={className}
-      >
+      <motion.div {...fadeInSlowly} className={className}>
         <WalletSidebar>
           <CurrentWalletInitials
             onClick={() => setIsNotificationsModalOpen(true)}
@@ -133,7 +128,7 @@ const WalletLayout: FC<WalletLayout> = ({ children, className }) => {
   )
 }
 
-export default styled(WalletLayout)`
+export default styled(UnlockedWalletLayout)`
   display: flex;
   width: 100%;
   height: 100%;
@@ -154,13 +149,9 @@ const WalletSidebar = styled.div`
 const MainContent = styled.main`
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-
-  padding: 56px;
   padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
-
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.background1};
 `
 
 const SideNavigation = styled.nav`

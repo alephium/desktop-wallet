@@ -24,6 +24,7 @@ import { WheelEvent } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import { fadeInBottom } from '@/animations'
 import {
   inputDefaultStyle,
   InputErrorMessage,
@@ -78,7 +79,7 @@ const Input = ({
         onWheel={handleScroll}
       />
       {!disabled && isValid && (
-        <InputValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+        <InputValidIconContainer {...fadeInBottom}>
           <Check strokeWidth={3} />
         </InputValidIconContainer>
       )}

@@ -19,11 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
-import UnlockedWalletLayout from '@/components/UnlockedWalletLayout'
 import { useAppSelector } from '@/hooks/redux'
-import AddressDetailsPage from '@/pages/Wallet/AddressDetailsPage'
-import AddressesPage from '@/pages/Wallet/AddressesPage'
-import OverviewPage from '@/pages/Wallet/OverviewPage'
+import AddressDetailsPage from '@/pages/UnlockedWallet/AddressDetailsPage'
+import AddressesPage from '@/pages/UnlockedWallet/AddressesPage'
+import OverviewPage from '@/pages/UnlockedWallet/OverviewPage'
+import UnlockedWalletLayout from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
 const WalletRoutes = () => {
   const navigate = useNavigate()

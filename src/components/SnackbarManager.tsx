@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import styled from 'styled-components'
 
+import { fadeInBottom, fadeOut } from '@/animations'
 import { useGlobalContext } from '@/contexts/global'
 import { deviceBreakPoints } from '@/style/globalStyles'
 
@@ -48,12 +49,7 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
     <SnackbarManagerContainer>
       <AnimatePresence>
         {message && (
-          <SnackbarPopup
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={message?.type}
-          >
+          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message?.type}>
             {message?.text}
           </SnackbarPopup>
         )}

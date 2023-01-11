@@ -25,36 +25,45 @@ import useFocusOnMount from '@/hooks/useFocusOnMount'
 
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
-interface SideModalProps extends ModalContainerProps {
+interface BottomModalProps extends ModalContainerProps {
   label: string
+  contentHeight?: number
+  className?: string
 }
 
-const SideModal = ({ onClose, children, label }: SideModalProps) => {
+const BottomModal = ({ onClose, children, label, contentHeight, className }: BottomModalProps) => {
   const elRef = useFocusOnMount<HTMLDivElement>()
 
   return (
-    <ModalContainer onClose={onClose}>
-      <Sidebar role="dialog" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} {...fastTransition}>
+    <ModalContainer onClose={onClose} className={className}>
+      <Content
+        role="dialog"
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        {...fastTransition}
+        style={{ maxHeight: contentHeight }}
+      >
         <Scrollbar>
           <div ref={elRef} tabIndex={0} aria-label={label}>
             {children}
           </div>
         </Scrollbar>
-      </Sidebar>
+      </Content>
     </ModalContainer>
   )
 }
 
-export default SideModal
+export default BottomModal
 
-const Sidebar = styled(motion.div)`
+const Content = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  margin-left: auto;
+  margin-top: auto;
+  /* height: auto; */
+  height: 100%;
+  max-height: 95%;
   width: 100%;
-  max-width: 476px;
-  height: 100vh;
-  background-color: ${({ theme }) => theme.bg.primary};
   position: relative;
   overflow: auto;
 `

@@ -20,10 +20,11 @@ import { motion } from 'framer-motion'
 import { Lock } from 'lucide-react'
 import styled from 'styled-components'
 
+import { fadeInOutBottomFast } from '@/animations'
+import Button from '@/components/Button'
+import WalletSwitcher from '@/components/WalletSwitcher'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
-import Button from '../components/Button'
-import WalletSwitcher from '../components/WalletSwitcher'
 import { useGlobalContext } from '../contexts/global'
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
@@ -32,13 +33,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>
-      <NotificationsBox
-        role="dialog"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
+      <NotificationsBox role="dialog" {...fadeInOutBottomFast}>
         <WalletSwitcher />
         <Button onClick={lockWallet} wide transparent Icon={Lock}>
           Lock wallet

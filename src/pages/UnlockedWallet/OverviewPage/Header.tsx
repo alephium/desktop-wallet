@@ -23,15 +23,16 @@ import { useTranslation } from 'react-i18next'
 import { ElementRef } from 'react-scrollbars-custom/dist/types/types'
 import styled from 'styled-components'
 
-import AddressSummaryCard, { addressSummaryCardWidthPx } from '@/components/AddressSummaryCard'
 import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
-import WalletSummaryCard from '@/components/WalletSummaryCard'
 import { useAddressesContext } from '@/contexts/addresses'
 import DayskyImageSrc from '@/images/daysky.jpeg'
 import NightskyImageSrc from '@/images/nightsky.png'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { sortAddressList } from '@/utils/addresses'
+
+import AddressSummaryCard, { addressSummaryCardWidthPx } from './AddressSummaryCard'
+import WalletSummaryCard from './WalletSummaryCard'
 
 const OverviewPageHeader = ({ className }: { className?: string }) => {
   const { t } = useTranslation('App')

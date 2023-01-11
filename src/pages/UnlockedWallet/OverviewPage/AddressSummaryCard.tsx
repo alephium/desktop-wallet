@@ -21,13 +21,13 @@ import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
+import { fastTransition } from '@/animations'
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import ClipboardButton from '@/components/Buttons/ClipboardButton'
+import QRCodeButton from '@/components/Buttons/QRCodeButton'
+import InputArea from '@/components/Inputs/InputArea'
 import { Address } from '@/contexts/addresses'
-
-import AddressBadge from './AddressBadge'
-import Amount from './Amount'
-import ClipboardButton from './Buttons/ClipboardButton'
-import QRCodeButton from './Buttons/QRCodeButton'
-import InputArea from './Inputs/InputArea'
 
 interface AddressSummaryCardProps {
   address: Address
@@ -54,7 +54,7 @@ const AddressSummaryCard = ({ address, clickable, className, index, totalCards }
       className={className}
       initial={{ x: collapsedPosition - 20 }}
       animate={{ x: collapsedPosition }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+      {...fastTransition}
     >
       <InputAreaStyled onInput={onInput} clickable={clickable}>
         <AddressNameSection collapsed={!clickable} tabIndex={0} role="representation">
