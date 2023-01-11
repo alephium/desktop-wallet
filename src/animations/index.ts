@@ -16,13 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+const transition = { duration: 0.3 }
+
 export const fadeIn = {
   initial: { opacity: 0 },
-  animate: { opacity: 1 }
+  animate: { opacity: 1 },
+  transition
 }
 
 export const fadeOut = {
-  exit: { opacity: 0 }
+  exit: { opacity: 0 },
+  transition
 }
 
 export const fadeInOut = {
@@ -32,7 +36,8 @@ export const fadeInOut = {
 
 export const fadeInBottom = {
   initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 }
+  animate: { opacity: 1, y: 0 },
+  transition
 }
 
 export const slowTransition = {
