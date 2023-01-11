@@ -56,7 +56,6 @@ const AddressesPage = () => {
   ])
   const discoverAndSaveActiveAddresses = useAddressDiscovery()
 
-  const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
@@ -165,14 +164,7 @@ const AddressesPage = () => {
           />
         </AdvancedOperationsHeader>
       </AdvancedOperationsPanel>
-      <AnimatePresence mode="wait" initial={true}>
-        {isGenerateNewAddressModalOpen && (
-          <NewAddressModal
-            singleAddress
-            title={t`New address`}
-            onClose={() => setIsGenerateNewAddressModalOpen(false)}
-          />
-        )}
+      <AnimatePresence>
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (
           <NewAddressModal

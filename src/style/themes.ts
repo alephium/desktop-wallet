@@ -28,7 +28,8 @@ export const lightTheme: DefaultTheme = {
     hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
     accent: colord('#000').alpha(0.04).toRgbString(),
-    background1: '#F0F0F0'
+    background1: '#F0F0F0',
+    background2: '#F0F0F0'
   },
   font: {
     primary: '#000',
@@ -65,12 +66,13 @@ export const darkTheme: DefaultTheme = {
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
     accent: colord('#598BED').alpha(0.07).toRgbString(),
-    background1: '#121215'
+    background1: '#121215',
+    background2: 'rgba(16, 16, 18, 1)'
   },
   font: {
     primary: '#e3e3e3',
     secondary: '#C0C0C0',
-    tertiary: '#767679',
+    tertiary: 'rgba(255, 255, 255, 0.4)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
     highlight: '#ffb800'
@@ -85,7 +87,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '0 25px 25px rgba(0, 0, 0, 0.2)'
   },
   global: {
-    accent: '#6083FF',
+    accent: 'rgba(89, 139, 237)',
     complementary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#3ed282',

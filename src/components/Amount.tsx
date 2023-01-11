@@ -96,7 +96,7 @@ const Amount = ({
 }
 
 export default styled(Amount)`
-  color: ${({ theme, color }) => color ?? theme.font.primary};
+  color: ${({ theme, color }) => color ?? 'inherit'};
 `
 
 const Decimals = styled.span`

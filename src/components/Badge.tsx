@@ -26,6 +26,7 @@ import Truncate from './Truncate'
 interface BadgeProps {
   color?: string
   border?: boolean
+  transparent?: boolean
   truncate?: boolean
   rounded?: boolean
   className?: string
@@ -38,7 +39,7 @@ const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tool
 )
 
 export default styled(Badge)`
-  ${({ color, theme, rounded, border, truncate }) => {
+  ${({ color, theme, rounded, border, truncate, transparent }) => {
     const usedColor = color || theme.font.primary
 
     return css`
@@ -46,10 +47,10 @@ export default styled(Badge)`
       padding: 5px 10px;
       color: ${usedColor};
       border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
-      background-color: ${colord(usedColor).alpha(0.08).toRgbString()};
+      background-color: ${!transparent && colord(usedColor).alpha(0.08).toRgbString()};
       ${border &&
       css`
-        border: 1px solid ${colord(usedColor).alpha(0.2).toRgbString()};
+        border: 1px solid ${theme.border.secondary};
       `};
       ${truncate &&
       css`

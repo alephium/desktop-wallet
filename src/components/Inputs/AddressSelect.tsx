@@ -162,7 +162,7 @@ const AddressSelectModal = ({
         )}
       </div>
       <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onClose}>
+        <ModalFooterButton mode="secondary" onClick={onClose}>
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton

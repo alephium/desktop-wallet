@@ -284,5 +284,8 @@
   "Localhost": "Localhost",
   "Delete": "Delete",
   "Timestamp": "Timestamp",
-  "Connect wallet to dApp": "Connect wallet to dApp"
+  "Connect wallet to dApp": "Connect wallet to dApp",
+  "This is the default address": "This is the default address",
+  "Set as the default address": "Set as the default address",
+  "Lock wallet": "Lock wallet"
 }

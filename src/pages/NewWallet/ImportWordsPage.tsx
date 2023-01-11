@@ -110,7 +110,7 @@ const ImportWordsPage = () => {
         </Paragraph>
       </PanelContentContainer>
       <FooterActionsContainer>
-        <Button secondary onClick={onButtonBack}>
+        <Button mode="secondary" onClick={onButtonBack}>
           {t`Cancel`}
         </Button>
         <Button onClick={handleWalletImport} disabled={!isNextButtonActive}>

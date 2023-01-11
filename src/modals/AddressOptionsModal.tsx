@@ -110,7 +110,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
         />
         <HorizontalDivider narrow />
         <ModalFooterButtons>
-          <ModalFooterButton secondary onClick={onClose}>
+          <ModalFooterButton mode="secondary" onClick={onClose}>
             {t`Cancel`}
           </ModalFooterButton>
           <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>

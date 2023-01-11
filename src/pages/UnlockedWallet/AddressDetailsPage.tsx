@@ -77,7 +77,7 @@ const AddressDetailsPage = () => {
           </PageH1Styled>
           {address.settings.label && <AddressBadgeStyled address={address} hideStar />}
           <OptionsButton
-            transparent
+            mode="transparent"
             squared
             onClick={() => setIsAddressOptionsModalOpen(true)}
             aria-label={t`Address options`}

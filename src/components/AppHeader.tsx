@@ -125,7 +125,12 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
           <>
             <HeaderDivider />
             <TooltipWrapper content={t`Connect wallet to dApp`}>
-              <Button transparent squared onClick={() => setIsWalletConnectModalOpen(true)} aria-label="WalletConnect">
+              <Button
+                mode="transparent"
+                squared
+                onClick={() => setIsWalletConnectModalOpen(true)}
+                aria-label="WalletConnect"
+              >
                 <img src={walletConnectIcon} style={{ width: '100%' }} />
               </Button>
             </TooltipWrapper>

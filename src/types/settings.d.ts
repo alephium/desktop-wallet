@@ -33,6 +33,7 @@ declare module 'styled-components' {
       contrast: string
       accent: string
       background1: string
+      background2: string
     }
     font: {
       primary: string

@@ -24,10 +24,9 @@ import styled, { css } from 'styled-components'
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
-  secondary?: boolean
-  alert?: boolean
+  mode?: 'primary' | 'secondary' | 'transparent'
+  variant?: 'default' | 'contrast' | 'valid' | 'alert'
   disabled?: boolean
-  transparent?: boolean
   squared?: boolean
   submit?: boolean
   short?: boolean
@@ -37,8 +36,8 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, ...props }: ButtonProps) => {
-  const [canBeAnimated, setCanBeAnimateds] = useState(props.squared ? true : false)
+const Button = ({ children, disabled, submit, Icon, className, style, ...props }: ButtonProps) => {
+  const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -65,7 +64,7 @@ const Button = ({ children, disabled, submit, Icon, className, ...props }: Butto
       custom={disabled}
       disabled={disabled}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
-      onAnimationComplete={() => setCanBeAnimateds(true)}
+      onAnimationComplete={() => setCanBeAnimated(true)}
       type={submit ? 'submit' : 'button'}
       ref={buttonRef}
     >
@@ -80,54 +79,75 @@ const Button = ({ children, disabled, submit, Icon, className, ...props }: Butto
 }
 
 export default styled(Button)`
-  ${({ theme, secondary, alert, transparent, children }) => {
-    const bgColor =
-      alert && !secondary
-        ? theme.global.alert
-        : transparent
-        ? 'transparent'
-        : secondary
-        ? theme.bg.secondary
-        : theme.global.accent
-    const hoverBgColor = transparent
-      ? colord(theme.bg.primary).isDark()
-        ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
-        : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
-      : secondary
-      ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
-      : alert
-      ? colord(theme.global.alert).darken(0.08).toRgbString()
-      : colord(theme.global.accent).darken(0.08).toRgbString()
-    const activeBgColor = transparent
-      ? colord(theme.bg.primary).isDark()
-        ? colord(theme.bg.accent).alpha(0.4).toRgbString()
-        : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
-      : secondary
-      ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
-      : alert
-      ? colord(theme.global.alert).lighten(0.03).toRgbString()
-      : colord(theme.global.accent).lighten(0.03).toRgbString()
-    const color =
-      alert && secondary
-        ? theme.global.alert
-        : transparent
-        ? theme.font.secondary
-        : alert
-        ? theme.font.contrastPrimary
-        : secondary
-        ? theme.global.accent
-        : theme.name === 'light'
-        ? theme.font.contrastPrimary
-        : theme.font.primary
-    const hoverColor = transparent && theme.font.primary
+  ${({ theme, mode = 'primary', variant = 'default', children }) => {
+    const bgColor = {
+      primary: {
+        default: theme.global.accent,
+        contrast: theme.bg.background2,
+        valid: theme.global.valid,
+        alert: theme.global.alert
+      }[variant],
+      secondary: {
+        default: theme.bg.primary,
+        contrast: theme.bg.background2,
+        valid: theme.global.valid,
+        alert: theme.global.alert
+      }[variant],
+      transparent: 'transparent'
+    }[mode]
+
+    const color = {
+      primary: {
+        default: 'white',
+        contrast: theme.font.secondary,
+        valid: theme.font.contrastPrimary,
+        alert: theme.font.contrastPrimary
+      }[variant],
+      secondary: {
+        default: theme.font.primary,
+        contrast: theme.font.secondary,
+        valid: theme.font.contrastPrimary,
+        alert: theme.font.contrastPrimary
+      }[variant],
+      transparent: theme.font.secondary
+    }[mode]
+
+    const boxShadow = {
+      primary: undefined,
+      secondary: theme.shadow.primary,
+      transparent: undefined
+    }[mode]
+
+    const hoverBgColor =
+      mode === 'transparent'
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
+          : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
+        : mode === 'secondary'
+        ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
+        : variant === 'alert'
+        ? colord(theme.global.alert).darken(0.08).toRgbString()
+        : colord(theme.global.accent).darken(0.08).toRgbString()
+    const activeBgColor =
+      mode === 'transparent'
+        ? colord(theme.bg.primary).isDark()
+          ? colord(theme.bg.accent).alpha(0.4).toRgbString()
+          : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
+        : mode === 'secondary'
+        ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
+        : variant === 'alert'
+        ? colord(theme.global.alert).lighten(0.03).toRgbString()
+        : colord(theme.global.accent).lighten(0.03).toRgbString()
+    const hoverColor = mode === 'transparent' && theme.font.primary
 
     return css`
-      color: ${color};
       background-color: ${bgColor};
+      color: ${color};
+      box-shadow: ${boxShadow};
 
       &:hover {
         color: ${hoverColor};
-        background-color: ${hoverBgColor};
+        background-color: ${hoverBgColor} !important;
       }
 
       &:active {
@@ -150,7 +170,7 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (squared ? '40px' : short ? '34px' : 'var(--inputHeight)')};
+  height: ${({ squared, short }) => (squared || short ? '40px' : 'var(--inputHeight)')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-medium);
