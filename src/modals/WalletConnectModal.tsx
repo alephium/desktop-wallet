@@ -53,7 +53,7 @@ const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
 const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
   const { addresses } = useAddressesContext()

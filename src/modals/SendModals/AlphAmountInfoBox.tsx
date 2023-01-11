@@ -29,7 +29,7 @@ interface AlphAmountInfoBoxProps {
 }
 
 const AlphAmountInfoBox = ({ amount, label, fullPrecision = false }: AlphAmountInfoBoxProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <InfoBox label={label ?? t`Amount`}>

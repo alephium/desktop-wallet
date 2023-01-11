@@ -45,7 +45,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   isSubmitDisabled = false,
   children
 }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { activeWalletName, setSnackbarMessage } = useGlobalContext()
   const [password, setPassword] = useState('')
 

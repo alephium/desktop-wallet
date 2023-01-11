@@ -29,7 +29,7 @@ import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 

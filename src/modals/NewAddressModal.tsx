@@ -54,7 +54,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 
   const generateNewAddress = useCallback(

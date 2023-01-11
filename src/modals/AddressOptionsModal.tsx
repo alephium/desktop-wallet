@@ -38,7 +38,7 @@ interface AddressOptionsModal {
 }
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',

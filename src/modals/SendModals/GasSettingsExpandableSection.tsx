@@ -17,8 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import i18next from 'i18next'
 import { useEffect, useState } from 'react'
-import { TFunction, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
 
 import AlefSymbol from '@/components/AlefSymbol'
@@ -56,7 +57,7 @@ const GasSettingsExpandableSection = ({
   onGasAmountChange,
   onGasPriceChange
 }: GasSettingsExpandableSectionProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
 
   const expectedFeeInALPH =
@@ -78,7 +79,7 @@ const GasSettingsExpandableSection = ({
 }
 
 const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [gasAmount, setGasAmount] = useStateWithParsed<GasAmountParsed>(
     value.parsed,
     value.parsed !== undefined ? value.parsed.toString() : ''
@@ -98,7 +99,7 @@ const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
       return
     }
 
-    const errorMessage = getAmountErrorMessage(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false, t)
+    const errorMessage = getAmountErrorMessage(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false)
     setGasAmount(newGasAmount, !errorMessage ? parseInt(newGasAmount) : undefined, errorMessage)
   }
 
@@ -116,7 +117,7 @@ const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
 }
 
 const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [gasPrice, setGasPrice] = useStateWithParsed<GasPriceParsed>(
     value.parsed,
     value.parsed !== undefined ? value.parsed : ''
@@ -136,7 +137,7 @@ const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
       return
     }
 
-    const errorMessage = getAmountErrorMessage(newGasPrice, MINIMAL_GAS_PRICE, true, t)
+    const errorMessage = getAmountErrorMessage(newGasPrice, MINIMAL_GAS_PRICE, true)
     setGasPrice(newGasPrice, !errorMessage ? newGasPrice : undefined, errorMessage)
   }
 
@@ -166,18 +167,13 @@ const ExpandableSectionStyled = styled(ExpandableSection)`
   margin-top: 38px;
 `
 
-const getAmountErrorMessage = (
-  amount: string,
-  minAmount: bigint,
-  shouldConvertToSet: boolean,
-  t: TFunction<'App'>
-): string => {
+const getAmountErrorMessage = (amount: string, minAmount: bigint, shouldConvertToSet: boolean): string => {
   try {
     const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
 
-    if (amountNumber < minAmount) return t('The amount must be greater than {{ minAmount }}', { minAmount })
+    if (amountNumber < minAmount) return i18next.t('The amount must be greater than {{ minAmount }}', { minAmount })
   } catch (e) {
-    return t`Unable to convert the amount`
+    return i18next.t`Unable to convert the amount`
   }
 
   return ''

@@ -34,7 +34,7 @@ interface WalletRemovalModalProps {
 }
 
 const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemovalModalProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
 
   return (

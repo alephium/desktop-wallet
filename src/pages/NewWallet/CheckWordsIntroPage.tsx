@@ -34,7 +34,7 @@ import { ReactComponent as LockBodySVG } from '@/images/lock_body.svg'
 import { ReactComponent as LockHandleSVG } from '@/images/lock_handle.svg'
 
 const CheckWordsIntroPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { onButtonBack, onButtonNext } = useStepsContext()
 
   return (

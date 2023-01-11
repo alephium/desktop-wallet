@@ -46,7 +46,7 @@ import ContactsTabContent from './ContactsTabContent'
 import OperationBox from './OperationBox'
 
 const AddressesPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { generateOneAddressPerGroup } = useAddressesContext()

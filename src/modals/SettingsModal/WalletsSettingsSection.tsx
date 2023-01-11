@@ -32,7 +32,7 @@ import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
 
 const WalletsSettingsSection = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { activeWalletName, walletNames, deleteWallet, lockWallet } = useGlobalContext()
   const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
 
@@ -111,7 +111,7 @@ interface WalletItemProps {
 }
 
 const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
   return (

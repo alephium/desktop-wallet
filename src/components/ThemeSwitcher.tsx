@@ -30,7 +30,7 @@ interface ThemeSwitcherProps {
 }
 
 const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const switchTheme = useSwitchTheme()
   const {
     settings: {

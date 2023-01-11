@@ -31,7 +31,7 @@ import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <motion.div {...fadeIn}>

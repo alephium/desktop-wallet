@@ -131,7 +131,7 @@ const AddressSelectModal = ({
   title: string
   hideEmptyAvailableBalance?: boolean
 }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [selectedAddress, setSelectedAddress] = useState(selectedOption)
   const displayedOptions = hideEmptyAvailableBalance
     ? options.filter((address) => address.availableBalance > 0)

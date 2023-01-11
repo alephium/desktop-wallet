@@ -37,7 +37,7 @@ import { useGlobalContext } from '@/contexts/global'
 const HomePage = () => {
   const [showInitialActions, setShowInitialActions] = useState(false)
   const { walletNames } = useGlobalContext()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   const hasWallet = walletNames.length > 0
 
@@ -84,7 +84,7 @@ interface LoginProps {
 }
 
 const Login = ({ walletNames, onLinkClick }: LoginProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [credentials, setCredentials] = useState({ walletName: '', password: '' })
   const { unlockWallet } = useGlobalContext()
   const navigate = useNavigate()
@@ -147,7 +147,7 @@ const InitialActions = ({
   onLinkClick?: () => void
 }) => {
   const navigate = useNavigate()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <>

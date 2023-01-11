@@ -36,7 +36,7 @@ interface OverviewPageTransactionListProps {
 }
 
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
   const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
 

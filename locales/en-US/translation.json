@@ -276,5 +276,12 @@
   "Show advanced operations": "Show advanced operations",
   "Open the advanced feature panel.": "Open the advanced feature panel.",
   "Last activity": "Last activity",
-  "Never used": "Never used"
+  "Never used": "Never used",
+  "Optional passphrase": "Optional passphrase",
+  "Pending": "Pending",
+  "Mainnet": "Mainnet",
+  "Testnet": "Testnet",
+  "Localhost": "Localhost",
+  "Delete": "Delete",
+  "Timestamp": "Timestamp"
 }

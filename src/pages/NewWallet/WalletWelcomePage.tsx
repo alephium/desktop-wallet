@@ -40,7 +40,7 @@ import { openInWebBrowser } from '@/utils/misc'
 // This is shown when a user creates or imports a wallet
 
 const WalletWelcomePage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
   const { width, height } = useWindowSize()

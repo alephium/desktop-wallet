@@ -32,7 +32,7 @@ interface TabBarProps {
 }
 
 const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <div className={className} role="tablist" aria-label={t`Tab navigation`}>

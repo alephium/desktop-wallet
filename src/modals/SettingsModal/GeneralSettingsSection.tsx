@@ -47,7 +47,7 @@ const themeOptions = [
 ]
 
 const GeneralSettingsSection = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const switchTheme = useSwitchTheme()
   const {
     settings: {

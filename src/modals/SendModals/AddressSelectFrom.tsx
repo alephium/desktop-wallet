@@ -28,7 +28,7 @@ export interface AddressSelectFromProps {
 }
 
 const AddressSelectFrom = ({ addresses, defaultAddress, onChange }: AddressSelectFromProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const updatedInitialAddress = addresses.find((a) => a.hash === defaultAddress.hash) ?? defaultAddress
 
   return (

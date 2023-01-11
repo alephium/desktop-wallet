@@ -47,7 +47,7 @@ interface TransferBuildTxModalContentProps {
 }
 
 const TransferTxModal = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { closeSendModal } = useSendModalContext()
   const initialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
 
@@ -66,7 +66,7 @@ const TransferTxModal = () => {
 }
 
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <>
@@ -79,7 +79,7 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
 }
 
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses } = useAddressesContext()
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',

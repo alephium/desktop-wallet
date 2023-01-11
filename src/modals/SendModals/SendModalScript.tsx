@@ -45,7 +45,7 @@ interface ScriptBuildTxModalContentProps {
 }
 
 const ScriptTxModal = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { closeSendModal } = useSendModalContext()
   const initialTxData = useDappTxData() as ScriptBuildTxModalContentProps['data']
 
@@ -64,7 +64,7 @@ const ScriptTxModal = () => {
 }
 
 const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <>
@@ -77,7 +77,7 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
 }
 
 const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxModalContentProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses } = useAddressesContext()
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',

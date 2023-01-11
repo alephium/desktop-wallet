@@ -104,7 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   children,
   overrideContextValue
 }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()

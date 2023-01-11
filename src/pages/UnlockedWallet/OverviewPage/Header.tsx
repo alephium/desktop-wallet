@@ -35,7 +35,7 @@ import AddressSummaryCard, { addressSummaryCardWidthPx } from './AddressSummaryC
 import WalletSummaryCard from './WalletSummaryCard'
 
 const OverviewPageHeader = ({ className }: { className?: string }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [areAddressSummariesExpanded, setAreAddressSummariesExpanded] = useState(false)
   const { addresses, isLoadingData } = useAddressesContext()
   const scrollbarRef = useRef<HTMLDivElement | null>(null)

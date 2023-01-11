@@ -38,7 +38,7 @@ import { useWalletContext } from '@/contexts/wallet'
 const WalletWordsPage = () => {
   const { mnemonic, setPlainWallet, setMnemonic } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   useEffect(() => {
     const wallet = walletGenerate()

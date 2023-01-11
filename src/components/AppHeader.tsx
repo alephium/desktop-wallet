@@ -46,7 +46,7 @@ interface AppHeader {
 const hideWalletConnectButton = false
 
 const AppHeader: FC<AppHeader> = ({ children, className }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
   const theme = useTheme()

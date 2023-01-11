@@ -25,7 +25,7 @@ import { TransactionInfoType } from '@/types/transactions'
 
 export const useTransactionUI = (infoType: TransactionInfoType) => {
   const theme = useTheme()
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return {
     label: {

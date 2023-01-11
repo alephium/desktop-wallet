@@ -39,7 +39,7 @@ import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { setSnackbarMessage, saveWallet } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()

@@ -44,7 +44,7 @@ interface WordKey {
 }
 
 const CheckWordsPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage, saveWallet } = useGlobalContext()

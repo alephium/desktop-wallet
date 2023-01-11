@@ -35,7 +35,7 @@ interface WalletNameSelectOptions {
 }
 
 const WalletSwitcher = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const { walletNames, activeWalletName, unlockWallet } = useGlobalContext()

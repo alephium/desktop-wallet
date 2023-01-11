@@ -31,7 +31,7 @@ import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from './CenteredModal'
 
 const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
   const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 

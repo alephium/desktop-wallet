@@ -27,7 +27,7 @@ interface BuildTxFooterButtons {
 }
 
 const BuildTxFooterButtons = ({ onSubmit, onCancel, isSubmitButtonActive }: BuildTxFooterButtons) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <ModalFooterButtons>
