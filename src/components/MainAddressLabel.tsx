@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 const MainAddressLabel = ({ className }: { className?: string }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   return <div className={className}>★ {t`Default address`}</div>
 }
 

@@ -27,7 +27,7 @@ interface LockProps {
 }
 
 const Lock = ({ unlockAt, className }: LockProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   if (!unlockAt) return null
 

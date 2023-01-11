@@ -30,7 +30,7 @@ import { PanelContentContainer } from '../PageComponents/PageContainers'
 import PanelTitle from '../PageComponents/PanelTitle'
 
 const SideBar = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
 
   return (

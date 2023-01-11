@@ -51,7 +51,7 @@ interface DetailsRowProps {
 }
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const {
     settings: {
       network: { explorerUrl }

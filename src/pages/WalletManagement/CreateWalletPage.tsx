@@ -38,7 +38,7 @@ import { useStepsContext } from '../../contexts/steps'
 import { useWalletContext } from '../../contexts/wallet'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { setCurrentWalletName, walletNames } = useGlobalContext()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()

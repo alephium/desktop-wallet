@@ -50,7 +50,7 @@ const IOList = ({
   truncate,
   disableA11y = false
 }: IOListProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { getAddress } = useAddressesContext()
   const handleShowAddress = useAddressLinkHandler()
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined

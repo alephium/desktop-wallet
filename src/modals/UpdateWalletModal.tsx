@@ -38,7 +38,7 @@ const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
 const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletModalProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { resetNewVersionDownloadTrigger } = useGlobalContext()
 
   const [status, setStatus] = useState<UpdateStatus>('download-available')

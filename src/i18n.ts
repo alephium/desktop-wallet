@@ -17,28 +17,25 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import i18next from 'i18next'
-import resourcesToBackend from 'i18next-resources-to-backend'
 import { initReactI18next } from 'react-i18next'
 
-i18next
-  .use(
-    resourcesToBackend((language, namespace, callback) => {
-      import(`../locales/${language}/${namespace}.json`)
-        .then((resources) => {
-          callback(null, resources)
-        })
-        .catch((error) => {
-          callback(error, null)
-        })
-    })
-  )
-  .use(initReactI18next)
-  .init({
-    lng: 'en-US',
-    fallbackLng: 'en-US',
-    interpolation: {
-      escapeValue: false
-    }
-  })
+import de from '../locales/de-DE/translation.json'
+import en from '../locales/en-US/translation.json'
+import fr from '../locales/fr-FR/translation.json'
+import vi from '../locales/vi-VN/translation.json'
+
+i18next.use(initReactI18next).init({
+  resources: {
+    'en-US': { translation: en },
+    'de-DE': { translation: de },
+    'fr-FR': { translation: fr },
+    'vi-VN': { translation: vi }
+  },
+  lng: 'en-US',
+  fallbackLng: 'en-US',
+  interpolation: {
+    escapeValue: false
+  }
+})
 
 export default i18next

@@ -46,7 +46,7 @@ const OperationBox = ({
   infoLink,
   placeholder
 }: OperationBoxProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <div className={className}>

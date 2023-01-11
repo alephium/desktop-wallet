@@ -46,7 +46,7 @@ const AddressBadge = ({
   disableA11y = false,
   ...props
 }: AddressBadgeProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { isPassphraseUsed } = useGlobalContext()
 
   if (!address) return null

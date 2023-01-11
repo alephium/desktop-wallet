@@ -28,7 +28,7 @@ import { useGlobalContext } from '../contexts/global'
 import CenteredModal from './CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { wallet } = useGlobalContext()
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 

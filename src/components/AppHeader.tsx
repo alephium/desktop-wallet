@@ -40,7 +40,7 @@ import ThemeSwitcher from './ThemeSwitcher'
 const hideWalletConnectButton = true
 
 const AppHeader: FC = ({ children }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
   const { scroll } = useScrollContext()

@@ -30,7 +30,7 @@ import SecretPhraseModal from '../SecretPhraseModal'
 import WalletRemovalModal from '../WalletRemovalModal'
 
 const WalletsSettingsSection = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { activeWalletName, wallet, walletNames, deleteWallet, lockWallet } = useGlobalContext()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState<string>('')
@@ -102,7 +102,7 @@ interface WalletItemProps {
 }
 
 const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
   return (

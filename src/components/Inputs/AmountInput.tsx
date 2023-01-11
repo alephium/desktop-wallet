@@ -34,7 +34,7 @@ interface AmountInputProps extends Omit<InputProps, 'onChange'> {
 
 const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps) => {
   const { value, onChange, ...restProps } = props
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [amountValue, setAmountValue] = useState(value)
   const availableAmountInAlph = convertSetToAlph(availableAmount)
   const minAmountInAlph = convertSetToAlph(MIN_UTXO_SET_AMOUNT)

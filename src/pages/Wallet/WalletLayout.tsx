@@ -56,7 +56,7 @@ dayjs.extend(relativeTime)
 const hideContractButtons = true
 
 const WalletLayout: FC = ({ children }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { wallet, walletNames, lockWallet, activeWalletName, unlockWallet, networkStatus } = useGlobalContext()
   const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)

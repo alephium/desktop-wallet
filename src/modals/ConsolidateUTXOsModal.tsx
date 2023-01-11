@@ -34,7 +34,7 @@ interface ConsolidateUTXOsModalProps {
 }
 
 const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: ConsolidateUTXOsModalProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
 
   return (

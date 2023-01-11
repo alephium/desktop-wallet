@@ -57,7 +57,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   handleSend,
   getWalletConnectResult
 }: SendModalProps<PT, T>) {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
   const { setAddress } = useAddressesContext()
   const {

@@ -45,7 +45,7 @@ interface DeployContractBuildTxModalContentProps {
 }
 
 const DeployContractTxModal = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { closeSendModal } = useSendModalContext()
   const initialTxData = useDappTxData() as DeployContractBuildTxModalContentProps['data']
   const [contractAddress, setContractAddress] = useState('')
@@ -98,7 +98,7 @@ const DeployContractTxModal = () => {
 }
 
 const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployContractTxData>) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <>
@@ -112,7 +112,7 @@ const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployCo
 }
 
 const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { addresses } = useAddressesContext()
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',

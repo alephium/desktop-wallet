@@ -29,7 +29,7 @@ interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const AddressEllipsed = ({ addressHash, disableA11y = false, ...props }: AddressEllipsedProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <ClipboardButton textToCopy={addressHash} tipText={t`Copy address`} disableA11y={disableA11y}>

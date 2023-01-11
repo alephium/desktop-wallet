@@ -58,7 +58,7 @@ const addressesTableHeaders: TableProps['headers'] = [
 const tableColumnWidths = addressesTableHeaders.map(({ width }) => width)
 
 const AddressesPage = () => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const { addresses, generateOneAddressPerGroup } = useAddressesContext()
   const navigate = useNavigate()

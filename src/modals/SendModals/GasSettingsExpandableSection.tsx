@@ -56,7 +56,7 @@ const GasSettingsExpandableSection = ({
   onGasAmountChange,
   onGasPriceChange
 }: GasSettingsExpandableSectionProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const theme = useTheme()
 
   const expectedFeeInALPH =
@@ -78,7 +78,7 @@ const GasSettingsExpandableSection = ({
 }
 
 const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [gasAmount, setGasAmount] = useStateWithParsed<GasAmountParsed>(
     value.parsed,
     value.parsed !== undefined ? value.parsed.toString() : ''
@@ -116,7 +116,7 @@ const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
 }
 
 const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const [gasPrice, setGasPrice] = useStateWithParsed<GasPriceParsed>(
     value.parsed,
     value.parsed !== undefined ? value.parsed : ''

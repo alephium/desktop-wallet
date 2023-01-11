@@ -33,7 +33,7 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <Wrapper>

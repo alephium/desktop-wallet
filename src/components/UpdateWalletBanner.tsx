@@ -29,7 +29,7 @@ interface UpdateWalletBannerProps {
 }
 
 const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
   const { triggerNewVersionDownload } = useGlobalContext()
 
   return (

@@ -40,7 +40,7 @@ interface TableCellProps {
 }
 
 const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => {
-  const { t } = useTranslation('App')
+  const { t } = useTranslation()
 
   return (
     <ScrollableWrapper>
