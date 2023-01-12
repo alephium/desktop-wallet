@@ -40,22 +40,32 @@ import GasSettingsExpandableSection from './GasSettingsExpandableSection'
 import { ModalInputFields } from './ModalInputFields'
 import SendModal from './SendModal'
 
+interface TransferTxModalProps {
+  onClose?: () => void
+  initialTxData?: Partial<TransferTxData>
+}
+
 interface TransferBuildTxModalContentProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>
   onSubmit: (data: TransferTxData) => void
   onCancel: () => void
 }
 
-const TransferTxModal = () => {
+const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   const { t } = useTranslation()
   const { closeSendModal } = useSendModalContext()
-  const initialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
+  const dappInitialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
+
+  const initData = {
+    ...(initialTxData ?? dappInitialTxData),
+    fromAddress: initialTxData?.fromAddress ?? dappInitialTxData.fromAddress
+  }
 
   return (
     <SendModal
       title={t`Send`}
-      initialTxData={initialTxData}
-      onClose={closeSendModal}
+      initialTxData={initData}
+      onClose={onClose ?? closeSendModal}
       BuildTxModalContent={TransferBuildTxModalContent}
       CheckTxModalContent={TransferCheckTxModalContent}
       buildTransaction={buildTransaction}

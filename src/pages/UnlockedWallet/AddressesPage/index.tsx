@@ -103,67 +103,69 @@ const AddressesPage = () => {
           </Tabs>
         </MainPanel>
       </Scrollbar>
-      <AdvancedOperationsPanel>
-        <AnimatePresence>
-          {isAdvancedSectionOpen && (
-            <BottomModalStyled
-              onClose={() => setIsAdvancedSectionOpen(false)}
-              label={t`Advanced operations`}
-              // TODO: Is there a better way than passing a hardcoded height?
-              contentHeight={344}
-            >
-              <AdvancedOperations>
-                <OperationBox
-                  title={t`Consolidate UTXOs`}
-                  Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
-                  description={t`Consolidate (merge) your UTXOs into one.`}
-                  buttonText={t`Start`}
-                  onButtonClick={() => setIsConsolidationModalOpen(true)}
-                  infoLink={links.utxoConsolidation}
+      {currentTab.value === 'addresses' && (
+        <AdvancedOperationsPanel>
+          <AnimatePresence>
+            {isAdvancedSectionOpen && (
+              <BottomModalStyled
+                onClose={() => setIsAdvancedSectionOpen(false)}
+                label={t`Advanced operations`}
+                // TODO: Is there a better way than passing a hardcoded height?
+                contentHeight={344}
+              >
+                <AdvancedOperations>
+                  <OperationBox
+                    title={t`Consolidate UTXOs`}
+                    Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
+                    description={t`Consolidate (merge) your UTXOs into one.`}
+                    buttonText={t`Start`}
+                    onButtonClick={() => setIsConsolidationModalOpen(true)}
+                    infoLink={links.utxoConsolidation}
+                  />
+                  <OperationBox
+                    title={t`Generate one address per group`}
+                    Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
+                    description={t`Useful for miners or DeFi use.`}
+                    buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
+                    onButtonClick={handleOneAddressPerGroupClick}
+                    infoLink={links.miningWallet}
+                  />
+                  <OperationBox
+                    title={t`Discover active addresses`}
+                    Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
+                    description={t`Scan the blockchain for addresses you used in the past.`}
+                    buttonText={t`Search`}
+                    onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
+                    infoLink={links.miningWallet}
+                  />
+                  <OperationBox
+                    placeholder
+                    title={t`More to come...`}
+                    Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
+                    description={t`You have great ideas you want to share?`}
+                    buttonText={t`Tell us!`}
+                    onButtonClick={() => openInWebBrowser(links.discord)}
+                  />
+                </AdvancedOperations>
+              </BottomModalStyled>
+            )}
+          </AnimatePresence>
+          <AdvancedOperationsHeader>
+            <AdvancedOperationsTitle>{t`Advanced operations`}</AdvancedOperationsTitle>
+            <AdvancedOperationsToggle
+              label={t`Show advanced operations`}
+              description={t`Open the advanced feature panel.`}
+              InputComponent={
+                <Toggle
+                  label={t`Show advanced operations`}
+                  toggled={isAdvancedSectionOpen}
+                  onToggle={() => setIsAdvancedSectionOpen(!isAdvancedSectionOpen)}
                 />
-                <OperationBox
-                  title={t`Generate one address per group`}
-                  Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
-                  description={t`Useful for miners or DeFi use.`}
-                  buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
-                  onButtonClick={handleOneAddressPerGroupClick}
-                  infoLink={links.miningWallet}
-                />
-                <OperationBox
-                  title={t`Discover active addresses`}
-                  Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
-                  description={t`Scan the blockchain for addresses you used in the past.`}
-                  buttonText={t`Search`}
-                  onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
-                  infoLink={links.miningWallet}
-                />
-                <OperationBox
-                  placeholder
-                  title={t`More to come...`}
-                  Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
-                  description={t`You have great ideas you want to share?`}
-                  buttonText={t`Tell us!`}
-                  onButtonClick={() => openInWebBrowser(links.discord)}
-                />
-              </AdvancedOperations>
-            </BottomModalStyled>
-          )}
-        </AnimatePresence>
-        <AdvancedOperationsHeader>
-          <AdvancedOperationsTitle>{t`Advanced operations`}</AdvancedOperationsTitle>
-          <AdvancedOperationsToggle
-            label={t`Show advanced operations`}
-            description={t`Open the advanced feature panel.`}
-            InputComponent={
-              <Toggle
-                label={t`Show advanced operations`}
-                toggled={isAdvancedSectionOpen}
-                onToggle={() => setIsAdvancedSectionOpen(!isAdvancedSectionOpen)}
-              />
-            }
-          />
-        </AdvancedOperationsHeader>
-      </AdvancedOperationsPanel>
+              }
+            />
+          </AdvancedOperationsHeader>
+        </AdvancedOperationsPanel>
+      )}
       <AnimatePresence>
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (
