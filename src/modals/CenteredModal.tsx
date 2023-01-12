@@ -65,7 +65,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
               </span>
               {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
             </PanelTitle>
-            <CloseButton aria-label={t`Close`} squared transparent onClick={onClose}>
+            <CloseButton aria-label={t`Close`} squared role="secondary" transparent onClick={onClose}>
               <X />
             </CloseButton>
           </TitleRow>

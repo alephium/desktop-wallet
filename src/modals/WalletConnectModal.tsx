@@ -222,9 +222,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t`Connect to a dApp`} onClose={onClose}>
         <Input onChange={(t) => setUri(t.target.value)} value={uri} label={t`Paste what was copied from the dApp`} />
         <ModalFooterButtons>
-          <ModalFooterButton secondary onClick={onClose}>
-            {t`Cancel`}
-          </ModalFooterButton>
+          <ModalFooterButton onClick={onClose}>{t`Cancel`}</ModalFooterButton>
           <ModalFooterButton onClick={() => handleConnect(uri)} disabled={uri === ''}>
             {t`Connect`}
           </ModalFooterButton>
@@ -274,7 +272,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
           />
         </Section>
         <ModalFooterButtons>
-          <ModalFooterButton secondary onClick={onReject}>
+          <ModalFooterButton role="secondary" onClick={onReject}>
             {t`Reject`}
           </ModalFooterButton>
           <ModalFooterButton onClick={() => onApprove(signerAddress)}>{t`Approve`}</ModalFooterButton>

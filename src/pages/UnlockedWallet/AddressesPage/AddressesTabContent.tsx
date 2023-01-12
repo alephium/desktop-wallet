@@ -16,43 +16,47 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dayjs from 'dayjs'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
-import AddressEllipsed from '@/components/AddressEllipsed'
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import Button from '@/components/Button'
+import { useAddressesContext } from '@/contexts/addresses'
+import NewAddressModal from '@/modals/NewAddressModal'
 import { sortAddressList } from '@/utils/addresses'
 
+import AddressCard from './AddressCard'
+
 const AddressesTabContent = () => {
-  const navigate = useNavigate()
   const { addresses } = useAddressesContext()
   const { t } = useTranslation()
 
-  const navigateToAddressDetailsPage = (addressHash: AddressHash) => () => navigate(`/wallet/addresses/${addressHash}`)
+  const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
 
   return (
     <motion.div {...fadeIn}>
       <Addresses>
         {sortAddressList(addresses).map((address) => (
-          <AddressCard
-            key={address.hash}
-            onClick={navigateToAddressDetailsPage(address.hash)}
-            onKeyPress={navigateToAddressDetailsPage(address.hash)}
-          >
-            <InfoSection style={{ backgroundColor: address.settings.color }}>
-              <AddressEllipsedStyled addressHash={address.hash} />
-              <LastActivity>
-                {address.lastUsed ? `${t`Last activity`} ${dayjs(address.lastUsed).fromNow()}` : t`Never used`}
-              </LastActivity>
-            </InfoSection>
-            <TokensSection></TokensSection>
-          </AddressCard>
+          <AddressCard hash={address.hash} key={address.hash} />
         ))}
+        <Placeholder>
+          <Text>Addresses allow you to organise your funds. You can create as many as you want!</Text>
+          <Button role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
+            + {t('New address')}
+          </Button>
+        </Placeholder>
       </Addresses>
+      <AnimatePresence>
+        {isGenerateNewAddressModalOpen && (
+          <NewAddressModal
+            singleAddress
+            title={t('New address')}
+            onClose={() => setIsGenerateNewAddressModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }
@@ -65,32 +69,19 @@ const Addresses = styled.div`
   gap: 25px;
 `
 
-const AddressCard = styled.div`
-  width: 305px;
-  border: 1px solid ${({ theme }) => theme.border.primary};
+const Placeholder = styled.div`
+  width: 222px;
   border-radius: var(--radius-huge);
-  background-color: ${({ theme }) => theme.bg.primary};
-  cursor: pointer;
+  border: 1px dashed ${({ theme }) => theme.border.primary};
+  padding: 70px 30px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
-const InfoSection = styled.div`
-  padding: 23px 23px 15px 23px;
-  border-top-left-radius: var(--radius-huge);
-  border-top-right-radius: var(--radius-huge);
-`
-
-const TokensSection = styled.div`
-  padding: 23px;
-  border-top: 1px solid ${({ theme }) => theme.border.primary};
-`
-
-const LastActivity = styled.div`
-  color: ${({ theme }) => theme.font.secondary}
-  font-size: 11px;
-  margin-top: 20px;
-`
-
-const AddressEllipsedStyled = styled(AddressEllipsed)`
-  font-size: 16px;
-  font-weight: var(--fontWeight-medium);
+const Text = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+  text-align: center;
+  line-height: 1.3;
+  margin-bottom: 20px;
 `

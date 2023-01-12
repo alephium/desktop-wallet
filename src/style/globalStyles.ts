@@ -62,6 +62,7 @@ export const GlobalStyle = createGlobalStyle`
     --radius-huge: 17px;
     --radius-full: 100%;
 
+    --fontWeight-normal: 400;
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
     --fontWeight-bold: 800;

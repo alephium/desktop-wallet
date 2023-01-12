@@ -146,7 +146,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         </ExpandableSection>
       )}
       <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onClose}>
+        <ModalFooterButton role="secondary" onClick={onClose}>
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onGenerateClick}>{t`Generate`}</ModalFooterButton>

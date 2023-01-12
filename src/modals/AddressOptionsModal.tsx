@@ -110,13 +110,13 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
         />
         <HorizontalDivider narrow />
         <ModalFooterButtons>
-          <ModalFooterButton secondary onClick={onClose}>
+          <ModalFooterButton role="secondary" onClick={onClose}>
             {t`Cancel`}
           </ModalFooterButton>
           <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
       </CenteredModal>
-      <AnimatePresence mode="wait" initial={true}>
+      <AnimatePresence>
         {isAddressSweepModalOpen && (
           <AddressSweepModal
             sweepAddress={address}

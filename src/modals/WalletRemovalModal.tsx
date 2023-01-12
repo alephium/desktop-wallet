@@ -52,7 +52,7 @@ const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemov
         </Paragraph>
       </Section>
       <Section inList>
-        <Button alert onClick={onWalletRemove}>
+        <Button variant="alert" onClick={onWalletRemove}>
           {t`CONFIRM REMOVAL`}
         </Button>
       </Section>

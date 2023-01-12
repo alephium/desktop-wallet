@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Lock } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeInOutBottomFast } from '@/animations'
@@ -30,13 +31,14 @@ import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
 const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
   const { lockWallet } = useGlobalContext()
+  const { t } = useTranslation()
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>
       <NotificationsBox role="dialog" {...fadeInOutBottomFast}>
         <WalletSwitcher />
         <Button onClick={lockWallet} wide transparent Icon={Lock}>
-          Lock wallet
+          {t('Lock wallet')}
         </Button>
       </NotificationsBox>
     </ModalContainer>
