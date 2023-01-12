@@ -88,10 +88,10 @@ const WalletsSettingsSection = () => {
             <Button role="secondary" onClick={lockWallet}>
               {t`Lock current wallet`}
             </Button>
-            <Button role="secondary" variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
+            <Button transparent variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
               {t`Export current wallet`}
             </Button>
-            <Button role="secondary" variant="alert" onClick={openSecretPhraseModal}>
+            <Button transparent variant="alert" onClick={openSecretPhraseModal}>
               {t`Show your secret recovery phrase`}
             </Button>
             <Button variant="alert" onClick={() => openRemoveWalletModal(activeWalletName)}>
@@ -129,6 +129,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
           aria-label={t`Delete`}
           tabIndex={0}
           squared
+          role="secondary"
           transparent
           onClick={() => onWalletDelete(walletName)}
           onBlur={() => setIsShowingDeleteButton(false)}

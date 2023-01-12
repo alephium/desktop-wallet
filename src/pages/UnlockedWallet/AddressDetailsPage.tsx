@@ -79,6 +79,7 @@ const AddressDetailsPage = () => {
           <OptionsButton
             transparent
             squared
+            role="secondary"
             onClick={() => setIsAddressOptionsModalOpen(true)}
             aria-label={t`Address options`}
           >
@@ -176,7 +177,7 @@ const AddressDetailsPage = () => {
           </TableRow>
         )}
       </Table>
-      <AnimatePresence role="wait" initial={true}>
+      <AnimatePresence>
         {isAddressOptionsModalOpen && (
           <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}

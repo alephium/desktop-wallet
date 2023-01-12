@@ -80,7 +80,7 @@ const Button = ({ children, disabled, submit, Icon, className, style, ...props }
 }
 
 export default styled(Button)`
-  ${({ theme, role = 'primary', variant = 'default', transparent, children }) => {
+  ${({ theme, role = 'primary', variant = 'default', transparent, borderless, children }) => {
     const bgColor = transparent
       ? 'transparent'
       : {
@@ -136,7 +136,7 @@ export default styled(Button)`
           }[variant]
         }[role]
 
-    const color = transparent
+    const fontColor = transparent
       ? theme.font.secondary
       : {
           primary: {
@@ -153,6 +153,25 @@ export default styled(Button)`
           }[variant]
         }[role]
 
+    const borderColor = borderless
+      ? 'transparent'
+      : transparent
+      ? {
+          primary: {
+            default: theme.global.accent,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert
+          }[variant],
+          secondary: {
+            default: theme.border.secondary,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert
+          }[variant]
+        }[role]
+      : theme.border.primary
+
     const boxShadow = transparent
       ? undefined
       : {
@@ -164,8 +183,9 @@ export default styled(Button)`
 
     return css`
       background-color: ${bgColor};
-      color: ${color};
+      color: ${fontColor};
       box-shadow: ${boxShadow};
+      border: 1px solid ${borderColor};
 
       &:hover {
         color: ${hoverColor};
@@ -183,7 +203,7 @@ export default styled(Button)`
         `}
 
         svg {
-          color: ${color};
+          color: ${fontColor};
         }
       }
     `
@@ -196,7 +216,6 @@ export default styled(Button)`
   width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-medium);
-  border: 1px solid ${({ theme, borderless }) => (borderless ? 'transparent' : theme.border.primary)};
   font-weight: var(--fontWeight-medium);
   font-size: 13px;
   font-family: inherit;

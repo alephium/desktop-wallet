@@ -89,7 +89,13 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
             )}
           </SideNavigation>
           <TooltipWrapper content={t`Settings`} tooltipId="sidenav">
-            <Button transparent squared onClick={() => setIsSettingsModalOpen(true)} aria-label={t`Settings`}>
+            <Button
+              transparent
+              squared
+              borderless
+              onClick={() => setIsSettingsModalOpen(true)}
+              aria-label={t`Settings`}
+            >
               <Settings />
             </Button>
           </TooltipWrapper>
@@ -102,6 +108,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
             {networkStatus === 'online' && (
               <TooltipWrapper content={t`Refresh data`}>
                 <RefreshButton
+                  role="secondary"
                   transparent
                   squared
                   onClick={refreshAddressesData}
@@ -115,7 +122,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
           </AppHeader>
         </Scrollbar>
       </motion.div>
-      <AnimatePresence role="wait" initial={true}>
+      <AnimatePresence>
         {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
         {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
         {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}

@@ -26,7 +26,7 @@ interface CompactToggleProps {
 }
 
 const CompactToggle = ({ toggled, onToggle, IconOn, IconOff, ...props }: CompactToggleProps) => (
-  <Button squared transparent onClick={() => onToggle(!toggled)} {...props}>
+  <Button squared transparent role="secondary" onClick={() => onToggle(!toggled)} {...props}>
     {toggled ? <IconOn /> : <IconOff />}
   </Button>
 )

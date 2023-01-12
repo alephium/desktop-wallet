@@ -95,7 +95,7 @@ const WalletSwitcher = () => {
           skipEqualityCheck
         />
       )}
-      <AnimatePresence role="wait" initial={true}>
+      <AnimatePresence>
         {isPasswordModalOpen && (
           <CenteredModal narrow title={t`Enter password`} onClose={onPasswordModalClose}>
             <PasswordConfirmation

@@ -116,7 +116,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
           <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
       </CenteredModal>
-      <AnimatePresence role="wait" initial={true}>
+      <AnimatePresence>
         {isAddressSweepModalOpen && (
           <AddressSweepModal
             sweepAddress={address}
