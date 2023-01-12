@@ -288,5 +288,8 @@
   "Connect wallet to dApp": "Connect wallet to dApp",
   "This is the default address": "This is the default address",
   "Set as the default address": "Set as the default address",
-  "Lock wallet": "Lock wallet"
+  "Lock wallet": "Lock wallet",
+  "Hide empty addresses": "Hide empty addresses",
+  "Addresses allow you to organise your funds. You can create as many as you want!": "Addresses allow you to organise your funds. You can create as many as you want!",
+  "Search for label, a hash or an asset...": "Search for label, a hash or an asset..."
 }

@@ -234,7 +234,7 @@ const AddressOption = styled(InputArea)`
 `
 
 const ClickableInput = styled.div<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid, true, true)};
+  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true)};
   display: flex;
   align-items: center;
   padding-right: 50px;

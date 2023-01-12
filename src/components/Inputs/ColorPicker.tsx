@@ -76,7 +76,7 @@ const ColorPickerContainer = styled.div<InputProps>`
 `
 
 const InputAreaStyled = styled(InputArea)<InputProps>`
-  ${({ isValid, value, label }) => inputDefaultStyle(isValid, !!value, !!label)}
+  ${({ isValid, value, label, Icon }) => inputDefaultStyle(isValid || !!Icon, !!value, !!label)}
   position: relative;
   display: inline-flex;
   align-items: center;
