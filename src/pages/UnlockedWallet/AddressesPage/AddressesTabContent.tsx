@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { SearchIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { fadeIn } from '@/animations'
+import { fadeIn, fadeInOut } from '@/animations'
 import Button from '@/components/Button'
 import Input from '@/components/Inputs/Input'
 import Toggle from '@/components/Inputs/Toggle'
@@ -35,6 +35,8 @@ import AddressCard from './AddressCard'
 const AddressesTabContent = () => {
   const { addresses } = useAddressesContext()
   const { t } = useTranslation()
+  const newAddressButtonRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(newAddressButtonRef)
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const [searchResults, setSearchResults] = useState(addresses)
@@ -80,6 +82,15 @@ const AddressesTabContent = () => {
             toggled={hideEmptyAddresses}
           />
         </HideEmptyAddressesToggle>
+        <AnimatePresence>
+          {!isInView && (
+            <ButtonContainer {...fadeInOut}>
+              <NewAddressHeaderButton role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
+                + {t('New address')}
+              </NewAddressHeaderButton>
+            </ButtonContainer>
+          )}
+        </AnimatePresence>
       </Header>
       <Addresses>
         {sortAddressList(visibleAddresses).map((address) => (
@@ -87,9 +98,11 @@ const AddressesTabContent = () => {
         ))}
         <Placeholder layout>
           <Text>{t('Addresses allow you to organise your funds. You can create as many as you want!')}</Text>
-          <Button role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
-            + {t('New address')}
-          </Button>
+          <motion.div ref={newAddressButtonRef}>
+            <Button role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
+              + {t('New address')}
+            </Button>
+          </motion.div>
         </Placeholder>
       </Addresses>
       <AnimatePresence>
@@ -109,6 +122,7 @@ export default AddressesTabContent
 
 const Header = styled.div`
   display: flex;
+  align-items: center;
   margin-bottom: 44px;
   gap: 28px;
 `
@@ -158,4 +172,13 @@ const HideEmptyAddressesToggle = styled.div`
 const ToggleText = styled.div`
   font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const NewAddressHeaderButton = styled(Button)`
+  margin: 0;
+  margin-left: auto;
+`
+
+const ButtonContainer = styled(motion.div)`
+  margin-left: auto;
 `
