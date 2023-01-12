@@ -50,7 +50,8 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
         Icon={Icon}
         borderless={!isActive}
         squared
-        mode={isActive ? 'secondary' : 'transparent'}
+        role="secondary"
+        transparent={!isActive}
         style={{
           cursor: isActive ? 'default' : undefined
         }}

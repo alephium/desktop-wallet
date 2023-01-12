@@ -37,7 +37,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
     <ModalContainer onClose={onClose} focusMode={focusMode}>
       <NotificationsBox role="dialog" {...fadeInOutBottomFast}>
         <WalletSwitcher />
-        <Button onClick={lockWallet} wide mode="transparent" Icon={Lock}>
+        <Button onClick={lockWallet} wide transparent Icon={Lock}>
           {t('Lock wallet')}
         </Button>
       </NotificationsBox>

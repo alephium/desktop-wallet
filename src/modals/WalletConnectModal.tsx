@@ -272,7 +272,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
           />
         </Section>
         <ModalFooterButtons>
-          <ModalFooterButton mode="secondary" onClick={onReject}>
+          <ModalFooterButton role="secondary" onClick={onReject}>
             {t`Reject`}
           </ModalFooterButton>
           <ModalFooterButton onClick={() => onApprove(signerAddress)}>{t`Approve`}</ModalFooterButton>

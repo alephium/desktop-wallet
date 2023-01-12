@@ -77,7 +77,7 @@ const AddressDetailsPage = () => {
           </PageH1Styled>
           {address.settings.label && <AddressBadgeStyled address={address} hideStar />}
           <OptionsButton
-            mode="transparent"
+            transparent
             squared
             onClick={() => setIsAddressOptionsModalOpen(true)}
             aria-label={t`Address options`}
@@ -176,7 +176,7 @@ const AddressDetailsPage = () => {
           </TableRow>
         )}
       </Table>
-      <AnimatePresence mode="wait" initial={true}>
+      <AnimatePresence role="wait" initial={true}>
         {isAddressOptionsModalOpen && (
           <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}

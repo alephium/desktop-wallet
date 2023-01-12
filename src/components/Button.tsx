@@ -24,8 +24,9 @@ import styled, { css } from 'styled-components'
 import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
-  mode?: 'primary' | 'secondary' | 'transparent'
+  role?: 'primary' | 'secondary'
   variant?: 'default' | 'contrast' | 'valid' | 'alert'
+  transparent?: boolean
   disabled?: boolean
   squared?: boolean
   submit?: boolean
@@ -79,66 +80,87 @@ const Button = ({ children, disabled, submit, Icon, className, style, ...props }
 }
 
 export default styled(Button)`
-  ${({ theme, mode = 'primary', variant = 'default', children }) => {
-    const bgColor = {
-      primary: {
-        default: theme.global.accent,
-        contrast: theme.bg.background2,
-        valid: theme.global.valid,
-        alert: theme.global.alert
-      }[variant],
-      secondary: {
-        default: theme.bg.primary,
-        contrast: theme.bg.background2,
-        valid: theme.global.valid,
-        alert: theme.global.alert
-      }[variant],
-      transparent: 'transparent'
-    }[mode]
+  ${({ theme, role = 'primary', variant = 'default', transparent, children }) => {
+    const bgColor = transparent
+      ? 'transparent'
+      : {
+          primary: {
+            default: theme.global.accent,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert
+          }[variant],
+          secondary: {
+            default: theme.bg.primary,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert
+          }[variant]
+        }[role]
 
-    const color = {
-      primary: {
-        default: 'white',
-        contrast: theme.font.secondary,
-        valid: theme.font.contrastPrimary,
-        alert: theme.font.contrastPrimary
-      }[variant],
-      secondary: {
-        default: theme.font.primary,
-        contrast: theme.font.secondary,
-        valid: theme.font.contrastPrimary,
-        alert: theme.font.contrastPrimary
-      }[variant],
-      transparent: theme.font.secondary
-    }[mode]
+    const hoverBgColor = transparent
+      ? colord(theme.bg.primary).isDark()
+        ? colord(theme.bg.primary).lighten(0.08).toRgbString()
+        : colord(theme.global.accent).lighten(0.9).alpha(0.4).toRgbString()
+      : {
+          primary: {
+            default: colord(theme.global.accent).darken(0.08).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
+            alert: colord(theme.global.alert).darken(0.08).toRgbString()
+          }[variant],
+          secondary: {
+            default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
+            alert: colord(theme.global.alert).darken(0.08).toRgbString()
+          }[variant]
+        }[role]
 
-    const boxShadow = {
-      primary: undefined,
-      secondary: theme.shadow.primary,
-      transparent: undefined
-    }[mode]
+    const activeBgColor = transparent
+      ? colord(theme.bg.primary).isDark()
+        ? colord(theme.global.accent).alpha(0.4).toRgbString()
+        : colord(theme.global.accent).lighten(0.1).alpha(0.15).toRgbString()
+      : {
+          primary: {
+            default: colord(theme.global.accent).lighten(0.03).toRgbString(),
+            contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
+            valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.03).toRgbString()
+          }[variant],
+          secondary: {
+            default: colord(theme.bg.primary).darken(0.08).toRgbString(),
+            contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
+            valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.03).toRgbString()
+          }[variant]
+        }[role]
 
-    const hoverBgColor =
-      mode === 'transparent'
-        ? colord(theme.bg.primary).isDark()
-          ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
-          : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
-        : mode === 'secondary'
-        ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
-        : variant === 'alert'
-        ? colord(theme.global.alert).darken(0.08).toRgbString()
-        : colord(theme.global.accent).darken(0.08).toRgbString()
-    const activeBgColor =
-      mode === 'transparent'
-        ? colord(theme.bg.primary).isDark()
-          ? colord(theme.bg.accent).alpha(0.4).toRgbString()
-          : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
-        : mode === 'secondary'
-        ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
-        : variant === 'alert'
-        ? colord(theme.global.alert).lighten(0.03).toRgbString()
-        : colord(theme.global.accent).lighten(0.03).toRgbString()
-    const hoverColor = mode === 'transparent' && theme.font.primary
+    const color = transparent
+      ? theme.font.secondary
+      : {
+          primary: {
+            default: 'white',
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.contrastPrimary
+          }[variant],
+          secondary: {
+            default: theme.font.primary,
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.contrastPrimary
+          }[variant]
+        }[role]
+
+    const boxShadow = transparent
+      ? undefined
+      : {
+          primary: undefined,
+          secondary: theme.shadow.primary
+        }[role]
+
+    const hoverColor = transparent && theme.font.primary
 
     return css`
       background-color: ${bgColor};
@@ -147,7 +169,7 @@ export default styled(Button)`
 
       &:hover {
         color: ${hoverColor};
-        background-color: ${hoverBgColor} !important;
+        background-color: ${hoverBgColor};
       }
 
       &:active {

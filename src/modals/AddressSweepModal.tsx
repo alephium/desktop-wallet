@@ -159,7 +159,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       </Content>
       <HorizontalDivider narrow />
       <ModalFooterButtons>
-        <ModalFooterButton mode="secondary" onClick={onClose}>
+        <ModalFooterButton role="secondary" onClick={onClose}>
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>

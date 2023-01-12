@@ -85,13 +85,13 @@ const WalletsSettingsSection = () => {
             <InfoBox label={t`Wallet name`} text={activeWalletName} />
           </Section>
           <Section>
-            <Button mode="secondary" onClick={lockWallet}>
+            <Button role="secondary" onClick={lockWallet}>
               {t`Lock current wallet`}
             </Button>
-            <Button mode="secondary" variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
+            <Button role="secondary" variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
               {t`Export current wallet`}
             </Button>
-            <Button mode="secondary" variant="alert" onClick={openSecretPhraseModal}>
+            <Button role="secondary" variant="alert" onClick={openSecretPhraseModal}>
               {t`Show your secret recovery phrase`}
             </Button>
             <Button variant="alert" onClick={() => openRemoveWalletModal(activeWalletName)}>
@@ -129,7 +129,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
           aria-label={t`Delete`}
           tabIndex={0}
           squared
-          mode="transparent"
+          transparent
           onClick={() => onWalletDelete(walletName)}
           onBlur={() => setIsShowingDeleteButton(false)}
         >

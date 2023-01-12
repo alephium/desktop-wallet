@@ -92,11 +92,7 @@ const OverviewPageHeader = ({ className }: { className?: string }) => {
             </AnimatePresence>
           </AddressSummaryCards>
         </Scrollbar>
-        <ExpandButton
-          onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)}
-          short
-          mode="transparent"
-        >
+        <ExpandButton onClick={() => setAreAddressSummariesExpanded(!areAddressSummariesExpanded)} short transparent>
           {areAddressSummariesExpanded && <ArrowLeft size="12px" />}
           {areAddressSummariesExpanded ? t`Reduce` : t`Show addresses`}
           {!areAddressSummariesExpanded && <ArrowRight size="12px" />}

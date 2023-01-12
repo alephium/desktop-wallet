@@ -132,7 +132,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
-        <Button mode="secondary" onClick={onButtonBack}>
+        <Button role="secondary" onClick={onButtonBack}>
           {t`Back`}
         </Button>
         <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick}>

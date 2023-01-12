@@ -43,7 +43,7 @@ const AddressesTabContent = () => {
         ))}
         <Placeholder>
           <Text>Addresses allow you to organise your funds. You can create as many as you want!</Text>
-          <Button mode="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
+          <Button role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
             + {t('New address')}
           </Button>
         </Placeholder>

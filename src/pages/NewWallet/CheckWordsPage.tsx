@@ -222,7 +222,7 @@ const CheckWordsPage = () => {
       ) : null}
       {selectedWords.length === wordList.current.length && (
         <FooterActionsContainer>
-          <Button mode="secondary" onClick={onButtonBack}>
+          <Button role="secondary" onClick={onButtonBack}>
             {t`Cancel`}
           </Button>
           <Button onClick={handleButtonNext} disabled={!areWordsValid}>
