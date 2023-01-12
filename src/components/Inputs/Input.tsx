@@ -22,16 +22,10 @@ import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { WheelEvent } from 'react'
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { fadeInBottom } from '@/animations'
-import {
-  inputDefaultStyle,
-  InputErrorMessage,
-  InputLabel,
-  InputProps,
-  InputValidIconContainer
-} from '@/components/Inputs'
+import { inputDefaultStyle, InputErrorMessage, InputIconContainer, InputLabel, InputProps } from '@/components/Inputs'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 const Input = ({
@@ -43,9 +37,12 @@ const Input = ({
   value,
   noMargin,
   hint,
+  Icon,
   children,
   ...props
 }: InputProps) => {
+  const theme = useTheme()
+
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -64,6 +61,7 @@ const Input = ({
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
       noMargin={noMargin}
+      className={className}
     >
       <InputLabel inputHasValue={!!value} htmlFor={props.id}>
         {label}
@@ -77,11 +75,17 @@ const Input = ({
         disabled={disabled}
         isValid={isValid}
         onWheel={handleScroll}
+        Icon={Icon}
       />
+      {!!Icon && !isValid && (
+        <InputIconContainer>
+          <Icon />
+        </InputIconContainer>
+      )}
       {!disabled && isValid && (
-        <InputValidIconContainer {...fadeInBottom}>
-          <Check strokeWidth={3} />
-        </InputValidIconContainer>
+        <InputIconContainer {...fadeInBottom}>
+          <Check strokeWidth={3} color={theme.global.valid} />
+        </InputIconContainer>
       )}
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
       {hint && <Hint>{hint}</Hint>}
@@ -100,7 +104,7 @@ export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
 `
 
 export const InputBase = styled.input<InputProps>`
-  ${({ isValid, value, label }) => inputDefaultStyle(isValid, !!value, !!label)};
+  ${({ isValid, value, label, Icon }) => inputDefaultStyle(isValid || !!Icon, !!value, !!label)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 

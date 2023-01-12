@@ -17,12 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence, motion } from 'framer-motion'
+import { SearchIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Button from '@/components/Button'
+import Input from '@/components/Inputs/Input'
+import Toggle from '@/components/Inputs/Toggle'
 import { useAddressesContext } from '@/contexts/addresses'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { sortAddressList } from '@/utils/addresses'
@@ -34,15 +37,56 @@ const AddressesTabContent = () => {
   const { t } = useTranslation()
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState(addresses)
+  const [emptyAddressesToggleResults, setEmptyAddressesToggleResults] = useState(addresses)
+  const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
+
+  const visibleAddresses = searchResults.filter((address1) => emptyAddressesToggleResults.includes(address1))
+
+  const handleSearch = (searchInput: string) => {
+    if (searchInput.length < 2) {
+      setSearchResults(addresses)
+      return
+    }
+
+    const input = searchInput.toLowerCase()
+    // TODO: Include tokens in search
+    setSearchResults(
+      addresses.filter(
+        (address) => address.settings.label?.toLowerCase().includes(input) || address.hash.toLowerCase().includes(input)
+      )
+    )
+  }
+
+  const handleHideEmptyAddressesToggle = (toggle: boolean) => {
+    setHideEmptyAddresses(toggle)
+    // TODO: Include tokens in filtering empty addresses
+    setEmptyAddressesToggleResults(toggle ? addresses.filter((address) => address.details.balance !== '0') : addresses)
+  }
 
   return (
     <motion.div {...fadeIn}>
+      <Header>
+        <Searchbar
+          placeholder={t('Search for label, a hash or an asset...')}
+          Icon={SearchIcon}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        <HideEmptyAddressesToggle>
+          <ToggleText>{t('Hide empty addresses')}</ToggleText>
+          <Toggle
+            onToggle={handleHideEmptyAddressesToggle}
+            label={t('Hide empty addresses')}
+            toggled={hideEmptyAddresses}
+          />
+        </HideEmptyAddressesToggle>
+      </Header>
       <Addresses>
-        {sortAddressList(addresses).map((address) => (
+        {sortAddressList(visibleAddresses).map((address) => (
           <AddressCard hash={address.hash} key={address.hash} />
         ))}
-        <Placeholder>
-          <Text>Addresses allow you to organise your funds. You can create as many as you want!</Text>
+        <Placeholder layout>
+          <Text>{t('Addresses allow you to organise your funds. You can create as many as you want!')}</Text>
           <Button role="secondary" short onClick={() => setIsGenerateNewAddressModalOpen(true)}>
             + {t('New address')}
           </Button>
@@ -63,13 +107,28 @@ const AddressesTabContent = () => {
 
 export default AddressesTabContent
 
+const Header = styled.div`
+  display: flex;
+  margin-bottom: 44px;
+  gap: 28px;
+`
+
+const Searchbar = styled(Input)`
+  max-width: 364px;
+  margin: 0;
+
+  svg {
+    color: ${({ theme }) => theme.font.tertiary};
+  }
+`
+
 const Addresses = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
 `
 
-const Placeholder = styled.div`
+const Placeholder = styled(motion.div)`
   width: 222px;
   border-radius: var(--radius-huge);
   border: 1px dashed ${({ theme }) => theme.border.primary};
@@ -84,4 +143,19 @@ const Text = styled.div`
   text-align: center;
   line-height: 1.3;
   margin-bottom: 20px;
+`
+
+const HideEmptyAddressesToggle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 250px;
+  background-color: ${({ theme }) => theme.bg.primary};
+  padding: 10px 18px 10px 22px;
+  border-radius: var(--radius-medium);
+`
+
+const ToggleText = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
 `

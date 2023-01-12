@@ -21,13 +21,14 @@ import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import { InputHTMLAttributes, ReactNode } from 'react'
 import styled, { css } from 'styled-components'
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: ReactNode
   error?: ReactNode
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
   hint?: string
+  Icon?: LucideIconType
   className?: string
 }
 
@@ -47,7 +48,7 @@ export const inputStyling = {
   paddingLeftRight: '12px'
 }
 
-export const inputDefaultStyle = (isValid?: boolean, hasValue?: boolean, hasLabel?: boolean) => css`
+export const inputDefaultStyle = (hasIcon?: boolean, hasValue?: boolean, hasLabel?: boolean) => css`
   background-image: none;
   height: var(--inputHeight);
   width: 100%;
@@ -55,7 +56,7 @@ export const inputDefaultStyle = (isValid?: boolean, hasValue?: boolean, hasLabe
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
-  padding: ${isValid ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
+  padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
   font-weight: var(--fontWeight-medium);
   font-size: 1em;
   text-align: left;
@@ -127,7 +128,7 @@ InputLabel = styled(InputLabel)`
   transform-origin: left;
 `
 
-export const InputValidIconContainer = styled(motion.div)`
+export const InputIconContainer = styled(motion.div)`
   position: absolute;
   top: 0;
   bottom: 0;
@@ -135,5 +136,4 @@ export const InputValidIconContainer = styled(motion.div)`
   font-weight: var(--fontWeight-medium);
   display: flex;
   align-items: center;
-  color: ${({ theme }) => theme.global.valid};
 `
