@@ -10,8 +10,7 @@ jobs:
 
     strategy:
       matrix:
-#        os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -39,7 +38,7 @@ jobs:
           mac_certs_password: ${{ secrets.mac_certs_password }}
           windows_certs: ${{ secrets.windows_certs }}
           windows_certs_password: ${{ secrets.windows_certs_password }}
-#          snapcraft_token: ${{ secrets.snapcraft_token }}
+          snapcraft_token: ${{ secrets.snapcraft_token }}
         env:
           APPLE_ID: ${{ secrets.apple_id }}
           APPLE_ID_PASSWORD: ${{ secrets.apple_id_password }}
