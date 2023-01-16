@@ -1,7 +1,7 @@
 {
   "name": "alephium-wallet",
   "description": "The official Alephium wallet",
-  "version": "1.4.1-rc.1",
+  "version": "1.4.1-rc.2",
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
@@ -69,6 +69,8 @@
     "electron-builder": "^23.0.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.29.0",
+    "@electron/notarize": "^1.2.3",
+    "electron-builder-notarize": "^1.5.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-prettier": "^4.0.0",
@@ -124,7 +126,12 @@
     "directories": {
       "buildResources": "assets"
     },
-    "afterPack": ".afterPack.js"
+    "afterPack": ".afterPack.js",
+    "afterSign": "electron-builder-notarize",
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+    }
   },
   "engines": {
     "node": ">=16",
