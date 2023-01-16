@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import 'dayjs/locale/fr'
 
 import dayjs from 'dayjs'
+import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactTooltip from 'react-tooltip'
@@ -91,13 +92,15 @@ const App = () => {
       )}
       <SnackbarManager message={snackbarMessage} />
       <Tooltip />
-      {isUpdateWalletModalVisible && (
-        <UpdateWalletModal
-          newVersion={newLatestVersion}
-          startDownload={newVersionDownloadTriggered}
-          onClose={() => setUpdateWalletModalVisible(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isUpdateWalletModalVisible && (
+          <UpdateWalletModal
+            newVersion={newLatestVersion}
+            startDownload={newVersionDownloadTriggered}
+            onClose={() => setUpdateWalletModalVisible(false)}
+          />
+        )}
+      </AnimatePresence>
     </ThemeProvider>
   )
 }
