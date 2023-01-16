@@ -28,10 +28,19 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
           echo '${{ secrets.mac_certs }}' | base64 -d > applecert.p12
 
+      - id: get-args
+        run: |
+          args=$(if ${{ startsWith(matrix.os, 'macos') }}; then echo '--mac --universal'; else echo ''; fi)
+          args=$(if ${{ startsWith(matrix.os, 'windows') }}; then echo '-w'; else echo $args; fi)
+          args=$(if ${{ startsWith(matrix.os, 'ubuntu') }}; then echo '-l'; else echo $args; fi)
+          echo "::set-output name=args::$args"
+        shell: bash
+
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
+          args: ${{ steps.get-args.outputs.args }}
           github_token: ${{ secrets.github_token }}
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           mac_certs: ${{ secrets.mac_certs }}
