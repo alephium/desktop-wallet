@@ -33,7 +33,7 @@ const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) 
   const { triggerNewVersionDownload } = useGlobalContext()
 
   return (
-    <Banner className={className}>
+    <Banner className={className} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <UpdateMessage>
         {t('Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.', { newVersion })}
       </UpdateMessage>

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimateSharedLayout } from 'framer-motion'
+import { AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 import { Route, Routes } from 'react-router-dom'
 
 import UpdateWalletBanner from '../components/UpdateWalletBanner'
@@ -31,7 +31,7 @@ const Router = () => {
 
   return (
     <AnimateSharedLayout type="crossfade">
-      {newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}
+      <AnimatePresence>{newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}</AnimatePresence>
       <Routes>
         <Route path="/create/:step" element={<CreateWalletRoutes />} />
         <Route path="/import/:step" element={<ImportWalletRoutes />} />
