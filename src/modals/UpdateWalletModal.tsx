@@ -42,7 +42,7 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
   const { resetNewVersionDownloadTrigger } = useGlobalContext()
 
   const [status, setStatus] = useState<UpdateStatus>('download-available')
-  const [percent, setPercent] = useState(0)
+  const [percent, setPercent] = useState('0')
   const [error, setError] = useState('')
 
   const newVersionDownloadTriggered = async () => {
@@ -52,7 +52,7 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
 
   useEffect(() => {
     const removeUpdateDownloadProgressListener = electron?.updater.onUpdateDownloadProgress((info) =>
-      setPercent(info.percent)
+      setPercent(info.percent.toFixed(2))
     )
     const removeUpdateDownloadedListener = electron?.updater.onUpdateDownloaded(() => {
       // Delay success message to give time for download validation errors to arise if any
