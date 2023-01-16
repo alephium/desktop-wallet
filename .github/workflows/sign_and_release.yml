@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Node.js and NPM
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -33,7 +33,7 @@ jobs:
           args=$(if ${{ startsWith(matrix.os, 'macos') }}; then echo '--mac --universal'; else echo ''; fi)
           args=$(if ${{ startsWith(matrix.os, 'windows') }}; then echo '-w'; else echo $args; fi)
           args=$(if ${{ startsWith(matrix.os, 'ubuntu') }}; then echo '-l'; else echo $args; fi)
-          echo "::set-output name=args::$args"
+          echo "args=$args" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Build/release Electron app
