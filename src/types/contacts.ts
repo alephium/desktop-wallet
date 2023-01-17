@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressHash } from '@/contexts/addresses'
 
 export type Contact = {
+  id?: string
   name: string
   address: AddressHash
 }

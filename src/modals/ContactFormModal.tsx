@@ -22,28 +22,49 @@ import { useTranslation } from 'react-i18next'
 
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
+import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
+import ContactStorage from '@/persistent-storage/contacts'
 import { Contact } from '@/types/contacts'
-import { requiredErrorMessage, validateIsAddressValid } from '@/utils/formValidation'
+import {
+  requiredErrorMessage,
+  validateIsAddressValid,
+  validateIsContactAddressValid,
+  validateIsContactNameValid
+} from '@/utils/formValidation'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface ContactFormModalProps {
   contact?: Contact
+  onSave: () => void
   onClose: () => void
 }
 
-const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
+const ContactFormModal = ({ contact, onSave, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
+  const { mnemonic, name: walletName } = useAppSelector((state) => state.activeWallet)
+  const { isPassphraseUsed, setSnackbarMessage } = useGlobalContext()
   const { control, handleSubmit, formState } = useForm<Contact>({
-    defaultValues: contact ?? { name: '', address: '' },
+    defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
   })
+
+  if (!mnemonic || !walletName) return null
 
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
 
   const saveContact = (formData: Contact) => {
-    console.log('Saving...', formData)
+    const error = ContactStorage.storeContact({ mnemonic, walletName }, formData, isPassphraseUsed)
+
+    if (!error) {
+      setSnackbarMessage({ text: t('Contact saved'), type: 'success' })
+      onSave()
+      onClose()
+    } else {
+      setSnackbarMessage({ text: error, type: 'alert' })
+    }
   }
 
   return (
@@ -57,12 +78,13 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
               value={value}
               onChange={onChange}
               onBlur={onBlur}
-              error={errors.name?.type === 'required' && requiredErrorMessage}
+              error={errors.name?.type === 'required' ? requiredErrorMessage : errors.name?.message}
               isValid={!!value && !errors.name}
             />
           )}
           rules={{
-            required: true
+            required: true,
+            validate: (name) => validateIsContactNameValid(name, contact?.id, mnemonic, walletName, isPassphraseUsed)
           }}
           control={control}
         />
@@ -80,7 +102,11 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
           )}
           rules={{
             required: true,
-            validate: validateIsAddressValid
+            validate: {
+              validateIsAddressValid,
+              validateIsContactAddressValid: (address) =>
+                validateIsContactAddressValid(address, contact?.id, mnemonic, walletName, isPassphraseUsed)
+            }
           }}
           control={control}
         />

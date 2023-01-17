@@ -297,5 +297,10 @@
   "Edit": "Edit",
   "Edit contact": "Edit contact",
   "This field is required": "This field is required",
-  "This address is not valid": "This address is not valid"
+  "This address is not valid": "This address is not valid",
+  "A contact with this address already exists": "A contact with this address already exists",
+  "A contact with this name already exists": "A contact with this name already exists",
+  "Contact saved": "Contact saved",
+  "Could not find a contact with this name": "Could not find a contact with this name",
+  "Could not find a contact with this ID": "Could not find a contact with this ID"
 }

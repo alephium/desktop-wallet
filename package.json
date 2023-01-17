@@ -82,6 +82,7 @@
     "jsdom": "^20.0.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.105.0-alpha.4",
+    "nanoid": "^4.0.0",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-color": "^2.19.3",

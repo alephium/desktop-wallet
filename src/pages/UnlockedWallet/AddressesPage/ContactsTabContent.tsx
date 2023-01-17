@@ -27,45 +27,37 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import Truncate from '@/components/Truncate'
+import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import ContactStorage from '@/persistent-storage/contacts'
 import { Contact } from '@/types/contacts'
 
 import TabContent from './TabContent'
 
-const contacts: Contact[] = [
-  {
-    name: 'Ilias Trichopoulos',
-    address: '1BBEMJQpRzFcKsQgfnVH2KhLgP5haD1o7D8dTSQ9QJS1q'
-  },
-  {
-    name: 'Alexander Sebastian',
-    address: '1Bw9NuSufuvi1EgWFe9uCQS3xi1gkZ81mtdPRhPbSqw5r'
-  },
-  {
-    name: 'Mika Vaivre',
-    address: '12kMjpXxCHDebp8ChJYSEyWBgJzmUMSnvgD4EXK6E4kCa'
-  }
-]
-
 const ContactsTabContent = () => {
   const { t } = useTranslation()
+  const { isPassphraseUsed } = useGlobalContext()
+  const { mnemonic, name: walletName } = useAppSelector((state) => state.activeWallet)
 
+  const contacts: Contact[] =
+    mnemonic && walletName ? ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed) : []
+
+  const [storedContacts, setStoredContacts] = useState(contacts)
+  const [filteredContacts, setFilteredContacts] = useState(contacts)
+  const [searchInput, setSearchInput] = useState('')
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
-  const [filteredContacts, setFilteredContacts] = useState(contacts)
+
+  if (!mnemonic || !walletName) return null
 
   const handleSearch = (searchInput: string) => {
     const input = searchInput.toLowerCase()
 
-    setFilteredContacts(
-      searchInput.length < 2
-        ? contacts
-        : contacts.filter(
-            (contact) => contact.name.toLowerCase().includes(input) || contact.address.toLowerCase().includes(input)
-          )
-    )
+    setSearchInput(input)
+    setFilteredContacts(filterContacts(storedContacts, input))
   }
 
   const openSendModal = (contact: Contact) => {
@@ -86,6 +78,13 @@ const ContactsTabContent = () => {
   const closeContactFormModal = () => {
     setSelectedContact(undefined)
     setIsContactFormModalOpen(false)
+  }
+
+  const refreshDisplayedContacts = () => {
+    const storedContacts: Contact[] = ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed)
+
+    setStoredContacts(storedContacts)
+    setFilteredContacts(filterContacts(storedContacts, searchInput))
   }
 
   return (
@@ -117,7 +116,13 @@ const ContactsTabContent = () => {
           </Card>
         ))}
         <AnimatePresence>
-          {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
+          {isContactFormModalOpen && (
+            <ContactFormModal
+              contact={selectedContact}
+              onClose={closeContactFormModal}
+              onSave={refreshDisplayedContacts}
+            />
+          )}
           {isSendModalOpen && (
             <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
           )}
@@ -126,6 +131,13 @@ const ContactsTabContent = () => {
     </motion.div>
   )
 }
+
+const filterContacts = (contacts: Contact[], text: string) =>
+  text.length < 2
+    ? contacts
+    : contacts.filter(
+        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
+      )
 
 export default ContactsTabContent
 
