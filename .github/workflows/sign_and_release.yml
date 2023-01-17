@@ -47,9 +47,14 @@ jobs:
           mac_certs_password: ${{ secrets.mac_certs_password }}
           windows_certs: ${{ secrets.windows_certs }}
           windows_certs_password: ${{ secrets.windows_certs_password }}
-          snapcraft_token: ${{ secrets.snapcraft_token }}
         env:
           APPLE_ID: ${{ secrets.apple_id }}
           APPLE_ID_PASSWORD: ${{ secrets.apple_id_password }}
           APPLEID: ${{ secrets.apple_id }}
           APPLEIDPASS: ${{ secrets.apple_id_password }}
+
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+        if: startsWith(matrix.os, 'ubuntu')
+        with:
+          snapcraft_token: ${{ secrets.snapcraft_token }}
