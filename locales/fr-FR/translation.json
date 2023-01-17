@@ -67,7 +67,6 @@
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Gardez ces mots précieusement ! Ils sont la clé pour accéder et récupérer votre wallet.",
   "No recovery phrase was stored along with this wallet": "Aucune phrase de récupération n'a été enregistrée avec ce wallet",
   "Expected fee": "Frais estimés",
-  "Address format is incorrect": "Le format de l'adresse n'est pas correct",
   "Select the address to send funds from.": "Sélectionnez l'adresse vers laquelle envoyer les fonds.",
   "Recipient's address": "Adresse du destinataire",
   "Advanced settings": "Paramètres avancés",

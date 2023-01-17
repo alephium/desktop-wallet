@@ -18,9 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { walletGenerate } from '@alephium/sdk'
 
-import { AddressMetadata, AddressSettings, loadStoredAddressesMetadataOfWallet } from '@/utils/addresses'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
+import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import * as migrate from '@/utils/migration'
-
 //
 // ANY CHANGES TO THIS FILE MUST BE REVIEWED BY AT LEAST ONE CORE CONTRIBUTOR
 //
@@ -145,7 +145,7 @@ describe('_20220527_120000', () => {
     wallets.forEach(({ walletName, wallet }) => migrate._20220527_120000(wallet.mnemonic, walletName))
 
     wallets.forEach(({ walletName, wallet, index, settings }) => {
-      const addresses = loadStoredAddressesMetadataOfWallet({
+      const addresses = AddressMetadataStorage.load({
         mnemonic: wallet.mnemonic,
         walletName
       })
@@ -154,12 +154,12 @@ describe('_20220527_120000', () => {
   })
 
   it('does not use the same wallet to encrypt address metadata', () => {
-    const walletFirst = loadStoredAddressesMetadataOfWallet({
+    const walletFirst = AddressMetadataStorage.load({
       mnemonic: wallets[0].wallet.mnemonic,
       walletName: wallets[0].walletName
     })
 
-    const walletLast = loadStoredAddressesMetadataOfWallet({
+    const walletLast = AddressMetadataStorage.load({
       mnemonic: wallets[wallets.length - 1].wallet.mnemonic,
       walletName: wallets[wallets.length - 1].walletName
     })

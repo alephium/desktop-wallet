@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { convertAlphToSet, isAddressValid } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,7 +30,6 @@ import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { isAddressValid } from '@/utils/addresses'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
 import { InputFieldsColumn } from '../../components/InputFieldsColumn'
@@ -108,7 +107,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
   const handleToAddressChange = (value: string) => {
-    setToAddress(value, isAddressValid(value) ? '' : t`Address format is incorrect`)
+    setToAddress(value, isAddressValid(value) ? '' : t('This address is not valid'))
   }
 
   const { fromAddress, gasAmount, gasPrice, alphAmount } = txPrep

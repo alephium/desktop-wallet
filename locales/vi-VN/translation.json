@@ -66,7 +66,6 @@
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Vui lòng ghi chú cẩn thận lại cụm từ khôi phục bí mật!",
   "No recovery phrase was stored along with this wallet": "Không có cụm từ khôi phục nào được lưu với ví này",
   "Expected fee": "Phí tuỳ chọn",
-  "Address format is incorrect": "Định dạng của địa chỉ ví không chính xác",
   "Select the address to send funds from.": "Chọn địa chỉ ví nguồn để gửi tài sản.",
   "Recipient's address": "Địa chỉ ví của người nhận",
   "Advanced settings": "Tuỳ chọn nâng cao",
