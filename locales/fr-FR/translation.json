@@ -295,5 +295,8 @@
   "Search for name or a hash...": "Search for name or a hash...",
   "New contact": "New contact",
   "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
-  "Edit": "Edit"
+  "Edit": "Edit",
+  "Edit contact": "Edit contact",
+  "This field is required": "This field is required",
+  "This address is not valid": "This address is not valid"
 }

@@ -32,12 +32,12 @@ import { getRandomLabelColor } from '@/utils/colors'
 import AddressSweepModal from './AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
-interface AddressOptionsModal {
+interface AddressOptionsModalProps {
   address: Address
   onClose: () => void
 }
 
-const AddressOptionsModal = ({ address, onClose }: AddressOptionsModal) => {
+const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
   const [addressLabel, setAddressLabel] = useState({

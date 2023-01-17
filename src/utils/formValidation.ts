@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import { isAddressValid } from '@alephium/sdk'
 
-export const ModalInputFields = styled.div`
-  display: flex;
-  flex-direction: column;
-`
+import i18n from '@/i18n'
+
+export const requiredErrorMessage = i18n.t('This field is required')
+
+export const validateIsAddressValid = (value: string) => isAddressValid(value) || i18n.t('This address is not valid')

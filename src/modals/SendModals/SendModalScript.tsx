@@ -31,11 +31,11 @@ import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
+import { InputFieldsColumn } from '../../components/InputFieldsColumn'
 import AddressSelectFrom from './AddressSelectFrom'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
-import { ModalInputFields } from './ModalInputFields'
 import SendModal from './SendModal'
 
 interface ScriptBuildTxModalContentProps {
@@ -108,7 +108,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
 
   return (
     <>
-      <ModalInputFields>
+      <InputFieldsColumn>
         <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
         <AmountInput
           value={alphAmount}
@@ -121,7 +121,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
           value={bytecode}
           onChange={(e) => setTxPrepProp('bytecode')(e.target.value)}
         />
-      </ModalInputFields>
+      </InputFieldsColumn>
       <GasSettingsExpandableSection
         gasAmount={gasAmount}
         gasPrice={gasPrice}

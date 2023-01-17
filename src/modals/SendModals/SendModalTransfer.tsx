@@ -33,11 +33,11 @@ import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation }
 import { isAddressValid } from '@/utils/addresses'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
+import { InputFieldsColumn } from '../../components/InputFieldsColumn'
 import AddressSelectFrom from './AddressSelectFrom'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
-import { ModalInputFields } from './ModalInputFields'
 import SendModal from './SendModal'
 
 interface TransferTxModalProps {
@@ -127,7 +127,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 
   return (
     <>
-      <ModalInputFields>
+      <InputFieldsColumn>
         <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
         <Input
           label={t`Recipient's address`}
@@ -141,7 +141,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onChange={setTxPrepProp('alphAmount')}
           availableAmount={fromAddress.availableBalance}
         />
-      </ModalInputFields>
+      </InputFieldsColumn>
       <GasSettingsExpandableSection
         gasAmount={gasAmount}
         gasPrice={gasPrice}
