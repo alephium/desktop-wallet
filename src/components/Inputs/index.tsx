@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import { InputHTMLAttributes, ReactNode } from 'react'
-import styled, { css } from 'styled-components'
+import styled, { css, CSSProperties } from 'styled-components'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: ReactNode
@@ -29,6 +29,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   noMargin?: boolean
   hint?: string
   Icon?: LucideIconType
+  inputFieldStyle?: CSSProperties
   className?: string
 }
 

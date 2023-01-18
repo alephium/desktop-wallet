@@ -33,6 +33,7 @@ import ContactFormModal from '@/modals/ContactFormModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import ContactStorage from '@/persistent-storage/contacts'
 import { Contact } from '@/types/contacts'
+import { filterContacts } from '@/utils/contacts'
 
 import TabContent from './TabContent'
 
@@ -131,13 +132,6 @@ const ContactsTabContent = () => {
     </motion.div>
   )
 }
-
-const filterContacts = (contacts: Contact[], text: string) =>
-  text.length < 2
-    ? contacts
-    : contacts.filter(
-        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
-      )
 
 export default ContactsTabContent
 

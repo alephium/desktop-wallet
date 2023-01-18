@@ -23,17 +23,18 @@ import { useTranslation } from 'react-i18next'
 
 import InfoBox from '@/components/InfoBox'
 import AmountInput from '@/components/Inputs/AmountInput'
-import Input from '@/components/Inputs/Input'
 import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
+import { requiredErrorMessage } from '@/utils/formValidation'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
 import { InputFieldsColumn } from '../../components/InputFieldsColumn'
 import AddressSelectFrom from './AddressSelectFrom'
+import AddressSelectTo from './AddressSelectTo'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
@@ -90,6 +91,7 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
   const { t } = useTranslation()
   const { addresses } = useAddressesContext()
+
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     gasAmount: {
@@ -107,7 +109,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
   const handleToAddressChange = (value: string) => {
-    setToAddress(value, isAddressValid(value) ? '' : t('This address is not valid'))
+    setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
   }
 
   const { fromAddress, gasAmount, gasPrice, alphAmount } = txPrep
@@ -128,12 +130,11 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     <>
       <InputFieldsColumn>
         <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
-        <Input
-          label={t`Recipient's address`}
+        <AddressSelectTo
           value={toAddress.value}
           onChange={(e) => handleToAddressChange(e.target.value)}
+          onContactSelect={handleToAddressChange}
           error={toAddress.error}
-          isValid={toAddress.value.length > 0 && !toAddress.error}
         />
         <AmountInput
           value={alphAmount}

@@ -16,22 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, MotionProps } from 'framer-motion'
-import { ReactNode } from 'react'
-import styled from 'styled-components'
+import { Contact } from '@/types/contacts'
 
-interface InputAreaProps extends MotionProps {
-  children: ReactNode | ReactNode[]
-  onInput?: () => void
-  className?: string
-}
-
-const InputArea = ({ onInput, children, className, ...rest }: InputAreaProps) => (
-  <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} className={className} {...rest}>
-    {children}
-  </motion.div>
-)
-
-export default styled(InputArea)`
-  cursor: pointer;
-`
+export const filterContacts = (contacts: Contact[], text: string) =>
+  text.length < 2
+    ? contacts
+    : contacts.filter(
+        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
+      )
