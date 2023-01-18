@@ -44,7 +44,7 @@ export class PersistentEncryptedStorage {
     return JSON.parse(decrypt(mnemonic, encryptedSettings))
   }
 
-  protected store(data: string, { mnemonic, walletName }: DataKey, isPassphraseUsed?: boolean) {
+  protected _store(data: string, { mnemonic, walletName }: DataKey, isPassphraseUsed?: boolean) {
     if (isPassphraseUsed) return
 
     const key = getMetadataKey(this.localStorageKeyPrefix, walletName)

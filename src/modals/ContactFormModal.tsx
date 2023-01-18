@@ -57,7 +57,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const isFormValid = isEmpty(errors)
 
   const saveContact = (formData: Contact) => {
-    const result = ContactStorage.storeContact({ mnemonic, walletName }, formData, isPassphraseUsed)
+    const result = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
 
     if (!result.error) {
       dispatch(

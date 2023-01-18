@@ -210,7 +210,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!mnemonic) throw new Error('Could not update address settings, mnemonic not found')
 
       if (!isPassphraseUsed)
-        AddressMetadataStorage.storeAddressMetadata(
+        AddressMetadataStorage.store(
           {
             mnemonic: mnemonic,
             walletName: activeWalletName
@@ -355,7 +355,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
 
       if (!isPassphraseUsed)
-        AddressMetadataStorage.storeAddressMetadata(
+        AddressMetadataStorage.store(
           {
             mnemonic: _mnemonic,
             walletName: activeWalletName

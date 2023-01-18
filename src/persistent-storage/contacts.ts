@@ -29,7 +29,7 @@ type StoreContactResult = {
 }
 
 class ContactsStorage extends PersistentEncryptedStorage {
-  storeContact({ mnemonic, walletName }: DataKey, contact: Contact, isPassphraseUsed?: boolean): StoreContactResult {
+  store({ mnemonic, walletName }: DataKey, contact: Contact, isPassphraseUsed?: boolean): StoreContactResult {
     if (isPassphraseUsed) return { error: 'Cannot use contact feature in passphrase-enabled wallets' }
 
     let contactId = contact.id
@@ -61,7 +61,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)
-    this.store(JSON.stringify(contacts), { mnemonic, walletName }, isPassphraseUsed)
+    super._store(JSON.stringify(contacts), { mnemonic, walletName }, isPassphraseUsed)
 
     return { contactId }
   }

@@ -22,12 +22,7 @@ import { latestAddressMetadataVersion } from '@/utils/migration'
 import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
 
 class AddressMetadataStorage extends PersistentEncryptedStorage {
-  storeAddressMetadata(
-    { mnemonic, walletName }: DataKey,
-    index: number,
-    settings: AddressSettings,
-    isPassphraseUsed?: boolean
-  ) {
+  store({ mnemonic, walletName }: DataKey, index: number, settings: AddressSettings, isPassphraseUsed?: boolean) {
     if (isPassphraseUsed) return
 
     const addressesMetadata = this.load({ walletName, mnemonic })
@@ -43,7 +38,7 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
     }
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
-    this.store(JSON.stringify(addressesMetadata), { mnemonic, walletName }, isPassphraseUsed)
+    super._store(JSON.stringify(addressesMetadata), { mnemonic, walletName }, isPassphraseUsed)
   }
 }
 
