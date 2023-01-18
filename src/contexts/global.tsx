@@ -26,12 +26,12 @@ import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { NetworkStatus } from '@/types/network'
 import { ThemeType } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
-import { deleteStoredAddressMetadataOfWallet } from '@/utils/addresses'
 import { createClient } from '@/utils/api-clients'
 import { migrateUserData } from '@/utils/migration'
 import {
@@ -147,7 +147,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const deleteWallet = (walletName: string) => {
     Storage.remove(walletName)
-    deleteStoredAddressMetadataOfWallet(walletName)
+    AddressMetadataStorage.delete(walletName)
     setWalletNames(Storage.list())
   }
 

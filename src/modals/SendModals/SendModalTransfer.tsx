@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { convertAlphToSet, isAddressValid } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,15 +30,19 @@ import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { isAddressValid } from '@/utils/addresses'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
+import { InputFieldsColumn } from '../../components/InputFieldsColumn'
 import AddressSelectFrom from './AddressSelectFrom'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
-import { ModalInputFields } from './ModalInputFields'
 import SendModal from './SendModal'
+
+interface TransferTxModalProps {
+  onClose?: () => void
+  initialTxData?: Partial<TransferTxData>
+}
 
 interface TransferBuildTxModalContentProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>
@@ -46,16 +50,21 @@ interface TransferBuildTxModalContentProps {
   onCancel: () => void
 }
 
-const TransferTxModal = () => {
+const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   const { t } = useTranslation()
   const { closeSendModal } = useSendModalContext()
-  const initialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
+  const dappInitialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
+
+  const initData = {
+    ...(initialTxData ?? dappInitialTxData),
+    fromAddress: initialTxData?.fromAddress ?? dappInitialTxData.fromAddress
+  }
 
   return (
     <SendModal
       title={t`Send`}
-      initialTxData={initialTxData}
-      onClose={closeSendModal}
+      initialTxData={initData}
+      onClose={onClose ?? closeSendModal}
       BuildTxModalContent={TransferBuildTxModalContent}
       CheckTxModalContent={TransferCheckTxModalContent}
       buildTransaction={buildTransaction}
@@ -98,7 +107,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
   const handleToAddressChange = (value: string) => {
-    setToAddress(value, isAddressValid(value) ? '' : t`Address format is incorrect`)
+    setToAddress(value, isAddressValid(value) ? '' : t('This address is not valid'))
   }
 
   const { fromAddress, gasAmount, gasPrice, alphAmount } = txPrep
@@ -117,7 +126,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 
   return (
     <>
-      <ModalInputFields>
+      <InputFieldsColumn>
         <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
         <Input
           label={t`Recipient's address`}
@@ -131,7 +140,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onChange={setTxPrepProp('alphAmount')}
           availableAmount={fromAddress.availableBalance}
         />
-      </ModalInputFields>
+      </InputFieldsColumn>
       <GasSettingsExpandableSection
         gasAmount={gasAmount}
         gasPrice={gasPrice}

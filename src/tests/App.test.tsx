@@ -59,7 +59,8 @@ vi.mock('@alephium/sdk', async () => ({
   }
 }))
 
-vi.mock('../utils/migration', () => ({
+vi.mock('../utils/migration', async () => ({
+  ...(await vi.importActual<typeof import('../utils/migration')>('../utils/migration')),
   migrateUserData: () => ({})
 }))
 

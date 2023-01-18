@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertSetToAlph } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs from 'dayjs'
-import { motion } from 'framer-motion'
 import { MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -29,6 +28,7 @@ import styled, { css, useTheme } from 'styled-components'
 import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import Badge from '@/components/Badge'
+import Card from '@/components/Card'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
@@ -64,7 +64,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
   }
 
   return (
-    <Card
+    <CardWithRibbon
       className={className}
       onClick={navigateToAddressDetailsPage(address.hash)}
       onKeyPress={navigateToAddressDetailsPage(address.hash)}
@@ -100,7 +100,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
           </Badge>
         ))}
       </TokensSection>
-    </Card>
+    </CardWithRibbon>
   )
 }
 
@@ -114,14 +114,7 @@ const RibbonContainer = styled.div`
   transition: opacity 0.2s ease-out;
 `
 
-const Card = styled(motion.div)`
-  width: 222px;
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-huge);
-  background-color: ${({ theme }) => theme.bg.primary};
-  box-shadow: 0px 7px 15px 0px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-
+const CardWithRibbon = styled(Card)`
   &:hover {
     ${RibbonContainer} {
       opacity: 1;

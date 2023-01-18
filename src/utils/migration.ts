@@ -21,7 +21,7 @@ import { encrypt } from '@alephium/sdk'
 
 import { stringToDoubleSHA256HexString } from './misc'
 
-export const latestUserDataVersion = '2022-05-27T12:00:00Z'
+export const latestAddressMetadataVersion = '2022-05-27T12:00:00Z'
 
 //
 // ANY CHANGES TO THIS FILE MUST BE REVIEWED BY AT LEAST ONE CORE CONTRIBUTOR

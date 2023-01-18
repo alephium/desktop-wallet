@@ -66,7 +66,6 @@
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Carefully note down the words! They are your wallet's secret recovery phrase.",
   "No recovery phrase was stored along with this wallet": "No recovery phrase was stored along with this wallet",
   "Expected fee": "Expected fee",
-  "Address format is incorrect": "Address format is incorrect",
   "Select the address to send funds from.": "Select the address to send funds from.",
   "Recipient's address": "Recipient's address",
   "Advanced settings": "Advanced settings",
@@ -290,5 +289,17 @@
   "Lock wallet": "Lock wallet",
   "Hide empty addresses": "Hide empty addresses",
   "Addresses allow you to organise your funds. You can create as many as you want!": "Addresses allow you to organise your funds. You can create as many as you want!",
-  "Search for label, a hash or an asset...": "Search for label, a hash or an asset..."
+  "Search for label, a hash or an asset...": "Search for label, a hash or an asset...",
+  "Search for name or a hash...": "Search for name or a hash...",
+  "New contact": "New contact",
+  "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
+  "Edit": "Edit",
+  "Edit contact": "Edit contact",
+  "This field is required": "This field is required",
+  "This address is not valid": "This address is not valid",
+  "A contact with this address already exists": "A contact with this address already exists",
+  "A contact with this name already exists": "A contact with this name already exists",
+  "Contact saved": "Contact saved",
+  "Could not find a contact with this name": "Could not find a contact with this name",
+  "Could not find a contact with this ID": "Could not find a contact with this ID"
 }

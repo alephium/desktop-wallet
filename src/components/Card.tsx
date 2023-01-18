@@ -16,12 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Address } from '@/contexts/addresses'
+import { motion } from 'framer-motion'
+import styled, { css } from 'styled-components'
 
-export const sortAddressList = (addresses: Address[]): Address[] =>
-  addresses.sort((a, b) => {
-    // Always keep default address to the top of the list
-    if (a.settings.isMain) return -1
-    if (b.settings.isMain) return 1
-    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
-  })
+const Card = styled(motion.div)<{ isPlaceholder?: boolean }>`
+  width: 222px;
+  border: 1px ${({ isPlaceholder }) => (isPlaceholder ? 'dashed' : 'solid')} ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-huge);
+  background-color: ${({ theme, isPlaceholder }) => (isPlaceholder ? theme.bg.secondary : theme.bg.primary)};
+
+  ${({ isPlaceholder }) =>
+    !isPlaceholder &&
+    css`
+      box-shadow: 0px 7px 15px 0px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    `}
+`
+
+export default Card

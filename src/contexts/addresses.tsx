@@ -24,10 +24,11 @@ import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
+import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
-import { AddressSettings, loadStoredAddressesMetadataOfWallet, storeAddressMetadataOfWallet } from '@/utils/addresses'
 import { NetworkName } from '@/utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
@@ -210,7 +211,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!activeWalletMnemonic) throw new Error('Could not update address settings, mnemonic not found')
 
       if (!isPassphraseUsed)
-        storeAddressMetadataOfWallet(
+        AddressMetadataStorage.storeAddressMetadata(
           {
             mnemonic: activeWalletMnemonic,
             walletName: activeWalletName
@@ -355,7 +356,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
 
       if (!isPassphraseUsed)
-        storeAddressMetadataOfWallet(
+        AddressMetadataStorage.storeAddressMetadata(
           {
             mnemonic: _mnemonic,
             walletName: activeWalletName
@@ -409,9 +410,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('🥇 Initializing current network addresses')
       if (!activeWalletMnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
 
-      const addressesMetadata = isPassphraseUsed
+      const addressesMetadata: AddressMetadata[] = isPassphraseUsed
         ? []
-        : loadStoredAddressesMetadataOfWallet({
+        : AddressMetadataStorage.load({
             mnemonic: activeWalletMnemonic,
             walletName: activeWalletName
           })

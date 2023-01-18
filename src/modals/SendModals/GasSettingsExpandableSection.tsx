@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
-import i18next from 'i18next'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
@@ -27,6 +26,7 @@ import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
 import Input from '@/components/Inputs/Input'
 import { useStateWithParsed } from '@/hooks/useStateWithParsed'
+import i18n from '@/i18n'
 import { WithParsed } from '@/types/data'
 import { GasInfo } from '@/types/transactions'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@/utils/constants'
@@ -171,9 +171,9 @@ const getAmountErrorMessage = (amount: string, minAmount: bigint, shouldConvertT
   try {
     const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
 
-    if (amountNumber < minAmount) return i18next.t('The amount must be greater than {{ minAmount }}', { minAmount })
+    if (amountNumber < minAmount) return i18n.t('The amount must be greater than {{ minAmount }}', { minAmount })
   } catch (e) {
-    return i18next.t`Unable to convert the amount`
+    return i18n.t`Unable to convert the amount`
   }
 
   return ''
