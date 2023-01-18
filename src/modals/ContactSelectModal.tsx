@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { SearchIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -29,10 +29,9 @@ import Input from '@/components/Inputs/Input'
 import Option from '@/components/Inputs/Option'
 import Scrollbar from '@/components/Scrollbar'
 import Truncate from '@/components/Truncate'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
-import ContactStorage from '@/persistent-storage/contacts'
+import { selectAllContacts } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 
@@ -45,36 +44,27 @@ interface ContactSelectModalProps {
 
 const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) => {
   const { t } = useTranslation()
-  const { mnemonic, name: walletName } = useAppSelector((state) => state.activeWallet)
-  const { isPassphraseUsed } = useGlobalContext()
+  const contacts = useAppSelector(selectAllContacts)
 
   const [selectedContact, setSelectedContact] = useState<Contact>()
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
-  const contacts: Contact[] =
-    mnemonic && walletName ? ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed) : []
-  const [storedContacts, setStoredContacts] = useState(contacts)
   const [filteredContacts, setFilteredContacts] = useState(contacts)
   const [searchInput, setSearchInput] = useState('')
 
-  if (!mnemonic || !walletName) return null
+  useEffect(() => {
+    setFilteredContacts(filterContacts(contacts, searchInput))
+  }, [contacts, searchInput])
 
   const onOptionContactSelect = (contact: Contact) => {
     setContact(contact)
     onClose()
   }
 
-  const refreshDisplayedContacts = () => {
-    const storedContacts: Contact[] = ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed)
-
-    setStoredContacts(storedContacts)
-    setFilteredContacts(filterContacts(storedContacts, searchInput))
-  }
-
   const handleSearch = (searchInput: string) => {
     const input = searchInput.toLowerCase()
 
     setSearchInput(input)
-    setFilteredContacts(filterContacts(storedContacts, input))
+    setFilteredContacts(filterContacts(contacts, input))
   }
 
   return (
@@ -119,9 +109,7 @@ const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) =>
         </ModalFooterButton>
       </ModalFooterButtons>
       <AnimatePresence>
-        {isContactFormModalOpen && (
-          <ContactFormModal onClose={() => setIsContactFormModalOpen(false)} onSave={refreshDisplayedContacts} />
-        )}
+        {isContactFormModalOpen && <ContactFormModal onClose={() => setIsContactFormModalOpen(false)} />}
       </AnimatePresence>
     </CenteredModal>
   )

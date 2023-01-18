@@ -16,6 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import ContactStorage from '@/persistent-storage/contacts'
+import { contactsLoadedFromPersistentStorage } from '@/store/contactsSlice'
+import { store } from '@/store/store'
 import { Contact } from '@/types/contacts'
 
 export const filterContacts = (contacts: Contact[], text: string) =>
@@ -24,3 +27,13 @@ export const filterContacts = (contacts: Contact[], text: string) =>
     : contacts.filter(
         (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
       )
+
+export const loadContacts = () => {
+  const state = store.getState()
+  const { mnemonic, name: walletName, isPassphraseUsed } = state.activeWallet
+
+  if (!mnemonic || !walletName) return
+
+  const contacts: Contact[] = ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed)
+  if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
+}

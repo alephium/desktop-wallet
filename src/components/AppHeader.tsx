@@ -51,12 +51,11 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
   const theme = useTheme()
-  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const { deepLinkUri } = useWalletConnectContext()
   const { mainAddress } = useAddressesContext()
   const {
     networkStatus,
-    isPassphraseUsed,
     settings: {
       general: { discreetMode }
     },
@@ -64,6 +63,8 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
   } = useGlobalContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
+
+  const isAuthenticated = !!mnemonic
 
   scrollY.set(scroll?.scrollTop ?? 0)
 

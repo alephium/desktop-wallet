@@ -1,0 +1,61 @@
+/*
+Copyright 2018 - 2022 The Alephium Authors
+This file is part of the alephium project.
+
+The library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the library. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
+
+import { Contact } from '@/types/contacts'
+
+import { walletLocked } from './activeWalletSlice'
+import { RootState } from './store'
+
+const sliceName = 'contacts'
+
+type ContactsState = EntityState<Contact>
+
+const contactsAdapter = createEntityAdapter<Contact>({
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
+})
+
+const initialState: ContactsState = contactsAdapter.getInitialState()
+
+export const contactsSlice = createSlice({
+  name: sliceName,
+  initialState,
+  reducers: {
+    contactStoredInPersistentStorage: contactsAdapter.upsertOne,
+    contactsLoadedFromPersistentStorage: contactsAdapter.setAll,
+    contactDeletedFromPeristentStorage: contactsAdapter.removeOne
+  },
+  extraReducers(builder) {
+    builder.addCase(walletLocked, () => initialState)
+  }
+})
+
+export const {
+  selectById: selectContactById,
+  selectAll: selectAllContacts,
+  selectIds: selectContactIds
+} = contactsAdapter.getSelectors<RootState>((state) => state[sliceName])
+
+export const {
+  contactStoredInPersistentStorage,
+  contactsLoadedFromPersistentStorage,
+  contactDeletedFromPeristentStorage
+} = contactsSlice.actions
+
+export default contactsSlice

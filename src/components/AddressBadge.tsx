@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import { Address } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import dotSvg from '@/images/dot.svg'
 
 import AddressEllipsed from './AddressEllipsed'
@@ -47,7 +47,7 @@ const AddressBadge = ({
   ...props
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
-  const { isPassphraseUsed } = useGlobalContext()
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
 
   if (!address) return null
 

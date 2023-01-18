@@ -26,7 +26,7 @@ import Amount from '@/components/Amount'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import { getRandomLabelColor } from '@/utils/colors'
 
 import AddressSweepModal from './AddressSweepModal'
@@ -39,15 +39,16 @@ interface AddressOptionsModalProps {
 
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
+  const theme = useTheme()
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
+
   const [addressLabel, setAddressLabel] = useState({
     title: address?.settings.label ?? '',
     color: address?.settings.color || getRandomLabelColor()
   })
   const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
-  const { isPassphraseUsed } = useGlobalContext()
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
-  const theme = useTheme()
 
   if (!address || !mainAddress) return null
 

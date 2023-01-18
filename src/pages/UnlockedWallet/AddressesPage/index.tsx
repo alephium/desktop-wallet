@@ -29,7 +29,6 @@ import Toggle from '@/components/Inputs/Toggle'
 import Scrollbar from '@/components/Scrollbar'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import AddressSweepModal from '@/modals/AddressSweepModal'
@@ -49,9 +48,8 @@ const AddressesPage = () => {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { generateOneAddressPerGroup } = useAddressesContext()
-  const { isPassphraseUsed } = useGlobalContext()
-  const [activeWalletMnemonic, infoMessageClosed] = useAppSelector((s) => [
-    s.activeWallet.mnemonic,
+  const [{ mnemonic, isPassphraseUsed }, infoMessageClosed] = useAppSelector((s) => [
+    s.activeWallet,
     s.app.addressesPageInfoMessageClosed
   ])
   const discoverAndSaveActiveAddresses = useAddressDiscovery()
@@ -76,7 +74,7 @@ const AddressesPage = () => {
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
 
-  if (!activeWalletMnemonic) return null
+  if (!mnemonic) return null
 
   return (
     <ScreenHeight {...fadeIn}>
@@ -135,7 +133,7 @@ const AddressesPage = () => {
                     Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
                     description={t`Scan the blockchain for addresses you used in the past.`}
                     buttonText={t`Search`}
-                    onButtonClick={() => discoverAndSaveActiveAddresses(activeWalletMnemonic)}
+                    onButtonClick={() => discoverAndSaveActiveAddresses(mnemonic)}
                     infoLink={links.miningWallet}
                   />
                   <OperationBox

@@ -21,12 +21,14 @@ import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
 import activeWalletSlice from './activeWalletSlice'
 import appSlice from './appSlice'
+import contactsSlice from './contactsSlice'
 import { priceApi } from './priceApiSlice'
 
 export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
     [activeWalletSlice.name]: activeWalletSlice.reducer,
+    [contactsSlice.name]: contactsSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(priceApi.middleware)

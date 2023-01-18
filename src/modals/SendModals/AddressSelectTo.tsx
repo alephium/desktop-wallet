@@ -16,14 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Contact as ContactIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import AddressEllipsed from '@/components/AddressEllipsed'
+import Badge from '@/components/Badge'
 import { InputProps, inputStyling } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
+import { useAppSelector } from '@/hooks/redux'
+import { selectAllContacts } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
 
 import ContactSelectModal from '../ContactSelectModal'
@@ -32,23 +36,60 @@ interface AddressSelectToProps extends InputProps {
   onContactSelect: (address: string) => void
 }
 
-const AddressSelectTo = ({ label, onContactSelect, ...props }: AddressSelectToProps) => {
+type InputFieldMode = 'view' | 'edit'
+
+const AddressSelectTo = ({ label, onContactSelect, value, ...props }: AddressSelectToProps) => {
   const { t } = useTranslation()
+  const contacts = useAppSelector(selectAllContacts)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
+  const [contact, setContact] = useState<Contact>()
+  const [inputFieldMode, setInputFieldMode] = useState<InputFieldMode>('view')
 
-  const selectContact = (contact: Contact) => {
-    onContactSelect(contact.address)
+  useEffect(() => {
+    const existingContact = contacts.find((c) => c.address === value)
+
+    setContact(existingContact)
+  }, [contacts, value])
+
+  const handleContactSelect = (c: Contact) => onContactSelect(c.address)
+
+  const inputFieldStyles = {
+    paddingRight: '48px',
+    color: contact && inputFieldMode === 'view' ? 'transparent' : undefined,
+    transition: 'all 0.2s ease-out'
+  }
+
+  const handleFocus = () => {
+    inputRef.current?.focus()
+    setInputFieldMode('edit')
   }
 
   return (
     <>
-      <Input label={label ?? t("Recipient's address")} inputFieldStyle={{ paddingRight: '48px' }} {...props}>
+      <Input
+        label={label ?? t("Recipient's address")}
+        inputFieldStyle={inputFieldStyles}
+        inputFieldRef={inputRef}
+        value={value}
+        {...props}
+        onFocus={handleFocus}
+        onBlur={() => setInputFieldMode('view')}
+      >
         <ContactIconStyled onClick={() => setIsAddressSelectModalOpen(true)} />
+        {contact && inputFieldMode === 'view' && (
+          <ContactRow onClick={handleFocus}>
+            <Badge rounded transparent border truncate>
+              {contact.name}
+            </Badge>
+            <AddressEllipsed addressHash={contact.address} disableA11y />
+          </ContactRow>
+        )}
       </Input>
       <AnimatePresence>
         {isAddressSelectModalOpen && (
-          <ContactSelectModal setContact={selectContact} onClose={() => setIsAddressSelectModalOpen(false)} />
+          <ContactSelectModal setContact={handleContactSelect} onClose={() => setIsAddressSelectModalOpen(false)} />
         )}
       </AnimatePresence>
     </>
@@ -68,4 +109,16 @@ const ContactIconStyled = styled(ContactIcon)`
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const ContactRow = styled(motion.div)`
+  display: flex;
+  gap: var(--spacing-2);
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  align-items: center;
+  top: 6px;
+  left: ${inputStyling.paddingLeftRight};
+  transition: opacity 0.2s ease-out;
 `

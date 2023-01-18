@@ -68,7 +68,6 @@ export interface GlobalContextProps {
   newVersionDownloadTriggered: boolean
   triggerNewVersionDownload: () => void
   resetNewVersionDownloadTrigger: () => void
-  isPassphraseUsed: boolean
 }
 
 export const initialGlobalContext: GlobalContextProps = {
@@ -90,8 +89,7 @@ export const initialGlobalContext: GlobalContextProps = {
   newLatestVersion: '',
   newVersionDownloadTriggered: false,
   triggerNewVersionDownload: () => null,
-  resetNewVersionDownloadTrigger: () => null,
-  isPassphraseUsed: false
+  resetNewVersionDownloadTrigger: () => null
 }
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
@@ -113,7 +111,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
-  const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
@@ -153,7 +150,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const lockWallet = () => {
     setCurrentWalletName('')
-    setIsPassphraseUsed(false)
     dispatch(walletLocked())
   }
 
@@ -176,11 +172,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       migrateUserData(wallet.mnemonic, walletName)
 
-      setIsPassphraseUsed(!!passphrase)
       dispatch(
         walletUnlocked({
           name: walletName,
-          mnemonic: wallet.mnemonic
+          mnemonic: wallet.mnemonic,
+          isPassphraseUsed: !!passphrase
         })
       )
       setCurrentWalletName(walletName)
@@ -300,8 +296,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           newLatestVersion,
           newVersionDownloadTriggered,
           triggerNewVersionDownload,
-          resetNewVersionDownloadTrigger,
-          isPassphraseUsed
+          resetNewVersionDownloadTrigger
         },
         overrideContextValue as GlobalContextProps
       )}

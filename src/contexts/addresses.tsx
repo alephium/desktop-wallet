@@ -155,11 +155,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     settings: {
       network: { nodeHost, explorerApiHost }
     },
-    networkStatus,
-    isPassphraseUsed
+    networkStatus
   } = useGlobalContext()
-  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
-  const previousMnemonic = useRef<string | undefined>(activeWalletMnemonic)
+  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const previousMnemonic = useRef<string | undefined>(mnemonic)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
   const dispatch = useAppDispatch()
@@ -208,12 +207,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const updateAddressSettings = useCallback(
     (address: Address, settings: AddressSettings) => {
-      if (!activeWalletMnemonic) throw new Error('Could not update address settings, mnemonic not found')
+      if (!mnemonic) throw new Error('Could not update address settings, mnemonic not found')
 
       if (!isPassphraseUsed)
         AddressMetadataStorage.storeAddressMetadata(
           {
-            mnemonic: activeWalletMnemonic,
+            mnemonic: mnemonic,
             walletName: activeWalletName
           },
           address.index,
@@ -222,7 +221,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       address.settings = settings
       setAddress(address)
     },
-    [activeWalletMnemonic, isPassphraseUsed, activeWalletName, setAddress]
+    [mnemonic, isPassphraseUsed, activeWalletName, setAddress]
   )
 
   const displayDataFetchingError = useCallback(
@@ -352,7 +351,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const saveNewAddress = useCallback(
     (newAddress: Address, mnemonic?: string) => {
-      const _mnemonic = mnemonic || activeWalletMnemonic
+      const _mnemonic = mnemonic || mnemonic
       if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
 
       if (!isPassphraseUsed)
@@ -368,11 +367,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       fetchAndStoreAddressesData([newAddress])
       fetchPendingTxs([newAddress])
     },
-    [activeWalletMnemonic, isPassphraseUsed, activeWalletName, setAddress, fetchAndStoreAddressesData, fetchPendingTxs]
+    [activeWalletName, fetchAndStoreAddressesData, fetchPendingTxs, isPassphraseUsed, setAddress]
   )
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
-    if (!activeWalletMnemonic) throw new Error('Could not generate addresses, mnemonic not found')
+    if (!mnemonic) throw new Error('Could not generate addresses, mnemonic not found')
 
     dispatch(addressGenerationStarted())
 
@@ -398,7 +397,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     }
 
     deriveAddressesInGroupsWorker.postMessage({
-      mnemonic: activeWalletMnemonic,
+      mnemonic: mnemonic,
       groups,
       skipIndexes: skipAddressIndexes
     })
@@ -408,12 +407,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
       console.log('🥇 Initializing current network addresses')
-      if (!activeWalletMnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
+      if (!mnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
 
       const addressesMetadata: AddressMetadata[] = isPassphraseUsed
         ? []
         : AddressMetadataStorage.load({
-            mnemonic: activeWalletMnemonic,
+            mnemonic: mnemonic,
             walletName: activeWalletName
           })
 
@@ -440,33 +439,33 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         }
 
         deriveAddressesFromIndexesWorker.postMessage({
-          mnemonic: activeWalletMnemonic,
+          mnemonic: mnemonic,
           indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
         })
       }
     }
 
-    const walletHasChanged = previousMnemonic.current !== activeWalletMnemonic
+    const walletHasChanged = previousMnemonic.current !== mnemonic
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
 
     if (networkStatus === 'connecting' || networkStatus === 'uninitialized') return
 
     // Clean state when locking the wallet or changing wallets
-    if (activeWalletMnemonic === undefined || activeWalletMnemonic !== previousMnemonic.current) {
+    if (mnemonic === undefined || mnemonic !== previousMnemonic.current) {
       console.log('🧽 Cleaning state.')
       setAddressesState(new Map())
-      previousMnemonic.current = activeWalletMnemonic
+      previousMnemonic.current = mnemonic
     }
 
-    if (activeWalletMnemonic && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
-      previousMnemonic.current = activeWalletMnemonic
+    if (mnemonic && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
+      previousMnemonic.current = mnemonic
       previousNodeApiHost.current = nodeHost
       previousExplorerApiHost.current = explorerApiHost
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, activeWalletName, activeWalletMnemonic, explorerApiHost, nodeHost])
+  }, [currentNetwork, networkStatus, client, activeWalletName, mnemonic, explorerApiHost, nodeHost])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.

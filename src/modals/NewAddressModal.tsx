@@ -33,7 +33,6 @@ import InfoBox from '@/components/InfoBox'
 import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { Address, useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import { getRandomLabelColor } from '@/utils/colors'
 
@@ -46,7 +45,8 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const { isPassphraseUsed } = useGlobalContext()
+  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isMainAddress, setIsMainAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressKeyPair>()
@@ -55,19 +55,18 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
   const { t } = useTranslation()
-  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 
   const generateNewAddress = useCallback(
     (group?: number) => {
-      if (!activeWalletMnemonic) throw new Error('Could not generate address, mnemonic not found')
+      if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
 
-      const { masterKey } = getWalletFromMnemonic(activeWalletMnemonic)
+      const { masterKey } = getWalletFromMnemonic(mnemonic)
 
       const data = deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes.current)
       setNewAddressData(data)
       setNewAddressGroup(group ?? addressToGroup(data.hash, TOTAL_NUMBER_OF_GROUPS))
     },
-    [activeWalletMnemonic]
+    [mnemonic]
   )
 
   useEffect(() => {

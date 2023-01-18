@@ -23,11 +23,13 @@ const sliceName = 'activeWallet'
 interface ActiveWalletState {
   name?: string
   mnemonic?: string
+  isPassphraseUsed?: boolean
 }
 
 const initialState: ActiveWalletState = {
   name: undefined,
-  mnemonic: undefined
+  mnemonic: undefined,
+  isPassphraseUsed: undefined
 }
 
 const activeWalletSlice = createSlice({

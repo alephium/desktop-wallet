@@ -40,6 +40,7 @@ const Input = ({
   Icon,
   children,
   inputFieldStyle,
+  inputFieldRef,
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -77,6 +78,7 @@ const Input = ({
         isValid={isValid}
         onWheel={handleScroll}
         Icon={Icon}
+        ref={inputFieldRef}
       />
       {!!Icon && !isValid && (
         <InputIconContainer>

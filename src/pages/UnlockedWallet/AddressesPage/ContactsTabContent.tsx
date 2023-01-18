@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp, Pencil } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -27,11 +27,10 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import Truncate from '@/components/Truncate'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
-import ContactStorage from '@/persistent-storage/contacts'
+import { selectAllContacts } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 
@@ -39,27 +38,17 @@ import TabContent from './TabContent'
 
 const ContactsTabContent = () => {
   const { t } = useTranslation()
-  const { isPassphraseUsed } = useGlobalContext()
-  const { mnemonic, name: walletName } = useAppSelector((state) => state.activeWallet)
+  const contacts = useAppSelector(selectAllContacts)
 
-  const contacts: Contact[] =
-    mnemonic && walletName ? ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed) : []
-
-  const [storedContacts, setStoredContacts] = useState(contacts)
   const [filteredContacts, setFilteredContacts] = useState(contacts)
   const [searchInput, setSearchInput] = useState('')
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
 
-  if (!mnemonic || !walletName) return null
-
-  const handleSearch = (searchInput: string) => {
-    const input = searchInput.toLowerCase()
-
-    setSearchInput(input)
-    setFilteredContacts(filterContacts(storedContacts, input))
-  }
+  useEffect(() => {
+    setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
+  }, [contacts, searchInput])
 
   const openSendModal = (contact: Contact) => {
     setSelectedContact(contact)
@@ -81,18 +70,11 @@ const ContactsTabContent = () => {
     setIsContactFormModalOpen(false)
   }
 
-  const refreshDisplayedContacts = () => {
-    const storedContacts: Contact[] = ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed)
-
-    setStoredContacts(storedContacts)
-    setFilteredContacts(filterContacts(storedContacts, searchInput))
-  }
-
   return (
     <motion.div {...fadeIn}>
       <TabContent
         searchPlaceholder={t('Search for name or a hash...')}
-        onSearch={handleSearch}
+        onSearch={setSearchInput}
         buttonText={`+ ${t('New contact')}`}
         onButtonClick={() => setIsContactFormModalOpen(true)}
         newItemPlaceholderText={t('Create contacts to avoid mistakes when sending transactions!')}
@@ -117,13 +99,7 @@ const ContactsTabContent = () => {
           </Card>
         ))}
         <AnimatePresence>
-          {isContactFormModalOpen && (
-            <ContactFormModal
-              contact={selectedContact}
-              onClose={closeContactFormModal}
-              onSave={refreshDisplayedContacts}
-            />
-          )}
+          {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
           {isSendModalOpen && (
             <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
           )}
