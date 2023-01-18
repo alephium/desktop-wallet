@@ -32,7 +32,7 @@ import {
   validateIsAddressValid,
   validateIsContactAddressValid,
   validateIsContactNameValid
-} from '@/utils/formValidation'
+} from '@/utils/form-validation'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 

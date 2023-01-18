@@ -47,6 +47,8 @@ const AddressSelectTo = ({ label, onContactSelect, value, ...props }: AddressSel
   const [contact, setContact] = useState<Contact>()
   const [inputFieldMode, setInputFieldMode] = useState<InputFieldMode>('view')
 
+  const isContactVisible = contact && inputFieldMode === 'view'
+
   useEffect(() => {
     const existingContact = contacts.find((c) => c.address === value)
 
@@ -54,12 +56,6 @@ const AddressSelectTo = ({ label, onContactSelect, value, ...props }: AddressSel
   }, [contacts, value])
 
   const handleContactSelect = (c: Contact) => onContactSelect(c.address)
-
-  const inputFieldStyles = {
-    paddingRight: '48px',
-    color: contact && inputFieldMode === 'view' ? 'transparent' : undefined,
-    transition: 'all 0.2s ease-out'
-  }
 
   const handleFocus = () => {
     inputRef.current?.focus()
@@ -70,15 +66,19 @@ const AddressSelectTo = ({ label, onContactSelect, value, ...props }: AddressSel
     <>
       <Input
         label={label ?? t("Recipient's address")}
-        inputFieldStyle={inputFieldStyles}
         inputFieldRef={inputRef}
         value={value}
         {...props}
         onFocus={handleFocus}
         onBlur={() => setInputFieldMode('view')}
+        inputFieldStyle={{
+          paddingRight: '48px',
+          color: isContactVisible ? 'transparent' : undefined,
+          transition: 'all 0.2s ease-out'
+        }}
       >
         <ContactIconStyled onClick={() => setIsAddressSelectModalOpen(true)} />
-        {contact && inputFieldMode === 'view' && (
+        {isContactVisible && (
           <ContactRow onClick={handleFocus}>
             <Badge rounded transparent border truncate>
               {contact.name}

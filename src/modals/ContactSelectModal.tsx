@@ -52,19 +52,12 @@ const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) =>
   const [searchInput, setSearchInput] = useState('')
 
   useEffect(() => {
-    setFilteredContacts(filterContacts(contacts, searchInput))
+    setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
   }, [contacts, searchInput])
 
   const onOptionContactSelect = (contact: Contact) => {
     setContact(contact)
     onClose()
-  }
-
-  const handleSearch = (searchInput: string) => {
-    const input = searchInput.toLowerCase()
-
-    setSearchInput(input)
-    setFilteredContacts(filterContacts(contacts, input))
   }
 
   return (
@@ -73,7 +66,7 @@ const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) =>
         <Searchbar
           placeholder={t('Search for name or a hash...')}
           Icon={SearchIcon}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
         <HeaderButton role="secondary" short onClick={() => setIsContactFormModalOpen(true)}>
           + {t('New contact')}
@@ -99,13 +92,13 @@ const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) =>
 
       <ModalFooterButtons>
         <ModalFooterButton role="secondary" onClick={onClose}>
-          {t`Cancel`}
+          {t('Cancel')}
         </ModalFooterButton>
         <ModalFooterButton
           onClick={() => selectedContact && onOptionContactSelect(selectedContact)}
           disabled={!selectedContact}
         >
-          {t`Select`}
+          {t('Select')}
         </ModalFooterButton>
       </ModalFooterButtons>
       <AnimatePresence>

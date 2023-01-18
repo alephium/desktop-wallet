@@ -29,7 +29,7 @@ import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { requiredErrorMessage } from '@/utils/formValidation'
+import { requiredErrorMessage } from '@/utils/form-validation'
 import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
 
 import { InputFieldsColumn } from '../../components/InputFieldsColumn'
