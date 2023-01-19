@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { fadeIn } from '@/animations'
 import { Address, useAddressesContext } from '@/contexts/addresses'
@@ -31,7 +30,6 @@ import AssetsOverviewPanel from './AssetsOverviewPanel'
 import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
-  const { t } = useTranslation()
   const { isLoadingData } = useAddressesContext()
 
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()

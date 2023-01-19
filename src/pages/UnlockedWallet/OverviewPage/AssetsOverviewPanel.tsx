@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertSetToFiat } from '@alephium/sdk'
 import classNames from 'classnames'
 import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -27,6 +28,9 @@ import Button from '@/components/Button'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
+import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import SettingsModal from '@/modals/SettingsModal'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
 import { currencies } from '@/utils/currencies'
 
@@ -38,11 +42,14 @@ interface AssetsOverviewProps {
 const AssetsOverview = ({ className, isLoading }: AssetsOverviewProps) => {
   const { t } = useTranslation()
   const { addresses } = useAddressesContext()
-  const { networkStatus } = useGlobalContext()
+  const { networkStatus, lockWallet } = useGlobalContext()
   const activeWallet = useAppSelector((state) => state.activeWallet)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
+
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
@@ -81,21 +88,25 @@ const AssetsOverview = ({ className, isLoading }: AssetsOverviewProps) => {
             <ArrowDown />
             <ButtonText>{t('Receive')}</ButtonText>
           </BottomButton>
-          <BottomButton transparent borderless>
+          <BottomButton transparent borderless onClick={() => setIsSendModalOpen(true)}>
             <ArrowUp />
             <ButtonText>{t('Send')}</ButtonText>
           </BottomButton>
-          <BottomButton transparent borderless>
+          <BottomButton transparent borderless onClick={() => setIsSettingsModalOpen(true)}>
             <Settings />
             <ButtonText>{t('Settings')}</ButtonText>
           </BottomButton>
-          <BottomButtonStyled transparent borderless>
+          <BottomButtonStyled transparent borderless onClick={lockWallet}>
             <Lock />
             <ButtonText>{t('Lock wallet')}</ButtonText>
           </BottomButtonStyled>
         </ButtonsRow>
       </BalancesSection>
       <PriceChartSection></PriceChartSection>
+      <ModalPortal>
+        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
+        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
+      </ModalPortal>
     </div>
   )
 }
