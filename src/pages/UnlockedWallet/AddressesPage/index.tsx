@@ -40,6 +40,7 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
+import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
 import AddressesTabContent from './AddressesTabContent'
 import ContactsTabContent from './ContactsTabContent'
 import OperationBox from './OperationBox'
@@ -186,12 +187,7 @@ const ScreenHeight = styled(motion.div)`
   height: calc(100vh - ${appHeaderHeightPx}px);
 `
 
-const Panel = styled.div`
-  padding-left: 60px;
-  padding-right: 60px;
-`
-
-const MainPanel = styled(Panel)`
+const MainPanel = styled(UnlockedWalletPanel)`
   padding-bottom: 130px;
 `
 
@@ -227,7 +223,7 @@ const BottomModalStyled = styled(BottomModal)`
   bottom: ${advancedOperationsHeaderHeightPx}px;
 `
 
-const AdvancedOperations = styled(Panel)`
+const AdvancedOperations = styled(UnlockedWalletPanel)`
   background-color: ${({ theme }) => theme.bg.background1};
 
   padding-top: 26px;
@@ -237,7 +233,7 @@ const AdvancedOperations = styled(Panel)`
   gap: 30px;
 `
 
-const AdvancedOperationsHeader = styled(Panel)`
+const AdvancedOperationsHeader = styled(UnlockedWalletPanel)`
   display: flex;
   align-items: center;
   justify-content: space-between;

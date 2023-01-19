@@ -134,6 +134,11 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
   )
 }
 
+export const UnlockedWalletPanel = styled.div`
+  padding-left: 60px;
+  padding-right: 60px;
+`
+
 export default styled(UnlockedWalletLayout)`
   display: flex;
   width: 100%;
