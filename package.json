@@ -116,7 +116,6 @@
     ],
     "linux": {
       "category": "Finance",
-      "executableName": "alephium",
       "target": [
         "AppImage",
         "deb",

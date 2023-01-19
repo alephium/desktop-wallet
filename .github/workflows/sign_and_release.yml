@@ -36,6 +36,10 @@ jobs:
           echo "args=$args" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+        if: startsWith(matrix.os, 'ubuntu')
+
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -52,9 +56,4 @@ jobs:
           APPLE_ID_PASSWORD: ${{ secrets.apple_id_password }}
           APPLEID: ${{ secrets.apple_id }}
           APPLEIDPASS: ${{ secrets.apple_id_password }}
-
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-        if: startsWith(matrix.os, 'ubuntu')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.snapcraft_token }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
