@@ -22,15 +22,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { fadeIn } from '@/animations'
-import { PageH2 } from '@/components/PageComponents/PageHeadings'
 import { Address, useAddressesContext } from '@/contexts/addresses'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
-import TransactionList from './TransactionList'
-import styled from 'styled-components'
 import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
 import AssetsOverviewPanel from './AssetsOverviewPanel'
+import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
   const { t } = useTranslation()

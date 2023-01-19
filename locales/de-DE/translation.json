@@ -297,5 +297,7 @@
   "A contact with this name already exists": "A contact with this name already exists",
   "Contact saved": "Contact saved",
   "Could not find a contact with this name": "Could not find a contact with this name",
-  "Could not find a contact with this ID": "Could not find a contact with this ID"
+  "Could not find a contact with this ID": "Could not find a contact with this ID",
+  "See more": "See more",
+  "Latest transactions": "Latest transactions"
 }
