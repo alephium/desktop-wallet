@@ -100,6 +100,8 @@ const App = () => {
   )
 }
 
+export default App
+
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -111,5 +113,3 @@ const AppContainer = styled.div`
 const BannerSection = styled.div`
   flex-shrink: 0;
 `
-
-export default App

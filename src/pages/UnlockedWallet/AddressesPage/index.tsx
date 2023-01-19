@@ -33,6 +33,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import BottomModal from '@/modals/BottomModal'
+import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { addressesPageInfoMessageClosed } from '@/store/appSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
@@ -164,7 +165,7 @@ const AddressesPage = () => {
           </AdvancedOperationsHeader>
         </AdvancedOperationsPanel>
       )}
-      <AnimatePresence>
+      <ModalPortal>
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (
           <NewAddressModal
@@ -172,7 +173,7 @@ const AddressesPage = () => {
             onClose={() => setIsAddressesGenerationModalOpen(false)}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </ScreenHeight>
   )
 }

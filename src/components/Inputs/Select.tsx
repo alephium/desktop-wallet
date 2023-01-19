@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
 import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
@@ -26,6 +25,7 @@ import { InputLabel, InputProps } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
+import ModalPortal from '@/modals/ModalPortal'
 
 import { InputBase } from './Input'
 
@@ -142,7 +142,7 @@ function Select<T extends OptionValue>({
           label={label}
         />
       </SelectContainer>
-      <AnimatePresence>
+      <ModalPortal>
         {showPopup && (
           <SelectOptionsPopup
             options={options}
@@ -153,7 +153,7 @@ function Select<T extends OptionValue>({
             }}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

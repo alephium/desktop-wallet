@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ArrowUp, Pencil } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -29,6 +29,7 @@ import Card from '@/components/Card'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
+import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import { selectAllContacts } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
@@ -98,12 +99,12 @@ const ContactsTabContent = () => {
             </ButtonsRow>
           </Card>
         ))}
-        <AnimatePresence>
+        <ModalPortal>
           {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
           {isSendModalOpen && (
             <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
           )}
-        </AnimatePresence>
+        </ModalPortal>
       </TabContent>
     </motion.div>
   )

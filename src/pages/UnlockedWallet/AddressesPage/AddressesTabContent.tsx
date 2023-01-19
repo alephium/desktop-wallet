@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Toggle from '@/components/Inputs/Toggle'
 import { useAddressesContext } from '@/contexts/addresses'
+import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { sortAddressList } from '@/utils/addresses'
 
@@ -82,7 +82,7 @@ const AddressesTabContent = () => {
         <AddressCard hash={address.hash} key={address.hash} />
       ))}
 
-      <AnimatePresence>
+      <ModalPortal>
         {isGenerateNewAddressModalOpen && (
           <NewAddressModal
             singleAddress
@@ -90,7 +90,7 @@ const AddressesTabContent = () => {
             onClose={() => setIsGenerateNewAddressModalOpen(false)}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </TabContent>
   )
 }

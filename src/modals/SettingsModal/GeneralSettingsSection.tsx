@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -32,6 +31,8 @@ import useSwitchTheme from '@/hooks/useSwitchTheme'
 import CenteredModal from '@/modals/CenteredModal'
 import { Language, ThemeType } from '@/types/settings'
 import { loadSettings } from '@/utils/settings'
+
+import ModalPortal from '../ModalPortal'
 
 const languageOptions = [
   { label: 'English', value: 'en-US' as Language },
@@ -150,7 +151,7 @@ const GeneralSettingsSection = () => {
           />
         }
       />
-      <AnimatePresence>
+      <ModalPortal>
         {isPasswordModelOpen && (
           <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
             <PasswordConfirmation
@@ -160,7 +161,7 @@ const GeneralSettingsSection = () => {
             />
           </CenteredModal>
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

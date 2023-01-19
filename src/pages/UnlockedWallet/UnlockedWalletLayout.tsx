@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Album, ArrowLeftRight, FileCode, Layers, RefreshCw, Settings, TerminalSquare } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,6 +34,7 @@ import Spinner from '@/components/Spinner'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useSendModalContext } from '@/contexts/sendModal'
+import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
@@ -122,13 +123,13 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
           </AppHeader>
         </Scrollbar>
       </motion.div>
-      <AnimatePresence>
+      <ModalPortal>
         {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
         {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
         {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
         {isNotificationsModalOpen && <NotificationsModal onClose={() => setIsNotificationsModalOpen(false)} />}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

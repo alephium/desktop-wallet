@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
@@ -33,6 +32,8 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/C
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
+
+import ModalPortal from '../ModalPortal'
 
 type Step = 'build-tx' | 'info-check' | 'password-check'
 
@@ -238,7 +239,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           onCorrectPasswordEntered={handleSendExtended}
         />
       )}
-      <AnimatePresence>
+      <ModalPortal>
         {isConsolidateUTXOsModalVisible && (
           <ConsolidateUTXOsModal
             onClose={() => setIsConsolidateUTXOsModalVisible(false)}
@@ -246,7 +247,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
             fee={fees}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </CenteredModal>
   )
 }

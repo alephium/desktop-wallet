@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -43,6 +43,7 @@ import TransactionalInfo from '@/components/TransactionalInfo'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
+import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
 const AddressDetailsPage = () => {
@@ -179,12 +180,10 @@ const AddressDetailsPage = () => {
           </TableRow>
         )}
       </Table>
-      <AnimatePresence>
+      <ModalPortal>
         {isAddressOptionsModalOpen && (
           <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
         )}
-      </AnimatePresence>
-      <AnimatePresence>
         {selectedTransaction && (
           <TransactionDetailsModal
             address={address}
@@ -192,7 +191,7 @@ const AddressDetailsPage = () => {
             onClose={() => setSelectedTransaction(undefined)}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
       <Tooltip />
     </motion.div>
   )

@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { MoreVertical } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +30,7 @@ import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import { Address } from '@/contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
 import { sortAddressList } from '@/utils/addresses'
 
 import Option from './Option'
@@ -99,7 +99,7 @@ function AddressSelect({
           {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
-      <AnimatePresence>
+      <ModalPortal>
         {isAddressSelectModalOpen && (
           <AddressSelectModal
             options={options}
@@ -112,7 +112,7 @@ function AddressSelect({
             }}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

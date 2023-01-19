@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -31,6 +30,7 @@ import { getRandomLabelColor } from '@/utils/colors'
 
 import AddressSweepModal from './AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import ModalPortal from './ModalPortal'
 
 interface AddressOptionsModalProps {
   address: Address
@@ -117,7 +117,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
           <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
       </CenteredModal>
-      <AnimatePresence>
+      <ModalPortal>
         {isAddressSweepModalOpen && (
           <AddressSweepModal
             sweepAddress={address}
@@ -125,7 +125,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
             onSuccessfulSweep={onClose}
           />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

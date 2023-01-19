@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +30,7 @@ import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
+import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
@@ -139,11 +140,11 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
           </>
         )}
       </motion.header>
-      <AnimatePresence>
+      <ModalPortal>
         {isWalletConnectModalOpen && (
           <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }
