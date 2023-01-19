@@ -119,7 +119,8 @@
       "executableName": "alephium",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "snap"
       ]
     },
     "productName": "Alephium",
