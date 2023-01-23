@@ -29,6 +29,9 @@ import { SignClientTypes } from '@walletconnect/types'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
 import { useAddressesContext } from '@/contexts/addresses'
+import ModalPortal from '@/modals/ModalPortal'
+import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
+import SendModalScript from '@/modals/SendModals/SendModalScript'
 import {
   DappTxData,
   DeployContractTxData,
@@ -41,7 +44,6 @@ import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
 import { useGlobalContext } from './global'
-import { useSendModalContext } from './sendModal'
 
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
@@ -65,8 +67,11 @@ const WalletConnectContext = createContext<WalletConnectContextProps>(initialCon
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { client } = useGlobalContext()
-  const { openSendModal } = useSendModalContext()
   const { addresses } = useAddressesContext()
+
+  const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
+  const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
+
   const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
   const [dappTxData, setDappTxData] = useState<DappTxData>()
   const [requestEvent, setRequestEvent] = useState<SignClientTypes.EventArguments['session_request']>()
@@ -129,7 +134,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
       const setTxDataAndOpenModal = ({ txData, modalType }: TxDataToModalType) => {
         setDappTxData(txData)
-        openSendModal(modalType)
+
+        if (modalType === TxType.DEPLOY_CONTRACT) {
+          setIsDeployContractSendModalOpen(true)
+        } else if (modalType === TxType.SCRIPT) {
+          setIsCallScriptSendModalOpen(true)
+        }
       }
 
       setRequestEvent(event)
@@ -219,7 +229,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         onError(extractErrorMsg(e))
       }
     },
-    [addresses, client, onError, openSendModal, walletConnectClient]
+    [addresses, client, onError, walletConnectClient]
   )
 
   useEffect(() => {
@@ -249,6 +259,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       }}
     >
       {children}
+      <ModalPortal>
+        {isDeployContractSendModalOpen && (
+          <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
+        )}
+        {isCallScriptSendModalOpen && <SendModalScript onClose={() => setIsCallScriptSendModalOpen(false)} />}
+      </ModalPortal>
     </WalletConnectContext.Provider>
   )
 }

@@ -31,7 +31,6 @@ import App from './App'
 import Tooltips from './components/Tooltips'
 import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
-import { SendModalContextProvider } from './contexts/sendModal'
 import { WalletConnectContextProvider } from './contexts/walletconnect'
 import * as serviceWorker from './serviceWorker'
 import { store } from './store/store'
@@ -51,15 +50,13 @@ ReactDOM.render(
           <Suspense fallback="loading">
             <GlobalContextProvider>
               <AddressesContextProvider>
-                <SendModalContextProvider>
-                  <WalletConnectContextProvider>
-                    <GlobalStyle />
-                    <TooltipProvider>
-                      <App />
-                      <Tooltips />
-                    </TooltipProvider>
-                  </WalletConnectContextProvider>
-                </SendModalContextProvider>
+                <WalletConnectContextProvider>
+                  <GlobalStyle />
+                  <TooltipProvider>
+                    <App />
+                    <Tooltips />
+                  </TooltipProvider>
+                </WalletConnectContextProvider>
               </AddressesContextProvider>
             </GlobalContextProvider>
           </Suspense>

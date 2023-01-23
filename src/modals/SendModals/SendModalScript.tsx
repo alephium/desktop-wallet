@@ -25,7 +25,6 @@ import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
-import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
@@ -38,22 +37,25 @@ import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
 import SendModal from './SendModal'
 
+interface ScriptTxModalModalProps {
+  onClose: () => void
+}
+
 interface ScriptBuildTxModalContentProps {
   data: PartialTxData<ScriptTxData, 'fromAddress'>
   onSubmit: (data: ScriptTxData) => void
   onCancel: () => void
 }
 
-const ScriptTxModal = () => {
+const ScriptTxModal = ({ onClose }: ScriptTxModalModalProps) => {
   const { t } = useTranslation()
-  const { closeSendModal } = useSendModalContext()
   const initialTxData = useDappTxData() as ScriptBuildTxModalContentProps['data']
 
   return (
     <SendModal
       title={t`Call contract`}
       initialTxData={initialTxData}
-      onClose={closeSendModal}
+      onClose={onClose}
       BuildTxModalContent={ScriptBuildTxModalContent}
       CheckTxModalContent={ScriptCheckTxModalContent}
       buildTransaction={buildTransaction}

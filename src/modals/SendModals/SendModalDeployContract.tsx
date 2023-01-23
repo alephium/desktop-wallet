@@ -26,7 +26,6 @@ import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
-import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '@/types/transactions'
@@ -39,15 +38,18 @@ import BuildTxFooterButtons from './BuildTxFooterButtons'
 import GasSettingsExpandableSection from './GasSettingsExpandableSection'
 import SendModal from './SendModal'
 
+interface DeployContractTxModalProps {
+  onClose: () => void
+}
+
 interface DeployContractBuildTxModalContentProps {
   data: PartialTxData<DeployContractTxData, 'fromAddress'>
   onSubmit: (data: DeployContractTxData) => void
   onCancel: () => void
 }
 
-const DeployContractTxModal = () => {
+const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
   const { t } = useTranslation()
-  const { closeSendModal } = useSendModalContext()
   const initialTxData = useDappTxData() as DeployContractBuildTxModalContentProps['data']
   const [contractAddress, setContractAddress] = useState('')
 
@@ -88,7 +90,7 @@ const DeployContractTxModal = () => {
     <SendModal
       title={t`Deploy contract`}
       initialTxData={initialTxData}
-      onClose={closeSendModal}
+      onClose={onClose}
       BuildTxModalContent={DeployContractBuildTxModalContent}
       CheckTxModalContent={DeployContractCheckTxModalContent}
       buildTransaction={buildTransaction}

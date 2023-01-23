@@ -21,6 +21,7 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import { deviceBreakPoints } from '@/style/globalStyles'
+import Box from '../Box'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
@@ -129,12 +130,9 @@ export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignm
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
 
-const StyledBoxContainer = styled(motion.div)`
+const StyledBoxContainer = styled(Box)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius-big);
   width: 100%;
 `
 

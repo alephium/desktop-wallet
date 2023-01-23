@@ -300,5 +300,9 @@
   "Could not find a contact with this name": "Could not find a contact with this name",
   "Could not find a contact with this ID": "Could not find a contact with this ID",
   "See more": "See more",
-  "Latest transactions": "Latest transactions"
+  "Latest transactions": "Latest transactions",
+  "Addresses": "Addresses",
+  "Developer tools": "Developer tools",
+  "Enable developer tools": "Enable developer tools",
+  "Deploy and call smart contracts": "Deploy and call smart contracts"
 }

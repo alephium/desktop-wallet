@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
+import Box from '@/components/Box'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
@@ -85,7 +85,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const discreetModeText = t`Discreet mode`
 
   return (
-    <div className={className}>
+    <Box className={className}>
       <KeyValueInput
         label={t`Lock time`}
         description={t`Duration in minutes after which an idle wallet will lock automatically.`}
@@ -167,12 +167,8 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           </CenteredModal>
         )}
       </ModalPortal>
-    </div>
+    </Box>
   )
 }
 
-export default styled(GeneralSettingsSection)`
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius-big);
-`
+export default GeneralSettingsSection

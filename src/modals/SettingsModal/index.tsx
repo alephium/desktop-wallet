@@ -26,24 +26,29 @@ import { fadeInOutBottomFast } from '@/animations'
 import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
+import i18next from '@/i18n'
 import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
 
 import ModalContainer from '../ModalContainer'
+import DevToolsSettingsSection from './DevToolsSettingsSection'
 
 interface SettingsModalProps {
   onClose: () => void
 }
 
+const tabs: TabItem[] = [
+  { value: 'general', label: i18next.t('General') },
+  { value: 'wallets', label: i18next.t('Wallets') },
+  { value: 'network', label: i18next.t('Network') },
+  { value: 'devtools', label: i18next.t('Developer tools') }
+]
+
 const SettingsModal = ({ onClose }: SettingsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const tabs = [
-    { value: 'general', label: t('General'), component: <GeneralSettingsSection /> },
-    { value: 'wallets', label: t('Wallets'), component: <WalletsSettingsSection /> },
-    { value: 'network', label: t('Network'), component: <NetworkSettingsSection /> }
-  ]
+
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
@@ -84,7 +89,16 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
             </CloseButton>
           </ColumnHeader>
           <Scrollbar translateContentSizeYToHolder>
-            <ColumnContent>{tabs.find((tab) => tab.value === currentTab.value)?.component}</ColumnContent>
+            <ColumnContent>
+              {
+                {
+                  general: <GeneralSettingsSection />,
+                  wallets: <WalletsSettingsSection />,
+                  network: <NetworkSettingsSection />,
+                  devtools: <DevToolsSettingsSection />
+                }[currentTab.value]
+              }
+            </ColumnContent>
           </Scrollbar>
         </TabContentsColumn>
       </CenteredBox>

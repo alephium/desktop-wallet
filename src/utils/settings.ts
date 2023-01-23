@@ -27,6 +27,7 @@ export interface Settings {
     discreetMode: boolean
     passwordRequirement: boolean
     language: Language
+    devTools: boolean
   }
   network: {
     networkId: number
@@ -70,7 +71,8 @@ export const defaultSettings: Settings = {
     walletLockTimeInMinutes: 3,
     discreetMode: false,
     passwordRequirement: false,
-    language: 'en-US'
+    language: 'en-US',
+    devTools: false
   },
   network: clone(networkEndpoints.mainnet) as Settings['network']
 }
