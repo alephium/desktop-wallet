@@ -30,23 +30,13 @@ import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { NetworkStatus } from '@/types/network'
-import { ThemeType } from '@/types/settings'
+import { NetworkName, Settings, ThemeType } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
 import { createClient } from '@/utils/api-clients'
 import { migrateUserData } from '@/utils/migration'
-import {
-  getNetworkName,
-  loadSettings,
-  migrateDeprecatedSettings,
-  NetworkName,
-  Settings,
-  UpdateSettingsFunctionSignature,
-  updateStoredSettings
-} from '@/utils/settings'
+import { getNetworkName } from '@/utils/settings'
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
-
-const localStorageSettings = migrateDeprecatedSettings()
 
 export interface GlobalContextProps {
   walletNames: string[]
@@ -57,11 +47,9 @@ export interface GlobalContextProps {
   lockWallet: () => void
   unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
-  settings: Settings
-  updateSettings: UpdateSettingsFunctionSignature
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  currentNetwork: NetworkName | 'custom'
+  currentNetwork: NetworkName
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
@@ -79,8 +67,6 @@ export const initialGlobalContext: GlobalContextProps = {
   lockWallet: () => null,
   unlockWallet: () => null,
   client: undefined,
-  settings: localStorageSettings,
-  updateSettings: () => null,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
   currentNetwork: 'mainnet',
@@ -107,7 +93,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
-  const [settings, setSettings] = useState<Settings>(localStorageSettings)
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
@@ -288,8 +273,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           client,
           snackbarMessage,
           setSnackbarMessage,
-          settings,
-          updateSettings,
           currentNetwork,
           networkStatus,
           updateNetworkSettings,

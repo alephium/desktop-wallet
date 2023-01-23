@@ -28,10 +28,11 @@ import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
+import { discreetModeToggled } from '@/store/settingsSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 import AddressBadge from './AddressBadge'
@@ -52,16 +53,14 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
   const theme = useTheme()
-  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const dispatch = useAppDispatch()
+  const [{ mnemonic, isPassphraseUsed }, discreetMode] = useAppSelector((s) => [
+    s.activeWallet,
+    s.settings.general.discreetMode
+  ])
   const { deepLinkUri } = useWalletConnectContext()
   const { mainAddress } = useAddressesContext()
-  const {
-    networkStatus,
-    settings: {
-      general: { discreetMode }
-    },
-    updateSettings
-  } = useGlobalContext()
+  const { networkStatus } = useGlobalContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -74,6 +73,8 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
     [0, 100],
     [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
   )
+
+  const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
   useEffect(() => {
     if (deepLinkUri && isAuthenticated) setIsWalletConnectModalOpen(true)
@@ -106,12 +107,7 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
           </>
         )}
         <TooltipWrapper content={t`Discreet mode`}>
-          <CompactToggle
-            toggled={discreetMode}
-            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-            IconOn={EyeOff}
-            IconOff={Eye}
-          />
+          <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
         </TooltipWrapper>
         {mainAddress && !isPassphraseUsed && (
           <>

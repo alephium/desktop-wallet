@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 
 import { Address } from '@/contexts/addresses'
-import { NetworkName } from '@/utils/settings'
 
 import { WithParsed } from './data'
+import { NetworkName } from './settings'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'

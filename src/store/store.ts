@@ -23,15 +23,18 @@ import activeWalletSlice from './activeWalletSlice'
 import appSlice from './appSlice'
 import contactsSlice from './contactsSlice'
 import { priceApi } from './priceApiSlice'
+import settingsSlice, { settingsListenerMiddleware } from './settingsSlice'
 
 export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
     [activeWalletSlice.name]: activeWalletSlice.reducer,
     [contactsSlice.name]: contactsSlice.reducer,
+    [settingsSlice.name]: settingsSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(priceApi.middleware)
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(priceApi.middleware).concat(settingsListenerMiddleware.middleware)
 })
 
 setupListeners(store.dispatch)

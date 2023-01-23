@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -29,8 +28,11 @@ import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
+import i18next from '@/i18n'
+import { networkEndpoints } from '@/persistent-storage/settings'
+import { NetworkName, NetworkNames, Settings } from '@/types/settings'
 import { useMountEffect } from '@/utils/hooks'
-import { getNetworkName, networkEndpoints, NetworkName, networkNames, Settings } from '@/utils/settings'
+import { getNetworkName } from '@/utils/settings'
 
 interface NetworkSelectOption {
   label: string
@@ -39,17 +41,24 @@ interface NetworkSelectOption {
 
 type NetworkSettings = Settings['network']
 
+const networkNames = Object.keys(NetworkNames) as (keyof typeof NetworkNames)[]
+
+const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
+  label: {
+    mainnet: i18next.t('Mainnet'),
+    testnet: i18next.t('Testnet'),
+    localhost: i18next.t('Localhost'),
+    custom: i18next.t('Custom')
+  }[networkName],
+  value: networkName
+}))
+
 const NetworkSettingsSection = () => {
   const { t } = useTranslation()
   const { client, settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
-
-  const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
-    label: t(capitalize(networkName) as 'Mainnet' | 'Testnet' | 'Localhost' | 'Custom'),
-    value: networkName
-  }))
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
