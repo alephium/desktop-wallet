@@ -56,7 +56,7 @@ const Label = styled.label`
 `
 
 const DescriptionContainer = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const InputContainer = styled.div`

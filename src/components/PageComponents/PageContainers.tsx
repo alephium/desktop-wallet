@@ -133,7 +133,8 @@ const StyledBoxContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: var(--radius);
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border-radius: var(--radius-big);
   width: 100%;
 `
 
