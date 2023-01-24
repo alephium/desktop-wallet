@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError, getWalletFromMnemonic, Wallet } from '@alephium/sdk'
+import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,7 +27,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import WalletStorage from '@/persistent-storage/wallet'
-import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
+import { walletLocked, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
 import { themeChanged } from '@/store/settingsSlice'
@@ -39,7 +39,6 @@ import { migrateUserData } from '@/utils/migration'
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 export interface GlobalContextProps {
-  saveWallet: (walletName: string, wallet: Wallet, password: string) => void
   unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
@@ -51,7 +50,6 @@ export interface GlobalContextProps {
 }
 
 export const initialGlobalContext: GlobalContextProps = {
-  saveWallet: () => null,
   unlockWallet: () => null,
   client: undefined,
   snackbarMessage: undefined,
@@ -82,16 +80,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
-
-  const saveWallet = (walletName: string, wallet: Wallet, password: string) => {
-    WalletStorage.store(walletName, password, wallet)
-    dispatch(
-      walletSaved({
-        name: walletName,
-        mnemonic: wallet.mnemonic
-      })
-    )
-  }
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
     try {
@@ -190,7 +178,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
-          saveWallet,
           unlockWallet,
           client,
           snackbarMessage,

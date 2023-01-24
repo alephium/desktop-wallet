@@ -38,6 +38,9 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
+import { useAppDispatch } from '@/hooks/redux'
+import WalletStorage from '@/persistent-storage/wallet'
+import { walletSaved } from '@/store/activeWalletSlice'
 
 interface WordKey {
   word: string
@@ -46,9 +49,10 @@ interface WordKey {
 
 const CheckWordsPage = () => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage, saveWallet } = useGlobalContext()
+  const { setSnackbarMessage } = useGlobalContext()
 
   const splitMnemonic = mnemonic.split(' ')
 
@@ -181,7 +185,13 @@ const CheckWordsPage = () => {
 
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
-      saveWallet(walletName, plainWallet, password)
+      WalletStorage.store(walletName, password, plainWallet)
+      dispatch(
+        walletSaved({
+          name: walletName,
+          mnemonic: plainWallet.mnemonic
+        })
+      )
       return true
     }
   }
