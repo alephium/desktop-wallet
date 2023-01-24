@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import useSwitchTheme from '@/hooks/useSwitchTheme'
 
 import Toggle from './Inputs/Toggle'
@@ -31,11 +31,7 @@ interface ThemeSwitcherProps {
 const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
   const { t } = useTranslation()
   const switchTheme = useSwitchTheme()
-  const {
-    settings: {
-      general: { theme: currentTheme }
-    }
-  } = useGlobalContext()
+  const { theme: currentTheme } = useAppSelector((state) => state.settings)
 
   const isDark = currentTheme === 'dark'
 

@@ -20,9 +20,9 @@ import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 import { NodeProvider as Web3Client } from '@alephium/web3'
 
 import { Address, AddressHash } from '@/contexts/addresses'
+import { NetworkName } from '@/types/network'
+import { Settings } from '@/types/settings'
 import { PendingTxType } from '@/types/transactions'
-
-import { NetworkName, Settings } from './settings'
 
 export async function createClient(settings: Settings['network']) {
   try {

@@ -18,31 +18,26 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import 'styled-components'
 
+export interface GeneralSettings {
+  theme: ThemeType
+  walletLockTimeInMinutes: number | null
+  discreetMode: boolean
+  passwordRequirement: boolean
+  language: Language
+  devTools: boolean
+}
+
+export interface NetworkSettings {
+  networkId: number
+  nodeHost: string
+  explorerApiHost: string
+  explorerUrl: string
+}
+
 export interface Settings {
-  general: {
-    theme: ThemeType
-    walletLockTimeInMinutes: number | null
-    discreetMode: boolean
-    passwordRequirement: boolean
-    language: Language
-    devTools: boolean
-  }
-  network: {
-    networkId: number
-    nodeHost: string
-    explorerApiHost: string
-    explorerUrl: string
-  }
+  general: GeneralSettings
+  network: NetworkSettings
 }
-
-export enum NetworkNames {
-  mainnet,
-  testnet,
-  localhost,
-  custom
-}
-
-export type NetworkName = keyof typeof NetworkNames
 
 export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN'
 

@@ -36,7 +36,7 @@ import SendModalScript from '../SendModals/SendModalScript'
 const DevToolsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { devTools } = useAppSelector((state) => state.settings.general)
+  const { devTools } = useAppSelector((state) => state.settings)
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)

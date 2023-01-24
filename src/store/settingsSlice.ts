@@ -23,44 +23,44 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
+import SettingsStorage from '@/persistent-storage/settings'
 
-import SettingsStorage, { defaultSettings } from '../persistent-storage/settings'
-import { Settings } from '../types/settings'
+import { GeneralSettings, Settings } from '../types/settings'
 import { languageChangeFinished, languageChangeStarted } from './actions'
 import { RootState } from './store'
 
 const sliceName = 'settings'
 
-const initialState: Settings = defaultSettings
+const initialState: GeneralSettings = SettingsStorage.load('general') as GeneralSettings
 
 const settingsSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
     themeChanged: (state, action: PayloadAction<Settings['general']['theme']>) => {
-      state.general.theme = action.payload
+      state.theme = action.payload
     },
     discreetModeToggled: (state) => {
-      state.general.discreetMode = !state.general.discreetMode
+      state.discreetMode = !state.discreetMode
     },
     passwordRequirementToggled: (state) => {
-      state.general.passwordRequirement = !state.general.passwordRequirement
+      state.passwordRequirement = !state.passwordRequirement
     },
     devToolsToggled: (state) => {
-      state.general.devTools = !state.general.devTools
+      state.devTools = !state.devTools
     },
     languageChanged: (state, action: PayloadAction<Settings['general']['language']>) => {
-      state.general.language = action.payload
+      state.language = action.payload
     },
     walletLockTimeChanged: (state, action: PayloadAction<Settings['general']['walletLockTimeInMinutes']>) => {
-      state.general.walletLockTimeInMinutes = action.payload
+      state.walletLockTimeInMinutes = action.payload
     },
-    settingsLoaded: (_, action: PayloadAction<Settings>) => action.payload
+    generalSettingsMigrated: (_, action: PayloadAction<GeneralSettings>) => action.payload
   }
 })
 
 export const {
-  settingsLoaded,
+  generalSettingsMigrated,
   themeChanged,
   discreetModeToggled,
   passwordRequirementToggled,
@@ -84,12 +84,12 @@ settingsListenerMiddleware.startListening({
   effect: async (_, { getState }) => {
     const state = getState() as RootState
 
-    SettingsStorage.storeAll(state[sliceName])
+    SettingsStorage.store('general', state[sliceName])
   }
 })
 
 settingsListenerMiddleware.startListening({
-  matcher: isAnyOf(settingsLoaded, languageChanged),
+  matcher: isAnyOf(generalSettingsMigrated, languageChanged),
   effect: async (_, { getState, dispatch }) => {
     const state = getState() as RootState
 
@@ -99,8 +99,8 @@ settingsListenerMiddleware.startListening({
       dispatch(languageChangeStarted())
 
       try {
-        dayjs.locale(settings.general.language.slice(0, 2))
-        await i18next.changeLanguage(settings.general.language)
+        dayjs.locale(settings.language.slice(0, 2))
+        await i18next.changeLanguage(settings.language)
       } catch (e) {
         console.error(e)
       } finally {
@@ -108,7 +108,7 @@ settingsListenerMiddleware.startListening({
       }
     }
 
-    if (i18next.language !== settings.general.language) {
+    if (i18next.language !== settings.language) {
       handleLanguageChange()
     }
   }

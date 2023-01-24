@@ -18,9 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { clone, merge } from 'lodash'
 
-import { NetworkName, Settings } from '@/types/settings'
+import { NetworkPreset } from '@/types/network'
+import { NetworkSettings, Settings } from '@/types/settings'
 
-export const networkEndpoints: Record<Exclude<NetworkName, 'custom'>, Settings['network']> = {
+export const networkPresets: Record<NetworkPreset, NetworkSettings> = {
   mainnet: {
     networkId: 0,
     nodeHost: 'https://wallet-v15.mainnet.alephium.org',
@@ -50,7 +51,7 @@ export const defaultSettings: Settings = {
     language: 'en-US',
     devTools: false
   },
-  network: clone(networkEndpoints.mainnet) as Settings['network']
+  network: clone(networkPresets.mainnet) as NetworkSettings
 }
 
 type SettingsKey = keyof Settings
@@ -67,7 +68,7 @@ class SettingsStorage {
       // Merge default settings with rawSettings in case of new key(s) being added
       const parsedSettings = JSON.parse(rawSettings) as Settings
 
-      return merge(defaultSettings, parsedSettings)
+      return merge({}, defaultSettings, parsedSettings)
     } catch (e) {
       console.error(e)
       return defaultSettings // Fallback to default settings if something went wrong

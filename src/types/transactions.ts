@@ -21,7 +21,7 @@ import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Address } from '@/contexts/addresses'
 
 import { WithParsed } from './data'
-import { NetworkName } from './settings'
+import { NetworkName } from './network'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'

@@ -25,10 +25,9 @@ import {
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '@/contexts/addresses'
+import { NetworkName } from '@/types/network'
 import { GasInfo } from '@/types/transactions'
 import { PendingTx, TransactionStatus } from '@/types/transactions'
-
-import { NetworkName } from './settings'
 
 export type TransactionVariant = Transaction | PendingTx
 type IsTransactionVariant<T extends TransactionVariant> = T extends Transaction

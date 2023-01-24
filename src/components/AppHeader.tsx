@@ -25,7 +25,6 @@ import { TooltipWrapper } from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import { useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -54,13 +53,13 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
   const scrollY = useMotionValue(0)
   const theme = useTheme()
   const dispatch = useAppDispatch()
-  const [{ mnemonic, isPassphraseUsed }, discreetMode] = useAppSelector((s) => [
+  const [{ mnemonic, isPassphraseUsed }, { discreetMode }, network] = useAppSelector((s) => [
     s.activeWallet,
-    s.settings.general.discreetMode
+    s.settings,
+    s.network
   ])
   const { deepLinkUri } = useWalletConnectContext()
   const { mainAddress } = useAddressesContext()
-  const { networkStatus } = useGlobalContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -87,7 +86,7 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
       <motion.header id="app-header" style={{ backgroundColor: headerBGColor }} className={className}>
         <ThemeSwitcher />
         <HeaderDivider />
-        {networkStatus === 'offline' && (
+        {network.status === 'offline' && (
           <>
             <TooltipWrapper content={offlineText}>
               <OfflineIcon tabIndex={0} aria-label={offlineText}>

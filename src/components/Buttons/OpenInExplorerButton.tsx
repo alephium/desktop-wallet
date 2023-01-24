@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface OpenInExplorerButtonProps {
@@ -31,11 +31,7 @@ interface OpenInExplorerButtonProps {
 
 const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps) => {
   const { t } = useTranslation()
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { explorerUrl } = useAppSelector((state) => state.network.settings)
 
   const handleShowInExplorer = () => {
     if (!explorerUrl) return

@@ -29,11 +29,15 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useSwitchTheme from '@/hooks/useSwitchTheme'
 import CenteredModal from '@/modals/CenteredModal'
+import {
+  discreetModeToggled,
+  languageChanged,
+  passwordRequirementToggled,
+  walletLockTimeChanged
+} from '@/store/settingsSlice'
 import { Language, ThemeType } from '@/types/settings'
 
 import ModalPortal from '../ModalPortal'
-import { passwordRequirementToggled, walletLockTimeChanged } from '@/store/settingsSlice'
-import { languageChanged } from '@/store/actions'
 
 interface GeneralSettingsSectionProps {
   className?: string
@@ -57,7 +61,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const dispatch = useAppDispatch()
   const switchTheme = useSwitchTheme()
   const [isAuthenticated, { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme }] =
-    useAppSelector((s) => [!!s.activeWallet.mnemonic, s.settings.general])
+    useAppSelector((s) => [!!s.activeWallet.mnemonic, s.settings])
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 

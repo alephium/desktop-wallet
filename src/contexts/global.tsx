@@ -18,23 +18,23 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
 import { merge } from 'lodash'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AsyncReturnType, PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
-import { useAppDispatch } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
-import { NetworkStatus } from '@/types/network'
-import { NetworkName, Settings, ThemeType } from '@/types/settings'
+import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
+import { themeChanged } from '@/store/settingsSlice'
 import { AlephiumWindow } from '@/types/window'
 import { createClient } from '@/utils/api-clients'
+import { useInterval } from '@/utils/hooks'
 import { migrateUserData } from '@/utils/migration'
-import { getNetworkName } from '@/utils/settings'
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
@@ -49,9 +49,6 @@ export interface GlobalContextProps {
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  currentNetwork: NetworkName
-  networkStatus: NetworkStatus
-  updateNetworkSettings: (settings: Settings['network']) => void
   newLatestVersion: string
   newVersionDownloadTriggered: boolean
   triggerNewVersionDownload: () => void
@@ -69,9 +66,6 @@ export const initialGlobalContext: GlobalContextProps = {
   client: undefined,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
-  currentNetwork: 'mainnet',
-  networkStatus: 'uninitialized',
-  updateNetworkSettings: () => null,
   newLatestVersion: '',
   newVersionDownloadTriggered: false,
   triggerNewVersionDownload: () => null,
@@ -89,31 +83,18 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   overrideContextValue
 }) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
+
   const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
   const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
-  const previousNodeHost = useRef<string>()
-  const previousExplorerAPIHost = useRef<string>()
-  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
-  const currentNetwork = getNetworkName(settings.network)
   const newLatestVersion = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
-  const dispatch = useAppDispatch()
 
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
-
-  const updateSettings: UpdateSettingsFunctionSignature = (settingKeyToUpdate, newSettings) => {
-    const updatedSettings = updateStoredSettings(settingKeyToUpdate, newSettings)
-    updatedSettings && setSettings(updatedSettings)
-    return updatedSettings
-  }
-
-  const updateNetworkSettings = (newNetworkSettings: Settings['network']) => {
-    setNetworkStatus('connecting')
-    updateSettings('network', newNetworkSettings)
-  }
 
   const saveWallet = (walletName: string, wallet: Wallet, password: string) => {
     const walletEncrypted = wallet.encrypt(password)
@@ -171,83 +152,61 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     }
   }
 
-  useIdleForTooLong(lockWallet, (settings.general.walletLockTimeInMinutes || 0) * 60 * 1000)
+  useIdleForTooLong(lockWallet, (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
 
-  const getClient = useCallback(async () => {
-    if (networkStatus !== 'offline') dispatch(appLoadingToggled(true))
+  const initializeClient = useCallback(async () => {
+    if (network.status !== 'offline') dispatch(appLoadingToggled(true))
 
-    const clientResp = await createClient(settings.network)
+    const clientResp = await createClient(network.settings)
     setClient(clientResp)
 
-    if (!clientResp || !settings.network.explorerApiHost || !settings.network.nodeHost) {
-      setNetworkStatus('offline')
+    if (!clientResp || !network.settings.explorerApiHost || !network.settings.nodeHost) {
+      dispatch(apiClientInitFailed())
     } else if (clientResp) {
-      setNetworkStatus('online')
+      dispatch(apiClientInitSucceeded())
 
       console.log('Clients initialized.')
 
       setSnackbarMessage({
-        text: `${t`Current network`}: ${currentNetwork}.`,
+        text: `${t('Current network')}: ${network.name}.`,
         type: 'info',
         duration: 4000
       })
     }
 
     dispatch(appLoadingToggled(false))
-  }, [currentNetwork, dispatch, networkStatus, settings.network, t])
+  }, [dispatch, network.name, network.settings, network.status, t])
 
   useEffect(() => {
-    const networkSettingsHaveChanged =
-      previousNodeHost.current !== settings.network.nodeHost ||
-      previousExplorerAPIHost.current !== settings.network.explorerApiHost
-
-    if (networkSettingsHaveChanged) {
-      getClient()
-      previousNodeHost.current = settings.network.nodeHost
-      previousExplorerAPIHost.current = settings.network.explorerApiHost
+    if (network.status === 'connecting') {
+      initializeClient()
     }
-  }, [currentNetwork, getClient, networkStatus, setSnackbarMessage, settings.network])
+  }, [initializeClient, network.status])
+
+  const shouldInitialize = network.status === 'offline'
+  useInterval(initializeClient, 2000, !shouldInitialize)
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>
-    if (networkStatus === 'offline') {
-      interval = setInterval(getClient, 2000)
-    }
-    return () => clearInterval(interval)
-  })
-
-  useEffect(() => {
-    if (networkStatus === 'offline') {
+    if (network.status === 'offline') {
       setSnackbarMessage({
-        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork }),
+        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork: network.name }),
         type: 'alert',
         duration: 5000
       })
     }
-  }, [currentNetwork, networkStatus, t])
-
-  const switchTheme = useCallback((theme: ThemeType) => {
-    setSettings((prevState) => ({
-      ...prevState,
-      general: {
-        ...prevState.general,
-        theme
-      }
-    }))
-  }, [])
+  }, [network.name, network.status, t])
 
   useEffect(() => {
-    const storedSettings = loadSettings()
-    const shouldListenToOSThemeChanges = storedSettings.general.theme === 'system'
+    const shouldListenToOSThemeChanges = settings.theme === 'system'
 
     if (!shouldListenToOSThemeChanges) return
 
     const removeOSThemeChangeListener = electron?.theme.onShouldUseDarkColors((useDark: boolean) =>
-      switchTheme(useDark ? 'dark' : 'light')
+      dispatch(themeChanged(useDark ? 'dark' : 'light'))
     )
 
     const removeGetNativeThemeListener = electron?.theme.onGetNativeTheme((nativeTheme) =>
-      switchTheme(nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
+      dispatch(themeChanged(nativeTheme.shouldUseDarkColors ? 'dark' : 'light'))
     )
 
     electron?.theme.getNativeTheme()
@@ -256,7 +215,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       removeGetNativeThemeListener && removeGetNativeThemeListener()
       removeOSThemeChangeListener && removeOSThemeChangeListener()
     }
-  }, [settings.general.theme, switchTheme])
+  }, [dispatch, settings.theme])
 
   return (
     <GlobalContext.Provider
@@ -273,9 +232,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           client,
           snackbarMessage,
           setSnackbarMessage,
-          currentNetwork,
-          networkStatus,
-          updateNetworkSettings,
           newLatestVersion,
           newVersionDownloadTriggered,
           triggerNewVersionDownload,

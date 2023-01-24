@@ -28,7 +28,8 @@ import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
-import { settingsLoaded } from './store/settingsSlice'
+import { networkSettingsMigrated } from './store/networkSlice'
+import { generalSettingsMigrated } from './store/settingsSlice'
 import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 import { migrateDeprecatedSettings } from './utils/migration'
@@ -44,7 +45,9 @@ const App = () => {
 
   useEffect(() => {
     const localStorageSettings = migrateDeprecatedSettings()
-    dispatch(settingsLoaded(localStorageSettings))
+
+    dispatch(generalSettingsMigrated(localStorageSettings.general))
+    dispatch(networkSettingsMigrated(localStorageSettings.network))
   }, [dispatch])
 
   useEffect(() => {
@@ -56,7 +59,7 @@ const App = () => {
   }, [newVersionDownloadTriggered])
 
   return (
-    <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={settings.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
 
       {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}

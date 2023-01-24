@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 
 import AlefSymbol from './AlefSymbol'
 
@@ -46,11 +46,8 @@ const Amount = ({
   suffix,
   tabIndex
 }: AmountProps) => {
-  const {
-    settings: {
-      general: { discreetMode }
-    }
-  } = useGlobalContext()
+  const { discreetMode } = useAppSelector((state) => state.settings)
+
   let integralPart = ''
   let fractionalPart = ''
   let quantitySymbol = ''

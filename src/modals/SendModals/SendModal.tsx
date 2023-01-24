@@ -26,6 +26,7 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { Address, useAddressesContext } from '@/contexts/addresses'
 import { Client, useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
+import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as PaperPlaneDarkSVG } from '@/images/paper-plane-dark.svg'
 import { ReactComponent as PaperPlaneLightSVG } from '@/images/paper-plane-light.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
@@ -61,14 +62,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const { t } = useTranslation()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
   const { setAddress } = useAddressesContext()
-  const {
-    currentNetwork,
-    client,
-    settings: {
-      general: { passwordRequirement }
-    },
-    setSnackbarMessage
-  } = useGlobalContext()
+  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
+  const { client, setSnackbarMessage } = useGlobalContext()
 
   const [modalTitle, setModalTitle] = useState(title)
   const [transactionData, setTransactionData] = useState<T | undefined>()
@@ -124,7 +119,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setUnsignedTxId,
     isSweeping,
     consolidationRequired,
-    currentNetwork,
+    currentNetwork: network.name,
     setAddress
   }
 
@@ -226,13 +221,13 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
             <ModalFooterButton secondary onClick={() => setStep('build-tx')}>
               {t`Back`}
             </ModalFooterButton>
-            <ModalFooterButton onClick={passwordRequirement ? confirmPassword : handleSendExtended}>
+            <ModalFooterButton onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}>
               {t`Send`}
             </ModalFooterButton>
           </ModalFooterButtons>
         </>
       )}
-      {step === 'password-check' && passwordRequirement && (
+      {step === 'password-check' && settings.passwordRequirement && (
         <PasswordConfirmation
           text={t`Enter your password to send the transaction.`}
           buttonText={t`Send`}
@@ -243,7 +238,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         {isConsolidateUTXOsModalVisible && (
           <ConsolidateUTXOsModal
             onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-            onConsolidateClick={passwordRequirement ? confirmPassword : handleSendExtended}
+            onConsolidateClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
             fee={fees}
           />
         )}

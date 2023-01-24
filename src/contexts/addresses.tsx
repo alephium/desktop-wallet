@@ -27,9 +27,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
 import { AddressMetadata, AddressSettings } from '@/types/addresses'
+import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
-import { NetworkName } from '@/utils/settings'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { useGlobalContext } from './global'
@@ -145,36 +145,26 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   overrideContextValue
 }) => {
   const { t } = useTranslation()
-  const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
-  const [isLoadingData, setIsLoadingData] = useState(false)
-  const {
-    activeWalletName,
-    client,
-    currentNetwork,
-    setSnackbarMessage,
-    settings: {
-      network: { nodeHost, explorerApiHost }
-    },
-    networkStatus
-  } = useGlobalContext()
-  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
-  const previousMnemonic = useRef<string | undefined>(mnemonic)
+  const dispatch = useAppDispatch()
+  const { activeWalletName, client, setSnackbarMessage } = useGlobalContext()
+  const [{ mnemonic, isPassphraseUsed }, network] = useAppSelector((s) => [s.activeWallet, s.network])
+
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
-  const dispatch = useAppDispatch()
+
+  const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
+  const [isLoadingData, setIsLoadingData] = useState(false)
+  const previousMnemonic = useRef<string | undefined>(mnemonic)
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
-    (addressState) => addressState.network === currentNetwork
+    (addressState) => addressState.network === network.name
   )
 
   const addressesWithPendingSentTxs = addressesOfCurrentNetwork.filter(
-    (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === currentNetwork).length > 0
+    (address) => address.transactions.pending.filter((pendingTx) => pendingTx.network === network.name).length > 0
   )
 
-  const constructMapKey = useCallback(
-    (addressHash: AddressHash) => `${addressHash}-${currentNetwork}`,
-    [currentNetwork]
-  )
+  const constructMapKey = useCallback((addressHash: AddressHash) => `${addressHash}-${network.name}`, [network.name])
 
   const getAddress = useCallback(
     (addressHash: AddressHash) => addressesState.get(constructMapKey(addressHash)),
@@ -187,7 +177,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       setAddressesState((prevState) => {
         const newAddressesState = new Map(prevState)
         for (const newAddress of newAddresses) {
-          newAddress.network = currentNetwork
+          newAddress.network = network.name
           newAddressesState.set(constructMapKey(newAddress.hash), newAddress)
         }
         return newAddressesState
@@ -195,7 +185,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       console.log('✅ Updated addresses state: ', newAddresses)
     },
-    [constructMapKey, currentNetwork]
+    [constructMapKey, network.name]
   )
 
   const setAddress = useCallback(
@@ -236,7 +226,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const fetchPendingTxs = useCallback(
     async (addresses: Address[] = []) => {
-      if (!client || networkStatus === 'offline') {
+      if (!client || network.status === 'offline') {
         displayDataFetchingError()
         return
       }
@@ -254,7 +244,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
               const pendingTx = convertUnconfirmedTxToPendingTx(
                 tx as UnconfirmedTransaction,
                 address.hash,
-                currentNetwork
+                network.name
               )
 
               address.addPendingTransaction(pendingTx)
@@ -273,12 +263,12 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       setIsLoadingData(false)
     },
-    [client, networkStatus, addressesOfCurrentNetwork, displayDataFetchingError, currentNetwork, setSnackbarMessage, t]
+    [client, network.status, addressesOfCurrentNetwork, displayDataFetchingError, network.name, setSnackbarMessage, t]
   )
 
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
-      if (!client || networkStatus === 'offline') {
+      if (!client || network.status === 'offline') {
         displayDataFetchingError()
         updateAddressesState(addresses)
         return
@@ -333,7 +323,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     },
     [
       client,
-      networkStatus,
+      network.status,
       addressesOfCurrentNetwork,
       displayDataFetchingError,
       updateAddressesState,
@@ -343,7 +333,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const fetchAddressTransactionsNextPage = async (address: Address) => {
-    if (!client || networkStatus === 'offline') return
+    if (!client || network.status === 'offline') return
     setIsLoadingData(true)
     await client.fetchAddressConfirmedTransactionsNextPage(address)
     setIsLoadingData(false)
@@ -447,9 +437,10 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
     const walletHasChanged = previousMnemonic.current !== mnemonic
     const networkSettingsHaveChanged =
-      previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+      previousNodeApiHost.current !== network.settings.nodeHost ||
+      previousExplorerApiHost.current !== network.settings.explorerApiHost
 
-    if (networkStatus === 'connecting' || networkStatus === 'uninitialized') return
+    if (network.status === 'connecting' || network.status === 'uninitialized') return
 
     // Clean state when locking the wallet or changing wallets
     if (mnemonic === undefined || mnemonic !== previousMnemonic.current) {
@@ -460,12 +451,20 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
     if (mnemonic && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
       previousMnemonic.current = mnemonic
-      previousNodeApiHost.current = nodeHost
-      previousExplorerApiHost.current = explorerApiHost
+      previousNodeApiHost.current = network.settings.nodeHost
+      previousExplorerApiHost.current = network.settings.explorerApiHost
       initializeCurrentNetworkAddresses()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork, networkStatus, client, activeWalletName, mnemonic, explorerApiHost, nodeHost])
+  }, [
+    network.name,
+    network.status,
+    client,
+    activeWalletName,
+    mnemonic,
+    network.settings.explorerApiHost,
+    network.settings.nodeHost
+  ])
 
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
@@ -492,13 +491,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     return () => {
       clearInterval(interval)
     }
-  }, [
-    addressesState,
-    currentNetwork,
-    fetchAndStoreAddressesData,
-    addressesOfCurrentNetwork,
-    addressesWithPendingSentTxs
-  ])
+  }, [addressesState, network.name, fetchAndStoreAddressesData, addressesOfCurrentNetwork, addressesWithPendingSentTxs])
 
   const refreshAddressesData = useCallback(async () => {
     await fetchAndStoreAddressesData()

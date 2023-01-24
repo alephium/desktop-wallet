@@ -19,15 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import { openInWebBrowser } from '@/utils/misc'
 
 const Address = ({ hash }: { hash: string }) => {
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { explorerUrl } = useAppSelector((state) => state.network.settings)
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     e.stopPropagation()
