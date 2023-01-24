@@ -33,7 +33,8 @@ const mockSettings = {
     walletLockTimeInMinutes: 999,
     discreetMode: false,
     passwordRequirement: false,
-    language: 'en-US' as Language
+    language: 'en-US' as Language,
+    devTools: false
   },
   network: {
     networkId: 123,
