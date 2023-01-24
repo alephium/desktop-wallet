@@ -16,11 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage } from '@alephium/sdk'
 import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
 
 import SettingsStorage, { defaultSettings } from '@/persistent-storage/settings'
+import WalletStorage from '@/persistent-storage/wallet'
 import { Settings, ThemeType } from '@/types/settings'
 
 import { stringToDoubleSHA256HexString } from './misc'
@@ -44,11 +44,15 @@ export const migrateUserData = (mnemonic: string, walletName: string) => {
   _20220527_120000(mnemonic, walletName)
 }
 
+export const migrateWalletData = () => {
+  console.log('🚚 Migrating wallet data')
+  _20230124_164900()
+}
+
 // Change localStorage address metadata key from "{walletName}-addresses-metadata" to "addresses-metadata-{walletName}"
 // See https://github.com/alephium/desktop-wallet/issues/236
 export const _20220511_074100 = () => {
-  const Storage = getStorage()
-  const walletNames = Storage.list()
+  const walletNames = WalletStorage.list()
 
   for (const walletName of walletNames) {
     const keyDeprecated = `${walletName}-addresses-metadata`
@@ -144,4 +148,19 @@ export const migrateDeprecatedSettings = (): Settings => {
   SettingsStorage.storeAll(newSettings)
 
   return newSettings
+}
+
+// Instead of storing a JSON stringified string, simply store a string
+export const _20230124_164900 = () => {
+  WalletStorage.list().forEach((name) => {
+    const wallet = window.localStorage.getItem(WalletStorage.getKey(name))
+
+    if (!wallet) return
+
+    const parsedWallet = JSON.parse(wallet)
+
+    if (typeof parsedWallet === 'string') {
+      window.localStorage.setItem(WalletStorage.getKey(name), parsedWallet)
+    }
+  })
 }

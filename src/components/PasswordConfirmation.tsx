@@ -16,19 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, walletOpen } from '@alephium/sdk'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
+import WalletStorage from '@/persistent-storage/wallet'
 
 import Button from './Button'
 import Input from './Inputs/Input'
 import { Section } from './PageComponents/PageContainers'
-
-const Storage = getStorage()
 
 interface PasswordConfirmationProps {
   onCorrectPasswordEntered: (password: string) => void
@@ -57,10 +55,8 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   if (!storedWalletName) return null
 
   const validatePassword = () => {
-    const walletEncrypted = Storage.load(storedWalletName)
-
     try {
-      if (walletOpen(password, walletEncrypted)) {
+      if (WalletStorage.load(storedWalletName, password)) {
         onCorrectPasswordEntered(password)
       }
     } catch (e) {

@@ -79,7 +79,8 @@ const ImportWordsPage = () => {
       saveWallet(walletName, wallet, password)
       saveNewAddress(
         new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, { isMain: true }),
-        wallet.mnemonic
+        wallet.mnemonic,
+        walletName
       )
       discoverAndSaveActiveAddresses(wallet.mnemonic, [0])
       onButtonNext()

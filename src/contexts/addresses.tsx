@@ -117,7 +117,7 @@ export interface AddressesContextProps {
   mainAddress?: Address
   getAddress: (hash: AddressHash) => Address | undefined
   setAddress: (address: Address) => void
-  saveNewAddress: (address: Address, mnemonic?: string) => void
+  saveNewAddress: (address: Address, mnemonic?: string, walletName?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
   fetchAddressTransactionsNextPage: (address: Address) => void
@@ -341,16 +341,19 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   }
 
   const saveNewAddress = useCallback(
-    (newAddress: Address, mnemonic?: string) => {
-      const _mnemonic = mnemonic || mnemonic
+    // TODO: Remove need for walletName and mnemonic once addresses in Redux
+    (newAddress: Address, mnemonic?: string, walletName?: string) => {
+      const _mnemonic = activeWallet.mnemonic || mnemonic
+      const _walletName = activeWallet.name || walletName
+
       if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
-      if (!activeWallet.name) throw new Error('Could not save new address, wallet name not found')
+      if (!_walletName) throw new Error('Could not save new address, wallet name not found')
 
       if (!activeWallet.isPassphraseUsed)
         AddressMetadataStorage.store(
           {
             mnemonic: _mnemonic,
-            walletName: activeWallet.name
+            walletName: _walletName
           },
           newAddress.index,
           newAddress.settings
@@ -359,7 +362,14 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       fetchAndStoreAddressesData([newAddress])
       fetchPendingTxs([newAddress])
     },
-    [activeWallet.isPassphraseUsed, activeWallet.name, fetchAndStoreAddressesData, fetchPendingTxs, setAddress]
+    [
+      activeWallet.isPassphraseUsed,
+      activeWallet.mnemonic,
+      activeWallet.name,
+      fetchAndStoreAddressesData,
+      fetchPendingTxs,
+      setAddress
+    ]
   )
 
   const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {

@@ -32,7 +32,7 @@ import { networkSettingsMigrated } from './store/networkSlice'
 import { generalSettingsMigrated } from './store/settingsSlice'
 import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
-import { migrateDeprecatedSettings } from './utils/migration'
+import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
 
 const App = () => {
   const { snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
@@ -48,6 +48,8 @@ const App = () => {
 
     dispatch(generalSettingsMigrated(localStorageSettings.general))
     dispatch(networkSettingsMigrated(localStorageSettings.network))
+
+    migrateWalletData()
   }, [dispatch])
 
   useEffect(() => {
