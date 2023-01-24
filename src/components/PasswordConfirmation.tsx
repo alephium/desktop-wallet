@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 
 import Button from './Button'
 import Input from './Inputs/Input'
@@ -46,18 +47,24 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   children
 }) => {
   const { t } = useTranslation()
-  const { activeWalletName, setSnackbarMessage } = useGlobalContext()
+  const activeWallet = useAppSelector((state) => state.activeWallet)
+  const { setSnackbarMessage } = useGlobalContext()
+
   const [password, setPassword] = useState('')
 
+  const storedWalletName = walletName || activeWallet.name
+
+  if (!storedWalletName) return null
+
   const validatePassword = () => {
-    const walletEncrypted = Storage.load(walletName || activeWalletName)
+    const walletEncrypted = Storage.load(storedWalletName)
 
     try {
       if (walletOpen(password, walletEncrypted)) {
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
-      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
+      setSnackbarMessage({ text: t('Invalid password'), type: 'alert' })
     }
   }
 
@@ -69,7 +76,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
       </Section>
       <Section>
         <ButtonStyled onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
-          {buttonText || t`Submit`}
+          {buttonText || t('Submit')}
         </ButtonStyled>
       </Section>
     </>

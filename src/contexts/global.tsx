@@ -40,11 +40,8 @@ export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 export interface GlobalContextProps {
   walletNames: string[]
-  activeWalletName: string
-  setCurrentWalletName: (walletName: string) => void
   saveWallet: (walletName: string, wallet: Wallet, password: string) => void
   deleteWallet: (w: string) => void
-  lockWallet: () => void
   unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
@@ -57,11 +54,8 @@ export interface GlobalContextProps {
 
 export const initialGlobalContext: GlobalContextProps = {
   walletNames: [],
-  activeWalletName: '',
-  setCurrentWalletName: () => null,
   saveWallet: () => null,
   deleteWallet: () => null,
-  lockWallet: () => null,
   unlockWallet: () => null,
   client: undefined,
   snackbarMessage: undefined,
@@ -87,7 +81,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [settings, network] = useAppSelector((s) => [s.settings, s.network])
 
   const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
-  const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const newLatestVersion = useLatestGitHubRelease()
@@ -112,11 +105,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     Storage.remove(walletName)
     AddressMetadataStorage.delete(walletName)
     setWalletNames(Storage.list())
-  }
-
-  const lockWallet = () => {
-    setCurrentWalletName('')
-    dispatch(walletLocked())
   }
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
@@ -145,14 +133,13 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           isPassphraseUsed: !!passphrase
         })
       )
-      setCurrentWalletName(walletName)
       callback()
     } catch (e) {
       setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
     }
   }
 
-  useIdleForTooLong(lockWallet, (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
+  useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   const initializeClient = useCallback(async () => {
     if (network.status !== 'offline') dispatch(appLoadingToggled(true))
@@ -223,11 +210,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         {
           walletNames,
           setWalletNames,
-          activeWalletName,
-          setCurrentWalletName,
           saveWallet,
           deleteWallet,
-          lockWallet,
           unlockWallet,
           client,
           snackbarMessage,

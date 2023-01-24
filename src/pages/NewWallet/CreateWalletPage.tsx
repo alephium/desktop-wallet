@@ -39,7 +39,7 @@ import { useWalletContext } from '@/contexts/wallet'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
-  const { setCurrentWalletName, walletNames } = useGlobalContext()
+  const { walletNames } = useGlobalContext()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const [walletName, setWalletNameState] = useState(existingWalletName)
@@ -86,7 +86,6 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const handleNextButtonClick = () => {
     setWalletName(walletName)
     setPassword(password)
-    setCurrentWalletName(walletName)
     onButtonNext()
   }
 

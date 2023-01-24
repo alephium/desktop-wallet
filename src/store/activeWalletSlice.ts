@@ -36,8 +36,8 @@ const activeWalletSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    walletSaved: (state, action: PayloadAction<ActiveWalletState>) => action.payload,
-    walletUnlocked: (state, action: PayloadAction<ActiveWalletState>) => action.payload,
+    walletSaved: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
+    walletUnlocked: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
     walletLocked: () => initialState
   }
 })

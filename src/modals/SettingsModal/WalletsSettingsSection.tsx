@@ -25,37 +25,42 @@ import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
+import { walletLocked } from '@/store/activeWalletSlice'
 
 import ModalPortal from '../ModalPortal'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
-  const { activeWalletName, walletNames, deleteWallet, lockWallet } = useGlobalContext()
-  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+  const dispatch = useAppDispatch()
+  const { walletNames, deleteWallet } = useGlobalContext()
+
+  const { mnemonic, name: activeWalletName } = useAppSelector((state) => state.activeWallet)
 
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [walletToRemove, setWalletToRemove] = useState<string>('')
+  const [walletToRemove, setWalletToRemove] = useState('')
   const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false)
 
   const openRemoveWalletModal = (walletName: string) => setWalletToRemove(walletName)
-  const openSecretPhraseModal = () => setIsDisplayingSecretModal(true)
-  const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
+
+  const isAuthenticated = !!mnemonic && !!activeWalletName
 
   const handleRemoveWallet = (walletName: string) => {
     deleteWallet(walletName)
 
-    walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
+    walletName === activeWalletName ? dispatch(walletLocked()) : setWalletToRemove('')
   }
+
+  const lockWallet = () => dispatch(walletLocked())
 
   return (
     <>
       <Section align="flex-start" role="table">
         <h2 tabIndex={0} role="label">
-          {t`Wallet list`} ({walletNames.length})
+          {t('Wallet list')} ({walletNames.length})
         </h2>
         <BoxContainer role="rowgroup">
           {walletNames.map((n) => (
@@ -65,26 +70,26 @@ const WalletsSettingsSection = () => {
       </Section>
       {isAuthenticated && (
         <CurrentWalletSection align="flex-start">
-          <h2>{t`Current wallet`}</h2>
-          <InfoBox label={t`Wallet name`} text={activeWalletName} />
+          <h2>{t('Current wallet')}</h2>
+          <InfoBox label={t('Wallet name')} text={activeWalletName} />
           <ActionButtons>
             <Button role="secondary" onClick={lockWallet}>
-              {t`Lock current wallet`}
+              {t('Lock current wallet')}
             </Button>
             <Button transparent variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
-              {t`Export current wallet`}
+              {t('Export current wallet')}
             </Button>
-            <Button transparent variant="alert" onClick={openSecretPhraseModal}>
-              {t`Show your secret recovery phrase`}
+            <Button transparent variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
+              {t('Show your secret recovery phrase')}
             </Button>
             <Button variant="alert" onClick={() => openRemoveWalletModal(activeWalletName)}>
-              {t`Remove current wallet`}
+              {t('Remove current wallet')}
             </Button>
           </ActionButtons>
         </CurrentWalletSection>
       )}
       <ModalPortal>
-        {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
+        {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
         {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
         {walletToRemove && (
           <WalletRemovalModal
