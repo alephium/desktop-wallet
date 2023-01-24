@@ -33,11 +33,13 @@ import { FloatingPanel, Section } from '@/components/PageComponents/PageContaine
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 
 const HomePage = () => {
-  const [showInitialActions, setShowInitialActions] = useState(false)
-  const { walletNames } = useGlobalContext()
   const { t } = useTranslation()
+  const walletNames = useAppSelector((state) => state.app.storedWalletNames)
+
+  const [showInitialActions, setShowInitialActions] = useState(false)
 
   const hasWallet = walletNames.length > 0
 

@@ -24,21 +24,23 @@ import styled from 'styled-components'
 import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
-import { walletLocked } from '@/store/activeWalletSlice'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
+import WalletStorage from '@/persistent-storage/wallet'
+import { walletDeleted, walletLocked } from '@/store/activeWalletSlice'
 
 import ModalPortal from '../ModalPortal'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { walletNames, deleteWallet } = useGlobalContext()
-
-  const { mnemonic, name: activeWalletName } = useAppSelector((state) => state.activeWallet)
+  const [{ mnemonic, name: activeWalletName }, walletNames] = useAppSelector((s) => [
+    s.activeWallet,
+    s.app.storedWalletNames
+  ])
 
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [walletToRemove, setWalletToRemove] = useState('')
@@ -49,9 +51,11 @@ const WalletsSettingsSection = () => {
   const isAuthenticated = !!mnemonic && !!activeWalletName
 
   const handleRemoveWallet = (walletName: string) => {
-    deleteWallet(walletName)
+    WalletStorage.delete(walletName)
+    AddressMetadataStorage.delete(walletName)
+    dispatch(walletDeleted(walletName))
 
-    walletName === activeWalletName ? dispatch(walletLocked()) : setWalletToRemove('')
+    setWalletToRemove('')
   }
 
   const lockWallet = () => dispatch(walletLocked())

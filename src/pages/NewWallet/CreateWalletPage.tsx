@@ -33,15 +33,16 @@ import {
 } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
-import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
+import { useAppSelector } from '@/hooks/redux'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
-  const { walletNames } = useGlobalContext()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
+  const walletNames = useAppSelector((state) => state.app.storedWalletNames)
+
   const [walletName, setWalletNameState] = useState(existingWalletName)
   const [walletNameError, setWalletNameError] = useState('')
   const [password, setPasswordState] = useState(existingPassword)
@@ -68,7 +69,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
 
     if (walletName.length < 3) {
       walletNameError = t`Wallet name is too short`
-    } else if (walletNames?.includes(walletName)) {
+    } else if (walletNames.includes(walletName)) {
       walletNameError = t`Wallet name already taken`
     }
 

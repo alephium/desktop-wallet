@@ -36,12 +36,19 @@ const activeWalletSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    walletSaved: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
+    walletSaved: (_, action: PayloadAction<Required<Pick<ActiveWalletState, 'name' | 'mnemonic'>>>) => action.payload,
     walletUnlocked: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
-    walletLocked: () => initialState
+    walletLocked: () => initialState,
+    walletDeleted: (state, action: PayloadAction<string>) => {
+      const deletedWalletName = action.payload
+
+      if (state.name === deletedWalletName) {
+        return initialState
+      }
+    }
   }
 })
 
-export const { walletSaved, walletLocked, walletUnlocked } = activeWalletSlice.actions
+export const { walletSaved, walletLocked, walletUnlocked, walletDeleted } = activeWalletSlice.actions
 
 export default activeWalletSlice

@@ -26,7 +26,6 @@ import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
@@ -40,9 +39,7 @@ import { migrateUserData } from '@/utils/migration'
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 export interface GlobalContextProps {
-  walletNames: string[]
   saveWallet: (walletName: string, wallet: Wallet, password: string) => void
-  deleteWallet: (w: string) => void
   unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
@@ -54,9 +51,7 @@ export interface GlobalContextProps {
 }
 
 export const initialGlobalContext: GlobalContextProps = {
-  walletNames: [],
   saveWallet: () => null,
-  deleteWallet: () => null,
   unlockWallet: () => null,
   client: undefined,
   snackbarMessage: undefined,
@@ -80,7 +75,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const dispatch = useAppDispatch()
   const [settings, network] = useAppSelector((s) => [s.settings, s.network])
 
-  const [walletNames, setWalletNames] = useState<string[]>(WalletStorage.list())
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const newLatestVersion = useLatestGitHubRelease()
@@ -91,19 +85,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const saveWallet = (walletName: string, wallet: Wallet, password: string) => {
     WalletStorage.store(walletName, password, wallet)
-    setWalletNames(WalletStorage.list())
     dispatch(
       walletSaved({
         name: walletName,
         mnemonic: wallet.mnemonic
       })
     )
-  }
-
-  const deleteWallet = (walletName: string) => {
-    WalletStorage.delete(walletName)
-    AddressMetadataStorage.delete(walletName)
-    setWalletNames(WalletStorage.list())
   }
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
@@ -203,10 +190,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
-          walletNames,
-          setWalletNames,
           saveWallet,
-          deleteWallet,
           unlockWallet,
           client,
           snackbarMessage,
