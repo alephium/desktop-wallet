@@ -21,6 +21,7 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import { deviceBreakPoints } from '@/style/globalStyles'
+
 import Box from '../Box'
 
 interface MainPanelProps {
