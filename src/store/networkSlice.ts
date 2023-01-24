@@ -88,7 +88,7 @@ export const networkListenerMiddleware = createListenerMiddleware()
 // When the network changes, store settings in persistent storage
 networkListenerMiddleware.startListening({
   matcher: isAnyOf(networkSettingsMigrated, networkPresetSwitched, customNetworkSettingsSaved),
-  effect: async (_, { getState }) => {
+  effect: (_, { getState }) => {
     const state = getState() as RootState
 
     SettingsStorage.store('network', state[sliceName].settings)
