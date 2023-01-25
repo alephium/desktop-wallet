@@ -26,7 +26,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
 import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
-import AssetsOverviewPanel from './AssetsOverviewPanel'
+import AmountsOverviewPanel from './AmountsOverviewPanel'
 import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
@@ -37,7 +37,7 @@ const OverviewPage = () => {
   return (
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel>
-        <AssetsOverviewPanel isLoading={isLoadingData} />
+        <AmountsOverviewPanel isLoading={isLoadingData} />
         <TransactionList onTransactionClick={setSelectedTransaction} />
 
         <ModalPortal>

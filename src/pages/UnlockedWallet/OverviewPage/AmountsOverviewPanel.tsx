@@ -34,12 +34,12 @@ import SettingsModal from '@/modals/SettingsModal'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
 import { currencies } from '@/utils/currencies'
 
-interface AssetsOverviewProps {
+interface AmountsOverviewPanelProps {
   isLoading?: boolean
   className?: string
 }
 
-const AssetsOverview = ({ className, isLoading }: AssetsOverviewProps) => {
+const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProps) => {
   const { t } = useTranslation()
   const { addresses } = useAddressesContext()
   const { networkStatus, lockWallet } = useGlobalContext()
@@ -111,7 +111,7 @@ const AssetsOverview = ({ className, isLoading }: AssetsOverviewProps) => {
   )
 }
 
-export default styled(AssetsOverview)`
+export default styled(AmountsOverviewPanel)`
   display: flex;
   border-radius: var(--radius-huge);
   border: 1px solid ${({ theme }) => theme.border.primary};
