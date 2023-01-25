@@ -36,7 +36,7 @@ const OverviewPage = () => {
 
   return (
     <motion.div {...fadeIn}>
-      <UnlockedWalletPanel>
+      <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <TransactionList onTransactionClick={setSelectedTransaction} />
 

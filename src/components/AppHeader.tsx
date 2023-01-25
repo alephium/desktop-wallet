@@ -41,13 +41,14 @@ import NetworkBadge from './NetworkBadge'
 import ThemeSwitcher from './ThemeSwitcher'
 
 interface AppHeader {
+  title?: string
   className?: string
 }
 
 // This shall be removed once v2.0.0 is released
 const hideWalletConnectButton = false
 
-const AppHeader: FC<AppHeader> = ({ children, className }) => {
+const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { t } = useTranslation()
   const { scroll } = useScrollContext()
   const scrollY = useMotionValue(0)
@@ -84,56 +85,59 @@ const AppHeader: FC<AppHeader> = ({ children, className }) => {
   return (
     <>
       <motion.header id="app-header" style={{ backgroundColor: headerBGColor }} className={className}>
-        <ThemeSwitcher />
-        <HeaderDivider />
-        {network.status === 'offline' && (
-          <>
-            <TooltipWrapper content={offlineText}>
-              <OfflineIcon tabIndex={0} aria-label={offlineText}>
-                <WifiOff
-                  size={20}
-                  color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
-                />
-              </OfflineIcon>
-            </TooltipWrapper>
-            <HeaderDivider />
-          </>
-        )}
-        {children && (
-          <>
-            {children}
-            <HeaderDivider />
-          </>
-        )}
-        <TooltipWrapper content={t`Discreet mode`}>
-          <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
-        </TooltipWrapper>
-        {mainAddress && !isPassphraseUsed && (
-          <>
-            <HeaderDivider />
-            <TooltipWrapper content={t`Default address`}>
-              <AddressBadge address={mainAddress} />
-            </TooltipWrapper>
-          </>
-        )}
-        <HeaderDivider />
-        <NetworkBadge />
-        {isAuthenticated && !hideWalletConnectButton && (
-          <>
-            <HeaderDivider />
-            <TooltipWrapper content={t`Connect wallet to dApp`}>
-              <Button
-                transparent
-                squared
-                role="secondary"
-                onClick={() => setIsWalletConnectModalOpen(true)}
-                aria-label="WalletConnect"
-              >
-                <img src={walletConnectIcon} style={{ width: '100%' }} />
-              </Button>
-            </TooltipWrapper>
-          </>
-        )}
+        <Title>{title}</Title>
+        <HeaderButtons>
+          <ThemeSwitcher />
+          <HeaderDivider />
+          {network.status === 'offline' && (
+            <>
+              <TooltipWrapper content={offlineText}>
+                <OfflineIcon tabIndex={0} aria-label={offlineText}>
+                  <WifiOff
+                    size={20}
+                    color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
+                  />
+                </OfflineIcon>
+              </TooltipWrapper>
+              <HeaderDivider />
+            </>
+          )}
+          {children && (
+            <>
+              {children}
+              <HeaderDivider />
+            </>
+          )}
+          <TooltipWrapper content={t`Discreet mode`}>
+            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
+          </TooltipWrapper>
+          {mainAddress && !isPassphraseUsed && (
+            <>
+              <HeaderDivider />
+              <TooltipWrapper content={t`Default address`}>
+                <AddressBadge address={mainAddress} />
+              </TooltipWrapper>
+            </>
+          )}
+          <HeaderDivider />
+          <NetworkBadge />
+          {isAuthenticated && !hideWalletConnectButton && (
+            <>
+              <HeaderDivider />
+              <TooltipWrapper content={t`Connect wallet to dApp`}>
+                <Button
+                  transparent
+                  squared
+                  role="secondary"
+                  onClick={() => setIsWalletConnectModalOpen(true)}
+                  aria-label="WalletConnect"
+                >
+                  <img src={walletConnectIcon} style={{ width: '100%' }} />
+                </Button>
+              </TooltipWrapper>
+            </>
+          )}
+        </HeaderButtons>
       </motion.header>
       <ModalPortal>
         {isWalletConnectModalOpen && (
@@ -151,16 +155,12 @@ export default styled(AppHeader)`
   left: ${walletSidebarWidthPx}px;
 
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 
   height: ${appHeaderHeightPx}px;
-  padding: 0 var(--spacing-4);
+  padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
-
-  > *:not(:last-child) {
-    margin-right: var(--spacing-1);
-  }
 `
 
 const HeaderDivider = styled.div`
@@ -177,4 +177,21 @@ const OfflineIcon = styled.div`
   height: 40px;
   border-radius: 40px;
   background-color: ${({ theme }) => theme.global.alert};
+`
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.primary};
+`
+
+const HeaderButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-1);
+
+  > *:not(:last-child) {
+    margin-right: var(--spacing-1);
+  }
 `

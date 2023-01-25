@@ -33,7 +33,7 @@ const TransfersPage = () => {
 
   return (
     <motion.div {...fadeIn}>
-      <UnlockedWalletPanel>
+      <UnlockedWalletPanel top>
         <TransactionList onTransactionClick={setSelectedTransaction} />
         <ModalPortal>
           {selectedTransaction && (
