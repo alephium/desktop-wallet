@@ -38,7 +38,7 @@ const OverviewPage = () => {
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
-        <TransactionList onTransactionClick={setSelectedTransaction} />
+        <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
 
         <ModalPortal>
           {selectedTransaction && (

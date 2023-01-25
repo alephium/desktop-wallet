@@ -33,10 +33,11 @@ import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } fr
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
+  limit?: number
   className?: string
 }
 
-const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
+const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { addresses, isLoadingData } = useAddressesContext()
@@ -45,6 +46,8 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
   const allPendingTxs = getTransactionsForAddresses('pending', addresses)
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+
+  const displayedConfirmedTxs = limit ? allConfirmedTxs.slice(0, limit - allPendingTxs.length) : allConfirmedTxs
 
   const shouldHideTx = (tx: Transaction, address: Address) =>
     tx.inputs &&
@@ -66,7 +69,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
         </TableRow>
       ))}
-      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
+      {displayedConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
         if (shouldHideTx(tx, address)) return null
         return (
           <TableRow
@@ -80,7 +83,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
           </TableRow>
         )
       })}
-      {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
+      {!isLoadingData && !allPendingTxs.length && !displayedConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
