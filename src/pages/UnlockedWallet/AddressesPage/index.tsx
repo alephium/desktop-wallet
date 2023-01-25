@@ -251,6 +251,7 @@ const AdvancedOperationsHeader = styled(UnlockedWalletPanel)`
   background-color: ${({ theme }) => theme.bg.background1};
   position: relative;
   z-index: 1;
+  padding-bottom: 0;
 `
 
 const AdvancedOperationsTitle = styled.h2`
