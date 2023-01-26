@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Contact as ContactIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +31,7 @@ import { selectAllContacts } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
 
 import ContactSelectModal from '../ContactSelectModal'
+import ModalPortal from '../ModalPortal'
 
 interface AddressSelectToProps extends InputProps {
   onContactSelect: (address: string) => void
@@ -87,11 +88,11 @@ const AddressSelectTo = ({ label, onContactSelect, value, ...props }: AddressSel
           </ContactRow>
         )}
       </Input>
-      <AnimatePresence>
+      <ModalPortal>
         {isAddressSelectModalOpen && (
           <ContactSelectModal setContact={handleContactSelect} onClose={() => setIsAddressSelectModalOpen(false)} />
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }

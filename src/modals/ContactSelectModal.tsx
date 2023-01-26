@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { SearchIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -36,6 +35,7 @@ import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 
 import ContactFormModal from './ContactFormModal'
+import ModalPortal from './ModalPortal'
 
 interface ContactSelectModalProps {
   setContact: (contact: Contact) => void | undefined
@@ -101,9 +101,9 @@ const ContactSelectModal = ({ setContact, onClose }: ContactSelectModalProps) =>
           {t('Select')}
         </ModalFooterButton>
       </ModalFooterButtons>
-      <AnimatePresence>
+      <ModalPortal>
         {isContactFormModalOpen && <ContactFormModal onClose={() => setIsContactFormModalOpen(false)} />}
-      </AnimatePresence>
+      </ModalPortal>
     </CenteredModal>
   )
 }

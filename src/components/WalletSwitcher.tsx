@@ -16,11 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+
+import ModalPortal from '@/modals/ModalPortal'
 
 import { useGlobalContext } from '../contexts/global'
 import CenteredModal from '../modals/CenteredModal'
@@ -95,7 +96,7 @@ const WalletSwitcher = () => {
           skipEqualityCheck
         />
       )}
-      <AnimatePresence>
+      <ModalPortal>
         {isPasswordModalOpen && (
           <CenteredModal narrow title={t`Enter password`} onClose={onPasswordModalClose}>
             <PasswordConfirmation
@@ -112,7 +113,7 @@ const WalletSwitcher = () => {
             </PasswordConfirmation>
           </CenteredModal>
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </>
   )
 }
