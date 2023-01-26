@@ -17,8 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
+
+import client from '@/api/client'
+import { useInterval } from '@/utils/hooks'
 
 import { CenteredSection } from './components/PageComponents/PageContainers'
 import SnackbarManager from './components/SnackbarManager'
@@ -28,16 +32,17 @@ import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
-import { networkSettingsMigrated } from './store/networkSlice'
+import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from './store/networkSlice'
 import { generalSettingsMigrated } from './store/settingsSlice'
 import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
 
 const App = () => {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const settings = useAppSelector((state) => state.settings)
-  const { snackbarMessage, newVersion, newVersionDownloadTriggered } = useGlobalContext()
+  const { snackbarMessage, newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
+  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
@@ -50,6 +55,46 @@ const App = () => {
 
     migrateWalletData()
   }, [dispatch])
+
+  const initializeClient = useCallback(async () => {
+    try {
+      await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
+      dispatch(apiClientInitSucceeded())
+      setSnackbarMessage({
+        text: `${t('Current network')}: ${network.name}.`,
+        type: 'info',
+        duration: 4000
+      })
+    } catch (e) {
+      dispatch(apiClientInitFailed())
+      console.error('Could not connect to network: ', network.name)
+      console.error(e)
+    }
+  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, dispatch, setSnackbarMessage, t])
+
+  // Is there a better way to trigger the initial client initialization?
+  // Currently we trigger it "magically" by setting the the networkSlice status status to 'connecting', which is
+  // happening when loading the stored network settings and when network settings are updated by the user.
+  useEffect(() => {
+    if (network.status === 'connecting') {
+      initializeClient()
+    }
+  }, [initializeClient, network.status])
+
+  // Is there a better way to trying to re-initialize the client? This gets "magically" triggered when the networkSlice
+  // status becomes 'offline' (which is done by the `apiClientInitFailed` action)
+  const shouldInitialize = network.status === 'offline'
+  useInterval(initializeClient, 2000, !shouldInitialize)
+
+  useEffect(() => {
+    if (network.status === 'offline') {
+      setSnackbarMessage({
+        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork: network.name }),
+        type: 'alert',
+        duration: 5000
+      })
+    }
+  }, [network.name, network.status, setSnackbarMessage, t])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

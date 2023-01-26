@@ -113,6 +113,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
 
+  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
   const initializeClient = useCallback(async () => {
     if (network.status !== 'offline') dispatch(appLoadingToggled(true))
 
@@ -136,24 +137,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     dispatch(appLoadingToggled(false))
   }, [dispatch, network.name, network.settings, network.status, t])
 
+  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
   useEffect(() => {
     if (network.status === 'connecting') {
       initializeClient()
     }
   }, [initializeClient, network.status])
 
+  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
   const shouldInitialize = network.status === 'offline'
   useInterval(initializeClient, 2000, !shouldInitialize)
-
-  useEffect(() => {
-    if (network.status === 'offline') {
-      setSnackbarMessage({
-        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork: network.name }),
-        type: 'alert',
-        duration: 5000
-      })
-    }
-  }, [network.name, network.status, t])
 
   useEffect(() => {
     const shouldListenToOSThemeChanges = settings.theme === 'system'
