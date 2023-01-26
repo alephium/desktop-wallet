@@ -24,6 +24,7 @@ import AddressDetailsPage from '@/pages/UnlockedWallet/AddressDetailsPage'
 import AddressesPage from '@/pages/UnlockedWallet/AddressesPage'
 import OverviewPage from '@/pages/UnlockedWallet/OverviewPage'
 import UnlockedWalletLayout from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import { loadContacts } from '@/utils/contacts'
 
 const WalletRoutes = () => {
   const navigate = useNavigate()
@@ -31,7 +32,11 @@ const WalletRoutes = () => {
   const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
 
   useEffect(() => {
-    if (!isAuthenticated) navigate('/')
+    if (!isAuthenticated) {
+      navigate('/')
+    } else {
+      loadContacts()
+    }
   }, [isAuthenticated, navigate])
 
   return (

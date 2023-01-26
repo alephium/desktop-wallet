@@ -26,6 +26,7 @@ import {
   languageChanged,
   languageChangeStarted
 } from './actions'
+import { walletLocked } from './activeWalletSlice'
 
 const sliceName = 'app'
 
@@ -76,6 +77,7 @@ const appSlice = createSlice({
       .addCase(addressesGenerated, (state) => {
         state.loading = false
       })
+      .addCase(walletLocked, () => initialState)
   }
 })
 

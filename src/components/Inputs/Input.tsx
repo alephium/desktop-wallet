@@ -39,6 +39,8 @@ const Input = ({
   hint,
   Icon,
   children,
+  inputFieldStyle,
+  inputFieldRef,
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -68,14 +70,15 @@ const Input = ({
       </InputLabel>
       <InputBase
         {...props}
+        style={inputFieldStyle}
         label={label}
         value={value}
         onChange={onChange}
-        className={className}
         disabled={disabled}
         isValid={isValid}
         onWheel={handleScroll}
         Icon={Icon}
+        ref={inputFieldRef}
       />
       {!!Icon && !isValid && (
         <InputIconContainer>

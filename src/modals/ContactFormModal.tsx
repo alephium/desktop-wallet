@@ -23,28 +23,29 @@ import { useTranslation } from 'react-i18next'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ContactStorage from '@/persistent-storage/contacts'
+import { contactStoredInPersistentStorage } from '@/store/contactsSlice'
 import { Contact } from '@/types/contacts'
 import {
   requiredErrorMessage,
   validateIsAddressValid,
   validateIsContactAddressValid,
   validateIsContactNameValid
-} from '@/utils/formValidation'
+} from '@/utils/form-validation'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface ContactFormModalProps {
   contact?: Contact
-  onSave: () => void
   onClose: () => void
 }
 
-const ContactFormModal = ({ contact, onSave, onClose }: ContactFormModalProps) => {
+const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
-  const { mnemonic, name: walletName } = useAppSelector((state) => state.activeWallet)
-  const { isPassphraseUsed, setSnackbarMessage } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const { mnemonic, name: walletName, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const { setSnackbarMessage } = useGlobalContext()
   const { control, handleSubmit, formState } = useForm<Contact>({
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
@@ -56,14 +57,19 @@ const ContactFormModal = ({ contact, onSave, onClose }: ContactFormModalProps) =
   const isFormValid = isEmpty(errors)
 
   const saveContact = (formData: Contact) => {
-    const error = ContactStorage.storeContact({ mnemonic, walletName }, formData, isPassphraseUsed)
+    const result = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
 
-    if (!error) {
+    if (!result.error) {
+      dispatch(
+        contactStoredInPersistentStorage({
+          ...formData,
+          id: result.contactId
+        })
+      )
       setSnackbarMessage({ text: t('Contact saved'), type: 'success' })
-      onSave()
       onClose()
     } else {
-      setSnackbarMessage({ text: error, type: 'alert' })
+      setSnackbarMessage({ text: result.error, type: 'alert' })
     }
   }
 
@@ -84,7 +90,7 @@ const ContactFormModal = ({ contact, onSave, onClose }: ContactFormModalProps) =
           )}
           rules={{
             required: true,
-            validate: (name) => validateIsContactNameValid(name, contact?.id, mnemonic, walletName, isPassphraseUsed)
+            validate: (name) => validateIsContactNameValid({ name, id: contact?.id })
           }}
           control={control}
         />
@@ -104,8 +110,7 @@ const ContactFormModal = ({ contact, onSave, onClose }: ContactFormModalProps) =
             required: true,
             validate: {
               validateIsAddressValid,
-              validateIsContactAddressValid: (address) =>
-                validateIsContactAddressValid(address, contact?.id, mnemonic, walletName, isPassphraseUsed)
+              validateIsContactAddressValid: (address) => validateIsContactAddressValid({ address, id: contact?.id })
             }
           }}
           control={control}

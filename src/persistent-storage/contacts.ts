@@ -23,13 +23,17 @@ import { Contact } from '@/types/contacts'
 
 import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
 
-type StoreError = string | undefined
+type StoreContactResult = {
+  contactId?: string
+  error?: string
+}
 
 class ContactsStorage extends PersistentEncryptedStorage {
-  storeContact({ mnemonic, walletName }: DataKey, contact: Contact, isPassphraseUsed?: boolean): StoreError {
-    if (isPassphraseUsed) return
+  store({ mnemonic, walletName }: DataKey, contact: Contact, isPassphraseUsed?: boolean): StoreContactResult {
+    if (isPassphraseUsed) return { error: 'Cannot use contact feature in passphrase-enabled wallets' }
 
-    const isNewContact = !contact.id
+    let contactId = contact.id
+    const isNewContact = !contactId
     const contacts: Contact[] = this.load({ walletName, mnemonic })
 
     const indexOfContactWithSameAddress = contacts.findIndex((c: Contact) => c.address === contact.address)
@@ -38,38 +42,28 @@ class ContactsStorage extends PersistentEncryptedStorage {
     )
 
     if (isNewContact) {
-      if (indexOfContactWithSameAddress >= 0) return i18n.t('A contact with this address already exists')
-      if (indexOfContactWithSameName >= 0) return i18n.t('A contact with this name already exists')
+      if (indexOfContactWithSameAddress >= 0) return { error: i18n.t('A contact with this address already exists') }
+      if (indexOfContactWithSameName >= 0) return { error: i18n.t('A contact with this name already exists') }
 
-      contacts.push({ ...contact, id: nanoid() })
+      contactId = nanoid()
+
+      contacts.push({ ...contact, id: contactId })
     } else {
       const indexOfContactWithSameId = contacts.findIndex((c: Contact) => c.id === contact.id)
 
-      if (indexOfContactWithSameId < 0) return i18n.t('Could not find a contact with this ID')
+      if (indexOfContactWithSameId < 0) return { error: i18n.t('Could not find a contact with this ID') }
       if (indexOfContactWithSameAddress >= 0 && indexOfContactWithSameAddress !== indexOfContactWithSameId)
-        return i18n.t('A contact with this address already exists')
+        return { error: i18n.t('A contact with this address already exists') }
       if (indexOfContactWithSameName >= 0 && indexOfContactWithSameName !== indexOfContactWithSameId)
-        return i18n.t('A contact with this name already exists')
+        return { error: i18n.t('A contact with this name already exists') }
 
       contacts.splice(indexOfContactWithSameId, 1, contact)
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)
-    this.store(JSON.stringify(contacts), { mnemonic, walletName }, isPassphraseUsed)
-  }
+    super._store(JSON.stringify(contacts), { mnemonic, walletName }, isPassphraseUsed)
 
-  getContactBy(
-    attr: keyof Contact,
-    value: string,
-    mnemonic: string,
-    walletName: string,
-    isPassphraseUsed?: boolean
-  ): Contact | undefined {
-    const contacts: Contact[] = this.load({ mnemonic, walletName }, isPassphraseUsed)
-
-    return contacts.find((c: Contact) =>
-      attr === 'name' ? c[attr].toLowerCase() === value.toLowerCase() : c[attr] === value
-    )
+    return { contactId }
   }
 }
 

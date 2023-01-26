@@ -41,19 +41,21 @@ import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/T
 import Tooltip from '@/components/Tooltip'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
+  const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
+
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
-  const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
-  const { isPassphraseUsed } = useGlobalContext()
-  const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
+
   const address = getAddress(addressHash)
-  const navigate = useNavigate()
 
   if (!address) return null
 

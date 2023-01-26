@@ -27,12 +27,13 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import InfoBox from '@/components/InfoBox'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
-import InputArea from '@/components/Inputs/InputArea'
 import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import { Address } from '@/contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { sortAddressList } from '@/utils/addresses'
+
+import Option from './Option'
 
 interface AddressSelectProps {
   id: string
@@ -148,11 +149,14 @@ const AddressSelectModal = ({
       <Description>{title}</Description>
       <div>
         {sortAddressList(displayedOptions).map((address) => (
-          <AddressOption key={address.hash} onInput={() => setSelectedAddress(address)}>
-            <Circle filled={selectedAddress?.hash === address.hash} />
+          <Option
+            key={address.hash}
+            onSelect={() => setSelectedAddress(address)}
+            isSelected={selectedAddress?.hash === address.hash}
+          >
             <AddressBadgeStyled address={address} showHashWhenNoLabel />
             <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
-          </AddressOption>
+          </Option>
         ))}
         {noAddressesWithAvailableBalance && (
           <InfoBox
@@ -186,51 +190,9 @@ const AddressSelectContainer = styled(SelectContainer)<{ disabled: boolean }>`
     `}
 `
 
-const Circle = styled.div<{ filled: boolean }>`
-  background-color: ${({ filled, theme }) => (filled ? theme.global.accent : theme.bg.secondary)};
-  height: 15px;
-  width: 15px;
-  border-radius: var(--radius-full);
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &::before {
-    ${({ filled }) =>
-      filled &&
-      css`
-        content: '';
-        display: block;
-        height: 7px;
-        width: 7px;
-        background-color: var(--color-white);
-        border-radius: var(--radius-full);
-      `}
-  }
-`
-
 const Description = styled.div`
   margin-bottom: var(--spacing-5);
   color: ${({ theme }) => theme.font.secondary};
-`
-
-const AddressOption = styled(InputArea)`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-
-  padding: var(--spacing-3);
-  background-color: ${({ theme }) => theme.bg.primary};
-  color: inherit;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
-
-  &:hover {
-    background-color: ${({ theme }) => theme.bg.secondary};
-  }
 `
 
 const ClickableInput = styled.div<InputProps>`
