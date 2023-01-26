@@ -44,6 +44,17 @@ export type PendingTx = {
   status: 'pending'
 }
 
+export type PendingTransaction = {
+  hash: string
+  fromAddress: string
+  toAddress: string
+  timestamp: number
+  type: PendingTxType
+  amount?: string
+  lockTime?: number
+  status: 'pending'
+}
+
 export type DappTxData = TransferTxData | DeployContractTxData | ScriptTxData
 
 export type TxDataToModalType =

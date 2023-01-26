@@ -24,7 +24,8 @@ import {
 } from '@alephium/sdk'
 import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { Address, AddressHash } from '@/contexts/addresses'
+import { Address } from '@/contexts/addresses'
+import { AddressHash } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { PendingTx, TransactionStatus } from '@/types/transactions'
 

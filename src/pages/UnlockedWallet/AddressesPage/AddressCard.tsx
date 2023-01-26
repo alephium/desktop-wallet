@@ -29,9 +29,10 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import Badge from '@/components/Badge'
 import Card from '@/components/Card'
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
+import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
 
 interface AddressCardProps {

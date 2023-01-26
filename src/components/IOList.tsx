@@ -21,8 +21,9 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
+import { AddressHash } from '@/types/addresses'
 import { GENESIS_TIMESTAMP } from '@/utils/constants'
 
 import ActionLink from './ActionLink'

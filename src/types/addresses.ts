@@ -16,6 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AddressKeyPair } from '@alephium/sdk'
+import { AddressBalance, AddressInfo, Token, Transaction } from '@alephium/sdk/api/explorer'
+
+import { TimeInMs } from './numbers'
+import { PendingTransaction } from './transactions'
+
 export type AddressSettings = {
   isMain: boolean
   label?: string
@@ -25,3 +31,25 @@ export type AddressSettings = {
 export type AddressMetadata = AddressSettings & {
   index: number
 }
+
+export type AddressSettingsRedux = {
+  isDefault: boolean
+  color: string
+  label?: string
+}
+
+export type AddressRedux = AddressKeyPair &
+  AddressInfo &
+  AddressSettingsRedux & {
+    group: number
+    transactions: (Transaction['hash'] | PendingTransaction['hash'])[]
+    transactionsPageLoaded: number
+    allTransactionPagesLoaded: boolean
+    tokens: {
+      id: Token['id']
+      balances: AddressBalance
+    }[]
+    lastUsed: TimeInMs
+  }
+
+export type AddressHash = string

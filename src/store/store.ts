@@ -20,6 +20,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
 import activeWalletSlice from './activeWalletSlice'
+import addressesSlice from './addressesSlice'
 import appSlice from './appSlice'
 import contactsSlice from './contactsSlice'
 import networkSlice, { networkListenerMiddleware } from './networkSlice'
@@ -33,6 +34,7 @@ export const store = configureStore({
     [contactsSlice.name]: contactsSlice.reducer,
     [settingsSlice.name]: settingsSlice.reducer,
     [networkSlice.name]: networkSlice.reducer,
+    [addressesSlice.name]: addressesSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },
   middleware: (getDefaultMiddleware) =>

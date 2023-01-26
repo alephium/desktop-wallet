@@ -26,7 +26,7 @@ import { PartialDeep } from 'type-fest'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
-import { AddressMetadata, AddressSettings } from '@/types/addresses'
+import { AddressHash, AddressMetadata, AddressSettings } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
@@ -41,8 +41,6 @@ const deriveAddressesFromIndexesWorker = new Worker(
 const deriveAddressesInGroupsWorker = new Worker(new URL('../workers/deriveAddressesInGroups.ts', import.meta.url), {
   type: 'module'
 })
-
-export type AddressHash = string
 
 export class Address {
   readonly hash: AddressHash

@@ -19,7 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 import { NodeProvider as Web3Client } from '@alephium/web3'
 
-import { Address, AddressHash } from '@/contexts/addresses'
+import { Address } from '@/contexts/addresses'
+import { AddressHash } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { Settings } from '@/types/settings'
 import { PendingTxType } from '@/types/transactions'

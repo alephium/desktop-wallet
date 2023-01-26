@@ -41,6 +41,7 @@ import { useWalletContext } from '@/contexts/wallet'
 import { useAppDispatch } from '@/hooks/redux'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletSaved } from '@/store/activeWalletSlice'
+import { syncAddressesData } from '@/store/addressesSlice'
 
 interface WordKey {
   word: string
@@ -189,9 +190,16 @@ const CheckWordsPage = () => {
       dispatch(
         walletSaved({
           name: walletName,
-          mnemonic: plainWallet.mnemonic
+          mnemonic: plainWallet.mnemonic,
+          initialAddress: {
+            index: 0,
+            hash: plainWallet.address,
+            publicKey: plainWallet.publicKey,
+            privateKey: plainWallet.privateKey
+          }
         })
       )
+      dispatch(syncAddressesData())
       return true
     }
   }

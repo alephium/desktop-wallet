@@ -19,7 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
+import { AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 
 import { useAppSelector } from './redux'

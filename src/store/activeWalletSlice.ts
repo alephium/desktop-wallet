@@ -18,13 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import { ActiveWallet, GeneratedWallet } from '@/types/wallet'
+
 const sliceName = 'activeWallet'
 
-interface ActiveWalletState {
-  name?: string
-  mnemonic?: string
-  isPassphraseUsed?: boolean
-}
+type ActiveWalletState = Partial<ActiveWallet>
 
 const initialState: ActiveWalletState = {
   name: undefined,
@@ -36,7 +34,7 @@ const activeWalletSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    walletSaved: (_, action: PayloadAction<Required<Pick<ActiveWalletState, 'name' | 'mnemonic'>>>) => action.payload,
+    walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload,
     walletUnlocked: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
     walletLocked: () => initialState,
     walletDeleted: (state, action: PayloadAction<string>) => {

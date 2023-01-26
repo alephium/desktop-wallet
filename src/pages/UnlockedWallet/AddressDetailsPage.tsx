@@ -40,11 +40,12 @@ import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import Tooltip from '@/components/Tooltip'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import { AddressHash } from '@/types/addresses'
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation()

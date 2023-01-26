@@ -39,6 +39,7 @@ import { useAppDispatch } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletSaved } from '@/store/activeWalletSlice'
+import { syncAddressesData } from '@/store/addressesSlice'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
@@ -84,9 +85,16 @@ const ImportWordsPage = () => {
       dispatch(
         walletSaved({
           name: walletName,
-          mnemonic: wallet.mnemonic
+          mnemonic: wallet.mnemonic,
+          initialAddress: {
+            index: 0,
+            hash: wallet.address,
+            publicKey: wallet.publicKey,
+            privateKey: wallet.privateKey
+          }
         })
       )
+      dispatch(syncAddressesData())
 
       saveNewAddress(
         new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, { isMain: true }),
