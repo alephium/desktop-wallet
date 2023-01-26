@@ -127,3 +127,11 @@ export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string
 
   return expectedAmount
 }
+
+export const extractNewTransactionHashes = (
+  incomingTransactions: Transaction[],
+  existingTransactions: Transaction['hash'][]
+): Transaction['hash'][] =>
+  incomingTransactions
+    .filter((newTx) => !existingTransactions.some((existingTx) => existingTx === newTx.hash))
+    .map((tx) => tx.hash)

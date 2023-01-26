@@ -16,20 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Transaction } from '@alephium/sdk/api/explorer'
+
 import client from '@/api/client'
-import { AddressHash } from '@/types/addresses'
+import { AddressHash, AddressRedux } from '@/types/addresses'
 
 export const fetchAddressesData = async (addressHashes: AddressHash[]) => {
   const results = []
 
   for (const addressHash of addressHashes) {
-    console.log('⬇️ Fetching address details: ', addressHash)
     const { data: details } = await client.explorerClient.getAddressDetails(addressHash)
-
-    console.log('⬇️ Fetching 1st page of address confirmed transactions: ', addressHash)
     const { data: transactions } = await client.explorerClient.getAddressTransactions(addressHash, 1)
-
-    console.log('⬇️ Fetching address tokens: ', addressHash)
     const { data: tokenIds } = await client.explorerClient.addresses.getAddressesAddressTokens(addressHash)
 
     const tokens = await Promise.all(
@@ -50,4 +47,31 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]) => {
   }
 
   return results
+}
+
+export const fetchAddressTransactionsNextPage = async (address: AddressRedux) => {
+  let nextPage = address.transactionsPageLoaded
+  let nextPageTransactions = [] as Transaction[]
+
+  if (!address.allTransactionPagesLoaded) {
+    nextPage += 1
+    const { data: transactions } = await client.explorerClient.getAddressTransactions(address.hash, nextPage)
+    nextPageTransactions = transactions
+  }
+
+  return {
+    hash: address.hash,
+    transactions: nextPageTransactions,
+    page: nextPage
+  }
+}
+
+export const fetchAddressesTransactionsNextPage = async (addresses: AddressRedux[], nextPage: number) => {
+  const addressHashes = addresses.filter((address) => !address.allTransactionPagesLoaded).map((address) => address.hash)
+  const { data: transactions } = await client.explorerClient.addresses.postAddressesTransactions(
+    { page: nextPage },
+    addressHashes
+  )
+
+  return transactions
 }
