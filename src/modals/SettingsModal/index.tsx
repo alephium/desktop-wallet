@@ -22,7 +22,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import { fadeInOutBottomFast } from '@/animations'
+import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
@@ -53,7 +53,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 
   return (
     <ModalContainer onClose={onClose}>
-      <CenteredBox role="dialog" {...fadeInOutBottomFast}>
+      <CenteredBox role="dialog" {...fadeInOutScaleFast}>
         <TabTitlesColumn>
           <TabTitlesColumnHeader>
             <ColumnTitle>

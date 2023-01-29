@@ -21,7 +21,7 @@ import { Lock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { fadeInOutBottomFast } from '@/animations'
+import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
 import WalletSwitcher from '@/components/WalletSwitcher'
 import { useAppDispatch } from '@/hooks/redux'
@@ -38,7 +38,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>
-      <NotificationsBox role="dialog" {...fadeInOutBottomFast}>
+      <NotificationsBox role="dialog" {...fadeInOutScaleFast}>
         <WalletSwitcher />
         <Button onClick={lockWallet} wide transparent Icon={Lock}>
           {t('Lock wallet')}

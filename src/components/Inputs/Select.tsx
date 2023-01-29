@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
+import { MouseEvent, OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { InputLabel, InputProps } from '@/components/Inputs'
@@ -26,6 +26,7 @@ import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
 import ModalPortal from '@/modals/ModalPortal'
+import { Coordinates } from '@/types/numbers'
 
 import { InputBase } from './Input'
 
@@ -76,6 +77,7 @@ function Select<T extends OptionValue>({
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
+  const [mousePosition, setMousePosition] = useState<Coordinates | undefined>(undefined)
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
@@ -87,8 +89,10 @@ function Select<T extends OptionValue>({
     [onValueChange, skipEqualityCheck, value]
   )
 
-  const onContainerInput = () => {
+  const handleClick = (e: MouseEvent) => {
     if (options.length <= 1) return
+
+    setMousePosition({ x: e.clientX, y: e.clientY })
     setShowPopup(true)
   }
 
@@ -120,7 +124,7 @@ function Select<T extends OptionValue>({
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
         noMargin={noMargin}
-        onInput={onContainerInput}
+        onMouseDown={handleClick}
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
@@ -148,6 +152,7 @@ function Select<T extends OptionValue>({
             options={options}
             setValue={setInputValue}
             title={title}
+            mousePosition={mousePosition}
             onBackgroundClick={() => {
               setShowPopup(false)
             }}
@@ -162,11 +167,13 @@ function SelectOptionsPopup<T extends OptionValue>({
   options,
   setValue,
   onBackgroundClick,
+  mousePosition,
   title
 }: {
   options: SelectOption<T>[]
   setValue: (value: SelectOption<T>) => void | undefined
   onBackgroundClick: () => void
+  mousePosition?: Coordinates
   title?: string
 }) {
   const handleEvent = (el: HTMLSelectElement) =>
@@ -181,7 +188,7 @@ function SelectOptionsPopup<T extends OptionValue>({
   }
 
   return (
-    <Popup title={title} onBackgroundClick={onBackgroundClick}>
+    <Popup title={title} onBackgroundClick={onBackgroundClick} hookPosition={mousePosition}>
       <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
         {options.map((o) => (
           <OptionItem key={o.label} value={o.value} onClick={() => handleOptionSelect(o)}>
@@ -225,7 +232,7 @@ export const OptionSelect = styled.select`
 `
 
 export const OptionItem = styled.option`
-  padding: var(--spacing-3);
+  padding: var(--spacing-4);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
