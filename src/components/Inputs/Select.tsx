@@ -188,7 +188,7 @@ function SelectOptionsPopup<T extends OptionValue>({
   }
 
   return (
-    <Popup title={title} onBackgroundClick={onBackgroundClick} hookPosition={mousePosition}>
+    <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={mousePosition}>
       <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
         {options.map((o) => (
           <OptionItem key={o.label} value={o.value} onClick={() => handleOptionSelect(o)}>
@@ -236,6 +236,7 @@ export const OptionItem = styled.option`
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
+  user-select: none;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};

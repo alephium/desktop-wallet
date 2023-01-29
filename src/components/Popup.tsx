@@ -15,9 +15,10 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
+
 import { motion } from 'framer-motion'
-import { ReactNode, useRef } from 'react'
-import styled, { CSSProperties } from 'styled-components'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
 
 import { fadeInOutScaleFast } from '@/animations'
 import ModalContainer from '@/modals/ModalContainer'
@@ -28,31 +29,42 @@ interface PopupProps {
   onBackgroundClick: () => void
   children?: ReactNode | ReactNode[]
   title?: string
-  hookPosition?: Coordinates
+  hookCoordinates?: Coordinates
 }
 
-const Popup = ({ children, onBackgroundClick, title, hookPosition }: PopupProps) => {
-  useWindowSize() // Recompute position on window resize
+const minMarginToEdge = 25
+const headerHeight = 50
+
+const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupProps) => {
+  const { height: windowHeight, width: windowWidth } = useWindowSize() // Recompute position on window resize
 
   const contentRef = useRef<HTMLDivElement>(null)
 
-  let wrapperStyle: CSSProperties | undefined = undefined
+  const [hookOffset, setHookOffset] = useState<Coordinates | undefined>(undefined)
 
-  if (hookPosition) {
-    const contentElement = contentRef.current
+  useEffect(() => {
+    if (windowHeight && windowWidth) {
+      const contentElement = contentRef.current
 
-    wrapperStyle = {
-      position: 'absolute',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      top: hookPosition.y,
-      left: hookPosition.x,
-      width: 0,
-      height: 0,
-      marginTop: contentElement ? -contentElement?.offsetHeight / 2 : 0
+      const contentRect = contentElement?.getBoundingClientRect()
+
+      const offsetX =
+        contentRect?.left && contentRect.left < minMarginToEdge
+          ? -contentRect.left + 2 * minMarginToEdge
+          : contentRect?.right && windowWidth - contentRect.right < minMarginToEdge
+          ? windowWidth - contentRect.right - 2 * minMarginToEdge
+          : 0
+
+      const offsetY =
+        contentRect?.top && contentRect.top < minMarginToEdge
+          ? -contentRect.top + 2 * minMarginToEdge
+          : contentRect?.bottom && windowHeight - contentRect.bottom < minMarginToEdge
+          ? windowHeight - contentRect.bottom - 2 * minMarginToEdge
+          : 0
+
+      setHookOffset({ x: offsetX, y: offsetY })
     }
-  }
+  }, [windowHeight, windowWidth])
 
   const PopupContent = (
     <Content onClick={(e) => e.stopPropagation()} role="dialog" ref={contentRef} {...fadeInOutScaleFast}>
@@ -67,12 +79,30 @@ const Popup = ({ children, onBackgroundClick, title, hookPosition }: PopupProps)
 
   return (
     <ModalContainer onClose={onBackgroundClick}>
-      {hookPosition ? <div style={wrapperStyle}>{PopupContent}</div> : PopupContent}
+      {hookCoordinates ? (
+        <Hook hookCoordinates={hookCoordinates} animate={hookOffset} transition={{ duration: 0.1 }}>
+          {PopupContent}
+        </Hook>
+      ) : (
+        PopupContent
+      )}
     </ModalContainer>
   )
 }
 
 export default Popup
+
+const Hook = styled(motion.div)<{ hookCoordinates: Coordinates }>`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 0;
+  height: 0;
+  top: ${({ hookCoordinates }) => hookCoordinates.y}px;
+  left: ${({ hookCoordinates }) => hookCoordinates.x}px;
+  margin-top: ${-headerHeight * 1.5}px;
+`
 
 const Content = styled(motion.div)`
   position: relative;
@@ -91,6 +121,7 @@ const Content = styled(motion.div)`
 `
 
 const Header = styled.div`
+  height: 50px;
   padding: var(--spacing-1) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background1};
