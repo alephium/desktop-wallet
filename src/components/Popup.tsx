@@ -67,7 +67,7 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
   }, [windowHeight, windowWidth])
 
   const PopupContent = (
-    <Content onClick={(e) => e.stopPropagation()} role="dialog" ref={contentRef} {...fadeInOutScaleFast}>
+    <Content role="dialog" ref={contentRef} {...fadeInOutScaleFast}>
       {title && (
         <Header>
           <h2>{title}</h2>

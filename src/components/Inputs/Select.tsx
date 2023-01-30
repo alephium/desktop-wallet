@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { MouseEvent, OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
+import { KeyboardEvent, MouseEvent, OptionHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { InputLabel, InputProps } from '@/components/Inputs'
@@ -74,16 +74,32 @@ function Select<T extends OptionValue>({
   noMargin,
   className
 }: SelectProps<T>) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
-  const [mousePosition, setMousePosition] = useState<Coordinates | undefined>(undefined)
+  const [hookCoordinates, setHookCoordinates] = useState<Coordinates | undefined>(undefined)
+
+  let containerCenter: Coordinates
+
+  if (inputRef?.current) {
+    const containerElement = inputRef.current
+    const containerElementRect = containerElement.getBoundingClientRect()
+
+    containerCenter = {
+      x: containerElementRect.x + containerElement.clientWidth / 2,
+      y: containerElementRect.y + containerElement.clientHeight / 2
+    }
+  }
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
       if (!value || !isEqual(option, value) || skipEqualityCheck) {
         onValueChange(option)
         setValue(option)
+
+        inputRef.current?.focus()
       }
     },
     [onValueChange, skipEqualityCheck, value]
@@ -92,8 +108,20 @@ function Select<T extends OptionValue>({
   const handleClick = (e: MouseEvent) => {
     if (options.length <= 1) return
 
-    setMousePosition({ x: e.clientX, y: e.clientY })
+    setHookCoordinates({ x: e.clientX, y: e.clientY })
     setShowPopup(true)
+  }
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
+    if (options.length <= 1) return
+    setHookCoordinates(containerCenter)
+    setShowPopup(true)
+  }
+
+  const handlePopupClose = () => {
+    setShowPopup(false)
+    inputRef.current?.focus()
   }
 
   useEffect(() => {
@@ -125,6 +153,7 @@ function Select<T extends OptionValue>({
         custom={disabled}
         noMargin={noMargin}
         onMouseDown={handleClick}
+        onKeyDown={handleKeyDown}
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
@@ -144,18 +173,18 @@ function Select<T extends OptionValue>({
           value={value?.label ?? ''}
           readOnly
           label={label}
+          ref={inputRef}
         />
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
           <SelectOptionsPopup
             options={options}
+            value={value}
             setValue={setInputValue}
             title={title}
-            mousePosition={mousePosition}
-            onBackgroundClick={() => {
-              setShowPopup(false)
-            }}
+            hookCoordinates={hookCoordinates}
+            onBackgroundClick={handlePopupClose}
           />
         )}
       </ModalPortal>
@@ -165,33 +194,39 @@ function Select<T extends OptionValue>({
 
 function SelectOptionsPopup<T extends OptionValue>({
   options,
+  value,
   setValue,
   onBackgroundClick,
-  mousePosition,
+  hookCoordinates,
   title
 }: {
   options: SelectOption<T>[]
+  value?: SelectOption<T>
   setValue: (value: SelectOption<T>) => void | undefined
   onBackgroundClick: () => void
-  mousePosition?: Coordinates
+  hookCoordinates?: Coordinates
   title?: string
 }) {
-  const handleEvent = (el: HTMLSelectElement) =>
-    handleOptionSelect({
-      label: options[el.selectedIndex]?.label,
-      value: el.value as T
-    })
+  const handleOptionSelect = (value: T) => {
+    console.log('SELECT')
+    const selectedValue = options.find((o) => o.value === value)
+    if (!selectedValue) return
 
-  const handleOptionSelect = (option: SelectOption<T>) => {
-    setValue(option)
+    setValue(selectedValue)
     onBackgroundClick()
   }
 
   return (
-    <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={mousePosition}>
-      <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
+    <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={hookCoordinates}>
+      <OptionSelect
+        value={value?.value}
+        size={options.length}
+        title={title}
+        aria-label={title}
+        onChange={(e) => handleOptionSelect(e.target.value as T)}
+      >
         {options.map((o) => (
-          <OptionItem key={o.label} value={o.value} onClick={() => handleOptionSelect(o)}>
+          <OptionItem key={o.value} value={o.value}>
             {o.label}
           </OptionItem>
         ))}
