@@ -23,13 +23,14 @@ import styled from 'styled-components'
 
 import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
+
+import ModalPortal from '../ModalPortal'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
@@ -52,39 +53,21 @@ const WalletsSettingsSection = () => {
 
   return (
     <>
-      {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
-      {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
-
-      {walletToRemove && (
-        <WalletRemovalModal
-          walletName={walletToRemove}
-          onClose={() => setWalletToRemove('')}
-          onWalletRemove={() => handleRemoveWallet(walletToRemove)}
-        />
-      )}
       <Section align="flex-start" role="table">
         <h2 tabIndex={0} role="label">
           {t`Wallet list`} ({walletNames.length})
         </h2>
         <BoxContainer role="rowgroup">
           {walletNames.map((n) => (
-            <WalletItem
-              key={n}
-              walletName={n}
-              isCurrent={n === activeWalletName}
-              onWalletDelete={(name) => setWalletToRemove(name)}
-            />
+            <WalletItem key={n} walletName={n} isCurrent={n === activeWalletName} onWalletDelete={setWalletToRemove} />
           ))}
         </BoxContainer>
       </Section>
       {isAuthenticated && (
-        <>
-          <HorizontalDivider />
-          <Section align="flex-start">
-            <h2>{t`Current wallet`}</h2>
-            <InfoBox label={t`Wallet name`} text={activeWalletName} />
-          </Section>
-          <Section>
+        <CurrentWalletSection align="flex-start">
+          <h2>{t`Current wallet`}</h2>
+          <InfoBox label={t`Wallet name`} text={activeWalletName} />
+          <ActionButtons>
             <Button role="secondary" onClick={lockWallet}>
               {t`Lock current wallet`}
             </Button>
@@ -97,9 +80,20 @@ const WalletsSettingsSection = () => {
             <Button variant="alert" onClick={() => openRemoveWalletModal(activeWalletName)}>
               {t`Remove current wallet`}
             </Button>
-          </Section>
-        </>
+          </ActionButtons>
+        </CurrentWalletSection>
       )}
+      <ModalPortal>
+        {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
+        {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
+        {walletToRemove && (
+          <WalletRemovalModal
+            walletName={walletToRemove}
+            onClose={() => setWalletToRemove('')}
+            onWalletRemove={() => handleRemoveWallet(walletToRemove)}
+          />
+        )}
+      </ModalPortal>
     </>
   )
 }
@@ -122,20 +116,21 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {walletName}
-        {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
+        {isCurrent && <CurrentWalletLabel> {t('(current)')}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
-        <WalletDeleteButton
-          aria-label={t`Delete`}
+        <Button
+          aria-label={t('Delete')}
           tabIndex={0}
           squared
           role="secondary"
           transparent
+          borderless
           onClick={() => onWalletDelete(walletName)}
           onBlur={() => setIsShowingDeleteButton(false)}
         >
           <Trash size={15} />
-        </WalletDeleteButton>
+        </Button>
       )}
     </WalletItemContainer>
   )
@@ -150,7 +145,7 @@ const WalletItemContainer = styled.div`
   padding: 0 var(--spacing-2);
 
   &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   }
 `
 
@@ -162,4 +157,13 @@ const CurrentWalletLabel = styled.span`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const WalletDeleteButton = styled(Button)``
+const ActionButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`
+
+const CurrentWalletSection = styled(Section)`
+  margin-top: var(--spacing-8);
+`

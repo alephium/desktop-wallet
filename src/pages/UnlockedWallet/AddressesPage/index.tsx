@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import { fadeIn } from '@/animations'
+import Box from '@/components/Box'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
@@ -31,6 +32,7 @@ import TabBar, { TabItem } from '@/components/TabBar'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import i18next from '@/i18n'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import BottomModal from '@/modals/BottomModal'
 import ModalPortal from '@/modals/ModalPortal'
@@ -40,9 +42,15 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
+import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
 import AddressesTabContent from './AddressesTabContent'
 import ContactsTabContent from './ContactsTabContent'
 import OperationBox from './OperationBox'
+
+const tabs = [
+  { value: 'addresses', label: i18next.t('Addresses') },
+  { value: 'contacts', label: i18next.t('Contacts') }
+]
 
 const AddressesPage = () => {
   const { t } = useTranslation()
@@ -58,11 +66,6 @@ const AddressesPage = () => {
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
-
-  const tabs = [
-    { value: 'addresses', label: t`Addresses`, component: <AddressesTabContent /> },
-    { value: 'contacts', label: t`Contacts`, component: <ContactsTabContent /> }
-  ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   const handleOneAddressPerGroupClick = () => {
@@ -98,7 +101,14 @@ const AddressesPage = () => {
           </Header>
           <Tabs>
             <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-            <TabContent>{tabs.find((t) => t.value === currentTab.value)?.component}</TabContent>
+            <TabContent>
+              {
+                {
+                  addresses: <AddressesTabContent />,
+                  contacts: <ContactsTabContent />
+                }[currentTab.value]
+              }
+            </TabContent>
           </Tabs>
         </MainPanel>
       </Scrollbar>
@@ -186,12 +196,7 @@ const ScreenHeight = styled(motion.div)`
   height: calc(100vh - ${appHeaderHeightPx}px);
 `
 
-const Panel = styled.div`
-  padding-left: 60px;
-  padding-right: 60px;
-`
-
-const MainPanel = styled(Panel)`
+const MainPanel = styled(UnlockedWalletPanel)`
   padding-bottom: 130px;
 `
 
@@ -227,7 +232,7 @@ const BottomModalStyled = styled(BottomModal)`
   bottom: ${advancedOperationsHeaderHeightPx}px;
 `
 
-const AdvancedOperations = styled(Panel)`
+const AdvancedOperations = styled(UnlockedWalletPanel)`
   background-color: ${({ theme }) => theme.bg.background1};
 
   padding-top: 26px;
@@ -237,7 +242,7 @@ const AdvancedOperations = styled(Panel)`
   gap: 30px;
 `
 
-const AdvancedOperationsHeader = styled(Panel)`
+const AdvancedOperationsHeader = styled(UnlockedWalletPanel)`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -261,10 +266,6 @@ const AdvancedOperationsToggle = styled(InlineLabelValueInput)`
 
 const Tabs = styled.div``
 
-const TabContent = styled.div`
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-radius: var(--radius-big);
-
+const TabContent = styled(Box)`
   padding: 30px 25px 45px 25px;
 `

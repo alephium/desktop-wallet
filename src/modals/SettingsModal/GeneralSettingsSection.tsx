@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import Box from '@/components/Box'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
@@ -34,6 +35,10 @@ import { loadSettings } from '@/utils/settings'
 
 import ModalPortal from '../ModalPortal'
 
+interface GeneralSettingsSectionProps {
+  className?: string
+}
+
 const languageOptions = [
   { label: 'English', value: 'en-US' as Language },
   { label: 'Français', value: 'fr-FR' as Language },
@@ -47,7 +52,7 @@ const themeOptions = [
   { label: 'Dark', value: 'dark' as ThemeType }
 ]
 
-const GeneralSettingsSection = () => {
+const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const switchTheme = useSwitchTheme()
   const {
@@ -80,7 +85,7 @@ const GeneralSettingsSection = () => {
   const discreetModeText = t`Discreet mode`
 
   return (
-    <>
+    <Box className={className}>
       <KeyValueInput
         label={t`Lock time`}
         description={t`Duration in minutes after which an idle wallet will lock automatically.`}
@@ -99,7 +104,7 @@ const GeneralSettingsSection = () => {
           />
         }
       />
-      <HorizontalDivider narrow />
+      <HorizontalDivider />
       <KeyValueInput
         label={t`Theme`}
         description={t`Select the theme and please your eyes.`}
@@ -114,7 +119,7 @@ const GeneralSettingsSection = () => {
           />
         }
       />
-      <HorizontalDivider narrow />
+      <HorizontalDivider />
       <KeyValueInput
         label={discreetModeText}
         description={t`Toggle discreet mode (hide amounts).`}
@@ -126,7 +131,7 @@ const GeneralSettingsSection = () => {
           />
         }
       />
-      <HorizontalDivider narrow />
+      <HorizontalDivider />
       {isAuthenticated && (
         <>
           <KeyValueInput
@@ -134,7 +139,7 @@ const GeneralSettingsSection = () => {
             description={t`Require password confirmation before sending each transaction.`}
             InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
           />
-          <HorizontalDivider narrow />
+          <HorizontalDivider />
         </>
       )}
       <KeyValueInput
@@ -153,7 +158,7 @@ const GeneralSettingsSection = () => {
       />
       <ModalPortal>
         {isPasswordModelOpen && (
-          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
+          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode>
             <PasswordConfirmation
               text={t`Type your password to change this setting.`}
               buttonText={t`Enter`}
@@ -162,7 +167,7 @@ const GeneralSettingsSection = () => {
           </CenteredModal>
         )}
       </ModalPortal>
-    </>
+    </Box>
   )
 }
 

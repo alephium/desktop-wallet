@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { motion } from 'framer-motion'
-import { Album, ArrowLeftRight, FileCode, Layers, RefreshCw, Settings, TerminalSquare } from 'lucide-react'
+import { Album, Layers, RefreshCw, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
@@ -33,15 +33,10 @@ import Scrollbar from '@/components/Scrollbar'
 import Spinner from '@/components/Spinner'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
-import { useSendModalContext } from '@/contexts/sendModal'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
-import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
-import SendModalScript from '@/modals/SendModals/SendModalScript'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SettingsModal from '@/modals/SettingsModal'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
-import { TxType } from '@/types/transactions'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
@@ -50,13 +45,9 @@ interface UnlockedWalletLayoutProps {
 
 dayjs.extend(relativeTime)
 
-// This shall be removed once v2.0.0 is released
-const hideContractButtons = true
-
 const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, className }) => {
   const { t } = useTranslation()
   const { networkStatus, activeWalletName } = useGlobalContext()
-  const { isSendModalOpen, openSendModal, txType } = useSendModalContext()
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -76,18 +67,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
           </CurrentWalletInitials>
           <SideNavigation>
             <NavItem Icon={Layers} label={t`Overview`} to="/wallet/overview" />
-            <NavItem Icon={ArrowLeftRight} label={t`Send`} onClick={() => openSendModal(TxType.TRANSFER)} />
             <NavItem Icon={Album} label={t`Addresses`} to="/wallet/addresses" />
-            {!hideContractButtons && (
-              <>
-                <NavItem Icon={TerminalSquare} label={t`Call contract`} onClick={() => openSendModal(TxType.SCRIPT)} />
-                <NavItem
-                  Icon={FileCode}
-                  label={t`Deploy contract`}
-                  onClick={() => openSendModal(TxType.DEPLOY_CONTRACT)}
-                />
-              </>
-            )}
           </SideNavigation>
           <TooltipWrapper content={t`Settings`} tooltipId="sidenav">
             <Button
@@ -124,15 +104,17 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
         </Scrollbar>
       </motion.div>
       <ModalPortal>
-        {isSendModalOpen && txType === TxType.TRANSFER && <SendModalTransfer />}
-        {isSendModalOpen && txType === TxType.DEPLOY_CONTRACT && <SendModalDeployContract />}
-        {isSendModalOpen && txType === TxType.SCRIPT && <SendModalScript />}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
         {isNotificationsModalOpen && <NotificationsModal onClose={() => setIsNotificationsModalOpen(false)} />}
       </ModalPortal>
     </>
   )
 }
+
+export const UnlockedWalletPanel = styled.div`
+  padding-left: 60px;
+  padding-right: 60px;
+`
 
 export default styled(UnlockedWalletLayout)`
   display: flex;

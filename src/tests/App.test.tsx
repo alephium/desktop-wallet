@@ -106,14 +106,14 @@ it('should lock the wallet when idle for too long after successful login', async
   fireEvent.click(screen.getByRole('button', { name: 'Login' }))
 
   // 2. Check that we have successfully unlocked the wallet
-  expect(screen.getByText('Transaction history')).toBeInTheDocument()
+  expect(screen.getByText('Latest transactions')).toBeInTheDocument()
 
   // 3. Ensure that the wallet hasn't locked if it's been idle for less than the lock time (ex: 1min less)
   vi.advanceTimersByTime((walletLockTimeInMinutes - 1) * 60 * 1000)
   act(() => {
     vi.runOnlyPendingTimers()
   })
-  expect(screen.getByText('Transaction history')).toBeInTheDocument()
+  expect(screen.getByText('Latest transactions')).toBeInTheDocument()
 
   // 4. Move the mouse
   act(() => {
@@ -125,7 +125,7 @@ it('should lock the wallet when idle for too long after successful login', async
   act(() => {
     vi.runOnlyPendingTimers()
   })
-  expect(screen.getByText('Transaction history')).toBeInTheDocument()
+  expect(screen.getByText('Latest transactions')).toBeInTheDocument()
 
   // 6. Finally, advance time by 1 more minute without any interaction and expect the wallet to lock
   vi.advanceTimersByTime(1 * 60 * 1000)

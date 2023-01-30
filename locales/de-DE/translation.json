@@ -34,9 +34,7 @@
   "No transactions to display": "Keine Transaktionen anzuzeigen",
   "Invalid password": "Ungültiges Passwort",
   "Submit": "Abschicken",
-  "TOTAL BALANCE": "GESAMTSALDO",
-  "AVAILABLE": "VERFÜGBAR",
-  "LOCKED": "GESPERRT",
+  "Locked": "Gesperrt",
   "Could not fetch data because the wallet is offline": "Konnte keine Daten abrufen, da die Brieftasche offline ist",
   "Unknown wallet name": "Unbekannter Brieftaschenname",
   "To remove this address from being the default address, you must set another one as default first.": "Um diese Adresse nicht mehr als Standardadresse zu verwenden, müssen Sie zuerst eine andere als Standardadresse festlegen.",
@@ -198,8 +196,6 @@
   "Error while fetching data for address {{ hash }}": "Fehler beim Abrufen von Daten für Adresse {{ hash }}",
   "Error while fetching pending transactions for address {{ hash }}": "Fehler beim Abrufen von ausstehenden Transaktionen für Adresse {{ hash }}",
   "Open in explorer": "Im Explorer öffnen",
-  "Reduce": "Verkleinern",
-  "Show addresses": "Adressen anzeigen",
   "More info": "Mehr Infos",
   "passphraseWarningMessage": "<0>Dies ist eine fortgeschrittene Funktion!</0><br />Verwenden Sie sie nur, wenn Sie wissen, was Sie tun.<br />Bitte lesen Sie unsere <5>Dokumentation</5>, um mehr darüber zu erfahren.",
   "welcomeScreenPassphraseMessage": "Wenn Sie eine <1>Passphrase</1> verwenden möchten, sperren Sie Ihre neu erstellte Brieftasche.",
@@ -301,5 +297,11 @@
   "A contact with this name already exists": "A contact with this name already exists",
   "Contact saved": "Contact saved",
   "Could not find a contact with this name": "Could not find a contact with this name",
-  "Could not find a contact with this ID": "Could not find a contact with this ID"
+  "Could not find a contact with this ID": "Could not find a contact with this ID",
+  "See more": "See more",
+  "Latest transactions": "Latest transactions",
+  "Addresses": "Adressen",
+  "Developer tools": "Developer tools",
+  "Enable developer tools": "Enable developer tools",
+  "Deploy and call smart contracts": "Deploy and call smart contracts"
 }

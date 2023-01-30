@@ -25,7 +25,6 @@ import InfoBox from '@/components/InfoBox'
 import AmountInput from '@/components/Inputs/AmountInput'
 import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
-import { useSendModalContext } from '@/contexts/sendModal'
 import useDappTxData from '@/hooks/useDappTxData'
 import useStateObject from '@/hooks/useStateObject'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
@@ -41,7 +40,7 @@ import GasSettingsExpandableSection from './GasSettingsExpandableSection'
 import SendModal from './SendModal'
 
 interface TransferTxModalProps {
-  onClose?: () => void
+  onClose: () => void
   initialTxData?: Partial<TransferTxData>
 }
 
@@ -53,7 +52,6 @@ interface TransferBuildTxModalContentProps {
 
 const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   const { t } = useTranslation()
-  const { closeSendModal } = useSendModalContext()
   const dappInitialTxData = useDappTxData() as TransferBuildTxModalContentProps['data']
 
   const initData = {
@@ -65,7 +63,7 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
     <SendModal
       title={t`Send`}
       initialTxData={initData}
-      onClose={onClose ?? closeSendModal}
+      onClose={onClose}
       BuildTxModalContent={TransferBuildTxModalContent}
       CheckTxModalContent={TransferCheckTxModalContent}
       buildTransaction={buildTransaction}

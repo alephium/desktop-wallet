@@ -24,6 +24,7 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Box from '@/components/Box'
 import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import {
@@ -281,13 +282,10 @@ const DragCursor = styled(motion.div)`
   background-color: ${({ theme }) => theme.global.accent};
 `
 
-const SelectedWordList = styled.div`
+const SelectedWordList = styled(Box)`
   width: 100%;
   padding: var(--spacing-4);
   min-height: 200px;
-  border-radius: var(--radius-big);
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.secondary};
   margin-bottom: var(--spacing-4);
 
   display: flex;

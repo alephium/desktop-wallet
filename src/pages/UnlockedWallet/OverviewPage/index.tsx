@@ -19,36 +19,37 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { fadeIn } from '@/animations'
-import { PageH2 } from '@/components/PageComponents/PageHeadings'
-import { Address } from '@/contexts/addresses'
+import { Address, useAddressesContext } from '@/contexts/addresses'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
-import Header from './Header'
+import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
+import AmountsOverviewPanel from './AmountsOverviewPanel'
 import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
+  const { isLoadingData } = useAddressesContext()
+
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()
-  const { t } = useTranslation()
 
   return (
     <motion.div {...fadeIn}>
-      <Header />
-      <PageH2>{t`Transaction history`}</PageH2>
-      <TransactionList onTransactionClick={setSelectedTransaction} />
+      <UnlockedWalletPanel>
+        <AmountsOverviewPanel isLoading={isLoadingData} />
+        <TransactionList onTransactionClick={setSelectedTransaction} />
 
-      <ModalPortal>
-        {selectedTransaction && (
-          <TransactionDetailsModal
-            address={selectedTransaction.address}
-            transaction={selectedTransaction}
-            onClose={() => setSelectedTransaction(undefined)}
-          />
-        )}
-      </ModalPortal>
+        <ModalPortal>
+          {selectedTransaction && (
+            <TransactionDetailsModal
+              address={selectedTransaction.address}
+              transaction={selectedTransaction}
+              onClose={() => setSelectedTransaction(undefined)}
+            />
+          )}
+        </ModalPortal>
+      </UnlockedWalletPanel>
     </motion.div>
   )
 }

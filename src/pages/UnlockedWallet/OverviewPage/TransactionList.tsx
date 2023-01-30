@@ -18,10 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getDirection } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
+import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
-import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
+import Table, { TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { Address, useAddressesContext } from '@/contexts/addresses'
 import { PendingTx } from '@/types/transactions'
@@ -35,15 +38,12 @@ interface OverviewPageTransactionListProps {
 
 const OverviewPageTransactionList = ({ className, onTransactionClick }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation()
-  const { addresses, fetchAddressTransactionsNextPage, isLoadingData } = useAddressesContext()
-  const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
+  const navigate = useNavigate()
+  const { addresses, isLoadingData } = useAddressesContext()
 
   const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
   const allPendingTxs = getTransactionsForAddresses('pending', addresses)
 
-  const loadNextTransactionsPage = async () => {
-    addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
-  }
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
   const shouldHideTx = (tx: Transaction, address: Address) =>
@@ -55,6 +55,12 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
+      <TableHeaderRow>
+        <TableTitle>{t('Latest transactions')}</TableTitle>
+        <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+          {t('See more')}
+        </ActionLink>
+      </TableHeaderRow>
       {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
         <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
@@ -74,13 +80,6 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
           </TableRow>
         )
       })}
-      {allConfirmedTxs.length !== totalNumberOfTransactions && (
-        <TableRow role="row">
-          <TableCell align="center" role="gridcell">
-            <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
-          </TableCell>
-        </TableRow>
-      )}
       {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
@@ -91,3 +90,15 @@ const OverviewPageTransactionList = ({ className, onTransactionClick }: Overview
 }
 
 export default OverviewPageTransactionList
+
+const TableHeaderRow = styled(TableRow)`
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+`
+
+const TableTitle = styled.div`
+  font-size: 16px;
+  font-weight: var(--fontWeight-semiBold);
+`

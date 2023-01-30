@@ -16,10 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-export default styled.div<{ narrow?: boolean }>`
-  background-color: ${({ theme }) => theme.border.secondary};
-  height: 1px;
+const Box = styled(motion.div)`
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border-radius: var(--radius-big);
   width: 100%;
 `
+
+export default Box

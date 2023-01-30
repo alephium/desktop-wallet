@@ -21,12 +21,18 @@ import styled from 'styled-components'
 
 interface ActionLinkProps {
   onClick: () => void
+  Icon?: LucideIconType
   className?: string
 }
 
-const ActionLink: FC<ActionLinkProps> = ({ className, children, onClick }) => (
+const ActionLink: FC<ActionLinkProps> = ({ className, Icon, children, onClick }) => (
   <button className={className} onClick={onClick}>
     {children}
+    {Icon && (
+      <IconContainer>
+        <Icon size={14} />
+      </IconContainer>
+    )}
   </button>
 )
 
@@ -46,4 +52,9 @@ export default styled(ActionLink)`
   &:focus-visible {
     text-decoration: underline;
   }
+`
+
+const IconContainer = styled.div`
+  margin-left: 10px;
+  display: flex;
 `
