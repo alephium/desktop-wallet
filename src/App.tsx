@@ -16,11 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'dayjs/locale/fr'
-
-import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import AppSpinner from './components/AppSpinner'
@@ -32,37 +28,27 @@ import { useGlobalContext } from './contexts/global'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import UpdateWalletModal from './modals/UpdateWalletModal'
 import Router from './routes'
-import { languageChanged, languageChangeStarted } from './store/actions'
+import { networkSettingsMigrated } from './store/networkSlice'
+import { generalSettingsMigrated } from './store/settingsSlice'
 import { GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
+import { migrateDeprecatedSettings } from './utils/migration'
 
 const App = () => {
-  const { settings, snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
-  const { i18n } = useTranslation()
+  const { snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
   const isAppLoading = useAppSelector((state) => state.app.loading)
   const dispatch = useAppDispatch()
+  const settings = useAppSelector((state) => state.settings)
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
 
   useEffect(() => {
-    const handleLanguageChange = async () => {
-      dispatch(languageChangeStarted())
+    const localStorageSettings = migrateDeprecatedSettings()
 
-      try {
-        dayjs.locale(settings.general.language.slice(0, 2))
-        await i18n.changeLanguage(settings.general.language)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        dispatch(languageChanged())
-      }
-    }
-
-    if (i18n.language !== settings.general.language) {
-      handleLanguageChange()
-    }
-  }, [dispatch, i18n, settings.general.language])
+    dispatch(generalSettingsMigrated(localStorageSettings.general))
+    dispatch(networkSettingsMigrated(localStorageSettings.network))
+  }, [dispatch])
 
   useEffect(() => {
     if (newLatestVersion) setUpdateWalletModalVisible(true)
@@ -73,7 +59,7 @@ const App = () => {
   }, [newVersionDownloadTriggered])
 
   return (
-    <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={settings.theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
 
       {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}

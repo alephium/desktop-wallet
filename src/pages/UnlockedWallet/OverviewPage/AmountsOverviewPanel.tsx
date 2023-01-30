@@ -42,8 +42,8 @@ interface AmountsOverviewPanelProps {
 const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProps) => {
   const { t } = useTranslation()
   const { addresses } = useAddressesContext()
-  const { networkStatus, lockWallet } = useGlobalContext()
-  const activeWallet = useAppSelector((state) => state.activeWallet)
+  const { lockWallet } = useGlobalContext()
+  const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
@@ -55,7 +55,7 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
   const balanceInFiat = convertSetToFiat(totalBalance, price ?? 0)
-  const isOnline = networkStatus === 'online'
+  const isOnline = network.status === 'online'
 
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading || isPriceLoading })}>

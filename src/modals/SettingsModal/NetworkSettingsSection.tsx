@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { capitalize } from 'lodash'
 import { AlertTriangle } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -29,27 +28,41 @@ import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
+import { networkPresets } from '@/persistent-storage/settings'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/store/networkSlice'
+import { NetworkName, NetworkNames } from '@/types/network'
+import { NetworkSettings } from '@/types/settings'
 import { useMountEffect } from '@/utils/hooks'
-import { getNetworkName, networkEndpoints, NetworkName, networkNames, Settings } from '@/utils/settings'
+import { getNetworkName } from '@/utils/settings'
 
 interface NetworkSelectOption {
   label: string
   value: NetworkName
 }
 
-type NetworkSettings = Settings['network']
+const networkNames = Object.values(NetworkNames) as (keyof typeof NetworkNames)[]
+
+const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
+  label: {
+    mainnet: i18next.t('Mainnet'),
+    testnet: i18next.t('Testnet'),
+    localhost: i18next.t('Localhost'),
+    custom: i18next.t('Custom')
+  }[networkName],
+  value: networkName
+}))
 
 const NetworkSettingsSection = () => {
   const { t } = useTranslation()
-  const { client, settings: currentSettings, updateNetworkSettings, setSnackbarMessage } = useGlobalContext()
-  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
+  const dispatch = useAppDispatch()
+  const { settings: currentSettings } = useAppSelector((state) => state.network)
+  const { client, setSnackbarMessage } = useGlobalContext()
+
+  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
-
-  const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
-    label: t(capitalize(networkName) as 'Mainnet' | 'Testnet' | 'Localhost' | 'Custom'),
-    value: networkName
-  }))
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
@@ -77,35 +90,44 @@ const NetworkSettingsSection = () => {
         setSelectedNetwork(option.value)
 
         if (option.value === 'custom') {
-          // Make sure to open expandable advanced section
           setAdvancedSectionOpen(true)
-        } else {
-          const newNetworkSettings = networkEndpoints[option.value]
-          let networkId = newNetworkSettings.networkId
-          if (typeof networkId === 'undefined' && typeof client !== 'undefined') {
-            const response = await client.web3.infos.getInfosChainParams()
-            networkId = response.networkId
-          }
-          if (typeof networkId !== 'undefined') {
-            const settings = { ...newNetworkSettings, networkId: networkId }
-            updateNetworkSettings(settings)
-            setTempAdvancedSettings(settings)
-          }
+          return
+        }
+
+        const newNetworkSettings = networkPresets[option.value]
+
+        let networkId = newNetworkSettings.networkId
+
+        if (networkId !== undefined) {
+          dispatch(networkPresetSwitched(option.value))
+          setTempAdvancedSettings(newNetworkSettings)
+          return
+        }
+
+        if (networkId === undefined && client !== undefined) {
+          const response = await client.web3.infos.getInfosChainParams()
+          networkId = response.networkId
+        }
+
+        if (networkId !== undefined) {
+          const settings = { ...newNetworkSettings, networkId: networkId }
+          dispatch(customNetworkSettingsSaved(settings))
+          setTempAdvancedSettings(settings)
         }
       }
     },
-    [selectedNetwork, updateNetworkSettings, client]
+    [client, dispatch, selectedNetwork]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    updateNetworkSettings(tempAdvancedSettings)
+    dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
     setSnackbarMessage({ text: t`Custom network settings saved.`, type: 'info' })
-  }, [overrideSelectionIfMatchesPreset, updateNetworkSettings, setSnackbarMessage, tempAdvancedSettings, t])
+  }, [dispatch, overrideSelectionIfMatchesPreset, setSnackbarMessage, t, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {
-    overrideSelectionIfMatchesPreset(currentSettings.network)
+    overrideSelectionIfMatchesPreset(currentSettings)
   })
 
   return (

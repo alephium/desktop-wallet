@@ -23,7 +23,7 @@ import {
   addressDiscoveryStarted,
   addressesGenerated,
   addressGenerationStarted,
-  languageChanged,
+  languageChangeFinished,
   languageChangeStarted
 } from './actions'
 import { walletLocked } from './activeWalletSlice'
@@ -68,7 +68,7 @@ const appSlice = createSlice({
       .addCase(languageChangeStarted, (state) => {
         state.loading = true
       })
-      .addCase(languageChanged, (state) => {
+      .addCase(languageChangeFinished, (state) => {
         state.loading = false
       })
       .addCase(addressGenerationStarted, (state) => {

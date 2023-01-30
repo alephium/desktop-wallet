@@ -18,6 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getStorage } from '@alephium/sdk'
 import { encrypt } from '@alephium/sdk'
+import { merge } from 'lodash'
+
+import SettingsStorage, { defaultSettings } from '@/persistent-storage/settings'
+import { Settings, ThemeType } from '@/types/settings'
 
 import { stringToDoubleSHA256HexString } from './misc'
 
@@ -88,4 +92,56 @@ export const _20220527_120000 = (mnemonic: string, walletName: string) => {
 
     localStorage.removeItem(keyDeprecated)
   }
+}
+
+export const migrateDeprecatedSettings = (): Settings => {
+  const settings = SettingsStorage.loadAll()
+
+  const deprecatedThemeSetting = window.localStorage.getItem('theme')
+  deprecatedThemeSetting && window.localStorage.removeItem('theme')
+
+  const migratedSettings = {
+    network: settings.network ?? (settings as unknown as Settings['network']),
+    general: deprecatedThemeSetting
+      ? { ...settings.general, theme: deprecatedThemeSetting as ThemeType }
+      : settings.general
+  }
+
+  if (
+    settings.network.explorerApiHost === 'https://mainnet-backend.alephium.org' ||
+    settings.network.explorerApiHost === 'https://backend-v18.mainnet.alephium.org'
+  ) {
+    migratedSettings.network.explorerApiHost = 'https://backend-v110.mainnet.alephium.org'
+  } else if (
+    settings.network.explorerApiHost === 'https://testnet-backend.alephium.org' ||
+    settings.network.explorerApiHost === 'https://backend-v18.testnet.alephium.org'
+  ) {
+    migratedSettings.network.explorerApiHost = 'https://backend-v110.testnet.alephium.org'
+  }
+
+  if (settings.network.explorerUrl === 'https://explorer-v18.mainnet.alephium.org') {
+    migratedSettings.network.explorerUrl = 'https://explorer.alephium.org'
+  } else if (
+    settings.network.explorerUrl === 'https://testnet.alephium.org' ||
+    settings.network.explorerUrl === 'https://explorer-v18.testnet.alephium.org'
+  ) {
+    migratedSettings.network.explorerUrl = 'https://explorer.testnet.alephium.org'
+  }
+
+  if (
+    settings.network.nodeHost === 'https://mainnet-wallet.alephium.org' ||
+    settings.network.nodeHost === 'https://wallet-v18.mainnet.alephium.org'
+  ) {
+    migratedSettings.network.nodeHost = 'https://wallet-v15.mainnet.alephium.org'
+  } else if (
+    settings.network.nodeHost === 'https://testnet-wallet.alephium.org' ||
+    settings.network.nodeHost === 'https://wallet-v18.testnet.alephium.org'
+  ) {
+    migratedSettings.network.nodeHost = 'https://wallet-v15.testnet.alephium.org'
+  }
+
+  const newSettings = merge({}, defaultSettings, migratedSettings)
+  SettingsStorage.storeAll(newSettings)
+
+  return newSettings
 }

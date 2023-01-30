@@ -18,7 +18,28 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import 'styled-components'
 
-export type Language = 'en-US' | 'fr-FR'
+export interface GeneralSettings {
+  theme: ThemeType
+  walletLockTimeInMinutes: number | null
+  discreetMode: boolean
+  passwordRequirement: boolean
+  language: Language
+  devTools: boolean
+}
+
+export interface NetworkSettings {
+  networkId: number
+  nodeHost: string
+  explorerApiHost: string
+  explorerUrl: string
+}
+
+export interface Settings {
+  general: GeneralSettings
+  network: NetworkSettings
+}
+
+export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN'
 
 export type ThemeType = 'light' | 'dark' | 'system'
 

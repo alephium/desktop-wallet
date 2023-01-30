@@ -29,6 +29,7 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
@@ -42,9 +43,13 @@ interface AddressSweepModal {
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { t } = useTranslation()
-  const { addresses, mainAddress } = useAddressesContext()
+  const { addresses, mainAddress, setAddress } = useAddressesContext()
+  const { client, setSnackbarMessage } = useGlobalContext()
+  const network = useAppSelector((state) => state.network)
+
   const fromAddress = sweepAddress || mainAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
+
   const [sweepAddresses, setSweepAddresses] = useState<{
     from: SweepAddress
     to: SweepAddress
@@ -53,8 +58,6 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     to: toAddressOptions.length > 0 ? toAddressOptions[0] : fromAddress
   })
   const [fee, setFee] = useState(BigInt(0))
-  const { client, currentNetwork, setSnackbarMessage } = useGlobalContext()
-  const { setAddress } = useAddressesContext()
   const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -90,7 +93,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           unsignedTx,
           sweepAddresses.to.hash,
           'sweep',
-          currentNetwork
+          network.name
         )
         if (txSendResp) {
           setAddress(sweepAddresses.from)

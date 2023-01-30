@@ -78,16 +78,6 @@ export const useWindowSize = () => {
   return windowSize
 }
 
-export function useStateWithLocalStorage<T>(localStorageKey: string, defaultValue: T) {
-  const [value, setValue] = useState(localStorage.getItem(localStorageKey) || defaultValue)
-
-  useEffect(() => {
-    localStorage.setItem(localStorageKey, value as string)
-  }, [localStorageKey, value])
-
-  return [value, setValue]
-}
-
 // Helper function to run React effect only once, without eslint screaming
 // eslint-disable-next-line react-hooks/exhaustive-deps
 export const useMountEffect = (fun: () => void) => useEffect(fun, [])

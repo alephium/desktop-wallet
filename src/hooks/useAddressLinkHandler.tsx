@@ -20,15 +20,12 @@ import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { AddressHash, useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
 import { openInWebBrowser } from '@/utils/misc'
 
+import { useAppSelector } from './redux'
+
 const useAddressLinkHandler = () => {
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const { getAddress } = useAddressesContext()
   const navigate = useNavigate()
 

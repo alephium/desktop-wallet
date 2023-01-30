@@ -19,17 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 
 import Badge from './Badge'
 
 const NetworkBadge = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
-  const { currentNetwork } = useGlobalContext()
+  const network = useAppSelector((state) => state.network)
 
   return (
-    <Badge className={className} border tooltip={t`Current network`}>
-      {currentNetwork}
+    <Badge className={className} border tooltip={t('Current network')}>
+      {network.name}
     </Badge>
   )
 }

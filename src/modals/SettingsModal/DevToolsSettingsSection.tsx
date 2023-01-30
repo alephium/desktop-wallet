@@ -26,7 +26,8 @@ import Button from '@/components/Button'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { devToolsToggled } from '@/store/settingsSlice'
 
 import ModalPortal from '../ModalPortal'
 import SendModalDeployContract from '../SendModals/SendModalDeployContract'
@@ -34,15 +35,13 @@ import SendModalScript from '../SendModals/SendModalScript'
 
 const DevToolsSettingsSection = () => {
   const { t } = useTranslation()
-  const {
-    settings: {
-      general: { devTools }
-    },
-    updateSettings
-  } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const { devTools } = useAppSelector((state) => state.settings)
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
+
+  const toggleDevTools = () => dispatch(devToolsToggled())
 
   return (
     <>
@@ -51,13 +50,7 @@ const DevToolsSettingsSection = () => {
           <InlineLabelValueInput
             label={t('Enable developer tools')}
             description={t('Deploy and call smart contracts')}
-            InputComponent={
-              <Toggle
-                label={t('Enable developer tools')}
-                toggled={devTools}
-                onToggle={() => updateSettings('general', { devTools: !devTools })}
-              />
-            }
+            InputComponent={<Toggle label={t('Enable developer tools')} toggled={devTools} onToggle={toggleDevTools} />}
           />
         </Box>
       </Section>

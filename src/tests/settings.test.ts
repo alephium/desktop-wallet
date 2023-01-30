@@ -16,16 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import SettingsStorage, { defaultSettings, networkPresets } from '@/persistent-storage/settings'
 import { Language, ThemeType } from '@/types/settings'
-import {
-  defaultSettings,
-  getNetworkName,
-  loadSettings,
-  migrateDeprecatedSettings,
-  networkEndpoints,
-  storeSettings,
-  updateStoredSettings
-} from '@/utils/settings'
+import { migrateDeprecatedSettings } from '@/utils/migration'
+import { getNetworkName } from '@/utils/settings'
 
 const mockSettings = {
   general: {
@@ -45,23 +39,23 @@ const mockSettings = {
 }
 
 it('Should return the network name if all settings match exactly', () => {
-  expect(getNetworkName(networkEndpoints.localhost)).toEqual('localhost'),
-    expect(getNetworkName(networkEndpoints.testnet)).toEqual('testnet'),
-    expect(getNetworkName(networkEndpoints.mainnet)).toEqual('mainnet'),
+  expect(getNetworkName(networkPresets.localhost)).toEqual('localhost'),
+    expect(getNetworkName(networkPresets.testnet)).toEqual('testnet'),
+    expect(getNetworkName(networkPresets.mainnet)).toEqual('mainnet'),
     expect(getNetworkName({ nodeHost: '', explorerApiHost: '', explorerUrl: '', networkId: 0 })).toEqual('custom'),
     expect(
       getNetworkName({
-        ...networkEndpoints.mainnet,
+        ...networkPresets.mainnet,
         nodeHost: 'https://mainnet-wallet.alephium2.org'
       })
     ).toEqual('custom')
 })
 
 it('Should load settings from local storage', () => {
-  expect(loadSettings()).toEqual(defaultSettings)
+  expect(SettingsStorage.loadAll()).toEqual(defaultSettings)
 
   localStorage.setItem('settings', JSON.stringify(mockSettings))
-  expect(loadSettings()).toEqual(mockSettings)
+  expect(SettingsStorage.loadAll()).toEqual(mockSettings)
 })
 
 describe('Settings migration', () => {
@@ -69,7 +63,7 @@ describe('Settings migration', () => {
     localStorage.setItem('theme', 'pink')
     expect(localStorage.getItem('theme')).toEqual('pink')
     expect(migrateDeprecatedSettings().general.theme).toEqual('pink')
-    expect(loadSettings().general.theme).toEqual('pink')
+    expect(SettingsStorage.loadAll().general.theme).toEqual('pink')
     expect(localStorage.getItem('theme')).toBeNull()
   })
 
@@ -133,7 +127,7 @@ describe('Settings migration', () => {
 })
 
 it('Should save settings in local storage', () => {
-  storeSettings(mockSettings)
+  SettingsStorage.storeAll(mockSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify(mockSettings))
 })
 
@@ -144,6 +138,6 @@ it('Should update stored settings', () => {
     explorerApiHost: 'https://explorer-backend1',
     explorerUrl: 'https://explorer1'
   }
-  updateStoredSettings('network', newNetworkSettings)
+  SettingsStorage.store('network', newNetworkSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify({ ...mockSettings, network: newNetworkSettings }))
 })

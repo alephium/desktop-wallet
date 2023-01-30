@@ -26,12 +26,16 @@ import Select from '@/components/Inputs/Select'
 import Toggle from '@/components/Inputs/Toggle'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
-import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useSwitchTheme from '@/hooks/useSwitchTheme'
 import CenteredModal from '@/modals/CenteredModal'
+import {
+  discreetModeToggled,
+  languageChanged,
+  passwordRequirementToggled,
+  walletLockTimeChanged
+} from '@/store/settingsSlice'
 import { Language, ThemeType } from '@/types/settings'
-import { loadSettings } from '@/utils/settings'
 
 import ModalPortal from '../ModalPortal'
 
@@ -54,16 +58,10 @@ const themeOptions = [
 
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const switchTheme = useSwitchTheme()
-  const {
-    settings: {
-      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement, language }
-    },
-    updateSettings
-  } = useGlobalContext()
-  const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
-
-  const storedSettings = loadSettings()
+  const [isAuthenticated, { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme }] =
+    useAppSelector((s) => [!!s.activeWallet.mnemonic, s.settings])
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 
@@ -71,16 +69,24 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     if (passwordRequirement) {
       setIsPasswordModalOpen(true)
     } else {
-      updateSettings('general', { passwordRequirement: true })
+      dispatch(passwordRequirementToggled())
     }
-  }, [passwordRequirement, updateSettings])
+  }, [dispatch, passwordRequirement])
 
   const disablePasswordRequirement = useCallback(() => {
-    updateSettings('general', { passwordRequirement: false })
+    dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
-  }, [updateSettings])
+  }, [dispatch])
 
-  const onLanguageChange = (language: Language) => updateSettings('general', { language })
+  const handleLanguageChange = (language: Language) => dispatch(languageChanged(language))
+
+  const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
+
+  const handleWalletLockTimeChange = (mins: string) => {
+    const time = mins ? parseInt(mins) : null
+
+    dispatch(walletLockTimeChanged(time))
+  }
 
   const discreetModeText = t`Discreet mode`
 
@@ -93,9 +99,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Input
             id="wallet-lock-time-in-minutes"
             value={walletLockTimeInMinutes || ''}
-            onChange={(v) =>
-              updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
-            }
+            onChange={(v) => handleWalletLockTimeChange(v.target.value)}
             label={walletLockTimeInMinutes ? t`Minutes` : t`Off`}
             type="number"
             step={1}
@@ -113,7 +117,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             id="theme"
             options={themeOptions}
             onValueChange={(v) => v?.value && switchTheme(v.value)}
-            controlledValue={themeOptions.find((l) => l.value === storedSettings.general.theme)}
+            controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}
           />
@@ -123,13 +127,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       <KeyValueInput
         label={discreetModeText}
         description={t`Toggle discreet mode (hide amounts).`}
-        InputComponent={
-          <Toggle
-            label={discreetModeText}
-            toggled={discreetMode}
-            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-          />
-        }
+        InputComponent={<Toggle label={discreetModeText} toggled={discreetMode} onToggle={handleDiscreetModeToggle} />}
       />
       <HorizontalDivider />
       {isAuthenticated && (
@@ -149,7 +147,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Select
             id="language"
             options={languageOptions}
-            onValueChange={(v) => v?.value && onLanguageChange(v.value)}
+            onValueChange={(v) => v?.value && handleLanguageChange(v.value)}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
             title={t`Language`}

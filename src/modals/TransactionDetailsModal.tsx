@@ -30,7 +30,7 @@ import ExpandableSection from '@/components/ExpandableSection'
 import IOList from '@/components/IOList'
 import Tooltip from '@/components/Tooltip'
 import { Address } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
@@ -52,11 +52,7 @@ interface DetailsRowProps {
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
-  const {
-    settings: {
-      network: { explorerUrl }
-    }
-  } = useGlobalContext()
+  const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const theme = useTheme()
   const handleShowAddress = useAddressLinkHandler()
   const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)

@@ -33,6 +33,7 @@ import Scrollbar from '@/components/Scrollbar'
 import Spinner from '@/components/Spinner'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import SettingsModal from '@/modals/SettingsModal'
@@ -47,7 +48,8 @@ dayjs.extend(relativeTime)
 
 const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, className }) => {
   const { t } = useTranslation()
-  const { networkStatus, activeWalletName } = useGlobalContext()
+  const network = useAppSelector((state) => state.network)
+  const { activeWalletName } = useGlobalContext()
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -86,7 +88,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
           <MainContent>{children}</MainContent>
 
           <AppHeader>
-            {networkStatus === 'online' && (
+            {network.status === 'online' && (
               <TooltipWrapper content={t`Refresh data`}>
                 <RefreshButton
                   role="secondary"
