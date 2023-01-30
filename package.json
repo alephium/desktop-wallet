@@ -108,6 +108,7 @@
   },
   "build": {
     "appId": "org.alephium.alephium-wallet",
+    "productName": "Alephium",
     "files": [
       "build/**/*",
       "public/electron.js",
@@ -122,16 +123,19 @@
         "snap"
       ]
     },
-    "productName": "Alephium",
+    "win": {
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+    },
     "directories": {
       "buildResources": "assets"
     },
     "afterPack": ".afterPack.js",
-    "afterSign": "electron-builder-notarize",
-    "mac": {
-      "hardenedRuntime": true,
-      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
-    }
+    "afterAllArtifactBuild": ".afterAllArtifactBuild.js",
+    "afterSign": "electron-builder-notarize"
   },
   "engines": {
     "node": ">=16",
