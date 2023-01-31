@@ -45,7 +45,6 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
   useEffect(() => {
     if (windowHeight && windowWidth) {
       const contentElement = contentRef.current
-
       const contentRect = contentElement?.getBoundingClientRect()
 
       const offsetX =
@@ -79,8 +78,13 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
 
   return (
     <ModalContainer onClose={onBackgroundClick}>
-      {hookCoordinates ? (
-        <Hook hookCoordinates={hookCoordinates} animate={hookOffset} transition={{ duration: 0.1 }}>
+      {hookCoordinates && contentRef.current ? (
+        <Hook
+          hookCoordinates={hookCoordinates}
+          contentWidth={contentRef.current.clientWidth}
+          animate={hookOffset}
+          transition={{ duration: 0.1 }}
+        >
           {PopupContent}
         </Hook>
       ) : (
@@ -92,16 +96,13 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
 
 export default Popup
 
-const Hook = styled(motion.div)<{ hookCoordinates: Coordinates }>`
+const Hook = styled(motion.div)<{ hookCoordinates: Coordinates; contentWidth: number }>`
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 0;
-  height: 0;
-  top: ${({ hookCoordinates }) => hookCoordinates.y}px;
-  left: ${({ hookCoordinates }) => hookCoordinates.x}px;
-  margin-top: ${-headerHeight * 1.5}px;
+  top: ${({ hookCoordinates }) => hookCoordinates.y - headerHeight * 1.5}px;
+  left: ${({ hookCoordinates, contentWidth }) => hookCoordinates.x - contentWidth / 2}px;
 `
 
 const Content = styled(motion.div)`
@@ -109,7 +110,6 @@ const Content = styled(motion.div)`
   overflow-x: hidden;
   overflow-y: auto;
 
-  width: 30vw;
   min-width: 300px;
   max-height: 500px;
   margin: auto;
