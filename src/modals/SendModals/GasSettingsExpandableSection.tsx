@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import { convertAlphToSet, convertSetToAlph, formatAmountForDisplay } from '@alephium/sdk'
 import { useEffect, useState } from 'react'
 import { TFunction, useTranslation } from 'react-i18next'
 import styled, { DefaultTheme, useTheme } from 'styled-components'
@@ -174,8 +174,10 @@ const getAmountErrorMessage = (
 ): string => {
   try {
     const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
+    const displayedMinAmount = shouldConvertToSet ? convertSetToAlph(minAmount) : minAmount
 
-    if (amountNumber < minAmount) return t('The amount must be greater than {{ minAmount }}', { minAmount })
+    if (amountNumber < minAmount)
+      return t('The amount must be greater than {{ minAmount }}', { minAmount: displayedMinAmount })
   } catch (e) {
     return t`Unable to convert the amount`
   }
