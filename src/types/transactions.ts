@@ -20,7 +20,6 @@ import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 
 import { Address } from '../contexts/addresses'
 import { NetworkName } from '../utils/settings'
-import { WithParsed } from './data'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
@@ -86,14 +85,10 @@ export interface TransferTxData {
   alphAmount: string
   gasAmount?: number
   gasPrice?: string
+  lockTime?: Date
 }
 
-export interface GasInfo {
-  gasAmount: WithParsed<number | undefined>
-  gasPrice: WithParsed<string | undefined>
-}
-
-export interface TxPreparation extends GasInfo {
+export interface TxPreparation {
   fromAddress: Address
   bytecode?: string
   issueTokenAmount?: string

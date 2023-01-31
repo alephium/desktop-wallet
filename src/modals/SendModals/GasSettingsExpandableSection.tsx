@@ -16,171 +16,83 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, convertSetToAlph, formatAmountForDisplay } from '@alephium/sdk'
-import { useEffect, useState } from 'react'
-import { TFunction, useTranslation } from 'react-i18next'
-import styled, { DefaultTheme, useTheme } from 'styled-components'
+import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
-import ExpandableSection from '../../components/ExpandableSection'
 import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import { useStateWithParsed } from '../../hooks/useStateWithParsed'
-import { WithParsed } from '../../types/data'
-import { GasInfo } from '../../types/transactions'
+import ToggleSection from '../../components/ToggleSection'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
 
-export interface GasSettingsExpandableSectionProps extends GasInfo {
-  onGasAmountChange: (v: GasAmountWithParseInfo) => void
-  onGasPriceChange: (v: GasPriceWithParseInfo) => void
-}
-
-type GasPriceParsed = string | undefined
-type GasPriceWithParseInfo = WithParsed<GasPriceParsed>
-interface GasPriceInputProps {
-  theme: DefaultTheme
-  value: WithParsed<string | undefined>
-  onChange: (value: GasPriceWithParseInfo) => void
-}
-
-type GasAmountParsed = number | undefined
-type GasAmountWithParseInfo = WithParsed<GasAmountParsed>
-interface GasAmountInputProps {
-  value: GasAmountWithParseInfo
-  onChange: (value: GasAmountWithParseInfo) => void
+export interface GasSettingsExpandableSectionProps {
+  gasAmount?: string
+  gasAmountError: string
+  gasPrice?: string
+  gasPriceError: string
+  onGasAmountChange: (v: string) => void
+  onGasPriceChange: (v: string) => void
+  onClearGasSettings: () => void
+  className?: string
 }
 
 const GasSettingsExpandableSection = ({
   gasAmount,
+  gasAmountError,
   gasPrice,
+  gasPriceError,
   onGasAmountChange,
-  onGasPriceChange
+  onGasPriceChange,
+  onClearGasSettings,
+  className
 }: GasSettingsExpandableSectionProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
 
   const expectedFeeInALPH =
-    gasAmount.parsed !== undefined &&
-    gasPrice.parsed !== undefined &&
-    formatAmountForDisplay(BigInt(gasAmount.raw) * convertAlphToSet(gasPrice.raw), true)
+    gasAmount && gasPrice && formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPrice), true)
 
-  return (
-    <ExpandableSectionStyled sectionTitleClosed={t`Gas`}>
-      <GasAmountInput value={gasAmount} onChange={onGasAmountChange} />
-      <GasPriceInput theme={theme} value={gasPrice} onChange={onGasPriceChange} />
-      {expectedFeeInALPH && (
-        <InfoBox short label={t`Expected fee`}>
-          {expectedFeeInALPH} <AlefSymbol />
-        </InfoBox>
-      )}
-    </ExpandableSectionStyled>
-  )
-}
+  const clearGasSettings = (isShown: boolean) => {
+    if (isShown) return
 
-const GasAmountInput = ({ value, onChange }: GasAmountInputProps) => {
-  const { t } = useTranslation()
-  const [gasAmount, setGasAmount] = useStateWithParsed<GasAmountParsed>(
-    value.parsed,
-    value.parsed !== undefined ? value.parsed.toString() : ''
-  )
-  const [prevGasAmount, setPrevGasAmount] = useState(gasAmount)
-
-  useEffect(() => {
-    if (prevGasAmount == gasAmount) return
-
-    onChange(gasAmount)
-    setPrevGasAmount(gasAmount)
-  }, [prevGasAmount, gasAmount, onChange])
-
-  const handleGasAmountChange = (newGasAmount: string) => {
-    if (!newGasAmount) {
-      setGasAmount('', undefined, '')
-      return
-    }
-
-    const errorMessage = getAmountErrorMessage(newGasAmount, BigInt(MINIMAL_GAS_AMOUNT), false, t)
-    setGasAmount(newGasAmount, !errorMessage ? parseInt(newGasAmount) : undefined, errorMessage)
-  }
-
-  return (
-    <Input
-      id="gas-amount"
-      label={`${t('Gas amount')} (≥ ${MINIMAL_GAS_AMOUNT})`}
-      value={gasAmount.raw}
-      onChange={(e) => handleGasAmountChange(e.target.value)}
-      type="number"
-      min={MINIMAL_GAS_AMOUNT}
-      error={gasAmount.error}
-    />
-  )
-}
-
-const GasPriceInput = ({ theme, value, onChange }: GasPriceInputProps) => {
-  const { t } = useTranslation()
-  const [gasPrice, setGasPrice] = useStateWithParsed<GasPriceParsed>(
-    value.parsed,
-    value.parsed !== undefined ? value.parsed : ''
-  )
-  const [prevGasPrice, setPrevGasPrice] = useState(gasPrice)
-
-  useEffect(() => {
-    if (prevGasPrice == gasPrice) return
-
-    onChange(gasPrice)
-    setPrevGasPrice(gasPrice)
-  }, [prevGasPrice, gasPrice, onChange])
-
-  const handleGasPriceChange = (newGasPrice: string) => {
-    if (!newGasPrice) {
-      setGasPrice('', undefined, '')
-      return
-    }
-
-    const errorMessage = getAmountErrorMessage(newGasPrice, MINIMAL_GAS_PRICE, true, t)
-    setGasPrice(newGasPrice, !errorMessage ? newGasPrice : undefined, errorMessage)
+    onClearGasSettings()
   }
 
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
 
   return (
-    <Input
-      id="gas-price"
-      label={
-        <>
-          {t`Gas price`} (≥ {minimalGasPriceInALPH} <AlefSymbol color={theme.font.secondary} />)
-        </>
-      }
-      value={gasPrice.raw}
-      type="number"
-      min={minimalGasPriceInALPH}
-      onChange={(e) => handleGasPriceChange(e.target.value)}
-      step={minimalGasPriceInALPH}
-      error={gasPrice.error}
-    />
+    <ToggleSection title={t`Gas`} onClick={clearGasSettings} className={className}>
+      <Input
+        id="gas-amount"
+        label={`${t('Gas amount')} (≥ ${MINIMAL_GAS_AMOUNT})`}
+        value={gasAmount ?? ''}
+        onChange={(e) => onGasAmountChange(e.target.value)}
+        type="number"
+        min={MINIMAL_GAS_AMOUNT}
+        error={gasAmountError}
+      />
+      <Input
+        id="gas-price"
+        label={
+          <>
+            {t`Gas price`} (≥ {minimalGasPriceInALPH} <AlefSymbol color={theme.font.secondary} />)
+          </>
+        }
+        value={gasPrice ?? ''}
+        type="number"
+        min={minimalGasPriceInALPH}
+        onChange={(e) => onGasPriceChange(e.target.value)}
+        step={minimalGasPriceInALPH}
+        error={gasPriceError}
+      />
+      {expectedFeeInALPH && (
+        <InfoBox short label={t`Expected fee`}>
+          {expectedFeeInALPH} <AlefSymbol />
+        </InfoBox>
+      )}
+    </ToggleSection>
   )
 }
 
 export default GasSettingsExpandableSection
-
-const ExpandableSectionStyled = styled(ExpandableSection)`
-  margin-top: 38px;
-`
-
-const getAmountErrorMessage = (
-  amount: string,
-  minAmount: bigint,
-  shouldConvertToSet: boolean,
-  t: TFunction<'App'>
-): string => {
-  try {
-    const amountNumber = shouldConvertToSet ? convertAlphToSet(amount || '0') : BigInt(amount)
-    const displayedMinAmount = shouldConvertToSet ? convertSetToAlph(minAmount) : minAmount
-
-    if (amountNumber < minAmount)
-      return t('The amount must be greater than {{ minAmount }}', { minAmount: displayedMinAmount })
-  } catch (e) {
-    return t`Unable to convert the amount`
-  }
-
-  return ''
-}

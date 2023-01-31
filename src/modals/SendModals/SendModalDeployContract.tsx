@@ -28,9 +28,10 @@ import { useAddressesContext } from '../../contexts/addresses'
 import { Client } from '../../contexts/global'
 import { useSendModalContext } from '../../contexts/sendModal'
 import useDappTxData from '../../hooks/useDappTxData'
+import useGasSettings from '../../hooks/useGasSettings'
 import useStateObject from '../../hooks/useStateObject'
 import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '../../types/transactions'
-import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '../../utils/transactions'
+import { expectedAmount, isAmountWithinRange } from '../../utils/transactions'
 import AddressSelectFrom from './AddressSelectFrom'
 import AlphAmountInfoBox from './AlphAmountInfoBox'
 import BuildTxFooterButtons from './BuildTxFooterButtons'
@@ -117,21 +118,20 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     bytecode: data.bytecode ?? '',
-    gasAmount: {
-      parsed: data.gasAmount,
-      raw: data.gasAmount?.toString() ?? '',
-      error: ''
-    },
-    gasPrice: {
-      parsed: data.gasPrice,
-      raw: data.gasPrice ?? '',
-      error: ''
-    },
     alphAmount: data.initialAlphAmount ?? '',
     issueTokenAmount: data.issueTokenAmount ?? ''
   })
+  const {
+    gasAmount,
+    gasAmountError,
+    gasPrice,
+    gasPriceError,
+    clearGasSettings,
+    handleGasAmountChange,
+    handleGasPriceChange
+  } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
-  const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount, issueTokenAmount } = txPrep
+  const { fromAddress, bytecode, alphAmount, issueTokenAmount } = txPrep
 
   if (fromAddress === undefined) {
     onCancel()
@@ -139,7 +139,8 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   }
 
   const isSubmitButtonActive =
-    hasNoGasErrors({ gasAmount, gasPrice }) &&
+    !gasPriceError &&
+    !gasAmountError &&
     !!bytecode &&
     (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
 
@@ -168,9 +169,12 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
       </ModalInputFields>
       <GasSettingsExpandableSection
         gasAmount={gasAmount}
+        gasAmountError={gasAmountError}
         gasPrice={gasPrice}
-        onGasAmountChange={setTxPrepProp('gasAmount')}
-        onGasPriceChange={setTxPrepProp('gasPrice')}
+        gasPriceError={gasPriceError}
+        onGasAmountChange={handleGasAmountChange}
+        onGasPriceChange={handleGasPriceChange}
+        onClearGasSettings={clearGasSettings}
       />
       <BuildTxFooterButtons
         onSubmit={() =>
@@ -179,8 +183,8 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             bytecode: bytecode ?? '',
             issueTokenAmount: issueTokenAmount || undefined,
             initialAlphAmount: (alphAmount && convertAlphToSet(alphAmount).toString()) || undefined,
-            gasAmount: gasAmount.parsed,
-            gasPrice: gasPrice.parsed
+            gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
+            gasPrice
           })
         }
         onCancel={onCancel}
