@@ -211,7 +211,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }
 
   return (
-    <CenteredModal title={modalTitle} onClose={onCloseExtended} isLoading={isLoading} header={modalHeader}>
+    <CenteredModal title={modalTitle} onClose={onCloseExtended} isLoading={isLoading} header={modalHeader} key={step}>
       {step === 'build-tx' && (
         <BuildTxModalContent
           data={transactionData ?? initialTxData}
