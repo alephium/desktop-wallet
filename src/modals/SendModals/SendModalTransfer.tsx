@@ -184,8 +184,8 @@ const buildTransaction = async (client: Client, transactionData: TransferTxData,
 const handleSend = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
   const { fromAddress, toAddress, alphAmount } = transactionData
 
-  if (toAddress && context.unsignedTransaction) {
-    if (context.isSweeping) {
+  if (toAddress) {
+    if (context.isSweeping && context.sweepUnsignedTxs) {
       const sendToAddress = context.consolidationRequired ? fromAddress.hash : toAddress
       const transactionType = context.consolidationRequired ? 'consolidation' : 'sweep'
 
@@ -201,7 +201,7 @@ const handleSend = async (client: Client, transactionData: TransferTxData, conte
 
         if (data) context.setAddress(fromAddress)
       }
-    } else {
+    } else if (context.unsignedTransaction) {
       const data = await client.signAndSendTransaction(
         fromAddress,
         context.unsignedTxId,
