@@ -95,8 +95,8 @@ describe('Settings migration', () => {
     for (const settings of mainnetSettings) {
       localStorage.setItem('settings', JSON.stringify(settings))
       const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v15.mainnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v110.mainnet.alephium.org')
+      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.mainnet.alephium.org')
+      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.mainnet.alephium.org')
       expect(migratedSettings.network.explorerUrl).toBe('https://explorer.alephium.org')
       expect(migratedSettings.network.networkId).toBe(0)
     }
@@ -123,8 +123,8 @@ describe('Settings migration', () => {
     for (const settings of testnetSettings) {
       localStorage.setItem('settings', JSON.stringify(settings))
       const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v15.testnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v110.testnet.alephium.org')
+      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.testnet.alephium.org')
+      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.testnet.alephium.org')
       expect(migratedSettings.network.explorerUrl).toBe('https://explorer.testnet.alephium.org')
       expect(migratedSettings.network.networkId).toBe(1)
     }
