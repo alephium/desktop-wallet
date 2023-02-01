@@ -27,7 +27,7 @@ export const lightTheme: DefaultTheme = {
     tertiary: 'rgba(0, 0, 0, 0.05)',
     hover: 'rgba(0, 0, 0, 0.012)',
     contrast: '#212126',
-    accent: colord('#000').alpha(0.04).toRgbString(),
+    accent: colord('#5981f3').alpha(0.15).toRgbString(),
     background1: '#F0F0F0',
     background2: '#F0F0F0'
   },
@@ -65,7 +65,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '#101012',
     hover: 'rgba(61, 64, 74, 0.1)',
     contrast: 'white',
-    accent: colord('#598BED').alpha(0.07).toRgbString(),
+    accent: colord('#598BED').alpha(0.15).toRgbString(),
     background1: '#121215',
     background2: 'rgba(16, 16, 18, 1)'
   },

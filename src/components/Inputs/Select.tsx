@@ -18,8 +18,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { KeyboardEvent, MouseEvent, OptionHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent,
+  OptionHTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+import styled, { css } from 'styled-components'
 
 import { InputLabel, InputProps } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
@@ -112,7 +120,7 @@ function Select<T extends OptionValue>({
     setShowPopup(true)
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = (e: ReactKeyboardEvent) => {
     if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
     if (options.length <= 1) return
     setHookCoordinates(containerCenter)
@@ -180,7 +188,7 @@ function Select<T extends OptionValue>({
         {showPopup && (
           <SelectOptionsPopup
             options={options}
-            value={value}
+            selectedOption={value}
             setValue={setInputValue}
             title={title}
             hookCoordinates={hookCoordinates}
@@ -194,21 +202,44 @@ function Select<T extends OptionValue>({
 
 function SelectOptionsPopup<T extends OptionValue>({
   options,
-  value,
+  selectedOption,
   setValue,
   onBackgroundClick,
   hookCoordinates,
   title
 }: {
   options: SelectOption<T>[]
-  value?: SelectOption<T>
+  selectedOption?: SelectOption<T>
   setValue: (value: SelectOption<T>) => void | undefined
   onBackgroundClick: () => void
   hookCoordinates?: Coordinates
   title?: string
 }) {
+  const selectRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    options && options.length > 0 && focusOnOption(selectRef.current?.children[0])
+  }, [options])
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.code === 'ArrowDown') {
+        focusOnOption(document.activeElement?.nextElementSibling)
+      } else if (e.code === 'ArrowUp') {
+        focusOnOption(document.activeElement?.previousElementSibling)
+      } else {
+        return
+      }
+    }
+
+    document.addEventListener('keydown', listener)
+
+    return () => {
+      document.removeEventListener('keydown', listener)
+    }
+  }, [])
+
   const handleOptionSelect = (value: T) => {
-    console.log('SELECT')
     const selectedValue = options.find((o) => o.value === value)
     if (!selectedValue) return
 
@@ -216,17 +247,21 @@ function SelectOptionsPopup<T extends OptionValue>({
     onBackgroundClick()
   }
 
+  const focusOnOption = (el?: Element | null) => {
+    if (!el) return
+    ;(el as HTMLButtonElement).focus()
+  }
+
   return (
     <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={hookCoordinates}>
-      <OptionSelect
-        value={value?.value}
-        size={options.length}
-        title={title}
-        aria-label={title}
-        onChange={(e) => handleOptionSelect(e.target.value as T)}
-      >
-        {options.map((o) => (
-          <OptionItem key={o.value} value={o.value}>
+      <OptionSelect title={title} aria-label={title} ref={selectRef}>
+        {options.map((o, i) => (
+          <OptionItem
+            key={o.value}
+            onClick={() => handleOptionSelect(o.value as T)}
+            selected={o.value === selectedOption?.value}
+            aria-label={o.label}
+          >
             {o.label}
           </OptionItem>
         ))}
@@ -257,21 +292,30 @@ export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
-export const OptionSelect = styled.select`
+export const OptionSelect = styled.div`
   width: 100%;
   overflow-y: auto;
   border: 0;
-  outline: 0;
   color: inherit;
   background: transparent;
+  display: flex;
+  flex-direction: column;
 `
 
-export const OptionItem = styled.option`
+export const OptionItem = styled.button<{ selected: boolean }>`
   padding: var(--spacing-4);
   cursor: pointer;
   background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
   user-select: none;
+  text-align: left;
+
+  ${({ theme, selected }) =>
+    selected &&
+    css`
+      font-weight: bold;
+      background-color: ${theme.bg.secondary};
+    `};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -279,6 +323,10 @@ export const OptionItem = styled.option`
 
   &:hover {
     background-color: ${({ theme }) => theme.bg.secondary};
+  }
+
+  &:focus {
+    background-color: ${({ theme }) => theme.bg.accent};
   }
 `
 
