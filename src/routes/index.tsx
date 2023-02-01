@@ -27,11 +27,11 @@ import ImportWalletRoutes from './ImportWalletRoutes'
 import WalletRoutes from './WalletRoutes'
 
 const Router = () => {
-  const { newLatestVersion } = useGlobalContext()
+  const { newVersion } = useGlobalContext()
 
   return (
     <AnimateSharedLayout type="crossfade">
-      <AnimatePresence>{newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}</AnimatePresence>
+      <AnimatePresence>{newVersion && <UpdateWalletBanner />}</AnimatePresence>
       <Routes>
         <Route path="/create/:step" element={<CreateWalletRoutes />} />
         <Route path="/import/:step" element={<ImportWalletRoutes />} />

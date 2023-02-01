@@ -20,26 +20,47 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useGlobalContext } from '../contexts/global'
+import { links } from '../utils/links'
+import { openInWebBrowser } from '../utils/misc'
 import Banner from './Banner'
 import Button from './Button'
 
 interface UpdateWalletBannerProps {
-  newVersion: string
   className?: string
 }
 
-const UpdateWalletBanner = ({ className, newVersion }: UpdateWalletBannerProps) => {
+const UpdateWalletBanner = ({ className }: UpdateWalletBannerProps) => {
   const { t } = useTranslation()
-  const { triggerNewVersionDownload } = useGlobalContext()
+  const { triggerNewVersionDownload, newVersion, requiresManualDownload } = useGlobalContext()
 
   return (
     <Banner className={className} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <UpdateMessage>
-        {t('Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.', { newVersion })}
-      </UpdateMessage>
-      <ButtonStyled short onClick={triggerNewVersionDownload}>
-        {t`Update`}
-      </ButtonStyled>
+      {requiresManualDownload ? (
+        <>
+          <UpdateMessage>
+            {t(
+              'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.',
+              {
+                newVersion
+              }
+            )}
+          </UpdateMessage>
+          <ButtonStyled short onClick={() => openInWebBrowser(links.latestRelease)}>
+            {t('Download')}
+          </ButtonStyled>
+        </>
+      ) : (
+        <>
+          <UpdateMessage>
+            {t('Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.', {
+              newVersion
+            })}
+          </UpdateMessage>
+          <ButtonStyled short onClick={triggerNewVersionDownload}>
+            {t('Update')}
+          </ButtonStyled>
+        </>
+      )}
     </Banner>
   )
 }

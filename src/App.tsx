@@ -37,13 +37,13 @@ import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
 import { darkTheme, lightTheme } from './style/themes'
 
 const App = () => {
-  const { networkStatus, settings, snackbarMessage, isClientLoading, newLatestVersion, newVersionDownloadTriggered } =
+  const { networkStatus, settings, snackbarMessage, isClientLoading, newVersion, newVersionDownloadTriggered } =
     useGlobalContext()
   const { mainAddress } = useAddressesContext()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isLanguageChanging, setIsLanguageChanging] = useState(false)
-  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
   const isOffline = networkStatus === 'offline'
 
@@ -71,8 +71,8 @@ const App = () => {
   }, [i18n, settings.general.language])
 
   useEffect(() => {
-    if (newLatestVersion) setUpdateWalletModalVisible(true)
-  }, [newLatestVersion])
+    if (newVersion) setUpdateWalletModalVisible(true)
+  }, [newVersion])
 
   useEffect(() => {
     if (newVersionDownloadTriggered) setUpdateWalletModalVisible(true)
@@ -95,7 +95,7 @@ const App = () => {
       <AnimatePresence>
         {isUpdateWalletModalVisible && (
           <UpdateWalletModal
-            newVersion={newLatestVersion}
+            newVersion={newVersion}
             startDownload={newVersionDownloadTriggered}
             onClose={() => setUpdateWalletModalVisible(false)}
           />
