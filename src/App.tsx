@@ -93,13 +93,7 @@ const App = () => {
       <SnackbarManager message={snackbarMessage} />
       <Tooltip />
       <AnimatePresence>
-        {isUpdateWalletModalVisible && (
-          <UpdateWalletModal
-            newVersion={newVersion}
-            startDownload={newVersionDownloadTriggered}
-            onClose={() => setUpdateWalletModalVisible(false)}
-          />
-        )}
+        {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
       </AnimatePresence>
     </ThemeProvider>
   )
