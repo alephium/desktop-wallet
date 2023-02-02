@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
 import InfoBox from '../../components/InfoBox'
@@ -82,7 +82,9 @@ const GasSettingsExpandableSection = ({
       />
       {expectedFeeInALPH && (
         <InfoBox short label={t`Expected fee`}>
-          {expectedFeeInALPH} <AlefSymbol />
+          <Fee>
+            {expectedFeeInALPH} <AlefSymbol />
+          </Fee>
         </InfoBox>
       )}
     </ToggleSection>
@@ -90,3 +92,7 @@ const GasSettingsExpandableSection = ({
 }
 
 export default GasSettingsExpandableSection
+
+const Fee = styled.div`
+  display: flex;
+`
