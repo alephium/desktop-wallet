@@ -86,7 +86,7 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
   const { t } = useTranslation()
   const { addresses } = useAddressesContext()
-  const [lockTime, setLockTime] = useState<Date>()
+  const [lockTime, setLockTime] = useState(data.lockTime)
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     alphAmount: data.alphAmount ?? ''
@@ -108,10 +108,12 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   }
 
   const handleLocktimeChange = (lockTimeInput: string) => {
-    setLockTime(dayjs(lockTimeInput).toDate())
+    setLockTime(lockTimeInput ? dayjs(lockTimeInput).toDate() : undefined)
   }
 
-  const onClickClearLockTime = (isShown: boolean) => !isShown && setLockTime(undefined)
+  const onClickClearLockTime = (isShown: boolean) => {
+    setLockTime(isShown ? undefined : dayjs().toDate())
+  }
 
   const { fromAddress, alphAmount } = txPrep
 
@@ -146,15 +148,16 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         />
       </ModalInputFields>
       <ToggleSections>
-        <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime}>
+        <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
           <Input
             id="locktime"
             label={t`Lock time`}
-            value={dayjs(lockTime).format('YYYY-MM-DDTHH:mm')}
+            value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
             onChange={(e) => handleLocktimeChange(e.target.value)}
             type="datetime-local"
             hint="DD/MM/YYYY hh:mm"
             min={dayjs().format('YYYY-MM-DDTHH:mm')}
+            liftLabel
           />
         </ToggleSection>
         <GasSettingsExpandableSection
@@ -165,6 +168,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onGasAmountChange={handleGasAmountChange}
           onGasPriceChange={handleGasPriceChange}
           onClearGasSettings={clearGasSettings}
+          isOpen={!!gasAmount || !!gasPrice}
         />
       </ToggleSections>
       <BuildTxFooterButtons

@@ -24,7 +24,7 @@ import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 type InfoBoxImportance = 'accent' | 'alert'
 
-interface InfoBoxProps {
+export interface InfoBoxProps {
   text?: string
   Icon?: LucideIconType
   label?: string

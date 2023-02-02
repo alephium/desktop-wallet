@@ -18,24 +18,31 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { formatAmountForDisplay } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
-import InfoBox from '../../components/InfoBox'
+import InfoBox, { InfoBoxProps } from '../../components/InfoBox'
 
-interface AlphAmountInfoBoxProps {
+interface AlphAmountInfoBoxProps extends InfoBoxProps {
   amount: bigint
   label?: string
   fullPrecision?: boolean
 }
 
-const AlphAmountInfoBox = ({ amount, label, fullPrecision = false }: AlphAmountInfoBoxProps) => {
+const AlphAmountInfoBox = ({ amount, label, fullPrecision = false, ...props }: AlphAmountInfoBoxProps) => {
   const { t } = useTranslation()
 
   return (
-    <InfoBox label={label ?? t`Amount`}>
-      {formatAmountForDisplay(amount, fullPrecision, !fullPrecision ? 7 : undefined)} <AlefSymbol />
+    <InfoBox label={label ?? t`Amount`} {...props}>
+      <Amount>
+        {formatAmountForDisplay(amount, fullPrecision, !fullPrecision ? 7 : undefined)} <AlefSymbol />
+      </Amount>
     </InfoBox>
   )
 }
 
 export default AlphAmountInfoBox
+
+const Amount = styled.div`
+  display: flex;
+`

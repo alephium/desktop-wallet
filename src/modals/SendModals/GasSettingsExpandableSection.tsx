@@ -18,15 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import { useTheme } from 'styled-components'
 
 import AlefSymbol from '../../components/AlefSymbol'
-import InfoBox from '../../components/InfoBox'
 import Input from '../../components/Inputs/Input'
-import ToggleSection from '../../components/ToggleSection'
+import ToggleSection, { ToggleSectionProps } from '../../components/ToggleSection'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '../../utils/constants'
+import AlphAmountInfoBox from './AlphAmountInfoBox'
 
-export interface GasSettingsExpandableSectionProps {
+export interface GasSettingsExpandableSectionProps extends Omit<ToggleSectionProps, 'title' | 'children'> {
   gasAmount?: string
   gasAmountError: string
   gasPrice?: string
@@ -45,18 +45,18 @@ const GasSettingsExpandableSection = ({
   onGasAmountChange,
   onGasPriceChange,
   onClearGasSettings,
-  className
+  className,
+  ...props
 }: GasSettingsExpandableSectionProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
 
-  const expectedFeeInALPH =
-    gasAmount && gasPrice && formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPrice), true)
+  const expectedFeeInALPH = !!gasAmount && !!gasPrice && BigInt(gasAmount) * convertAlphToSet(gasPrice)
 
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
 
   return (
-    <ToggleSection title={t`Gas`} onClick={onClearGasSettings} className={className}>
+    <ToggleSection {...props} title={t`Gas`} onClick={onClearGasSettings} className={className}>
       <Input
         id="gas-amount"
         label={`${t('Gas amount')} (≥ ${MINIMAL_GAS_AMOUNT})`}
@@ -80,19 +80,9 @@ const GasSettingsExpandableSection = ({
         step={minimalGasPriceInALPH}
         error={gasPriceError}
       />
-      {expectedFeeInALPH && (
-        <InfoBox short label={t`Expected fee`}>
-          <Fee>
-            {expectedFeeInALPH} <AlefSymbol />
-          </Fee>
-        </InfoBox>
-      )}
+      {expectedFeeInALPH && <AlphAmountInfoBox label={t`Expected fee`} amount={expectedFeeInALPH} short />}
     </ToggleSection>
   )
 }
 
 export default GasSettingsExpandableSection
-
-const Fee = styled.div`
-  display: flex;
-`

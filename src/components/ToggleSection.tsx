@@ -22,15 +22,16 @@ import styled from 'styled-components'
 
 import Toggle from './Inputs/Toggle'
 
-interface ToggleSectionProps {
+export interface ToggleSectionProps {
   title: string
   children: ReactNode
+  isOpen?: boolean
   onClick?: (b: boolean) => void
   className?: string
 }
 
-const ToggleSection = ({ title, onClick = () => null, children, className }: ToggleSectionProps) => {
-  const [isShown, setIsShown] = useState(false)
+const ToggleSection = ({ title, isOpen = false, onClick = () => null, children, className }: ToggleSectionProps) => {
+  const [isShown, setIsShown] = useState(isOpen)
 
   const handleToggle = () => {
     setIsShown(!isShown)
