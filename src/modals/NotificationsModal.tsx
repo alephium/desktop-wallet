@@ -24,14 +24,17 @@ import styled from 'styled-components'
 import { fadeInOutBottomFast } from '@/animations'
 import Button from '@/components/Button'
 import WalletSwitcher from '@/components/WalletSwitcher'
+import { useAppDispatch } from '@/hooks/redux'
+import { walletLocked } from '@/store/activeWalletSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
-import { useGlobalContext } from '../contexts/global'
 import ModalContainer, { ModalContainerProps } from './ModalContainer'
 
 const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
-  const { lockWallet } = useGlobalContext()
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+
+  const lockWallet = () => dispatch(walletLocked())
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>

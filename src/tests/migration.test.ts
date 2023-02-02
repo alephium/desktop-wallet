@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { walletGenerate } from '@alephium/sdk'
+import { getStorage, walletGenerate } from '@alephium/sdk'
 
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
+import WalletStorage from '@/persistent-storage/wallet'
 import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import * as migrate from '@/utils/migration'
 //
@@ -164,5 +165,37 @@ describe('_20220527_120000', () => {
       walletName: wallets[wallets.length - 1].walletName
     })
     expect(walletFirst).not.toStrictEqual(walletLast)
+  })
+})
+
+describe('_20230124_164900', () => {
+  const wallet = {
+    name: 'John Doe',
+    unencryptedWallet: walletGenerate()
+  }
+
+  it('replaces the JSON stringified encrypted wallet string with simply the encrypted wallet string', () => {
+    const Storage = getStorage()
+    let storedWallet
+
+    Storage.save(wallet.name, wallet.unencryptedWallet.encrypt('passw0rd'))
+
+    storedWallet = localStorage.getItem(`wallet-${wallet.name}`)
+
+    if (storedWallet) {
+      expect(typeof JSON.parse(storedWallet)).toEqual('string')
+      expect(typeof JSON.parse(JSON.parse(storedWallet))).toEqual('object')
+    }
+
+    migrate._20230124_164900()
+
+    storedWallet = localStorage.getItem(`wallet-${wallet.name}`)
+
+    if (storedWallet) {
+      expect(typeof JSON.parse(storedWallet)).toEqual('object')
+    }
+
+    const unencryptedWallet = WalletStorage.load(wallet.name, 'passw0rd')
+    expect(unencryptedWallet.mnemonic).toEqual(wallet.unencryptedWallet.mnemonic)
   })
 })

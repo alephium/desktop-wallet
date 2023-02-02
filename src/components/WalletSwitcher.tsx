@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 
 import { useGlobalContext } from '../contexts/global'
@@ -39,12 +40,15 @@ const WalletSwitcher = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const { walletNames, activeWalletName, unlockWallet } = useGlobalContext()
+  const [activeWallet, walletNames] = useAppSelector((s) => [s.activeWallet, s.app.storedWalletNames])
+  const { unlockWallet } = useGlobalContext()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
-  const [switchToWalletName, setSwitchToWalletName] = useState(activeWalletName)
+  const [switchToWalletName, setSwitchToWalletName] = useState(activeWallet.name)
+
+  if (!activeWallet.name) return null
 
   const walletNameSelectOptions = walletNames.map((walletName) => ({
     label: walletName,
@@ -59,11 +63,13 @@ const WalletSwitcher = () => {
   }
 
   const onPasswordModalClose = () => {
-    setSwitchToWalletName('')
+    setSwitchToWalletName(undefined)
     setIsPasswordModalOpen(false)
   }
 
   const onLoginClick = (password: string) => {
+    if (!switchToWalletName) return
+
     setIsPasswordModalOpen(false)
     unlockWallet(
       switchToWalletName,
@@ -80,14 +86,14 @@ const WalletSwitcher = () => {
   return (
     <>
       {walletNameSelectOptions.length === 0 ? (
-        <InfoBox text={activeWalletName} label={t`Wallet`} />
+        <InfoBox text={activeWallet.name} label={t`Wallet`} />
       ) : (
         <Select
           label={t`Current wallet`}
           options={walletNameSelectOptions}
           controlledValue={{
-            label: activeWalletName,
-            value: activeWalletName
+            label: activeWallet.name,
+            value: activeWallet.name
           }}
           onValueChange={handleWalletNameChange}
           title={t`Select a wallet`}

@@ -18,6 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import WalletStorage from '@/persistent-storage/wallet'
+
 import {
   addressDiscoveryFinished,
   addressDiscoveryStarted,
@@ -26,7 +28,7 @@ import {
   languageChangeFinished,
   languageChangeStarted
 } from './actions'
-import { walletLocked } from './activeWalletSlice'
+import { walletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
 
 const sliceName = 'app'
 
@@ -34,12 +36,14 @@ interface AppState {
   loading: boolean
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
+  storedWalletNames: string[]
 }
 
 const initialState: AppState = {
   loading: false,
   visibleModals: [],
-  addressesPageInfoMessageClosed: false
+  addressesPageInfoMessageClosed: false,
+  storedWalletNames: WalletStorage.list()
 }
 
 const appSlice = createSlice({
@@ -78,6 +82,16 @@ const appSlice = createSlice({
         state.loading = false
       })
       .addCase(walletLocked, () => initialState)
+      .addCase(walletSaved, (state, action) => {
+        const newWallet = action.payload
+
+        state.storedWalletNames.push(newWallet.name)
+      })
+      .addCase(walletDeleted, (state, action) => {
+        const deletedWalletName = action.payload
+
+        state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
+      })
   }
 })
 

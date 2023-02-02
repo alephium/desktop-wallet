@@ -35,12 +35,16 @@ import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
+import { useAppDispatch } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import WalletStorage from '@/persistent-storage/wallet'
+import { walletSaved } from '@/store/activeWalletSlice'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
   const { t } = useTranslation()
-  const { setSnackbarMessage, saveWallet } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const { setSnackbarMessage } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { saveNewAddress } = useAddressesContext()
@@ -76,10 +80,18 @@ const ImportWordsPage = () => {
     try {
       const wallet = walletImport(formatedPhrase)
 
-      saveWallet(walletName, wallet, password)
+      WalletStorage.store(walletName, password, wallet)
+      dispatch(
+        walletSaved({
+          name: walletName,
+          mnemonic: wallet.mnemonic
+        })
+      )
+
       saveNewAddress(
         new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, { isMain: true }),
-        wallet.mnemonic
+        wallet.mnemonic,
+        walletName
       )
       discoverAndSaveActiveAddresses(wallet.mnemonic, [0])
       onButtonNext()

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, getWalletFromMnemonic, Wallet, walletOpen } from '@alephium/sdk'
+import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,8 +26,8 @@ import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { walletLocked, walletSaved, walletUnlocked } from '@/store/activeWalletSlice'
+import WalletStorage from '@/persistent-storage/wallet'
+import { walletLocked, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
 import { themeChanged } from '@/store/settingsSlice'
@@ -39,12 +39,6 @@ import { migrateUserData } from '@/utils/migration'
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 export interface GlobalContextProps {
-  walletNames: string[]
-  activeWalletName: string
-  setCurrentWalletName: (walletName: string) => void
-  saveWallet: (walletName: string, wallet: Wallet, password: string) => void
-  deleteWallet: (w: string) => void
-  lockWallet: () => void
   unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
@@ -56,12 +50,6 @@ export interface GlobalContextProps {
 }
 
 export const initialGlobalContext: GlobalContextProps = {
-  walletNames: [],
-  activeWalletName: '',
-  setCurrentWalletName: () => null,
-  saveWallet: () => null,
-  deleteWallet: () => null,
-  lockWallet: () => null,
   unlockWallet: () => null,
   client: undefined,
   snackbarMessage: undefined,
@@ -74,7 +62,6 @@ export const initialGlobalContext: GlobalContextProps = {
 
 export const GlobalContext = createContext<GlobalContextProps>(initialGlobalContext)
 
-const Storage = getStorage()
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
@@ -86,8 +73,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const dispatch = useAppDispatch()
   const [settings, network] = useAppSelector((s) => [s.settings, s.network])
 
-  const [walletNames, setWalletNames] = useState<string[]>(Storage.list())
-  const [activeWalletName, setCurrentWalletName] = useState('')
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const newLatestVersion = useLatestGitHubRelease()
@@ -96,39 +81,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
-  const saveWallet = (walletName: string, wallet: Wallet, password: string) => {
-    const walletEncrypted = wallet.encrypt(password)
-    Storage.save(walletName, walletEncrypted)
-    setWalletNames(Storage.list())
-    dispatch(
-      walletSaved({
-        name: walletName,
-        mnemonic: wallet.mnemonic
-      })
-    )
-  }
-
-  const deleteWallet = (walletName: string) => {
-    Storage.remove(walletName)
-    AddressMetadataStorage.delete(walletName)
-    setWalletNames(Storage.list())
-  }
-
-  const lockWallet = () => {
-    setCurrentWalletName('')
-    dispatch(walletLocked())
-  }
-
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
-    const walletEncrypted = Storage.load(walletName)
-
-    if (!walletEncrypted) {
-      setSnackbarMessage({ text: t`Unknown wallet name`, type: 'alert' })
-      return
-    }
-
     try {
-      let wallet = walletOpen(password, walletEncrypted)
+      let wallet = WalletStorage.load(walletName, password)
 
       if (!wallet) return
 
@@ -145,14 +100,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           isPassphraseUsed: !!passphrase
         })
       )
-      setCurrentWalletName(walletName)
       callback()
     } catch (e) {
-      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
+      setSnackbarMessage({
+        text: getHumanReadableError(e, t('Invalid password')),
+        type: 'alert'
+      })
     }
   }
 
-  useIdleForTooLong(lockWallet, (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
+  useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
 
   const initializeClient = useCallback(async () => {
     if (network.status !== 'offline') dispatch(appLoadingToggled(true))
@@ -221,13 +178,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     <GlobalContext.Provider
       value={merge(
         {
-          walletNames,
-          setWalletNames,
-          activeWalletName,
-          setCurrentWalletName,
-          saveWallet,
-          deleteWallet,
-          lockWallet,
           unlockWallet,
           client,
           snackbarMessage,
