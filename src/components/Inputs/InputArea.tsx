@@ -23,16 +23,18 @@ import styled from 'styled-components'
 interface InputAreaProps extends MotionProps {
   children: ReactNode | ReactNode[]
   onKeyDown?: KeyboardEventHandler
+  onInput?: () => void
   onMouseDown?: MouseEventHandler
   className?: string
   innerRef?: MutableRefObject<HTMLDivElement>
 }
 
-const InputArea = ({ onKeyDown, children, className, onMouseDown, ...rest }: InputAreaProps) => (
+const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...rest }: InputAreaProps) => (
   <motion.div
     role="button"
     tabIndex={0}
     onMouseDown={onMouseDown}
+    onInput={onInput}
     onKeyDown={onKeyDown}
     className={className}
     {...rest}

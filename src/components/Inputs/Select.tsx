@@ -218,8 +218,11 @@ function SelectOptionsPopup<T extends OptionValue>({
   const selectRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    options && options.length > 0 && focusOnOption(selectRef.current?.children[0])
-  }, [options])
+    const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
+    options &&
+      options.length > 0 &&
+      focusOnOption(selectRef.current?.children[selectedOptionIndex > 0 ? selectedOptionIndex : 0])
+  }, [options, selectedOption?.value])
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
@@ -227,6 +230,9 @@ function SelectOptionsPopup<T extends OptionValue>({
         focusOnOption(document.activeElement?.nextElementSibling)
       } else if (e.code === 'ArrowUp') {
         focusOnOption(document.activeElement?.previousElementSibling)
+      } else if (e.code === 'Tab') {
+        e.preventDefault()
+        onBackgroundClick()
       } else {
         return
       }
@@ -237,7 +243,7 @@ function SelectOptionsPopup<T extends OptionValue>({
     return () => {
       document.removeEventListener('keydown', listener)
     }
-  }, [])
+  }, [onBackgroundClick])
 
   const handleOptionSelect = (value: T) => {
     const selectedValue = options.find((o) => o.value === value)
@@ -259,6 +265,7 @@ function SelectOptionsPopup<T extends OptionValue>({
           <OptionItem
             key={o.value}
             onClick={() => handleOptionSelect(o.value as T)}
+            onMouseEnter={(e) => focusOnOption(e.currentTarget)}
             selected={o.value === selectedOption?.value}
             aria-label={o.label}
           >
@@ -305,28 +312,17 @@ export const OptionSelect = styled.div`
 export const OptionItem = styled.button<{ selected: boolean }>`
   padding: var(--spacing-4);
   cursor: pointer;
-  background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
   user-select: none;
   text-align: left;
-
-  ${({ theme, selected }) =>
-    selected &&
-    css`
-      font-weight: bold;
-      background-color: ${theme.bg.secondary};
-    `};
+  background-color: ${({ theme, selected }) => (selected ? theme.global.accent : theme.bg.primary)};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   }
 
-  &:hover {
-    background-color: ${({ theme }) => theme.bg.secondary};
-  }
-
   &:focus {
-    background-color: ${({ theme }) => theme.bg.accent};
+    background-color: ${({ theme, selected }) => !selected && theme.bg.accent};
   }
 `
 
