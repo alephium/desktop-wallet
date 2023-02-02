@@ -18,36 +18,32 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getDirection } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
-import Table, { TableCellPlaceholder, TableRow } from '@/components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { Address, useAddressesContext } from '@/contexts/addresses'
 import { PendingTx } from '@/types/transactions'
 import { GENESIS_TIMESTAMP } from '@/utils/constants'
 import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '@/utils/transactions'
 
-interface OverviewPageTransactionListProps {
+interface TransfersPageTransactionListProps {
   onTransactionClick: (transaction: Transaction & { address: Address }) => void
-  limit?: number
   className?: string
 }
 
-const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: OverviewPageTransactionListProps) => {
+const TransfersPageTransactionList = ({ className, onTransactionClick }: TransfersPageTransactionListProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { addresses, isLoadingData } = useAddressesContext()
+  const { addresses, isLoadingData, fetchAddressTransactionsNextPage } = useAddressesContext()
 
   const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
   const allPendingTxs = getTransactionsForAddresses('pending', addresses)
-
+  const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  const displayedConfirmedTxs = limit ? allConfirmedTxs.slice(0, limit - allPendingTxs.length) : allConfirmedTxs
+  const loadNextTransactionsPage = async () => addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
 
   const shouldHideTx = (tx: Transaction, address: Address) =>
     tx.inputs &&
@@ -59,17 +55,14 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
       <TableHeaderRow>
-        <TableTitle>{t('Latest transactions')}</TableTitle>
-        <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
-          {t('See more')}
-        </ActionLink>
+        <TableTitle>{t('Transactions')}</TableTitle>
       </TableHeaderRow>
       {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
         <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
         </TableRow>
       ))}
-      {displayedConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
+      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
         if (shouldHideTx(tx, address)) return null
         return (
           <TableRow
@@ -83,7 +76,14 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
           </TableRow>
         )
       })}
-      {!isLoadingData && !allPendingTxs.length && !displayedConfirmedTxs.length && (
+      {allConfirmedTxs.length !== totalNumberOfTransactions && (
+        <TableRow role="row">
+          <TableCell align="center" role="gridcell">
+            <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
+          </TableCell>
+        </TableRow>
+      )}
+      {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>
@@ -92,7 +92,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
   )
 }
 
-export default OverviewPageTransactionList
+export default TransfersPageTransactionList
 
 const TableHeaderRow = styled(TableRow)`
   display: flex;

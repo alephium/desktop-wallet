@@ -21,25 +21,20 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 import { fadeIn } from '@/animations'
-import { Address, useAddressesContext } from '@/contexts/addresses'
+import { Address } from '@/contexts/addresses'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 
 import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
-import AmountsOverviewPanel from './AmountsOverviewPanel'
 import TransactionList from './TransactionList'
 
-const OverviewPage = () => {
-  const { isLoadingData } = useAddressesContext()
-
+const TransfersPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction & { address: Address }>()
 
   return (
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
-        <AmountsOverviewPanel isLoading={isLoadingData} />
-        <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
-
+        <TransactionList onTransactionClick={setSelectedTransaction} />
         <ModalPortal>
           {selectedTransaction && (
             <TransactionDetailsModal
@@ -54,4 +49,4 @@ const OverviewPage = () => {
   )
 }
 
-export default OverviewPage
+export default TransfersPage

@@ -27,7 +27,6 @@ import Box from '@/components/Box'
 import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
-import Scrollbar from '@/components/Scrollbar'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -38,7 +37,7 @@ import BottomModal from '@/modals/BottomModal'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import { addressesPageInfoMessageClosed } from '@/store/appSlice'
-import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
+import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
@@ -81,37 +80,35 @@ const AddressesPage = () => {
   if (!mnemonic) return null
 
   return (
-    <ScreenHeight {...fadeIn}>
-      <Scrollbar>
-        <MainPanel>
-          <Header>
-            <div>
-              <Title>{t`Addresses & contacts`}</Title>
-              <Subtitle>{t`Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.`}</Subtitle>
-            </div>
-            <div>
-              <AnimatePresence>
-                {!infoMessageClosed && (
-                  <InfoMessage link={links.faq} onClose={closeInfoMessage}>
-                    {t`Want to know more? Click here to take a look at our FAQ!`}
-                  </InfoMessage>
-                )}
-              </AnimatePresence>
-            </div>
-          </Header>
-          <Tabs>
-            <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-            <TabContent>
+    <motion.div {...fadeIn}>
+      <MainPanel>
+        <Header>
+          <div>
+            <Title>{t`Addresses & contacts`}</Title>
+            <Subtitle>{t`Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.`}</Subtitle>
+          </div>
+          <div>
+            <AnimatePresence>
+              {!infoMessageClosed && (
+                <InfoMessage link={links.faq} onClose={closeInfoMessage}>
+                  {t`Want to know more? Click here to take a look at our FAQ!`}
+                </InfoMessage>
+              )}
+            </AnimatePresence>
+          </div>
+        </Header>
+        <Tabs>
+          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+          <TabContent>
+            {
               {
-                {
-                  addresses: <AddressesTabContent />,
-                  contacts: <ContactsTabContent />
-                }[currentTab.value]
-              }
-            </TabContent>
-          </Tabs>
-        </MainPanel>
-      </Scrollbar>
+                addresses: <AddressesTabContent />,
+                contacts: <ContactsTabContent />
+              }[currentTab.value]
+            }
+          </TabContent>
+        </Tabs>
+      </MainPanel>
       {currentTab.value === 'addresses' && (
         <AdvancedOperationsPanel>
           <AnimatePresence>
@@ -120,7 +117,7 @@ const AddressesPage = () => {
                 onClose={() => setIsAdvancedSectionOpen(false)}
                 label={t`Advanced operations`}
                 // TODO: Is there a better way than passing a hardcoded height?
-                contentHeight={344}
+                contentHeight={350}
               >
                 <AdvancedOperations>
                   <OperationBox
@@ -184,17 +181,13 @@ const AddressesPage = () => {
           />
         )}
       </ModalPortal>
-    </ScreenHeight>
+    </motion.div>
   )
 }
 
 export default AddressesPage
 
 const advancedOperationsHeaderHeightPx = 80
-
-const ScreenHeight = styled(motion.div)`
-  height: calc(100vh - ${appHeaderHeightPx}px);
-`
 
 const MainPanel = styled(UnlockedWalletPanel)`
   padding-bottom: 130px;
@@ -221,9 +214,10 @@ const Subtitle = styled.div`
 `
 
 const AdvancedOperationsPanel = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  width: 100%;
+  right: 0;
+  left: ${walletSidebarWidthPx}px;
   background-color: ${({ theme }) => theme.bg.background1};
 `
 
@@ -251,6 +245,7 @@ const AdvancedOperationsHeader = styled(UnlockedWalletPanel)`
   background-color: ${({ theme }) => theme.bg.background1};
   position: relative;
   z-index: 1;
+  padding-bottom: 0;
 `
 
 const AdvancedOperationsTitle = styled.h2`

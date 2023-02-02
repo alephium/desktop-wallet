@@ -19,11 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { motion } from 'framer-motion'
-import { Album, Layers, RefreshCw, Settings } from 'lucide-react'
+import { Album, ArrowLeftRight, Layers, RefreshCw, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
 import AppHeader from '@/components/AppHeader'
@@ -40,12 +40,13 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
+  headerTitle?: string
   className?: string
 }
 
 dayjs.extend(relativeTime)
 
-const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerTitle, className }) => {
   const { t } = useTranslation()
   const [network, activeWallet] = useAppSelector((s) => [s.network, s.activeWallet])
   const { refreshAddressesData, isLoadingData } = useAddressesContext()
@@ -68,8 +69,9 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
             {activeWalletNameInitials}
           </CurrentWalletInitials>
           <SideNavigation>
-            <NavItem Icon={Layers} label={t`Overview`} to="/wallet/overview" />
-            <NavItem Icon={Album} label={t`Addresses`} to="/wallet/addresses" />
+            <NavItem Icon={Layers} label={t('Overview')} to="/wallet/overview" />
+            <NavItem Icon={ArrowLeftRight} label={t('Transfers')} to="/wallet/transfers" />
+            <NavItem Icon={Album} label={t('Addresses')} to="/wallet/addresses" />
           </SideNavigation>
           <TooltipWrapper content={t`Settings`} tooltipId="sidenav">
             <Button
@@ -87,7 +89,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
         <Scrollbar>
           <MainContent>{children}</MainContent>
 
-          <AppHeader>
+          <AppHeader title={headerTitle}>
             {network.status === 'online' && (
               <TooltipWrapper content={t`Refresh data`}>
                 <RefreshButton
@@ -113,9 +115,16 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, classNa
   )
 }
 
-export const UnlockedWalletPanel = styled.div`
+export const UnlockedWalletPanel = styled.div<{ top?: boolean }>`
   padding-left: 60px;
   padding-right: 60px;
+  padding-bottom: 60px;
+
+  ${({ top }) =>
+    top &&
+    css`
+      padding-top: 22px;
+    `}
 `
 
 export default styled(UnlockedWalletLayout)`
