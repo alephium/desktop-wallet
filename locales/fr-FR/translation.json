@@ -276,5 +276,6 @@
   "Testnet": "Testnet",
   "Localhost": "Localhost",
   "Delete": "Delete",
-  "Timestamp": "Date"
+  "Timestamp": "Date",
+  "Lock time must be in the future.": "Lock time must be in the future."
 }
