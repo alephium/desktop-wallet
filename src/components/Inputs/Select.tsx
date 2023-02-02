@@ -216,20 +216,35 @@ function SelectOptionsPopup<T extends OptionValue>({
   title?: string
 }) {
   const selectRef = useRef<HTMLDivElement>(null)
+  const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
   useEffect(() => {
     const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
-    options &&
-      options.length > 0 &&
-      focusOnOption(selectRef.current?.children[selectedOptionIndex > 0 ? selectedOptionIndex : 0])
+
+    if (options && options.length > 0) {
+      setFocusedOptionIndex(selectedOptionIndex > 0 ? selectedOptionIndex : 0)
+    }
   }, [options, selectedOption?.value])
+
+  const handleOptionSelect = useCallback(
+    (value: T) => {
+      const selectedValue = options.find((o) => o.value === value)
+      if (!selectedValue) return
+
+      setValue(selectedValue)
+      onBackgroundClick()
+    },
+    [onBackgroundClick, options, setValue]
+  )
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'ArrowDown') {
-        focusOnOption(document.activeElement?.nextElementSibling)
+        setFocusedOptionIndex((i) => (i < options.length - 1 ? i + 1 : i))
       } else if (e.code === 'ArrowUp') {
-        focusOnOption(document.activeElement?.previousElementSibling)
+        setFocusedOptionIndex((i) => (i > 0 ? i - 1 : i))
+      } else if (['Space', ' ', 'Enter'].includes(e.code)) {
+        handleOptionSelect(options[focusedOptionIndex].value)
       } else if (e.code === 'Tab') {
         e.preventDefault()
         onBackgroundClick()
@@ -243,20 +258,7 @@ function SelectOptionsPopup<T extends OptionValue>({
     return () => {
       document.removeEventListener('keydown', listener)
     }
-  }, [onBackgroundClick])
-
-  const handleOptionSelect = (value: T) => {
-    const selectedValue = options.find((o) => o.value === value)
-    if (!selectedValue) return
-
-    setValue(selectedValue)
-    onBackgroundClick()
-  }
-
-  const focusOnOption = (el?: Element | null) => {
-    if (!el) return
-    ;(el as HTMLButtonElement).focus()
-  }
+  }, [focusedOptionIndex, handleOptionSelect, onBackgroundClick, options])
 
   return (
     <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={hookCoordinates}>
@@ -265,8 +267,9 @@ function SelectOptionsPopup<T extends OptionValue>({
           <OptionItem
             key={o.value}
             onClick={() => handleOptionSelect(o.value as T)}
-            onMouseEnter={(e) => focusOnOption(e.currentTarget)}
+            onMouseEnter={(e) => setFocusedOptionIndex(i)}
             selected={o.value === selectedOption?.value}
+            focused={i === focusedOptionIndex}
             aria-label={o.label}
           >
             {o.label}
@@ -309,20 +312,17 @@ export const OptionSelect = styled.div`
   flex-direction: column;
 `
 
-export const OptionItem = styled.button<{ selected: boolean }>`
+export const OptionItem = styled.button<{ selected: boolean; focused: boolean }>`
   padding: var(--spacing-4);
   cursor: pointer;
   color: inherit;
   user-select: none;
   text-align: left;
-  background-color: ${({ theme, selected }) => (selected ? theme.global.accent : theme.bg.primary)};
+  background-color: ${({ theme, selected, focused }) =>
+    selected ? theme.global.accent : focused ? theme.bg.accent : theme.bg.primary};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
-
-  &:focus {
-    background-color: ${({ theme, selected }) => !selected && theme.bg.accent};
   }
 `
 
