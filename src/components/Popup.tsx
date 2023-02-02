@@ -78,10 +78,10 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
 
   return (
     <ModalContainer onClose={onBackgroundClick}>
-      {hookCoordinates && contentRef.current ? (
+      {hookCoordinates ? (
         <Hook
           hookCoordinates={hookCoordinates}
-          contentWidth={contentRef.current.clientWidth}
+          contentWidth={contentRef.current?.clientWidth || 0}
           animate={hookOffset}
           transition={{ duration: 0.1 }}
         >
