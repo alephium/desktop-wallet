@@ -77,7 +77,14 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
       <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
       <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
-      {data.lockTime && <InfoBox label={t`Unlocks at`}>{formatDateForDisplay(data.lockTime)}</InfoBox>}
+      {data.lockTime && (
+        <InfoBox label={t('Unlocks at')}>
+          <UnlocksAt>
+            {formatDateForDisplay(data.lockTime)}
+            <FromNow>({dayjs(data.lockTime).fromNow()})</FromNow>
+          </UnlocksAt>
+        </InfoBox>
+      )}
       <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
     </>
   )
@@ -103,19 +110,17 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
-  const handleToAddressChange = (value: string) => {
+  const handleToAddressChange = (value: string) =>
     setToAddress(value, isAddressValid(value) ? '' : t`Address format is incorrect`)
-  }
 
-  const handleLocktimeChange = (lockTimeInput: string) => {
+  const handleLocktimeChange = (lockTimeInput: string) =>
     setLockTime(lockTimeInput ? dayjs(lockTimeInput).toDate() : undefined)
-  }
 
-  const onClickClearLockTime = (isShown: boolean) => {
-    setLockTime(isShown ? undefined : dayjs().toDate())
-  }
+  const onClickClearLockTime = (isShown: boolean) =>
+    setLockTime(isShown ? undefined : dayjs().add(1, 'minute').toDate())
 
   const { fromAddress, alphAmount } = txPrep
+  const lockTimeInPast = lockTime && dayjs(lockTime).toDate() < dayjs().toDate()
 
   if (fromAddress === undefined) {
     onCancel()
@@ -128,6 +133,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     toAddress.value &&
     !toAddress.error &&
     !!alphAmount &&
+    !lockTimeInPast &&
     isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
 
   return (
@@ -151,12 +157,13 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
           <Input
             id="locktime"
-            label={t`Lock time`}
+            label={t('Lock time')}
             value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
             onChange={(e) => handleLocktimeChange(e.target.value)}
             type="datetime-local"
             hint="DD/MM/YYYY hh:mm"
             min={dayjs().format('YYYY-MM-DDTHH:mm')}
+            error={lockTimeInPast && t('Lock time must be in the future.')}
             liftLabel
           />
         </ToggleSection>
@@ -277,10 +284,19 @@ function useStateWithError<T>(initialValue: T) {
   return [value, setValueWithError] as const
 }
 
+export default TransferTxModal
+
 const ToggleSections = styled.div`
   > * {
     margin-top: 20px;
   }
 `
 
-export default TransferTxModal
+const UnlocksAt = styled.div`
+  display: flex;
+  gap: var(--spacing-1);
+`
+
+const FromNow = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
+`
