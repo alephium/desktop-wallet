@@ -148,7 +148,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     currentNetwork,
     setSnackbarMessage,
     settings: {
-      network: { nodeHost, explorerApiHost }
+      network: { nodeHost, explorerApiHost, explorerUrl }
     },
     networkStatus,
     isPassphraseUsed
@@ -156,6 +156,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const previousWallet = useRef<Wallet | undefined>(wallet)
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+  const previousExplorerUrl = useRef<string>()
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === currentNetwork
@@ -418,7 +419,9 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
     const walletHasChanged = previousWallet.current !== wallet
     const networkSettingsHaveChanged =
-      previousNodeApiHost.current !== nodeHost || previousExplorerApiHost.current !== explorerApiHost
+      previousNodeApiHost.current !== nodeHost ||
+      previousExplorerApiHost.current !== explorerApiHost ||
+      previousExplorerUrl.current !== explorerUrl
 
     if (networkStatus === 'connecting' || networkStatus === 'uninitialized') return
 
