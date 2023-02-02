@@ -28,8 +28,10 @@ const useGasSettings = (initialGasAmount?: string, initialGasPrice?: string) => 
   const [gasPriceError, setGasPriceError] = useState('')
 
   const clearGasSettings = () => {
-    setGasAmount(undefined)
+    setGasAmount('')
     setGasPrice('')
+    setGasPriceError('')
+    setGasAmountError('')
   }
 
   const handleGasAmountChange = (newAmount: string) => {

@@ -53,16 +53,10 @@ const GasSettingsExpandableSection = ({
   const expectedFeeInALPH =
     gasAmount && gasPrice && formatAmountForDisplay(BigInt(gasAmount) * convertAlphToSet(gasPrice), true)
 
-  const clearGasSettings = (isShown: boolean) => {
-    if (isShown) return
-
-    onClearGasSettings()
-  }
-
   const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
 
   return (
-    <ToggleSection title={t`Gas`} onClick={clearGasSettings} className={className}>
+    <ToggleSection title={t`Gas`} onClick={onClearGasSettings} className={className}>
       <Input
         id="gas-amount"
         label={`${t('Gas amount')} (≥ ${MINIMAL_GAS_AMOUNT})`}
