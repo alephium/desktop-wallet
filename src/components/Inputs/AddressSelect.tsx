@@ -83,7 +83,7 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onInput={() => !disabled && setIsAddressSelectModalOpen(true)}
+        onMouseDown={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
