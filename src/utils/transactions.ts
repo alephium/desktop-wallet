@@ -22,7 +22,7 @@ import {
   MIN_UTXO_SET_AMOUNT,
   removeConsolidationChangeAmount
 } from '@alephium/sdk'
-import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/contexts/addresses'
 import { AddressHash } from '@/types/addresses'
@@ -68,9 +68,6 @@ export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
 
   return delta
 }
-
-export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolean =>
-  inputs.every((i) => i?.address && addresses.map((a) => a.hash).indexOf(i.address) >= 0)
 
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)

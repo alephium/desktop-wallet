@@ -118,7 +118,6 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address, mnemonic?: string, walletName?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
-  fetchAddressTransactionsNextPage: (address: Address) => void
   generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
@@ -131,7 +130,6 @@ export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
-  fetchAddressTransactionsNextPage: () => null,
   generateOneAddressPerGroup: () => null,
   isLoadingData: false
 }
@@ -332,13 +330,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     ]
   )
 
-  const fetchAddressTransactionsNextPage = async (address: Address) => {
-    if (!client || network.status === 'offline') return
-    setIsLoadingData(true)
-    await client.fetchAddressConfirmedTransactionsNextPage(address)
-    setIsLoadingData(false)
-  }
-
   const saveNewAddress = useCallback(
     // TODO: Remove need for walletName and mnemonic once addresses in Redux
     (newAddress: Address, mnemonic?: string, walletName?: string) => {
@@ -425,7 +416,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
         deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
           const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
-            const metadata = addressesMetadata.find((metadata) => metadata.index === index)
+            const metadata = addressesMetadata.find((metadata) => metadata.index === index) as AddressMetadata
 
             return new Address(hash, publicKey, privateKey, index, {
               isMain: metadata?.isMain || false,
@@ -522,7 +513,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           saveNewAddress,
           updateAddressSettings,
           refreshAddressesData,
-          fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },

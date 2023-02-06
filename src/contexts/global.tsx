@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
+import { AddressKeyPair, getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,15 +26,24 @@ import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletLocked, walletUnlocked } from '@/store/activeWalletSlice'
+import { addressesRestoredFromMetadata, addressRestorationStarted } from '@/store/addressesSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
 import { themeChanged } from '@/store/settingsSlice'
+import { AddressMetadata } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { createClient } from '@/utils/api-clients'
+import { getRandomLabelColor } from '@/utils/colors'
 import { useInterval } from '@/utils/hooks'
 import { migrateUserData } from '@/utils/migration'
+
+const deriveAddressesFromIndexesWorker = new Worker(
+  new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
+  { type: 'module' }
+)
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
@@ -84,6 +93,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
   const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+    const isPassphraseUsed = !!passphrase
     try {
       let wallet = WalletStorage.load(walletName, password)
 
@@ -99,9 +109,47 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         walletUnlocked({
           name: walletName,
           mnemonic: wallet.mnemonic,
-          isPassphraseUsed: !!passphrase
+          isPassphraseUsed
         })
       )
+
+      const addressesMetadata: AddressMetadata[] = isPassphraseUsed
+        ? []
+        : AddressMetadataStorage.load({
+            mnemonic: wallet.mnemonic,
+            walletName: walletName
+          })
+
+      if (addressesMetadata.length > 0) {
+        dispatch(addressRestorationStarted())
+
+        console.log('👀 Found addresses metadata in local storage')
+
+        deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
+          const restoredAddresses = data.map((address) => {
+            const { isMain, color, ...metadata } = addressesMetadata.find(
+              (metadata) => metadata.index === address.index
+            ) as AddressMetadata
+
+            return {
+              ...address,
+              ...metadata,
+              // TODO: Write a migration script for all addresses with no colors and then remove the following line
+              color: color || getRandomLabelColor(),
+              // TODO: Write a migration script to rename `isMain` to `isDefault` adn then remove the following line
+              isDefault: isMain
+            }
+          })
+
+          dispatch(addressesRestoredFromMetadata(restoredAddresses))
+        }
+
+        deriveAddressesFromIndexesWorker.postMessage({
+          mnemonic: wallet.mnemonic,
+          indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
+        })
+      }
+
       callback()
     } catch (e) {
       setSnackbarMessage({

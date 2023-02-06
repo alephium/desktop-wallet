@@ -38,9 +38,10 @@ export type AddressSettingsRedux = {
   label?: string
 }
 
-export type AddressRedux = AddressKeyPair &
-  AddressInfo &
-  AddressSettingsRedux & {
+export type AddressBase = AddressKeyPair & AddressSettingsRedux
+
+export type AddressRedux = AddressBase &
+  AddressInfo & {
     group: number
     transactions: (Transaction['hash'] | PendingTransaction['hash'])[]
     transactionsPageLoaded: number

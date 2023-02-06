@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
+import { selectAllAddresses, syncAddressesData } from '@/store/addressesSlice'
 import { useInterval } from '@/utils/hooks'
 
 import { CenteredSection } from './components/PageComponents/PageContainers'
@@ -40,9 +41,15 @@ import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
 
 const App = () => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { snackbarMessage, newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
-  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
+  const dispatch = useAppDispatch()
+  const addresses = useAppSelector(selectAllAddresses)
+  const [settings, network, addressesStatus] = useAppSelector((s) => [
+    s.settings,
+    s.network,
+    s.addresses.status,
+    s.app.loading
+  ])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
@@ -95,6 +102,14 @@ const App = () => {
       })
     }
   }, [network.name, network.status, setSnackbarMessage, t])
+
+  // Is there a better way to re-fetch addresses data when client goes back online?
+  // Currently we trigger it "magically" by setting the addressesSlice status to 'uninitialized'
+  useEffect(() => {
+    if (network.status === 'online' && addressesStatus === 'uninitialized' && addresses.length > 0) {
+      dispatch(syncAddressesData())
+    }
+  }, [addresses.length, addressesStatus, dispatch, network.status])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

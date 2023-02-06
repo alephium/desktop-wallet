@@ -17,8 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/contexts/addresses'
+import { AddressRedux } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 
 export type TransactionDirection = 'out' | 'in'
@@ -137,3 +139,7 @@ export type TxContext = {
   currentNetwork: NetworkName
   setAddress: (address: Address) => void
 }
+
+export type AddressConfirmedTransaction = Transaction & { address: AddressRedux }
+export type AddressPendingTransaction = PendingTransaction & { address: AddressRedux }
+export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction

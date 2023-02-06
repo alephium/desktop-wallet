@@ -17,7 +17,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+  EntityState,
+  PayloadAction
+} from '@reduxjs/toolkit'
 import { chunk, uniq } from 'lodash'
 
 import {
@@ -25,7 +32,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
-import { AddressHash, AddressRedux } from '@/types/addresses'
+import { AddressBase, AddressHash, AddressRedux } from '@/types/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
@@ -48,6 +55,7 @@ interface AddressesState extends EntityState<AddressRedux> {
   loading: boolean
   transactionsPageLoaded: number
   allTransactionsLoaded: boolean
+  isRestoringAddressesFromMetadata: boolean
   status: 'uninitialized' | 'initialized'
 }
 
@@ -55,6 +63,7 @@ const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,
   transactionsPageLoaded: 0,
   allTransactionsLoaded: false,
+  isRestoringAddressesFromMetadata: false,
   status: 'uninitialized'
 })
 
@@ -109,6 +118,31 @@ const addressesSlice = createSlice({
   reducers: {
     loadingStarted: (state) => {
       state.loading = true
+    },
+    addressRestorationStarted: (state) => {
+      state.isRestoringAddressesFromMetadata = true
+    },
+    addressesRestoredFromMetadata: (state, action: PayloadAction<AddressBase[]>) => {
+      const addresses = action.payload
+
+      addressesAdapter.setAll(state, [])
+      addressesAdapter.addMany(
+        state,
+        addresses.map((address) => ({
+          ...address,
+          group: addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS),
+          balance: '0',
+          lockedBalance: '0',
+          txNumber: 0,
+          transactions: [],
+          transactionsPageLoaded: 0,
+          allTransactionPagesLoaded: false,
+          tokens: [],
+          lastUsed: 0
+        }))
+      )
+      state.isRestoringAddressesFromMetadata = false
+      state.status = 'uninitialized'
     }
   },
   extraReducers(builder) {
@@ -206,7 +240,7 @@ const addressesSlice = createSlice({
   }
 })
 
-export const { loadingStarted } = addressesSlice.actions
+export const { loadingStarted, addressesRestoredFromMetadata, addressRestorationStarted } = addressesSlice.actions
 
 export const {
   selectById: selectAddressByHash,
@@ -214,8 +248,10 @@ export const {
   selectIds: selectAddressIds
 } = addressesAdapter.getSelectors<RootState>((state) => state[sliceName])
 
-export const selectHaveAllPagesLoaded = createSelector(selectAllAddresses, (addresses) =>
-  addresses.every((address) => address.allTransactionPagesLoaded)
+export const selectHaveAllPagesLoaded = createSelector(
+  [selectAllAddresses, (state: AddressesState) => state.allTransactionsLoaded],
+  (addresses, allTransactionsLoaded) =>
+    addresses.every((address) => address.allTransactionPagesLoaded) || allTransactionsLoaded
 )
 
 export const selectDefaultAddress = createSelector(selectAllAddresses, (addresses) =>

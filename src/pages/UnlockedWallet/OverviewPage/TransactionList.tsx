@@ -16,8 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getDirection } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
 import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -26,13 +24,16 @@ import styled from 'styled-components'
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { Address, useAddressesContext } from '@/contexts/addresses'
-import { PendingTx } from '@/types/transactions'
-import { GENESIS_TIMESTAMP } from '@/utils/constants'
-import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '@/utils/transactions'
+import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
+import { selectAddressIds } from '@/store/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { AddressHash } from '@/types/addresses'
+import { AddressTransaction, PendingTx } from '@/types/transactions'
+import { BelongingToAddress, getTransactionsForAddresses } from '@/utils/transactions'
 
 interface OverviewPageTransactionListProps {
-  onTransactionClick: (transaction: Transaction & { address: Address }) => void
+  onTransactionClick: (transaction: AddressTransaction) => void
   limit?: number
   className?: string
 }
@@ -40,21 +41,15 @@ interface OverviewPageTransactionListProps {
 const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { addresses, isLoadingData } = useAddressesContext()
+  const { addresses: contextAddresses, isLoadingData } = useAddressesContext()
+  const addresses = useAppSelector(selectAddressIds) as AddressHash[]
+  const allConfirmedTxs = useAppSelector((state) => selectAddressesConfirmedTransactions(state, addresses))
 
-  const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
-  const allPendingTxs = getTransactionsForAddresses('pending', addresses)
+  const allPendingTxs = getTransactionsForAddresses('pending', contextAddresses)
 
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
   const displayedConfirmedTxs = limit ? allConfirmedTxs.slice(0, limit - allPendingTxs.length) : allConfirmedTxs
-
-  const shouldHideTx = (tx: Transaction, address: Address) =>
-    tx.inputs &&
-    tx.inputs.length > 0 &&
-    hasOnlyInputsWith(tx.inputs, addresses) &&
-    getDirection(tx, address.hash) == 'in' &&
-    tx.timestamp !== GENESIS_TIMESTAMP
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
@@ -69,20 +64,17 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
         </TableRow>
       ))}
-      {displayedConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
-        if (shouldHideTx(tx, address)) return null
-        return (
-          <TableRow
-            key={`${tx.hash}-${address.hash}`}
-            role="row"
-            tabIndex={0}
-            onClick={() => onTransactionClick({ ...tx, address })}
-            onKeyPress={() => onTransactionClick({ ...tx, address })}
-          >
-            <TransactionalInfo transaction={tx} addressHash={address.hash} />
-          </TableRow>
-        )
-      })}
+      {displayedConfirmedTxs.map((confirmedTx) => (
+        <TableRow
+          key={`${confirmedTx.hash}-${confirmedTx.address.hash}`}
+          role="row"
+          tabIndex={0}
+          onClick={() => onTransactionClick(confirmedTx)}
+          onKeyPress={() => onTransactionClick(confirmedTx)}
+        >
+          <TransactionalInfo transaction={confirmedTx} addressHash={confirmedTx.address.hash} />
+        </TableRow>
+      ))}
       {!isLoadingData && !allPendingTxs.length && !displayedConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>

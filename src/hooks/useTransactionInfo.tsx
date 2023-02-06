@@ -29,7 +29,7 @@ import { useAddressesContext } from '@/contexts/addresses'
 import { AddressHash } from '@/types/addresses'
 import { hasOnlyOutputsWith, isPendingTx, TransactionVariant } from '@/utils/transactions'
 
-export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash) => {
+export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash, showInternalInflows?: boolean) => {
   const { addresses } = useAddressesContext()
 
   let amount: bigint | undefined = BigInt(0)
@@ -53,7 +53,12 @@ export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressH
       infoType = 'move'
     } else {
       direction = getDirection(tx, addressHash)
-      infoType = direction === 'out' && hasOnlyOutputsWith(outputs, addresses) ? 'move' : direction
+      const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
+      infoType =
+        (isInternalTransfer && showInternalInflows && direction === 'out') ||
+        (isInternalTransfer && !showInternalInflows)
+          ? 'move'
+          : direction
     }
 
     lockTime = outputs.reduce(
