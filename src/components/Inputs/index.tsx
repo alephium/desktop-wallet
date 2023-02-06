@@ -28,6 +28,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   disabled?: boolean
   noMargin?: boolean
   hint?: string
+  liftLabel?: boolean
   className?: string
 }
 

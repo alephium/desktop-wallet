@@ -37,6 +37,7 @@ const Input = ({
   noMargin,
   hint,
   children,
+  liftLabel = false,
   ...props
 }: InputProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
@@ -58,7 +59,7 @@ const Input = ({
       custom={disabled}
       noMargin={noMargin}
     >
-      <InputLabel inputHasValue={!!value} htmlFor={props.id}>
+      <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
         {label}
       </InputLabel>
       <StyledInput

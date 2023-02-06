@@ -63,7 +63,8 @@ export interface GlobalContextProps {
   currentNetwork: NetworkName | 'custom'
   networkStatus: NetworkStatus
   updateNetworkSettings: (settings: Settings['network']) => void
-  newLatestVersion: string
+  newVersion: string
+  requiresManualDownload: boolean
   newVersionDownloadTriggered: boolean
   triggerNewVersionDownload: () => void
   resetNewVersionDownloadTrigger: () => void
@@ -88,7 +89,8 @@ export const initialGlobalContext: GlobalContextProps = {
   currentNetwork: 'mainnet',
   networkStatus: 'uninitialized',
   updateNetworkSettings: () => null,
-  newLatestVersion: '',
+  newVersion: '',
+  requiresManualDownload: false,
   newVersionDownloadTriggered: false,
   triggerNewVersionDownload: () => null,
   resetNewVersionDownloadTrigger: () => null,
@@ -115,10 +117,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const [isClientLoading, setIsClientLoading] = useState(false)
   const previousNodeHost = useRef<string>()
   const previousExplorerAPIHost = useRef<string>()
+  const previousExplorerUrl = useRef<string>()
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>('uninitialized')
   const [isPassphraseUsed, setIsPassphraseUsed] = useState(false)
   const currentNetwork = getNetworkName(settings.network)
-  const newLatestVersion = useLatestGitHubRelease()
+  const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
 
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
@@ -209,12 +212,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   useEffect(() => {
     const networkSettingsHaveChanged =
       previousNodeHost.current !== settings.network.nodeHost ||
-      previousExplorerAPIHost.current !== settings.network.explorerApiHost
+      previousExplorerAPIHost.current !== settings.network.explorerApiHost ||
+      previousExplorerUrl.current !== settings.network.explorerUrl
 
     if (networkSettingsHaveChanged) {
       getClient()
       previousNodeHost.current = settings.network.nodeHost
       previousExplorerAPIHost.current = settings.network.explorerApiHost
+      previousExplorerUrl.current = settings.network.explorerUrl
+    } else if (networkStatus === 'connecting') {
+      setNetworkStatus('online')
     }
   }, [currentNetwork, getClient, networkStatus, setSnackbarMessage, settings.network])
 
@@ -291,7 +298,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           currentNetwork,
           networkStatus,
           updateNetworkSettings,
-          newLatestVersion,
+          newVersion,
+          requiresManualDownload,
           newVersionDownloadTriggered,
           triggerNewVersionDownload,
           resetNewVersionDownloadTrigger,

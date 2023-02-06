@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { AlephiumWindow } from '../types/window'
 import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
 import { useTimeout } from '../utils/hooks'
+import { links } from '../utils/links'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
@@ -32,8 +33,20 @@ const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 const ONE_HOUR = 1000 * 60 * 60
 
 const useLatestGitHubRelease = () => {
-  const [newLatestRelease, setNewLatestRelease] = useState('')
+  const [newVersion, setNewVersion] = useState('')
   const [timeUntilNextFetch, setTimeUntilNextFetch] = useState(0)
+  const [requiresManualDownload, setRequiresManualDownload] = useState(false)
+
+  const checkForManualDownload = async () => {
+    const response = await fetch(links.latestReleaseApi)
+    const data = await response.json()
+    const version = data.tag_name.replace('v', '')
+
+    if (isVersionNewer(version)) {
+      setNewVersion(version)
+      setRequiresManualDownload(true)
+    }
+  }
 
   useTimeout(async () => {
     const appData: AppMetaData = JSON.parse(localStorage.getItem(KEY_APPMETADATA) ?? '{}', toAppMetaData) ?? {}
@@ -50,15 +63,24 @@ const useLatestGitHubRelease = () => {
 
     const version = await electron?.updater.checkForUpdates()
 
-    if (version && semverRegex.test(version) && currentVersion && compareVersions(version, currentVersion) > 0) {
-      setNewLatestRelease(version)
+    if (!version) {
+      try {
+        await checkForManualDownload()
+      } catch (e) {
+        console.error(e)
+      }
+    } else if (isVersionNewer(version)) {
+      setNewVersion(version)
     }
 
     localStorage.setItem(KEY_APPMETADATA, JSON.stringify({ ...appData, lastVersionCheckedAt: new Date() }))
     setTimeUntilNextFetch(nextTimeUntilNextFetch)
   }, timeUntilNextFetch)
 
-  return newLatestRelease
+  return { newVersion, requiresManualDownload }
 }
 
 export default useLatestGitHubRelease
+
+const isVersionNewer = (version: string): boolean =>
+  semverRegex.test(version) && currentVersion && compareVersions(version, currentVersion) > 0
