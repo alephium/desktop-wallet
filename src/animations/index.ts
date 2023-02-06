@@ -45,7 +45,7 @@ export const slowTransition = {
 }
 
 export const fastTransition = {
-  transition: { duration: 0.1 }
+  transition: { duration: 0.15 }
 }
 
 export const fadeInSlowly = {

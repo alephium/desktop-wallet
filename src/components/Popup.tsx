@@ -40,7 +40,7 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
 
   const contentRef = useRef<HTMLDivElement>(null)
 
-  const [hookOffset, setHookOffset] = useState<Coordinates | undefined>(undefined)
+  const [hookOffset, setHookOffset] = useState<Coordinates>()
 
   useEffect(() => {
     if (windowHeight && windowWidth) {
