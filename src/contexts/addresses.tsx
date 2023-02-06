@@ -30,6 +30,7 @@ import { AddressHash, AddressMetadata, AddressSettings } from '@/types/addresses
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { useGlobalContext } from './global'
@@ -198,14 +199,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!activeWallet.name) throw new Error('Could not update address settings, wallet name not found')
 
       if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store(
-          {
+        AddressMetadataStorage.store({
+          dataKey: {
             mnemonic: activeWallet.mnemonic,
             walletName: activeWallet.name
           },
-          address.index,
-          settings
-        )
+          index: address.index,
+          settings: {
+            ...settings,
+            isDefault: settings.isMain,
+            color: settings.color ?? getRandomLabelColor()
+          }
+        })
       address.settings = settings
       setAddress(address)
     },
@@ -340,14 +345,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!_walletName) throw new Error('Could not save new address, wallet name not found')
 
       if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store(
-          {
+        AddressMetadataStorage.store({
+          dataKey: {
             mnemonic: _mnemonic,
             walletName: _walletName
           },
-          newAddress.index,
-          newAddress.settings
-        )
+          index: newAddress.index,
+          settings: {
+            ...newAddress.settings,
+            isDefault: newAddress.settings.isMain,
+            color: newAddress.settings.color ?? getRandomLabelColor()
+          }
+        })
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
       fetchPendingTxs([newAddress])

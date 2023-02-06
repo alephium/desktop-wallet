@@ -27,11 +27,11 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
-import { AddressTransaction, PendingTx } from '@/types/transactions'
+import { AddressConfirmedTransaction, PendingTx } from '@/types/transactions'
 import { BelongingToAddress, getTransactionsForAddresses } from '@/utils/transactions'
 
 interface TransfersPageTransactionListProps {
-  onTransactionClick: (transaction: AddressTransaction) => void
+  onTransactionClick: (transaction: AddressConfirmedTransaction) => void
   className?: string
 }
 
