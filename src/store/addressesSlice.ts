@@ -33,7 +33,6 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import { AddressBase, AddressHash, AddressRedux } from '@/types/addresses'
-import { getRandomLabelColor } from '@/utils/colors'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
 import { walletSaved } from './activeWalletSlice'
@@ -101,9 +100,9 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
 
     const state = getState() as RootState
     const addresses = selectAllAddresses(state)
-
     const nextPage = state.addresses.transactionsPageLoaded + 1
 
+    // NOTE: Explorer backend limits this query to 80 addresses
     const results = await Promise.all(
       chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
     )
@@ -126,21 +125,7 @@ const addressesSlice = createSlice({
       const addresses = action.payload
 
       addressesAdapter.setAll(state, [])
-      addressesAdapter.addMany(
-        state,
-        addresses.map((address) => ({
-          ...address,
-          group: addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS),
-          balance: '0',
-          lockedBalance: '0',
-          txNumber: 0,
-          transactions: [],
-          transactionsPageLoaded: 0,
-          allTransactionPagesLoaded: false,
-          tokens: [],
-          lastUsed: 0
-        }))
-      )
+      addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
       state.isRestoringAddressesFromMetadata = false
       state.status = 'uninitialized'
     }
@@ -151,20 +136,7 @@ const addressesSlice = createSlice({
         const { initialAddress } = action.payload
 
         addressesAdapter.setAll(state, [])
-        addressesAdapter.addOne(state, {
-          ...initialAddress,
-          group: addressToGroup(initialAddress.hash, TOTAL_NUMBER_OF_GROUPS),
-          color: getRandomLabelColor(),
-          isDefault: true,
-          balance: '0',
-          lockedBalance: '0',
-          txNumber: 0,
-          transactions: [],
-          transactionsPageLoaded: 0,
-          allTransactionPagesLoaded: false,
-          tokens: [],
-          lastUsed: 0
-        })
+        addressesAdapter.addOne(state, getDefaultAddressState(initialAddress))
         state.status = 'uninitialized'
       })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
@@ -265,3 +237,16 @@ export const selectTotalBalance = createSelector([selectAllAddresses], (addresse
 const getAddresses = (state: AddressesState) => Object.values(state.entities) as AddressRedux[]
 
 export default addressesSlice
+
+const getDefaultAddressState = (address: AddressBase) => ({
+  ...address,
+  group: addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS),
+  balance: '0',
+  lockedBalance: '0',
+  txNumber: 0,
+  transactions: [],
+  transactionsPageLoaded: 0,
+  allTransactionPagesLoaded: false,
+  tokens: [],
+  lastUsed: 0
+})

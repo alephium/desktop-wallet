@@ -20,6 +20,7 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { AddressHash, AddressRedux } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
 
 export const sortAddressList = (addresses: AddressRedux[]): AddressRedux[] =>
   addresses.sort((a, b) => {
@@ -43,4 +44,9 @@ export const selectAddressTransactions = (
 
     return txs
   }, [] as AddressTransaction[])
+}
+
+export const initialAddressSettings = {
+  isDefault: true,
+  color: getRandomLabelColor()
 }

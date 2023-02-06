@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair } from '@alephium/sdk'
+import { AddressBase } from '@/types/addresses'
 
 export type ActiveWallet = {
   name: string
@@ -25,5 +25,5 @@ export type ActiveWallet = {
 }
 
 export type GeneratedWallet = ActiveWallet & {
-  initialAddress: AddressKeyPair
+  initialAddress: AddressBase
 }

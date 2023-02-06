@@ -37,9 +37,11 @@ import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import { useAppDispatch } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletSaved } from '@/store/activeWalletSlice'
 import { syncAddressesData } from '@/store/addressesSlice'
+import { initialAddressSettings } from '@/utils/addresses'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
@@ -82,6 +84,14 @@ const ImportWordsPage = () => {
       const wallet = walletImport(formatedPhrase)
 
       WalletStorage.store(walletName, password, wallet)
+      AddressMetadataStorage.store({
+        index: 0,
+        settings: initialAddressSettings,
+        dataKey: {
+          mnemonic: wallet.mnemonic,
+          walletName: walletName
+        }
+      })
       dispatch(
         walletSaved({
           name: walletName,
@@ -90,7 +100,8 @@ const ImportWordsPage = () => {
             index: 0,
             hash: wallet.address,
             publicKey: wallet.publicKey,
-            privateKey: wallet.privateKey
+            privateKey: wallet.privateKey,
+            ...initialAddressSettings
           }
         })
       )
