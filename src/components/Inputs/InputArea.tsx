@@ -17,17 +17,28 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, MotionProps } from 'framer-motion'
-import { ReactNode } from 'react'
+import { KeyboardEventHandler, MouseEventHandler, MutableRefObject, ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputAreaProps extends MotionProps {
   children: ReactNode | ReactNode[]
+  onKeyDown?: KeyboardEventHandler
   onInput?: () => void
+  onMouseDown?: MouseEventHandler
   className?: string
+  innerRef?: MutableRefObject<HTMLDivElement>
 }
 
-const InputArea = ({ onInput, children, className, ...rest }: InputAreaProps) => (
-  <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} className={className} {...rest}>
+const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...rest }: InputAreaProps) => (
+  <motion.div
+    role="button"
+    tabIndex={0}
+    onMouseDown={onMouseDown}
+    onInput={onInput}
+    onKeyDown={onKeyDown}
+    className={className}
+    {...rest}
+  >
     {children}
   </motion.div>
 )

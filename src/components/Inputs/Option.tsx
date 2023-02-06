@@ -27,7 +27,7 @@ interface OptionProps {
 }
 
 const Option: FC<OptionProps> = ({ className, isSelected, onSelect, children }) => (
-  <InputArea onInput={onSelect} className={className}>
+  <InputArea onMouseDown={onSelect} className={className}>
     <Circle filled={isSelected} />
     {children}
   </InputArea>

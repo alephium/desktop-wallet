@@ -18,7 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual } from 'lodash'
 import { MoreVertical } from 'lucide-react'
-import { OptionHTMLAttributes, useCallback, useEffect, useState } from 'react'
+import {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent,
+  OptionHTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import styled from 'styled-components'
 
 import { InputLabel, InputProps } from '@/components/Inputs'
@@ -26,6 +34,7 @@ import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
 import ModalPortal from '@/modals/ModalPortal'
+import { Coordinates } from '@/types/numbers'
 
 import { InputBase } from './Input'
 
@@ -73,23 +82,54 @@ function Select<T extends OptionValue>({
   noMargin,
   className
 }: SelectProps<T>) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
   const [showPopup, setShowPopup] = useState(false)
+  const [hookCoordinates, setHookCoordinates] = useState<Coordinates | undefined>(undefined)
+
+  let containerCenter: Coordinates
+
+  if (inputRef?.current) {
+    const containerElement = inputRef.current
+    const containerElementRect = containerElement.getBoundingClientRect()
+
+    containerCenter = {
+      x: containerElementRect.x + containerElement.clientWidth / 2,
+      y: containerElementRect.y + containerElement.clientHeight / 2
+    }
+  }
 
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
       if (!value || !isEqual(option, value) || skipEqualityCheck) {
         onValueChange(option)
         setValue(option)
+
+        inputRef.current?.focus()
       }
     },
     [onValueChange, skipEqualityCheck, value]
   )
 
-  const onContainerInput = () => {
+  const handleClick = (e: MouseEvent) => {
     if (options.length <= 1) return
+
+    setHookCoordinates({ x: e.clientX, y: e.clientY })
     setShowPopup(true)
+  }
+
+  const handleKeyDown = (e: ReactKeyboardEvent) => {
+    if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
+    if (options.length <= 1) return
+    setHookCoordinates(containerCenter)
+    setShowPopup(true)
+  }
+
+  const handlePopupClose = () => {
+    setShowPopup(false)
+    inputRef.current?.focus()
   }
 
   useEffect(() => {
@@ -120,7 +160,8 @@ function Select<T extends OptionValue>({
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
         noMargin={noMargin}
-        onInput={onContainerInput}
+        onMouseDown={handleClick}
+        onKeyDown={handleKeyDown}
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
@@ -140,17 +181,18 @@ function Select<T extends OptionValue>({
           value={value?.label ?? ''}
           readOnly
           label={label}
+          ref={inputRef}
         />
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
           <SelectOptionsPopup
             options={options}
+            selectedOption={value}
             setValue={setInputValue}
             title={title}
-            onBackgroundClick={() => {
-              setShowPopup(false)
-            }}
+            hookCoordinates={hookCoordinates}
+            onBackgroundClick={handlePopupClose}
           />
         )}
       </ModalPortal>
@@ -160,31 +202,76 @@ function Select<T extends OptionValue>({
 
 function SelectOptionsPopup<T extends OptionValue>({
   options,
+  selectedOption,
   setValue,
   onBackgroundClick,
+  hookCoordinates,
   title
 }: {
   options: SelectOption<T>[]
+  selectedOption?: SelectOption<T>
   setValue: (value: SelectOption<T>) => void | undefined
   onBackgroundClick: () => void
+  hookCoordinates?: Coordinates
   title?: string
 }) {
-  const handleEvent = (el: HTMLSelectElement) =>
-    handleOptionSelect({
-      label: options[el.selectedIndex]?.label,
-      value: el.value as T
-    })
+  const selectRef = useRef<HTMLDivElement>(null)
+  const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
-  const handleOptionSelect = (option: SelectOption<T>) => {
-    setValue(option)
-    onBackgroundClick()
-  }
+  useEffect(() => {
+    const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
+
+    if (options && options.length > 0) {
+      setFocusedOptionIndex(selectedOptionIndex > 0 ? selectedOptionIndex : 0)
+    }
+  }, [options, selectedOption?.value])
+
+  const handleOptionSelect = useCallback(
+    (value: T) => {
+      const selectedValue = options.find((o) => o.value === value)
+      if (!selectedValue) return
+
+      setValue(selectedValue)
+      onBackgroundClick()
+    },
+    [onBackgroundClick, options, setValue]
+  )
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.code === 'ArrowDown') {
+        setFocusedOptionIndex((i) => (i < options.length - 1 ? i + 1 : i))
+      } else if (e.code === 'ArrowUp') {
+        setFocusedOptionIndex((i) => (i > 0 ? i - 1 : i))
+      } else if (['Space', ' ', 'Enter'].includes(e.code)) {
+        handleOptionSelect(options[focusedOptionIndex].value)
+      } else if (e.code === 'Tab') {
+        e.preventDefault()
+        onBackgroundClick()
+      } else {
+        return
+      }
+    }
+
+    document.addEventListener('keydown', listener)
+
+    return () => {
+      document.removeEventListener('keydown', listener)
+    }
+  }, [focusedOptionIndex, handleOptionSelect, onBackgroundClick, options])
 
   return (
-    <Popup title={title} onBackgroundClick={onBackgroundClick}>
-      <OptionSelect autoFocus size={options.length} onKeyPress={(e) => handleEvent(e.currentTarget)}>
-        {options.map((o) => (
-          <OptionItem key={o.label} value={o.value} onClick={() => handleOptionSelect(o)}>
+    <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={hookCoordinates}>
+      <OptionSelect title={title} aria-label={title} ref={selectRef}>
+        {options.map((o, i) => (
+          <OptionItem
+            key={o.value}
+            onClick={() => handleOptionSelect(o.value as T)}
+            onMouseEnter={(e) => setFocusedOptionIndex(i)}
+            selected={o.value === selectedOption?.value}
+            focused={i === focusedOptionIndex}
+            aria-label={o.label}
+          >
             {o.label}
           </OptionItem>
         ))}
@@ -215,27 +302,27 @@ export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
-export const OptionSelect = styled.select`
+export const OptionSelect = styled.div`
   width: 100%;
   overflow-y: auto;
   border: 0;
-  outline: 0;
   color: inherit;
   background: transparent;
+  display: flex;
+  flex-direction: column;
 `
 
-export const OptionItem = styled.option`
-  padding: var(--spacing-3);
+export const OptionItem = styled.button<{ selected: boolean; focused: boolean }>`
+  padding: var(--spacing-4);
   cursor: pointer;
-  background-color: ${({ theme }) => theme.bg.primary};
   color: inherit;
+  user-select: none;
+  text-align: left;
+  background-color: ${({ theme, selected, focused }) =>
+    selected ? theme.global.accent : focused ? theme.bg.accent : theme.bg.primary};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
-
-  &:hover {
-    background-color: ${({ theme }) => theme.bg.secondary};
   }
 `
 
