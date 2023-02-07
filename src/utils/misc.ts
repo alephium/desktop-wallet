@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createHash } from '@alephium/sdk'
 import dayjs from 'dayjs'
+import { KeyboardEvent } from 'react'
 
 // ===================== //
 // ==== RUNNING ENV ==== //
@@ -75,4 +76,11 @@ export const getInitials = (str: string) => {
   const initials = words.length > 1 ? `${words[0][0]}${words[1][0]}` : str.length > 1 ? str.substring(0, 2) : str[0]
 
   return initials.toUpperCase()
+}
+
+export const onEnterOrSpace = (event: KeyboardEvent, callback: () => void) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+
+  event.stopPropagation()
+  callback()
 }
