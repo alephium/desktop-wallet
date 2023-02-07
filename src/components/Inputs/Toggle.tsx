@@ -17,8 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { KeyboardEvent, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
+
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ToggleProps {
   toggled: boolean
@@ -78,17 +80,10 @@ const Toggle = ({
 
   const getToggleIconColor = (isActive: boolean) => (isActive ? 'var(--color-white)' : theme.font.tertiary)
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.stopPropagation()
-      handleSwitch()
-    }
-  }
-
   return (
     <StyledToggle
       onClick={handleSwitch}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => onEnterOrSpace(e, handleSwitch)}
       className={className}
       aria-label={label}
       aria-checked={toggled}

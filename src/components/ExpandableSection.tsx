@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { fastTransition } from '@/animations'
+import { onEnterOrSpace } from '@/utils/misc'
 
 import InputArea from './Inputs/InputArea'
 import { Section } from './PageComponents/PageContainers'
@@ -73,7 +74,11 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 
   return (
     <ExpandableSectionContainer className={className} shrinkWhenOpen={shrinkWhenOpen} isOpen={isExpanded}>
-      <Title onInput={handleTitleExpansion} aria-expanded={isExpanded}>
+      <Title
+        onMouseDown={handleTitleExpansion}
+        onKeyDown={(e) => onEnterOrSpace(e, handleTitleExpansion)}
+        aria-expanded={isExpanded}
+      >
         {centered && <LeftDivider />}
         {isCheckbox ? (
           <input type="checkbox" tabIndex={-1} checked={isExpanded} onChange={() => setIsExpanded(!isExpanded)} />
