@@ -19,9 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 
 import { Address } from '@/contexts/addresses'
-
-import { WithParsed } from './data'
-import { NetworkName } from './network'
+import { NetworkName } from '@/types/network'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
@@ -87,14 +85,10 @@ export interface TransferTxData {
   alphAmount: string
   gasAmount?: number
   gasPrice?: string
+  lockTime?: Date
 }
 
-export interface GasInfo {
-  gasAmount: WithParsed<number | undefined>
-  gasPrice: WithParsed<string | undefined>
-}
-
-export interface TxPreparation extends GasInfo {
+export interface TxPreparation {
   fromAddress: Address
   bytecode?: string
   issueTokenAmount?: string

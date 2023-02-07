@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
-export default styled.div`
+export default styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;

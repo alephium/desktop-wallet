@@ -151,6 +151,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
   const previousNodeApiHost = useRef<string>()
   const previousExplorerApiHost = useRef<string>()
+  const previousExplorerUrl = useRef<string>()
 
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
@@ -451,7 +452,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     const walletHasChanged = previousMnemonic.current !== activeWallet.mnemonic
     const networkSettingsHaveChanged =
       previousNodeApiHost.current !== network.settings.nodeHost ||
-      previousExplorerApiHost.current !== network.settings.explorerApiHost
+      previousExplorerApiHost.current !== network.settings.explorerApiHost ||
+      previousExplorerUrl.current !== network.settings.explorerUrl
 
     if (network.status === 'connecting' || network.status === 'uninitialized') return
 

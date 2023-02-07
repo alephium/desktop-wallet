@@ -32,7 +32,9 @@ const AlefSymbol = ({ className, color }: AlefSymbolProps) => (
   </span>
 )
 
-export default AlefSymbol
+export default styled(AlefSymbol)`
+  height: 1em;
+`
 
 const HiddenForCopying = styled.span`
   font-size: 0;

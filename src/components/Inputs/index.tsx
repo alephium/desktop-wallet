@@ -31,6 +31,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   Icon?: LucideIconType
   inputFieldStyle?: CSSProperties
   inputFieldRef?: RefObject<HTMLInputElement>
+  liftLabel?: boolean
   className?: string
 }
 

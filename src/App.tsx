@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 
-import AppSpinner from './components/AppSpinner'
 import { CenteredSection } from './components/PageComponents/PageContainers'
 import SnackbarManager from './components/SnackbarManager'
 import SplashScreen from './components/SplashScreen'
@@ -35,13 +35,12 @@ import { darkTheme, lightTheme } from './style/themes'
 import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
 
 const App = () => {
-  const { snackbarMessage, newLatestVersion, newVersionDownloadTriggered } = useGlobalContext()
-  const isAppLoading = useAppSelector((state) => state.app.loading)
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
+  const { snackbarMessage, newVersion, newVersionDownloadTriggered } = useGlobalContext()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
-  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newLatestVersion)
+  const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
   useEffect(() => {
     const localStorageSettings = migrateDeprecatedSettings()
@@ -53,8 +52,8 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (newLatestVersion) setUpdateWalletModalVisible(true)
-  }, [newLatestVersion])
+    if (newVersion) setUpdateWalletModalVisible(true)
+  }, [newVersion])
 
   useEffect(() => {
     if (newVersionDownloadTriggered) setUpdateWalletModalVisible(true)
@@ -70,20 +69,13 @@ const App = () => {
         <CenteredSection>
           <Router />
         </CenteredSection>
-        <BannerSection>{newLatestVersion && <UpdateWalletBanner newVersion={newLatestVersion} />}</BannerSection>
+        <BannerSection>{newVersion && <UpdateWalletBanner />}</BannerSection>
       </AppContainer>
 
       <SnackbarManager message={snackbarMessage} />
-
-      {isUpdateWalletModalVisible && (
-        <UpdateWalletModal
-          newVersion={newLatestVersion}
-          startDownload={newVersionDownloadTriggered}
-          onClose={() => setUpdateWalletModalVisible(false)}
-        />
-      )}
-
-      {isAppLoading && <AppSpinner />}
+      <AnimatePresence>
+        {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
+      </AnimatePresence>
     </ThemeProvider>
   )
 }

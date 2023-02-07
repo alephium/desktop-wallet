@@ -23,7 +23,7 @@ import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 type InfoBoxImportance = 'accent' | 'alert'
 
-interface InfoBoxProps {
+export interface InfoBoxProps {
   text?: string
   Icon?: LucideIconType
   label?: string
@@ -107,15 +107,16 @@ const TextContainer = styled.div<{ wordBreak?: boolean; ellipsis?: boolean }>`
   flex: 2;
   font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
+  text-align: left;
 
   ${({ ellipsis }) =>
     ellipsis
       ? css`
-          overflow: 'hidden';
-          textoverflow: 'ellipsis';
+          overflow: hidden;
+          text-overflow: ellipsis;
         `
       : css`
-          overflowwrap: 'anywhere';
+          overflow-wrap: anywhere;
         `}
 `
 

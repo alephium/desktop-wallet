@@ -43,7 +43,8 @@ export interface GlobalContextProps {
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
-  newLatestVersion: string
+  newVersion: string
+  requiresManualDownload: boolean
   newVersionDownloadTriggered: boolean
   triggerNewVersionDownload: () => void
   resetNewVersionDownloadTrigger: () => void
@@ -54,7 +55,8 @@ export const initialGlobalContext: GlobalContextProps = {
   client: undefined,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
-  newLatestVersion: '',
+  newVersion: '',
+  requiresManualDownload: false,
   newVersionDownloadTriggered: false,
   triggerNewVersionDownload: () => null,
   resetNewVersionDownloadTrigger: () => null
@@ -75,7 +77,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
-  const newLatestVersion = useLatestGitHubRelease()
+  const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
 
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
@@ -182,7 +184,8 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           client,
           snackbarMessage,
           setSnackbarMessage,
-          newLatestVersion,
+          newVersion,
+          requiresManualDownload,
           newVersionDownloadTriggered,
           triggerNewVersionDownload,
           resetNewVersionDownloadTrigger

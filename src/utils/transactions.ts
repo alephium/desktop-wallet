@@ -26,7 +26,6 @@ import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sd
 
 import { Address, AddressHash } from '@/contexts/addresses'
 import { NetworkName } from '@/types/network'
-import { GasInfo } from '@/types/transactions'
 import { PendingTx, TransactionStatus } from '@/types/transactions'
 
 export type TransactionVariant = Transaction | PendingTx
@@ -118,8 +117,6 @@ export const convertUnconfirmedTxToPendingTx = (
     status: 'pending'
   }
 }
-
-export const hasNoGasErrors = ({ gasAmount, gasPrice }: GasInfo) => !gasAmount.error && !gasPrice.error
 
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
   const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)

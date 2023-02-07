@@ -1,19 +1,19 @@
 {
   "name": "alephium-wallet",
   "description": "The official Alephium wallet",
-  "version": "1.4.1-rc.1",
+  "version": "1.5.0",
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
   "scripts": {
     "build": "tsc && cross-env INLINE_RUNTIME_CHUNK=false VITE_VERSION=$npm_package_version vite build",
-    "electron-dev": "concurrently \"BROWSER=none npm run start\" \"electron .\"",
+    "start": "cross-env VITE_VERSION=$npm_package_version vite",
+    "start:electron": "concurrently \"cross-env VITE_VERSION=$npm_package_version vite\" \"electron .\"",
     "electron-pack": "npm run build && electron-builder",
     "electron-pack-windows": "npm run build && electron-builder -w",
     "electron-pack-macos": "npm run build && electron-builder --mac --universal",
     "electron-pack-ubuntu": "npm run build && electron-builder -l",
     "electron-pack-linux:arm64": "npm run build && electron-builder -l --arm64",
-    "start": "cross-env VITE_VERSION=$npm_package_version vite",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -33,7 +33,7 @@
     "electron-updater": "^5.3.0"
   },
   "devDependencies": {
-    "@alephium/sdk": "0.4.1",
+    "@alephium/sdk": "0.5.0",
     "@alephium/walletconnect-provider": "0.2.1",
     "@alephium/web3": "0.2.0",
     "@json-rpc-tools/utils": "^1.7.6",
@@ -69,6 +69,8 @@
     "electron-builder": "^23.0.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.29.0",
+    "@electron/notarize": "^1.2.3",
+    "electron-builder-notarize": "^1.5.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-prettier": "^4.0.0",
@@ -111,6 +113,7 @@
   },
   "build": {
     "appId": "org.alephium.alephium-wallet",
+    "productName": "Alephium",
     "files": [
       "build/**/*",
       "public/electron.js",
@@ -119,17 +122,25 @@
     ],
     "linux": {
       "category": "Finance",
-      "executableName": "alephium",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "snap"
       ]
     },
-    "productName": "Alephium",
+    "win": {
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist"
+    },
     "directories": {
       "buildResources": "assets"
     },
-    "afterPack": ".afterPack.js"
+    "afterPack": ".afterPack.js",
+    "afterAllArtifactBuild": ".afterAllArtifactBuild.js",
+    "afterSign": "electron-builder-notarize"
   },
   "engines": {
     "node": ">=16",

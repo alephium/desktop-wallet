@@ -118,7 +118,8 @@
   "Inputs": "Eingaben",
   "Outputs": "Ausgaben",
   "New version": "Neue Version",
-  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Version {{ newVersion }} ist verfügbar. Bitte laden Sie sie herunter und installieren Sie sie, um Probleme mit der Brieftasche zu vermeiden.",
+  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet",
+  "Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.": "Version {{ newVersion }} ist verfügbar. Bitte laden Sie sie herunter und installieren Sie sie, um Probleme mit der Brieftasche zu vermeiden.",
   "Download": "Herunterladen",
   "Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.": "Bitte stellen Sie sicher, dass Sie Ihre Wiederherstellungsphrase gespeichert und an einem sicheren Ort aufbewahrt haben, um Ihre Brieftasche in Zukunft wiederherstellen zu können. Ohne die Wiederherstellungsphrase ist Ihr Portemonnaie nicht wiederherstellbar und dauerhaft verloren.",
   "Not your keys, not your coins.": "Nicht Ihre Schlüssel, nicht Ihre Münzen.",
@@ -252,6 +253,7 @@
   "Unable to convert the amount": "Unable to convert the amount",
   "The amount must be greater than {{ minAmount }}": "The amount must be greater than {{ minAmount }}",
   "Restart the application to install the new update.": "Restart the application to install the new update.",
+  "Restart": "Restart",
   "Downloaded {{ percent }}%": "Downloaded {{ percent }}%",
   "Update": "Update",
   "Download failed, try again later.": "Download failed, try again later.",
@@ -304,5 +306,6 @@
   "Developer tools": "Developer tools",
   "Enable developer tools": "Enable developer tools",
   "Deploy and call smart contracts": "Deploy and call smart contracts",
-  "Transfers": "Transfers"
+  "Transfers": "Transfers",
+  "Lock time must be in the future.": "Lock time must be in the future."
 }

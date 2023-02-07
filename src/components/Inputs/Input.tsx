@@ -41,6 +41,7 @@ const Input = ({
   children,
   inputFieldStyle,
   inputFieldRef,
+  liftLabel = false,
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -65,7 +66,7 @@ const Input = ({
       noMargin={noMargin}
       className={className}
     >
-      <InputLabel inputHasValue={!!value} htmlFor={props.id}>
+      <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
         {label}
       </InputLabel>
       <InputBase

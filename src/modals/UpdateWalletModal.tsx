@@ -24,13 +24,13 @@ import InfoBox from '@/components/InfoBox'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
 import { AlephiumWindow } from '@/types/window'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface UpdateWalletModalProps {
   onClose: () => void
-  newVersion: string
-  startDownload?: boolean
 }
 
 type UpdateStatus = 'download-available' | 'downloading' | 'download-finished' | 'download-failed'
@@ -38,22 +38,23 @@ type UpdateStatus = 'download-available' | 'downloading' | 'download-finished' |
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
-const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletModalProps) => {
+const UpdateWalletModal = ({ onClose }: UpdateWalletModalProps) => {
   const { t } = useTranslation()
-  const { resetNewVersionDownloadTrigger } = useGlobalContext()
+  const { resetNewVersionDownloadTrigger, newVersion, newVersionDownloadTriggered, requiresManualDownload } =
+    useGlobalContext()
 
   const [status, setStatus] = useState<UpdateStatus>('download-available')
-  const [percent, setPercent] = useState(0)
+  const [percent, setPercent] = useState('0')
   const [error, setError] = useState('')
 
-  const newVersionDownloadTriggered = async () => {
+  const startDownload = async () => {
     setStatus('downloading')
     electron?.updater.startUpdateDownload()
   }
 
   useEffect(() => {
     const removeUpdateDownloadProgressListener = electron?.updater.onUpdateDownloadProgress((info) =>
-      setPercent(info.percent)
+      setPercent(info.percent.toFixed(2))
     )
     const removeUpdateDownloadedListener = electron?.updater.onUpdateDownloaded(() => {
       // Delay success message to give time for download validation errors to arise if any
@@ -74,8 +75,8 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
   const restartApplication = () => electron?.updater.quitAndInstallUpdate()
 
   useEffect(() => {
-    if (startDownload) newVersionDownloadTriggered()
-  }, [startDownload])
+    if (newVersionDownloadTriggered) startDownload()
+  }, [newVersionDownloadTriggered])
 
   const closeModal = () => {
     resetNewVersionDownloadTrigger()
@@ -83,11 +84,16 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
   }
 
   const downloadMessage = {
-    'download-available': t('Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.', {
-      newVersion
-    }),
-    'download-finished': t`Restart the application to install the new update.`,
-    'download-failed': t`Download failed, try again later.`,
+    'download-available': t(
+      requiresManualDownload
+        ? 'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.'
+        : 'Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.',
+      {
+        newVersion
+      }
+    ),
+    'download-finished': t('Restart the application to install the new update.'),
+    'download-failed': t('Download failed, try again later.'),
     downloading: t('Downloaded {{ percent }}%', { percent })
   }[status]
 
@@ -97,13 +103,16 @@ const UpdateWalletModal = ({ onClose, newVersion, startDownload }: UpdateWalletM
         <InfoBox Icon={BellPlus}>{error ? error : downloadMessage}</InfoBox>
       </Section>
       <ModalFooterButtons>
-        {status === 'download-available' && (
-          <ModalFooterButton onClick={newVersionDownloadTriggered}>{t`Update`}</ModalFooterButton>
+        {status === 'download-available' && requiresManualDownload && (
+          <ModalFooterButton onClick={() => openInWebBrowser(links.latestRelease)}>{t('Download')}</ModalFooterButton>
+        )}
+        {status === 'download-available' && !requiresManualDownload && (
+          <ModalFooterButton onClick={startDownload}>{t('Update')}</ModalFooterButton>
         )}
         {status === 'download-finished' && !error && (
-          <ModalFooterButton onClick={restartApplication}>{t`Restart`}</ModalFooterButton>
+          <ModalFooterButton onClick={restartApplication}>{t('Restart')}</ModalFooterButton>
         )}
-        {error && <ModalFooterButton onClick={closeModal}>{t`Close`}</ModalFooterButton>}
+        {error && <ModalFooterButton onClick={closeModal}>{t('Close')}</ModalFooterButton>}
       </ModalFooterButtons>
     </CenteredModal>
   )

@@ -21,21 +21,21 @@ import { SignExecuteScriptTxResult } from '@alephium/web3'
 import { useTranslation } from 'react-i18next'
 
 import InfoBox from '@/components/InfoBox'
+import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
 import useDappTxData from '@/hooks/useDappTxData'
+import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
+import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
+import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
+import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
+import SendModal from '@/modals/SendModals/SendModal'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { expectedAmount, hasNoGasErrors, isAmountWithinRange } from '@/utils/transactions'
-
-import { InputFieldsColumn } from '../../components/InputFieldsColumn'
-import AddressSelectFrom from './AddressSelectFrom'
-import AlphAmountInfoBox from './AlphAmountInfoBox'
-import BuildTxFooterButtons from './BuildTxFooterButtons'
-import GasSettingsExpandableSection from './GasSettingsExpandableSection'
-import SendModal from './SendModal'
+import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
 
 interface ScriptTxModalModalProps {
   onClose: () => void
@@ -84,19 +84,19 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     bytecode: data.bytecode ?? '',
-    gasAmount: {
-      parsed: data.gasAmount,
-      raw: data.gasAmount?.toString() ?? '',
-      error: ''
-    },
-    gasPrice: {
-      parsed: data.gasPrice,
-      raw: data.gasPrice ?? '',
-      error: ''
-    },
     alphAmount: data.alphAmount ?? ''
   })
-  const { fromAddress, bytecode, gasAmount, gasPrice, alphAmount } = txPrep
+  const {
+    gasAmount,
+    gasAmountError,
+    gasPrice,
+    gasPriceError,
+    clearGasSettings,
+    handleGasAmountChange,
+    handleGasPriceChange
+  } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
+
+  const { fromAddress, bytecode, alphAmount } = txPrep
 
   if (fromAddress === undefined) {
     onCancel()
@@ -104,7 +104,8 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   }
 
   const isSubmitButtonActive =
-    hasNoGasErrors({ gasAmount, gasPrice }) &&
+    !gasPriceError &&
+    !gasAmountError &&
     !!bytecode &&
     (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
 
@@ -126,9 +127,12 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
       </InputFieldsColumn>
       <GasSettingsExpandableSection
         gasAmount={gasAmount}
+        gasAmountError={gasAmountError}
         gasPrice={gasPrice}
-        onGasAmountChange={setTxPrepProp('gasAmount')}
-        onGasPriceChange={setTxPrepProp('gasPrice')}
+        gasPriceError={gasPriceError}
+        onGasAmountChange={handleGasAmountChange}
+        onGasPriceChange={handleGasPriceChange}
+        onClearGasSettings={clearGasSettings}
       />
       <BuildTxFooterButtons
         onSubmit={() =>
@@ -136,8 +140,8 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
             fromAddress,
             bytecode: bytecode ?? '',
             alphAmount: alphAmount || undefined,
-            gasAmount: gasAmount.parsed,
-            gasPrice: gasPrice.parsed
+            gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
+            gasPrice
           })
         }
         onCancel={onCancel}
