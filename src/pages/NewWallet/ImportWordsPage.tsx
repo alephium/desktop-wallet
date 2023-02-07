@@ -31,7 +31,6 @@ import {
 } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
@@ -50,7 +49,6 @@ const ImportWordsPage = () => {
   const { setSnackbarMessage } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { saveNewAddress } = useAddressesContext()
   const discoverAndSaveActiveAddresses = useAddressDiscovery(false)
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
@@ -106,12 +104,6 @@ const ImportWordsPage = () => {
         })
       )
       dispatch(syncAddressesData())
-
-      saveNewAddress(
-        new Address(wallet.address, wallet.publicKey, wallet.privateKey, 0, { isMain: true }),
-        wallet.mnemonic,
-        walletName
-      )
       discoverAndSaveActiveAddresses(wallet.mnemonic, [0])
       onButtonNext()
     } catch (e) {

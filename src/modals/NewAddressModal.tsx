@@ -33,10 +33,9 @@ import InfoBox from '@/components/InfoBox'
 import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAddressesContext } from '@/contexts/addresses'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { newAddressGenerated, selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
-import { getName } from '@/utils/addresses'
+import { useAppSelector } from '@/hooks/redux'
+import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
+import { getName, saveNewAddress } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
@@ -49,7 +48,6 @@ interface NewAddressModalProps {
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { mnemonic, isPassphraseUsed, name: walletName } = useAppSelector((state) => state.activeWallet)
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
@@ -89,21 +87,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   const onGenerateClick = () => {
     if (newAddressData) {
-      AddressMetadataStorage.store({
-        dataKey: {
-          walletName,
-          mnemonic
-        },
-        index: newAddressData.index,
-        settings
-      })
-
-      dispatch(
-        newAddressGenerated({
-          ...newAddressData,
-          ...settings
-        })
-      )
+      saveNewAddress({ ...newAddressData, ...settings }, { walletName, mnemonic })
     } else {
       generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
     }
