@@ -112,8 +112,8 @@ export const InputErrorMessage = styled(motion.label)<InputProps>`
   color: ${({ theme }) => theme.global.alert};
 `
 
-export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }> = ({ inputHasValue, ...props }) => (
-  <motion.label
+export const InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }> = ({ inputHasValue, ...props }) => (
+  <StyledInputLabel
     {...props}
     variants={inputPlaceHolderVariants}
     animate={!inputHasValue ? 'down' : 'up'}
@@ -121,7 +121,7 @@ export let InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }>
   />
 )
 
-InputLabel = styled(InputLabel)`
+const StyledInputLabel = styled(motion.label)`
   position: absolute;
   top: 17px;
   left: 12px;
