@@ -24,52 +24,18 @@ import {
 } from '@alephium/sdk'
 import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { Address } from '@/contexts/addresses'
-import { AddressHash } from '@/types/addresses'
+import { AddressHash, AddressRedux } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
-import { PendingTx, TransactionStatus } from '@/types/transactions'
-
-export type TransactionVariant = Transaction | PendingTx
-type IsTransactionVariant<T extends TransactionVariant> = T extends Transaction
-  ? Transaction
-  : T extends PendingTx
-  ? PendingTx
-  : never
-export type BelongingToAddress<T extends TransactionVariant> = { data: IsTransactionVariant<T>; address: Address }
+import { AddressPendingTransaction, AddressTransaction, PendingTx } from '@/types/transactions'
+import { getAvailableBalance } from '@/utils/addresses'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
 
-export const getTransactionsForAddresses = (
-  txStatus: TransactionStatus,
-  addresses: Address[]
-): BelongingToAddress<TransactionVariant>[] =>
-  addresses
-    .map((address) =>
-      address.transactions[txStatus].map((tx) => ({
-        data: tx,
-        address
-      }))
-    )
-    .flat()
-    .sort((a, b) => sortTransactions(a.data, b.data))
+export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransaction =>
+  (tx as AddressPendingTransaction).status === 'pending'
 
-export const isPendingTx = (tx: TransactionVariant): tx is PendingTx => (tx as PendingTx).status === 'pending'
-
-type HasTimestamp = { timestamp: number }
-
-export function sortTransactions(a: HasTimestamp, b: HasTimestamp): number {
-  const delta = b.timestamp - a.timestamp
-
-  // Sent and received in the same block, but will not be in the right order when displaying
-  if (delta === 0) {
-    return -1
-  }
-
-  return delta
-}
-
-export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
+export const hasOnlyOutputsWith = (outputs: Output[], addresses: AddressRedux[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
 export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, address: AddressHash): bigint => {
@@ -116,11 +82,11 @@ export const convertUnconfirmedTxToPendingTx = (
   }
 }
 
-export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
+export const expectedAmount = (data: { fromAddress: AddressRedux; alphAmount?: string }, fees: bigint): bigint => {
   const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)
   const amountIncludingFees = amountInSet + fees
-  const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
-  const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet
+  const exceededBy = amountIncludingFees - getAvailableBalance(data.fromAddress)
+  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInSet
 
   return expectedAmount
 }

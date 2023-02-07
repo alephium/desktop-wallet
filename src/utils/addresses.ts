@@ -22,14 +22,6 @@ import { AddressHash, AddressRedux } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
 
-export const sortAddressList = (addresses: AddressRedux[]): AddressRedux[] =>
-  addresses.sort((a, b) => {
-    // Always keep default address to the top of the list
-    if (a.isDefault) return -1
-    if (b.isDefault) return 1
-    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
-  })
-
 export const selectAddressTransactions = (
   allAddresses: AddressRedux[],
   transactions: (Transaction | PendingTransaction)[],
@@ -50,3 +42,8 @@ export const initialAddressSettings = {
   isDefault: true,
   color: getRandomLabelColor()
 }
+
+export const getAvailableBalance = (address: AddressRedux): bigint =>
+  BigInt(address.balance) - BigInt(address.lockedBalance)
+
+export const getName = (address: AddressRedux): string => address.label ?? `${address.hash.substring(0, 10)}...`

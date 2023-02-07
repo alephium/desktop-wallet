@@ -21,15 +21,16 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Toggle from '@/components/Inputs/Toggle'
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
+import { selectAllAddresses } from '@/store/addressesSlice'
 
 import AddressCard from './AddressCard'
 import TabContent from './TabContent'
 
 const AddressesTabContent = () => {
-  const { addresses } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
   const { t } = useTranslation()
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
@@ -47,8 +48,7 @@ const AddressesTabContent = () => {
       searchInput.length < 2
         ? addresses
         : addresses.filter(
-            (address) =>
-              address.settings.label?.toLowerCase().includes(input) || address.hash.toLowerCase().includes(input)
+            (address) => address.label?.toLowerCase().includes(input) || address.hash.toLowerCase().includes(input)
           )
     )
   }
@@ -56,7 +56,7 @@ const AddressesTabContent = () => {
   const handleHideEmptyAddressesToggle = (toggle: boolean) => {
     setHideEmptyAddresses(toggle)
     // TODO: Include tokens in filtering empty addresses
-    setEmptyAddressesToggleResults(toggle ? addresses.filter((address) => address.details.balance !== '0') : addresses)
+    setEmptyAddressesToggleResults(toggle ? addresses.filter((address) => address.balance !== '0') : addresses)
   }
 
   return (

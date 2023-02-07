@@ -24,8 +24,8 @@ import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
-import { useAddressesContext } from '@/contexts/addresses'
 import { Client } from '@/contexts/global'
+import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
@@ -34,7 +34,9 @@ import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
+import { selectAllAddresses } from '@/store/addressesSlice'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
+import { getAvailableBalance } from '@/utils/addresses'
 import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
 
 interface ScriptTxModalModalProps {
@@ -80,7 +82,7 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
 
 const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxModalContentProps) => {
   const { t } = useTranslation()
-  const { addresses } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     bytecode: data.bytecode ?? '',
@@ -97,6 +99,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
   const { fromAddress, bytecode, alphAmount } = txPrep
+  const availableBalance = getAvailableBalance(fromAddress)
 
   if (fromAddress === undefined) {
     onCancel()
@@ -107,17 +110,13 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     !gasPriceError &&
     !gasAmountError &&
     !!bytecode &&
-    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance))
+    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), availableBalance))
 
   return (
     <>
       <InputFieldsColumn>
         <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
-        <AmountInput
-          value={alphAmount}
-          onChange={setTxPrepProp('alphAmount')}
-          availableAmount={fromAddress.availableBalance}
-        />
+        <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
         <Input
           id="code"
           label={t`Bytecode`}

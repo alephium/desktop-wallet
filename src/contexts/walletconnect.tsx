@@ -28,10 +28,11 @@ import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
+import { selectAllAddresses } from '@/store/addressesSlice'
 import {
   DappTxData,
   DeployContractTxData,
@@ -67,7 +68,7 @@ const WalletConnectContext = createContext<WalletConnectContextProps>(initialCon
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { client } = useGlobalContext()
-  const { addresses } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)

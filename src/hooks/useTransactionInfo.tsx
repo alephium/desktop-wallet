@@ -25,12 +25,14 @@ import {
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
+import { selectAllAddresses } from '@/store/addressesSlice'
 import { AddressHash } from '@/types/addresses'
-import { hasOnlyOutputsWith, isPendingTx, TransactionVariant } from '@/utils/transactions'
+import { AddressTransaction } from '@/types/transactions'
+import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'
 
-export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressHash, showInternalInflows?: boolean) => {
-  const { addresses } = useAddressesContext()
+export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressHash, showInternalInflows?: boolean) => {
+  const addresses = useAppSelector(selectAllAddresses)
 
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
@@ -41,8 +43,8 @@ export const useTransactionInfo = (tx: TransactionVariant, addressHash: AddressH
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
-    amount = tx.amount
-    lockTime = tx.lockTime
+    amount = tx.amount ? BigInt(tx.amount) : undefined
+    lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
     amount = calcTxAmountDeltaForAddress(tx, addressHash)

@@ -24,8 +24,10 @@ import AddressMetadataForm from '@/components/AddressMetadataForm'
 import Amount from '@/components/Amount'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
+import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
+import { AddressRedux } from '@/types/addresses'
+import { getAvailableBalance, getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 import AddressSweepModal from './AddressSweepModal'
@@ -33,7 +35,7 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './Centered
 import ModalPortal from './ModalPortal'
 
 interface AddressOptionsModalProps {
-  address: Address
+  address: AddressRedux
   onClose: () => void
 }
 
@@ -41,51 +43,54 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
   const { t } = useTranslation()
   const theme = useTheme()
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
-  const { addresses, updateAddressSettings, mainAddress } = useAddressesContext()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const addresses = useAppSelector(selectAllAddresses)
 
   const [addressLabel, setAddressLabel] = useState({
-    title: address?.settings.label ?? '',
-    color: address?.settings.color || getRandomLabelColor()
+    title: address.label ?? '',
+    color: address.color || getRandomLabelColor()
   })
-  const [isMainAddress, setIsMainAddress] = useState(address?.settings.isMain ?? false)
+  const [isDefaultAddress, setIsDefaultAddress] = useState(address.isDefault ?? false)
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
 
-  if (!address || !mainAddress) return null
+  if (!address || !defaultAddress) return null
 
-  const isMainAddressToggleEnabled = mainAddress.hash !== address.hash
-  const isSweepButtonEnabled = addresses.length > 1 && address.availableBalance > 0
+  const availableBalance = getAvailableBalance(address)
+  const isDefaultAddressToggleEnabled = defaultAddress.hash !== address.hash
+  const isSweepButtonEnabled = addresses.length > 1 && availableBalance > 0
 
+  // TODO: Implement through Redux
   const onGenerateClick = () => {
-    updateAddressSettings(address, {
-      isMain: isMainAddressToggleEnabled ? isMainAddress : address.settings.isMain,
-      label: addressLabel.title,
-      color: addressLabel.color
-    })
-    if (isMainAddress && isMainAddressToggleEnabled) {
-      updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
-    }
-    onClose()
+    // updateAddressSettings(address, {
+    //   isDefault: isDefaultAddressToggleEnabled ? isDefaultAddress : address.settings.isDefault,
+    //   label: addressLabel.title,
+    //   color: addressLabel.color
+    // })
+    // if (isDefaultAddress && isDefaultAddressToggleEnabled) {
+    //   updateAddressSettings(mainAddress, { ...mainAddress.settings, isDefault: false })
+    // }
+    // onClose()
   }
 
-  let mainAddressMessage = `${t`Default address for sending transactions.`} `
-  mainAddressMessage += isMainAddressToggleEnabled
+  let defaultAddressMessage = `${t`Default address for sending transactions.`} `
+  defaultAddressMessage += isDefaultAddressToggleEnabled
     ? t('Note that if activated, "{{ address }}" will not be the default address anymore.', {
-        address: mainAddress.getName()
+        address: getName(defaultAddress)
       })
     : t`To remove this address from being the default address, you must set another one as default first.`
 
   return (
     <>
-      <CenteredModal title={t`Address options`} subtitle={address.getName()} onClose={onClose}>
+      <CenteredModal title={t`Address options`} subtitle={getName(address)} onClose={onClose}>
         {!isPassphraseUsed && (
           <>
             <AddressMetadataForm
               label={addressLabel}
               setLabel={setAddressLabel}
-              mainAddressMessage={mainAddressMessage}
-              isMain={isMainAddress}
-              setIsMain={setIsMainAddress}
-              isMainAddressToggleEnabled={isMainAddressToggleEnabled}
+              defaultAddressMessage={defaultAddressMessage}
+              isDefault={isDefaultAddress}
+              setIsDefault={setIsDefaultAddress}
+              isDefaultAddressToggleEnabled={isDefaultAddressToggleEnabled}
               singleAddress
             />
             <HorizontalDivider narrow />
@@ -104,7 +109,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
                 {t`Sweep`}
               </ModalFooterButton>
               <AvailableAmount tabIndex={0}>
-                {t`Available`}: <Amount value={address.availableBalance} color={theme.font.secondary} />
+                {t`Available`}: <Amount value={availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
             </SweepButton>
           }

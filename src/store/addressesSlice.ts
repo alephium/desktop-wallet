@@ -33,6 +33,7 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import { AddressBase, AddressHash, AddressRedux } from '@/types/addresses'
+import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
 import { walletSaved } from './activeWalletSlice'
@@ -128,6 +129,41 @@ const addressesSlice = createSlice({
       addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
       state.isRestoringAddressesFromMetadata = false
       state.status = 'uninitialized'
+    },
+    transactionSent: (state, action: PayloadAction<PendingTransaction>) => {
+      const pendingTransaction = action.payload
+      const address = state.entities[pendingTransaction.fromAddress] as AddressRedux
+
+      address.transactions.push(pendingTransaction.hash)
+    },
+    newAddressGenerated: (state, action: PayloadAction<AddressBase>) => {
+      const address = action.payload
+
+      if (address.isDefault) updateOldDefaultAddress(state)
+
+      addressesAdapter.addOne(state, getDefaultAddressState(address))
+    },
+    defaultAddressChanged: (state, action: PayloadAction<AddressRedux>) => {
+      const address = action.payload
+
+      updateOldDefaultAddress(state)
+
+      addressesAdapter.updateOne(state, {
+        id: address.hash,
+        changes: {
+          isDefault: true
+        }
+      })
+    },
+    addressSettingsSaved: (state, action: PayloadAction<AddressBase>) => {
+      const address = action.payload
+
+      if (address.isDefault) updateOldDefaultAddress(state)
+
+      addressesAdapter.updateOne(state, {
+        id: address.hash,
+        changes: address
+      })
     }
   },
   extraReducers(builder) {
@@ -212,7 +248,15 @@ const addressesSlice = createSlice({
   }
 })
 
-export const { loadingStarted, addressesRestoredFromMetadata, addressRestorationStarted } = addressesSlice.actions
+export const {
+  loadingStarted,
+  addressesRestoredFromMetadata,
+  addressRestorationStarted,
+  transactionSent,
+  newAddressGenerated,
+  defaultAddressChanged,
+  addressSettingsSaved
+} = addressesSlice.actions
 
 export const {
   selectById: selectAddressByHash,
@@ -250,3 +294,16 @@ const getDefaultAddressState = (address: AddressBase) => ({
   tokens: [],
   lastUsed: 0
 })
+
+const updateOldDefaultAddress = (state: AddressesState) => {
+  const oldDefaultAddress = getAddresses(state).find((address) => address.isDefault)
+
+  if (oldDefaultAddress) {
+    addressesAdapter.updateOne(state, {
+      id: oldDefaultAddress.hash,
+      changes: {
+        isDefault: false
+      }
+    })
+  }
+}

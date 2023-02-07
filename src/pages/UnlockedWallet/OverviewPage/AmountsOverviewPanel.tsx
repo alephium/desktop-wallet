@@ -25,13 +25,14 @@ import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SettingsModal from '@/modals/SettingsModal'
 import { walletLocked } from '@/store/activeWalletSlice'
+import { selectAllAddresses } from '@/store/addressesSlice'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
+import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 
 interface AmountsOverviewPanelProps {
@@ -42,7 +43,7 @@ interface AmountsOverviewPanelProps {
 const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { addresses } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
   const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
@@ -51,9 +52,9 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
-  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.balance), BigInt(0))
-  const totalAvailableBalance = addresses.reduce((acc, address) => acc + address.availableBalance, BigInt(0))
-  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.details.lockedBalance), BigInt(0))
+  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
+  const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
+  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
   const balanceInFiat = convertSetToFiat(totalBalance, price ?? 0)
   const isOnline = network.status === 'online'
 

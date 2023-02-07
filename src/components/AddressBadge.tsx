@@ -20,16 +20,17 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import { Address } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
 import dotSvg from '@/images/dot.svg'
+import { AddressRedux } from '@/types/addresses'
+import { getName } from '@/utils/addresses'
 
 import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
 import ClipboardButton from './Buttons/ClipboardButton'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  address: Address
+  address: AddressRedux
   truncate?: boolean
   showHashWhenNoLabel?: boolean
   withBorders?: boolean
@@ -51,17 +52,17 @@ const AddressBadge = ({
 
   if (!address) return null
 
-  return showHashWhenNoLabel && !address.settings.label ? (
+  return showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>
-      {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
+      {!isPassphraseUsed && address.isDefault && !hideStar && <Star>★</Star>}
       <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
-        <Label {...props}>{address.getName()}</Label>
-        {!!address.settings.label && <DotIcon color={address.settings.color} />}
+        {!isPassphraseUsed && address.isDefault && !hideStar && <Star>★</Star>}
+        <Label {...props}>{getName(address)}</Label>
+        {!!address.label && <DotIcon color={address.color} />}
       </RoundBorders>
     </ClipboardButton>
   )

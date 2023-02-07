@@ -28,19 +28,19 @@ import InfoBox from '@/components/InfoBox'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
-import { Address } from '@/contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
+import { AddressRedux } from '@/types/addresses'
+import { getAvailableBalance } from '@/utils/addresses'
 
-// import { sortAddressList } from '@/utils/addresses'
 import Option from './Option'
 
 interface AddressSelectProps {
   id: string
   title: string
-  options: Address[]
-  onAddressChange: (address: Address) => void
-  defaultAddress?: Address
+  options: AddressRedux[]
+  onAddressChange: (address: AddressRedux) => void
+  defaultAddress?: AddressRedux
   label?: string
   disabled?: boolean
   hideEmptyAvailableBalance?: boolean
@@ -96,7 +96,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
           <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
-          {!!address.settings.label && <AddressEllipsed addressHash={address.hash} />}
+          {!!address.label && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
       <ModalPortal>
@@ -125,9 +125,9 @@ const AddressSelectModal = ({
   title,
   hideEmptyAvailableBalance
 }: {
-  options: Address[]
-  selectedOption?: Address
-  setAddress: (address: Address) => void | undefined
+  options: AddressRedux[]
+  selectedOption?: AddressRedux
+  setAddress: (address: AddressRedux) => void | undefined
   onClose: () => void
   title: string
   hideEmptyAvailableBalance?: boolean
@@ -135,11 +135,11 @@ const AddressSelectModal = ({
   const { t } = useTranslation()
   const [selectedAddress, setSelectedAddress] = useState(selectedOption)
   const displayedOptions = hideEmptyAvailableBalance
-    ? options.filter((address) => address.availableBalance > 0)
+    ? options.filter((address) => getAvailableBalance(address) > 0)
     : options
   const noAddressesWithAvailableBalance = hideEmptyAvailableBalance && displayedOptions.length === 0
 
-  const onOptionAddressSelect = (address: Address) => {
+  const onOptionAddressSelect = (address: AddressRedux) => {
     setAddress(address)
     onClose()
   }
@@ -148,7 +148,6 @@ const AddressSelectModal = ({
     <CenteredModal title={t`Addresses`} onClose={onClose}>
       <Description>{title}</Description>
       <div>
-        {/* TODO: Use sortAddressList(displayedOptions) when dependency from contexts/addresses has been removed */}
         {displayedOptions.map((address) => (
           <Option
             key={address.hash}
@@ -156,7 +155,7 @@ const AddressSelectModal = ({
             isSelected={selectedAddress?.hash === address.hash}
           >
             <AddressBadgeStyled address={address} showHashWhenNoLabel />
-            <AmountStyled value={BigInt(address.details.balance)} fadeDecimals />
+            <AmountStyled value={BigInt(address.balance)} fadeDecimals />
           </Option>
         ))}
         {noAddressesWithAvailableBalance && (
