@@ -18,35 +18,32 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AddressKeyPair } from '@alephium/sdk'
 
-import { Address, useAddressesContext } from '@/contexts/addresses'
-import { useGlobalContext } from '@/contexts/global'
+import client from '@/api/client'
+import { saveNewAddresses } from '@/storage-utils/addresses'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/store/actions'
+import { selectAllAddresses } from '@/store/addressesSlice'
+import { AddressBase } from '@/types/addresses'
+import { getRandomLabelColor } from '@/utils/colors'
 
-import { useAppDispatch } from './redux'
+import { useAppDispatch, useAppSelector } from './redux'
 
 const addressDiscoveryWorker = new Worker(new URL('../workers/addressDiscovery.ts', import.meta.url), {
   type: 'module'
 })
 
 const useAddressDiscovery = (enableLoading = true) => {
-  const { client } = useGlobalContext()
-  const { addresses, saveNewAddress } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
   const dispatch = useAppDispatch()
 
-  const discoverAndSaveActiveAddresses = async (mnemonic: string, skipIndexes?: number[]) => {
-    if (!client) throw new Error('Could not discover active addresses, client not found')
-
+  const discoverAndSaveActiveAddresses = async (mnemonic: string, walletName: string, skipIndexes?: number[]) => {
     addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
-      data.forEach(({ hash, publicKey, privateKey, index }) =>
-        saveNewAddress(
-          new Address(hash, publicKey, privateKey, index, {
-            isMain: false,
-            label: '',
-            color: ''
-          }),
-          mnemonic
-        )
-      )
+      const addresses: AddressBase[] = data.map((address) => ({
+        ...address,
+        isDefault: false,
+        color: getRandomLabelColor()
+      }))
+
+      saveNewAddresses(addresses, { walletName, mnemonic })
 
       dispatch(addressDiscoveryFinished(enableLoading))
     }
@@ -56,7 +53,7 @@ const useAddressDiscovery = (enableLoading = true) => {
     addressDiscoveryWorker.postMessage({
       mnemonic,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : addresses.map((address) => address.index),
-      clientUrl: client.explorer.baseUrl
+      clientUrl: client.explorerClient.baseUrl
     })
   }
 

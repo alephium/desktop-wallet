@@ -34,8 +34,9 @@ import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
+import { saveNewAddresses } from '@/storage-utils/addresses'
 import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
-import { getName, saveNewAddress } from '@/utils/addresses'
+import { getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
@@ -87,7 +88,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
   const onGenerateClick = () => {
     if (newAddressData) {
-      saveNewAddress({ ...newAddressData, ...settings }, { walletName, mnemonic })
+      saveNewAddresses([{ ...newAddressData, ...settings }], { walletName, mnemonic })
     } else {
       generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
     }

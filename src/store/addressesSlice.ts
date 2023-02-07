@@ -136,12 +136,12 @@ const addressesSlice = createSlice({
 
       address.transactions.push(pendingTransaction.hash)
     },
-    newAddressGenerated: (state, action: PayloadAction<AddressBase>) => {
-      const address = action.payload
+    newAddressesGenerated: (state, action: PayloadAction<AddressBase[]>) => {
+      const addresses = action.payload
 
-      if (address.isDefault) updateOldDefaultAddress(state)
+      if (addresses.some((address) => address.isDefault)) updateOldDefaultAddress(state)
 
-      addressesAdapter.addOne(state, getDefaultAddressState(address))
+      addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
     },
     defaultAddressChanged: (state, action: PayloadAction<AddressRedux>) => {
       const address = action.payload
@@ -253,7 +253,7 @@ export const {
   addressesRestoredFromMetadata,
   addressRestorationStarted,
   transactionSent,
-  newAddressGenerated,
+  newAddressesGenerated,
   defaultAddressChanged,
   addressSettingsSaved
 } = addressesSlice.actions

@@ -34,18 +34,12 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import { useAppDispatch } from '@/hooks/redux'
 import useAddressDiscovery from '@/hooks/useAddressDiscovery'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletSaved } from '@/store/activeWalletSlice'
-import { syncAddressesData } from '@/store/addressesSlice'
-import { initialAddressSettings } from '@/utils/addresses'
+import { saveNewWallet } from '@/storage-utils/wallet'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { setSnackbarMessage } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
@@ -81,30 +75,9 @@ const ImportWordsPage = () => {
     try {
       const wallet = walletImport(formatedPhrase)
 
-      WalletStorage.store(walletName, password, wallet)
-      AddressMetadataStorage.store({
-        index: 0,
-        settings: initialAddressSettings,
-        dataKey: {
-          mnemonic: wallet.mnemonic,
-          walletName: walletName
-        }
-      })
-      dispatch(
-        walletSaved({
-          name: walletName,
-          mnemonic: wallet.mnemonic,
-          initialAddress: {
-            index: 0,
-            hash: wallet.address,
-            publicKey: wallet.publicKey,
-            privateKey: wallet.privateKey,
-            ...initialAddressSettings
-          }
-        })
-      )
-      dispatch(syncAddressesData())
-      discoverAndSaveActiveAddresses(wallet.mnemonic, [0])
+      saveNewWallet({ wallet, walletName, password })
+
+      discoverAndSaveActiveAddresses(wallet.mnemonic, walletName, [0])
       onButtonNext()
     } catch (e) {
       setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })
