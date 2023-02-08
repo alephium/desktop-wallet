@@ -28,7 +28,6 @@ import { useAppSelector } from '@/hooks/redux'
 import { selectAddressIds } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
 import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
-import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
@@ -42,9 +41,8 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
   const { t } = useTranslation()
   const navigate = useNavigate()
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const [allConfirmedTxs, allUnconfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
+  const [allConfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
     selectAddressesConfirmedTransactions(s, addressHashes),
-    selectAddressesUnconfirmedTransactions(s, addressHashes),
     selectAddressesPendingTransactions(s, addressHashes),
     s.addresses.loading
   ])
@@ -62,11 +60,6 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
         </ActionLink>
       </TableHeaderRow>
       {allPendingTxs.map((tx) => (
-        <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
-          <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
-        </TableRow>
-      ))}
-      {allUnconfirmedTxs.map((tx) => (
         <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
           <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
         </TableRow>

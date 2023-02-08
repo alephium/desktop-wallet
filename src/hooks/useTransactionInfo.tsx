@@ -23,7 +23,7 @@ import {
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
-import { AssetOutput, Output, TransactionLike } from '@alephium/sdk/api/explorer'
+import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses } from '@/store/addressesSlice'
@@ -47,14 +47,14 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
-    amount = calcTxAmountDeltaForAddress(tx as TransactionLike, addressHash)
+    amount = calcTxAmountDeltaForAddress(tx, addressHash)
     amount = amount < 0 ? amount * BigInt(-1) : amount
 
     if (isConsolidationTx(tx)) {
       direction = 'out'
       infoType = 'move'
     } else {
-      direction = getDirection(tx as TransactionLike, addressHash)
+      direction = getDirection(tx, addressHash)
       const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
       infoType =
         (isInternalTransfer && showInternalInflows && direction === 'out') ||

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
@@ -138,6 +138,5 @@ export type TxContext = {
 }
 
 export type AddressConfirmedTransaction = Transaction & { address: Address }
-export type AddressUnconfirmedTransaction = UnconfirmedTransaction & { address: Address }
 export type AddressPendingTransaction = PendingTransaction & { address: Address }
-export type AddressTransaction = AddressConfirmedTransaction | AddressUnconfirmedTransaction | AddressPendingTransaction
+export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction

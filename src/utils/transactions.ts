@@ -25,8 +25,7 @@ import {
 import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '@/types/addresses'
-import { NetworkName } from '@/types/network'
-import { AddressPendingTransaction, AddressTransaction, PendingTx } from '@/types/transactions'
+import { AddressPendingTransaction, AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
@@ -52,14 +51,13 @@ export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, add
 
   return totalOutputAmount - totalOutputAmountOfAddress
 }
-// TODO: Delete?
+
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (
   tx: UnconfirmedTransaction,
-  fromAddress: AddressHash,
-  network: NetworkName
-): PendingTx => {
+  fromAddress: AddressHash
+): PendingTransaction => {
   if (!tx.outputs) throw 'Missing transaction details'
 
   const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress)
@@ -69,15 +67,13 @@ export const convertUnconfirmedTxToPendingTx = (
   if (!toAddress) throw new Error('toAddress is not defined')
 
   return {
-    txId: tx.hash,
+    hash: tx.hash,
     fromAddress,
     toAddress,
     // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
     timestamp: tx.lastSeen,
     type: 'transfer',
-    // SUPER important that this is the same as the current network. Lots of debug time used tracking this down.
-    network,
-    amount,
+    amount: amount.toString(),
     status: 'pending'
   }
 }

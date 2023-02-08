@@ -20,6 +20,7 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
+import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { AddressDataSyncResult, AddressHash } from '../types/addresses'
 import { AddressPendingTransaction, PendingTransaction } from '../types/transactions'
@@ -51,7 +52,7 @@ const pendingTransactionsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(transactionSent, pendingTransactionsAdapter.addOne)
-      .addCase(syncAddressesData.fulfilled, removeTransactions)
+      .addCase(syncAddressesData.fulfilled, updateTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(walletLocked, () => initialState)
@@ -71,15 +72,26 @@ export const selectAddressesPendingTransactions = createSelector(
 
 export default pendingTransactionsSlice
 
+const updateTransactions = (state: PendingTransactionsState, action: PayloadAction<AddressDataSyncResult[]>) => {
+  const addresses = action.payload
+  const confirmedTransactionsHashes = addresses.flatMap((address) => address.transactions).map((tx) => tx.hash)
+
+  // Converting unconfirmed txs to pending txs because the amount delta calculation doesn't work for unconfirmed txs.
+  // See: https://github.com/alephium/explorer-backend/issues/360
+  const pendingTransactions = addresses
+    .flatMap((address) => address.unconfirmedTransactions.map((tx) => ({ tx, address: address.hash })))
+    .map(({ tx, address }) => convertUnconfirmedTxToPendingTx(tx, address))
+
+  pendingTransactionsAdapter.removeMany(state, confirmedTransactionsHashes)
+  pendingTransactionsAdapter.upsertMany(state, pendingTransactions)
+}
+
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<AddressDataSyncResult[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<{ transactions: Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
-    ? [
-        ...action.payload.flatMap((address) => address.transactions),
-        ...action.payload.flatMap((address) => address.unconfirmedTransactions)
-      ]
+    ? action.payload.flatMap((address) => address.transactions)
     : action.payload?.transactions
 
   if (transactions && transactions.length > 0) {

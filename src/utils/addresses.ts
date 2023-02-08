@@ -16,14 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 
 export const selectAddressTransactions = (
   allAddresses: Address[],
-  transactions: (Transaction | UnconfirmedTransaction | PendingTransaction)[],
+  transactions: (Transaction | PendingTransaction)[],
   addressHashes: AddressHash[]
 ) => {
   const addresses = allAddresses.filter((address) => addressHashes.includes(address.hash))

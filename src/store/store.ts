@@ -21,7 +21,6 @@ import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
 import confirmedTransactionsSlice from '@/store/confirmedTransactionsSlice'
 import pendingTransactionsSlice from '@/store/pendingTransactionsSlice'
-import unconfirmedTransactionsSlice from '@/store/unconfirmedTransactionsSlice'
 
 import activeWalletSlice from './activeWalletSlice'
 import addressesSlice from './addressesSlice'
@@ -40,7 +39,6 @@ export const store = configureStore({
     [networkSlice.name]: networkSlice.reducer,
     [addressesSlice.name]: addressesSlice.reducer,
     [confirmedTransactionsSlice.name]: confirmedTransactionsSlice.reducer,
-    [unconfirmedTransactionsSlice.name]: unconfirmedTransactionsSlice.reducer,
     [pendingTransactionsSlice.name]: pendingTransactionsSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },

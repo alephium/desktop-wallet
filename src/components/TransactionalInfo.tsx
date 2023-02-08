@@ -28,7 +28,7 @@ import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { selectAddressByHash } from '@/store/addressesSlice'
 import { AddressHash } from '@/types/addresses'
-import { AddressConfirmedTransaction, AddressTransaction, AddressUnconfirmedTransaction } from '@/types/transactions'
+import { AddressTransaction } from '@/types/transactions'
 import { isPendingTx } from '@/utils/transactions'
 
 import AddressBadge from './AddressBadge'
@@ -66,7 +66,6 @@ const TransactionalInfo = ({
   const pendingToAddressComponent = isPendingTx(tx) && (
     <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
   )
-  const timestamp = (tx as AddressConfirmedTransaction).timestamp ?? (tx as AddressUnconfirmedTransaction).lastSeen
   const amountSign =
     showInternalInflows && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
 
@@ -81,7 +80,7 @@ const TransactionalInfo = ({
         <TokenTimeInner>
           {label}
           <HiddenLabel text={`${formatAmountForDisplay(BigInt(amount ?? 0))} ${token}`} />
-          <TimeSince timestamp={timestamp} faded />
+          <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>
       <CellToken>

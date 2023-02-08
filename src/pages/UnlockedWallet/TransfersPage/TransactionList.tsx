@@ -26,7 +26,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
 import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
-import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
@@ -40,9 +39,8 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const [allConfirmedTxs, allUnconfirmedTxs, allPendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
+  const [allConfirmedTxs, allPendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
     selectAddressesConfirmedTransactions(s, addressHashes),
-    selectAddressesUnconfirmedTransactions(s, addressHashes),
     selectAddressesPendingTransactions(s, addressHashes),
     s.addresses.allTransactionsLoaded,
     s.addresses.loading
@@ -59,11 +57,6 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
         <TableTitle>{t('Transactions')}</TableTitle>
       </TableHeaderRow>
       {allPendingTxs.map((tx) => (
-        <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
-          <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
-        </TableRow>
-      ))}
-      {allUnconfirmedTxs.map((tx) => (
         <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
           <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
         </TableRow>

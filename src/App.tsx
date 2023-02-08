@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
-import { uniq } from 'lodash'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
@@ -35,7 +34,6 @@ import { selectAllAddresses, syncAddressesData } from '@/store/addressesSlice'
 import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from '@/store/networkSlice'
 import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
 import { generalSettingsMigrated } from '@/store/settingsSlice'
-import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
@@ -47,10 +45,9 @@ const App = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = addresses.map((address) => address.hash)
-  const [allUnconfirmedTxs, allPendingTxs] = useAppSelector((s) => [
-    selectAddressesUnconfirmedTransactions(s, addressHashes),
-    selectAddressesPendingTransactions(s, addressHashes)
-  ])
+  const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
+    (tx) => tx.address.hash
+  )
   const [settings, network, addressesStatus] = useAppSelector((s) => [
     s.settings,
     s.network,
@@ -60,11 +57,6 @@ const App = () => {
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
-
-  const addressesWithUnconfirmedTxs = uniq([
-    ...allUnconfirmedTxs.map((tx) => tx.address.hash),
-    ...allPendingTxs.map((tx) => tx.address.hash)
-  ])
 
   useEffect(() => {
     const localStorageSettings = migrateDeprecatedSettings()
@@ -125,8 +117,8 @@ const App = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (addressesWithUnconfirmedTxs.length > 0) {
-        dispatch(syncAddressesData(addressesWithUnconfirmedTxs))
+      if (pendingTxHashes.length > 0) {
+        dispatch(syncAddressesData(pendingTxHashes))
       } else {
         clearInterval(interval)
       }
@@ -135,7 +127,7 @@ const App = () => {
     return () => {
       clearInterval(interval)
     }
-  }, [addressesWithUnconfirmedTxs, dispatch])
+  }, [pendingTxHashes, dispatch])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
