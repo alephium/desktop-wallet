@@ -30,7 +30,7 @@ import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { getAvailableBalance } from '@/utils/addresses'
 
 import Option from './Option'
@@ -38,9 +38,9 @@ import Option from './Option'
 interface AddressSelectProps {
   id: string
   title: string
-  options: AddressRedux[]
-  onAddressChange: (address: AddressRedux) => void
-  defaultAddress?: AddressRedux
+  options: Address[]
+  onAddressChange: (address: Address) => void
+  defaultAddress?: Address
   label?: string
   disabled?: boolean
   hideEmptyAvailableBalance?: boolean
@@ -125,9 +125,9 @@ const AddressSelectModal = ({
   title,
   hideEmptyAvailableBalance
 }: {
-  options: AddressRedux[]
-  selectedOption?: AddressRedux
-  setAddress: (address: AddressRedux) => void | undefined
+  options: Address[]
+  selectedOption?: Address
+  setAddress: (address: Address) => void | undefined
   onClose: () => void
   title: string
   hideEmptyAvailableBalance?: boolean
@@ -139,7 +139,7 @@ const AddressSelectModal = ({
     : options
   const noAddressesWithAvailableBalance = hideEmptyAvailableBalance && displayedOptions.length === 0
 
-  const onOptionAddressSelect = (address: AddressRedux) => {
+  const onOptionAddressSelect = (address: Address) => {
     setAddress(address)
     onClose()
   }

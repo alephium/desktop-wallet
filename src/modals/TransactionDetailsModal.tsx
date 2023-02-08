@@ -32,7 +32,7 @@ import { useAppSelector } from '@/hooks/redux'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 
@@ -41,7 +41,7 @@ import SideModal from './SideModal'
 
 interface TransactionDetailsModalProps {
   transaction: AddressConfirmedTransaction
-  address: AddressRedux
+  address: Address
   onClose: () => void
 }
 

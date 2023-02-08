@@ -32,7 +32,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
-import { AddressBase, AddressHash, AddressRedux, AddressSettingsRedux, LoadingEnabled } from '@/types/addresses'
+import { Address, AddressBase, AddressHash, AddressSettingsRedux, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
@@ -41,7 +41,7 @@ import { RootState } from './store'
 
 const sliceName = 'addresses'
 
-const addressesAdapter = createEntityAdapter<AddressRedux>({
+const addressesAdapter = createEntityAdapter<Address>({
   selectId: (address) => address.hash,
   sortComparer: (a, b) => {
     // Always keep main address to the top of the list
@@ -51,7 +51,7 @@ const addressesAdapter = createEntityAdapter<AddressRedux>({
   }
 })
 
-interface AddressesState extends EntityState<AddressRedux> {
+interface AddressesState extends EntityState<Address> {
   loading: boolean
   transactionsPageLoaded: number
   allTransactionsLoaded: boolean
@@ -142,7 +142,7 @@ const addressesSlice = createSlice({
     },
     transactionSent: (state, action: PayloadAction<PendingTransaction>) => {
       const pendingTransaction = action.payload
-      const address = state.entities[pendingTransaction.fromAddress] as AddressRedux
+      const address = state.entities[pendingTransaction.fromAddress] as Address
 
       address.transactions.push(pendingTransaction.hash)
     },
@@ -153,7 +153,7 @@ const addressesSlice = createSlice({
 
       addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
     },
-    defaultAddressChanged: (state, action: PayloadAction<AddressRedux>) => {
+    defaultAddressChanged: (state, action: PayloadAction<Address>) => {
       const address = action.payload
 
       updateOldDefaultAddress(state)
@@ -191,7 +191,7 @@ const addressesSlice = createSlice({
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
         const updatedAddresses = addressData.map(({ hash, details, tokens, transactions }) => {
-          const address = state.entities[hash] as AddressRedux
+          const address = state.entities[hash] as Address
 
           return {
             id: hash,
@@ -216,7 +216,7 @@ const addressesSlice = createSlice({
         if (!addressTransactionsData) return
 
         const { hash, transactions, page } = addressTransactionsData
-        const address = state.entities[hash] as AddressRedux
+        const address = state.entities[hash] as Address
         const newTxHashes = extractNewTransactionHashes(transactions, address.transactions)
 
         addressesAdapter.updateOne(state, {
@@ -298,7 +298,7 @@ export const selectTotalBalance = createSelector([selectAllAddresses], (addresse
   addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
 )
 
-const getAddresses = (state: AddressesState) => Object.values(state.entities) as AddressRedux[]
+const getAddresses = (state: AddressesState) => Object.values(state.entities) as Address[]
 
 export default addressesSlice
 

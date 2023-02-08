@@ -24,7 +24,7 @@ import {
 } from '@alephium/sdk'
 import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { AddressHash, AddressRedux } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { AddressPendingTransaction, AddressTransaction, PendingTx } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
@@ -35,7 +35,7 @@ export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean 
 export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransaction =>
   (tx as AddressPendingTransaction).status === 'pending'
 
-export const hasOnlyOutputsWith = (outputs: Output[], addresses: AddressRedux[]): boolean =>
+export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
 export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, address: AddressHash): bigint => {
@@ -82,7 +82,7 @@ export const convertUnconfirmedTxToPendingTx = (
   }
 }
 
-export const expectedAmount = (data: { fromAddress: AddressRedux; alphAmount?: string }, fees: bigint): bigint => {
+export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
   const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)
   const amountIncludingFees = amountInSet + fees
   const exceededBy = amountIncludingFees - getAvailableBalance(data.fromAddress)

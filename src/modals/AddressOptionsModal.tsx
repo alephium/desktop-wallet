@@ -27,7 +27,7 @@ import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import { saveAddressSettings } from '@/storage-utils/addresses'
 import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { getAvailableBalance, getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
@@ -36,7 +36,7 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './Centered
 import ModalPortal from './ModalPortal'
 
 interface AddressOptionsModalProps {
-  address: AddressRedux
+  address: Address
   onClose: () => void
 }
 

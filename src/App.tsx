@@ -17,33 +17,40 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
+import { uniq } from 'lodash'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
+import { CenteredSection } from '@/components/PageComponents/PageContainers'
+import SnackbarManager from '@/components/SnackbarManager'
+import SplashScreen from '@/components/SplashScreen'
+import UpdateWalletBanner from '@/components/UpdateWalletBanner'
+import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import UpdateWalletModal from '@/modals/UpdateWalletModal'
+import Router from '@/routes'
 import { selectAllAddresses, syncAddressesData } from '@/store/addressesSlice'
+import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from '@/store/networkSlice'
+import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import { generalSettingsMigrated } from '@/store/settingsSlice'
+import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
+import { GlobalStyle } from '@/style/globalStyles'
+import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
-
-import { CenteredSection } from './components/PageComponents/PageContainers'
-import SnackbarManager from './components/SnackbarManager'
-import SplashScreen from './components/SplashScreen'
-import UpdateWalletBanner from './components/UpdateWalletBanner'
-import { useGlobalContext } from './contexts/global'
-import { useAppDispatch, useAppSelector } from './hooks/redux'
-import UpdateWalletModal from './modals/UpdateWalletModal'
-import Router from './routes'
-import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from './store/networkSlice'
-import { generalSettingsMigrated } from './store/settingsSlice'
-import { GlobalStyle } from './style/globalStyles'
-import { darkTheme, lightTheme } from './style/themes'
-import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
+import { migrateDeprecatedSettings, migrateWalletData } from '@/utils/migration'
 
 const App = () => {
   const { t } = useTranslation()
   const { snackbarMessage, newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
+  const addressHashes = addresses.map((address) => address.hash)
+  const [allUnconfirmedTxs, allPendingTxs] = useAppSelector((s) => [
+    selectAddressesUnconfirmedTransactions(s, addressHashes),
+    selectAddressesPendingTransactions(s, addressHashes)
+  ])
   const [settings, network, addressesStatus] = useAppSelector((s) => [
     s.settings,
     s.network,
@@ -53,6 +60,11 @@ const App = () => {
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
+
+  const addressesWithUnconfirmedTxs = uniq([
+    ...allUnconfirmedTxs.map((tx) => tx.address.hash),
+    ...allPendingTxs.map((tx) => tx.address.hash)
+  ])
 
   useEffect(() => {
     const localStorageSettings = migrateDeprecatedSettings()
@@ -110,6 +122,20 @@ const App = () => {
       dispatch(syncAddressesData())
     }
   }, [addresses.length, addressesStatus, dispatch, network.status])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (addressesWithUnconfirmedTxs.length > 0) {
+        dispatch(syncAddressesData(addressesWithUnconfirmedTxs))
+      } else {
+        clearInterval(interval)
+      }
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [addressesWithUnconfirmedTxs, dispatch])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

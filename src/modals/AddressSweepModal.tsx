@@ -31,12 +31,12 @@ import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/store/addressesSlice'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
-type SweepAddress = AddressRedux | undefined
+type SweepAddress = Address | undefined
 
 interface AddressSweepModal {
   sweepAddress?: SweepAddress
@@ -118,7 +118,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(false)
   }
 
-  const onAddressChange = (type: 'from' | 'to', address: AddressRedux) => {
+  const onAddressChange = (type: 'from' | 'to', address: Address) => {
     setSweepAddresses((prev) => ({ ...prev, [type]: address }))
   }
 

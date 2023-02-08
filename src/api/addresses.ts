@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import client from '@/api/client'
-import { AddressDataSyncResult, AddressHash, AddressRedux } from '@/types/addresses'
+import { Address, AddressDataSyncResult, AddressHash } from '@/types/addresses'
 
 export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<AddressDataSyncResult[]> => {
   const results = []
@@ -53,7 +53,7 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
   return results
 }
 
-export const fetchAddressTransactionsNextPage = async (address: AddressRedux) => {
+export const fetchAddressTransactionsNextPage = async (address: Address) => {
   let nextPage = address.transactionsPageLoaded
   let nextPageTransactions = [] as Transaction[]
 
@@ -70,7 +70,7 @@ export const fetchAddressTransactionsNextPage = async (address: AddressRedux) =>
   }
 }
 
-export const fetchAddressesTransactionsNextPage = async (addresses: AddressRedux[], nextPage: number) => {
+export const fetchAddressesTransactionsNextPage = async (addresses: Address[], nextPage: number) => {
   const addressHashes = addresses.filter((address) => !address.allTransactionPagesLoaded).map((address) => address.hash)
   const { data: transactions } = await client.explorerClient.addresses.postAddressesTransactions(
     { page: nextPage },

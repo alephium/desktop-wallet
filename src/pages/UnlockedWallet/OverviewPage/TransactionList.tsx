@@ -41,11 +41,11 @@ interface OverviewPageTransactionListProps {
 const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const addresses = useAppSelector(selectAddressIds) as AddressHash[]
+  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const [allConfirmedTxs, allUnconfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
-    selectAddressesConfirmedTransactions(s, addresses),
-    selectAddressesUnconfirmedTransactions(s, addresses),
-    selectAddressesPendingTransactions(s, addresses),
+    selectAddressesConfirmedTransactions(s, addressHashes),
+    selectAddressesUnconfirmedTransactions(s, addressHashes),
+    selectAddressesPendingTransactions(s, addressHashes),
     s.addresses.loading
   ])
 

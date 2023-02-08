@@ -31,7 +31,7 @@ import { ReactComponent as PaperPlaneDarkSVG } from '@/images/paper-plane-dark.s
 import { ReactComponent as PaperPlaneLightSVG } from '@/images/paper-plane-light.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
 
@@ -39,7 +39,7 @@ import ModalPortal from '../ModalPortal'
 
 type Step = 'build-tx' | 'info-check' | 'password-check'
 
-type SendModalProps<PT extends { fromAddress: AddressRedux }, T extends PT> = {
+type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   title: string
   initialTxData: PT
   onClose: () => void
@@ -50,7 +50,7 @@ type SendModalProps<PT extends { fromAddress: AddressRedux }, T extends PT> = {
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
-function SendModal<PT extends { fromAddress: AddressRedux }, T extends PT>({
+function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   title,
   initialTxData,
   onClose,

@@ -44,7 +44,7 @@ export type AddressMetadataRedux = AddressSettingsRedux & {
 
 export type AddressBase = AddressKeyPair & AddressSettingsRedux
 
-export type AddressRedux = AddressBase &
+export type Address = AddressBase &
   AddressInfo & {
     group: number
     transactions: (Transaction['hash'] | PendingTransaction['hash'])[]

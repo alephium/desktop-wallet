@@ -25,7 +25,7 @@ import {
   syncAddressesData
 } from '@/store/addressesSlice'
 import { store } from '@/store/store'
-import { AddressBase, AddressRedux, AddressSettingsRedux } from '@/types/addresses'
+import { Address, AddressBase, AddressSettingsRedux } from '@/types/addresses'
 
 export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => {
   addresses.forEach((address) =>
@@ -44,7 +44,7 @@ export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => 
   store.dispatch(syncAddressesData(addresses.map((address) => address.hash)))
 }
 
-export const changeDefaultAddress = (address: AddressRedux, dataKey: DataKey) => {
+export const changeDefaultAddress = (address: Address, dataKey: DataKey) => {
   AddressMetadataStorage.store({
     dataKey,
     index: address.index,

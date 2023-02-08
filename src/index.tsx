@@ -29,7 +29,6 @@ import { ThemeProvider } from 'styled-components'
 
 import App from './App'
 import Tooltips from './components/Tooltips'
-import { AddressesContextProvider } from './contexts/addresses'
 import { GlobalContextProvider } from './contexts/global'
 import { WalletConnectContextProvider } from './contexts/walletconnect'
 import * as serviceWorker from './serviceWorker'
@@ -49,15 +48,13 @@ ReactDOM.render(
         <ThemeProvider theme={lightTheme}>
           <Suspense fallback="loading">
             <GlobalContextProvider>
-              <AddressesContextProvider>
-                <WalletConnectContextProvider>
-                  <GlobalStyle />
-                  <TooltipProvider>
-                    <App />
-                    <Tooltips />
-                  </TooltipProvider>
-                </WalletConnectContextProvider>
-              </AddressesContextProvider>
+              <WalletConnectContextProvider>
+                <GlobalStyle />
+                <TooltipProvider>
+                  <App />
+                  <Tooltips />
+                </TooltipProvider>
+              </WalletConnectContextProvider>
             </GlobalContextProvider>
           </Suspense>
         </ThemeProvider>
