@@ -73,7 +73,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             {label}
           </Direction>
           <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
-          <AddressBadge address={address} truncate withBorders />
+          <AddressBadge addressHash={address.hash} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
@@ -82,7 +82,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -100,7 +100,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (

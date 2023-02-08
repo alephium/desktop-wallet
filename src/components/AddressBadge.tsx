@@ -20,17 +20,17 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import AddressEllipsed from '@/components/AddressEllipsed'
+import Badge from '@/components/Badge'
+import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import { useAppSelector } from '@/hooks/redux'
 import dotSvg from '@/images/dot.svg'
-import { AddressRedux } from '@/types/addresses'
+import { selectAddressByHash } from '@/store/addressesSlice'
+import { AddressHash } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 
-import AddressEllipsed from './AddressEllipsed'
-import Badge from './Badge'
-import ClipboardButton from './Buttons/ClipboardButton'
-
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  address: AddressRedux
+  addressHash: AddressHash
   truncate?: boolean
   showHashWhenNoLabel?: boolean
   withBorders?: boolean
@@ -39,7 +39,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 }
 
 const AddressBadge = ({
-  address,
+  addressHash,
   showHashWhenNoLabel,
   withBorders,
   hideStar,
@@ -48,9 +48,10 @@ const AddressBadge = ({
   ...props
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
+  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
 
-  if (!address) return null
+  if (!address) return <AddressEllipsed addressHash={addressHash} />
 
   return showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>

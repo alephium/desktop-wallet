@@ -80,7 +80,7 @@ const AddressDetailsPage = () => {
           <PageH1Styled>
             {t`Address details`} {address.isDefault && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
-          {address.label && <AddressBadgeStyled address={address} hideStar />}
+          {address.label && <AddressBadgeStyled addressHash={address.hash} hideStar />}
           <OptionsButton
             transparent
             squared
@@ -108,7 +108,7 @@ const AddressDetailsPage = () => {
             Label
           </DataListCell>
           <DataListCell role="gridcell" tabIndex={0}>
-            {address.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
+            {address.label ? <AddressBadge addressHash={address.hash} truncate hideStar /> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow role="row">

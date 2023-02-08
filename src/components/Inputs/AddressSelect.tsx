@@ -95,7 +95,7 @@ function AddressSelect({
           </MoreIcon>
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id}>
-          <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+          <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
           {!!address.label && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
@@ -154,7 +154,7 @@ const AddressSelectModal = ({
             onSelect={() => setSelectedAddress(address)}
             isSelected={selectedAddress?.hash === address.hash}
           >
-            <AddressBadgeStyled address={address} showHashWhenNoLabel />
+            <AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel />
             <AmountStyled value={BigInt(address.balance)} fadeDecimals />
           </Option>
         ))}

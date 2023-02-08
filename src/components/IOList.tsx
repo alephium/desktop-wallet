@@ -21,14 +21,11 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useAddressesContext } from '@/contexts/addresses'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
-import { AddressHash } from '@/types/addresses'
 import { GENESIS_TIMESTAMP } from '@/utils/constants'
 
 import ActionLink from './ActionLink'
 import AddressBadge from './AddressBadge'
-import AddressEllipsed from './AddressEllipsed'
 import Badge from './Badge'
 
 interface IOListProps {
@@ -53,14 +50,15 @@ const IOList = ({
   disableA11y = false
 }: IOListProps) => {
   const { t } = useTranslation()
-  const { getAddress } = useAddressesContext()
   const handleShowAddress = useAddressLinkHandler()
+
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
 
   if (io && io.length > 0) {
     const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
     const notCurrentAddresses = _(io.filter((o) => o.address !== currentAddress))
       .map((v) => v.address)
+      .filter((v): v is string => v !== undefined)
       .uniq()
       .value()
 
@@ -73,27 +71,23 @@ const IOList = ({
     // make it a change address but a legimitate receiving address.
     const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
 
-    const getAddressComponent = (addressHash: AddressHash) => {
-      const address = getAddress(addressHash)
-
-      return address ? (
-        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders disableA11y={disableA11y} />
-      ) : (
-        <AddressEllipsed addressHash={addressHash} disableA11y={disableA11y} />
-      )
-    }
-
     return truncate ? (
       <TruncateWrap>
-        {getAddressComponent(addressHash)}
+        <AddressBadge truncate addressHash={addressHash} showHashWhenNoLabel withBorders disableA11y={disableA11y} />
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
         {addressesToShow.map((addressHash) => {
-          if (!addressHash) return null
-
-          const addressComponent = getAddressComponent(addressHash)
+          const addressComponent = (
+            <AddressBadge
+              truncate
+              addressHash={addressHash}
+              showHashWhenNoLabel
+              withBorders
+              disableA11y={disableA11y}
+            />
+          )
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}

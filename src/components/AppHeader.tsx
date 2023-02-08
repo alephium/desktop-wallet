@@ -24,13 +24,13 @@ import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
-import { useAddressesContext } from '@/contexts/addresses'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
+import { selectDefaultAddress } from '@/store/addressesSlice'
 import { discreetModeToggled } from '@/store/settingsSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
@@ -54,13 +54,13 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const scrollY = useMotionValue(0)
   const theme = useTheme()
   const dispatch = useAppDispatch()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
   const [{ mnemonic, isPassphraseUsed }, { discreetMode }, network] = useAppSelector((s) => [
     s.activeWallet,
     s.settings,
     s.network
   ])
   const { deepLinkUri } = useWalletConnectContext()
-  const { mainAddress } = useAddressesContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -111,11 +111,11 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           <TooltipWrapper content={t`Discreet mode`}>
             <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
           </TooltipWrapper>
-          {mainAddress && !isPassphraseUsed && (
+          {defaultAddress && !isPassphraseUsed && (
             <>
               <HeaderDivider />
               <TooltipWrapper content={t`Default address`}>
-                <AddressBadge address={mainAddress} />
+                <AddressBadge addressHash={defaultAddress.hash} />
               </TooltipWrapper>
             </>
           )}

@@ -23,15 +23,15 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
+import { selectAddressByHash } from '@/store/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction, AddressTransaction, AddressUnconfirmedTransaction } from '@/types/transactions'
 import { isPendingTx } from '@/utils/transactions'
 
 import AddressBadge from './AddressBadge'
-import AddressEllipsed from './AddressEllipsed'
 import Amount from './Amount'
 import HiddenLabel from './HiddenLabel'
 import IOList from './IOList'
@@ -54,30 +54,18 @@ const TransactionalInfo = ({
   className,
   showInternalInflows
 }: TransactionalInfoProps) => {
+  const { t } = useTranslation()
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
-  const { getAddress } = useAddressesContext()
+  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
-  const { t } = useTranslation()
-
-  const address = getAddress(addressHash)
-
   if (!address) return null
 
-  let pendingToAddressComponent
-
-  if (isPendingTx(tx)) {
-    const pendingToAddress = getAddress(tx.toAddress)
-
-    pendingToAddressComponent = pendingToAddress ? (
-      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
-    ) : (
-      <AddressEllipsed addressHash={tx.toAddress} />
-    )
-  }
-
+  const pendingToAddressComponent = isPendingTx(tx) && (
+    <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
+  )
   const timestamp = (tx as AddressConfirmedTransaction).timestamp ?? (tx as AddressUnconfirmedTransaction).lastSeen
   const amountSign =
     showInternalInflows && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
@@ -103,7 +91,7 @@ const TransactionalInfo = ({
         <CellAddress alignRight>
           <HiddenLabel text={t`from`} />
           {direction === 'out' && (
-            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
+            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel withBorders disableA11y />
           )}
           {direction === 'in' &&
             (pendingToAddressComponent || (
@@ -130,7 +118,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
+            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel withBorders disableA11y />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out') &&
             (pendingToAddressComponent || (
