@@ -32,7 +32,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
-import { AddressBase, AddressHash, AddressRedux, LoadingEnabled } from '@/types/addresses'
+import { AddressBase, AddressHash, AddressRedux, AddressSettingsRedux, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
@@ -165,14 +165,17 @@ const addressesSlice = createSlice({
         }
       })
     },
-    addressSettingsSaved: (state, action: PayloadAction<AddressBase>) => {
-      const address = action.payload
+    addressSettingsSaved: (
+      state,
+      action: PayloadAction<{ addressHash: AddressHash; settings: AddressSettingsRedux }>
+    ) => {
+      const { addressHash, settings } = action.payload
 
-      if (address.isDefault) updateOldDefaultAddress(state)
+      if (settings.isDefault) updateOldDefaultAddress(state)
 
       addressesAdapter.updateOne(state, {
-        id: address.hash,
-        changes: address
+        id: addressHash,
+        changes: settings
       })
     }
   },

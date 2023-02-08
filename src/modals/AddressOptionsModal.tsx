@@ -25,6 +25,7 @@ import Amount from '@/components/Amount'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
+import { saveAddressSettings } from '@/storage-utils/addresses'
 import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
 import { AddressRedux } from '@/types/addresses'
 import { getAvailableBalance, getName } from '@/utils/addresses'
@@ -42,7 +43,7 @@ interface AddressOptionsModalProps {
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
+  const { name: walletName, mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -53,23 +54,24 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
   const [isDefaultAddress, setIsDefaultAddress] = useState(address.isDefault ?? false)
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
 
-  if (!address || !defaultAddress) return null
+  if (!address || !defaultAddress || !mnemonic || !walletName) return null
 
   const availableBalance = getAvailableBalance(address)
   const isDefaultAddressToggleEnabled = defaultAddress.hash !== address.hash
   const isSweepButtonEnabled = addresses.length > 1 && availableBalance > 0
 
   // TODO: Implement through Redux
-  const onGenerateClick = () => {
-    // updateAddressSettings(address, {
-    //   isDefault: isDefaultAddressToggleEnabled ? isDefaultAddress : address.settings.isDefault,
-    //   label: addressLabel.title,
-    //   color: addressLabel.color
-    // })
-    // if (isDefaultAddress && isDefaultAddressToggleEnabled) {
-    //   updateAddressSettings(mainAddress, { ...mainAddress.settings, isDefault: false })
-    // }
-    // onClose()
+  const onSaveClick = () => {
+    saveAddressSettings(
+      address,
+      {
+        isDefault: isDefaultAddressToggleEnabled ? isDefaultAddress : address.isDefault,
+        label: addressLabel.title,
+        color: addressLabel.color
+      },
+      { walletName, mnemonic }
+    )
+    onClose()
   }
 
   let defaultAddressMessage = `${t`Default address for sending transactions.`} `
@@ -119,7 +121,7 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
           <ModalFooterButton role="secondary" onClick={onClose}>
             {t`Cancel`}
           </ModalFooterButton>
-          <ModalFooterButton onClick={onGenerateClick}>{t`Save`}</ModalFooterButton>
+          <ModalFooterButton onClick={onSaveClick}>{t`Save`}</ModalFooterButton>
         </ModalFooterButtons>
       </CenteredModal>
       <ModalPortal>

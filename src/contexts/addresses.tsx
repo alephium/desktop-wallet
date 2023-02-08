@@ -24,12 +24,10 @@ import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { useAppSelector } from '@/hooks/redux'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { AddressHash, AddressSettings } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
-import { getRandomLabelColor } from '@/utils/colors'
 
 import { useGlobalContext } from './global'
 
@@ -103,17 +101,11 @@ export type AddressesStateMap = Map<AddressHash, Address>
 
 export interface AddressesContextProps {
   addresses: Address[]
-  mainAddress?: Address
-  setAddress: (address: Address) => void
-  updateAddressSettings: (address: Address, settings: AddressSettings) => void
   isLoadingData: boolean
 }
 
 export const initialAddressesContext: AddressesContextProps = {
   addresses: [],
-  mainAddress: undefined,
-  setAddress: () => undefined,
-  updateAddressSettings: () => null,
   isLoadingData: false
 }
 
@@ -125,7 +117,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 }) => {
   const { t } = useTranslation()
   const { client, setSnackbarMessage } = useGlobalContext()
-  const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
+  const network = useAppSelector((s) => s.network)
 
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
@@ -155,37 +147,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       console.log('✅ Updated addresses state: ', newAddresses)
     },
     [constructMapKey, network.name]
-  )
-
-  const setAddress = useCallback(
-    (address: Address) => {
-      updateAddressesState([address])
-    },
-    [updateAddressesState]
-  )
-
-  const updateAddressSettings = useCallback(
-    (address: Address, settings: AddressSettings) => {
-      if (!activeWallet.mnemonic) throw new Error('Could not update address settings, mnemonic not found')
-      if (!activeWallet.name) throw new Error('Could not update address settings, wallet name not found')
-
-      if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store({
-          dataKey: {
-            mnemonic: activeWallet.mnemonic,
-            walletName: activeWallet.name
-          },
-          index: address.index,
-          settings: {
-            ...settings,
-            isDefault: settings.isMain,
-            color: settings.color ?? getRandomLabelColor()
-          }
-        })
-      address.settings = settings
-      setAddress(address)
-    },
-    [activeWallet.isPassphraseUsed, activeWallet.mnemonic, activeWallet.name, setAddress]
   )
 
   const displayDataFetchingError = useCallback(
@@ -296,9 +257,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       value={merge(
         {
           addresses: addressesOfCurrentNetwork,
-          mainAddress: addressesOfCurrentNetwork.find((address) => address.settings.isMain),
-          setAddress,
-          updateAddressSettings,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

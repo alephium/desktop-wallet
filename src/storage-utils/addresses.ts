@@ -18,9 +18,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { DataKey } from '@/persistent-storage/encrypted-storage'
-import { defaultAddressChanged, newAddressesGenerated, syncAddressesData } from '@/store/addressesSlice'
+import {
+  addressSettingsSaved,
+  defaultAddressChanged,
+  newAddressesGenerated,
+  syncAddressesData
+} from '@/store/addressesSlice'
 import { store } from '@/store/store'
-import { AddressBase, AddressRedux } from '@/types/addresses'
+import { AddressBase, AddressRedux, AddressSettingsRedux } from '@/types/addresses'
 
 export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => {
   addresses.forEach((address) =>
@@ -51,4 +56,14 @@ export const changeDefaultAddress = (address: AddressRedux, dataKey: DataKey) =>
   })
 
   store.dispatch(defaultAddressChanged(address))
+}
+
+export const saveAddressSettings = (address: AddressBase, settings: AddressSettingsRedux, dataKey: DataKey) => {
+  AddressMetadataStorage.store({
+    dataKey,
+    index: address.index,
+    settings
+  })
+
+  store.dispatch(addressSettingsSaved({ addressHash: address.hash, settings }))
 }
