@@ -19,7 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { AddressHash } from '../types/addresses'
+import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
+
+import { AddressDataSyncResult, AddressHash } from '../types/addresses'
 import { AddressPendingTransaction, PendingTransaction } from '../types/transactions'
 import { selectAddressTransactions } from '../utils/addresses'
 import {
@@ -52,6 +54,8 @@ const pendingTransactionsSlice = createSlice({
       .addCase(syncAddressesData.fulfilled, removeTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
+      .addCase(walletLocked, () => initialState)
+      .addCase(walletSwitched, () => initialState)
   }
 })
 
@@ -69,10 +73,13 @@ export default pendingTransactionsSlice
 
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<AddressDataSyncResult[] | { transactions: Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
-    ? action.payload.flatMap((address) => address.transactions)
+    ? [
+        ...action.payload.flatMap((address) => address.transactions),
+        ...action.payload.flatMap((address) => address.unconfirmedTransactions)
+      ]
     : action.payload?.transactions
 
   if (transactions && transactions.length > 0) {

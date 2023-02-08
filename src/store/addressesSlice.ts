@@ -36,7 +36,7 @@ import { AddressBase, AddressHash, AddressRedux, LoadingEnabled } from '@/types/
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
-import { walletSaved } from './activeWalletSlice'
+import { walletLocked, walletSaved, walletSwitched } from './activeWalletSlice'
 import { RootState } from './store'
 
 const sliceName = 'addresses'
@@ -255,6 +255,11 @@ const addressesSlice = createSlice({
         state.allTransactionsLoaded = transactions.length === 0
         state.loading = false
       })
+      .addCase(walletLocked, () => initialState)
+      .addCase(walletSwitched, () => initialState)
+    // TODO
+    // .addCase(networkPresetSwitched, clearAddressesNetworkData)
+    // .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
   }
 })
 
@@ -319,3 +324,14 @@ const updateOldDefaultAddress = (state: AddressesState) => {
     })
   }
 }
+
+// const clearAddressesNetworkData = (state: AddressesState) => {
+//   const reinitializedAddresses = getAddresses(state).map(getDefaultAddressState)
+
+//   addressesAdapter.updateMany(
+//     state,
+//     reinitializedAddresses.map((address) => ({ id: address.hash, changes: address }))
+//   )
+
+//   state.status = 'uninitialized'
+// }

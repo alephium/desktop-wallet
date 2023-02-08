@@ -71,15 +71,16 @@ const WalletSwitcher = () => {
     if (!switchToWalletName) return
 
     setIsPasswordModalOpen(false)
-    unlockWallet(
-      switchToWalletName,
+    unlockWallet({
+      event: 'switch',
+      walletName: switchToWalletName,
       password,
-      () => {
+      passphrase,
+      afterUnlock: () => {
         const nextPageLocation = '/wallet/overview'
         if (location.pathname !== nextPageLocation) navigate(nextPageLocation)
-      },
-      passphrase
-    )
+      }
+    })
     if (passphrase) setPassphrase('')
   }
 

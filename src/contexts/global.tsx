@@ -28,7 +28,7 @@ import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import WalletStorage from '@/persistent-storage/wallet'
-import { walletLocked, walletUnlocked } from '@/store/activeWalletSlice'
+import { walletLocked, walletSwitched, walletUnlocked } from '@/store/activeWalletSlice'
 import { appLoadingToggled } from '@/store/appSlice'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
 import { themeChanged } from '@/store/settingsSlice'
@@ -39,8 +39,16 @@ import { migrateUserData } from '@/utils/migration'
 
 export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
+interface WalletUnlockProps {
+  event: 'login' | 'switch'
+  walletName: string
+  password: string
+  afterUnlock: () => void
+  passphrase?: string
+}
+
 export interface GlobalContextProps {
-  unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
+  unlockWallet: (props: WalletUnlockProps) => void
   client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
@@ -85,7 +93,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
-  const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+  const unlockWallet = async ({ event, walletName, password, afterUnlock, passphrase }: WalletUnlockProps) => {
     const isPassphraseUsed = !!passphrase
     try {
       let wallet = WalletStorage.load(walletName, password)
@@ -96,17 +104,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       migrateUserData(wallet.mnemonic, walletName)
 
-      dispatch(
-        walletUnlocked({
-          name: walletName,
-          mnemonic: wallet.mnemonic,
-          isPassphraseUsed
-        })
-      )
+      const payload = {
+        name: walletName,
+        mnemonic: wallet.mnemonic,
+        isPassphraseUsed
+      }
+      dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))
 
       restoreAddressesFromMetadata({ walletName, mnemonic: wallet.mnemonic, isPassphraseUsed })
 
-      callback()
+      afterUnlock()
     } catch (e) {
       setSnackbarMessage({
         text: getHumanReadableError(e, t('Invalid password')),

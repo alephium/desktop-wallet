@@ -46,6 +46,7 @@ import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import { selectAddressByHash, syncAddressTransactionsNextPage } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
 import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
@@ -55,9 +56,10 @@ const AddressDetailsPage = () => {
   const navigate = useNavigate()
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
-  const [address, confirmedTxs, pendingTxs] = useAppSelector((s) => [
+  const [address, confirmedTxs, allUnconfirmedTxs, pendingTxs] = useAppSelector((s) => [
     selectAddressByHash(s, addressHash),
     selectAddressesConfirmedTransactions(s, [addressHash]),
+    selectAddressesUnconfirmedTransactions(s, [addressHash]),
     selectAddressesPendingTransactions(s, [addressHash])
   ])
 
@@ -146,23 +148,25 @@ const AddressDetailsPage = () => {
       </DataList>
       <PageH2>{t`Transaction history`}</PageH2>
       <Table minWidth="500px">
-        {pendingTxs
-          .slice(0)
-          .reverse()
-          .map((transaction) => (
-            <TableRow role="row" tabIndex={0} key={transaction.hash} blinking>
-              <TransactionalInfo transaction={transaction} showInternalInflows />
-            </TableRow>
-          ))}
-        {confirmedTxs.map((transaction) => (
+        {pendingTxs.map((tx) => (
+          <TableRow role="row" tabIndex={0} key={tx.hash} blinking>
+            <TransactionalInfo transaction={tx} showInternalInflows />
+          </TableRow>
+        ))}
+        {allUnconfirmedTxs.map((tx) => (
+          <TableRow role="row" tabIndex={0} key={tx.hash} blinking>
+            <TransactionalInfo transaction={tx} showInternalInflows />
+          </TableRow>
+        ))}
+        {confirmedTxs.map((tx) => (
           <TableRow
             role="row"
             tabIndex={0}
-            key={transaction.hash}
-            onClick={() => setSelectedTransaction(transaction)}
-            onKeyPress={() => setSelectedTransaction(transaction)}
+            key={tx.hash}
+            onClick={() => setSelectedTransaction(tx)}
+            onKeyPress={() => setSelectedTransaction(tx)}
           >
-            <TransactionalInfo transaction={transaction} showInternalInflows />
+            <TransactionalInfo transaction={tx} showInternalInflows />
           </TableRow>
         ))}
         {confirmedTxs.length !== address.txNumber && (

@@ -28,6 +28,7 @@ import { useAppSelector } from '@/hooks/redux'
 import { selectAddressIds } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
 import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import { selectAddressesUnconfirmedTransactions } from '@/store/unconfirmedTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
@@ -41,8 +42,9 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
   const { t } = useTranslation()
   const navigate = useNavigate()
   const addresses = useAppSelector(selectAddressIds) as AddressHash[]
-  const [allConfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
+  const [allConfirmedTxs, allUnconfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
     selectAddressesConfirmedTransactions(s, addresses),
+    selectAddressesUnconfirmedTransactions(s, addresses),
     selectAddressesPendingTransactions(s, addresses),
     s.addresses.loading
   ])
@@ -59,20 +61,25 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
           {t('See more')}
         </ActionLink>
       </TableHeaderRow>
-      {allPendingTxs.map((pendingTx) => (
-        <TableRow key={pendingTx.hash} blinking role="row" tabIndex={0}>
-          <TransactionalInfo transaction={pendingTx} addressHash={pendingTx.address.hash} />
+      {allPendingTxs.map((tx) => (
+        <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
         </TableRow>
       ))}
-      {displayedConfirmedTxs.map((confirmedTx) => (
+      {allUnconfirmedTxs.map((tx) => (
+        <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
+        </TableRow>
+      ))}
+      {displayedConfirmedTxs.map((tx) => (
         <TableRow
-          key={`${confirmedTx.hash}-${confirmedTx.address.hash}`}
+          key={`${tx.hash}-${tx.address.hash}`}
           role="row"
           tabIndex={0}
-          onClick={() => onTransactionClick(confirmedTx)}
-          onKeyPress={() => onTransactionClick(confirmedTx)}
+          onClick={() => onTransactionClick(tx)}
+          onKeyPress={() => onTransactionClick(tx)}
         >
-          <TransactionalInfo transaction={confirmedTx} addressHash={confirmedTx.address.hash} />
+          <TransactionalInfo transaction={tx} addressHash={tx.address.hash} />
         </TableRow>
       ))}
       {!isLoading && !allPendingTxs.length && !displayedConfirmedTxs.length && (

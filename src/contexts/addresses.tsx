@@ -16,28 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair, addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
-import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { AddressInfo, Transaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { useAppSelector } from '@/hooks/redux'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { AddressHash, AddressMetadata, AddressSettings } from '@/types/addresses'
+import { AddressHash, AddressSettings } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
-import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { useGlobalContext } from './global'
-
-const deriveAddressesFromIndexesWorker = new Worker(
-  new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
-  { type: 'module' }
-)
 
 export class Address {
   readonly hash: AddressHash
@@ -112,9 +106,7 @@ export interface AddressesContextProps {
   mainAddress?: Address
   getAddress: (hash: AddressHash) => Address | undefined
   setAddress: (address: Address) => void
-  saveNewAddress: (address: Address, mnemonic?: string, walletName?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
-  refreshAddressesData: () => void
   isLoadingData: boolean
 }
 
@@ -123,9 +115,7 @@ export const initialAddressesContext: AddressesContextProps = {
   mainAddress: undefined,
   getAddress: () => undefined,
   setAddress: () => undefined,
-  saveNewAddress: () => null,
   updateAddressSettings: () => null,
-  refreshAddressesData: () => null,
   isLoadingData: false
 }
 
@@ -139,13 +129,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   const { client, setSnackbarMessage } = useGlobalContext()
   const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
 
-  const previousNodeApiHost = useRef<string>()
-  const previousExplorerApiHost = useRef<string>()
-  const previousExplorerUrl = useRef<string>()
-
   const [addressesState, setAddressesState] = useState<AddressesStateMap>(new Map())
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const previousMnemonic = useRef<string | undefined>(activeWallet.mnemonic)
 
   const addressesOfCurrentNetwork = Array.from(addressesState.values()).filter(
     (addressState) => addressState.network === network.name
@@ -220,48 +205,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     [setSnackbarMessage, t]
   )
 
-  const fetchPendingTxs = useCallback(
-    async (addresses: Address[] = []) => {
-      if (!client || network.status === 'offline') {
-        displayDataFetchingError()
-        return
-      }
-      setIsLoadingData(true)
-
-      const addressesToCheck = addresses.length > 0 ? addresses : addressesOfCurrentNetwork
-
-      for (const address of addressesToCheck) {
-        try {
-          console.log('🤷 Fetching unconfirmed txs for', address.hash)
-          const { data: txs } = await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash)
-
-          txs.forEach((tx) => {
-            if (tx.type === 'Unconfirmed' && !address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
-              const pendingTx = convertUnconfirmedTxToPendingTx(
-                tx as UnconfirmedTransaction,
-                address.hash,
-                network.name
-              )
-
-              address.addPendingTransaction(pendingTx)
-            }
-          })
-        } catch (e) {
-          setSnackbarMessage({
-            text: getHumanReadableError(
-              e,
-              t('Error while fetching pending transactions for address {{ hash }}', { hash: address.hash })
-            ),
-            type: 'alert'
-          })
-        }
-      }
-
-      setIsLoadingData(false)
-    },
-    [client, network.status, addressesOfCurrentNetwork, displayDataFetchingError, network.name, setSnackbarMessage, t]
-  )
-
   const fetchAndStoreAddressesData = useCallback(
     async (addresses: Address[] = [], checkingForPendingTransactions = false) => {
       if (!client || network.status === 'offline') {
@@ -328,114 +271,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     ]
   )
 
-  const saveNewAddress = useCallback(
-    // TODO: Remove need for walletName and mnemonic once addresses in Redux
-    (newAddress: Address, mnemonic?: string, walletName?: string) => {
-      const _mnemonic = activeWallet.mnemonic || mnemonic
-      const _walletName = activeWallet.name || walletName
-
-      if (!_mnemonic) throw new Error('Could not save new address, mnemonic not found')
-      if (!_walletName) throw new Error('Could not save new address, wallet name not found')
-
-      if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store({
-          dataKey: {
-            mnemonic: _mnemonic,
-            walletName: _walletName
-          },
-          index: newAddress.index,
-          settings: {
-            ...newAddress.settings,
-            isDefault: newAddress.settings.isMain,
-            color: newAddress.settings.color ?? getRandomLabelColor()
-          }
-        })
-      setAddress(newAddress)
-      fetchAndStoreAddressesData([newAddress])
-      fetchPendingTxs([newAddress])
-    },
-    [
-      activeWallet.isPassphraseUsed,
-      activeWallet.mnemonic,
-      activeWallet.name,
-      fetchAndStoreAddressesData,
-      fetchPendingTxs,
-      setAddress
-    ]
-  )
-
-  // Initialize addresses state using the locally stored address metadata
-  useEffect(() => {
-    const initializeCurrentNetworkAddresses = async () => {
-      console.log('🥇 Initializing current network addresses')
-      if (!activeWallet.mnemonic) throw new Error('Could not initialize addresses, mnemonic not found')
-      if (!activeWallet.name) throw new Error('Could not initialize addresses, wallet name not found')
-
-      const addressesMetadata: AddressMetadata[] = activeWallet.isPassphraseUsed
-        ? []
-        : AddressMetadataStorage.load({
-            mnemonic: activeWallet.mnemonic,
-            walletName: activeWallet.name
-          })
-
-      if (addressesMetadata.length > 0) {
-        console.log('👀 Found addresses metadata in local storage')
-
-        deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
-          const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
-            const metadata = addressesMetadata.find((metadata) => metadata.index === index) as AddressMetadata
-
-            return new Address(hash, publicKey, privateKey, index, {
-              isMain: metadata?.isMain || false,
-              label: metadata?.label,
-              color: metadata?.color
-            })
-          })
-
-          updateAddressesState(addressesToFetchData)
-          await fetchAndStoreAddressesData(addressesToFetchData)
-          await fetchPendingTxs(addressesToFetchData)
-        }
-
-        deriveAddressesFromIndexesWorker.postMessage({
-          mnemonic: activeWallet.mnemonic,
-          indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
-        })
-      }
-    }
-
-    const walletHasChanged = previousMnemonic.current !== activeWallet.mnemonic
-    const networkSettingsHaveChanged =
-      previousNodeApiHost.current !== network.settings.nodeHost ||
-      previousExplorerApiHost.current !== network.settings.explorerApiHost ||
-      previousExplorerUrl.current !== network.settings.explorerUrl
-
-    if (network.status === 'connecting' || network.status === 'uninitialized') return
-
-    // Clean state when locking the wallet or changing wallets
-    if (activeWallet.mnemonic === undefined || activeWallet.mnemonic !== previousMnemonic.current) {
-      console.log('🧽 Cleaning state.')
-      setAddressesState(new Map())
-      previousMnemonic.current = activeWallet.mnemonic
-    }
-
-    if (activeWallet.mnemonic && (client === undefined || walletHasChanged || networkSettingsHaveChanged)) {
-      previousMnemonic.current = activeWallet.mnemonic
-      previousNodeApiHost.current = network.settings.nodeHost
-      previousExplorerApiHost.current = network.settings.explorerApiHost
-      initializeCurrentNetworkAddresses()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    network.name,
-    network.status,
-    client,
-    activeWallet.name,
-    activeWallet.mnemonic,
-    network.settings.explorerApiHost,
-    network.settings.nodeHost
-  ])
-
   // Whenever the addresses state updates, check if there are pending transactions on the current network and if so,
   // keep querying the API until all pending transactions are confirmed.
   useEffect(() => {
@@ -463,11 +298,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     }
   }, [addressesState, network.name, fetchAndStoreAddressesData, addressesOfCurrentNetwork, addressesWithPendingSentTxs])
 
-  const refreshAddressesData = useCallback(async () => {
-    await fetchAndStoreAddressesData()
-    await fetchPendingTxs()
-  }, [fetchAndStoreAddressesData, fetchPendingTxs])
-
   return (
     <AddressesContext.Provider
       value={merge(
@@ -476,9 +306,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           mainAddress: addressesOfCurrentNetwork.find((address) => address.settings.isMain),
           getAddress,
           setAddress,
-          saveNewAddress,
           updateAddressSettings,
-          refreshAddressesData,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

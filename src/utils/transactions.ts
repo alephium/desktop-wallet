@@ -52,7 +52,7 @@ export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, add
 
   return totalOutputAmount - totalOutputAmountOfAddress
 }
-
+// TODO: Delete?
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (

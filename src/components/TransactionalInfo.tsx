@@ -27,7 +27,7 @@ import { useAddressesContext } from '@/contexts/addresses'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { AddressHash } from '@/types/addresses'
-import { AddressTransaction } from '@/types/transactions'
+import { AddressConfirmedTransaction, AddressTransaction, AddressUnconfirmedTransaction } from '@/types/transactions'
 import { isPendingTx } from '@/utils/transactions'
 
 import AddressBadge from './AddressBadge'
@@ -78,6 +78,7 @@ const TransactionalInfo = ({
     )
   }
 
+  const timestamp = (tx as AddressConfirmedTransaction).timestamp ?? (tx as AddressUnconfirmedTransaction).lastSeen
   const amountSign =
     showInternalInflows && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
 
@@ -92,7 +93,7 @@ const TransactionalInfo = ({
         <TokenTimeInner>
           {label}
           <HiddenLabel text={`${formatAmountForDisplay(BigInt(amount ?? 0))} ${token}`} />
-          <TimeSince timestamp={tx.timestamp} faded />
+          <TimeSince timestamp={timestamp} faded />
         </TokenTimeInner>
       </CellTime>
       <CellToken>

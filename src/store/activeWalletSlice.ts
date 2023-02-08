@@ -36,6 +36,7 @@ const activeWalletSlice = createSlice({
   reducers: {
     walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload,
     walletUnlocked: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
+    walletSwitched: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
     walletLocked: () => initialState,
     walletDeleted: (state, action: PayloadAction<string>) => {
       const deletedWalletName = action.payload
@@ -47,6 +48,6 @@ const activeWalletSlice = createSlice({
   }
 })
 
-export const { walletSaved, walletLocked, walletUnlocked, walletDeleted } = activeWalletSlice.actions
+export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, walletDeleted } = activeWalletSlice.actions
 
 export default activeWalletSlice
