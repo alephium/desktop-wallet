@@ -19,15 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import WalletStorage from '@/persistent-storage/wallet'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/store/addressesSlice'
 
-import {
-  addressDiscoveryFinished,
-  addressDiscoveryStarted,
-  addressesGenerated,
-  addressGenerationStarted,
-  languageChangeFinished,
-  languageChangeStarted
-} from './actions'
+import { languageChangeFinished, languageChangeStarted } from './actions'
 import { walletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
 
 const sliceName = 'app'
@@ -73,12 +67,6 @@ const appSlice = createSlice({
         state.loading = true
       })
       .addCase(languageChangeFinished, (state) => {
-        state.loading = false
-      })
-      .addCase(addressGenerationStarted, (state) => {
-        state.loading = true
-      })
-      .addCase(addressesGenerated, (state) => {
         state.loading = false
       })
       .addCase(walletLocked, () => initialState)

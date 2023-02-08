@@ -32,7 +32,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
-import { AddressBase, AddressHash, AddressRedux } from '@/types/addresses'
+import { AddressBase, AddressHash, AddressRedux, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
@@ -121,6 +121,16 @@ const addressesSlice = createSlice({
     },
     addressRestorationStarted: (state) => {
       state.isRestoringAddressesFromMetadata = true
+    },
+    addressDiscoveryStarted: (state, action: PayloadAction<LoadingEnabled>) => {
+      const loadingEnabled = action.payload
+
+      if (loadingEnabled) state.loading = true
+    },
+    addressDiscoveryFinished: (state, action: PayloadAction<LoadingEnabled>) => {
+      const loadingEnabled = action.payload
+
+      if (loadingEnabled) state.loading = false
     },
     addressesRestoredFromMetadata: (state, action: PayloadAction<AddressBase[]>) => {
       const addresses = action.payload
@@ -255,7 +265,9 @@ export const {
   transactionSent,
   newAddressesGenerated,
   defaultAddressChanged,
-  addressSettingsSaved
+  addressSettingsSaved,
+  addressDiscoveryStarted,
+  addressDiscoveryFinished
 } = addressesSlice.actions
 
 export const {

@@ -23,9 +23,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useAppSelector } from '@/hooks/redux'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
 import { AddressHash, AddressMetadata, AddressSettings } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
@@ -39,9 +38,6 @@ const deriveAddressesFromIndexesWorker = new Worker(
   new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
   { type: 'module' }
 )
-const deriveAddressesInGroupsWorker = new Worker(new URL('../workers/deriveAddressesInGroups.ts', import.meta.url), {
-  type: 'module'
-})
 
 export class Address {
   readonly hash: AddressHash
@@ -119,7 +115,6 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address, mnemonic?: string, walletName?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
-  generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
 
@@ -131,7 +126,6 @@ export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
-  generateOneAddressPerGroup: () => null,
   isLoadingData: false
 }
 
@@ -142,7 +136,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   overrideContextValue
 }) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { client, setSnackbarMessage } = useGlobalContext()
   const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
 
@@ -371,39 +364,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     ]
   )
 
-  const generateOneAddressPerGroup = (labelPrefix?: string, labelColor?: string, skipGroups: number[] = []) => {
-    if (!activeWallet.mnemonic) throw new Error('Could not generate addresses, mnemonic not found')
-
-    dispatch(addressGenerationStarted())
-
-    const skipAddressIndexes = addressesOfCurrentNetwork.map(({ index }) => index)
-    const hasLabel = !!labelPrefix && !!labelColor
-    const groups = Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group).filter(
-      (group) => !skipGroups.includes(group)
-    )
-
-    deriveAddressesInGroupsWorker.onmessage = ({ data }: { data: (AddressKeyPair & { group: number })[] }) => {
-      data.forEach(({ hash, publicKey, privateKey, index, group }) =>
-        saveNewAddress(
-          new Address(hash, publicKey, privateKey, index, {
-            isMain: false,
-            label: hasLabel ? `${labelPrefix} ${group}` : '',
-            color: hasLabel ? labelColor : ''
-          })
-        )
-      )
-
-      dispatch(addressesGenerated())
-      deriveAddressesInGroupsWorker.terminate()
-    }
-
-    deriveAddressesInGroupsWorker.postMessage({
-      mnemonic: activeWallet.mnemonic,
-      groups,
-      skipIndexes: skipAddressIndexes
-    })
-  }
-
   // Initialize addresses state using the locally stored address metadata
   useEffect(() => {
     const initializeCurrentNetworkAddresses = async () => {
@@ -419,8 +379,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           })
 
       if (addressesMetadata.length > 0) {
-        dispatch(addressGenerationStarted())
-
         console.log('👀 Found addresses metadata in local storage')
 
         deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
@@ -437,7 +395,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           updateAddressesState(addressesToFetchData)
           await fetchAndStoreAddressesData(addressesToFetchData)
           await fetchPendingTxs(addressesToFetchData)
-          dispatch(addressesGenerated())
         }
 
         deriveAddressesFromIndexesWorker.postMessage({
@@ -522,7 +479,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           saveNewAddress,
           updateAddressSettings,
           refreshAddressesData,
-          generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },
         overrideContextValue as AddressesContextProps

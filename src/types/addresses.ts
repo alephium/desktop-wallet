@@ -58,3 +58,5 @@ export type AddressRedux = AddressBase &
   }
 
 export type AddressHash = string
+
+export type LoadingEnabled = boolean | undefined

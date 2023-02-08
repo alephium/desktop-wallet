@@ -18,13 +18,5 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createAction } from '@reduxjs/toolkit'
 
-type EnableLoading = boolean | undefined
-
-export const addressDiscoveryStarted = createAction<EnableLoading>('discovery/addressDiscoveryStarted')
-export const addressDiscoveryFinished = createAction<EnableLoading>('discovery/addressDiscoveryFinished')
-
 export const languageChangeStarted = createAction('app/languageChangeStarted')
 export const languageChangeFinished = createAction('app/languageChangeFinished')
-
-export const addressGenerationStarted = createAction('address/addressGenerationStarted')
-export const addressesGenerated = createAction('address/addressesGenerated')
