@@ -18,9 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AsyncReturnType, PartialDeep } from 'type-fest'
+import { PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -29,15 +29,9 @@ import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import WalletStorage from '@/persistent-storage/wallet'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/store/activeWalletSlice'
-import { appLoadingToggled } from '@/store/appSlice'
-import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
 import { themeChanged } from '@/store/settingsSlice'
 import { AlephiumWindow } from '@/types/window'
-import { createClient } from '@/utils/api-clients'
-import { useInterval } from '@/utils/hooks'
 import { migrateUserData } from '@/utils/migration'
-
-export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
 
 interface WalletUnlockProps {
   event: 'login' | 'switch'
@@ -49,7 +43,6 @@ interface WalletUnlockProps {
 
 export interface GlobalContextProps {
   unlockWallet: (props: WalletUnlockProps) => void
-  client: Client | undefined
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   newVersion: string
@@ -61,7 +54,6 @@ export interface GlobalContextProps {
 
 export const initialGlobalContext: GlobalContextProps = {
   unlockWallet: () => null,
-  client: undefined,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
   newVersion: '',
@@ -82,10 +74,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
+  const settings = useAppSelector((s) => s.settings)
   const { restoreAddressesFromMetadata } = useAddressGeneration()
 
-  const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
@@ -124,41 +115,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
 
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  const initializeClient = useCallback(async () => {
-    if (network.status !== 'offline') dispatch(appLoadingToggled(true))
-
-    const clientResp = await createClient(network.settings)
-    setClient(clientResp)
-
-    if (!clientResp || !network.settings.explorerApiHost || !network.settings.nodeHost) {
-      dispatch(apiClientInitFailed())
-    } else if (clientResp) {
-      dispatch(apiClientInitSucceeded())
-
-      console.log('Clients initialized.')
-
-      setSnackbarMessage({
-        text: `${t('Current network')}: ${network.name}.`,
-        type: 'info',
-        duration: 4000
-      })
-    }
-
-    dispatch(appLoadingToggled(false))
-  }, [dispatch, network.name, network.settings, network.status, t])
-
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  useEffect(() => {
-    if (network.status === 'connecting') {
-      initializeClient()
-    }
-  }, [initializeClient, network.status])
-
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  const shouldInitialize = network.status === 'offline'
-  useInterval(initializeClient, 2000, !shouldInitialize)
-
   useEffect(() => {
     const shouldListenToOSThemeChanges = settings.theme === 'system'
 
@@ -185,7 +141,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       value={merge(
         {
           unlockWallet,
-          client,
           snackbarMessage,
           setSnackbarMessage,
           newVersion,

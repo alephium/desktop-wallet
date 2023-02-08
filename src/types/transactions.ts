@@ -135,7 +135,6 @@ export type TxContext = {
   setUnsignedTxId: (txId: string) => void
   isSweeping: boolean
   consolidationRequired: boolean
-  currentNetwork: NetworkName
 }
 
 export type AddressConfirmedTransaction = Transaction & { address: Address }

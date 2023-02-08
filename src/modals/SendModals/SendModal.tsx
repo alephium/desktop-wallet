@@ -24,7 +24,7 @@ import { useTheme } from 'styled-components'
 
 import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
-import { Client, useGlobalContext } from '@/contexts/global'
+import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as PaperPlaneDarkSVG } from '@/images/paper-plane-dark.svg'
@@ -45,8 +45,8 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   onClose: () => void
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
   CheckTxModalContent: (props: { data: T; fees: bigint }) => JSX.Element | null
-  buildTransaction: (client: Client, data: T, context: TxContext) => Promise<void>
-  handleSend: (client: Client, data: T, context: TxContext) => Promise<string | undefined>
+  buildTransaction: (data: T, context: TxContext) => Promise<void>
+  handleSend: (data: T, context: TxContext) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
@@ -62,8 +62,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
-  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
-  const { client, setSnackbarMessage } = useGlobalContext()
+  const settings = useAppSelector((s) => s.settings)
+  const { setSnackbarMessage } = useGlobalContext()
 
   const [modalTitle, setModalTitle] = useState(title)
   const [transactionData, setTransactionData] = useState<T | undefined>()
@@ -91,7 +91,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }, [step, t, title])
 
   useEffect(() => {
-    if (!consolidationRequired || !transactionData || !client) return
+    if (!consolidationRequired || !transactionData) return
 
     const buildConsolidationTransactions = async () => {
       setIsSweeping(true)
@@ -106,7 +106,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     }
 
     buildConsolidationTransactions()
-  }, [client, consolidationRequired, transactionData])
+  }, [consolidationRequired, transactionData])
 
   const txContext: TxContext = {
     setIsSweeping,
@@ -118,18 +118,15 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     unsignedTxId,
     setUnsignedTxId,
     isSweeping,
-    consolidationRequired,
-    currentNetwork: network.name
+    consolidationRequired
   }
 
   const buildTransactionExtended = async (data: T) => {
     setTransactionData(data)
-
-    if (!client) return
     setIsLoading(true)
 
     try {
-      await buildTransaction(client, data, txContext)
+      await buildTransaction(data, txContext)
 
       if (!isConsolidateUTXOsModalVisible) {
         setStep('info-check')
@@ -158,12 +155,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }
 
   const handleSendExtended = async () => {
-    if (!client || !transactionData) return
+    if (!transactionData) return
 
     setIsLoading(true)
 
     try {
-      const signature = await handleSend(client, transactionData, txContext)
+      const signature = await handleSend(transactionData, txContext)
 
       if (signature && requestEvent && walletConnectClient) {
         const wcResult = getWalletConnectResult(txContext, signature)

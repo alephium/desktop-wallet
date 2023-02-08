@@ -66,5 +66,5 @@ export const signAndSendTransaction = async (fromAddress: Address, txId: string,
   const signature = client.cliqueClient.transactionSign(txId, fromAddress.privateKey)
   const { data } = await client.cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
 
-  return data
+  return { ...data, signature: signature }
 }

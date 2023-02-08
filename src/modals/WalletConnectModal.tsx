@@ -28,11 +28,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import client from '@/api/client'
 import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
@@ -56,7 +56,6 @@ const electron = _window.electron
 
 const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   const { t } = useTranslation()
-  const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -143,7 +142,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
 
       const requiredChain = parseChain(requiredNamespace.chains[0])
 
-      if (requiredChain.networkId !== (await client?.web3.infos.getInfosChainParams())?.networkId) {
+      if (requiredChain.networkId !== (await client.web3Client.infos.getInfosChainParams())?.networkId) {
         setErrorState('The current network is unmatched with the network requested by WalletConnect')
         return
       }
@@ -178,7 +177,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       onClose()
       electron?.app.hide()
     },
-    [chainAccounts, client?.web3.infos, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
+    [chainAccounts, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
   )
 
   const onReject = async () => {
