@@ -21,7 +21,7 @@ import { Address, AddressHash } from '@/types/addresses'
 import { getAvailableBalance } from '@/utils/addresses'
 
 export const buildSweepTransactions = async (fromAddress: Address, toAddressHash: AddressHash) => {
-  const { data } = await client.cliqueClient.transactionConsolidateUTXOs(
+  const { data } = await client.clique.transactionConsolidateUTXOs(
     fromAddress.publicKey,
     fromAddress.hash,
     toAddressHash
@@ -45,7 +45,7 @@ export const buildUnsignedTransactions = async (
   if (isSweep) {
     return await buildSweepTransactions(fromAddress, toAddressHash)
   } else {
-    const { data } = await client.cliqueClient.transactionCreate(
+    const { data } = await client.clique.transactionCreate(
       fromAddress.hash,
       fromAddress.publicKey,
       toAddressHash,
@@ -63,8 +63,8 @@ export const buildUnsignedTransactions = async (
 }
 
 export const signAndSendTransaction = async (fromAddress: Address, txId: string, unsignedTx: string) => {
-  const signature = client.cliqueClient.transactionSign(txId, fromAddress.privateKey)
-  const { data } = await client.cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
+  const signature = client.clique.transactionSign(txId, fromAddress.privateKey)
+  const { data } = await client.clique.transactionSend(fromAddress.hash, unsignedTx, signature)
 
   return { ...data, signature: signature }
 }

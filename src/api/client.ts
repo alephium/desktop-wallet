@@ -23,16 +23,16 @@ import { defaultSettings } from '@/persistent-storage/settings'
 import { NetworkSettings } from '@/types/settings'
 
 export class Client {
-  cliqueClient: CliqueClient
-  explorerClient: ExplorerClient
-  web3Client: Web3Client
+  clique: CliqueClient
+  explorer: ExplorerClient
+  web3: Web3Client
 
   constructor() {
     const { nodeHost, explorerApiHost } = defaultSettings.network
 
-    this.cliqueClient = new CliqueClient({ baseUrl: nodeHost })
-    this.explorerClient = new ExplorerClient({ baseUrl: explorerApiHost })
-    this.web3Client = new Web3Client(nodeHost)
+    this.clique = new CliqueClient({ baseUrl: nodeHost })
+    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost })
+    this.web3 = new Web3Client(nodeHost)
   }
 
   async init(
@@ -40,11 +40,11 @@ export class Client {
     explorerApiHost: NetworkSettings['explorerApiHost'],
     isMultiNodesClique = false
   ) {
-    this.cliqueClient = new CliqueClient({ baseUrl: nodeHost })
-    this.explorerClient = new ExplorerClient({ baseUrl: explorerApiHost })
-    this.web3Client = new Web3Client(nodeHost)
+    this.clique = new CliqueClient({ baseUrl: nodeHost })
+    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost })
+    this.web3 = new Web3Client(nodeHost)
 
-    await this.cliqueClient.init(isMultiNodesClique)
+    await this.clique.init(isMultiNodesClique)
   }
 }
 

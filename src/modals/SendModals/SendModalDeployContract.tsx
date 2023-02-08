@@ -59,7 +59,7 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
   const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
       data.initialAlphAmount !== undefined ? convertAlphToSet(data.initialAlphAmount).toString() : undefined
-    const response = await client.web3Client.contracts.postContractsUnsignedTxDeployContract({
+    const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
       initialAttoAlphAmount: initialAttoAlphAmount,

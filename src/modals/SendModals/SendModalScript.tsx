@@ -156,7 +156,7 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
     txData.alphAmount = undefined
   }
   const attoAlphAmount = txData.alphAmount !== undefined ? convertAlphToSet(txData.alphAmount).toString() : undefined
-  const response = await client.web3Client.contracts.postContractsUnsignedTxExecuteScript({
+  const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,

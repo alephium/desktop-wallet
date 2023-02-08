@@ -60,7 +60,6 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
   const isDefaultAddressToggleEnabled = defaultAddress.hash !== address.hash
   const isSweepButtonEnabled = addresses.length > 1 && availableBalance > 0
 
-  // TODO: Implement through Redux
   const onSaveClick = () => {
     saveAddressSettings(
       address,

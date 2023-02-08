@@ -218,7 +218,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
     context.setSweepUnsignedTxs(unsignedTxs)
     context.setFees(fees)
   } else {
-    const { data } = await client.cliqueClient.transactionCreate(
+    const { data } = await client.clique.transactionCreate(
       fromAddress.hash,
       fromAddress.publicKey,
       toAddress,

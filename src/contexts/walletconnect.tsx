@@ -195,7 +195,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestNodeApi': {
             const p = request.params as ApiRequestArguments
-            const result = await client.web3Client.request(p)
+            const result = await client.web3.request(p)
             await walletConnectClient.respond({
               topic: event.topic,
               response: {
@@ -208,7 +208,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestExplorerApi': {
             const p = request.params as ApiRequestArguments
-            const result = await client.explorerClient.request(p)
+            const result = await client.explorer.request(p)
             await walletConnectClient.respond({
               topic: event.topic,
               response: {

@@ -179,7 +179,7 @@ const useAddressGeneration = () => {
     addressDiscoveryWorker.postMessage({
       mnemonic,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : currentAddressIndexes,
-      clientUrl: client.explorerClient.baseUrl
+      clientUrl: client.explorer.baseUrl
     })
   }
 
