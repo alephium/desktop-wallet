@@ -16,41 +16,41 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getDirection } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { Address, useAddressesContext } from '@/contexts/addresses'
-import { PendingTx } from '@/types/transactions'
-import { GENESIS_TIMESTAMP } from '@/utils/constants'
-import { BelongingToAddress, getTransactionsForAddresses, hasOnlyInputsWith } from '@/utils/transactions'
+import { useAddressesContext } from '@/contexts/addresses'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { AddressHash } from '@/types/addresses'
+import { AddressConfirmedTransaction, PendingTx } from '@/types/transactions'
+import { BelongingToAddress, getTransactionsForAddresses } from '@/utils/transactions'
 
 interface TransfersPageTransactionListProps {
-  onTransactionClick: (transaction: Transaction & { address: Address }) => void
+  onTransactionClick: (transaction: AddressConfirmedTransaction) => void
   className?: string
 }
 
 const TransfersPageTransactionList = ({ className, onTransactionClick }: TransfersPageTransactionListProps) => {
   const { t } = useTranslation()
-  const { addresses, isLoadingData, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const dispatch = useAppDispatch()
+  const { addresses: contextAddresses, isLoadingData } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
+  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+  const [allConfirmedTxs, allTransactionsLoaded] = useAppSelector((s) => [
+    selectAddressesConfirmedTransactions(s, addressHashes),
+    s.addresses.allTransactionsLoaded
+  ])
 
-  const allConfirmedTxs = getTransactionsForAddresses('confirmed', addresses)
-  const allPendingTxs = getTransactionsForAddresses('pending', addresses)
-  const totalNumberOfTransactions = addresses.map((address) => address.details.txNumber).reduce((a, b) => a + b, 0)
+  const allPendingTxs = getTransactionsForAddresses('pending', contextAddresses)
+  const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
   const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
 
-  const loadNextTransactionsPage = async () => addresses.forEach((address) => fetchAddressTransactionsNextPage(address))
-
-  const shouldHideTx = (tx: Transaction, address: Address) =>
-    tx.inputs &&
-    tx.inputs.length > 0 &&
-    hasOnlyInputsWith(tx.inputs, addresses) &&
-    getDirection(tx, address.hash) == 'in' &&
-    tx.timestamp !== GENESIS_TIMESTAMP
+  const loadNextTransactionsPage = () => dispatch(syncAllAddressesTransactionsNextPage())
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
@@ -62,24 +62,34 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
           <TransactionalInfo transaction={tx} addressHash={address.hash} />
         </TableRow>
       ))}
-      {allConfirmedTxs.map(({ data: tx, address }: BelongingToAddress<Transaction>) => {
-        if (shouldHideTx(tx, address)) return null
-        return (
-          <TableRow
-            key={`${tx.hash}-${address.hash}`}
-            role="row"
-            tabIndex={0}
-            onClick={() => onTransactionClick({ ...tx, address })}
-            onKeyPress={() => onTransactionClick({ ...tx, address })}
-          >
-            <TransactionalInfo transaction={tx} addressHash={address.hash} />
-          </TableRow>
-        )
-      })}
+      {allConfirmedTxs.map((confirmedTx) => (
+        <TableRow
+          key={`${confirmedTx.hash}-${confirmedTx.address.hash}`}
+          role="row"
+          tabIndex={0}
+          onClick={() => onTransactionClick(confirmedTx)}
+          onKeyPress={() => onTransactionClick(confirmedTx)}
+        >
+          <TransactionalInfo transaction={confirmedTx} addressHash={confirmedTx.address.hash} />
+        </TableRow>
+      ))}
       {allConfirmedTxs.length !== totalNumberOfTransactions && (
         <TableRow role="row">
           <TableCell align="center" role="gridcell">
-            <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
+            {allTransactionsLoaded ? (
+              // TODO: Do we want to show a message here?
+              <div>All transactions loaded!</div>
+            ) : (
+              // TODO: Since we "squash" transactions between internal addresses and mark them as "moved", we have the
+              // problem where fetching the next page returns transactions we already have, so the UI doesn't show any
+              // update. In the testnet genesis wallet, for example, once you generate 4 addresses, you need to click 3
+              // times "Show more" to get new transactions. This is because we fetch the 1st tx page of each individiual
+              // address (using `GET:/addresses/{address}/transactions`) once the wallet gets unlocked. Then, when we
+              // click "Show more" (querying `POST:/addresses/transactions`) it happens that we receive txs that we
+              // already have. This could be improved by making further requests until we get some data, or until we get
+              // to the end of the transaction history.
+              <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
+            )}
           </TableCell>
         </TableRow>
       )}

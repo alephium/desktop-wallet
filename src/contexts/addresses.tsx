@@ -26,10 +26,11 @@ import { PartialDeep } from 'type-fest'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import { addressesGenerated, addressGenerationStarted } from '@/store/actions'
-import { AddressMetadata, AddressSettings } from '@/types/addresses'
+import { AddressHash, AddressMetadata, AddressSettings } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTx } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { useGlobalContext } from './global'
@@ -41,8 +42,6 @@ const deriveAddressesFromIndexesWorker = new Worker(
 const deriveAddressesInGroupsWorker = new Worker(new URL('../workers/deriveAddressesInGroups.ts', import.meta.url), {
   type: 'module'
 })
-
-export type AddressHash = string
 
 export class Address {
   readonly hash: AddressHash
@@ -120,7 +119,6 @@ export interface AddressesContextProps {
   saveNewAddress: (address: Address, mnemonic?: string, walletName?: string) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   refreshAddressesData: () => void
-  fetchAddressTransactionsNextPage: (address: Address) => void
   generateOneAddressPerGroup: (labelPrefix?: string, color?: string, skipGroups?: number[]) => void
   isLoadingData: boolean
 }
@@ -133,7 +131,6 @@ export const initialAddressesContext: AddressesContextProps = {
   saveNewAddress: () => null,
   updateAddressSettings: () => null,
   refreshAddressesData: () => null,
-  fetchAddressTransactionsNextPage: () => null,
   generateOneAddressPerGroup: () => null,
   isLoadingData: false
 }
@@ -202,14 +199,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!activeWallet.name) throw new Error('Could not update address settings, wallet name not found')
 
       if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store(
-          {
+        AddressMetadataStorage.store({
+          dataKey: {
             mnemonic: activeWallet.mnemonic,
             walletName: activeWallet.name
           },
-          address.index,
-          settings
-        )
+          index: address.index,
+          settings: {
+            ...settings,
+            isDefault: settings.isMain,
+            color: settings.color ?? getRandomLabelColor()
+          }
+        })
       address.settings = settings
       setAddress(address)
     },
@@ -334,13 +335,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
     ]
   )
 
-  const fetchAddressTransactionsNextPage = async (address: Address) => {
-    if (!client || network.status === 'offline') return
-    setIsLoadingData(true)
-    await client.fetchAddressConfirmedTransactionsNextPage(address)
-    setIsLoadingData(false)
-  }
-
   const saveNewAddress = useCallback(
     // TODO: Remove need for walletName and mnemonic once addresses in Redux
     (newAddress: Address, mnemonic?: string, walletName?: string) => {
@@ -351,14 +345,18 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       if (!_walletName) throw new Error('Could not save new address, wallet name not found')
 
       if (!activeWallet.isPassphraseUsed)
-        AddressMetadataStorage.store(
-          {
+        AddressMetadataStorage.store({
+          dataKey: {
             mnemonic: _mnemonic,
             walletName: _walletName
           },
-          newAddress.index,
-          newAddress.settings
-        )
+          index: newAddress.index,
+          settings: {
+            ...newAddress.settings,
+            isDefault: newAddress.settings.isMain,
+            color: newAddress.settings.color ?? getRandomLabelColor()
+          }
+        })
       setAddress(newAddress)
       fetchAndStoreAddressesData([newAddress])
       fetchPendingTxs([newAddress])
@@ -427,7 +425,7 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
         deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
           const addressesToFetchData = data.map(({ hash, publicKey, privateKey, index }) => {
-            const metadata = addressesMetadata.find((metadata) => metadata.index === index)
+            const metadata = addressesMetadata.find((metadata) => metadata.index === index) as AddressMetadata
 
             return new Address(hash, publicKey, privateKey, index, {
               isMain: metadata?.isMain || false,
@@ -524,7 +522,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
           saveNewAddress,
           updateAddressSettings,
           refreshAddressesData,
-          fetchAddressTransactionsNextPage,
           generateOneAddressPerGroup,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0
         },

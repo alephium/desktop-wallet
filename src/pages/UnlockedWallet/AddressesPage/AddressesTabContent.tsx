@@ -24,7 +24,6 @@ import Toggle from '@/components/Inputs/Toggle'
 import { useAddressesContext } from '@/contexts/addresses'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import { sortAddressList } from '@/utils/addresses'
 
 import AddressCard from './AddressCard'
 import TabContent from './TabContent'
@@ -78,7 +77,8 @@ const AddressesTabContent = () => {
         </HideEmptyAddressesToggle>
       }
     >
-      {sortAddressList(visibleAddresses).map((address) => (
+      {/* TODO: Use sortAddressList(visibleAddresses) when dependency from contexts/addresses is removed */}
+      {visibleAddresses.map((address) => (
         <AddressCard hash={address.hash} key={address.hash} />
       ))}
 

@@ -40,18 +40,23 @@ import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import Tooltip from '@/components/Tooltip'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { AddressHash, useAddressesContext } from '@/contexts/addresses'
-import { useAppSelector } from '@/hooks/redux'
+import { useAddressesContext } from '@/contexts/addresses'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import { syncAddressTransactionsNextPage } from '@/store/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { AddressHash } from '@/types/addresses'
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { getAddress, fetchAddressTransactionsNextPage } = useAddressesContext()
+  const { getAddress } = useAddressesContext()
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
+  const confirmedTxs = useAppSelector((state) => selectAddressesConfirmedTransactions(state, [addressHash]))
 
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
@@ -60,9 +65,7 @@ const AddressDetailsPage = () => {
 
   if (!address) return null
 
-  const loadNextTransactionsPage = () => {
-    fetchAddressTransactionsNextPage(address)
-  }
+  const loadNextTransactionsPage = () => dispatch(syncAddressTransactionsNextPage(address.hash))
 
   const onTransactionClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
@@ -151,10 +154,10 @@ const AddressDetailsPage = () => {
           .reverse()
           .map((transaction) => (
             <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
-              <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
+              <TransactionalInfo transaction={transaction} showInternalInflows />
             </TableRow>
           ))}
-        {address.transactions.confirmed.map((transaction) => (
+        {confirmedTxs.map((transaction) => (
           <TableRow
             role="row"
             tabIndex={0}
@@ -162,17 +165,17 @@ const AddressDetailsPage = () => {
             onClick={() => onTransactionClick(transaction)}
             onKeyPress={() => onTransactionClick(transaction)}
           >
-            <TransactionalInfo transaction={transaction} isDisplayedInAddressDetailsPage />
+            <TransactionalInfo transaction={transaction} showInternalInflows />
           </TableRow>
         ))}
-        {address.transactions.confirmed.length !== address.details.txNumber && (
+        {confirmedTxs.length !== address.details.txNumber && (
           <TableRow role="row">
             <TableCell align="center" role="gridcell">
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
-        {address.transactions.pending.length === 0 && address.transactions.confirmed.length === 0 && (
+        {address.transactions.pending.length === 0 && confirmedTxs.length === 0 && (
           <TableRow role="row" tabIndex={0}>
             <TableCellPlaceholder align="center" role="gridcell">
               {t`No transactions to display`}

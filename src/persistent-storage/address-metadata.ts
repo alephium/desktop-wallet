@@ -16,16 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressMetadata, AddressSettings } from '@/types/addresses'
+import { AddressMetadata, AddressSettingsRedux } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 
 import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
 
+interface AddressMetadataStorageStoreProps {
+  dataKey: DataKey
+  index: number
+  settings: AddressSettingsRedux
+  isPassphraseUsed?: boolean
+}
+
 class AddressMetadataStorage extends PersistentEncryptedStorage {
-  store({ mnemonic, walletName }: DataKey, index: number, settings: AddressSettings, isPassphraseUsed?: boolean) {
+  store({ dataKey, index, settings, isPassphraseUsed }: AddressMetadataStorageStoreProps) {
     if (isPassphraseUsed) return
 
-    const addressesMetadata = this.load({ walletName, mnemonic })
+    const addressesMetadata = this.load(dataKey)
     const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
 
     if (!existingAddressMetadata) {
@@ -38,7 +45,7 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
     }
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
-    super._store(JSON.stringify(addressesMetadata), { mnemonic, walletName }, isPassphraseUsed)
+    super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)
   }
 }
 

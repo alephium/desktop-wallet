@@ -16,12 +16,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Address } from '@/contexts/addresses'
+import { Transaction } from '@alephium/sdk/api/explorer'
 
-export const sortAddressList = (addresses: Address[]): Address[] =>
+import { AddressHash, AddressRedux } from '@/types/addresses'
+import { AddressTransaction, PendingTransaction } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
+
+export const sortAddressList = (addresses: AddressRedux[]): AddressRedux[] =>
   addresses.sort((a, b) => {
     // Always keep default address to the top of the list
-    if (a.settings.isMain) return -1
-    if (b.settings.isMain) return 1
+    if (a.isDefault) return -1
+    if (b.isDefault) return 1
     return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
   })
+
+export const selectAddressTransactions = (
+  allAddresses: AddressRedux[],
+  transactions: (Transaction | PendingTransaction)[],
+  addressHashes: AddressHash[]
+) => {
+  const addresses = allAddresses.filter((address) => addressHashes.includes(address.hash))
+  const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
+
+  return transactions.reduce((txs, tx) => {
+    const addressTx = addressesTxs.find(({ txHash }) => txHash === tx.hash)
+    if (addressTx) txs.push({ ...tx, address: addressTx.address })
+
+    return txs
+  }, [] as AddressTransaction[])
+}
+
+export const initialAddressSettings = {
+  isDefault: true,
+  color: getRandomLabelColor()
+}

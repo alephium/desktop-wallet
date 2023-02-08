@@ -16,10 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressHash } from '@/types/addresses'
+import { AddressBase } from '@/types/addresses'
 
-export type Contact = {
-  id?: string
+export type ActiveWallet = {
   name: string
-  address: AddressHash
+  mnemonic: string
+  isPassphraseUsed?: boolean
+}
+
+export type GeneratedWallet = ActiveWallet & {
+  initialAddress: AddressBase
 }

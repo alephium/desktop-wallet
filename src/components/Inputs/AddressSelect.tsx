@@ -31,8 +31,8 @@ import { sectionChildrenVariants } from '@/components/PageComponents/PageContain
 import { Address } from '@/contexts/addresses'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-import { sortAddressList } from '@/utils/addresses'
 
+// import { sortAddressList } from '@/utils/addresses'
 import Option from './Option'
 
 interface AddressSelectProps {
@@ -148,7 +148,8 @@ const AddressSelectModal = ({
     <CenteredModal title={t`Addresses`} onClose={onClose}>
       <Description>{title}</Description>
       <div>
-        {sortAddressList(displayedOptions).map((address) => (
+        {/* TODO: Use sortAddressList(displayedOptions) when dependency from contexts/addresses has been removed */}
+        {displayedOptions.map((address) => (
           <Option
             key={address.hash}
             onSelect={() => setSelectedAddress(address)}

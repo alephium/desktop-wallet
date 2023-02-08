@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AddressHash } from '@/contexts/addresses'
+import { AddressHash } from '@/types/addresses'
 
 import ClipboardButton from './Buttons/ClipboardButton'
 import Ellipsed from './Ellipsed'
