@@ -77,7 +77,6 @@ const AddressesTabContent = () => {
         </HideEmptyAddressesToggle>
       }
     >
-      {/* TODO: Use sortAddressList(visibleAddresses) when dependency from contexts/addresses is removed */}
       {visibleAddresses.map((address) => (
         <AddressCard hash={address.hash} key={address.hash} />
       ))}

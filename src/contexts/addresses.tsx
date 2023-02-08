@@ -104,7 +104,6 @@ export type AddressesStateMap = Map<AddressHash, Address>
 export interface AddressesContextProps {
   addresses: Address[]
   mainAddress?: Address
-  getAddress: (hash: AddressHash) => Address | undefined
   setAddress: (address: Address) => void
   updateAddressSettings: (address: Address, settings: AddressSettings) => void
   isLoadingData: boolean
@@ -113,7 +112,6 @@ export interface AddressesContextProps {
 export const initialAddressesContext: AddressesContextProps = {
   addresses: [],
   mainAddress: undefined,
-  getAddress: () => undefined,
   setAddress: () => undefined,
   updateAddressSettings: () => null,
   isLoadingData: false
@@ -141,11 +139,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
   )
 
   const constructMapKey = useCallback((addressHash: AddressHash) => `${addressHash}-${network.name}`, [network.name])
-
-  const getAddress = useCallback(
-    (addressHash: AddressHash) => addressesState.get(constructMapKey(addressHash)),
-    [addressesState, constructMapKey]
-  )
 
   const updateAddressesState = useCallback(
     (newAddresses: Address[]) => {
@@ -304,7 +297,6 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
         {
           addresses: addressesOfCurrentNetwork,
           mainAddress: addressesOfCurrentNetwork.find((address) => address.settings.isMain),
-          getAddress,
           setAddress,
           updateAddressSettings,
           isLoadingData: isLoadingData || addressesWithPendingSentTxs.length > 0

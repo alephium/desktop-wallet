@@ -29,8 +29,10 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import Badge from '@/components/Badge'
 import Card from '@/components/Card'
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
+import { changeDefaultAddress } from '@/storage-utils/addresses'
+import { selectAddressByHash } from '@/store/addressesSlice'
 import { useGetPriceQuery } from '@/store/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -44,23 +46,23 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const theme = useTheme()
-  const { getAddress, mainAddress, updateAddressSettings } = useAddressesContext()
+  const [address, { name: walletName, mnemonic }] = useAppSelector((s) => [
+    selectAddressByHash(s, hash),
+    s.activeWallet
+  ])
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
-  const address = getAddress(hash)
+  if (!address || !walletName || !mnemonic) return null
 
-  if (!address) return null
-
-  const alphBalance = parseFloat(convertSetToAlph(BigInt(address.details.balance)))
+  const alphBalance = parseFloat(convertSetToAlph(BigInt(address.balance)))
   const fiatBalance = alphBalance * (price ?? 0)
   // TODO: Fetch tokens from explorer API and store in Redux
-  const tokens: string[] = address.details.balance !== '0' ? ['ALPH'] : []
+  const tokens: string[] = address.balance !== '0' ? ['ALPH'] : []
 
   const navigateToAddressDetailsPage = (hash: AddressHash) => () => navigate(`/wallet/addresses/${hash}`)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {
-    mainAddress && updateAddressSettings(mainAddress, { ...mainAddress?.settings, isMain: false })
-    updateAddressSettings(address, { ...address.settings, isMain: true })
+    changeDefaultAddress(address, { walletName, mnemonic })
     event.stopPropagation()
   }
 
@@ -71,8 +73,8 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
       onKeyPress={navigateToAddressDetailsPage(address.hash)}
       layout
     >
-      <InfoSection bgColor={address.settings.color}>
-        {address.settings.isMain ? (
+      <InfoSection bgColor={address.color}>
+        {address.isDefault ? (
           <DefaultAddressRibbonContainer>
             <TooltipWrapper content={t('This is the default address')} place="bottom">
               <DefaultAddressRibbon />
@@ -85,7 +87,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
             </TooltipWrapper>
           </RibbonContainer>
         )}
-        <Label>{address.settings.label}</Label>
+        <Label>{address.label}</Label>
         <TotalBalance>
           {!isPriceLoading && <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />}
         </TotalBalance>

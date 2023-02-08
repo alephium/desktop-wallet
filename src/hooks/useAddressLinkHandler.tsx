@@ -19,30 +19,26 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAddressesContext } from '@/contexts/addresses'
 import { AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 
 import { useAppSelector } from './redux'
 
 const useAddressLinkHandler = () => {
-  const { explorerUrl } = useAppSelector((state) => state.network.settings)
-  const { getAddress } = useAddressesContext()
+  const [explorerUrl, addressHashes] = useAppSelector((s) => [s.network.settings.explorerUrl, s.addresses.ids])
   const navigate = useNavigate()
 
   return useCallback(
     (addressHash: AddressHash) => {
       if (!addressHash) return
 
-      const address = getAddress(addressHash)
-
-      if (address) {
+      if (addressHashes.includes(addressHash)) {
         navigate(`/wallet/addresses/${addressHash}`)
       } else {
         openInWebBrowser(`${explorerUrl}/#/addresses/${addressHash}`)
       }
     },
-    [navigate, getAddress, explorerUrl]
+    [addressHashes, explorerUrl, navigate]
   )
 }
 
