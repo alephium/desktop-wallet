@@ -36,7 +36,8 @@ import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
+import { store } from '@/storage/app-state/store'
 import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
@@ -196,17 +197,23 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   )
 }
 
-const handleSend = async (txData: DeployContractTxData, context: TxContext) => {
+const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext) => {
   if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
 
-  const data = await signAndSendTransaction(
-    txData.fromAddress,
-    context.unsignedTxId,
-    context.unsignedTransaction.unsignedTx
-  )
+  const data = await signAndSendTransaction(fromAddress, context.unsignedTxId, context.unsignedTransaction.unsignedTx)
 
   // TODO: Should we display a pending transaction when deploying a contract? What would the "toAddress" be in that case?
   // Since there's no toAddress, we need to rethink our UI.
+  store.dispatch(
+    transactionSent({
+      hash: data.txId,
+      fromAddress: fromAddress.hash,
+      toAddress: '',
+      timestamp: new Date().getTime(),
+      type: 'contract',
+      status: 'pending'
+    })
+  )
 
   return data.signature
 }

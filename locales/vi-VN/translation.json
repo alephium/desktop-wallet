@@ -309,5 +309,6 @@
   "Transfers": "Transfers",
   "Lock time must be in the future.": "Lock time must be in the future.",
   "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.": "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.",
-  "Gas price must be greater than {{ amount }}": "Gas price must be greater than {{ amount }}"
+  "Gas price must be greater than {{ amount }}": "Gas price must be greater than {{ amount }}",
+  "Smart contract": "Smart contract"
 }

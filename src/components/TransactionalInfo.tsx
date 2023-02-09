@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
+import Badge from '@/components/Badge'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
@@ -60,14 +61,19 @@ const TransactionalInfo = ({
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+  const isPending = isPendingTx(tx)
 
   if (!address) return null
 
-  const pendingToAddressComponent = isPendingTx(tx) && (
-    <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
-  )
-  const amountSign =
-    showInternalInflows && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
+  const pendingToAddressComponent = isPending ? (
+    tx.type === 'contract' ? (
+      <Badge>{t('Smart contract')}</Badge>
+    ) : (
+      <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
+    )
+  ) : null
+
+  const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
   return (
     <div className={className}>
