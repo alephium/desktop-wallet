@@ -125,18 +125,10 @@ const useAddressGeneration = () => {
       dispatch(addressRestorationStarted())
 
       deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
-        const restoredAddresses = data.map((address) => {
-          const { color, ...metadata } = addressesMetadata.find(
-            (metadata) => metadata.index === address.index
-          ) as AddressMetadata
-
-          return {
-            ...address,
-            ...metadata,
-            // TODO: Write a migration script for all addresses with no colors and then remove the following line
-            color: color || getRandomLabelColor()
-          }
-        })
+        const restoredAddresses: AddressBase[] = data.map((address) => ({
+          ...address,
+          ...(addressesMetadata.find((metadata) => metadata.index === address.index) as AddressMetadata)
+        }))
 
         dispatch(addressesRestoredFromMetadata(restoredAddresses))
       }

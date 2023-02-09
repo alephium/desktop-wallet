@@ -321,7 +321,7 @@ describe('_20230209_124300', () => {
     unencryptedWallet: walletGenerate()
   }
 
-  it('should replace the isMain address metadata settings with isDefault', () => {
+  it('should replace the isMain address metadata settings with isDefault and ensure there is a color', () => {
     const dataKey = { mnemonic: wallet.unencryptedWallet.mnemonic, walletName: wallet.name }
     const deprecatedAddressMetadata: DeprecatedAddressMetadata[] = [
       {
@@ -351,6 +351,8 @@ describe('_20230209_124300', () => {
     expect(Object.prototype.hasOwnProperty.call(metadata[0], 'isMain')).toBeFalsy()
     expect(metadata[0].isDefault).toEqual(false)
     expect(metadata[0].index).toEqual(0)
+    expect(metadata[0].color).toBeDefined()
+    expect(metadata[0].color).toBeTruthy()
     expect(Object.prototype.hasOwnProperty.call(metadata[1], 'isMain')).toBeFalsy()
     expect(metadata[1].isDefault).toEqual(true)
     expect(metadata[1].index).toEqual(1)

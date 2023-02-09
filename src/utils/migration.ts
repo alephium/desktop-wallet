@@ -28,6 +28,7 @@ import SettingsStorage, {
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
 import { GeneralSettings, NetworkSettings, ThemeType } from '@/types/settings'
+import { getRandomLabelColor } from '@/utils/colors'
 import { stringToDoubleSHA256HexString } from '@/utils/misc'
 
 export const latestAddressMetadataVersion = '2022-05-27T12:00:00Z'
@@ -206,7 +207,7 @@ export const _20230124_164900 = () => {
   })
 }
 
-// Change isMain to isDefault settings of each address
+// Change isMain to isDefault settings of each address and ensure it has a color
 export const _20230209_124300 = (dataKey: DataKey) => {
   const currentAddressMetadata: (AddressMetadata | DeprecatedAddressMetadata)[] = AddressMetadataStorage.load(dataKey)
   const newAddressesMetadata: AddressMetadata[] = []
@@ -215,8 +216,8 @@ export const _20230209_124300 = (dataKey: DataKey) => {
     let newMetadata: AddressMetadata
 
     if (Object.prototype.hasOwnProperty.call(currentMetadata, 'isMain')) {
-      const { isMain, ...rest } = currentMetadata as DeprecatedAddressMetadata
-      newMetadata = { ...rest, isDefault: isMain } as AddressMetadata
+      const { isMain, color, ...rest } = currentMetadata as DeprecatedAddressMetadata
+      newMetadata = { ...rest, isDefault: isMain, color: color || getRandomLabelColor() } as AddressMetadata
     } else {
       newMetadata = currentMetadata as AddressMetadata
     }
