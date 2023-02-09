@@ -75,41 +75,36 @@ const App = () => {
     try {
       await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
       dispatch(apiClientInitSucceeded())
-      setSnackbarMessage({
-        text: `${t('Current network')}: ${network.name}.`,
-        type: 'info',
-        duration: 4000
-      })
     } catch (e) {
       dispatch(apiClientInitFailed())
-      console.error('Could not connect to network: ', network.name)
-      console.error(e)
+      console.error('Could not connect to network: ', network.name, e)
     }
-  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, dispatch, setSnackbarMessage, t])
+  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, dispatch])
 
   // Is there a better way to trigger the initial client initialization?
-  // Currently we trigger it "magically" by setting the the networkSlice status status to 'connecting', which is
-  // happening when loading the stored network settings and when network settings are updated by the user.
+  // Currently we trigger it is a side-effect of setting the networkSlice status to 'connecting', which is happening
+  // when loading the stored network settings and when network settings are updated by the user.
   useEffect(() => {
     if (network.status === 'connecting') {
       initializeClient()
-    }
-  }, [initializeClient, network.status])
-
-  // Is there a better way to trying to re-initialize the client? This gets "magically" triggered when the networkSlice
-  // status becomes 'offline' (which is done by the `apiClientInitFailed` action)
-  const shouldInitialize = network.status === 'offline'
-  useInterval(initializeClient, 2000, !shouldInitialize)
-
-  useEffect(() => {
-    if (network.status === 'offline') {
+    } else if (network.status === 'offline') {
       setSnackbarMessage({
         text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork: network.name }),
         type: 'alert',
         duration: 5000
       })
+    } else if (network.status === 'online') {
+      setSnackbarMessage({
+        text: `${t('Current network')}: ${network.name}.`,
+        type: 'info',
+        duration: 4000
+      })
     }
-  }, [network.name, network.status, setSnackbarMessage, t])
+  }, [initializeClient, network.name, network.status, setSnackbarMessage, t])
+
+  // Is there a better way to trying to re-initialize the client? This gets "magically" triggered when the networkSlice
+  // status becomes 'offline' (which is done by the `apiClientInitFailed` action)
+  useInterval(initializeClient, 2000, network.status !== 'offline')
 
   // Is there a better way to re-fetch addresses data when client goes back online?
   // Currently we trigger it "magically" by setting the addressesSlice status to 'uninitialized'
@@ -119,19 +114,12 @@ const App = () => {
     }
   }, [addresses.length, addressesStatus, dispatch, network.status])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (pendingTxHashes.length > 0) {
-        dispatch(syncAddressesData(pendingTxHashes))
-      } else {
-        clearInterval(interval)
-      }
-    }, 2000)
+  const refreshAddressesData = useCallback(
+    () => dispatch(syncAddressesData(pendingTxHashes)),
+    [dispatch, pendingTxHashes]
+  )
 
-    return () => {
-      clearInterval(interval)
-    }
-  }, [pendingTxHashes, dispatch])
+  useInterval(refreshAddressesData, 2000, pendingTxHashes.length === 0)
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
