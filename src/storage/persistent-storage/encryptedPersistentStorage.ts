@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { decrypt, encrypt } from '@alephium/sdk'
 
-import { stringToDoubleSHA256HexString } from '../utils/misc'
+import { stringToDoubleSHA256HexString } from '../../utils/misc'
 
 export interface DataKey {
   mnemonic: string

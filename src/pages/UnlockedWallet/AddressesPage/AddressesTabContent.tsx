@@ -24,7 +24,7 @@ import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 
 import AddressCard from './AddressCard'
 import TabContent from './TabContent'

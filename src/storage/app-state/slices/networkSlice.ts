@@ -18,12 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 
-import SettingsStorage, { networkPresets } from '@/persistent-storage/settings'
+import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
 import { NetworkName, NetworkPreset, NetworkStatus } from '@/types/network'
 import { NetworkSettings } from '@/types/settings'
 import { getNetworkName } from '@/utils/settings'
 
-import { RootState } from './store'
+import { RootState } from '../store'
 
 const sliceName = 'network'
 

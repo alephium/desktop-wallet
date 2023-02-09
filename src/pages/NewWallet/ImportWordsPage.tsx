@@ -35,7 +35,7 @@ import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
-import { saveNewWallet } from '@/storage-utils/wallet'
+import { saveNewWallet } from '@/storage/storage-utils/walletStorageUtils'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {

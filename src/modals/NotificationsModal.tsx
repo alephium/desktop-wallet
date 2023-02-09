@@ -25,7 +25,7 @@ import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
 import WalletSwitcher from '@/components/WalletSwitcher'
 import { useAppDispatch } from '@/hooks/redux'
-import { walletLocked } from '@/store/activeWalletSlice'
+import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 import ModalContainer, { ModalContainerProps } from './ModalContainer'

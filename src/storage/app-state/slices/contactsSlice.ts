@@ -20,8 +20,8 @@ import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 
 import { Contact } from '@/types/contacts'
 
+import { RootState } from '../store'
 import { walletLocked } from './activeWalletSlice'
-import { RootState } from './store'
 
 const sliceName = 'contacts'
 

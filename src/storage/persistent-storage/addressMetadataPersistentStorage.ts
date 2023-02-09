@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressMetadataRedux, AddressSettingsRedux } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 
-import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
+import { DataKey, PersistentEncryptedStorage } from './encryptedPersistentStorage'
 
 interface AddressMetadataStorageStoreProps {
   dataKey: DataKey

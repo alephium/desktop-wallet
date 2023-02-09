@@ -30,10 +30,14 @@ import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
-import { selectAllAddresses, syncAddressesData } from '@/store/addressesSlice'
-import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from '@/store/networkSlice'
-import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
-import { generalSettingsMigrated } from '@/store/settingsSlice'
+import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import {
+  apiClientInitFailed,
+  apiClientInitSucceeded,
+  networkSettingsMigrated
+} from '@/storage/app-state/slices/networkSlice'
+import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
+import { generalSettingsMigrated } from '@/storage/app-state/slices/settingsSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'

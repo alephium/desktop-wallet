@@ -36,8 +36,8 @@ import { Address, AddressBase, AddressHash, AddressSettingsRedux, LoadingEnabled
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
+import { RootState } from '../store'
 import { walletLocked, walletSaved, walletSwitched } from './activeWalletSlice'
-import { RootState } from './store'
 
 const sliceName = 'addresses'
 

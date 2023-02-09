@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
 
-import SettingsStorage, { defaultSettings } from '@/persistent-storage/settings'
-import WalletStorage from '@/persistent-storage/wallet'
+import SettingsStorage, { defaultSettings } from '@/storage/persistent-storage/settingsPersistentStorage'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { Settings, ThemeType } from '@/types/settings'
 
 import { stringToDoubleSHA256HexString } from './misc'

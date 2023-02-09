@@ -28,9 +28,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletDeleted, walletLocked } from '@/store/activeWalletSlice'
+import { walletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 import ModalPortal from '../ModalPortal'
 

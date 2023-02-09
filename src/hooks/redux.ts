@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
-import type { AppDispatch, RootState } from '@/store/store'
+import type { AppDispatch, RootState } from '@/storage/app-state/store'
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`.
 // See: https://redux-toolkit.js.org/tutorials/typescript#define-typed-hooks

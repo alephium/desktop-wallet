@@ -23,9 +23,13 @@ import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
-import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
-import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import {
+  selectAddressIds,
+  selectAllAddresses,
+  syncAllAddressesTransactionsNextPage
+} from '@/storage/app-state/slices/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/storage/app-state/slices/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 

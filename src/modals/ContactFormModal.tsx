@@ -24,8 +24,8 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import ContactStorage from '@/persistent-storage/contacts'
-import { contactStoredInPersistentStorage } from '@/store/contactsSlice'
+import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
+import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
 import {
   requiredErrorMessage,

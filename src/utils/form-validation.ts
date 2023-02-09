@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { isAddressValid } from '@alephium/sdk'
 
 import i18n from '@/i18n'
-import { store } from '@/store/store'
+import { store } from '@/storage/app-state/store'
 import { Contact } from '@/types/contacts'
 
 export const requiredErrorMessage = i18n.t('This field is required')

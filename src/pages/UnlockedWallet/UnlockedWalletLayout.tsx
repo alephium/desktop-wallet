@@ -35,7 +35,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import SettingsModal from '@/modals/SettingsModal'
-import { syncAddressesData } from '@/store/addressesSlice'
+import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 

@@ -20,15 +20,15 @@ import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic, TOTAL_NUMB
 import { useCallback } from 'react'
 
 import client from '@/api/client'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { saveNewAddresses } from '@/storage-utils/addresses'
 import {
   addressDiscoveryFinished,
   addressDiscoveryStarted,
   addressesRestoredFromMetadata,
   addressRestorationStarted,
   selectAllAddresses
-} from '@/store/addressesSlice'
+} from '@/storage/app-state/slices/addressesSlice'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 

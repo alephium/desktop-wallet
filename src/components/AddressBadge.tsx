@@ -25,7 +25,7 @@ import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import { useAppSelector } from '@/hooks/redux'
 import dotSvg from '@/images/dot.svg'
-import { selectAddressByHash } from '@/store/addressesSlice'
+import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 

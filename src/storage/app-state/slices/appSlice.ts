@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import WalletStorage from '@/persistent-storage/wallet'
-import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/store/addressesSlice'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
-import { languageChangeFinished, languageChangeStarted } from './actions'
+import { languageChangeFinished, languageChangeStarted } from '../actions'
 import { walletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
 
 const sliceName = 'app'

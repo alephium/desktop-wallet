@@ -33,7 +33,7 @@ import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import {
   DappTxData,
   DeployContractTxData,

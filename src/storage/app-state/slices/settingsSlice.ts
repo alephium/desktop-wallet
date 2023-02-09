@@ -24,11 +24,11 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
-import SettingsStorage from '@/persistent-storage/settings'
+import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 
-import { GeneralSettings, Settings } from '../types/settings'
-import { languageChangeFinished, languageChangeStarted } from './actions'
-import { RootState } from './store'
+import { GeneralSettings, Settings } from '../../../types/settings'
+import { languageChangeFinished, languageChangeStarted } from '../actions'
+import { RootState } from '../store'
 
 const sliceName = 'settings'
 

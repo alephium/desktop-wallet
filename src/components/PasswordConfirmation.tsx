@@ -22,7 +22,7 @@ import styled from 'styled-components'
 
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
-import WalletStorage from '@/persistent-storage/wallet'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 import Button from './Button'
 import Input from './Inputs/Input'

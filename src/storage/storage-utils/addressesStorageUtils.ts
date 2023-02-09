@@ -16,15 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { DataKey } from '@/persistent-storage/encrypted-storage'
 import {
   addressSettingsSaved,
   defaultAddressChanged,
   newAddressesStored,
   syncAddressesData
-} from '@/store/addressesSlice'
-import { store } from '@/store/store'
+} from '@/storage/app-state/slices/addressesSlice'
+import { store } from '@/storage/app-state/store'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import { DataKey } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { Address, AddressBase, AddressSettingsRedux } from '@/types/addresses'
 
 export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => {

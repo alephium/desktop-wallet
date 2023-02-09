@@ -34,7 +34,7 @@ import {
   languageChanged,
   passwordRequirementToggled,
   walletLockTimeChanged
-} from '@/store/settingsSlice'
+} from '@/storage/app-state/slices/settingsSlice'
 import { Language, ThemeType } from '@/types/settings'
 
 import ModalPortal from '../ModalPortal'

@@ -19,12 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
+import { walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
-import { AddressDataSyncResult, AddressHash } from '../types/addresses'
-import { AddressPendingTransaction, PendingTransaction } from '../types/transactions'
-import { selectAddressTransactions } from '../utils/addresses'
+import { AddressDataSyncResult, AddressHash } from '../../../types/addresses'
+import { AddressPendingTransaction, PendingTransaction } from '../../../types/transactions'
+import { selectAddressTransactions } from '../../../utils/addresses'
+import { RootState } from '../store'
 import {
   selectAllAddresses,
   syncAddressesData,
@@ -32,7 +33,6 @@ import {
   syncAllAddressesTransactionsNextPage,
   transactionSent
 } from './addressesSlice'
-import { RootState } from './store'
 
 const sliceName = 'pendingTransactions'
 

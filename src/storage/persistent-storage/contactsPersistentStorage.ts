@@ -21,7 +21,7 @@ import { nanoid } from 'nanoid'
 import i18n from '@/i18n'
 import { Contact } from '@/types/contacts'
 
-import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
+import { DataKey, PersistentEncryptedStorage } from './encryptedPersistentStorage'
 
 type StoreContactResult = {
   contactId?: string
