@@ -53,7 +53,7 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
       Object.assign(existingAddressMetadata, settings)
     }
 
-    if (settings.isDefault && currentDefaultAddress.index !== index) {
+    if (settings.isDefault && currentDefaultAddress && currentDefaultAddress.index !== index) {
       console.log(`🟠 Removing old default address with index ${index}`)
 
       Object.assign(currentDefaultAddress, {
