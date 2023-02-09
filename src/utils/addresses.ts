@@ -46,3 +46,11 @@ export const getInitialAddressSettings = (): AddressSettings => ({
   isDefault: true,
   color: getRandomLabelColor()
 })
+
+export const filterAddresses = (addresses: Address[], text: string) =>
+  text.length < 2
+    ? addresses
+    : addresses.filter(
+        // TODO: Include tokens in search
+        (address) => address.label?.toLowerCase().includes(text) || address.hash.toLowerCase().includes(text)
+      )

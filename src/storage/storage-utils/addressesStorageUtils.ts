@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import {
   addressSettingsSaved,
   defaultAddressChanged,
-  newAddressesStored,
+  newAddressesSaved,
   syncAddressesData
 } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
@@ -40,7 +40,7 @@ export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => 
     })
   )
 
-  store.dispatch(newAddressesStored(addresses))
+  store.dispatch(newAddressesSaved(addresses))
   store.dispatch(syncAddressesData(addresses.map((address) => address.hash)))
 }
 

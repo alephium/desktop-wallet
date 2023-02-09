@@ -101,8 +101,6 @@ const useAddressGeneration = () => {
       }))
 
       saveNewAddresses(addresses, { walletName, mnemonic })
-
-      deriveAddressesInGroupsWorker.terminate()
     }
 
     deriveAddressesInGroupsWorker.postMessage({
