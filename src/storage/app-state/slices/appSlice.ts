@@ -75,7 +75,7 @@ const appSlice = createSlice({
       })
       .addCase(walletLocked, () => initialState)
       .addCase(walletSaved, (state, action) => {
-        const newWallet = action.payload
+        const newWallet = action.payload.wallet
 
         state.storedWalletNames.push(newWallet.name)
       })

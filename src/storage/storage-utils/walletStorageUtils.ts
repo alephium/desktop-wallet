@@ -47,8 +47,10 @@ export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletPro
 
   store.dispatch(
     walletSaved({
-      name: walletName,
-      mnemonic: wallet.mnemonic,
+      wallet: {
+        name: walletName,
+        mnemonic: wallet.mnemonic
+      },
       initialAddress: {
         ...getWalletInitialAddress(wallet),
         ...initialAddressSettings

@@ -374,9 +374,9 @@ const addInitialAddress = (state: AddressesState, address: AddressBase) => {
 }
 
 const addPassphraseInitialAddress = (state: AddressesState, action: PayloadAction<UnlockedWallet>) => {
-  const { isPassphraseUsed, initialAddress } = action.payload
+  const { wallet, initialAddress } = action.payload
 
-  if (isPassphraseUsed)
+  if (wallet.isPassphraseUsed)
     addInitialAddress(state, {
       ...initialAddress,
       ...getInitialAddressSettings()

@@ -97,9 +97,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       }
 
       const payload = {
-        name: walletName,
-        mnemonic: wallet.mnemonic,
-        isPassphraseUsed,
+        wallet: {
+          name: walletName,
+          mnemonic: wallet.mnemonic,
+          isPassphraseUsed
+        },
         initialAddress: getWalletInitialAddress(wallet)
       }
       dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))

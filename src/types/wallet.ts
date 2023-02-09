@@ -26,10 +26,12 @@ export type ActiveWallet = {
   isPassphraseUsed?: boolean
 }
 
-export type GeneratedWallet = ActiveWallet & {
+export type GeneratedWallet = {
+  wallet: ActiveWallet
   initialAddress: AddressBase
 }
 
-export type UnlockedWallet = ActiveWallet & {
+export type UnlockedWallet = {
+  wallet: ActiveWallet
   initialAddress: AddressKeyPair
 }
