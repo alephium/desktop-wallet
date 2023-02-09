@@ -94,3 +94,10 @@ export const extractNewTransactionHashes = (
   incomingTransactions
     .filter((newTx) => !existingTransactions.some((existingTx) => existingTx === newTx.hash))
     .map((tx) => tx.hash)
+
+export const getTransactionsOfAddress = (transactions: Transaction[], address: Address) =>
+  transactions.filter(
+    (tx) =>
+      tx.inputs?.some((input) => input.address === address.hash) ||
+      tx.outputs?.some((output) => output.address === address.hash)
+  )

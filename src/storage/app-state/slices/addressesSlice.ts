@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
 import {
   createAsyncThunk,
   createEntityAdapter,
@@ -37,7 +38,7 @@ import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } fr
 import { PendingTransaction } from '@/types/transactions'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
-import { extractNewTransactionHashes } from '@/utils/transactions'
+import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 import { RootState } from '../store'
 import { activeWalletDeleted, walletLocked, walletSaved, walletSwitched, walletUnlocked } from './activeWalletSlice'
@@ -104,14 +105,35 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
 
     const state = getState() as RootState
     const addresses = selectAllAddresses(state)
-    const nextPage = state.addresses.transactionsPageLoaded + 1
+    let nextPage = state.addresses.transactionsPageLoaded
+    let newTransactionsFound = false
+    let allTransactionsLoaded = state.addresses.allTransactionsLoaded
+    let transactions: Transaction[] = []
 
-    // NOTE: Explorer backend limits this query to 80 addresses
-    const results = await Promise.all(
-      chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
-    )
+    while (!allTransactionsLoaded && !newTransactionsFound) {
+      nextPage += 1
 
-    return { page: nextPage, transactions: results.flat() }
+      // NOTE: Explorer backend limits this query to 80 addresses
+      const results = await Promise.all(
+        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
+      )
+
+      transactions = results.flat()
+
+      if (transactions.length === 0) {
+        allTransactionsLoaded = true
+        break
+      }
+
+      newTransactionsFound = addresses.some((address) => {
+        const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
+        const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
+
+        return newTxHashes.length > 0
+      })
+    }
+
+    return { page: nextPage, transactions }
   }
 )
 
@@ -229,12 +251,7 @@ const addressesSlice = createSlice({
         const addresses = getAddresses(state)
 
         const updatedAddresses = addresses.map((address) => {
-          const transactionsOfAddress = transactions.filter(
-            (tx) =>
-              tx.inputs?.some((input) => input.address === address.hash) ||
-              tx.outputs?.some((output) => output.address === address.hash)
-          )
-
+          const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
           const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
 
           return {
