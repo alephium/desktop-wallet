@@ -19,14 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
 
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import { DataKey } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import SettingsStorage, {
   defaultSettings,
   networkPresets
 } from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
 import { GeneralSettings, NetworkSettings, ThemeType } from '@/types/settings'
-
-import { stringToDoubleSHA256HexString } from './misc'
+import { stringToDoubleSHA256HexString } from '@/utils/misc'
 
 export const latestAddressMetadataVersion = '2022-05-27T12:00:00Z'
 
@@ -45,7 +47,8 @@ export const migrateUserData = (mnemonic: string, walletName: string) => {
   console.log('🚚 Migrating user data')
 
   _20220511_074100()
-  _20220527_120000(mnemonic, walletName)
+  _20220527_120000({ mnemonic, walletName })
+  _20230209_124300({ mnemonic, walletName })
 }
 
 export const migrateWalletData = () => {
@@ -91,7 +94,7 @@ export const _20220511_074100 = () => {
 }
 
 // Encrypt address metadata key and value
-export const _20220527_120000 = (mnemonic: string, walletName: string) => {
+export const _20220527_120000 = ({ mnemonic, walletName }: DataKey) => {
   const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
   const keyDeprecated = `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
 
@@ -201,4 +204,24 @@ export const _20230124_164900 = () => {
       window.localStorage.setItem(WalletStorage.getKey(name), parsedWallet)
     }
   })
+}
+
+// Change isMain to isDefault settings of each address
+export const _20230209_124300 = (dataKey: DataKey) => {
+  const currentAddressMetadata: (AddressMetadata | DeprecatedAddressMetadata)[] = AddressMetadataStorage.load(dataKey)
+  const newAddressesMetadata: AddressMetadata[] = []
+
+  currentAddressMetadata.forEach((currentMetadata: AddressMetadata | DeprecatedAddressMetadata) => {
+    let newMetadata: AddressMetadata
+
+    if (Object.prototype.hasOwnProperty.call(currentMetadata, 'isMain')) {
+      const { isMain, ...rest } = currentMetadata as DeprecatedAddressMetadata
+      newMetadata = { ...rest, isDefault: isMain } as AddressMetadata
+    } else {
+      newMetadata = currentMetadata as AddressMetadata
+    }
+    newAddressesMetadata.push(newMetadata)
+  })
+
+  AddressMetadataStorage.storeAll({ addressesMetadata: newAddressesMetadata, dataKey })
 }

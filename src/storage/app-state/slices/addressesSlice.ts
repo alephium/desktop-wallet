@@ -33,7 +33,7 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
-import { Address, AddressBase, AddressHash, AddressSettingsRedux, LoadingEnabled } from '@/types/addresses'
+import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
@@ -166,10 +166,7 @@ const addressesSlice = createSlice({
         }
       })
     },
-    addressSettingsSaved: (
-      state,
-      action: PayloadAction<{ addressHash: AddressHash; settings: AddressSettingsRedux }>
-    ) => {
+    addressSettingsSaved: (state, action: PayloadAction<{ addressHash: AddressHash; settings: AddressSettings }>) => {
       const { addressHash, settings } = action.payload
 
       if (settings.isDefault) updateOldDefaultAddress(state)

@@ -25,7 +25,7 @@ import {
 import { store } from '@/storage/app-state/store'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import { DataKey } from '@/storage/persistent-storage/encryptedPersistentStorage'
-import { Address, AddressBase, AddressSettingsRedux } from '@/types/addresses'
+import { Address, AddressBase, AddressSettings } from '@/types/addresses'
 
 export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => {
   addresses.forEach((address) =>
@@ -58,7 +58,7 @@ export const changeDefaultAddress = (address: Address, dataKey: DataKey) => {
   store.dispatch(defaultAddressChanged(address))
 }
 
-export const saveAddressSettings = (address: AddressBase, settings: AddressSettingsRedux, dataKey: DataKey) => {
+export const saveAddressSettings = (address: AddressBase, settings: AddressSettings, dataKey: DataKey) => {
   AddressMetadataStorage.store({
     dataKey,
     index: address.index,

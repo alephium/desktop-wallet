@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressMetadataRedux, AddressSettingsRedux } from '@/types/addresses'
+import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 
 import { DataKey, PersistentEncryptedStorage } from './encryptedPersistentStorage'
@@ -24,7 +24,13 @@ import { DataKey, PersistentEncryptedStorage } from './encryptedPersistentStorag
 interface AddressMetadataStorageStoreProps {
   dataKey: DataKey
   index: number
-  settings: AddressSettingsRedux
+  settings: AddressSettings
+  isPassphraseUsed?: boolean
+}
+
+interface AddressesMetadataStorageStoreAppProps {
+  dataKey: DataKey
+  addressesMetadata: AddressMetadata[]
   isPassphraseUsed?: boolean
 }
 
@@ -33,12 +39,10 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
     if (isPassphraseUsed) return
 
     const addressesMetadata = this.load(dataKey)
-    const existingAddressMetadata: AddressMetadataRedux | undefined = addressesMetadata.find(
-      (data: AddressMetadataRedux) => data.index === index
+    const existingAddressMetadata: AddressMetadata | undefined = addressesMetadata.find(
+      (data: AddressMetadata) => data.index === index
     )
-    const currentDefaultAddress: AddressMetadataRedux = addressesMetadata.find(
-      (data: AddressMetadataRedux) => data.isDefault
-    )
+    const currentDefaultAddress: AddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.isDefault)
 
     if (!existingAddressMetadata) {
       addressesMetadata.push({
@@ -60,6 +64,10 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
 
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
+    super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)
+  }
+
+  storeAll({ addressesMetadata, dataKey, isPassphraseUsed }: AddressesMetadataStorageStoreAppProps) {
     super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)
   }
 }

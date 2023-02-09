@@ -22,27 +22,27 @@ import { AddressBalance, AddressInfo, Token, Transaction, UnconfirmedTransaction
 import { TimeInMs } from './numbers'
 import { PendingTransaction } from './transactions'
 
-export type AddressSettings = {
+export type DeprecatedAddressSettings = {
   isMain: boolean
   label?: string
   color?: string
+}
+
+export type DeprecatedAddressMetadata = DeprecatedAddressSettings & {
+  index: number
+}
+
+export type AddressSettings = {
+  isDefault: boolean
+  color: string
+  label?: string
 }
 
 export type AddressMetadata = AddressSettings & {
   index: number
 }
 
-export type AddressSettingsRedux = {
-  isDefault: boolean
-  color: string
-  label?: string
-}
-
-export type AddressMetadataRedux = AddressSettingsRedux & {
-  index: number
-}
-
-export type AddressBase = AddressKeyPair & AddressSettingsRedux
+export type AddressBase = AddressKeyPair & AddressSettings
 
 export type Address = AddressBase &
   AddressInfo & {
