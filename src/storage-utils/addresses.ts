@@ -21,7 +21,7 @@ import { DataKey } from '@/persistent-storage/encrypted-storage'
 import {
   addressSettingsSaved,
   defaultAddressChanged,
-  newAddressesGenerated,
+  newAddressesStored,
   syncAddressesData
 } from '@/store/addressesSlice'
 import { store } from '@/store/store'
@@ -40,7 +40,7 @@ export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => 
     })
   )
 
-  store.dispatch(newAddressesGenerated(addresses))
+  store.dispatch(newAddressesStored(addresses))
   store.dispatch(syncAddressesData(addresses.map((address) => address.hash)))
 }
 
