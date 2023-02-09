@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
-import { useCallback } from 'react'
 
 import client from '@/api/client'
 import {
@@ -75,16 +74,13 @@ const useAddressGeneration = () => {
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 
-  const generateAddress = useCallback(
-    ({ group }: GenerateAddressProps = {}): AddressKeyPair => {
-      if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
+  const generateAddress = ({ group }: GenerateAddressProps = {}): AddressKeyPair => {
+    if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
 
-      const { masterKey } = getWalletFromMnemonic(mnemonic)
+    const { masterKey } = getWalletFromMnemonic(mnemonic)
 
-      return deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes)
-    },
-    [currentAddressIndexes, mnemonic]
-  )
+    return deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes)
+  }
 
   const generateAndSaveOneAddressPerGroup = (
     { labelPrefix, labelColor, skipGroups = [] }: GenerateOneAddressPerGroupProps = { skipGroups: [] }
