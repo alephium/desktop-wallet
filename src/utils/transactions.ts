@@ -60,7 +60,7 @@ export const convertUnconfirmedTxToPendingTx = (
 ): PendingTransaction => {
   if (!tx.outputs) throw 'Missing transaction details'
 
-  const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress)
+  const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress).toString()
   const toAddress = tx.outputs[0].address
 
   if (!fromAddress) throw new Error('fromAddress is not defined')
@@ -73,7 +73,7 @@ export const convertUnconfirmedTxToPendingTx = (
     // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
     timestamp: tx.lastSeen,
     type: 'transfer',
-    amount: amount.toString(),
+    amount,
     status: 'pending'
   }
 }

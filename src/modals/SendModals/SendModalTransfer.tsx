@@ -234,14 +234,18 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
 }
 
 const handleSend = async (transactionData: TransferTxData, context: TxContext) => {
-  const { fromAddress, toAddress, lockTime } = transactionData
+  const { fromAddress, toAddress, lockTime: lockDateTime, alphAmount } = transactionData
+  const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
   if (toAddress) {
-    if (context.isSweeping && context.sweepUnsignedTxs) {
-      const sendToAddress = context.consolidationRequired ? fromAddress.hash : toAddress
-      const type = context.consolidationRequired ? 'consolidation' : 'sweep'
+    const amount = convertAlphToSet(alphAmount).toString()
+    const lockTime = lockDateTime?.getTime()
 
-      for (const { txId, unsignedTx } of context.sweepUnsignedTxs) {
+    if (isSweeping && sweepUnsignedTxs) {
+      const sendToAddress = consolidationRequired ? fromAddress.hash : toAddress
+      const type = consolidationRequired ? 'consolidation' : 'sweep'
+
+      for (const { txId, unsignedTx } of sweepUnsignedTxs) {
         const data = await signAndSendTransaction(fromAddress, txId, unsignedTx)
 
         store.dispatch(
@@ -249,28 +253,26 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
             hash: data.txId,
             fromAddress: fromAddress.hash,
             toAddress: sendToAddress,
+            amount,
             timestamp: new Date().getTime(),
+            lockTime,
             type,
-            lockTime: lockTime?.getTime(),
             status: 'pending'
           })
         )
       }
-    } else if (context.unsignedTransaction) {
-      const data = await signAndSendTransaction(
-        fromAddress,
-        context.unsignedTxId,
-        context.unsignedTransaction.unsignedTx
-      )
+    } else if (unsignedTransaction) {
+      const data = await signAndSendTransaction(fromAddress, unsignedTxId, unsignedTransaction.unsignedTx)
 
       store.dispatch(
         transactionSent({
           hash: data.txId,
           fromAddress: fromAddress.hash,
           toAddress,
+          amount,
           timestamp: new Date().getTime(),
+          lockTime,
           type: 'transfer',
-          lockTime: lockTime?.getTime(),
           status: 'pending'
         })
       )
