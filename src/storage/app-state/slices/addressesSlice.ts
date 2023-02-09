@@ -35,10 +35,12 @@ import {
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
+import { UnlockedWallet } from '@/types/wallet'
+import { getInitialAddressSettings } from '@/utils/addresses'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
 import { RootState } from '../store'
-import { activeWalletDeleted, walletLocked, walletSaved, walletSwitched } from './activeWalletSlice'
+import { activeWalletDeleted, walletLocked, walletSaved, walletSwitched, walletUnlocked } from './activeWalletSlice'
 
 const sliceName = 'addresses'
 
@@ -179,13 +181,6 @@ const addressesSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(walletSaved, (state, action) => {
-        const { initialAddress } = action.payload
-
-        addressesAdapter.setAll(state, [])
-        addressesAdapter.addOne(state, getDefaultAddressState(initialAddress))
-        state.status = 'uninitialized'
-      })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
         const updatedAddresses = addressData.map(({ hash, details, tokens, transactions }) => {
@@ -256,8 +251,16 @@ const addressesSlice = createSlice({
         state.allTransactionsLoaded = transactions.length === 0
         state.loading = false
       })
+      .addCase(walletSaved, (state, action) => addInitialAddress(state, action.payload.initialAddress))
+      .addCase(walletUnlocked, addPassphraseInitialAddress)
+      .addCase(walletSwitched, (_, action) => {
+        const clearedState = { ...initialState }
+
+        addPassphraseInitialAddress(clearedState, action)
+
+        return clearedState
+      })
       .addCase(walletLocked, () => initialState)
-      .addCase(walletSwitched, () => initialState)
       .addCase(activeWalletDeleted, () => initialState)
       .addCase(networkPresetSwitched, clearAddressesNetworkData)
       .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
@@ -333,4 +336,20 @@ const clearAddressesNetworkData = (state: AddressesState) => {
   )
 
   state.status = 'uninitialized'
+}
+
+const addInitialAddress = (state: AddressesState, address: AddressBase) => {
+  addressesAdapter.setAll(state, [])
+  addressesAdapter.addOne(state, getDefaultAddressState(address))
+  state.status = 'uninitialized'
+}
+
+const addPassphraseInitialAddress = (state: AddressesState, action: PayloadAction<UnlockedWallet>) => {
+  const { isPassphraseUsed, initialAddress } = action.payload
+
+  if (isPassphraseUsed)
+    addInitialAddress(state, {
+      ...initialAddress,
+      ...getInitialAddressSettings()
+    })
 }

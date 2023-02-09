@@ -18,8 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address, AddressHash } from '@/types/addresses'
+import { Address, AddressHash, AddressSettings } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
 
 export const selectAddressTransactions = (
   allAddresses: Address[],
@@ -40,3 +41,8 @@ export const selectAddressTransactions = (
 export const getAvailableBalance = (address: Address): bigint => BigInt(address.balance) - BigInt(address.lockedBalance)
 
 export const getName = (address: Address): string => address.label ?? `${address.hash.substring(0, 10)}...`
+
+export const getInitialAddressSettings = (): AddressSettings => ({
+  isDefault: true,
+  color: getRandomLabelColor()
+})

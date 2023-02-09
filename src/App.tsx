@@ -52,11 +52,12 @@ const App = () => {
   const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
     (tx) => tx.address.hash
   )
-  const [settings, network, addressesStatus] = useAppSelector((s) => [
+  const [settings, network, addressesStatus, isPassphraseUsed] = useAppSelector((s) => [
     s.settings,
     s.network,
     s.addresses.status,
-    s.app.loading
+    s.app.loading,
+    s.activeWallet.isPassphraseUsed
   ])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -69,8 +70,8 @@ const App = () => {
     dispatch(generalSettingsMigrated(localStorageGeneralSettings))
     dispatch(networkSettingsMigrated(localStorageNetworkSettings))
 
-    migrateWalletData()
-  }, [dispatch])
+    if (!isPassphraseUsed) migrateWalletData()
+  }, [dispatch, isPassphraseUsed])
 
   const initializeClient = useCallback(async () => {
     try {

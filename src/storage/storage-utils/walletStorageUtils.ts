@@ -23,7 +23,8 @@ import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
-import { getRandomLabelColor } from '@/utils/colors'
+import { getInitialAddressSettings } from '@/utils/addresses'
+import { getWalletInitialAddress } from '@/utils/wallet'
 
 interface SaveNewWalletProps {
   walletName: string
@@ -32,10 +33,7 @@ interface SaveNewWalletProps {
 }
 
 export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletProps) => {
-  const initialAddressSettings = {
-    isDefault: true,
-    color: getRandomLabelColor()
-  }
+  const initialAddressSettings = getInitialAddressSettings()
 
   WalletStorage.store(walletName, password, wallet)
   AddressMetadataStorage.store({
@@ -52,10 +50,7 @@ export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletPro
       name: walletName,
       mnemonic: wallet.mnemonic,
       initialAddress: {
-        index: 0,
-        hash: wallet.address,
-        publicKey: wallet.publicKey,
-        privateKey: wallet.privateKey,
+        ...getWalletInitialAddress(wallet),
         ...initialAddressSettings
       }
     })
