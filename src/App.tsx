@@ -41,7 +41,7 @@ import { generalSettingsMigrated } from '@/storage/app-state/slices/settingsSlic
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
-import { migrateDeprecatedSettings, migrateWalletData } from '@/utils/migration'
+import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
 
 const App = () => {
   const { t } = useTranslation()
@@ -63,10 +63,11 @@ const App = () => {
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
   useEffect(() => {
-    const localStorageSettings = migrateDeprecatedSettings()
+    const localStorageGeneralSettings = migrateGeneralSettings()
+    const localStorageNetworkSettings = migrateNetworkSettings()
 
-    dispatch(generalSettingsMigrated(localStorageSettings.general))
-    dispatch(networkSettingsMigrated(localStorageSettings.network))
+    dispatch(generalSettingsMigrated(localStorageGeneralSettings))
+    dispatch(networkSettingsMigrated(localStorageNetworkSettings))
 
     migrateWalletData()
   }, [dispatch])

@@ -19,9 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
 
-import SettingsStorage, { defaultSettings } from '@/storage/persistent-storage/settingsPersistentStorage'
+import SettingsStorage, {
+  defaultSettings,
+  networkPresets
+} from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
-import { Settings, ThemeType } from '@/types/settings'
+import { GeneralSettings, NetworkSettings, ThemeType } from '@/types/settings'
 
 import { stringToDoubleSHA256HexString } from './misc'
 
@@ -40,13 +43,32 @@ export const latestAddressMetadataVersion = '2022-05-27T12:00:00Z'
 //
 export const migrateUserData = (mnemonic: string, walletName: string) => {
   console.log('🚚 Migrating user data')
+
   _20220511_074100()
   _20220527_120000(mnemonic, walletName)
 }
 
 export const migrateWalletData = () => {
   console.log('🚚 Migrating wallet data')
+
   _20230124_164900()
+}
+
+export const migrateGeneralSettings = (): GeneralSettings => {
+  console.log('🚚 Migrating settings')
+
+  _20211220_194004()
+
+  return SettingsStorage.load('general') as GeneralSettings
+}
+
+export const migrateNetworkSettings = (): NetworkSettings => {
+  console.log('🚚 Migrating network settings')
+
+  _v140_networkSettingsMigration()
+  _v150_networkSettingsMigration()
+
+  return SettingsStorage.load('network') as NetworkSettings
 }
 
 // Change localStorage address metadata key from "{walletName}-addresses-metadata" to "addresses-metadata-{walletName}"
@@ -98,59 +120,75 @@ export const _20220527_120000 = (mnemonic: string, walletName: string) => {
   }
 }
 
-export const migrateDeprecatedSettings = (): Settings => {
-  const settings = SettingsStorage.loadAll()
-
+// Remove "theme" from localStorage and add it inside general settings
+export const _20211220_194004 = () => {
+  const generalSettings = SettingsStorage.load('general') as GeneralSettings
   const deprecatedThemeSetting = window.localStorage.getItem('theme')
   deprecatedThemeSetting && window.localStorage.removeItem('theme')
 
-  const migratedSettings = {
-    network: settings.network ?? (settings as unknown as Settings['network']),
-    general: deprecatedThemeSetting
-      ? { ...settings.general, theme: deprecatedThemeSetting as ThemeType }
-      : settings.general
-  }
+  const migratedGeneralSettings = deprecatedThemeSetting
+    ? { ...generalSettings, theme: deprecatedThemeSetting as ThemeType }
+    : generalSettings
+  const newGeneralSettings = merge({}, defaultSettings.general, migratedGeneralSettings)
 
-  if (
-    settings.network.explorerApiHost === 'https://mainnet-backend.alephium.org' ||
-    settings.network.explorerApiHost === 'https://backend-v18.mainnet.alephium.org'
-  ) {
-    migratedSettings.network.explorerApiHost = 'https://backend-v112.mainnet.alephium.org'
-  } else if (
-    settings.network.explorerApiHost === 'https://testnet-backend.alephium.org' ||
-    settings.network.explorerApiHost === 'https://backend-v18.testnet.alephium.org'
-  ) {
-    migratedSettings.network.explorerApiHost = 'https://backend-v112.testnet.alephium.org'
-  }
-
-  if (settings.network.explorerUrl === 'https://explorer-v18.mainnet.alephium.org') {
-    migratedSettings.network.explorerUrl = 'https://explorer.alephium.org'
-  } else if (
-    settings.network.explorerUrl === 'https://testnet.alephium.org' ||
-    settings.network.explorerUrl === 'https://explorer-v18.testnet.alephium.org'
-  ) {
-    migratedSettings.network.explorerUrl = 'https://explorer.testnet.alephium.org'
-  }
-
-  if (
-    settings.network.nodeHost === 'https://mainnet-wallet.alephium.org' ||
-    settings.network.nodeHost === 'https://wallet-v18.mainnet.alephium.org'
-  ) {
-    migratedSettings.network.nodeHost = 'https://wallet-v16.mainnet.alephium.org'
-  } else if (
-    settings.network.nodeHost === 'https://testnet-wallet.alephium.org' ||
-    settings.network.nodeHost === 'https://wallet-v18.testnet.alephium.org'
-  ) {
-    migratedSettings.network.nodeHost = 'https://wallet-v16.testnet.alephium.org'
-  }
-
-  const newSettings = merge({}, defaultSettings, migratedSettings)
-  SettingsStorage.storeAll(newSettings)
-
-  return newSettings
+  SettingsStorage.store('general', newGeneralSettings)
 }
 
-// Instead of storing a JSON stringified string, simply store a string
+export const _v140_networkSettingsMigration = () => {
+  const oldSettings = SettingsStorage.load('network') as NetworkSettings
+
+  const migratedNetworkSettings = {
+    nodeHost:
+      oldSettings.nodeHost === 'https://mainnet-wallet.alephium.org'
+        ? networkPresets.mainnet.nodeHost
+        : oldSettings.nodeHost === 'https://testnet-wallet.alephium.org'
+        ? networkPresets.testnet.nodeHost
+        : oldSettings.nodeHost,
+    explorerApiHost:
+      oldSettings.explorerApiHost === 'https://mainnet-backend.alephium.org'
+        ? networkPresets.mainnet.explorerApiHost
+        : oldSettings.explorerApiHost === 'https://testnet-backend.alephium.org'
+        ? networkPresets.testnet.explorerApiHost
+        : oldSettings.explorerApiHost,
+    explorerUrl:
+      oldSettings.explorerUrl === 'https://testnet.alephium.org'
+        ? networkPresets.testnet.explorerUrl
+        : oldSettings.explorerUrl
+  }
+
+  const newNetworkSettings = merge({}, defaultSettings.network, migratedNetworkSettings)
+  SettingsStorage.store('network', newNetworkSettings)
+}
+
+export const _v150_networkSettingsMigration = () => {
+  const oldSettings = SettingsStorage.load('network') as NetworkSettings
+
+  const migratedNetworkSettings = {
+    nodeHost:
+      oldSettings.nodeHost === 'https://wallet-v18.mainnet.alephium.org'
+        ? networkPresets.mainnet.nodeHost
+        : oldSettings.nodeHost === 'https://wallet-v18.testnet.alephium.org'
+        ? networkPresets.testnet.nodeHost
+        : oldSettings.nodeHost,
+    explorerApiHost:
+      oldSettings.explorerApiHost === 'https://backend-v18.mainnet.alephium.org'
+        ? networkPresets.mainnet.explorerApiHost
+        : oldSettings.explorerApiHost === 'https://backend-v18.testnet.alephium.org'
+        ? networkPresets.testnet.explorerApiHost
+        : oldSettings.explorerApiHost,
+    explorerUrl:
+      oldSettings.explorerUrl === 'https://explorer-v18.mainnet.alephium.org'
+        ? networkPresets.mainnet.explorerUrl
+        : oldSettings.explorerUrl === 'https://explorer-v18.testnet.alephium.org'
+        ? networkPresets.testnet.explorerUrl
+        : oldSettings.explorerUrl
+  }
+
+  const newNetworkSettings = merge({}, defaultSettings.network, migratedNetworkSettings)
+  SettingsStorage.store('network', newNetworkSettings)
+}
+
+// Instead of storing the wallet as a JSON stringified string, simply store a string
 export const _20230124_164900 = () => {
   WalletStorage.list().forEach((name) => {
     const wallet = window.localStorage.getItem(WalletStorage.getKey(name))

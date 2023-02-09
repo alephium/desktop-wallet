@@ -19,8 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getStorage, walletGenerate } from '@alephium/sdk'
 
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AddressMetadata, AddressSettings } from '@/types/addresses'
+import { NetworkSettings } from '@/types/settings'
 import * as migrate from '@/utils/migration'
 //
 // ANY CHANGES TO THIS FILE MUST BE REVIEWED BY AT LEAST ONE CORE CONTRIBUTOR
@@ -197,5 +199,127 @@ describe('_20230124_164900', () => {
 
     const unencryptedWallet = WalletStorage.load(wallet.name, 'passw0rd')
     expect(unencryptedWallet.mnemonic).toEqual(wallet.unencryptedWallet.mnemonic)
+  })
+})
+
+describe('_20211220_194004', () => {
+  it('should migrate deprecated theme settings', () => {
+    localStorage.setItem('theme', 'pink')
+    expect(localStorage.getItem('theme')).toEqual('pink')
+
+    migrate._20211220_194004()
+
+    expect(SettingsStorage.loadAll().general.theme).toEqual('pink')
+    expect(localStorage.getItem('theme')).toBeNull()
+  })
+})
+
+describe('_v140_networkSettingsMigration', () => {
+  it('should migrate pre-v1.4.0 deprecated mainnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 0,
+      nodeHost: 'https://mainnet-wallet.alephium.org',
+      explorerApiHost: 'https://mainnet-backend.alephium.org',
+      explorerUrl: 'https://explorer.alephium.org'
+    })
+
+    migrate._v140_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.mainnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.mainnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.mainnet.explorerUrl)
+  })
+
+  it('should migrate pre-v1.4.0 deprecated testnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 1,
+      nodeHost: 'https://testnet-wallet.alephium.org',
+      explorerApiHost: 'https://testnet-backend.alephium.org',
+      explorerUrl: 'https://testnet.alephium.org'
+    })
+
+    migrate._v140_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.testnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.testnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.testnet.explorerUrl)
+  })
+
+  it('should not migrate pre-v1.4.0 custom network settings', () => {
+    const customSettings = {
+      networkId: 3,
+      nodeHost: 'https://mainnet-wallet.custom.com',
+      explorerApiHost: 'https://mainnet-backend.custom.com',
+      explorerUrl: 'https://explorer.custom.com'
+    }
+
+    SettingsStorage.store('network', customSettings)
+
+    migrate._v140_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(customSettings.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(customSettings.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(customSettings.explorerUrl)
+  })
+})
+
+describe('_v150_networkSettingsMigration', () => {
+  it('should migrate pre-v1.5.0 deprecated mainnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 0,
+      nodeHost: 'https://wallet-v18.mainnet.alephium.org',
+      explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
+      explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
+    })
+
+    migrate._v150_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.mainnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.mainnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.mainnet.explorerUrl)
+  })
+
+  it('should migrate pre-v1.5.0 deprecated testnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 1,
+      nodeHost: 'https://wallet-v18.testnet.alephium.org',
+      explorerApiHost: 'https://backend-v18.testnet.alephium.org',
+      explorerUrl: 'https://explorer-v18.testnet.alephium.org'
+    })
+
+    migrate._v150_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.testnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.testnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.testnet.explorerUrl)
+  })
+
+  it('should not migrate pre-v1.5.0 custom network settings', () => {
+    const customSettings = {
+      networkId: 3,
+      nodeHost: 'https://mainnet-wallet.custom.com',
+      explorerApiHost: 'https://mainnet-backend.custom.com',
+      explorerUrl: 'https://explorer.custom.com'
+    }
+
+    SettingsStorage.store('network', customSettings)
+
+    migrate._v150_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(customSettings.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(customSettings.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(customSettings.explorerUrl)
   })
 })
