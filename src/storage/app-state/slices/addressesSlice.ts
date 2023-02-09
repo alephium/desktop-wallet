@@ -32,6 +32,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { Address, AddressBase, AddressHash, AddressSettingsRedux, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
@@ -260,9 +261,8 @@ const addressesSlice = createSlice({
       })
       .addCase(walletLocked, () => initialState)
       .addCase(walletSwitched, () => initialState)
-    // TODO
-    // .addCase(networkPresetSwitched, clearAddressesNetworkData)
-    // .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
+      .addCase(networkPresetSwitched, clearAddressesNetworkData)
+      .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
   }
 })
 
@@ -302,7 +302,7 @@ const getAddresses = (state: AddressesState) => Object.values(state.entities) as
 
 export default addressesSlice
 
-const getDefaultAddressState = (address: AddressBase) => ({
+const getDefaultAddressState = (address: AddressBase): Address => ({
   ...address,
   group: addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS),
   balance: '0',
@@ -328,13 +328,11 @@ const updateOldDefaultAddress = (state: AddressesState) => {
   }
 }
 
-// const clearAddressesNetworkData = (state: AddressesState) => {
-//   const reinitializedAddresses = getAddresses(state).map(getDefaultAddressState)
+const clearAddressesNetworkData = (state: AddressesState) => {
+  addressesAdapter.updateMany(
+    state,
+    getAddresses(state).map((address) => ({ id: address.hash, changes: getDefaultAddressState(address) }))
+  )
 
-//   addressesAdapter.updateMany(
-//     state,
-//     reinitializedAddresses.map((address) => ({ id: address.hash, changes: address }))
-//   )
-
-//   state.status = 'uninitialized'
-// }
+  state.status = 'uninitialized'
+}

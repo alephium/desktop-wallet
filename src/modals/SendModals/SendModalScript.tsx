@@ -175,8 +175,6 @@ const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxCont
 
   const data = await signAndSendTransaction(fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
 
-  // TODO: Should we display a pending transaction when calling a script? What would the "toAddress" be in that case?
-  // Since there's no toAddress, we need to rethink our UI.
   store.dispatch(
     transactionSent({
       hash: data.txId,

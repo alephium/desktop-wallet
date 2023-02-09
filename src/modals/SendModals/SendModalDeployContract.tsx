@@ -202,8 +202,6 @@ const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxCont
 
   const data = await signAndSendTransaction(fromAddress, context.unsignedTxId, context.unsignedTransaction.unsignedTx)
 
-  // TODO: Should we display a pending transaction when deploying a contract? What would the "toAddress" be in that case?
-  // Since there's no toAddress, we need to rethink our UI.
   store.dispatch(
     transactionSent({
       hash: data.txId,

@@ -22,7 +22,7 @@ import { useState } from 'react'
 
 import { fadeIn } from '@/animations'
 import ModalPortal from '@/modals/ModalPortal'
-// import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
 import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
@@ -37,14 +37,13 @@ const TransfersPage = () => {
         <TransactionList onTransactionClick={setSelectedTransaction} />
         <ModalPortal>
           {selectedTransaction?.hash}
-          {/* TODO: Uncomment when dependency from contexts/addresses is removed */}
-          {/* {selectedTransaction && (
+          {selectedTransaction && (
             <TransactionDetailsModal
               address={selectedTransaction.address}
               transaction={selectedTransaction}
               onClose={() => setSelectedTransaction(undefined)}
             />
-          )} */}
+          )}
         </ModalPortal>
       </UnlockedWalletPanel>
     </motion.div>
