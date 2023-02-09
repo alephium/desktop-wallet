@@ -22,7 +22,7 @@ import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 import { languageChangeFinished, languageChangeStarted } from '../actions'
-import { walletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
+import { activeWalletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
 
 const sliceName = 'app'
 
@@ -57,6 +57,11 @@ const appSlice = createSlice({
     },
     addressesPageInfoMessageClosed: (state) => {
       state.addressesPageInfoMessageClosed = true
+    },
+    walletDeleted: (state, action: PayloadAction<string>) => {
+      const deletedWalletName = action.payload
+
+      state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
     }
   },
   extraReducers(builder) {
@@ -75,15 +80,15 @@ const appSlice = createSlice({
 
         state.storedWalletNames.push(newWallet.name)
       })
-      .addCase(walletDeleted, (state, action) => {
-        const deletedWalletName = action.payload
-
-        state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
-      })
+      .addCase(activeWalletDeleted, () => ({
+        ...initialState,
+        storedWalletNames: WalletStorage.list()
+      }))
   }
 })
 
-export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed } = appSlice.actions
+export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed, walletDeleted } =
+  appSlice.actions
 
 export default appSlice
 

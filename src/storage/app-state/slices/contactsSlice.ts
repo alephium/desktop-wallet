@@ -21,7 +21,7 @@ import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 import { Contact } from '@/types/contacts'
 
 import { RootState } from '../store'
-import { walletLocked } from './activeWalletSlice'
+import { activeWalletDeleted, walletLocked } from './activeWalletSlice'
 
 const sliceName = 'contacts'
 
@@ -42,7 +42,7 @@ export const contactsSlice = createSlice({
     contactDeletedFromPeristentStorage: contactsAdapter.removeOne
   },
   extraReducers(builder) {
-    builder.addCase(walletLocked, () => initialState)
+    builder.addCase(walletLocked, () => initialState).addCase(activeWalletDeleted, () => initialState)
   }
 })
 

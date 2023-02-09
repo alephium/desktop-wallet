@@ -38,7 +38,7 @@ import { PendingTransaction } from '@/types/transactions'
 import { extractNewTransactionHashes } from '@/utils/transactions'
 
 import { RootState } from '../store'
-import { walletLocked, walletSaved, walletSwitched } from './activeWalletSlice'
+import { activeWalletDeleted, walletLocked, walletSaved, walletSwitched } from './activeWalletSlice'
 
 const sliceName = 'addresses'
 
@@ -258,6 +258,7 @@ const addressesSlice = createSlice({
       })
       .addCase(walletLocked, () => initialState)
       .addCase(walletSwitched, () => initialState)
+      .addCase(activeWalletDeleted, () => initialState)
       .addCase(networkPresetSwitched, clearAddressesNetworkData)
       .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
   }

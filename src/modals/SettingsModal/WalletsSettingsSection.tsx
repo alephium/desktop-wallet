@@ -28,7 +28,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
-import { walletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { walletDeleted } from '@/storage/app-state/slices/appSlice'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
@@ -53,7 +54,7 @@ const WalletsSettingsSection = () => {
   const handleRemoveWallet = (walletName: string) => {
     WalletStorage.delete(walletName)
     AddressMetadataStorage.delete(walletName)
-    dispatch(walletDeleted(walletName))
+    dispatch(walletName === activeWalletName ? activeWalletDeleted() : walletDeleted(walletName))
 
     setWalletToRemove('')
   }

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
+import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
 import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 import { AddressDataSyncResult, AddressHash } from '../../../types/addresses'
@@ -57,6 +57,7 @@ const pendingTransactionsSlice = createSlice({
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(walletLocked, () => initialState)
       .addCase(walletSwitched, () => initialState)
+      .addCase(activeWalletDeleted, () => initialState)
   }
 })
 
