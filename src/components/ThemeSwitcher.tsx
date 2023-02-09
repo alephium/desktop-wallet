@@ -19,10 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import useSwitchTheme from '@/hooks/useSwitchTheme'
-
-import Toggle from './Inputs/Toggle'
 
 interface ThemeSwitcherProps {
   className?: string

@@ -33,15 +33,20 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
+import {
+  activeWalletDeleted,
+  walletLocked,
+  walletSaved,
+  walletSwitched,
+  walletUnlocked
+} from '@/storage/app-state/slices/activeWalletSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
+import { RootState } from '@/storage/app-state/store'
 import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
-
-import { RootState } from '../store'
-import { activeWalletDeleted, walletLocked, walletSaved, walletSwitched, walletUnlocked } from './activeWalletSlice'
 
 const sliceName = 'addresses'
 

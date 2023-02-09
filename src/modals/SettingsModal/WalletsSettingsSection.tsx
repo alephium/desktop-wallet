@@ -25,6 +25,7 @@ import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
@@ -32,8 +33,6 @@ import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/ac
 import { walletDeleted } from '@/storage/app-state/slices/appSlice'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
-
-import ModalPortal from '../ModalPortal'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()

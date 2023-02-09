@@ -19,12 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Banner from '@/components/Banner'
+import Button from '@/components/Button'
 import { useGlobalContext } from '@/contexts/global'
-
-import { links } from '../utils/links'
-import { openInWebBrowser } from '../utils/misc'
-import Banner from './Banner'
-import Button from './Button'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface UpdateWalletBannerProps {
   className?: string

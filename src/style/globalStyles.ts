@@ -18,10 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createGlobalStyle } from 'styled-components'
 
+import resets from '@/style/resets'
+import tags from '@/style/tags'
 import { isElectron } from '@/utils/misc'
-
-import resets from './resets'
-import tags from './tags'
 
 export const appHeaderHeightPx = 60
 

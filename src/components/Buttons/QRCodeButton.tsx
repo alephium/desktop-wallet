@@ -22,7 +22,7 @@ import { QrCode } from 'lucide-react'
 import QRCode from 'react-qr-code'
 import styled from 'styled-components'
 
-import Tooltip from '../Tooltip'
+import Tooltip from '@/components/Tooltip'
 
 interface QRCodeButtonProps {
   textToEncode: string

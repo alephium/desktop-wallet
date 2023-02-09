@@ -20,8 +20,8 @@ import { colord } from 'colord'
 import { TooltipWrapper } from 'react-tooltip'
 import styled, { css } from 'styled-components'
 
-import { HasTooltip } from './Tooltip'
-import Truncate from './Truncate'
+import { HasTooltip } from '@/components/Tooltip'
+import Truncate from '@/components/Truncate'
 
 interface BadgeProps {
   color?: string

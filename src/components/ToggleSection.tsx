@@ -21,8 +21,7 @@ import { ReactNode, useState } from 'react'
 import styled from 'styled-components'
 
 import { fastTransition } from '@/animations'
-
-import Toggle from './Inputs/Toggle'
+import Toggle from '@/components/Inputs/Toggle'
 
 export interface ToggleSectionProps {
   title: string

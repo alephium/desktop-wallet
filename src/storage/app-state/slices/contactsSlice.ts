@@ -18,10 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 
+import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { RootState } from '@/storage/app-state/store'
 import { Contact } from '@/types/contacts'
-
-import { RootState } from '../store'
-import { activeWalletDeleted, walletLocked } from './activeWalletSlice'
 
 const sliceName = 'contacts'
 

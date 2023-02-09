@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair } from '@alephium/sdk'
 import { AddressBalance, AddressInfo, Token, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { TimeInMs } from './numbers'
-import { PendingTransaction } from './transactions'
+import { TimeInMs } from '@/types/numbers'
+import { PendingTransaction } from '@/types/transactions'
 
 export type DeprecatedAddressSettings = {
   isMain: boolean

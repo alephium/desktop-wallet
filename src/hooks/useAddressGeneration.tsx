@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 
 import client from '@/api/client'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import {
   addressDiscoveryFinished,
   addressDiscoveryStarted,
@@ -30,8 +31,6 @@ import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadata
 import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
-
-import { useAppDispatch, useAppSelector } from './redux'
 
 interface GenerateAddressProps {
   group?: number

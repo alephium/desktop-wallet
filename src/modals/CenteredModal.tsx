@@ -30,8 +30,7 @@ import Scrollbar from '@/components/Scrollbar'
 import Spinner from '@/components/Spinner'
 import Tooltip from '@/components/Tooltip'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
-
-import ModalContainer, { ModalBackdrop, ModalContainerProps } from './ModalContainer'
+import ModalContainer, { ModalBackdrop, ModalContainerProps } from '@/modals/ModalContainer'
 
 interface CenteredModalProps extends ModalContainerProps {
   title?: ReactNode

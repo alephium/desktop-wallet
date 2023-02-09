@@ -21,12 +21,11 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
+import AddressBadge from '@/components/AddressBadge'
+import Badge from '@/components/Badge'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { GENESIS_TIMESTAMP } from '@/utils/constants'
-
-import ActionLink from './ActionLink'
-import AddressBadge from './AddressBadge'
-import Badge from './Badge'
 
 interface IOListProps {
   currentAddress: string

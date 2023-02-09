@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useLocation, useNavigate } from 'react-router-dom'
 import { TooltipWrapper } from 'react-tooltip'
 
-import Button from './Button'
+import Button from '@/components/Button'
 
 interface NavItemProps {
   Icon: LucideIconType

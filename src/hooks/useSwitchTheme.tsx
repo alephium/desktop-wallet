@@ -16,11 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useAppDispatch } from '@/hooks/redux'
 import { themeChanged } from '@/storage/app-state/slices/settingsSlice'
 import { ThemeType } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
-
-import { useAppDispatch } from './redux'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron

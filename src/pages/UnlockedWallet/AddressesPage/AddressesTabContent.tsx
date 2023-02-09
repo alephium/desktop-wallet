@@ -24,11 +24,10 @@ import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
+import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
+import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { filterAddresses } from '@/utils/addresses'
-
-import AddressCard from './AddressCard'
-import TabContent from './TabContent'
 
 const AddressesTabContent = () => {
   const addresses = useAppSelector(selectAllAddresses)

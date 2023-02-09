@@ -27,12 +27,11 @@ import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
 import i18next from '@/i18n'
+import ModalContainer from '@/modals/ModalContainer'
+import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSection'
 import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
-
-import ModalContainer from '../ModalContainer'
-import DevToolsSettingsSection from './DevToolsSettingsSection'
 
 interface SettingsModalProps {
   onClose: () => void

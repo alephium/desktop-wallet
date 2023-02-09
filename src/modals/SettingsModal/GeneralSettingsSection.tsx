@@ -29,6 +29,7 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useSwitchTheme from '@/hooks/useSwitchTheme'
 import CenteredModal from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
 import {
   discreetModeToggled,
   languageChanged,
@@ -36,8 +37,6 @@ import {
   walletLockTimeChanged
 } from '@/storage/app-state/slices/settingsSlice'
 import { Language, ThemeType } from '@/types/settings'
-
-import ModalPortal from '../ModalPortal'
 
 interface GeneralSettingsSectionProps {
   className?: string

@@ -28,12 +28,11 @@ import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
 import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
-
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface NewAddressModalProps {
   title: string

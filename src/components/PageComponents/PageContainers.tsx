@@ -20,9 +20,8 @@ import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
+import Box from '@/components/Box'
 import { deviceBreakPoints } from '@/style/globalStyles'
-
-import Box from '../Box'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'

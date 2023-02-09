@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useTranslation } from 'react-i18next'
 
-import ColoredLabelInput, { ColoredLabelInputValue } from './Inputs/ColoredLabelInput'
-import InlineLabelValueInput from './Inputs/InlineLabelValueInput'
-import Toggle from './Inputs/Toggle'
-import HorizontalDivider from './PageComponents/HorizontalDivider'
+import ColoredLabelInput, { ColoredLabelInputValue } from '@/components/Inputs/ColoredLabelInput'
+import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
+import Toggle from '@/components/Inputs/Toggle'
+import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 
 interface AddressMetadataFormProps {
   label: ColoredLabelInputValue

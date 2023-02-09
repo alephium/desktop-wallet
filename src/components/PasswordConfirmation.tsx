@@ -20,13 +20,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Button from '@/components/Button'
+import Input from '@/components/Inputs/Input'
+import { Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
-
-import Button from './Button'
-import Input from './Inputs/Input'
-import { Section } from './PageComponents/PageContainers'
 
 interface PasswordConfirmationProps {
   onCorrectPasswordEntered: (password: string) => void

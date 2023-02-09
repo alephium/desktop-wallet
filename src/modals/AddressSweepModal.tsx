@@ -30,11 +30,10 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { Address } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
-
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type SweepAddress = Address | undefined
 

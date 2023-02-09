@@ -22,10 +22,9 @@ import { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { fastTransition } from '@/animations'
+import InputArea from '@/components/Inputs/InputArea'
+import { Section } from '@/components/PageComponents/PageContainers'
 import { onEnterOrSpace } from '@/utils/misc'
-
-import InputArea from './Inputs/InputArea'
-import { Section } from './PageComponents/PageContainers'
 
 interface ExpandableSectionProps {
   sectionTitleClosed: string

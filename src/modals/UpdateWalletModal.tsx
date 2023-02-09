@@ -23,11 +23,10 @@ import { useTranslation } from 'react-i18next'
 import InfoBox from '@/components/InfoBox'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useGlobalContext } from '@/contexts/global'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { AlephiumWindow } from '@/types/window'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
-
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface UpdateWalletModalProps {
   onClose: () => void

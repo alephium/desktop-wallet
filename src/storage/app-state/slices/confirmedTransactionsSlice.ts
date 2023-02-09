@@ -20,17 +20,16 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
-
-import { AddressDataSyncResult, AddressHash } from '../../../types/addresses'
-import { AddressConfirmedTransaction } from '../../../types/transactions'
-import { selectAddressTransactions } from '../../../utils/addresses'
-import { RootState } from '../store'
 import {
   selectAllAddresses,
   syncAddressesData,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
-} from './addressesSlice'
+} from '@/storage/app-state/slices/addressesSlice'
+import { RootState } from '@/storage/app-state/store'
+import { AddressDataSyncResult, AddressHash } from '@/types/addresses'
+import { AddressConfirmedTransaction } from '@/types/transactions'
+import { selectAddressTransactions } from '@/utils/addresses'
 
 const sliceName = 'confirmedTransactions'
 

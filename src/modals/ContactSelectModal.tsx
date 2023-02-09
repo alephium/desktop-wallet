@@ -30,12 +30,11 @@ import Scrollbar from '@/components/Scrollbar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import ContactFormModal from '@/modals/ContactFormModal'
+import ModalPortal from '@/modals/ModalPortal'
 import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
-
-import ContactFormModal from './ContactFormModal'
-import ModalPortal from './ModalPortal'
 
 interface ContactSelectModalProps {
   setContact: (contact: Contact) => void | undefined

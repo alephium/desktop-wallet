@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { nanoid } from 'nanoid'
 
 import i18n from '@/i18n'
+import { DataKey, PersistentEncryptedStorage } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { Contact } from '@/types/contacts'
-
-import { DataKey, PersistentEncryptedStorage } from './encryptedPersistentStorage'
 
 type StoreContactResult = {
   contactId?: string

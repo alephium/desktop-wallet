@@ -20,19 +20,18 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
-import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
-
-import { AddressDataSyncResult, AddressHash } from '../../../types/addresses'
-import { AddressPendingTransaction, PendingTransaction } from '../../../types/transactions'
-import { selectAddressTransactions } from '../../../utils/addresses'
-import { RootState } from '../store'
 import {
   selectAllAddresses,
   syncAddressesData,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage,
   transactionSent
-} from './addressesSlice'
+} from '@/storage/app-state/slices/addressesSlice'
+import { RootState } from '@/storage/app-state/store'
+import { AddressDataSyncResult, AddressHash } from '@/types/addresses'
+import { AddressPendingTransaction, PendingTransaction } from '@/types/transactions'
+import { selectAddressTransactions } from '@/utils/addresses'
+import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 const sliceName = 'pendingTransactions'
 

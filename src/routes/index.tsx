@@ -19,10 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Route, Routes } from 'react-router-dom'
 
 import HomePage from '@/pages/HomePage'
-
-import CreateWalletRoutes from './CreateWalletRoutes'
-import ImportWalletRoutes from './ImportWalletRoutes'
-import UnlockedWalletRoutes from './UnlockedWalletRoutes'
+import CreateWalletRoutes from '@/routes/CreateWalletRoutes'
+import ImportWalletRoutes from '@/routes/ImportWalletRoutes'
+import UnlockedWalletRoutes from '@/routes/UnlockedWalletRoutes'
 
 const Router = () => (
   <Routes>

@@ -27,8 +27,7 @@ import InfoBox from '@/components/InfoBox'
 import { Section } from '@/components/PageComponents/PageContainers'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppSelector } from '@/hooks/redux'
-
-import CenteredModal from './CenteredModal'
+import CenteredModal from '@/modals/CenteredModal'
 
 const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation()

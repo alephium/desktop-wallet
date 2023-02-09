@@ -23,10 +23,9 @@ import { useState } from 'react'
 import { fadeIn } from '@/animations'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import TransactionList from '@/pages/UnlockedWallet/TransfersPage/TransactionList'
+import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { AddressConfirmedTransaction } from '@/types/transactions'
-
-import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
-import TransactionList from './TransactionList'
 
 const TransfersPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
