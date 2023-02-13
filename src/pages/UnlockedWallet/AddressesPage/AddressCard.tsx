@@ -33,6 +33,7 @@ import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
+import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
 import { changeDefaultAddress } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -50,14 +51,14 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
     selectAddressByHash(s, hash),
     s.activeWallet
   ])
+  const tokens = useAppSelector((state) => selectTokens(state, address?.hash ? [address.hash] : undefined))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
   if (!address || !walletName || !mnemonic) return null
 
   const alphBalance = parseFloat(convertSetToAlph(BigInt(address.balance)))
   const fiatBalance = alphBalance * (price ?? 0)
-  // TODO: Fetch tokens from explorer API and store in Redux
-  const tokens: string[] = address.balance !== '0' ? ['ALPH'] : []
+  const tokenSymbols = [...(address.balance !== '0' ? ['ALPH'] : []), ...tokens.map((token) => token.symbol)]
 
   const navigateToAddressDetailsPage = (hash: AddressHash) => () => navigate(`/wallet/addresses/${hash}`)
 
@@ -97,9 +98,9 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
         </LastActivity>
       </InfoSection>
       <TokensSection>
-        {tokens.map((token) => (
-          <Badge rounded border transparent color={theme.font.secondary} key={token}>
-            {token}
+        {tokenSymbols.map((tokenName) => (
+          <Badge rounded border transparent color={theme.font.secondary} key={tokenName}>
+            {tokenName}
           </Badge>
         ))}
       </TokensSection>
@@ -149,6 +150,8 @@ const InfoSection = styled.div<{ bgColor?: string }>`
 const TokensSection = styled.div`
   padding: 23px;
   border-top: 1px solid ${({ theme }) => theme.border.primary};
+  display: flex;
+  gap: 6px;
 `
 
 const LastActivity = styled.div`

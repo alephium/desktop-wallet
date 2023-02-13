@@ -23,6 +23,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, Ent
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { RootState } from '@/storage/app-state/store'
+import { AddressHash } from '@/types/addresses'
 import { TokenDisplay, TokenDisplayBalances } from '@/types/tokens'
 
 const sliceName = 'tokens'
@@ -77,8 +78,11 @@ export const { selectAll: selectAllTokens, selectById: selectTokenById } = token
 )
 
 export const selectTokens = createSelector(
-  [selectAllAddresses, selectAllTokens],
-  (addresses, tokens): TokenDisplay[] => {
+  [selectAllAddresses, selectAllTokens, (_, addressHashes?: AddressHash[]) => addressHashes],
+  (allAddresses, tokens, addressHashes): TokenDisplay[] => {
+    const addresses = addressHashes
+      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
+      : allAddresses
     const tokenBalances = addresses.reduce((acc, { tokens }) => {
       tokens.forEach((token) => {
         const existingToken = acc.find((t) => t.id === token.id)
