@@ -38,6 +38,7 @@ import {
 } from '@/storage/app-state/slices/networkSlice'
 import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { generalSettingsMigrated } from '@/storage/app-state/slices/settingsSlice'
+import { syncNetworkTokensInfo } from '@/storage/app-state/slices/tokensSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
@@ -52,12 +53,12 @@ const App = () => {
   const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
     (tx) => tx.address.hash
   )
-  const [settings, network, addressesStatus, isPassphraseUsed] = useAppSelector((s) => [
+  const [settings, network, addressesStatus, isPassphraseUsed, tokens] = useAppSelector((s) => [
     s.settings,
     s.network,
     s.addresses.status,
-    s.app.loading,
-    s.activeWallet.isPassphraseUsed
+    s.activeWallet.isPassphraseUsed,
+    s.tokens
   ])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -76,7 +77,8 @@ const App = () => {
   const initializeClient = useCallback(async () => {
     try {
       await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
-      dispatch(apiClientInitSucceeded())
+      const { networkId } = await client.web3.infos.getInfosChainParams()
+      dispatch(apiClientInitSucceeded(networkId))
     } catch (e) {
       dispatch(apiClientInitFailed())
       console.error('Could not connect to network: ', network.name, e)
@@ -122,6 +124,12 @@ const App = () => {
   )
 
   useInterval(refreshAddressesData, 2000, pendingTxHashes.length === 0)
+
+  useEffect(() => {
+    if (network.status === 'online' && tokens.status === 'uninitialized') {
+      dispatch(syncNetworkTokensInfo())
+    }
+  }, [dispatch, network.status, tokens.status])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

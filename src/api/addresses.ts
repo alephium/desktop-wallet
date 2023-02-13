@@ -35,7 +35,7 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
       tokenIds.map((id) =>
         client.explorer.addresses.getAddressesAddressTokensTokenIdBalance(addressHash, id).then(({ data }) => ({
           id,
-          balances: data
+          ...data
         }))
       )
     )

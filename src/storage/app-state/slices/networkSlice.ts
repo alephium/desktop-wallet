@@ -65,7 +65,8 @@ const networkSlice = createSlice({
     },
     customNetworkSettingsSaved: (_, action: PayloadAction<NetworkSettings>) => parseSettingsUpdate(action.payload),
     networkSettingsMigrated: (_, action: PayloadAction<NetworkSettings>) => parseSettingsUpdate(action.payload),
-    apiClientInitSucceeded: (state) => {
+    apiClientInitSucceeded: (state, action: PayloadAction<NetworkSettings['networkId']>) => {
+      state.settings.networkId = action.payload
       state.status = 'online'
     },
     apiClientInitFailed: (state) => {
@@ -86,7 +87,7 @@ export const networkListenerMiddleware = createListenerMiddleware()
 
 // When the network changes, store settings in persistent storage
 networkListenerMiddleware.startListening({
-  matcher: isAnyOf(networkSettingsMigrated, networkPresetSwitched, customNetworkSettingsSaved),
+  matcher: isAnyOf(networkSettingsMigrated, networkPresetSwitched, customNetworkSettingsSaved, apiClientInitSucceeded),
   effect: (_, { getState }) => {
     const state = getState() as RootState
 

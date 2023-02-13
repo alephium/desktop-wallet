@@ -24,6 +24,7 @@ import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
+import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
 import TransactionList from '@/pages/UnlockedWallet/OverviewPage/TransactionList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { AddressConfirmedTransaction } from '@/types/transactions'
@@ -37,6 +38,7 @@ const OverviewPage = () => {
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
+        <TokensNFTsList />
         <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
 
         <ModalPortal>
