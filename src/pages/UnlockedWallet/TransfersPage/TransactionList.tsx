@@ -22,13 +22,12 @@ import styled from 'styled-components'
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
-import { AddressConfirmedTransaction, PendingTx } from '@/types/transactions'
-import { BelongingToAddress, getTransactionsForAddresses } from '@/utils/transactions'
+import { AddressConfirmedTransaction } from '@/types/transactions'
 
 interface TransfersPageTransactionListProps {
   onTransactionClick: (transaction: AddressConfirmedTransaction) => void
@@ -38,17 +37,17 @@ interface TransfersPageTransactionListProps {
 const TransfersPageTransactionList = ({ className, onTransactionClick }: TransfersPageTransactionListProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { addresses: contextAddresses, isLoadingData } = useAddressesContext()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const [allConfirmedTxs, allTransactionsLoaded] = useAppSelector((s) => [
+  const [allConfirmedTxs, allPendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
     selectAddressesConfirmedTransactions(s, addressHashes),
-    s.addresses.allTransactionsLoaded
+    selectAddressesPendingTransactions(s, addressHashes),
+    s.addresses.allTransactionsLoaded,
+    s.addresses.loading
   ])
 
-  const allPendingTxs = getTransactionsForAddresses('pending', contextAddresses)
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+  const showSkeletonLoading = isLoading && !allConfirmedTxs.length && !allPendingTxs.length
 
   const loadNextTransactionsPage = () => dispatch(syncAllAddressesTransactionsNextPage())
 
@@ -57,9 +56,9 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
       <TableHeaderRow>
         <TableTitle>{t('Transactions')}</TableTitle>
       </TableHeaderRow>
-      {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
-        <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
-          <TransactionalInfo transaction={tx} addressHash={address.hash} />
+      {allPendingTxs.map((pendingTx) => (
+        <TableRow key={pendingTx.hash} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={pendingTx} addressHash={pendingTx.address.hash} />
         </TableRow>
       ))}
       {allConfirmedTxs.map((confirmedTx) => (
@@ -93,7 +92,7 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
           </TableCell>
         </TableRow>
       )}
-      {!isLoadingData && !allPendingTxs.length && !allConfirmedTxs.length && (
+      {!isLoading && !allPendingTxs.length && !allConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>

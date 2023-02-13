@@ -32,8 +32,11 @@ import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
 import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { Address, useAddressesContext } from '@/contexts/addresses'
+import { useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
+import { saveNewAddresses } from '@/storage-utils/addresses'
+import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
+import { getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
@@ -45,16 +48,18 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const { mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const { t } = useTranslation()
+  const { mnemonic, isPassphraseUsed, name: walletName } = useAppSelector((state) => state.activeWallet)
+  const addresses = useAppSelector(selectAllAddresses)
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+
+  const { generateOneAddressPerGroup } = useAddressesContext()
 
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
-  const [isMainAddress, setIsMainAddress] = useState(false)
+  const [isDefaultAddress, setIsDefaultAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressKeyPair>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
-    useAddressesContext()
   const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-  const { t } = useTranslation()
 
   const generateNewAddress = useCallback(
     (group?: number) => {
@@ -73,31 +78,32 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     singleAddress && generateNewAddress()
   }, [generateNewAddress, singleAddress])
 
+  if (!mnemonic || !walletName) return null
+
+  const settings = {
+    isDefault: isDefaultAddress,
+    color: addressLabel.color,
+    label: addressLabel.title
+  }
+
   const onGenerateClick = () => {
     if (newAddressData) {
-      saveNewAddress(
-        new Address(newAddressData.hash, newAddressData.publicKey, newAddressData.privateKey, newAddressData.index, {
-          isMain: isMainAddress,
-          label: addressLabel.title,
-          color: addressLabel.color
-        })
-      )
-      if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.index) {
-        updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
-      }
+      saveNewAddresses([{ ...newAddressData, ...settings }], { walletName, mnemonic })
     } else {
       generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
     }
     onClose()
   }
 
-  let mainAddressMessage = t('Default address for sending transactions.')
+  let defaultAddressMessage = t('Default address for sending transactions.')
 
-  if (mainAddress) {
-    const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
-    mainAddressMessage +=
-      mainAddress.index !== newAddressData?.index
-        ? ' ' + t('Note that if activated, "{{ address }}" will not be the default address anymore.', { address })
+  if (defaultAddress) {
+    defaultAddressMessage +=
+      defaultAddress.index !== newAddressData?.index
+        ? ' ' +
+          t('Note that if activated, "{{ address }}" will not be the default address anymore.', {
+            address: getName(defaultAddress)
+          })
         : ''
   }
 
@@ -114,10 +120,10 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
           <AddressMetadataForm
             label={addressLabel}
             setLabel={setAddressLabel}
-            mainAddressMessage={mainAddressMessage}
-            isMain={isMainAddress}
-            setIsMain={setIsMainAddress}
-            isMainAddressToggleEnabled
+            defaultAddressMessage={defaultAddressMessage}
+            isDefault={isDefaultAddress}
+            setIsDefault={setIsDefaultAddress}
+            isDefaultAddressToggleEnabled
             singleAddress={singleAddress}
           />
           {!singleAddress && (

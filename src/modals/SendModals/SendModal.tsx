@@ -22,8 +22,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
+import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { Client, useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
@@ -31,6 +31,7 @@ import { ReactComponent as PaperPlaneDarkSVG } from '@/images/paper-plane-dark.s
 import { ReactComponent as PaperPlaneLightSVG } from '@/images/paper-plane-light.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
+import { AddressRedux } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
 
@@ -38,7 +39,7 @@ import ModalPortal from '../ModalPortal'
 
 type Step = 'build-tx' | 'info-check' | 'password-check'
 
-type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
+type SendModalProps<PT extends { fromAddress: AddressRedux }, T extends PT> = {
   title: string
   initialTxData: PT
   onClose: () => void
@@ -49,7 +50,7 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
-function SendModal<PT extends { fromAddress: Address }, T extends PT>({
+function SendModal<PT extends { fromAddress: AddressRedux }, T extends PT>({
   title,
   initialTxData,
   onClose,
@@ -61,7 +62,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
-  const { setAddress } = useAddressesContext()
   const [settings, network] = useAppSelector((s) => [s.settings, s.network])
   const { client, setSnackbarMessage } = useGlobalContext()
 
@@ -98,7 +98,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       setIsLoading(true)
 
       const { fromAddress } = transactionData
-      const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, fromAddress.hash)
+      const { unsignedTxs, fees } = await buildSweepTransactions(fromAddress, fromAddress.hash)
 
       setSweepUnsignedTxs(unsignedTxs)
       setFees(fees)
@@ -119,8 +119,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setUnsignedTxId,
     isSweeping,
     consolidationRequired,
-    currentNetwork: network.name,
-    setAddress
+    currentNetwork: network.name
   }
 
   const buildTransactionExtended = async (data: T) => {
@@ -179,7 +178,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         })
       }
 
-      setAddress(transactionData.fromAddress)
       setSnackbarMessage({
         text: isSweeping && sweepUnsignedTxs.length > 1 ? t`Transactions sent!` : t`Transaction sent!`,
         type: 'success'

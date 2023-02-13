@@ -290,8 +290,8 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
 
       for (const address of addressesStateToRefresh) {
         try {
-          await client.fetchAddressDetails(address)
-          await client.fetchAddressConfirmedTransactions(address)
+          // await client.fetchAddressDetails(address)
+          // await client.fetchAddressConfirmedTransactions(address)
 
           const initialNumberOfPendingTransactions = address.transactions.pending.length
 

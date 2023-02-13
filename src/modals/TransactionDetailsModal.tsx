@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addApostrophes } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/dist/api/api-explorer'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -29,19 +28,20 @@ import Badge from '@/components/Badge'
 import ExpandableSection from '@/components/ExpandableSection'
 import IOList from '@/components/IOList'
 import Tooltip from '@/components/Tooltip'
-import { Address } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
+import { AddressRedux } from '@/types/addresses'
+import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 
 import { ModalHeader } from './CenteredModal'
 import SideModal from './SideModal'
 
 interface TransactionDetailsModalProps {
-  transaction: Transaction
-  address: Address
+  transaction: AddressConfirmedTransaction
+  address: AddressRedux
   onClose: () => void
 }
 

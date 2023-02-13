@@ -27,7 +27,8 @@ import { useAddressesContext } from '@/contexts/addresses'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { AddressHash } from '@/types/addresses'
-import { isPendingTx, TransactionVariant } from '@/utils/transactions'
+import { AddressTransaction } from '@/types/transactions'
+import { isPendingTx } from '@/utils/transactions'
 
 import AddressBadge from './AddressBadge'
 import AddressEllipsed from './AddressEllipsed'
@@ -41,7 +42,7 @@ import Token from './Token'
 const token = 'alph'
 
 interface TransactionalInfoProps {
-  transaction: TransactionVariant
+  transaction: AddressTransaction
   addressHash?: AddressHash
   showInternalInflows?: boolean
   className?: string

@@ -23,17 +23,20 @@ import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import Amount from '@/components/Amount'
 import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/store/addressesSlice'
+import { AddressRedux } from '@/types/addresses'
+import { getName } from '@/utils/addresses'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
-type SweepAddress = Address | undefined
+type SweepAddress = AddressRedux | undefined
 
 interface AddressSweepModal {
   sweepAddress?: SweepAddress
@@ -43,11 +46,12 @@ interface AddressSweepModal {
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { t } = useTranslation()
-  const { addresses, mainAddress, setAddress } = useAddressesContext()
+  const dispatch = useAppDispatch()
   const { client, setSnackbarMessage } = useGlobalContext()
-  const network = useAppSelector((state) => state.network)
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const addresses = useAppSelector(selectAllAddresses)
 
-  const fromAddress = sweepAddress || mainAddress
+  const fromAddress = sweepAddress || defaultAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
 
   const [sweepAddresses, setSweepAddresses] = useState<{
@@ -66,7 +70,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       if (!client || !sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
-        const { unsignedTxs, fees } = await client.buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
+        const { unsignedTxs, fees } = await buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
         setBuiltUnsignedTxs(unsignedTxs)
         setFee(fees)
       } catch (e) {
@@ -87,16 +91,19 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(true)
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
-        const txSendResp = await client.signAndSendTransaction(
-          sweepAddresses.from,
-          txId,
-          unsignedTx,
-          sweepAddresses.to.hash,
-          'sweep',
-          network.name
-        )
-        if (txSendResp) {
-          setAddress(sweepAddresses.from)
+        const data = await signAndSendTransaction(sweepAddresses.from, txId, unsignedTx)
+
+        if (data) {
+          dispatch(
+            transactionSent({
+              hash: data.txId,
+              fromAddress: sweepAddresses.from.hash,
+              toAddress: sweepAddresses.to.hash,
+              timestamp: new Date().getTime(),
+              type: 'sweep',
+              status: 'pending'
+            })
+          )
         }
       }
       onClose()
@@ -111,7 +118,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(false)
   }
 
-  const onAddressChange = (type: 'from' | 'to', address: Address) => {
+  const onAddressChange = (type: 'from' | 'to', address: AddressRedux) => {
     setSweepAddresses((prev) => ({ ...prev, [type]: address }))
   }
 
@@ -146,10 +153,10 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           <Trans
             t={t}
             i18nKey="sweepOperationFromTo"
-            values={{ from: sweepAddresses.from.getName(), to: sweepAddresses.to.getName() }}
+            values={{ from: getName(sweepAddresses.from), to: getName(sweepAddresses.to) }}
             components={{
-              1: <ColoredWord color={sweepAddresses.from.settings.color} />,
-              3: <ColoredWord color={sweepAddresses.to.settings.color} />
+              1: <ColoredWord color={sweepAddresses.from.color} />,
+              3: <ColoredWord color={sweepAddresses.to.color} />
             }}
           >
             {'This operation will sweep all funds from <1>{{ from }}</1> and transfer them to <3>{{ to }}</3>.'}

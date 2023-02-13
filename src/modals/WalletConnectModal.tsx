@@ -32,10 +32,12 @@ import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
+import { useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
+import { selectAllAddresses } from '@/store/addressesSlice'
+import { AddressRedux } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
@@ -56,7 +58,8 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   const { t } = useTranslation()
   const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
-  const { addresses } = useAddressesContext()
+  const addresses = useAppSelector(selectAllAddresses)
+
   const [uri, setUri] = useState(uriProp)
   const [error, setError] = useState('')
   const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>(
@@ -67,7 +70,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
 
   const group = requiredChainInfo?.chainGroup
   const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
-  const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.settings.isMain))
+  const [signerAddress, setSignerAddress] = useState<AddressRedux | undefined>(addressOptions.find((a) => a.isDefault))
 
   const onProposal = useCallback(
     async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
@@ -113,7 +116,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   }, [])
 
   const chainAccounts = useCallback(
-    (address: Address, chain: ChainInfo): string[] => {
+    (address: AddressRedux, chain: ChainInfo): string[] => {
       if (!isCompatibleChainGroup(address.group, chain.chainGroup)) {
         setErrorState(t`Invalid address group for the WallectConnect connection`)
       }
@@ -124,7 +127,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   )
 
   const onApprove = useCallback(
-    async (signerAddress: Address) => {
+    async (signerAddress: AddressRedux) => {
       if (proposal === undefined) {
         setWcSessionState('uninitialized')
         return

@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -40,36 +39,34 @@ import { PageH1, PageH2 } from '@/components/PageComponents/PageHeadings'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import Tooltip from '@/components/Tooltip'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
-import { syncAddressTransactionsNextPage } from '@/store/addressesSlice'
+import { selectAddressByHash, syncAddressTransactionsNextPage } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
+import { AddressConfirmedTransaction } from '@/types/transactions'
 
 const AddressDetailsPage = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { getAddress } = useAddressesContext()
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const { addressHash = '' } = useParams<{ addressHash: AddressHash }>()
-  const confirmedTxs = useAppSelector((state) => selectAddressesConfirmedTransactions(state, [addressHash]))
+  const [address, confirmedTxs, pendingTxs] = useAppSelector((s) => [
+    selectAddressByHash(s, addressHash),
+    selectAddressesConfirmedTransactions(s, [addressHash]),
+    selectAddressesPendingTransactions(s, [addressHash])
+  ])
 
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction>()
-
-  const address = getAddress(addressHash)
+  const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
 
   if (!address) return null
 
   const loadNextTransactionsPage = () => dispatch(syncAddressTransactionsNextPage(address.hash))
-
-  const onTransactionClick = (transaction: Transaction) => {
-    setSelectedTransaction(transaction)
-  }
 
   const goBack = () => navigate(-1)
 
@@ -79,9 +76,9 @@ const AddressDetailsPage = () => {
         <Title>
           <ArrowLeftStyled role="button" tabIndex={0} onClick={goBack} onKeyPress={goBack} />
           <PageH1Styled>
-            {t`Address details`} {address.settings.isMain && !isPassphraseUsed && <MainAddressLabelStyled />}
+            {t`Address details`} {address.isDefault && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
-          {address.settings.label && <AddressBadgeStyled address={address} hideStar />}
+          {address.label && <AddressBadgeStyled address={address} hideStar />}
           <OptionsButton
             transparent
             squared
@@ -109,7 +106,7 @@ const AddressDetailsPage = () => {
             Label
           </DataListCell>
           <DataListCell role="gridcell" tabIndex={0}>
-            {address.settings.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
+            {address.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow role="row">
@@ -117,17 +114,17 @@ const AddressDetailsPage = () => {
             {t`Number of transactions`}
           </DataListCell>
           <DataListCell role="gridcell" tabIndex={0}>
-            {address.details?.txNumber}
+            {address.txNumber}
           </DataListCell>
         </DataListRow>
-        {address.details?.lockedBalance && BigInt(address.details.lockedBalance) > 0 && (
+        {address.lockedBalance && BigInt(address.lockedBalance) > 0 && (
           <DataListRow role="row">
             <DataListCell role="gridcell" tabIndex={0}>
               {t`Locked ALPH balance`}
             </DataListCell>
             <DataListCell role="gridcell" tabIndex={0}>
               <Badge>
-                <Amount value={BigInt(address.details.lockedBalance)} fadeDecimals />
+                <Amount value={BigInt(address.lockedBalance)} fadeDecimals />
               </Badge>
             </DataListCell>
           </DataListRow>
@@ -137,9 +134,9 @@ const AddressDetailsPage = () => {
             {t`Total ALPH balance`}
           </DataListCell>
           <DataListCell role="gridcell" tabIndex={0}>
-            {address.details?.balance ? (
+            {address?.balance ? (
               <Badge border>
-                <Amount value={BigInt(address.details.balance)} fadeDecimals />
+                <Amount value={BigInt(address.balance)} fadeDecimals />
               </Badge>
             ) : (
               '-'
@@ -149,11 +146,11 @@ const AddressDetailsPage = () => {
       </DataList>
       <PageH2>{t`Transaction history`}</PageH2>
       <Table minWidth="500px">
-        {address.transactions.pending
+        {pendingTxs
           .slice(0)
           .reverse()
           .map((transaction) => (
-            <TableRow role="row" tabIndex={0} key={transaction.txId} blinking>
+            <TableRow role="row" tabIndex={0} key={transaction.hash} blinking>
               <TransactionalInfo transaction={transaction} showInternalInflows />
             </TableRow>
           ))}
@@ -162,20 +159,20 @@ const AddressDetailsPage = () => {
             role="row"
             tabIndex={0}
             key={transaction.hash}
-            onClick={() => onTransactionClick(transaction)}
-            onKeyPress={() => onTransactionClick(transaction)}
+            onClick={() => setSelectedTransaction(transaction)}
+            onKeyPress={() => setSelectedTransaction(transaction)}
           >
             <TransactionalInfo transaction={transaction} showInternalInflows />
           </TableRow>
         ))}
-        {confirmedTxs.length !== address.details.txNumber && (
+        {confirmedTxs.length !== address.txNumber && (
           <TableRow role="row">
             <TableCell align="center" role="gridcell">
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             </TableCell>
           </TableRow>
         )}
-        {address.transactions.pending.length === 0 && confirmedTxs.length === 0 && (
+        {pendingTxs.length === 0 && confirmedTxs.length === 0 && (
           <TableRow role="row" tabIndex={0}>
             <TableCellPlaceholder align="center" role="gridcell">
               {t`No transactions to display`}

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressMetadata, AddressSettingsRedux } from '@/types/addresses'
+import { AddressMetadataRedux, AddressSettingsRedux } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 
 import { DataKey, PersistentEncryptedStorage } from './encrypted-storage'
@@ -33,7 +33,12 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
     if (isPassphraseUsed) return
 
     const addressesMetadata = this.load(dataKey)
-    const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
+    const existingAddressMetadata: AddressMetadataRedux | undefined = addressesMetadata.find(
+      (data: AddressMetadataRedux) => data.index === index
+    )
+    const currentDefaultAddress: AddressMetadataRedux = addressesMetadata.find(
+      (data: AddressMetadataRedux) => data.isDefault
+    )
 
     if (!existingAddressMetadata) {
       addressesMetadata.push({
@@ -43,6 +48,16 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
     } else {
       Object.assign(existingAddressMetadata, settings)
     }
+
+    if (settings.isDefault && currentDefaultAddress.index !== index) {
+      console.log(`🟠 Removing old default address with index ${index}`)
+
+      Object.assign(currentDefaultAddress, {
+        ...currentDefaultAddress,
+        isDefault: false
+      })
+    }
+
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
     super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)

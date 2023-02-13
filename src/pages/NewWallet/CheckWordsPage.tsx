@@ -38,12 +38,7 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import { useAppDispatch } from '@/hooks/redux'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletSaved } from '@/store/activeWalletSlice'
-import { syncAddressesData } from '@/store/addressesSlice'
-import { initialAddressSettings } from '@/utils/addresses'
+import { saveNewWallet } from '@/storage-utils/wallet'
 
 interface WordKey {
   word: string
@@ -52,7 +47,6 @@ interface WordKey {
 
 const CheckWordsPage = () => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { setSnackbarMessage } = useGlobalContext()
@@ -188,29 +182,8 @@ const CheckWordsPage = () => {
 
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
-      WalletStorage.store(walletName, password, plainWallet)
-      AddressMetadataStorage.store({
-        index: 0,
-        settings: initialAddressSettings,
-        dataKey: {
-          mnemonic: plainWallet.mnemonic,
-          walletName: walletName
-        }
-      })
-      dispatch(
-        walletSaved({
-          name: walletName,
-          mnemonic: plainWallet.mnemonic,
-          initialAddress: {
-            index: 0,
-            hash: plainWallet.address,
-            publicKey: plainWallet.publicKey,
-            privateKey: plainWallet.privateKey,
-            ...initialAddressSettings
-          }
-        })
-      )
-      dispatch(syncAddressesData())
+      saveNewWallet({ wallet: plainWallet, walletName, password })
+
       return true
     }
   }

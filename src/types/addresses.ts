@@ -38,6 +38,10 @@ export type AddressSettingsRedux = {
   label?: string
 }
 
+export type AddressMetadataRedux = AddressSettingsRedux & {
+  index: number
+}
+
 export type AddressBase = AddressKeyPair & AddressSettingsRedux
 
 export type AddressRedux = AddressBase &

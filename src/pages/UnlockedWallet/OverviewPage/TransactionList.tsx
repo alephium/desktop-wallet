@@ -24,13 +24,12 @@ import styled from 'styled-components'
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddressIds } from '@/store/addressesSlice'
 import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
-import { AddressConfirmedTransaction, PendingTx } from '@/types/transactions'
-import { BelongingToAddress, getTransactionsForAddresses } from '@/utils/transactions'
+import { AddressConfirmedTransaction } from '@/types/transactions'
 
 interface OverviewPageTransactionListProps {
   onTransactionClick: (transaction: AddressConfirmedTransaction) => void
@@ -41,13 +40,14 @@ interface OverviewPageTransactionListProps {
 const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: OverviewPageTransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { addresses: contextAddresses, isLoadingData } = useAddressesContext()
   const addresses = useAppSelector(selectAddressIds) as AddressHash[]
-  const allConfirmedTxs = useAppSelector((state) => selectAddressesConfirmedTransactions(state, addresses))
+  const [allConfirmedTxs, allPendingTxs, isLoading] = useAppSelector((s) => [
+    selectAddressesConfirmedTransactions(s, addresses),
+    selectAddressesPendingTransactions(s, addresses),
+    s.addresses.loading
+  ])
 
-  const allPendingTxs = getTransactionsForAddresses('pending', contextAddresses)
-
-  const showSkeletonLoading = isLoadingData && !allConfirmedTxs.length && !allPendingTxs.length
+  const showSkeletonLoading = isLoading && !allConfirmedTxs.length && !allPendingTxs.length
 
   const displayedConfirmedTxs = limit ? allConfirmedTxs.slice(0, limit - allPendingTxs.length) : allConfirmedTxs
 
@@ -59,9 +59,9 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
           {t('See more')}
         </ActionLink>
       </TableHeaderRow>
-      {allPendingTxs.map(({ data: tx, address }: BelongingToAddress<PendingTx>) => (
-        <TableRow key={tx.txId} blinking role="row" tabIndex={0}>
-          <TransactionalInfo transaction={tx} addressHash={address.hash} />
+      {allPendingTxs.map((pendingTx) => (
+        <TableRow key={pendingTx.hash} blinking role="row" tabIndex={0}>
+          <TransactionalInfo transaction={pendingTx} addressHash={pendingTx.address.hash} />
         </TableRow>
       ))}
       {displayedConfirmedTxs.map((confirmedTx) => (
@@ -75,7 +75,7 @@ const OverviewPageTransactionList = ({ className, onTransactionClick, limit }: O
           <TransactionalInfo transaction={confirmedTx} addressHash={confirmedTx.address.hash} />
         </TableRow>
       ))}
-      {!isLoadingData && !allPendingTxs.length && !displayedConfirmedTxs.length && (
+      {!isLoading && !allPendingTxs.length && !displayedConfirmedTxs.length && (
         <TableRow role="row" tabIndex={0}>
           <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
         </TableRow>

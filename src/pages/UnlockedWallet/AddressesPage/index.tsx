@@ -56,7 +56,7 @@ const AddressesPage = () => {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { generateOneAddressPerGroup } = useAddressesContext()
-  const [{ mnemonic, isPassphraseUsed }, infoMessageClosed] = useAppSelector((s) => [
+  const [{ mnemonic, isPassphraseUsed, name: walletName }, infoMessageClosed] = useAppSelector((s) => [
     s.activeWallet,
     s.app.addressesPageInfoMessageClosed
   ])
@@ -77,7 +77,7 @@ const AddressesPage = () => {
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
 
-  if (!mnemonic) return null
+  if (!mnemonic || !walletName) return null
 
   return (
     <motion.div {...fadeIn}>
@@ -141,7 +141,7 @@ const AddressesPage = () => {
                     Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
                     description={t`Scan the blockchain for addresses you used in the past.`}
                     buttonText={t`Search`}
-                    onButtonClick={() => discoverAndSaveActiveAddresses(mnemonic)}
+                    onButtonClick={() => discoverAndSaveActiveAddresses(mnemonic, walletName)}
                     infoLink={links.miningWallet}
                   />
                   <OperationBox

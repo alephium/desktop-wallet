@@ -16,14 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Address, useAddressesContext } from '@/contexts/addresses'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
+import { useAppSelector } from '@/hooks/redux'
+import { selectDefaultAddress } from '@/store/addressesSlice'
+import { AddressRedux } from '@/types/addresses'
 
 const useDappTxData = () => {
-  const { mainAddress } = useAddressesContext()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
   const { dappTxData } = useWalletConnectContext()
 
-  return dappTxData ?? { fromAddress: mainAddress as Address }
+  return dappTxData ?? { fromAddress: defaultAddress as AddressRedux }
 }
 
 export default useDappTxData

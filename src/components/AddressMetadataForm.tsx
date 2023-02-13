@@ -26,21 +26,21 @@ import HorizontalDivider from './PageComponents/HorizontalDivider'
 interface AddressMetadataFormProps {
   label: ColoredLabelInputValue
   setLabel: (label: ColoredLabelInputValue) => void
-  mainAddressMessage: string
-  isMain: boolean
-  setIsMain: (isMain: boolean) => void
-  isMainAddressToggleEnabled: boolean
+  defaultAddressMessage: string
+  isDefault: boolean
+  setIsDefault: (isDefault: boolean) => void
+  isDefaultAddressToggleEnabled: boolean
   singleAddress?: boolean
 }
 
 const AddressMetadataForm = ({
   label,
   setLabel,
-  mainAddressMessage,
+  defaultAddressMessage,
   singleAddress,
-  isMain,
-  setIsMain,
-  isMainAddressToggleEnabled
+  isDefault,
+  setIsDefault,
+  isDefaultAddressToggleEnabled
 }: AddressMetadataFormProps) => {
   const { t } = useTranslation()
 
@@ -52,13 +52,13 @@ const AddressMetadataForm = ({
           <HorizontalDivider narrow />
           <InlineLabelValueInput
             label={`★ ${t`Default address`}`}
-            description={mainAddressMessage}
+            description={defaultAddressMessage}
             InputComponent={
               <Toggle
-                toggled={isMain}
+                toggled={isDefault}
                 label={t`Make this your default address`}
-                onToggle={() => setIsMain(!isMain)}
-                disabled={!isMainAddressToggleEnabled}
+                onToggle={() => setIsDefault(!isDefault)}
+                disabled={!isDefaultAddressToggleEnabled}
               />
             }
           />
