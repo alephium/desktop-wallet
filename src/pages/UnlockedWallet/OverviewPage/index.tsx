@@ -18,11 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
 import TransactionList from '@/pages/UnlockedWallet/OverviewPage/TransactionList'
@@ -38,9 +40,11 @@ const OverviewPage = () => {
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
-        <TokensNFTsList />
+        <Row>
+          <TokensNFTsList />
+          <AddressesContactsList />
+        </Row>
         <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
-
         <ModalPortal>
           {selectedTransaction?.hash}
           {selectedTransaction && (
@@ -57,3 +61,9 @@ const OverviewPage = () => {
 }
 
 export default OverviewPage
+
+const Row = styled.div`
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+`

@@ -23,8 +23,8 @@ import styled, { css } from 'styled-components'
 import AddressEllipsed from '@/components/AddressEllipsed'
 import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
+import DotIcon from '@/components/DotIcon'
 import { useAppSelector } from '@/hooks/redux'
-import dotSvg from '@/images/dot.svg'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
@@ -98,18 +98,6 @@ export const dotStyling = {
   width: '1rem',
   marginRight: '0.2rem'
 }
-
-const DotIcon = styled.div<{ color?: string }>`
-  display: inline-block;
-  width: 7px;
-  height: 8px;
-  -webkit-mask: url(${dotSvg}) no-repeat 100% 100%;
-  mask: url(${dotSvg}) no-repeat 100% 100%;
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  background-color: ${({ color, theme }) => color || theme.font.primary};
-  flex-shrink: 0;
-`
 
 const Hash = styled.div`
   width: 100%;

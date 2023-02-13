@@ -21,6 +21,7 @@ import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Table, { TableRow } from '@/components/Table'
+import TableCellAmount from '@/components/TableCellAmount'
 import { useAppSelector } from '@/hooks/redux'
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
 import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
@@ -54,12 +55,15 @@ const TokensNFTsList = ({ className }: TokensNFTsListProps) => {
               <TokenName>{token.name}</TokenName>
               <TokenSymbol>{token.symbol}</TokenSymbol>
             </NameColumn>
-            <Column>
+            <TableCellAmount>
               <TokenAmount fadeDecimals value={token.balance} suffix={token.symbol} />
               {token.lockedBalance > 0 && (
-                <TokenLockedAmount fadeDecimals value={token.lockedBalance} suffix={token.symbol} />
+                <TokenAvailableAmount>
+                  {t('Available')}
+                  <Amount fadeDecimals value={token.balance - token.lockedBalance} suffix={token.symbol} />
+                </TokenAvailableAmount>
               )}
-            </Column>
+            </TableCellAmount>
           </TokenRow>
         </TableRow>
       ))}
@@ -127,7 +131,7 @@ const TokenAmount = styled(Amount)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const TokenLockedAmount = styled(Amount)`
+const TokenAvailableAmount = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 10px;
 `

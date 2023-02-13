@@ -29,6 +29,7 @@ import Badge from '@/components/Badge'
 import HiddenLabel from '@/components/HiddenLabel'
 import IOList from '@/components/IOList'
 import Lock from '@/components/Lock'
+import TableCellAmount from '@/components/TableCellAmount'
 import TimeSince from '@/components/TimeSince'
 import Token from '@/components/Token'
 import { useAppSelector } from '@/hooks/redux'
@@ -138,7 +139,7 @@ const TransactionalInfo = ({
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true" color={amountTextColor}>
+      <TableCellAmount aria-hidden="true" color={amountTextColor}>
         {amount !== undefined && (
           <>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
@@ -148,7 +149,7 @@ const TransactionalInfo = ({
             </div>
           </>
         )}
-      </CellAmount>
+      </TableCellAmount>
     </div>
   )
 }
@@ -197,17 +198,6 @@ const CellAddress = styled.div<{ alignRight?: boolean }>`
 
 const TokenStyled = styled(Token)`
   font-weight: var(--fontWeight-semiBold);
-`
-
-const CellAmount = styled.div<{ color: string }>`
-  flex-grow: 1;
-  justify-content: right;
-  display: flex;
-  min-width: 6em;
-  flex-basis: 120px;
-  gap: 6px;
-  align-items: center;
-  color: ${({ color }) => color};
 `
 
 const DirectionText = styled.div`
