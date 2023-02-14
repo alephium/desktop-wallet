@@ -26,12 +26,13 @@ import styled from 'styled-components'
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SettingsModal from '@/modals/SettingsModal'
 import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { selectAddressByHash, selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
@@ -39,12 +40,15 @@ import { currencies } from '@/utils/currencies'
 interface AmountsOverviewPanelProps {
   isLoading?: boolean
   className?: string
+  addressHash?: string
 }
 
-const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProps) => {
+const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOverviewPanelProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const addresses = useAppSelector(selectAllAddresses)
+  const allAddresses = useAppSelector(selectAllAddresses)
+  const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
+  const addresses = address ? [address] : allAddresses
   const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
@@ -53,7 +57,9 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
+  const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
 
+  const singleAddress = !!address
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
@@ -65,9 +71,11 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading || isPriceLoading })}>
       <Balances>
-        <WalletNameRow>
-          <WalletName>{activeWallet.name}</WalletName>
-        </WalletNameRow>
+        {!singleAddress && (
+          <WalletNameRow>
+            <WalletName>{activeWallet.name}</WalletName>
+          </WalletNameRow>
+        )}
         <BalancesRow>
           <BalancesColumn>
             {!isPriceLoading && (
@@ -75,21 +83,25 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
             )}
             <Today>{t('Today')}</Today>
           </BalancesColumn>
-          <Divider />
-          <BalancesColumn>
-            <AvailableBalanceRow>
-              <BalanceLabel tabIndex={0} role="representation">
-                {t('Available')}
-              </BalanceLabel>
-              <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
-            </AvailableBalanceRow>
-            <LockedBalanceRow>
-              <BalanceLabel tabIndex={0} role="representation">
-                {t('Locked')}
-              </BalanceLabel>
-              <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
-            </LockedBalanceRow>
-          </BalancesColumn>
+          {!singleAddress && (
+            <>
+              <Divider />
+              <BalancesColumn>
+                <AvailableBalanceRow>
+                  <BalanceLabel tabIndex={0} role="representation">
+                    {t('Available')}
+                  </BalanceLabel>
+                  <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
+                </AvailableBalanceRow>
+                <LockedBalanceRow>
+                  <BalanceLabel tabIndex={0} role="representation">
+                    {t('Locked')}
+                  </BalanceLabel>
+                  <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
+                </LockedBalanceRow>
+              </BalancesColumn>
+            </>
+          )}
         </BalancesRow>
       </Balances>
       <Buttons>
@@ -99,17 +111,31 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
         <ShortcutButton transparent borderless onClick={() => setIsSendModalOpen(true)} Icon={ArrowUp}>
           <ButtonText>{t('Send')}</ButtonText>
         </ShortcutButton>
-        <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
-          <ButtonText>{t('Settings')}</ButtonText>
+        <ShortcutButton
+          transparent
+          borderless
+          onClick={() => (singleAddress ? setIsAddressOptionsModalOpen(true) : setIsSettingsModalOpen(true))}
+          Icon={Settings}
+        >
+          <ButtonText>{t(singleAddress ? 'Address settings' : 'Settings')}</ButtonText>
         </ShortcutButton>
-        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
-          <ButtonText>{t('Lock wallet')}</ButtonText>
-        </ShortcutButton>
+        {!singleAddress && (
+          <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
+            <ButtonText>{t('Lock wallet')}</ButtonText>
+          </ShortcutButton>
+        )}
       </Buttons>
       <ModalPortal>
-        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
+        {isSendModalOpen && (
+          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
+        )}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-        {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
+        {isReceiveModalOpen && (
+          <ReceiveModal addressHash={address?.hash} onClose={() => setIsReceiveModalOpen(false)} />
+        )}
+        {isAddressOptionsModalOpen && address && (
+          <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
+        )}
       </ModalPortal>
     </div>
   )
@@ -127,9 +153,10 @@ export default styled(AmountsOverviewPanel)`
 
 const Balances = styled.div`
   flex-grow: 1;
+  padding-top: 25px;
 `
 const WalletNameRow = styled.div`
-  padding: 25px 40px;
+  padding: 0 40px 25px 40px;
 `
 
 const BalancesRow = styled.div`

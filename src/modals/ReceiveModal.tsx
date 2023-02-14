@@ -24,17 +24,23 @@ import styled, { useTheme } from 'styled-components'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
-import { selectAllAddresses, selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
+import {
+  selectAddressByHash,
+  selectAllAddresses,
+  selectDefaultAddress
+} from '@/storage/app-state/slices/addressesSlice'
 
 interface ReceiveModalProps {
   onClose: () => void
+  addressHash?: string
 }
 
-const ReceiveModal = ({ onClose }: ReceiveModalProps) => {
+const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
+  const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
 
   const [selectedAddress, setSelectedAddress] = useState(defaultAddress)
 
@@ -45,7 +51,7 @@ const ReceiveModal = ({ onClose }: ReceiveModalProps) => {
           label={t`Address`}
           title={t`Select the address to receive funds to.`}
           options={addresses}
-          defaultAddress={defaultAddress}
+          defaultAddress={address ?? defaultAddress}
           onAddressChange={setSelectedAddress}
           id="address"
         />
