@@ -27,6 +27,7 @@ import Amount from '@/components/Amount'
 import Button from '@/components/Button'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
+import ReceiveModal from '@/modals/ReceiveModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SettingsModal from '@/modals/SettingsModal'
 import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
@@ -51,6 +52,7 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
@@ -91,7 +93,7 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
         </BalancesRow>
       </Balances>
       <Buttons>
-        <ShortcutButton transparent borderless Icon={ArrowDown}>
+        <ShortcutButton transparent borderless onClick={() => setIsReceiveModalOpen(true)} Icon={ArrowDown}>
           <ButtonText>{t('Receive')}</ButtonText>
         </ShortcutButton>
         <ShortcutButton transparent borderless onClick={() => setIsSendModalOpen(true)} Icon={ArrowUp}>
@@ -107,6 +109,7 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
       <ModalPortal>
         {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
+        {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
       </ModalPortal>
     </div>
   )
