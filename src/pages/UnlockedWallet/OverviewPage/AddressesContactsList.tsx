@@ -125,7 +125,7 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
       ))}
       <ModalPortal>
         {selectedAddress && (
-          <AddressDetailsModal address={selectedAddress} onClose={() => setSelectedAddress(undefined)} />
+          <AddressDetailsModal addressHash={selectedAddress.hash} onClose={() => setSelectedAddress(undefined)} />
         )}
       </ModalPortal>
     </motion.div>

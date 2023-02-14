@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertSetToAlph } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs from 'dayjs'
-import { MouseEvent } from 'react'
+import { MouseEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import { TooltipWrapper } from 'react-tooltip'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -31,6 +30,8 @@ import Badge from '@/components/Badge'
 import Card from '@/components/Card'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
+import AddressDetailsModal from '@/modals/AddressDetailsModal'
+import ModalPortal from '@/modals/ModalPortal'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
 import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
@@ -44,7 +45,6 @@ interface AddressCardProps {
 }
 
 const AddressCard = ({ hash, className }: AddressCardProps) => {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const theme = useTheme()
   const [address, { name: walletName, mnemonic }] = useAppSelector((s) => [
@@ -54,13 +54,13 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
   const tokens = useAppSelector((state) => selectTokens(state, address?.hash ? [address.hash] : undefined))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
+  const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
+
   if (!address || !walletName || !mnemonic) return null
 
   const alphBalance = parseFloat(convertSetToAlph(BigInt(address.balance)))
   const fiatBalance = alphBalance * (price ?? 0)
   const tokenSymbols = [...(address.balance !== '0' ? ['ALPH'] : []), ...tokens.map((token) => token.symbol)]
-
-  const navigateToAddressDetailsPage = (hash: AddressHash) => () => navigate(`/wallet/addresses/${hash}`)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {
     changeDefaultAddress(address, { walletName, mnemonic })
@@ -68,43 +68,50 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
   }
 
   return (
-    <CardWithRibbon
-      className={className}
-      onClick={navigateToAddressDetailsPage(address.hash)}
-      onKeyPress={navigateToAddressDetailsPage(address.hash)}
-      layout
-    >
-      <InfoSection bgColor={address.color}>
-        {address.isDefault ? (
-          <DefaultAddressRibbonContainer>
-            <TooltipWrapper content={t('This is the default address')} place="bottom">
-              <DefaultAddressRibbon />
-            </TooltipWrapper>
-          </DefaultAddressRibbonContainer>
-        ) : (
-          <RibbonContainer onClick={setAsDefaultAddress}>
-            <TooltipWrapper content={t('Set as the default address')} place="bottom">
-              <Ribbon />
-            </TooltipWrapper>
-          </RibbonContainer>
+    <>
+      <CardWithRibbon
+        className={className}
+        onClick={() => setIsAddressDetailsModalOpen(true)}
+        onKeyPress={() => setIsAddressDetailsModalOpen(true)}
+        layout
+      >
+        <InfoSection bgColor={address.color}>
+          {address.isDefault ? (
+            <DefaultAddressRibbonContainer>
+              <TooltipWrapper content={t('This is the default address')} place="bottom">
+                <DefaultAddressRibbon />
+              </TooltipWrapper>
+            </DefaultAddressRibbonContainer>
+          ) : (
+            <RibbonContainer onClick={setAsDefaultAddress}>
+              <TooltipWrapper content={t('Set as the default address')} place="bottom">
+                <Ribbon />
+              </TooltipWrapper>
+            </RibbonContainer>
+          )}
+          <Label>{address.label}</Label>
+          <TotalBalance>
+            {!isPriceLoading && <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />}
+          </TotalBalance>
+          <AddressEllipsedStyled addressHash={address.hash} />
+          <LastActivity>
+            {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
+          </LastActivity>
+        </InfoSection>
+        <TokensSection>
+          {tokenSymbols.map((tokenName) => (
+            <Badge rounded border transparent color={theme.font.secondary} key={tokenName}>
+              {tokenName}
+            </Badge>
+          ))}
+        </TokensSection>
+      </CardWithRibbon>
+      <ModalPortal>
+        {isAddressDetailsModalOpen && (
+          <AddressDetailsModal addressHash={address.hash} onClose={() => setIsAddressDetailsModalOpen(false)} />
         )}
-        <Label>{address.label}</Label>
-        <TotalBalance>
-          {!isPriceLoading && <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />}
-        </TotalBalance>
-        <AddressEllipsedStyled addressHash={address.hash} />
-        <LastActivity>
-          {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
-        </LastActivity>
-      </InfoSection>
-      <TokensSection>
-        {tokenSymbols.map((tokenName) => (
-          <Badge rounded border transparent color={theme.font.secondary} key={tokenName}>
-            {tokenName}
-          </Badge>
-        ))}
-      </TokensSection>
-    </CardWithRibbon>
+      </ModalPortal>
+    </>
   )
 }
 

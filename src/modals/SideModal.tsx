@@ -91,4 +91,5 @@ const HeaderColumn = styled.div`
 
 const CloseButton = styled(Button)`
   color: ${({ theme }) => theme.font.primary};
+  flex-shrink: 0;
 `

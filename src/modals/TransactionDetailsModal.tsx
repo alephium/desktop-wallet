@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addApostrophes } from '@alephium/sdk'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -29,12 +30,14 @@ import ExpandableSection from '@/components/ExpandableSection'
 import IOList from '@/components/IOList'
 import Tooltip from '@/components/Tooltip'
 import { useAppSelector } from '@/hooks/redux'
-import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
+import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import { ModalHeader } from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
 import SideModal from '@/modals/SideModal'
-import { Address } from '@/types/addresses'
+import { selectAddressIds } from '@/storage/app-state/slices/addressesSlice'
+import { Address, AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 
@@ -52,12 +55,19 @@ interface DetailsRowProps {
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
   const { explorerUrl } = useAppSelector((state) => state.network.settings)
+  const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
-  const handleShowAddress = useAddressLinkHandler()
   const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
   const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
+  const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
+
   const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
+
+  const handleShowAddress = (addressHash: AddressHash) =>
+    internalAddressHashes.includes(addressHash)
+      ? setSelectedAddressHash(addressHash)
+      : openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)
 
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
@@ -166,6 +176,11 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </ExpandableSectionStyled>
       </Details>
       <Tooltip />
+      <ModalPortal>
+        {selectedAddressHash && (
+          <AddressDetailsModal addressHash={selectedAddressHash} onClose={() => setSelectedAddressHash(undefined)} />
+        )}
+      </ModalPortal>
     </SideModal>
   )
 }

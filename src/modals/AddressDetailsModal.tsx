@@ -21,16 +21,22 @@ import styled from 'styled-components'
 
 import AddressEllipsed from '@/components/AddressEllipsed'
 import DotIcon from '@/components/DotIcon'
+import TransactionsList from '@/components/TransactionsList'
+import { useAppSelector } from '@/hooks/redux'
 import SideModal from '@/modals/SideModal'
 import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
-import { Address } from '@/types/addresses'
+import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
+import { AddressHash } from '@/types/addresses'
 
 interface AddressDetailsModalProps {
-  address: Address
+  addressHash: AddressHash
   onClose: () => void
 }
-const AddressDetailsModal = ({ address, onClose }: AddressDetailsModalProps) => {
+const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps) => {
   const { t } = useTranslation()
+  const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])
+
+  if (!address) return null
 
   return (
     <SideModal
@@ -40,10 +46,14 @@ const AddressDetailsModal = ({ address, onClose }: AddressDetailsModalProps) => 
       header={
         <Header>
           <AddressColor>
-            {address.isDefault ? <Star color={address.color}>★</Star> : <DotIcon size="big" color={address.color} />}
+            {address.isDefault && !isPassphraseUsed ? (
+              <Star color={address.color}>★</Star>
+            ) : (
+              <DotIcon size="big" color={address.color} />
+            )}
           </AddressColor>
           <Column>
-            <Label>{address.label ?? <AddressEllipsed addressHash={address.hash} />}</Label>
+            <Label>{address.label || <AddressEllipsedStyled addressHash={address.hash} />}</Label>
             <Subtitle>
               {address.label && <Hash addressHash={address.hash} />}
               <Group>
@@ -60,6 +70,7 @@ const AddressDetailsModal = ({ address, onClose }: AddressDetailsModalProps) => 
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}
         />
+        <TransactionsList title={t('Address transactions')} addressHash={address.hash} />
       </Content>
     </SideModal>
   )
@@ -75,6 +86,10 @@ const Header = styled.div`
 const Label = styled.div`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
+`
+
+const AddressEllipsedStyled = styled(AddressEllipsed)`
+  max-width: 300px;
 `
 
 const Hash = styled(AddressEllipsed)`

@@ -18,35 +18,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // import { Transaction } from '@alephium/sdk/api/explorer'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 
 import { fadeIn } from '@/animations'
-import ModalPortal from '@/modals/ModalPortal'
-import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
-import TransactionList from '@/pages/UnlockedWallet/TransfersPage/TransactionList'
+import TransactionsList from '@/components/TransactionsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { AddressConfirmedTransaction } from '@/types/transactions'
 
-const TransfersPage = () => {
-  const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
-
-  return (
-    <motion.div {...fadeIn}>
-      <UnlockedWalletPanel top>
-        <TransactionList onTransactionClick={setSelectedTransaction} />
-        <ModalPortal>
-          {selectedTransaction?.hash}
-          {selectedTransaction && (
-            <TransactionDetailsModal
-              address={selectedTransaction.address}
-              transaction={selectedTransaction}
-              onClose={() => setSelectedTransaction(undefined)}
-            />
-          )}
-        </ModalPortal>
-      </UnlockedWalletPanel>
-    </motion.div>
-  )
-}
+const TransfersPage = () => (
+  <motion.div {...fadeIn}>
+    <UnlockedWalletPanel top>
+      <TransactionsList />
+    </UnlockedWalletPanel>
+  </motion.div>
+)
 
 export default TransfersPage

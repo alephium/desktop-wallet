@@ -21,7 +21,6 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
-import AddressDetailsPage from '@/pages/UnlockedWallet/AddressDetailsPage'
 import AddressesPage from '@/pages/UnlockedWallet/AddressesPage'
 import OverviewPage from '@/pages/UnlockedWallet/OverviewPage'
 import TransfersPage from '@/pages/UnlockedWallet/TransfersPage'
@@ -51,7 +50,6 @@ const WalletRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="overview" key="overview" element={<OverviewPage />} />
         <Route path="transfers" key="transfers" element={<TransfersPage />} />
-        <Route path="addresses/:addressHash" key="address-details" element={<AddressDetailsPage />} />
         <Route path="addresses" key="addresses" element={<AddressesPage />} />
       </Routes>
     </UnlockedWalletLayout>
