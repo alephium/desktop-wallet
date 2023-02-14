@@ -33,6 +33,7 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
+import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
@@ -79,13 +80,12 @@ const AddressesContactsList = ({ className, limit }: AddressesContactsListProps)
 }
 
 const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
-  const navigate = useNavigate()
   const addresses = useAppSelector(selectAllAddresses)
   const { data: price } = useGetPriceQuery(currencies.USD.ticker)
 
-  const displayedAddresses = limit ? addresses.slice(0, limit) : addresses
+  const [selectedAddress, setSelectedAddress] = useState<Address>()
 
-  const handleAddressClick = (address: Address) => navigate(`/wallet/addresses/${address.hash}`)
+  const displayedAddresses = limit ? addresses.slice(0, limit) : addresses
 
   return (
     <motion.div {...fadeIn} className={className}>
@@ -94,8 +94,8 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
           key={address.hash}
           role="row"
           tabIndex={0}
-          onClick={() => handleAddressClick(address)}
-          onKeyPress={() => handleAddressClick(address)}
+          onClick={() => setSelectedAddress(address)}
+          onKeyPress={() => setSelectedAddress(address)}
         >
           <Row>
             <AddressColor>
@@ -123,6 +123,11 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
           </Row>
         </TableRow>
       ))}
+      <ModalPortal>
+        {selectedAddress && (
+          <AddressDetailsModal address={selectedAddress} onClose={() => setSelectedAddress(undefined)} />
+        )}
+      </ModalPortal>
     </motion.div>
   )
 }

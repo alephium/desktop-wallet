@@ -41,7 +41,7 @@ const OverviewPage = () => {
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <Row>
-          <TokensNFTsList />
+          <TokensNFTsList showTokens showNfts />
           <AddressesContactsList limit={5} />
         </Row>
         <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />

@@ -28,42 +28,66 @@ import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
-import i18next from '@/i18n'
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
 import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
+import { AddressHash } from '@/types/addresses'
 
 interface TokensNFTsListProps {
   className?: string
   limit?: number
+  addressHashes?: AddressHash[]
+  tokensTabTitle?: string
+  nftsTabTitle?: string
+  showTokens?: boolean
+  showNfts?: boolean
 }
 
-const tabs = [
-  { value: 'tokens', label: i18next.t('Tokens') },
-  { value: 'nfts', label: i18next.t('NFTs') }
-]
-
-const TokensNFTsList = ({ className, limit }: TokensNFTsListProps) => {
+const TokensNFTsList = ({
+  className,
+  limit,
+  addressHashes,
+  tokensTabTitle,
+  nftsTabTitle,
+  showTokens,
+  showNfts
+}: TokensNFTsListProps) => {
+  const { t } = useTranslation()
   const [isLoadingAddresses, tokensStatus] = useAppSelector((s) => [s.addresses.loading, s.tokens.status])
+  const tokens = useAppSelector((state) => selectTokens(state, addressHashes))
+
+  const tabs = [
+    { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
+    { value: 'nfts', label: nftsTabTitle ?? t('NFTs') }
+  ]
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const showTokensTab = showTokens ?? tokens.length > 0
+  const showNftsTab = showNfts ?? tokens.length > 0 // TODO: Update when NFTs implemented
+
+  if (!showTokensTab && !showNftsTab) return null
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="450px">
-      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+      <TableTabBar
+        items={tabs}
+        onTabChange={(tab) => setCurrentTab(tab)}
+        activeTab={currentTab}
+        showTab={[showTokensTab, showNftsTab]}
+      />
       {
         {
-          tokens: <TokensList limit={limit} />,
-          nfts: <NFTsList limit={limit} />
+          tokens: <TokensList limit={limit} addressHashes={addressHashes} />,
+          nfts: <NFTsList limit={limit} addressHashes={addressHashes} />
         }[currentTab.value]
       }
     </Table>
   )
 }
 
-const TokensList = ({ className, limit }: TokensNFTsListProps) => {
+const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) => {
   const { t } = useTranslation()
-  const tokens = useAppSelector(selectTokens)
+  const [tokens, isLoading] = useAppSelector((s) => [selectTokens(s, addressHashes), s.addresses.loading])
 
   const displayedTokens = limit ? tokens.slice(0, limit) : tokens
 
@@ -93,6 +117,7 @@ const TokensList = ({ className, limit }: TokensNFTsListProps) => {
           </TokenRow>
         </TableRow>
       ))}
+      {displayedTokens.length === 0 && !isLoading && <TableRow>{t('Your tokens will appear here.')}</TableRow>}
     </motion.div>
   )
 }

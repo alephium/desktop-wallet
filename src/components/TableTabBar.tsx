@@ -26,14 +26,25 @@ import { TabBarProps } from '@/components/TabBar'
 interface TableTabBarProps extends TabBarProps {
   linkText?: string
   onLinkClick?: () => void
+  showTab?: boolean[]
 }
 
-const TableTabBar = ({ items, onTabChange, activeTab, className, linkText, onLinkClick }: TableTabBarProps) => {
+const TableTabBar = ({
+  items,
+  onTabChange,
+  activeTab,
+  className,
+  linkText,
+  onLinkClick,
+  showTab
+}: TableTabBarProps) => {
   const { t } = useTranslation()
 
   return (
     <div className={className} role="tablist" aria-label={t('Tab navigation')}>
-      {items.map((item) => {
+      {items.map((item, index) => {
+        if (showTab && !showTab[index]) return
+
         const isActive = activeTab.value === item.value
 
         return (
