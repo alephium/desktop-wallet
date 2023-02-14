@@ -42,7 +42,7 @@ const OverviewPage = () => {
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <Row>
           <TokensNFTsList />
-          <AddressesContactsList />
+          <AddressesContactsList limit={5} />
         </Row>
         <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
         <ModalPortal>

@@ -16,12 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
 import { TabBarProps } from '@/components/TabBar'
 
-const TableTabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
+interface TableTabBarProps extends TabBarProps {
+  linkText?: string
+  onLinkClick?: () => void
+}
+
+const TableTabBar = ({ items, onTabChange, activeTab, className, linkText, onLinkClick }: TableTabBarProps) => {
   const { t } = useTranslation()
 
   return (
@@ -43,6 +50,11 @@ const TableTabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) 
           </Tab>
         )
       })}
+      {linkText && onLinkClick && (
+        <ActionLinkStyled onClick={onLinkClick} Icon={ChevronRight}>
+          {linkText}
+        </ActionLinkStyled>
+      )}
     </div>
   )
 }
@@ -76,4 +88,9 @@ const Tab = styled.div<{ isActive: boolean }>`
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  margin-left: auto;
+  margin-right: 20px;
 `

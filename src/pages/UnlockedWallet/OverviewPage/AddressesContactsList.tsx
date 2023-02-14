@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { convertSetToFiat } from '@alephium/sdk'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -43,6 +44,7 @@ import { currencies } from '@/utils/currencies'
 
 interface AddressesContactsListProps {
   className?: string
+  limit?: number
 }
 
 const tabs = [
@@ -50,34 +52,44 @@ const tabs = [
   { value: 'contacts', label: i18next.t('Contacts') }
 ]
 
-const AddressesContactsList = ({ className }: AddressesContactsListProps) => {
+const AddressesContactsList = ({ className, limit }: AddressesContactsListProps) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
   const [isLoadingAddresses] = useAppSelector((s) => [s.addresses.loading])
 
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
     <Table isLoading={isLoadingAddresses} className={className} minWidth="500px">
-      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+      <TableTabBar
+        items={tabs}
+        onTabChange={(tab) => setCurrentTab(tab)}
+        activeTab={currentTab}
+        linkText={t('See more')}
+        onLinkClick={() => navigate('/wallet/addresses')}
+      />
       {
         {
-          addresses: <AddressesList />,
-          contacts: <ContactsList />
+          addresses: <AddressesList limit={limit} />,
+          contacts: <ContactsList limit={limit} />
         }[currentTab.value]
       }
     </Table>
   )
 }
 
-const AddressesList = () => {
+const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
   const navigate = useNavigate()
   const addresses = useAppSelector(selectAllAddresses)
   const { data: price } = useGetPriceQuery(currencies.USD.ticker)
 
+  const displayedAddresses = limit ? addresses.slice(0, limit) : addresses
+
   const handleAddressClick = (address: Address) => navigate(`/wallet/addresses/${address.hash}`)
 
   return (
-    <motion.div {...fadeIn}>
-      {addresses.map((address) => (
+    <motion.div {...fadeIn} className={className}>
+      {displayedAddresses.map((address) => (
         <TableRow
           key={address.hash}
           role="row"
@@ -114,11 +126,13 @@ const AddressesList = () => {
     </motion.div>
   )
 }
-const ContactsList = () => {
+const ContactsList = ({ className, limit }: AddressesContactsListProps) => {
   const contacts = useAppSelector(selectAllContacts)
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
+
+  const displayedContacts = limit ? contacts.slice(0, limit) : contacts
 
   const handleContactClick = (contact: Contact) => {
     setSelectedContact(contact)
@@ -131,8 +145,8 @@ const ContactsList = () => {
   }
 
   return (
-    <motion.div {...fadeIn}>
-      {contacts.map((contact) => (
+    <motion.div {...fadeIn} className={className}>
+      {displayedContacts.map((contact) => (
         <TableRow
           key={contact.address}
           role="row"
