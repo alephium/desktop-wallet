@@ -16,34 +16,60 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
+import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
+import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
 import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
 
 interface TokensNFTsListProps {
   className?: string
+  limit?: number
 }
 
-const TokensNFTsList = ({ className }: TokensNFTsListProps) => {
-  const { t } = useTranslation()
-  const tokens = useAppSelector(selectTokens)
+const tabs = [
+  { value: 'tokens', label: i18next.t('Tokens') },
+  { value: 'nfts', label: i18next.t('NFTs') }
+]
+
+const TokensNFTsList = ({ className, limit }: TokensNFTsListProps) => {
   const [isLoadingAddresses, tokensStatus] = useAppSelector((s) => [s.addresses.loading, s.tokens.status])
+
   const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="450px">
-      <TableHeaderRow>
-        <TableTitle>
-          {t('Tokens')} ({tokens.length})
-        </TableTitle>
-      </TableHeaderRow>
-      {tokens.map((token) => (
+      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+      {
+        {
+          tokens: <TokensList limit={limit} />,
+          nfts: <NFTsList limit={limit} />
+        }[currentTab.value]
+      }
+    </Table>
+  )
+}
+
+const TokensList = ({ className, limit }: TokensNFTsListProps) => {
+  const { t } = useTranslation()
+  const tokens = useAppSelector(selectTokens)
+
+  const displayedTokens = limit ? tokens.slice(0, limit) : tokens
+
+  return (
+    <motion.div {...fadeIn} className={className}>
+      {displayedTokens.map((token) => (
         <TableRow key={token.id} role="row" tabIndex={0}>
           <TokenRow>
             <TokenLogo>
@@ -67,24 +93,24 @@ const TokensNFTsList = ({ className }: TokensNFTsListProps) => {
           </TokenRow>
         </TableRow>
       ))}
-    </Table>
+    </motion.div>
+  )
+}
+
+const NFTsList = ({ className }: TokensNFTsListProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <motion.div {...fadeIn} className={className}>
+      <TableRow role="row" tabIndex={0}>
+        {t('Coming soon!')}
+      </TableRow>
+    </motion.div>
   )
 }
 
 export default styled(TokensNFTsList)`
   margin-bottom: 45px;
-`
-
-const TableHeaderRow = styled(TableRow)`
-  display: flex;
-  justify-content: space-between;
-  height: 60px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-`
-
-const TableTitle = styled.div`
-  font-size: 13px;
-  font-weight: var(--fontWeight-semiBold);
 `
 
 const TokenRow = styled.div`
