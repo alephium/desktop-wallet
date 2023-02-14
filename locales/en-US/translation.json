@@ -312,5 +312,6 @@
   "Gas price must be greater than {{ amount }}": "Gas price must be greater than {{ amount }}",
   "Smart contract": "Smart contract",
   "All transactions loaded!": "All transactions loaded!",
-  "Tokens": "Tokens"
+  "Tokens": "Tokens",
+  "Today": "Today"
 }

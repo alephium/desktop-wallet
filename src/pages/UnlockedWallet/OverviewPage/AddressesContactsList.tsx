@@ -60,7 +60,7 @@ const AddressesContactsList = ({ className, limit }: AddressesContactsListProps)
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
-    <Table isLoading={isLoadingAddresses} className={className} minWidth="500px">
+    <Table isLoading={isLoadingAddresses} className={className} minWidth="350px">
       <TableTabBar
         items={tabs}
         onTabChange={(tab) => setCurrentTab(tab)}

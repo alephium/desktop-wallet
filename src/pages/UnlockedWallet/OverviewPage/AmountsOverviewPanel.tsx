@@ -62,16 +62,19 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
 
   return (
     <div className={classNames(className, { 'skeleton-loader': isLoading || isPriceLoading })}>
-      <BalancesSection>
-        <DataRow>
-          <DataRowColumn>
-            <WalletName>{activeWallet.name}</WalletName>
+      <Balances>
+        <WalletNameRow>
+          <WalletName>{activeWallet.name}</WalletName>
+        </WalletNameRow>
+        <BalancesRow>
+          <BalancesColumn>
             {!isPriceLoading && (
               <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
             )}
-          </DataRowColumn>
+            <Today>{t('Today')}</Today>
+          </BalancesColumn>
           <Divider />
-          <DataRowColumn>
+          <BalancesColumn>
             <AvailableBalanceRow>
               <BalanceLabel tabIndex={0} role="representation">
                 {t('Available')}
@@ -84,28 +87,23 @@ const AmountsOverviewPanel = ({ className, isLoading }: AmountsOverviewPanelProp
               </BalanceLabel>
               <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
             </LockedBalanceRow>
-          </DataRowColumn>
-        </DataRow>
-        <ButtonsRow>
-          <BottomButton transparent borderless>
-            <ArrowDown />
-            <ButtonText>{t('Receive')}</ButtonText>
-          </BottomButton>
-          <BottomButton transparent borderless onClick={() => setIsSendModalOpen(true)}>
-            <ArrowUp />
-            <ButtonText>{t('Send')}</ButtonText>
-          </BottomButton>
-          <BottomButton transparent borderless onClick={() => setIsSettingsModalOpen(true)}>
-            <Settings />
-            <ButtonText>{t('Settings')}</ButtonText>
-          </BottomButton>
-          <BottomButtonStyled transparent borderless onClick={lockWallet}>
-            <Lock />
-            <ButtonText>{t('Lock wallet')}</ButtonText>
-          </BottomButtonStyled>
-        </ButtonsRow>
-      </BalancesSection>
-      <PriceChartSection></PriceChartSection>
+          </BalancesColumn>
+        </BalancesRow>
+      </Balances>
+      <Buttons>
+        <ShortcutButton transparent borderless Icon={ArrowDown}>
+          <ButtonText>{t('Receive')}</ButtonText>
+        </ShortcutButton>
+        <ShortcutButton transparent borderless onClick={() => setIsSendModalOpen(true)} Icon={ArrowUp}>
+          <ButtonText>{t('Send')}</ButtonText>
+        </ShortcutButton>
+        <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
+          <ButtonText>{t('Settings')}</ButtonText>
+        </ShortcutButton>
+        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
+          <ButtonText>{t('Lock wallet')}</ButtonText>
+        </ShortcutButton>
+      </Buttons>
       <ModalPortal>
         {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
@@ -118,48 +116,47 @@ export default styled(AmountsOverviewPanel)`
   display: flex;
   border-radius: var(--radius-huge);
   border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.background1};
   margin-bottom: 45px;
   overflow: hidden;
   box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.3); // TODO: Add in theme?
 `
 
-const Section = styled.div`
-  width: 50%;
+const Balances = styled.div`
+  flex-grow: 1;
+`
+const WalletNameRow = styled.div`
+  padding: 25px 40px;
 `
 
-const BalancesSection = styled(Section)``
-
-const PriceChartSection = styled(Section)`
-  border-left: 1px solid ${({ theme }) => theme.border.secondary};
-`
-
-const DataRow = styled.div`
+const BalancesRow = styled.div`
   display: flex;
   align-items: stretch;
+  flex-grow: 1;
 `
 
-const ButtonsRow = styled.div`
+const Buttons = styled.div`
   background-color: ${({ theme }) => theme.bg.secondary};
   display: flex;
+  flex-direction: column;
+  border-left: 1px solid ${({ theme }) => theme.border.primary};
 `
 
-const DataRowColumn = styled.div`
+const BalancesColumn = styled.div`
   flex: 1;
-  padding: 30px 40px;
+  padding-left: 40px;
 `
 
 const Divider = styled.div`
   width: 1px;
-  background-color: ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.border.primary};
   margin: 17px 0;
 `
 
 const WalletName = styled.div`
-  color: ${({ theme }) => theme.font.secondary}
+  color: ${({ theme }) => theme.font.tertiary};
   font-size: 14px;
   font-weight: var(--fontWeight-medium);
-  margin-bottom: 25px;
 `
 
 const AvailableBalanceRow = styled.div`
@@ -186,21 +183,26 @@ const BalanceLabel = styled.label`
   margin-bottom: 3px;
 `
 
-const BottomButton = styled(Button)`
+const ShortcutButton = styled(Button)`
   border-radius: 0;
-  height: 90px;
   margin: 0;
-  flex-direction: column;
-  border-top: 1px solid ${({ theme }) => theme.border.secondary};
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  padding: 20px 25px;
+  min-width: 200px;
+  justify-content: flex-start;
+  height: auto;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  }
 `
 
 const ButtonText = styled.div`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
-  margin-top: 7px;
 `
 
-const BottomButtonStyled = styled(BottomButton)`
-  border-right: 0;
+const Today = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+  font-size: 14px;
+  margin-top: 6px;
 `

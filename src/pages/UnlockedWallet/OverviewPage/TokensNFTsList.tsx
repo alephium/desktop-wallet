@@ -37,7 +37,7 @@ const TokensNFTsList = ({ className }: TokensNFTsListProps) => {
   const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
 
   return (
-    <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
+    <Table isLoading={showSkeletonLoading} className={className} minWidth="450px">
       <TableHeaderRow>
         <TableTitle>
           {t('Tokens')} ({tokens.length})
@@ -103,6 +103,7 @@ const TokenLogo = styled.div`
   padding: 5px;
   background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
   margin-right: 25px;
+  flex-shrink: 0;
 `
 
 const LogoImage = styled.img`
