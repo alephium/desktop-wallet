@@ -17,25 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
-export interface TabItem {
-  value: string
-  label: string
-}
+import { TabBarProps } from '@/components/TabBar'
 
-export interface TabBarProps {
-  items: TabItem[]
-  onTabChange: (tab: TabItem) => void
-  activeTab: TabItem
-  className?: string
-}
-
-const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
+const TableTabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className={className} role="tablist" aria-label={t`Tab navigation`}>
+    <div className={className} role="tablist" aria-label={t('Tab navigation')}>
       {items.map((item) => {
         const isActive = activeTab.value === item.value
 
@@ -57,25 +47,31 @@ const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
   )
 }
 
-export default styled(TabBar)`
-  margin-left: 22px;
+export default styled(TableTabBar)`
   display: flex;
   justify-content: flex-start;
-  gap: 10px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 const Tab = styled.div<{ isActive: boolean }>`
-  min-width: 50px;
+  min-width: 60px;
   text-align: center;
-  padding: 16px 36px;
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-top-left-radius: var(--radius-big);
-  border-top-right-radius: var(--radius-big);
-  border-bottom: none;
+  padding: 22px 20px;
+  border-right: 1px solid ${({ theme }) => theme.border.secondary};
   cursor: pointer;
 
-  color: ${({ isActive, theme }) => (isActive ? theme.font.primary : theme.font.tertiary)};
-  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : theme.bg.background1)};
+  ${({ isActive, theme }) =>
+    isActive
+      ? css`
+          color: ${theme.font.primary};
+          background-color: ${theme.bg.primary};
+          margin-bottom: -1px;
+        `
+      : css`
+          color: ${theme.font.tertiary};
+          background-color: ${theme.bg.secondary};
+        `}
 
   &:hover {
     color: ${({ theme }) => theme.font.primary};

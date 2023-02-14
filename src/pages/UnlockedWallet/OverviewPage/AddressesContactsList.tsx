@@ -17,41 +17,66 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertSetToFiat } from '@alephium/sdk'
-import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import DotIcon from '@/components/DotIcon'
+import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
+import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
+import ModalPortal from '@/modals/ModalPortal'
+import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
 import { Address } from '@/types/addresses'
+import { Contact } from '@/types/contacts'
 import { currencies } from '@/utils/currencies'
 
 interface AddressesContactsListProps {
   className?: string
 }
 
+const tabs = [
+  { value: 'addresses', label: i18next.t('Addresses') },
+  { value: 'contacts', label: i18next.t('Contacts') }
+]
+
 const AddressesContactsList = ({ className }: AddressesContactsListProps) => {
-  const { t } = useTranslation()
+  const [isLoadingAddresses] = useAppSelector((s) => [s.addresses.loading])
+
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+
+  return (
+    <Table isLoading={isLoadingAddresses} className={className} minWidth="500px">
+      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+      {
+        {
+          addresses: <AddressesList />,
+          contacts: <ContactsList />
+        }[currentTab.value]
+      }
+    </Table>
+  )
+}
+
+const AddressesList = () => {
   const navigate = useNavigate()
   const addresses = useAppSelector(selectAllAddresses)
-  const [isLoadingAddresses] = useAppSelector((s) => [s.addresses.loading])
   const { data: price } = useGetPriceQuery(currencies.USD.ticker)
 
   const handleAddressClick = (address: Address) => navigate(`/wallet/addresses/${address.hash}`)
 
   return (
-    <Table isLoading={isLoadingAddresses} className={className} minWidth="500px">
-      <TableHeaderRow>
-        <TableTitle>
-          {t('Addresses')} ({addresses.length})
-        </TableTitle>
-      </TableHeaderRow>
+    <motion.div {...fadeIn}>
       {addresses.map((address) => (
         <TableRow
           key={address.hash}
@@ -86,24 +111,54 @@ const AddressesContactsList = ({ className }: AddressesContactsListProps) => {
           </Row>
         </TableRow>
       ))}
-    </Table>
+    </motion.div>
+  )
+}
+const ContactsList = () => {
+  const contacts = useAppSelector(selectAllContacts)
+
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [selectedContact, setSelectedContact] = useState<Contact>()
+
+  const handleContactClick = (contact: Contact) => {
+    setSelectedContact(contact)
+    setIsSendModalOpen(true)
+  }
+
+  const closeSendModal = () => {
+    setSelectedContact(undefined)
+    setIsSendModalOpen(false)
+  }
+
+  return (
+    <motion.div {...fadeIn}>
+      {contacts.map((contact) => (
+        <TableRow
+          key={contact.address}
+          role="row"
+          tabIndex={0}
+          onClick={() => handleContactClick(contact)}
+          onKeyPress={() => handleContactClick(contact)}
+        >
+          <Row>
+            <Column>
+              <Label>{contact.name}</Label>
+              <Hash addressHash={contact.address} />
+            </Column>
+          </Row>
+        </TableRow>
+      ))}
+      <ModalPortal>
+        {isSendModalOpen && (
+          <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
+        )}
+      </ModalPortal>
+    </motion.div>
   )
 }
 
 export default styled(AddressesContactsList)`
   margin-bottom: 45px;
-`
-
-const TableHeaderRow = styled(TableRow)`
-  display: flex;
-  justify-content: space-between;
-  height: 60px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-`
-
-const TableTitle = styled.div`
-  font-size: 13px;
-  font-weight: var(--fontWeight-semiBold);
 `
 
 const Row = styled.div`
