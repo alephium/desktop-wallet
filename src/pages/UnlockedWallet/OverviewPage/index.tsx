@@ -35,7 +35,7 @@ const OverviewPage = () => {
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <Row>
-          <TokensNFTsList showTokens showNfts />
+          <TokensNFTsList />
           <AddressesContactsList limit={5} />
         </Row>
         <TransactionsList limit={5} />

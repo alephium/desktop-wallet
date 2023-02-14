@@ -29,6 +29,7 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
 import { AddressHash } from '@/types/addresses'
 
@@ -42,18 +43,9 @@ interface TokensNFTsListProps {
   showNfts?: boolean
 }
 
-const TokensNFTsList = ({
-  className,
-  limit,
-  addressHashes,
-  tokensTabTitle,
-  nftsTabTitle,
-  showTokens,
-  showNfts
-}: TokensNFTsListProps) => {
+const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: TokensNFTsListProps) => {
   const { t } = useTranslation()
   const [isLoadingAddresses, tokensStatus] = useAppSelector((s) => [s.addresses.loading, s.tokens.status])
-  const tokens = useAppSelector((state) => selectTokens(state, addressHashes))
 
   const tabs = [
     { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
@@ -62,19 +54,10 @@ const TokensNFTsList = ({
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
-  const showTokensTab = showTokens ?? tokens.length > 0
-  const showNftsTab = showNfts ?? tokens.length > 0 // TODO: Update when NFTs implemented
-
-  if (!showTokensTab && !showNftsTab) return null
 
   return (
     <Table isLoading={showSkeletonLoading} className={className} minWidth="450px">
-      <TableTabBar
-        items={tabs}
-        onTabChange={(tab) => setCurrentTab(tab)}
-        activeTab={currentTab}
-        showTab={[showTokensTab, showNftsTab]}
-      />
+      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {
         {
           tokens: <TokensList limit={limit} addressHashes={addressHashes} />,
@@ -87,12 +70,36 @@ const TokensNFTsList = ({
 
 const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) => {
   const { t } = useTranslation()
-  const [tokens, isLoading] = useAppSelector((s) => [selectTokens(s, addressHashes), s.addresses.loading])
+  const tokens = useAppSelector((s) => selectTokens(s, addressHashes))
+  const allAddresses = useAppSelector(selectAllAddresses)
+  const addresses = addressHashes ? allAddresses.filter((a) => addressHashes.includes(a.hash)) : allAddresses
+  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
+  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
 
   const displayedTokens = limit ? tokens.slice(0, limit) : tokens
 
   return (
     <motion.div {...fadeIn} className={className}>
+      <TableRow role="row" tabIndex={0}>
+        <TokenRow>
+          <AlephiumCoinLogo>
+            <LogoImage src={AlephiumLogoSVG} />
+          </AlephiumCoinLogo>
+          <NameColumn>
+            <TokenName>Alephium</TokenName>
+            <TokenSymbol>ALPH</TokenSymbol>
+          </NameColumn>
+          <TableCellAmount>
+            <TokenAmount fadeDecimals value={totalBalance} />
+            {totalLockedBalance > 0 && (
+              <TokenAvailableAmount>
+                {t('Available')}
+                <Amount fadeDecimals value={totalBalance - totalLockedBalance} />
+              </TokenAvailableAmount>
+            )}
+          </TableCellAmount>
+        </TokenRow>
+      </TableRow>
       {displayedTokens.map((token) => (
         <TableRow key={token.id} role="row" tabIndex={0}>
           <TokenRow>
@@ -117,7 +124,6 @@ const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) =>
           </TokenRow>
         </TableRow>
       ))}
-      {displayedTokens.length === 0 && !isLoading && <TableRow>{t('Your tokens will appear here.')}</TableRow>}
     </motion.div>
   )
 }
@@ -152,9 +158,13 @@ const TokenLogo = styled.div`
   height: 30px;
   border-radius: 30px;
   padding: 5px;
-  background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
+  background-color: ${({ theme }) => theme.font.tertiary};
   margin-right: 25px;
   flex-shrink: 0;
+`
+
+const AlephiumCoinLogo = styled(TokenLogo)`
+  background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
 `
 
 const LogoImage = styled.img`
