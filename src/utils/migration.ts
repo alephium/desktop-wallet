@@ -138,54 +138,32 @@ export const _20211220_194004 = () => {
   SettingsStorage.store('general', newGeneralSettings)
 }
 
-export const _v140_networkSettingsMigration = () => {
-  const oldSettings = SettingsStorage.load('network') as NetworkSettings
+export const _v140_networkSettingsMigration = () =>
+  migrateReleaseNetworkSettings({
+    'https://mainnet-wallet.alephium.org': networkPresets.mainnet.nodeHost,
+    'https://testnet-wallet.alephium.org': networkPresets.testnet.nodeHost,
+    'https://mainnet-backend.alephium.org': networkPresets.mainnet.explorerApiHost,
+    'https://testnet-backend.alephium.org': networkPresets.testnet.explorerApiHost,
+    'https://testnet.alephium.org': networkPresets.testnet.explorerUrl
+  })
+
+export const _v150_networkSettingsMigration = () =>
+  migrateReleaseNetworkSettings({
+    'https://wallet-v18.mainnet.alephium.org': networkPresets.mainnet.nodeHost,
+    'https://wallet-v18.testnet.alephium.org': networkPresets.testnet.nodeHost,
+    'https://backend-v18.mainnet.alephium.org': networkPresets.mainnet.explorerApiHost,
+    'https://backend-v18.testnet.alephium.org': networkPresets.testnet.explorerApiHost,
+    'https://explorer-v18.mainnet.alephium.org': networkPresets.mainnet.explorerUrl,
+    'https://explorer-v18.testnet.alephium.org': networkPresets.testnet.explorerUrl
+  })
+
+const migrateReleaseNetworkSettings = (migrationsMapping: Record<string, string>) => {
+  const { nodeHost, explorerApiHost, explorerUrl } = SettingsStorage.load('network') as NetworkSettings
 
   const migratedNetworkSettings = {
-    nodeHost:
-      oldSettings.nodeHost === 'https://mainnet-wallet.alephium.org'
-        ? networkPresets.mainnet.nodeHost
-        : oldSettings.nodeHost === 'https://testnet-wallet.alephium.org'
-        ? networkPresets.testnet.nodeHost
-        : oldSettings.nodeHost,
-    explorerApiHost:
-      oldSettings.explorerApiHost === 'https://mainnet-backend.alephium.org'
-        ? networkPresets.mainnet.explorerApiHost
-        : oldSettings.explorerApiHost === 'https://testnet-backend.alephium.org'
-        ? networkPresets.testnet.explorerApiHost
-        : oldSettings.explorerApiHost,
-    explorerUrl:
-      oldSettings.explorerUrl === 'https://testnet.alephium.org'
-        ? networkPresets.testnet.explorerUrl
-        : oldSettings.explorerUrl
-  }
-
-  const newNetworkSettings = merge({}, defaultSettings.network, migratedNetworkSettings)
-  SettingsStorage.store('network', newNetworkSettings)
-}
-
-export const _v150_networkSettingsMigration = () => {
-  const oldSettings = SettingsStorage.load('network') as NetworkSettings
-
-  const migratedNetworkSettings = {
-    nodeHost:
-      oldSettings.nodeHost === 'https://wallet-v18.mainnet.alephium.org'
-        ? networkPresets.mainnet.nodeHost
-        : oldSettings.nodeHost === 'https://wallet-v18.testnet.alephium.org'
-        ? networkPresets.testnet.nodeHost
-        : oldSettings.nodeHost,
-    explorerApiHost:
-      oldSettings.explorerApiHost === 'https://backend-v18.mainnet.alephium.org'
-        ? networkPresets.mainnet.explorerApiHost
-        : oldSettings.explorerApiHost === 'https://backend-v18.testnet.alephium.org'
-        ? networkPresets.testnet.explorerApiHost
-        : oldSettings.explorerApiHost,
-    explorerUrl:
-      oldSettings.explorerUrl === 'https://explorer-v18.mainnet.alephium.org'
-        ? networkPresets.mainnet.explorerUrl
-        : oldSettings.explorerUrl === 'https://explorer-v18.testnet.alephium.org'
-        ? networkPresets.testnet.explorerUrl
-        : oldSettings.explorerUrl
+    nodeHost: migrationsMapping[nodeHost] ?? nodeHost,
+    explorerApiHost: migrationsMapping[explorerApiHost] ?? explorerApiHost,
+    explorerUrl: migrationsMapping[explorerUrl] ?? explorerUrl
   }
 
   const newNetworkSettings = merge({}, defaultSettings.network, migratedNetworkSettings)
