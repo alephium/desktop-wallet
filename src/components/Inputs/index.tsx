@@ -48,14 +48,14 @@ export const inputPlaceHolderVariants: Variants = {
 
 export const inputStyling = {
   paddingRight: '12px',
-  paddingLeftRight: '12px'
+  paddingLeftRight: '25px'
 }
 
 export const inputDefaultStyle = (hasIcon?: boolean, hasValue?: boolean, hasLabel?: boolean) => css`
   background-image: none;
   height: var(--inputHeight);
   width: 100%;
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-big);
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};

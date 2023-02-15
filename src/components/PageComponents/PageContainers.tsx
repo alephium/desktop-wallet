@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
@@ -28,6 +28,7 @@ interface MainPanelProps {
   horizontalAlign?: 'center' | 'stretch'
   enforceMinHeight?: boolean
   transparentBg?: boolean
+  borderless?: boolean
 }
 
 type SectionContentAlignment = 'flex-start' | 'center' | 'stretch'
@@ -102,8 +103,13 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
   background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
   border-radius: var(--radius);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
   box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.secondary};
+
+  ${({ borderless, theme }) =>
+    !borderless &&
+    css`
+      border: 1px solid ${theme.border.secondary};
+    `}
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;

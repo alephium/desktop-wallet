@@ -62,7 +62,8 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
 
   return (
     <ToggleSection
-      title={t`Use optional passphrase (advanced)`}
+      title={t('Use optional passphrase')}
+      subtitle={t('Advanced feature')}
       onClick={onExpandableSectionToggle}
       className={className}
     >

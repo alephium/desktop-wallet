@@ -198,7 +198,7 @@ const CheckWordsPage = () => {
 
   return (
     <FloatingPanel enforceMinHeight>
-      <PanelTitle color="primary" onBackButtonClick={onButtonBack} smaller>
+      <PanelTitle color="primary" onBackButtonClick={onButtonBack} size="small">
         {t`Security Check`}
       </PanelTitle>
       <PanelContentContainer>

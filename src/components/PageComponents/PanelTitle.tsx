@@ -23,7 +23,7 @@ import styled, { css } from 'styled-components'
 interface PanelTitleProps {
   color?: string
   onBackButtonClick?: () => void
-  smaller?: boolean
+  size?: 'small' | 'big'
   useLayoutId?: boolean
   isSticky?: boolean
 }
@@ -32,7 +32,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
   color,
   children,
   onBackButtonClick,
-  smaller,
+  size,
   useLayoutId = true,
   isSticky = true
 }) => {
@@ -51,7 +51,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
           tabIndex={0}
         />
       )}
-      <H1 color={color} smaller={smaller} style={isSticky ? { scale: titleScale, originX: 0 } : {}}>
+      <H1 color={color} size={size} style={isSticky ? { scale: titleScale, originX: 0 } : {}}>
         {children}
       </H1>
     </TitleContainer>
@@ -80,10 +80,10 @@ const BackArrow = styled(ArrowLeft)`
   cursor: pointer;
 `
 
-const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
+const H1 = styled(motion.h1)<PanelTitleProps>`
   flex: 1;
   margin: 0;
   color: ${({ theme, color }) => (color ? color : theme.font.primary)};
-  font-size: ${({ smaller }) => (smaller ? '2.0em' : 'revert')};
-  font-weight: var(--fontWeight-medium);
+  font-size: ${({ size }) => (size === 'small' ? '2.0em' : size === 'big' ? '42px' : 'revert')};
+  font-weight: var(--fontWeight-bold);
 `

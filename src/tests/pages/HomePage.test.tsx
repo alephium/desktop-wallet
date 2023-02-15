@@ -61,7 +61,7 @@ it('TODO: enable tests after setting up Redux', () => {
 //   expect(main).toHaveTextContent('Please choose a wallet and enter your password to continue')
 //   expect(screen.getByLabelText('Wallet')).toBeInTheDocument()
 //   expect(screen.getByLabelText('Password')).toBeInTheDocument()
-//   expect(main).toHaveTextContent('Create / import a new wallet')
+//   expect(main).toHaveTextContent('Import or create a wallet')
 //   expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument()
 //   expect(screen.queryByRole('button', { name: 'New wallet' })).not.toBeInTheDocument()
 //   expect(screen.queryByRole('button', { name: 'Import wallet' })).not.toBeInTheDocument()
@@ -72,7 +72,7 @@ it('TODO: enable tests after setting up Redux', () => {
 
 //   const main = screen.getByRole('main')
 
-//   let link = screen.getByText('Create / import a new wallet')
+//   let link = screen.getByText('Import or create a wallet')
 //   fireEvent.click(link)
 //   expect(main).toHaveTextContent('New wallet')
 //   expect(main).toHaveTextContent('Please choose whether you want to create a new wallet or import an existing one.')

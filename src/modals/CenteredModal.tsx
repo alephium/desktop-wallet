@@ -58,7 +58,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader contrast={!!header}>
           <TitleRow>
-            <PanelTitle smaller useLayoutId={false}>
+            <PanelTitle size="small" useLayoutId={false}>
               <span ref={elRef} tabIndex={0} role="heading">
                 {title}
               </span>
