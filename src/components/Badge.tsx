@@ -44,13 +44,13 @@ export default styled(Badge)`
 
     return css`
       display: inline;
-      padding: 5px 10px;
+      padding: 8px 16px;
       color: ${usedColor};
-      border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
+      border-radius: ${rounded ? '20px' : 'var(--radius-big)'};
       background-color: ${!transparent && colord(usedColor).alpha(0.08).toRgbString()};
       ${border &&
       css`
-        border: 1px solid ${theme.border.secondary};
+        border: 1px solid ${theme.border.primary};
       `};
       ${truncate &&
       css`
