@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Badge from '@/components/Badge'
 import { useAppSelector } from '@/hooks/redux'
-
-import Badge from './Badge'
 
 const NetworkBadge = ({ className }: { className?: string }) => {
   const { t } = useTranslation()

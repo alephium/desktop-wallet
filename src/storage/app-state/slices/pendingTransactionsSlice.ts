@@ -19,20 +19,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
-import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
-
-import { AddressDataSyncResult, AddressHash } from '../types/addresses'
-import { AddressPendingTransaction, PendingTransaction } from '../types/transactions'
-import { selectAddressTransactions } from '../utils/addresses'
+import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
 import {
   selectAllAddresses,
   syncAddressesData,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage,
   transactionSent
-} from './addressesSlice'
-import { RootState } from './store'
+} from '@/storage/app-state/slices/addressesSlice'
+import { RootState } from '@/storage/app-state/store'
+import { AddressDataSyncResult, AddressHash } from '@/types/addresses'
+import { AddressPendingTransaction, PendingTransaction } from '@/types/transactions'
+import { selectAddressTransactions } from '@/utils/addresses'
+import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 const sliceName = 'pendingTransactions'
 
@@ -57,6 +56,7 @@ const pendingTransactionsSlice = createSlice({
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(walletLocked, () => initialState)
       .addCase(walletSwitched, () => initialState)
+      .addCase(activeWalletDeleted, () => initialState)
   }
 })
 

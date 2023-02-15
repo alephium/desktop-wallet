@@ -27,11 +27,10 @@ import Badge from '@/components/Badge'
 import { InputProps, inputStyling } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAllContacts } from '@/store/contactsSlice'
+import ContactSelectModal from '@/modals/ContactSelectModal'
+import ModalPortal from '@/modals/ModalPortal'
+import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
 import { Contact } from '@/types/contacts'
-
-import ContactSelectModal from '../ContactSelectModal'
-import ModalPortal from '../ModalPortal'
 
 interface AddressSelectToProps extends InputProps {
   onContactSelect: (address: string) => void

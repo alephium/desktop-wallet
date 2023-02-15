@@ -25,8 +25,7 @@ import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { Section } from '@/components/PageComponents/PageContainers'
 import Spinner from '@/components/Spinner'
-
-import CenteredModal, { HeaderContent, HeaderLogo } from './CenteredModal'
+import CenteredModal, { HeaderContent, HeaderLogo } from '@/modals/CenteredModal'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void

@@ -35,15 +35,14 @@ import AddressSweepModal from '@/modals/AddressSweepModal'
 import BottomModal from '@/modals/BottomModal'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import { addressesPageInfoMessageClosed } from '@/store/appSlice'
+import AddressesTabContent from '@/pages/UnlockedWallet/AddressesPage/AddressesTabContent'
+import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTabContent'
+import OperationBox from '@/pages/UnlockedWallet/AddressesPage/OperationBox'
+import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import { addressesPageInfoMessageClosed } from '@/storage/app-state/slices/appSlice'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
-
-import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
-import AddressesTabContent from './AddressesTabContent'
-import ContactsTabContent from './ContactsTabContent'
-import OperationBox from './OperationBox'
 
 const tabs = [
   { value: 'addresses', label: i18next.t('Addresses') },

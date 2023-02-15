@@ -28,12 +28,11 @@ import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
-import { saveNewAddresses } from '@/storage-utils/addresses'
-import { selectDefaultAddress } from '@/store/addressesSlice'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
+import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
-
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 interface NewAddressModalProps {
   title: string
@@ -59,7 +58,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       setNewAddressData(address)
       setNewAddressGroup(addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS))
     }
-  }, [generateAddress, singleAddress])
+    // Without disabling eslint, we need to add `generateAddress` in the deps. Doing so results in infinite renders,
+    // even after wrapping it in a useCallback. The only solution would be to implement generateAddress in this
+    // component and wrap it in useCallback. Which might not be a bad idea since it's not used anywhere else. But then
+    // we don't have a unique place for all address generation function. Which is also fine.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [singleAddress])
 
   if (!mnemonic || !walletName) return null
 

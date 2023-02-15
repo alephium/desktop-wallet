@@ -26,7 +26,7 @@ import {
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
 import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'

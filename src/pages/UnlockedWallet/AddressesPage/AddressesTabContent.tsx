@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -24,56 +24,40 @@ import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import { selectAllAddresses } from '@/store/addressesSlice'
-
-import AddressCard from './AddressCard'
-import TabContent from './TabContent'
+import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
+import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { filterAddresses } from '@/utils/addresses'
 
 const AddressesTabContent = () => {
   const addresses = useAppSelector(selectAllAddresses)
   const { t } = useTranslation()
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
-  const [searchResults, setSearchResults] = useState(addresses)
-  const [emptyAddressesToggleResults, setEmptyAddressesToggleResults] = useState(addresses)
+  const [visibleAddresses, setVisibleAddresses] = useState(addresses)
+  const [searchInput, setSearchInput] = useState('')
   const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
 
-  const visibleAddresses = searchResults.filter((address1) => emptyAddressesToggleResults.includes(address1))
+  useEffect(() => {
+    const filteredByText = filterAddresses(addresses, searchInput.toLowerCase())
+    const filteredByToggle = hideEmptyAddresses
+      ? filteredByText.filter((address) => address.balance !== '0')
+      : filteredByText
 
-  const handleSearch = (searchInput: string) => {
-    const input = searchInput.toLowerCase()
-
-    // TODO: Include tokens in search
-    setSearchResults(
-      searchInput.length < 2
-        ? addresses
-        : addresses.filter(
-            (address) => address.label?.toLowerCase().includes(input) || address.hash.toLowerCase().includes(input)
-          )
-    )
-  }
-
-  const handleHideEmptyAddressesToggle = (toggle: boolean) => {
-    setHideEmptyAddresses(toggle)
-    // TODO: Include tokens in filtering empty addresses
-    setEmptyAddressesToggleResults(toggle ? addresses.filter((address) => address.balance !== '0') : addresses)
-  }
+    setVisibleAddresses(filteredByToggle)
+  }, [addresses, hideEmptyAddresses, searchInput])
 
   return (
     <TabContent
       searchPlaceholder={t('Search for label, a hash or an asset...')}
-      onSearch={handleSearch}
+      onSearch={setSearchInput}
       buttonText={`+ ${t('New address')}`}
       onButtonClick={() => setIsGenerateNewAddressModalOpen(true)}
       newItemPlaceholderText={t('Addresses allow you to organise your funds. You can create as many as you want!')}
       HeaderMiddleComponent={
         <HideEmptyAddressesToggle>
           <ToggleText>{t('Hide empty addresses')}</ToggleText>
-          <Toggle
-            onToggle={handleHideEmptyAddressesToggle}
-            label={t('Hide empty addresses')}
-            toggled={hideEmptyAddresses}
-          />
+          <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
         </HideEmptyAddressesToggle>
       }
     >

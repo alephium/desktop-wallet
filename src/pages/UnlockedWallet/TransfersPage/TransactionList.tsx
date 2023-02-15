@@ -23,9 +23,13 @@ import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { selectAddressIds, selectAllAddresses, syncAllAddressesTransactionsNextPage } from '@/store/addressesSlice'
-import { selectAddressesConfirmedTransactions } from '@/store/confirmedTransactionsSlice'
-import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import {
+  selectAddressIds,
+  selectAllAddresses,
+  syncAllAddressesTransactionsNextPage
+} from '@/storage/app-state/slices/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/storage/app-state/slices/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
@@ -76,17 +80,8 @@ const TransfersPageTransactionList = ({ className, onTransactionClick }: Transfe
         <TableRow role="row">
           <TableCell align="center" role="gridcell">
             {allTransactionsLoaded ? (
-              // TODO: Do we want to show a message here?
-              <div>All transactions loaded!</div>
+              <span>{t('All transactions loaded!')}</span>
             ) : (
-              // TODO: Since we "squash" transactions between internal addresses and mark them as "moved", we have the
-              // problem where fetching the next page returns transactions we already have, so the UI doesn't show any
-              // update. In the testnet genesis wallet, for example, once you generate 4 addresses, you need to click 3
-              // times "Show more" to get new transactions. This is because we fetch the 1st tx page of each individiual
-              // address (using `GET:/addresses/{address}/transactions`) once the wallet gets unlocked. Then, when we
-              // click "Show more" (querying `POST:/addresses/transactions`) it happens that we receive txs that we
-              // already have. This could be improved by making further requests until we get some data, or until we get
-              // to the end of the transaction history.
               <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
             )}
           </TableCell>

@@ -33,7 +33,7 @@ import { FooterActionsContainer, Section } from '@/components/PageComponents/Pag
 import Paragraph from '@/components/Paragraph'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
-import { selectDefaultAddress } from '@/store/addressesSlice'
+import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
 import { getRandomLabelColor } from '@/utils/colors'
 import { useTimeout, useWindowSize } from '@/utils/hooks'
 import { links } from '@/utils/links'

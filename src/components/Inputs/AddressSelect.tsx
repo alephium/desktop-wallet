@@ -26,14 +26,13 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import InfoBox from '@/components/InfoBox'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
+import Option from '@/components/Inputs/Option'
 import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { Address } from '@/types/addresses'
 import { getAvailableBalance } from '@/utils/addresses'
-
-import Option from './Option'
 
 interface AddressSelectProps {
   id: string

@@ -21,15 +21,14 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
+import InfoBox from '@/components/InfoBox'
+import Select from '@/components/Inputs/Select'
+import WalletPassphrase from '@/components/Inputs/WalletPassphrase'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
+import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-
-import { useGlobalContext } from '../contexts/global'
-import CenteredModal from '../modals/CenteredModal'
-import InfoBox from './InfoBox'
-import Select from './Inputs/Select'
-import WalletPassphrase from './Inputs/WalletPassphrase'
-import PasswordConfirmation from './PasswordConfirmation'
 
 interface WalletNameSelectOptions {
   label: string

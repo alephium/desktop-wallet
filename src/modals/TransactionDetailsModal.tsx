@@ -32,12 +32,11 @@ import { useAppSelector } from '@/hooks/redux'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
+import { ModalHeader } from '@/modals/CenteredModal'
+import SideModal from '@/modals/SideModal'
 import { Address } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
-
-import { ModalHeader } from './CenteredModal'
-import SideModal from './SideModal'
 
 interface TransactionDetailsModalProps {
   transaction: AddressConfirmedTransaction

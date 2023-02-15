@@ -19,30 +19,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair } from '@alephium/sdk'
 import { AddressBalance, AddressInfo, Token, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
-import { TimeInMs } from './numbers'
-import { PendingTransaction } from './transactions'
+import { TimeInMs } from '@/types/numbers'
+import { PendingTransaction } from '@/types/transactions'
 
-export type AddressSettings = {
+export type DeprecatedAddressSettings = {
   isMain: boolean
   label?: string
   color?: string
+}
+
+export type DeprecatedAddressMetadata = DeprecatedAddressSettings & {
+  index: number
+}
+
+export type AddressSettings = {
+  isDefault: boolean
+  color: string
+  label?: string
 }
 
 export type AddressMetadata = AddressSettings & {
   index: number
 }
 
-export type AddressSettingsRedux = {
-  isDefault: boolean
-  color: string
-  label?: string
-}
-
-export type AddressMetadataRedux = AddressSettingsRedux & {
-  index: number
-}
-
-export type AddressBase = AddressKeyPair & AddressSettingsRedux
+export type AddressBase = AddressKeyPair & AddressSettings
 
 export type Address = AddressBase &
   AddressInfo & {

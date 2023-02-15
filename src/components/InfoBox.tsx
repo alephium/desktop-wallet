@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import styled, { css, useTheme } from 'styled-components'
 
-import { sectionChildrenVariants } from './PageComponents/PageContainers'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 type InfoBoxImportance = 'accent' | 'alert'
 

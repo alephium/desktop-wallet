@@ -36,12 +36,11 @@ import { Section } from '@/components/PageComponents/PageContainers'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { Address } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
-
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
 type WalletConnectSessionState = 'uninitialized' | 'proposal' | 'require-unlock' | 'error'
 

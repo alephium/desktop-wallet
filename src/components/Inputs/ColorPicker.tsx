@@ -27,6 +27,7 @@ import { fadeInOut } from '@/animations'
 import { inputDefaultStyle, InputProps } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { getRandomLabelColor, labelColorPalette } from '@/utils/colors'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ColorPickerProps {
   value: string
@@ -47,7 +48,12 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
 
   return (
     <ColorPickerContainer ref={ref}>
-      <InputAreaStyled aria-label={t`Pick a color`} onInput={handlePopupOpen}>
+      <InputAreaStyled
+        aria-label={t`Pick a color`}
+        onInput={handlePopupOpen}
+        onClick={handlePopupOpen}
+        onKeyDown={(e) => onEnterOrSpace(e, handlePopupOpen)}
+      >
         <Circle color={color} />
       </InputAreaStyled>
       <AnimatePresence>

@@ -30,13 +30,12 @@ import {
 import styled from 'styled-components'
 
 import { InputLabel, InputProps } from '@/components/Inputs'
+import { InputBase } from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
 import ModalPortal from '@/modals/ModalPortal'
 import { Coordinates } from '@/types/numbers'
-
-import { InputBase } from './Input'
 
 type Writable<T> = T extends string
   ? string

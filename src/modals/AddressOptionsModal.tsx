@@ -25,15 +25,14 @@ import Amount from '@/components/Amount'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import { saveAddressSettings } from '@/storage-utils/addresses'
-import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
+import AddressSweepModal from '@/modals/AddressSweepModal'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
+import { saveAddressSettings } from '@/storage/storage-utils/addressesStorageUtils'
 import { Address } from '@/types/addresses'
 import { getAvailableBalance, getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
-
-import AddressSweepModal from './AddressSweepModal'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
-import ModalPortal from './ModalPortal'
 
 interface AddressOptionsModalProps {
   address: Address

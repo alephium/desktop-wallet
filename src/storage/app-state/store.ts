@@ -19,16 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
-import confirmedTransactionsSlice from '@/store/confirmedTransactionsSlice'
-import pendingTransactionsSlice from '@/store/pendingTransactionsSlice'
-
-import activeWalletSlice from './activeWalletSlice'
-import addressesSlice from './addressesSlice'
-import appSlice from './appSlice'
-import contactsSlice from './contactsSlice'
-import networkSlice, { networkListenerMiddleware } from './networkSlice'
-import { priceApi } from './priceApiSlice'
-import settingsSlice, { settingsListenerMiddleware } from './settingsSlice'
+import activeWalletSlice from '@/storage/app-state/slices/activeWalletSlice'
+import addressesSlice from '@/storage/app-state/slices/addressesSlice'
+import appSlice from '@/storage/app-state/slices/appSlice'
+import confirmedTransactionsSlice from '@/storage/app-state/slices/confirmedTransactionsSlice'
+import contactsSlice from '@/storage/app-state/slices/contactsSlice'
+import networkSlice, { networkListenerMiddleware } from '@/storage/app-state/slices/networkSlice'
+import pendingTransactionsSlice from '@/storage/app-state/slices/pendingTransactionsSlice'
+import { priceApi } from '@/storage/app-state/slices/priceApiSlice'
+import settingsSlice, { settingsListenerMiddleware } from '@/storage/app-state/slices/settingsSlice'
 
 export const store = configureStore({
   reducer: {

@@ -18,11 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import WalletStorage from '@/persistent-storage/wallet'
-import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/store/addressesSlice'
-
-import { languageChangeFinished, languageChangeStarted } from './actions'
-import { walletDeleted, walletLocked, walletSaved } from './activeWalletSlice'
+import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
+import { activeWalletDeleted, walletLocked, walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 const sliceName = 'app'
 
@@ -57,6 +56,11 @@ const appSlice = createSlice({
     },
     addressesPageInfoMessageClosed: (state) => {
       state.addressesPageInfoMessageClosed = true
+    },
+    walletDeleted: (state, action: PayloadAction<string>) => {
+      const deletedWalletName = action.payload
+
+      state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
     }
   },
   extraReducers(builder) {
@@ -71,19 +75,19 @@ const appSlice = createSlice({
       })
       .addCase(walletLocked, () => initialState)
       .addCase(walletSaved, (state, action) => {
-        const newWallet = action.payload
+        const newWallet = action.payload.wallet
 
         state.storedWalletNames.push(newWallet.name)
       })
-      .addCase(walletDeleted, (state, action) => {
-        const deletedWalletName = action.payload
-
-        state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
-      })
+      .addCase(activeWalletDeleted, () => ({
+        ...initialState,
+        storedWalletNames: WalletStorage.list()
+      }))
   }
 })
 
-export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed } = appSlice.actions
+export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed, walletDeleted } =
+  appSlice.actions
 
 export default appSlice
 

@@ -21,7 +21,7 @@ import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 
-import { sectionChildrenVariants } from './PageComponents/PageContainers'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   role?: 'primary' | 'secondary'

@@ -35,7 +35,8 @@ import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
+import { store } from '@/storage/app-state/store'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
@@ -169,13 +170,22 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
   ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
 }
 
-const handleSend = async (txData: ScriptTxData, ctx: TxContext) => {
+const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxContext) => {
   if (!ctx.unsignedTransaction) throw Error('No unsignedTransaction available')
 
-  const data = await signAndSendTransaction(txData.fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
+  const data = await signAndSendTransaction(fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
 
-  // TODO: Should we display a pending transaction when calling a script? What would the "toAddress" be in that case?
-  // Since there's no toAddress, we need to rethink our UI.
+  store.dispatch(
+    transactionSent({
+      hash: data.txId,
+      fromAddress: fromAddress.hash,
+      toAddress: '',
+      amount: alphAmount ? convertAlphToSet(alphAmount).toString() : undefined,
+      timestamp: new Date().getTime(),
+      type: 'contract',
+      status: 'pending'
+    })
+  )
 
   return data.signature
 }

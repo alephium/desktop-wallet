@@ -31,11 +31,10 @@ import { ReactComponent as PaperPlaneDarkSVG } from '@/images/paper-plane-dark.s
 import { ReactComponent as PaperPlaneLightSVG } from '@/images/paper-plane-light.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
+import ModalPortal from '@/modals/ModalPortal'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
-
-import ModalPortal from '../ModalPortal'
 
 type Step = 'build-tx' | 'info-check' | 'password-check'
 

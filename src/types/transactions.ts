@@ -20,7 +20,6 @@ import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/types/addresses'
-import { NetworkName } from '@/types/network'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
@@ -32,18 +31,6 @@ export enum TxType {
 }
 
 export type PendingTxType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
-
-export type PendingTx = {
-  txId: string
-  fromAddress: string
-  toAddress: string
-  timestamp: number
-  type: PendingTxType
-  network: NetworkName
-  amount?: bigint
-  lockTime?: Date
-  status: 'pending'
-}
 
 export type PendingTransaction = {
   hash: string

@@ -19,10 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import ClipboardButton from '@/components/Buttons/ClipboardButton'
+import Ellipsed from '@/components/Ellipsed'
 import { AddressHash } from '@/types/addresses'
-
-import ClipboardButton from './Buttons/ClipboardButton'
-import Ellipsed from './Ellipsed'
 
 interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
   addressHash: AddressHash

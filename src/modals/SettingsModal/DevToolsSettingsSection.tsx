@@ -27,11 +27,10 @@ import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { devToolsToggled } from '@/store/settingsSlice'
-
-import ModalPortal from '../ModalPortal'
-import SendModalDeployContract from '../SendModals/SendModalDeployContract'
-import SendModalScript from '../SendModals/SendModalScript'
+import ModalPortal from '@/modals/ModalPortal'
+import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
+import SendModalScript from '@/modals/SendModals/SendModalScript'
+import { devToolsToggled } from '@/storage/app-state/slices/settingsSlice'
 
 const DevToolsSettingsSection = () => {
   const { t } = useTranslation()

@@ -23,11 +23,10 @@ import { fadeIn } from '@/animations'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
+import TransactionList from '@/pages/UnlockedWallet/OverviewPage/TransactionList'
+import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { AddressConfirmedTransaction } from '@/types/transactions'
-
-import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
-import AmountsOverviewPanel from './AmountsOverviewPanel'
-import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
   const isLoadingData = useAppSelector((state) => state.addresses.loading)

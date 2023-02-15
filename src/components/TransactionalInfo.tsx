@@ -23,21 +23,21 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import Badge from '@/components/Badge'
+import HiddenLabel from '@/components/HiddenLabel'
+import IOList from '@/components/IOList'
+import Lock from '@/components/Lock'
+import TimeSince from '@/components/TimeSince'
+import Token from '@/components/Token'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
-import { selectAddressByHash } from '@/store/addressesSlice'
+import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
 import { isPendingTx } from '@/utils/transactions'
-
-import AddressBadge from './AddressBadge'
-import Amount from './Amount'
-import HiddenLabel from './HiddenLabel'
-import IOList from './IOList'
-import Lock from './Lock'
-import TimeSince from './TimeSince'
-import Token from './Token'
 
 const token = 'alph'
 
@@ -60,14 +60,19 @@ const TransactionalInfo = ({
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+  const isPending = isPendingTx(tx)
 
   if (!address) return null
 
-  const pendingToAddressComponent = isPendingTx(tx) && (
-    <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
-  )
-  const amountSign =
-    showInternalInflows && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
+  const pendingToAddressComponent = isPending ? (
+    tx.type === 'contract' ? (
+      <Badge>{t('Smart contract')}</Badge>
+    ) : (
+      <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
+    )
+  ) : null
+
+  const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
   return (
     <div className={className}>

@@ -24,8 +24,7 @@ import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { Section } from '@/components/PageComponents/PageContainers'
 import Paragraph from '@/components/Paragraph'
-
-import CenteredModal from './CenteredModal'
+import CenteredModal from '@/modals/CenteredModal'
 
 interface WalletRemovalModalProps {
   walletName: string

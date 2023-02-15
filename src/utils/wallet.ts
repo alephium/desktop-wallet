@@ -16,22 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair } from '@alephium/sdk'
+import { Wallet } from '@alephium/sdk'
 
-import { AddressBase } from '@/types/addresses'
-
-export type ActiveWallet = {
-  name: string
-  mnemonic: string
-  isPassphraseUsed?: boolean
-}
-
-export type GeneratedWallet = {
-  wallet: ActiveWallet
-  initialAddress: AddressBase
-}
-
-export type UnlockedWallet = {
-  wallet: ActiveWallet
-  initialAddress: AddressKeyPair
-}
+export const getWalletInitialAddress = (wallet: Wallet) => ({
+  index: 0,
+  hash: wallet.address,
+  publicKey: wallet.publicKey,
+  privateKey: wallet.privateKey
+})

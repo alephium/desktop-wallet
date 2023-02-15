@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import SettingsStorage, { defaultSettings, networkPresets } from '@/persistent-storage/settings'
+import SettingsStorage, {
+  defaultSettings,
+  networkPresets
+} from '@/storage/persistent-storage/settingsPersistentStorage'
 import { Language, ThemeType } from '@/types/settings'
-import { migrateDeprecatedSettings } from '@/utils/migration'
 import { getNetworkName } from '@/utils/settings'
 
 const mockSettings = {
@@ -56,74 +58,6 @@ it('Should load settings from local storage', () => {
 
   localStorage.setItem('settings', JSON.stringify(mockSettings))
   expect(SettingsStorage.loadAll()).toEqual(mockSettings)
-})
-
-describe('Settings migration', () => {
-  it('should migrate deprecated theme settings', () => {
-    localStorage.setItem('theme', 'pink')
-    expect(localStorage.getItem('theme')).toEqual('pink')
-    expect(migrateDeprecatedSettings().general.theme).toEqual('pink')
-    expect(SettingsStorage.loadAll().general.theme).toEqual('pink')
-    expect(localStorage.getItem('theme')).toBeNull()
-  })
-
-  it('should migrate deprecated network settings', () => {
-    const mainnetSettings = [
-      {
-        network: {
-          networkId: 0,
-          nodeHost: 'https://mainnet-wallet.alephium.org',
-          explorerApiHost: 'https://mainnet-backend.alephium.org',
-          explorerUrl: 'https://explorer.alephium.org'
-        }
-      },
-      {
-        network: {
-          networkId: 0,
-          nodeHost: 'https://wallet-v18.mainnet.alephium.org',
-          explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
-          explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
-        }
-      }
-    ]
-
-    for (const settings of mainnetSettings) {
-      localStorage.setItem('settings', JSON.stringify(settings))
-      const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.mainnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.mainnet.alephium.org')
-      expect(migratedSettings.network.explorerUrl).toBe('https://explorer.alephium.org')
-      expect(migratedSettings.network.networkId).toBe(0)
-    }
-
-    const testnetSettings = [
-      {
-        network: {
-          networkId: 1,
-          nodeHost: 'https://testnet-wallet.alephium.org',
-          explorerApiHost: 'https://testnet-backend.alephium.org',
-          explorerUrl: 'https://testnet.alephium.org'
-        }
-      },
-      {
-        network: {
-          networkId: 1,
-          nodeHost: 'https://wallet-v18.testnet.alephium.org',
-          explorerApiHost: 'https://backend-v18.testnet.alephium.org',
-          explorerUrl: 'https://explorer-v18.testnet.alephium.org'
-        }
-      }
-    ]
-
-    for (const settings of testnetSettings) {
-      localStorage.setItem('settings', JSON.stringify(settings))
-      const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.testnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.testnet.alephium.org')
-      expect(migratedSettings.network.explorerUrl).toBe('https://explorer.testnet.alephium.org')
-      expect(migratedSettings.network.networkId).toBe(1)
-    }
-  })
 })
 
 it('Should save settings in local storage', () => {

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { ActiveWallet, GeneratedWallet } from '@/types/wallet'
+import { ActiveWallet, GeneratedWallet, UnlockedWallet } from '@/types/wallet'
 
 const sliceName = 'activeWallet'
 
@@ -34,20 +34,15 @@ const activeWalletSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload,
-    walletUnlocked: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
-    walletSwitched: (_, action: PayloadAction<ActiveWalletState>) => action.payload,
+    walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload.wallet,
+    walletUnlocked: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
+    walletSwitched: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
     walletLocked: () => initialState,
-    walletDeleted: (state, action: PayloadAction<string>) => {
-      const deletedWalletName = action.payload
-
-      if (state.name === deletedWalletName) {
-        return initialState
-      }
-    }
+    activeWalletDeleted: () => initialState
   }
 })
 
-export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, walletDeleted } = activeWalletSlice.actions
+export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, activeWalletDeleted } =
+  activeWalletSlice.actions
 
 export default activeWalletSlice

@@ -18,10 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 
+import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { RootState } from '@/storage/app-state/store'
 import { Contact } from '@/types/contacts'
-
-import { walletLocked } from './activeWalletSlice'
-import { RootState } from './store'
 
 const sliceName = 'contacts'
 
@@ -42,7 +41,7 @@ export const contactsSlice = createSlice({
     contactDeletedFromPeristentStorage: contactsAdapter.removeOne
   },
   extraReducers(builder) {
-    builder.addCase(walletLocked, () => initialState)
+    builder.addCase(walletLocked, () => initialState).addCase(activeWalletDeleted, () => initialState)
   }
 })
 

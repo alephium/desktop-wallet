@@ -22,8 +22,7 @@ import styled from 'styled-components'
 import { fastTransition } from '@/animations'
 import Scrollbar from '@/components/Scrollbar'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
-
-import ModalContainer, { ModalContainerProps } from './ModalContainer'
+import ModalContainer, { ModalContainerProps } from '@/modals/ModalContainer'
 
 interface SideModalProps extends ModalContainerProps {
   label: string

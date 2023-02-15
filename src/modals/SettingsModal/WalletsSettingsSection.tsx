@@ -25,14 +25,14 @@ import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletDeleted, walletLocked } from '@/store/activeWalletSlice'
-
-import ModalPortal from '../ModalPortal'
+import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { walletDeleted } from '@/storage/app-state/slices/appSlice'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
@@ -53,7 +53,7 @@ const WalletsSettingsSection = () => {
   const handleRemoveWallet = (walletName: string) => {
     WalletStorage.delete(walletName)
     AddressMetadataStorage.delete(walletName)
-    dispatch(walletDeleted(walletName))
+    dispatch(walletName === activeWalletName ? activeWalletDeleted() : walletDeleted(walletName))
 
     setWalletToRemove('')
   }

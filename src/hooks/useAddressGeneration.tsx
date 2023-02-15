@@ -17,22 +17,20 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
-import { useCallback } from 'react'
 
 import client from '@/api/client'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import { saveNewAddresses } from '@/storage-utils/addresses'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import {
   addressDiscoveryFinished,
   addressDiscoveryStarted,
   addressesRestoredFromMetadata,
   addressRestorationStarted,
   selectAllAddresses
-} from '@/store/addressesSlice'
+} from '@/storage/app-state/slices/addressesSlice'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
-
-import { useAppDispatch, useAppSelector } from './redux'
 
 interface GenerateAddressProps {
   group?: number
@@ -75,16 +73,13 @@ const useAddressGeneration = () => {
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 
-  const generateAddress = useCallback(
-    ({ group }: GenerateAddressProps = {}): AddressKeyPair => {
-      if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
+  const generateAddress = ({ group }: GenerateAddressProps = {}): AddressKeyPair => {
+    if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
 
-      const { masterKey } = getWalletFromMnemonic(mnemonic)
+    const { masterKey } = getWalletFromMnemonic(mnemonic)
 
-      return deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes)
-    },
-    [currentAddressIndexes, mnemonic]
-  )
+    return deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes)
+  }
 
   const generateAndSaveOneAddressPerGroup = (
     { labelPrefix, labelColor, skipGroups = [] }: GenerateOneAddressPerGroupProps = { skipGroups: [] }
@@ -105,8 +100,6 @@ const useAddressGeneration = () => {
       }))
 
       saveNewAddresses(addresses, { walletName, mnemonic })
-
-      deriveAddressesInGroupsWorker.terminate()
     }
 
     deriveAddressesInGroupsWorker.postMessage({
@@ -129,20 +122,10 @@ const useAddressGeneration = () => {
       dispatch(addressRestorationStarted())
 
       deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
-        const restoredAddresses = data.map((address) => {
-          const { isMain, color, ...metadata } = addressesMetadata.find(
-            (metadata) => metadata.index === address.index
-          ) as AddressMetadata
-
-          return {
-            ...address,
-            ...metadata,
-            // TODO: Write a migration script for all addresses with no colors and then remove the following line
-            color: color || getRandomLabelColor(),
-            // TODO: Write a migration script to rename `isMain` to `isDefault` adn then remove the following line
-            isDefault: isMain
-          }
-        })
+        const restoredAddresses: AddressBase[] = data.map((address) => ({
+          ...address,
+          ...(addressesMetadata.find((metadata) => metadata.index === address.index) as AddressMetadata)
+        }))
 
         dispatch(addressesRestoredFromMetadata(restoredAddresses))
       }

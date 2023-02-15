@@ -24,21 +24,20 @@ import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
+import AddressBadge from '@/components/AddressBadge'
+import Button from '@/components/Button'
+import CompactToggle from '@/components/Inputs/CompactToggle'
+import NetworkBadge from '@/components/NetworkBadge'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
-import { selectDefaultAddress } from '@/store/addressesSlice'
-import { discreetModeToggled } from '@/store/settingsSlice'
+import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
+import { discreetModeToggled } from '@/storage/app-state/slices/settingsSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
-
-import AddressBadge from './AddressBadge'
-import Button from './Button'
-import CompactToggle from './Inputs/CompactToggle'
-import NetworkBadge from './NetworkBadge'
-import ThemeSwitcher from './ThemeSwitcher'
 
 interface AppHeader {
   title?: string

@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import './index.css' // Importing CSS through CSS file to avoid font flickering
-import './i18n'
+import '@/index.css' // Importing CSS through CSS file to avoid font flickering
+import '@/i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
 import { StrictMode, Suspense } from 'react'
@@ -27,14 +27,14 @@ import { HashRouter as Router } from 'react-router-dom'
 import { TooltipProvider } from 'react-tooltip'
 import { ThemeProvider } from 'styled-components'
 
-import App from './App'
-import Tooltips from './components/Tooltips'
-import { GlobalContextProvider } from './contexts/global'
-import { WalletConnectContextProvider } from './contexts/walletconnect'
-import * as serviceWorker from './serviceWorker'
-import { store } from './store/store'
-import { GlobalStyle } from './style/globalStyles'
-import { lightTheme } from './style/themes'
+import App from '@/App'
+import Tooltips from '@/components/Tooltips'
+import { GlobalContextProvider } from '@/contexts/global'
+import { WalletConnectContextProvider } from '@/contexts/walletconnect'
+import * as serviceWorker from '@/serviceWorker'
+import { store } from '@/storage/app-state/store'
+import { GlobalStyle } from '@/style/globalStyles'
+import { lightTheme } from '@/style/themes'
 
 // The app still behaves as if React 17 is used. This is because
 // `react-custom-scrollbars` is not working with React 18 yet.

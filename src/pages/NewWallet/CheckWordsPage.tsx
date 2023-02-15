@@ -38,7 +38,7 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import { saveNewWallet } from '@/storage-utils/wallet'
+import { saveNewWallet } from '@/storage/storage-utils/walletStorageUtils'
 
 interface WordKey {
   word: string

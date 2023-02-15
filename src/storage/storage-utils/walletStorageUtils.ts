@@ -18,12 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Wallet } from '@alephium/sdk'
 
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletSaved } from '@/store/activeWalletSlice'
-import { syncAddressesData } from '@/store/addressesSlice'
-import { store } from '@/store/store'
-import { getRandomLabelColor } from '@/utils/colors'
+import { walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
+import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { store } from '@/storage/app-state/store'
+import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { getInitialAddressSettings } from '@/utils/addresses'
+import { getWalletInitialAddress } from '@/utils/wallet'
 
 interface SaveNewWalletProps {
   walletName: string
@@ -32,10 +33,7 @@ interface SaveNewWalletProps {
 }
 
 export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletProps) => {
-  const initialAddressSettings = {
-    isDefault: true,
-    color: getRandomLabelColor()
-  }
+  const initialAddressSettings = getInitialAddressSettings()
 
   WalletStorage.store(walletName, password, wallet)
   AddressMetadataStorage.store({
@@ -49,13 +47,12 @@ export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletPro
 
   store.dispatch(
     walletSaved({
-      name: walletName,
-      mnemonic: wallet.mnemonic,
+      wallet: {
+        name: walletName,
+        mnemonic: wallet.mnemonic
+      },
       initialAddress: {
-        index: 0,
-        hash: wallet.address,
-        publicKey: wallet.publicKey,
-        privateKey: wallet.privateKey,
+        ...getWalletInitialAddress(wallet),
         ...initialAddressSettings
       }
     })

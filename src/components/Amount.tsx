@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
+import AlefSymbol from '@/components/AlefSymbol'
 import { useAppSelector } from '@/hooks/redux'
-
-import AlefSymbol from './AlefSymbol'
 
 interface AmountProps {
   value?: bigint | number

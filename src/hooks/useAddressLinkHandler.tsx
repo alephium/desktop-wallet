@@ -19,10 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { useAppSelector } from '@/hooks/redux'
 import { AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
-
-import { useAppSelector } from './redux'
 
 const useAddressLinkHandler = () => {
   const [explorerUrl, addressHashes] = useAppSelector((s) => [s.network.settings.explorerUrl, s.addresses.ids])

@@ -31,11 +31,10 @@ import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
-import { selectAllContacts } from '@/store/contactsSlice'
+import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
+import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
-
-import TabContent from './TabContent'
 
 const ContactsTabContent = () => {
   const { t } = useTranslation()

@@ -27,11 +27,12 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
-import WalletStorage from '@/persistent-storage/wallet'
-import { walletLocked, walletSwitched, walletUnlocked } from '@/store/activeWalletSlice'
-import { themeChanged } from '@/store/settingsSlice'
+import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { themeChanged } from '@/storage/app-state/slices/settingsSlice'
+import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AlephiumWindow } from '@/types/window'
 import { migrateUserData } from '@/utils/migration'
+import { getWalletInitialAddress } from '@/utils/wallet'
 
 interface WalletUnlockProps {
   event: 'login' | 'switch'
@@ -86,23 +87,26 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
   const unlockWallet = async ({ event, walletName, password, afterUnlock, passphrase }: WalletUnlockProps) => {
     const isPassphraseUsed = !!passphrase
+
     try {
       let wallet = WalletStorage.load(walletName, password)
 
-      if (passphrase) {
+      if (isPassphraseUsed) {
         wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
+        migrateUserData(wallet.mnemonic, walletName)
       }
 
-      migrateUserData(wallet.mnemonic, walletName)
-
       const payload = {
-        name: walletName,
-        mnemonic: wallet.mnemonic,
-        isPassphraseUsed
+        wallet: {
+          name: walletName,
+          mnemonic: wallet.mnemonic,
+          isPassphraseUsed
+        },
+        initialAddress: getWalletInitialAddress(wallet)
       }
       dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))
 
-      restoreAddressesFromMetadata({ walletName, mnemonic: wallet.mnemonic, isPassphraseUsed })
+      if (!isPassphraseUsed) restoreAddressesFromMetadata({ walletName, mnemonic: wallet.mnemonic, isPassphraseUsed })
 
       afterUnlock()
     } catch (e) {
