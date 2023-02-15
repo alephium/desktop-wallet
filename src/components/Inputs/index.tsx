@@ -42,7 +42,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { y: -9, fontSize: '9px' },
+  up: { y: -17, fontSize: '9px' },
   down: { y: 0, scale: 1 }
 }
 
@@ -123,8 +123,11 @@ export const InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean 
 
 const StyledInputLabel = styled(motion.label)`
   position: absolute;
-  top: 17px;
-  left: 12px;
+
+  left: ${inputStyling.paddingLeftRight};
+  height: 100%;
+  display: flex;
+  align-items: center;
   font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.secondary};
   pointer-events: none;

@@ -29,7 +29,7 @@ import {
 } from 'react'
 import styled from 'styled-components'
 
-import { InputLabel, InputProps } from '@/components/Inputs'
+import { InputLabel, InputProps, inputStyling } from '@/components/Inputs'
 import { InputBase } from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
@@ -291,8 +291,10 @@ const InputContainer = styled(InputArea)`
 
 export const MoreIcon = styled.div`
   position: absolute;
-  top: 14px;
-  right: 10px;
+  right: ${inputStyling.paddingLeftRight};
+  height: 100%;
+  display: flex;
+  align-items: center;
   color: ${({ theme }) => theme.font.secondary};
 `
 
