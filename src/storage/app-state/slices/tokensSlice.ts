@@ -16,15 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { NUM_OF_ZEROS_IN_QUINTILLION, produceZeros } from '@alephium/sdk'
 import TokensMetadata, { TokenInfo } from '@alephium/token-list'
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
+import { createAsyncThunk, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { RootState } from '@/storage/app-state/store'
-import { AddressHash } from '@/types/addresses'
-import { TokenDisplay, TokenDisplayBalances } from '@/types/tokens'
 
 const sliceName = 'tokens'
 
@@ -75,48 +71,6 @@ const tokensSlice = createSlice({
 
 export const { selectAll: selectAllTokens, selectById: selectTokenById } = tokensAdapter.getSelectors<RootState>(
   (state) => state[sliceName]
-)
-
-export const selectTokens = createSelector(
-  [selectAllAddresses, selectAllTokens, (_, addressHashes?: AddressHash[]) => addressHashes],
-  (allAddresses, tokens, addressHashes): TokenDisplay[] => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
-    const tokenBalances = addresses.reduce((acc, { tokens }) => {
-      tokens.forEach((token) => {
-        const existingToken = acc.find((t) => t.id === token.id)
-
-        if (!existingToken) {
-          acc.push({
-            id: token.id,
-            balance: BigInt(token.balance),
-            lockedBalance: BigInt(token.lockedBalance)
-          })
-        } else {
-          existingToken.balance = existingToken.balance + BigInt(token.balance)
-          existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
-        }
-      })
-
-      return acc
-    }, [] as TokenDisplayBalances[])
-
-    return tokenBalances.map((token) => {
-      const tokenMetadata = tokens.find((t) => t.id === token.id)
-      const trailingZeros = produceZeros(NUM_OF_ZEROS_IN_QUINTILLION - (tokenMetadata?.decimals ?? 0))
-
-      return {
-        id: token.id,
-        balance: BigInt(token.balance.toString() + trailingZeros),
-        lockedBalance: BigInt(token.lockedBalance.toString() + trailingZeros),
-        name: tokenMetadata?.name ?? token.id,
-        symbol: tokenMetadata?.symbol ?? '',
-        description: tokenMetadata?.description,
-        logoURI: tokenMetadata?.logoURI
-      }
-    })
-  }
 )
 
 export default tokensSlice

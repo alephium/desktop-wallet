@@ -21,3 +21,9 @@ import { BILLION } from '@alephium/sdk'
 export const MINIMAL_GAS_AMOUNT = 20000
 export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
 export const GENESIS_TIMESTAMP = 1231006505000
+
+export const ALPH = {
+  id: '0',
+  name: 'Alephium',
+  symbol: 'ALPH'
+}

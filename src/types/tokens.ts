@@ -23,7 +23,7 @@ export type TokenBalances = AddressBalance & {
   id: Token['id']
 }
 
-export type TokenDisplay = Omit<TokenInfo, 'decimals'> & TokenDisplayBalances
+export type Asset = Omit<TokenInfo, 'decimals'> & TokenDisplayBalances
 
 export type TokenDisplayBalances = {
   id: Token['id']

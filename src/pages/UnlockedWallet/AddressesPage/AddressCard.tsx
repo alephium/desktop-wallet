@@ -33,8 +33,8 @@ import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
+import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
-import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
 import { changeDefaultAddress } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -51,7 +51,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
     selectAddressByHash(s, hash),
     s.activeWallet
   ])
-  const tokens = useAppSelector((state) => selectTokens(state, address?.hash ? [address.hash] : undefined))
+  const assets = useAppSelector((state) => selectAddressesAssets(state, address?.hash ? [address.hash] : undefined))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
@@ -60,7 +60,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
 
   const alphBalance = parseFloat(convertSetToAlph(BigInt(address.balance)))
   const fiatBalance = alphBalance * (price ?? 0)
-  const tokenSymbols = [...(address.balance !== '0' ? ['ALPH'] : []), ...tokens.map((token) => token.symbol)]
+  const assetSymbols = assets.filter((asset) => asset.balance > 0).map((asset) => asset.symbol)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {
     changeDefaultAddress(address, { walletName, mnemonic })
@@ -98,13 +98,13 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
             {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
           </LastActivity>
         </InfoSection>
-        <TokensSection>
-          {tokenSymbols.map((tokenName) => (
-            <Badge rounded border transparent color={theme.font.secondary} key={tokenName}>
-              {tokenName}
+        <AssetsSection>
+          {assetSymbols.map((symbol) => (
+            <Badge rounded border transparent color={theme.font.secondary} key={symbol}>
+              {symbol}
             </Badge>
           ))}
-        </TokensSection>
+        </AssetsSection>
       </CardWithRibbon>
       <ModalPortal>
         {isAddressDetailsModalOpen && (
@@ -154,7 +154,7 @@ const InfoSection = styled.div<{ bgColor?: string }>`
     `}
 `
 
-const TokensSection = styled.div`
+const AssetsSection = styled.div`
   padding: 23px;
   border-top: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;

@@ -23,14 +23,13 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
+import AssetLogo from '@/components/AssetLogo'
 import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
-import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
-import { selectTokens } from '@/storage/app-state/slices/tokensSlice'
+import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 
 interface TokensNFTsListProps {
@@ -70,54 +69,26 @@ const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsT
 
 const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) => {
   const { t } = useTranslation()
-  const tokens = useAppSelector((s) => selectTokens(s, addressHashes))
-  const allAddresses = useAppSelector(selectAllAddresses)
-  const addresses = addressHashes ? allAddresses.filter((a) => addressHashes.includes(a.hash)) : allAddresses
-  const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
-  const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
+  const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
 
-  const displayedTokens = limit ? tokens.slice(0, limit) : tokens
+  const displayedAssets = limit ? assets.slice(0, limit) : assets
 
   return (
     <motion.div {...fadeIn} className={className}>
-      <TableRow role="row" tabIndex={0}>
-        <TokenRow>
-          <AlephiumCoinLogo>
-            <LogoImage src={AlephiumLogoSVG} />
-          </AlephiumCoinLogo>
-          <NameColumn>
-            <TokenName>Alephium</TokenName>
-            <TokenSymbol>ALPH</TokenSymbol>
-          </NameColumn>
-          <TableCellAmount>
-            <TokenAmount fadeDecimals value={totalBalance} />
-            {totalLockedBalance > 0 && (
-              <TokenAvailableAmount>
-                {t('Available')}
-                <Amount fadeDecimals value={totalBalance - totalLockedBalance} />
-              </TokenAvailableAmount>
-            )}
-          </TableCellAmount>
-        </TokenRow>
-      </TableRow>
-      {displayedTokens.map((token) => (
-        <TableRow key={token.id} role="row" tabIndex={0}>
+      {displayedAssets.map((asset) => (
+        <TableRow key={asset.id} role="row" tabIndex={0}>
           <TokenRow>
-            <TokenLogo>
-              {/* TODO: uncomment when metadata repo is accessible by the public */}
-              {/* <LogoImage src={token.logoURI ?? AlephiumLogoSVG} /> */}
-              <LogoImage src={AlephiumLogoSVG} />
-            </TokenLogo>
+            <AssetLogoStyled asset={asset} size={30} />
             <NameColumn>
-              <TokenName>{token.name}</TokenName>
-              <TokenSymbol>{token.symbol}</TokenSymbol>
+              <TokenName>{asset.name}</TokenName>
+              <TokenSymbol>{asset.symbol}</TokenSymbol>
             </NameColumn>
             <TableCellAmount>
-              <TokenAmount fadeDecimals value={token.balance} suffix={token.symbol} />
-              {token.lockedBalance > 0 && (
+              <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} />
+              {asset.lockedBalance > 0 && (
                 <TokenAvailableAmount>
                   {t('Available')}
-                  <Amount fadeDecimals value={token.balance - token.lockedBalance} suffix={token.symbol} />
+                  <Amount fadeDecimals value={asset.balance - asset.lockedBalance} suffix={asset.symbol} />
                 </TokenAvailableAmount>
               )}
             </TableCellAmount>
@@ -150,26 +121,8 @@ const TokenRow = styled.div`
   flex-grow: 1;
 `
 
-const TokenLogo = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 30px;
-  padding: 5px;
-  background-color: ${({ theme }) => theme.font.tertiary};
+const AssetLogoStyled = styled(AssetLogo)`
   margin-right: 25px;
-  flex-shrink: 0;
-`
-
-const AlephiumCoinLogo = styled(TokenLogo)`
-  background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
-`
-
-const LogoImage = styled.img`
-  width: 100%;
-  height: 100%;
 `
 
 const TokenName = styled.div`

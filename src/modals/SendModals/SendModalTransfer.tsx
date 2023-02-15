@@ -37,6 +37,7 @@ import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import AssetSelect from '@/modals/SendModals/AssetSelect'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
@@ -44,6 +45,7 @@ import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/
 import { store } from '@/storage/app-state/store'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
+import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
 import { formatDateForDisplay } from '@/utils/misc'
 import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
@@ -121,7 +123,11 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
+  const [assetId, setAssetId] = useState(ALPH.id)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
+
+  // TODO: Remove log after assetId is utilized
+  console.log(assetId)
 
   const handleToAddressChange = (value: string) => {
     setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
@@ -161,6 +167,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onContactSelect={handleToAddressChange}
           error={toAddress.error}
         />
+        <AssetSelect id="asset-select" addressHash={fromAddress.hash} onAssetChange={setAssetId} />
         <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
       </InputFieldsColumn>
       <ToggleSections>

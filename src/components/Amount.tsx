@@ -87,7 +87,7 @@ const Amount = ({
         '-'
       )}
 
-      {suffix ? ` ${suffix}` : <AlefSymbol color={color} />}
+      {suffix && suffix !== 'ALPH' ? ` ${suffix}` : <AlefSymbol color={color} />}
     </span>
   )
 }
