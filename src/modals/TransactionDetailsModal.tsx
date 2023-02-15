@@ -32,7 +32,7 @@ import { useAppSelector } from '@/hooks/redux'
 import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 
@@ -41,7 +41,7 @@ import SideModal from './SideModal'
 
 interface TransactionDetailsModalProps {
   transaction: AddressConfirmedTransaction
-  address: AddressRedux
+  address: Address
   onClose: () => void
 }
 
@@ -73,7 +73,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             {label}
           </Direction>
           <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
-          <AddressBadge address={address} truncate withBorders />
+          <AddressBadge addressHash={address.hash} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
@@ -82,7 +82,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} truncate showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -100,7 +100,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge address={address} showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} showHashWhenNoLabel withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (

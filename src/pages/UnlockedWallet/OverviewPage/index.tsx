@@ -16,14 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// import { Transaction } from '@alephium/sdk/api/explorer'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 import { fadeIn } from '@/animations'
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
-// import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
 import { UnlockedWalletPanel } from '../UnlockedWalletLayout'
@@ -31,7 +30,7 @@ import AmountsOverviewPanel from './AmountsOverviewPanel'
 import TransactionList from './TransactionList'
 
 const OverviewPage = () => {
-  const { isLoadingData } = useAddressesContext()
+  const isLoadingData = useAppSelector((state) => state.addresses.loading)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
 
@@ -41,16 +40,15 @@ const OverviewPage = () => {
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
 
-        {/* TODO: Uncomment when dependency from contexts/addresses is removed */}
         <ModalPortal>
           {selectedTransaction?.hash}
-          {/* {selectedTransaction && (
+          {selectedTransaction && (
             <TransactionDetailsModal
               address={selectedTransaction.address}
               transaction={selectedTransaction}
               onClose={() => setSelectedTransaction(undefined)}
             />
-          )} */}
+          )}
         </ModalPortal>
       </UnlockedWalletPanel>
     </motion.div>

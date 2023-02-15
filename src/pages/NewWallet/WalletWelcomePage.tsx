@@ -31,7 +31,9 @@ import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
 import { FooterActionsContainer, Section } from '@/components/PageComponents/PageContainers'
 import Paragraph from '@/components/Paragraph'
-import { useAddressesContext } from '@/contexts/addresses'
+import { useAppSelector } from '@/hooks/redux'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
+import { selectDefaultAddress } from '@/store/addressesSlice'
 import { getRandomLabelColor } from '@/utils/colors'
 import { useTimeout, useWindowSize } from '@/utils/hooks'
 import { links } from '@/utils/links'
@@ -41,27 +43,24 @@ import { openInWebBrowser } from '@/utils/misc'
 
 const WalletWelcomePage = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const { width, height } = useWindowSize()
+  const { generateAndSaveOneAddressPerGroup } = useAddressGeneration()
+
   const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
-  const { width, height } = useWindowSize()
-  const navigate = useNavigate()
-  const { mainAddress, updateAddressSettings, generateOneAddressPerGroup } = useAddressesContext()
 
   useTimeout(() => {
     setConfettiRunning(false)
   }, 3000)
 
   const onButtonClick = () => {
-    if (shouldGenerateOneAddressPerGroup && mainAddress) {
-      const labelPrefix = 'Address'
-      const labelColor = getRandomLabelColor()
-
-      generateOneAddressPerGroup(labelPrefix, labelColor, [mainAddress.group])
-
-      updateAddressSettings(mainAddress, {
-        ...mainAddress.settings,
-        label: `${labelPrefix} ${mainAddress.group}`,
-        color: labelColor
+    if (shouldGenerateOneAddressPerGroup && defaultAddress) {
+      generateAndSaveOneAddressPerGroup({
+        labelPrefix: 'Address',
+        labelColor: getRandomLabelColor(),
+        skipGroups: [defaultAddress.group]
       })
     }
 

@@ -16,22 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import client from '@/api/client'
-import { AddressHash, AddressRedux } from '@/types/addresses'
+import { Address, AddressDataSyncResult, AddressHash } from '@/types/addresses'
 
-export const fetchAddressesData = async (addressHashes: AddressHash[]) => {
+export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<AddressDataSyncResult[]> => {
   const results = []
 
   for (const addressHash of addressHashes) {
-    const { data: details } = await client.explorerClient.getAddressDetails(addressHash)
-    const { data: transactions } = await client.explorerClient.getAddressTransactions(addressHash, 1)
-    const { data: tokenIds } = await client.explorerClient.addresses.getAddressesAddressTokens(addressHash)
+    const { data: details } = await client.explorer.getAddressDetails(addressHash)
+    const { data: transactions } = await client.explorer.getAddressTransactions(addressHash, 1)
+    const { data: unconfirmedTransactions } =
+      await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(addressHash)
+    const { data: tokenIds } = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
 
     const tokens = await Promise.all(
       tokenIds.map((id) =>
-        client.explorerClient.addresses.getAddressesAddressTokensTokenIdBalance(addressHash, id).then(({ data }) => ({
+        client.explorer.addresses.getAddressesAddressTokensTokenIdBalance(addressHash, id).then(({ data }) => ({
           id,
           balances: data
         }))
@@ -42,6 +44,8 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]) => {
       hash: addressHash,
       details,
       transactions,
+      // Type casting needed due to https://github.com/alephium/explorer-backend/issues/427
+      unconfirmedTransactions: unconfirmedTransactions as UnconfirmedTransaction[],
       tokens
     })
   }
@@ -49,13 +53,13 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]) => {
   return results
 }
 
-export const fetchAddressTransactionsNextPage = async (address: AddressRedux) => {
+export const fetchAddressTransactionsNextPage = async (address: Address) => {
   let nextPage = address.transactionsPageLoaded
   let nextPageTransactions = [] as Transaction[]
 
   if (!address.allTransactionPagesLoaded) {
     nextPage += 1
-    const { data: transactions } = await client.explorerClient.getAddressTransactions(address.hash, nextPage)
+    const { data: transactions } = await client.explorer.getAddressTransactions(address.hash, nextPage)
     nextPageTransactions = transactions
   }
 
@@ -66,9 +70,9 @@ export const fetchAddressTransactionsNextPage = async (address: AddressRedux) =>
   }
 }
 
-export const fetchAddressesTransactionsNextPage = async (addresses: AddressRedux[], nextPage: number) => {
+export const fetchAddressesTransactionsNextPage = async (addresses: Address[], nextPage: number) => {
   const addressHashes = addresses.filter((address) => !address.allTransactionPagesLoaded).map((address) => address.hash)
-  const { data: transactions } = await client.explorerClient.addresses.postAddressesTransactions(
+  const { data: transactions } = await client.explorer.addresses.postAddressesTransactions(
     { page: nextPage },
     addressHashes
   )

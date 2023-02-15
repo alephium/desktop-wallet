@@ -21,6 +21,7 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import client from '@/api/client'
 import Button from '@/components/Button'
 import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
@@ -58,7 +59,7 @@ const NetworkSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
-  const { client, setSnackbarMessage } = useGlobalContext()
+  const { setSnackbarMessage } = useGlobalContext()
 
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
@@ -104,7 +105,7 @@ const NetworkSettingsSection = () => {
           return
         }
 
-        if (networkId === undefined && client !== undefined) {
+        if (networkId === undefined) {
           const response = await client.web3.infos.getInfosChainParams()
           networkId = response.networkId
         }
@@ -116,7 +117,7 @@ const NetworkSettingsSection = () => {
         }
       }
     },
-    [client, dispatch, selectedNetwork]
+    [dispatch, selectedNetwork]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {

@@ -31,11 +31,11 @@ import Button from '@/components/Button'
 import NavItem from '@/components/NavItem'
 import Scrollbar from '@/components/Scrollbar'
 import Spinner from '@/components/Spinner'
-import { useAddressesContext } from '@/contexts/addresses'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import SettingsModal from '@/modals/SettingsModal'
+import { syncAddressesData } from '@/store/addressesSlice'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 
@@ -48,8 +48,8 @@ dayjs.extend(relativeTime)
 
 const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerTitle, className }) => {
   const { t } = useTranslation()
-  const [network, activeWallet] = useAppSelector((s) => [s.network, s.activeWallet])
-  const { refreshAddressesData, isLoadingData } = useAddressesContext()
+  const dispatch = useAppDispatch()
+  const [network, activeWallet, isLoadingData] = useAppSelector((s) => [s.network, s.activeWallet, s.addresses.loading])
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
@@ -57,6 +57,8 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerT
   if (!activeWallet.name) return null
 
   const activeWalletNameInitials = getInitials(activeWallet.name)
+
+  const refreshAddressesData = () => dispatch(syncAddressesData())
 
   return (
     <>

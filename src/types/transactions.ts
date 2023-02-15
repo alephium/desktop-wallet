@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Transaction } from '@alephium/sdk/api/explorer'
 
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { NetworkName } from '@/types/network'
 
 export type TransactionDirection = 'out' | 'in'
@@ -73,7 +73,7 @@ export type TxDataToModalType =
     }
 
 export interface DeployContractTxData {
-  fromAddress: AddressRedux
+  fromAddress: Address
   bytecode: string
 
   initialAlphAmount?: string
@@ -83,7 +83,7 @@ export interface DeployContractTxData {
 }
 
 export interface ScriptTxData {
-  fromAddress: AddressRedux
+  fromAddress: Address
   bytecode: string
 
   alphAmount?: string
@@ -92,7 +92,7 @@ export interface ScriptTxData {
 }
 
 export interface TransferTxData {
-  fromAddress: AddressRedux
+  fromAddress: Address
   toAddress: string
   alphAmount: string
   gasAmount?: number
@@ -101,7 +101,7 @@ export interface TransferTxData {
 }
 
 export interface TxPreparation {
-  fromAddress: AddressRedux
+  fromAddress: Address
   bytecode?: string
   issueTokenAmount?: string
   alphAmount?: string
@@ -135,9 +135,8 @@ export type TxContext = {
   setUnsignedTxId: (txId: string) => void
   isSweeping: boolean
   consolidationRequired: boolean
-  currentNetwork: NetworkName
 }
 
-export type AddressConfirmedTransaction = Transaction & { address: AddressRedux }
-export type AddressPendingTransaction = PendingTransaction & { address: AddressRedux }
+export type AddressConfirmedTransaction = Transaction & { address: Address }
+export type AddressPendingTransaction = PendingTransaction & { address: Address }
 export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction

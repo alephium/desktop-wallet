@@ -21,11 +21,12 @@ import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@al
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import client from '@/api/client'
+import { signAndSendTransaction } from '@/api/transactions'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
-import { Client } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
@@ -55,7 +56,7 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
   const initialTxData = useDappTxData() as DeployContractBuildTxModalContentProps['data']
   const [contractAddress, setContractAddress] = useState('')
 
-  const buildTransaction = async (client: Client, data: DeployContractTxData, context: TxContext) => {
+  const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
       data.initialAlphAmount !== undefined ? convertAlphToSet(data.initialAlphAmount).toString() : undefined
     const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
@@ -195,15 +196,17 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   )
 }
 
-const handleSend = async (client: Client, txData: DeployContractTxData, context: TxContext) => {
+const handleSend = async (txData: DeployContractTxData, context: TxContext) => {
   if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
 
-  const data = await client.signAndSendContractOrScript(
+  const data = await signAndSendTransaction(
     txData.fromAddress,
     context.unsignedTxId,
-    context.unsignedTransaction.unsignedTx,
-    context.currentNetwork
+    context.unsignedTransaction.unsignedTx
   )
+
+  // TODO: Should we display a pending transaction when deploying a contract? What would the "toAddress" be in that case?
+  // Since there's no toAddress, we need to rethink our UI.
 
   return data.signature
 }

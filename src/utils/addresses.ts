@@ -18,11 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from '@alephium/sdk/api/explorer'
 
-import { AddressHash, AddressRedux } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 
 export const selectAddressTransactions = (
-  allAddresses: AddressRedux[],
+  allAddresses: Address[],
   transactions: (Transaction | PendingTransaction)[],
   addressHashes: AddressHash[]
 ) => {
@@ -37,7 +37,6 @@ export const selectAddressTransactions = (
   }, [] as AddressTransaction[])
 }
 
-export const getAvailableBalance = (address: AddressRedux): bigint =>
-  BigInt(address.balance) - BigInt(address.lockedBalance)
+export const getAvailableBalance = (address: Address): bigint => BigInt(address.balance) - BigInt(address.lockedBalance)
 
-export const getName = (address: AddressRedux): string => address.label ?? `${address.hash.substring(0, 10)}...`
+export const getName = (address: Address): string => address.label ?? `${address.hash.substring(0, 10)}...`

@@ -28,16 +28,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import client from '@/api/client'
 import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
 import { selectAllAddresses } from '@/store/addressesSlice'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
@@ -56,7 +56,6 @@ const electron = _window.electron
 
 const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   const { t } = useTranslation()
-  const { client } = useGlobalContext()
   const { walletConnectClient } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -70,7 +69,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
 
   const group = requiredChainInfo?.chainGroup
   const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
-  const [signerAddress, setSignerAddress] = useState<AddressRedux | undefined>(addressOptions.find((a) => a.isDefault))
+  const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
 
   const onProposal = useCallback(
     async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
@@ -116,7 +115,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   }, [])
 
   const chainAccounts = useCallback(
-    (address: AddressRedux, chain: ChainInfo): string[] => {
+    (address: Address, chain: ChainInfo): string[] => {
       if (!isCompatibleChainGroup(address.group, chain.chainGroup)) {
         setErrorState(t`Invalid address group for the WallectConnect connection`)
       }
@@ -127,7 +126,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
   )
 
   const onApprove = useCallback(
-    async (signerAddress: AddressRedux) => {
+    async (signerAddress: Address) => {
       if (proposal === undefined) {
         setWcSessionState('uninitialized')
         return
@@ -143,7 +142,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
 
       const requiredChain = parseChain(requiredNamespace.chains[0])
 
-      if (requiredChain.networkId !== (await client?.web3.infos.getInfosChainParams())?.networkId) {
+      if (requiredChain.networkId !== (await client.web3.infos.getInfosChainParams())?.networkId) {
         setErrorState('The current network is unmatched with the network requested by WalletConnect')
         return
       }
@@ -178,7 +177,7 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       onClose()
       electron?.app.hide()
     },
-    [chainAccounts, client?.web3.infos, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
+    [chainAccounts, onClose, proposal, requiredChainInfo, setErrorState, walletConnectClient]
   )
 
   const onReject = async () => {

@@ -28,9 +28,8 @@ import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
 import TabBar, { TabItem } from '@/components/TabBar'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
 import i18next from '@/i18n'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import BottomModal from '@/modals/BottomModal'
@@ -55,12 +54,11 @@ const AddressesPage = () => {
   const { t } = useTranslation()
   const theme = useTheme()
   const dispatch = useAppDispatch()
-  const { generateOneAddressPerGroup } = useAddressesContext()
+  const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
   const [{ mnemonic, isPassphraseUsed, name: walletName }, infoMessageClosed] = useAppSelector((s) => [
     s.activeWallet,
     s.app.addressesPageInfoMessageClosed
   ])
-  const discoverAndSaveActiveAddresses = useAddressDiscovery()
 
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
@@ -69,7 +67,7 @@ const AddressesPage = () => {
 
   const handleOneAddressPerGroupClick = () => {
     if (isPassphraseUsed) {
-      generateOneAddressPerGroup()
+      generateAndSaveOneAddressPerGroup()
     } else {
       setIsAddressesGenerationModalOpen(true)
     }
@@ -141,7 +139,7 @@ const AddressesPage = () => {
                     Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
                     description={t`Scan the blockchain for addresses you used in the past.`}
                     buttonText={t`Search`}
-                    onButtonClick={() => discoverAndSaveActiveAddresses(mnemonic, walletName)}
+                    onButtonClick={discoverAndSaveUsedAddresses}
                     infoLink={links.miningWallet}
                   />
                   <OperationBox

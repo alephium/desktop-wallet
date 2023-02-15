@@ -22,28 +22,32 @@ import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
+import { CenteredSection } from '@/components/PageComponents/PageContainers'
+import SnackbarManager from '@/components/SnackbarManager'
+import SplashScreen from '@/components/SplashScreen'
+import UpdateWalletBanner from '@/components/UpdateWalletBanner'
+import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import UpdateWalletModal from '@/modals/UpdateWalletModal'
+import Router from '@/routes'
 import { selectAllAddresses, syncAddressesData } from '@/store/addressesSlice'
+import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from '@/store/networkSlice'
+import { selectAddressesPendingTransactions } from '@/store/pendingTransactionsSlice'
+import { generalSettingsMigrated } from '@/store/settingsSlice'
+import { GlobalStyle } from '@/style/globalStyles'
+import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
-
-import { CenteredSection } from './components/PageComponents/PageContainers'
-import SnackbarManager from './components/SnackbarManager'
-import SplashScreen from './components/SplashScreen'
-import UpdateWalletBanner from './components/UpdateWalletBanner'
-import { useGlobalContext } from './contexts/global'
-import { useAppDispatch, useAppSelector } from './hooks/redux'
-import UpdateWalletModal from './modals/UpdateWalletModal'
-import Router from './routes'
-import { apiClientInitFailed, apiClientInitSucceeded, networkSettingsMigrated } from './store/networkSlice'
-import { generalSettingsMigrated } from './store/settingsSlice'
-import { GlobalStyle } from './style/globalStyles'
-import { darkTheme, lightTheme } from './style/themes'
-import { migrateDeprecatedSettings, migrateWalletData } from './utils/migration'
+import { migrateDeprecatedSettings, migrateWalletData } from '@/utils/migration'
 
 const App = () => {
   const { t } = useTranslation()
   const { snackbarMessage, newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
+  const addressHashes = addresses.map((address) => address.hash)
+  const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
+    (tx) => tx.address.hash
+  )
   const [settings, network, addressesStatus] = useAppSelector((s) => [
     s.settings,
     s.network,
@@ -110,6 +114,20 @@ const App = () => {
       dispatch(syncAddressesData())
     }
   }, [addresses.length, addressesStatus, dispatch, network.status])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (pendingTxHashes.length > 0) {
+        dispatch(syncAddressesData(pendingTxHashes))
+      } else {
+        clearInterval(interval)
+      }
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [pendingTxHashes, dispatch])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

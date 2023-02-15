@@ -19,7 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { AddressHash } from '../types/addresses'
+import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
+import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
+
+import { AddressDataSyncResult, AddressHash } from '../types/addresses'
 import { AddressPendingTransaction, PendingTransaction } from '../types/transactions'
 import { selectAddressTransactions } from '../utils/addresses'
 import {
@@ -49,9 +52,11 @@ const pendingTransactionsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(transactionSent, pendingTransactionsAdapter.addOne)
-      .addCase(syncAddressesData.fulfilled, removeTransactions)
+      .addCase(syncAddressesData.fulfilled, updateTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
+      .addCase(walletLocked, () => initialState)
+      .addCase(walletSwitched, () => initialState)
   }
 })
 
@@ -67,9 +72,23 @@ export const selectAddressesPendingTransactions = createSelector(
 
 export default pendingTransactionsSlice
 
+const updateTransactions = (state: PendingTransactionsState, action: PayloadAction<AddressDataSyncResult[]>) => {
+  const addresses = action.payload
+  const confirmedTransactionsHashes = addresses.flatMap((address) => address.transactions).map((tx) => tx.hash)
+
+  // Converting unconfirmed txs to pending txs because the amount delta calculation doesn't work for unconfirmed txs.
+  // See: https://github.com/alephium/explorer-backend/issues/360
+  const pendingTransactions = addresses
+    .flatMap((address) => address.unconfirmedTransactions.map((tx) => ({ tx, address: address.hash })))
+    .map(({ tx, address }) => convertUnconfirmedTxToPendingTx(tx, address))
+
+  pendingTransactionsAdapter.removeMany(state, confirmedTransactionsHashes)
+  pendingTransactionsAdapter.upsertMany(state, pendingTransactions)
+}
+
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<{ transactions: Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

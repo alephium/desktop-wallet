@@ -17,11 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import client from '@/api/client'
-import { AddressHash, AddressRedux } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { getAvailableBalance } from '@/utils/addresses'
 
-export const buildSweepTransactions = async (fromAddress: AddressRedux, toAddressHash: AddressHash) => {
-  const { data } = await client.cliqueClient.transactionConsolidateUTXOs(
+export const buildSweepTransactions = async (fromAddress: Address, toAddressHash: AddressHash) => {
+  const { data } = await client.clique.transactionConsolidateUTXOs(
     fromAddress.publicKey,
     fromAddress.hash,
     toAddressHash
@@ -34,7 +34,7 @@ export const buildSweepTransactions = async (fromAddress: AddressRedux, toAddres
 }
 
 export const buildUnsignedTransactions = async (
-  fromAddress: AddressRedux,
+  fromAddress: Address,
   toAddressHash: string,
   amountInSet: bigint,
   gasAmount: string,
@@ -45,7 +45,7 @@ export const buildUnsignedTransactions = async (
   if (isSweep) {
     return await buildSweepTransactions(fromAddress, toAddressHash)
   } else {
-    const { data } = await client.cliqueClient.transactionCreate(
+    const { data } = await client.clique.transactionCreate(
       fromAddress.hash,
       fromAddress.publicKey,
       toAddressHash,
@@ -62,9 +62,9 @@ export const buildUnsignedTransactions = async (
   }
 }
 
-export const signAndSendTransaction = async (fromAddress: AddressRedux, txId: string, unsignedTx: string) => {
-  const signature = client.cliqueClient.transactionSign(txId, fromAddress.privateKey)
-  const { data } = await client.cliqueClient.transactionSend(fromAddress.hash, unsignedTx, signature)
+export const signAndSendTransaction = async (fromAddress: Address, txId: string, unsignedTx: string) => {
+  const signature = client.clique.transactionSign(txId, fromAddress.privateKey)
+  const { data } = await client.clique.transactionSend(fromAddress.hash, unsignedTx, signature)
 
-  return data
+  return { ...data, signature: signature }
 }

@@ -23,13 +23,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
-import { Client } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
@@ -40,7 +40,8 @@ import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
-import { selectAllAddresses } from '@/store/addressesSlice'
+import { selectAllAddresses, transactionSent } from '@/store/addressesSlice'
+import { store } from '@/store/store'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { requiredErrorMessage } from '@/utils/form-validation'
@@ -205,7 +206,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   )
 }
 
-const buildTransaction = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
+const buildTransaction = async (transactionData: TransferTxData, context: TxContext) => {
   const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice, lockTime } = transactionData
   const amountInSet = convertAlphToSet(alphAmount)
   const sweep = amountInSet === getAvailableBalance(fromAddress)
@@ -232,20 +233,28 @@ const buildTransaction = async (client: Client, transactionData: TransferTxData,
   }
 }
 
-const handleSend = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
-  const { fromAddress, toAddress } = transactionData
+const handleSend = async (transactionData: TransferTxData, context: TxContext) => {
+  const { fromAddress, toAddress, lockTime } = transactionData
 
   if (toAddress) {
     if (context.isSweeping && context.sweepUnsignedTxs) {
-      // const sendToAddress = context.consolidationRequired ? fromAddress.hash : toAddress
-      // const transactionType = context.consolidationRequired ? 'consolidation' : 'sweep'
+      const sendToAddress = context.consolidationRequired ? fromAddress.hash : toAddress
+      const type = context.consolidationRequired ? 'consolidation' : 'sweep'
 
       for (const { txId, unsignedTx } of context.sweepUnsignedTxs) {
         const data = await signAndSendTransaction(fromAddress, txId, unsignedTx)
 
-        if (data) {
-          // TODO: dispatch pending tx
-        }
+        store.dispatch(
+          transactionSent({
+            hash: data.txId,
+            fromAddress: fromAddress.hash,
+            toAddress: sendToAddress,
+            timestamp: new Date().getTime(),
+            type,
+            lockTime: lockTime?.getTime(),
+            status: 'pending'
+          })
+        )
       }
     } else if (context.unsignedTransaction) {
       const data = await signAndSendTransaction(
@@ -254,7 +263,17 @@ const handleSend = async (client: Client, transactionData: TransferTxData, conte
         context.unsignedTransaction.unsignedTx
       )
 
-      // TODO: dispatch pending tx
+      store.dispatch(
+        transactionSent({
+          hash: data.txId,
+          fromAddress: fromAddress.hash,
+          toAddress,
+          timestamp: new Date().getTime(),
+          type: 'transfer',
+          lockTime: lockTime?.getTime(),
+          status: 'pending'
+        })
+      )
 
       return data.txId
     }

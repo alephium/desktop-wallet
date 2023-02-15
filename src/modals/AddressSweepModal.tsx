@@ -31,12 +31,12 @@ import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/store/addressesSlice'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
 
-type SweepAddress = AddressRedux | undefined
+type SweepAddress = Address | undefined
 
 interface AddressSweepModal {
   sweepAddress?: SweepAddress
@@ -47,7 +47,7 @@ interface AddressSweepModal {
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { client, setSnackbarMessage } = useGlobalContext()
+  const { setSnackbarMessage } = useGlobalContext()
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -67,7 +67,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
 
   useEffect(() => {
     const buildTransactions = async () => {
-      if (!client || !sweepAddresses.from || !sweepAddresses.to) return
+      if (!sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
         const { unsignedTxs, fees } = await buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
@@ -84,27 +84,25 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     }
 
     buildTransactions()
-  }, [client, setSnackbarMessage, sweepAddresses.from, sweepAddresses.to, t])
+  }, [setSnackbarMessage, sweepAddresses.from, sweepAddresses.to, t])
 
   const onSweepClick = async () => {
-    if (!client || !sweepAddresses.from || !sweepAddresses.to) return
+    if (!sweepAddresses.from || !sweepAddresses.to) return
     setIsLoading(true)
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
         const data = await signAndSendTransaction(sweepAddresses.from, txId, unsignedTx)
 
-        if (data) {
-          dispatch(
-            transactionSent({
-              hash: data.txId,
-              fromAddress: sweepAddresses.from.hash,
-              toAddress: sweepAddresses.to.hash,
-              timestamp: new Date().getTime(),
-              type: 'sweep',
-              status: 'pending'
-            })
-          )
-        }
+        dispatch(
+          transactionSent({
+            hash: data.txId,
+            fromAddress: sweepAddresses.from.hash,
+            toAddress: sweepAddresses.to.hash,
+            timestamp: new Date().getTime(),
+            type: 'sweep',
+            status: 'pending'
+          })
+        )
       }
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
@@ -118,7 +116,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     setIsLoading(false)
   }
 
-  const onAddressChange = (type: 'from' | 'to', address: AddressRedux) => {
+  const onAddressChange = (type: 'from' | 'to', address: Address) => {
     setSweepAddresses((prev) => ({ ...prev, [type]: address }))
   }
 

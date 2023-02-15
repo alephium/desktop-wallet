@@ -78,7 +78,7 @@ const AddressDetailsPage = () => {
           <PageH1Styled>
             {t`Address details`} {address.isDefault && !isPassphraseUsed && <MainAddressLabelStyled />}
           </PageH1Styled>
-          {address.label && <AddressBadgeStyled address={address} hideStar />}
+          {address.label && <AddressBadgeStyled addressHash={address.hash} hideStar />}
           <OptionsButton
             transparent
             squared
@@ -106,7 +106,7 @@ const AddressDetailsPage = () => {
             Label
           </DataListCell>
           <DataListCell role="gridcell" tabIndex={0}>
-            {address.label ? <AddressBadge address={address} truncate hideStar /> : '-'}
+            {address.label ? <AddressBadge addressHash={address.hash} truncate hideStar /> : '-'}
           </DataListCell>
         </DataListRow>
         <DataListRow role="row">
@@ -146,23 +146,20 @@ const AddressDetailsPage = () => {
       </DataList>
       <PageH2>{t`Transaction history`}</PageH2>
       <Table minWidth="500px">
-        {pendingTxs
-          .slice(0)
-          .reverse()
-          .map((transaction) => (
-            <TableRow role="row" tabIndex={0} key={transaction.hash} blinking>
-              <TransactionalInfo transaction={transaction} showInternalInflows />
-            </TableRow>
-          ))}
-        {confirmedTxs.map((transaction) => (
+        {pendingTxs.map((tx) => (
+          <TableRow role="row" tabIndex={0} key={tx.hash} blinking>
+            <TransactionalInfo transaction={tx} showInternalInflows />
+          </TableRow>
+        ))}
+        {confirmedTxs.map((tx) => (
           <TableRow
             role="row"
             tabIndex={0}
-            key={transaction.hash}
-            onClick={() => setSelectedTransaction(transaction)}
-            onKeyPress={() => setSelectedTransaction(transaction)}
+            key={tx.hash}
+            onClick={() => setSelectedTransaction(tx)}
+            onKeyPress={() => setSelectedTransaction(tx)}
           >
-            <TransactionalInfo transaction={transaction} showInternalInflows />
+            <TransactionalInfo transaction={tx} showInternalInflows />
           </TableRow>
         ))}
         {confirmedTxs.length !== address.txNumber && (

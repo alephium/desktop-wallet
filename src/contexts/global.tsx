@@ -16,40 +16,33 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair, getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
+import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AsyncReturnType, PartialDeep } from 'type-fest'
+import { PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
-import AddressMetadataStorage from '@/persistent-storage/address-metadata'
 import WalletStorage from '@/persistent-storage/wallet'
-import { walletLocked, walletUnlocked } from '@/store/activeWalletSlice'
-import { addressesRestoredFromMetadata, addressRestorationStarted } from '@/store/addressesSlice'
-import { appLoadingToggled } from '@/store/appSlice'
-import { apiClientInitFailed, apiClientInitSucceeded } from '@/store/networkSlice'
+import { walletLocked, walletSwitched, walletUnlocked } from '@/store/activeWalletSlice'
 import { themeChanged } from '@/store/settingsSlice'
-import { AddressMetadata } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
-import { createClient } from '@/utils/api-clients'
-import { getRandomLabelColor } from '@/utils/colors'
-import { useInterval } from '@/utils/hooks'
 import { migrateUserData } from '@/utils/migration'
 
-const deriveAddressesFromIndexesWorker = new Worker(
-  new URL('../workers/deriveAddressesFromIndexes.ts', import.meta.url),
-  { type: 'module' }
-)
-
-export type Client = Exclude<AsyncReturnType<typeof createClient>, undefined>
+interface WalletUnlockProps {
+  event: 'login' | 'switch'
+  walletName: string
+  password: string
+  afterUnlock: () => void
+  passphrase?: string
+}
 
 export interface GlobalContextProps {
-  unlockWallet: (walletName: string, password: string, callback: () => void, passphrase?: string) => void
-  client: Client | undefined
+  unlockWallet: (props: WalletUnlockProps) => void
   snackbarMessage: SnackbarMessage | undefined
   setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   newVersion: string
@@ -61,7 +54,6 @@ export interface GlobalContextProps {
 
 export const initialGlobalContext: GlobalContextProps = {
   unlockWallet: () => null,
-  client: undefined,
   snackbarMessage: undefined,
   setSnackbarMessage: () => null,
   newVersion: '',
@@ -82,9 +74,9 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [settings, network] = useAppSelector((s) => [s.settings, s.network])
+  const settings = useAppSelector((s) => s.settings)
+  const { restoreAddressesFromMetadata } = useAddressGeneration()
 
-  const [client, setClient] = useState<Client>()
   const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
@@ -92,12 +84,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
-  const unlockWallet = async (walletName: string, password: string, callback: () => void, passphrase?: string) => {
+  const unlockWallet = async ({ event, walletName, password, afterUnlock, passphrase }: WalletUnlockProps) => {
     const isPassphraseUsed = !!passphrase
     try {
       let wallet = WalletStorage.load(walletName, password)
-
-      if (!wallet) return
 
       if (passphrase) {
         wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
@@ -105,52 +95,16 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       migrateUserData(wallet.mnemonic, walletName)
 
-      dispatch(
-        walletUnlocked({
-          name: walletName,
-          mnemonic: wallet.mnemonic,
-          isPassphraseUsed
-        })
-      )
-
-      const addressesMetadata: AddressMetadata[] = isPassphraseUsed
-        ? []
-        : AddressMetadataStorage.load({
-            mnemonic: wallet.mnemonic,
-            walletName: walletName
-          })
-
-      if (addressesMetadata.length > 0) {
-        dispatch(addressRestorationStarted())
-
-        console.log('👀 Found addresses metadata in local storage')
-
-        deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
-          const restoredAddresses = data.map((address) => {
-            const { isMain, color, ...metadata } = addressesMetadata.find(
-              (metadata) => metadata.index === address.index
-            ) as AddressMetadata
-
-            return {
-              ...address,
-              ...metadata,
-              // TODO: Write a migration script for all addresses with no colors and then remove the following line
-              color: color || getRandomLabelColor(),
-              // TODO: Write a migration script to rename `isMain` to `isDefault` adn then remove the following line
-              isDefault: isMain
-            }
-          })
-
-          dispatch(addressesRestoredFromMetadata(restoredAddresses))
-        }
-
-        deriveAddressesFromIndexesWorker.postMessage({
-          mnemonic: wallet.mnemonic,
-          indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
-        })
+      const payload = {
+        name: walletName,
+        mnemonic: wallet.mnemonic,
+        isPassphraseUsed
       }
+      dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))
 
-      callback()
+      restoreAddressesFromMetadata({ walletName, mnemonic: wallet.mnemonic, isPassphraseUsed })
+
+      afterUnlock()
     } catch (e) {
       setSnackbarMessage({
         text: getHumanReadableError(e, t('Invalid password')),
@@ -160,41 +114,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   }
 
   useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)
-
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  const initializeClient = useCallback(async () => {
-    if (network.status !== 'offline') dispatch(appLoadingToggled(true))
-
-    const clientResp = await createClient(network.settings)
-    setClient(clientResp)
-
-    if (!clientResp || !network.settings.explorerApiHost || !network.settings.nodeHost) {
-      dispatch(apiClientInitFailed())
-    } else if (clientResp) {
-      dispatch(apiClientInitSucceeded())
-
-      console.log('Clients initialized.')
-
-      setSnackbarMessage({
-        text: `${t('Current network')}: ${network.name}.`,
-        type: 'info',
-        duration: 4000
-      })
-    }
-
-    dispatch(appLoadingToggled(false))
-  }, [dispatch, network.name, network.settings, network.status, t])
-
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  useEffect(() => {
-    if (network.status === 'connecting') {
-      initializeClient()
-    }
-  }, [initializeClient, network.status])
-
-  // TODO: Delete when @/util/api-clients becomes obsolete in favor of @/api/client.ts
-  const shouldInitialize = network.status === 'offline'
-  useInterval(initializeClient, 2000, !shouldInitialize)
 
   useEffect(() => {
     const shouldListenToOSThemeChanges = settings.theme === 'system'
@@ -222,7 +141,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       value={merge(
         {
           unlockWallet,
-          client,
           snackbarMessage,
           setSnackbarMessage,
           newVersion,

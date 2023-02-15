@@ -16,15 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  AddressKeyPair,
-  addressToGroup,
-  deriveNewAddressData,
-  getWalletFromMnemonic,
-  TOTAL_NUMBER_OF_GROUPS
-} from '@alephium/sdk'
+import { AddressKeyPair, addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Info } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import AddressMetadataForm from '@/components/AddressMetadataForm'
@@ -32,10 +26,10 @@ import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
 import Select, { SelectOption } from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useAddressesContext } from '@/contexts/addresses'
 import { useAppSelector } from '@/hooks/redux'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
 import { saveNewAddresses } from '@/storage-utils/addresses'
-import { selectAllAddresses, selectDefaultAddress } from '@/store/addressesSlice'
+import { selectDefaultAddress } from '@/store/addressesSlice'
 import { getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
@@ -50,47 +44,35 @@ interface NewAddressModalProps {
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
   const { t } = useTranslation()
   const { mnemonic, isPassphraseUsed, name: walletName } = useAppSelector((state) => state.activeWallet)
-  const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
 
-  const { generateOneAddressPerGroup } = useAddressesContext()
+  const { generateAddress, generateAndSaveOneAddressPerGroup } = useAddressGeneration()
 
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isDefaultAddress, setIsDefaultAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressKeyPair>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-
-  const generateNewAddress = useCallback(
-    (group?: number) => {
-      if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
-
-      const { masterKey } = getWalletFromMnemonic(mnemonic)
-
-      const data = deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes.current)
-      setNewAddressData(data)
-      setNewAddressGroup(group ?? addressToGroup(data.hash, TOTAL_NUMBER_OF_GROUPS))
-    },
-    [mnemonic]
-  )
 
   useEffect(() => {
-    singleAddress && generateNewAddress()
-  }, [generateNewAddress, singleAddress])
+    if (singleAddress) {
+      const address = generateAddress()
+      setNewAddressData(address)
+      setNewAddressGroup(addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS))
+    }
+  }, [generateAddress, singleAddress])
 
   if (!mnemonic || !walletName) return null
 
-  const settings = {
-    isDefault: isDefaultAddress,
-    color: addressLabel.color,
-    label: addressLabel.title
-  }
-
   const onGenerateClick = () => {
-    if (newAddressData) {
+    if (singleAddress && newAddressData) {
+      const settings = {
+        isDefault: isDefaultAddress,
+        color: addressLabel.color,
+        label: addressLabel.title
+      }
       saveNewAddresses([{ ...newAddressData, ...settings }], { walletName, mnemonic })
     } else {
-      generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
+      generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
     }
     onClose()
   }
@@ -107,10 +89,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         : ''
   }
 
-  function onValueChange(newValue?: SelectOption<number>) {
-    if (newValue === undefined) return
+  function onValueChange(group?: SelectOption<number>) {
+    if (group === undefined) return
 
-    generateNewAddress(newValue.value)
+    const address = generateAddress({ group: group.value })
+    setNewAddressData(address)
+    setNewAddressGroup(group.value ?? addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS))
   }
 
   return (

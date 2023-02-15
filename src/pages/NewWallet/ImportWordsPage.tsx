@@ -34,7 +34,7 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import useAddressDiscovery from '@/hooks/useAddressDiscovery'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
 import { saveNewWallet } from '@/storage-utils/wallet'
 import { bip39Words } from '@/utils/bip39'
 
@@ -43,7 +43,7 @@ const ImportWordsPage = () => {
   const { setSnackbarMessage } = useGlobalContext()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const discoverAndSaveActiveAddresses = useAddressDiscovery(false)
+  const { discoverAndSaveUsedAddresses } = useAddressGeneration()
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
@@ -77,7 +77,7 @@ const ImportWordsPage = () => {
 
       saveNewWallet({ wallet, walletName, password })
 
-      discoverAndSaveActiveAddresses(wallet.mnemonic, walletName, [0])
+      discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, walletName, skipIndexes: [0], enableLoading: false })
       onButtonNext()
     } catch (e) {
       setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })

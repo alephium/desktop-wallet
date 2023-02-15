@@ -99,7 +99,13 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
 
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    unlockWallet(credentials.walletName, credentials.password, () => navigate('/wallet/overview'), passphrase)
+
+    unlockWallet({
+      event: 'login',
+      ...credentials,
+      afterUnlock: () => navigate('/wallet/overview'),
+      passphrase
+    })
 
     if (passphrase) setPassphrase('')
   }

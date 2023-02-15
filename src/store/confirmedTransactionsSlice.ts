@@ -19,7 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { AddressHash } from '../types/addresses'
+import { walletLocked, walletSwitched } from '@/store/activeWalletSlice'
+
+import { AddressDataSyncResult, AddressHash } from '../types/addresses'
 import { AddressConfirmedTransaction } from '../types/transactions'
 import { selectAddressTransactions } from '../utils/addresses'
 import {
@@ -50,6 +52,8 @@ const confirmedTransactionsSlice = createSlice({
       .addCase(syncAddressesData.fulfilled, addTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, addTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, addTransactions)
+      .addCase(walletLocked, () => initialState)
+      .addCase(walletSwitched, () => initialState)
   }
 })
 
@@ -67,7 +71,7 @@ export default confirmedTransactionsSlice
 
 const addTransactions = (
   state: ConfirmedTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<AddressDataSyncResult[] | { transactions: Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

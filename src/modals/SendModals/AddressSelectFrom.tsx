@@ -19,12 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 
 import AddressSelect from '@/components/Inputs/AddressSelect'
-import { AddressRedux } from '@/types/addresses'
+import { Address } from '@/types/addresses'
 
 export interface AddressSelectFromProps {
-  addresses: AddressRedux[]
-  defaultAddress: AddressRedux
-  onChange: (v: AddressRedux) => void
+  addresses: Address[]
+  defaultAddress: Address
+  onChange: (v: Address) => void
 }
 
 const AddressSelectFrom = ({ addresses, defaultAddress, onChange }: AddressSelectFromProps) => {

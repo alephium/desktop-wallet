@@ -20,11 +20,12 @@ import { convertAlphToSet } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
 import { useTranslation } from 'react-i18next'
 
+import client from '@/api/client'
+import { signAndSendTransaction } from '@/api/transactions'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
-import { Client } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
@@ -150,7 +151,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   )
 }
 
-const buildTransaction = async (client: Client, txData: ScriptTxData, ctx: TxContext) => {
+const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
   if (!txData.alphAmount) {
     txData.alphAmount = undefined
   }
@@ -168,15 +169,13 @@ const buildTransaction = async (client: Client, txData: ScriptTxData, ctx: TxCon
   ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
 }
 
-const handleSend = async (client: Client, txData: ScriptTxData, ctx: TxContext) => {
+const handleSend = async (txData: ScriptTxData, ctx: TxContext) => {
   if (!ctx.unsignedTransaction) throw Error('No unsignedTransaction available')
 
-  const data = await client.signAndSendContractOrScript(
-    txData.fromAddress,
-    ctx.unsignedTxId,
-    ctx.unsignedTransaction.unsignedTx,
-    ctx.currentNetwork
-  )
+  const data = await signAndSendTransaction(txData.fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
+
+  // TODO: Should we display a pending transaction when calling a script? What would the "toAddress" be in that case?
+  // Since there's no toAddress, we need to rethink our UI.
 
   return data.signature
 }

@@ -28,6 +28,7 @@ import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
+import client from '@/api/client'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
@@ -43,8 +44,6 @@ import {
 } from '@/types/transactions'
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
-
-import { useGlobalContext } from './global'
 
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
@@ -67,7 +66,6 @@ const initialContext: WalletConnectContextProps = {
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
-  const { client } = useGlobalContext()
   const addresses = useAppSelector(selectAllAddresses)
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
@@ -124,7 +122,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const onSessionRequest = useCallback(
     async (event: SignClientTypes.EventArguments['session_request']) => {
-      if (!client || !walletConnectClient) return
+      if (!walletConnectClient) return
 
       const getAddressByHash = (signerAddress: string) => {
         const address = addresses.find((a) => a.hash === signerAddress)
@@ -230,7 +228,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         onError(extractErrorMsg(e))
       }
     },
-    [addresses, client, onError, walletConnectClient]
+    [addresses, onError, walletConnectClient]
   )
 
   useEffect(() => {
