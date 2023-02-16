@@ -16,33 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
-import dotSvg from '@/images/dot.svg'
+import { ReactComponent as DotSvg } from '@/images/dot.svg'
 
 interface DotIconProps {
   color: string
-  size?: 'normal' | 'big'
+  size?: number
+  strokeColor?: string
+  className?: string
 }
 
-export default styled.div<DotIconProps>`
-  display: inline-block;
+const defaultSize = 8
 
-  -webkit-mask: url(${dotSvg}) no-repeat 100% 100%;
-  mask: url(${dotSvg}) no-repeat 100% 100%;
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  background-color: ${({ color, theme }) => color || theme.font.primary};
-  flex-shrink: 0;
+const DotIcon = ({ className }: DotIconProps) => <DotSvg className={className} />
 
-  ${({ size }) =>
-    size === 'big'
-      ? css`
-          width: 10px;
-          height: 11px;
-        `
-      : css`
-          width: 7px;
-          height: 8px;
-        `}
+export default styled(DotIcon)`
+  fill: ${({ color }) => color};
+  width: ${({ size }) => size ?? defaultSize}px;
+  height: ${({ size }) => size ?? defaultSize}px;
+  stroke: ${({ strokeColor }) => strokeColor};
 `

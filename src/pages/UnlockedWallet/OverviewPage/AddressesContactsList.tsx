@@ -99,7 +99,7 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
         >
           <Row>
             <AddressColor>
-              {address.isDefault ? <Star color={address.color}>★</Star> : <DotIcon size="big" color={address.color} />}
+              {address.isDefault ? <Star color={address.color}>★</Star> : <DotIcon size={11} color={address.color} />}
             </AddressColor>
             {address.label ? (
               <Column>

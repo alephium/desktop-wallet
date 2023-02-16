@@ -138,7 +138,7 @@ export const ModalHeader = styled.header<{ contrast?: boolean }>`
 const ModalHeaderContent = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 `
 
 const TitleRow = styled.div`
