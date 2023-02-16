@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressBalance, Token } from '@alephium/sdk/api/explorer'
-import { TokenInfo } from '@alephium/tokens-list'
+import { TokenInfo } from '@alephium/token-list'
 
 export type TokenBalances = AddressBalance & {
   id: Token['id']

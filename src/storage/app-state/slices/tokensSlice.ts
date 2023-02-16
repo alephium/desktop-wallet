@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { NUM_OF_ZEROS_IN_QUINTILLION, produceZeros } from '@alephium/sdk'
-import TokensMetadata, { TokenInfo } from '@alephium/tokens-list'
+import TokensMetadata, { TokenInfo } from '@alephium/token-list'
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
