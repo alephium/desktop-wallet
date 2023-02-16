@@ -30,3 +30,8 @@ export type TokenDisplayBalances = {
   balance: bigint
   lockedBalance: bigint
 }
+
+export type AssetAmount = {
+  id: Asset['id']
+  amount?: bigint
+}

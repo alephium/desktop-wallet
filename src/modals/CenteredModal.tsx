@@ -123,7 +123,7 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.background1};
 
   ${TitleContainer} {
     flex: 1;

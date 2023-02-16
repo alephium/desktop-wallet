@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.",
   "Select": "Select",
   "Amount exceeds available balance": "Amount exceeds available balance",
-  "Available": "Available",
+  "available": "available",
   "Use max amount": "Use max amount",
   "Current network": "Current network",
   "Amount": "Amount",
@@ -323,6 +323,7 @@
   "Address settings": "Address settings",
   "Asset": "Asset",
   "Assets": "Assets",
+  "Add asset": "Add asset",
   "Info": "Info",
   "Confirm": "Confirm",
   "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings."

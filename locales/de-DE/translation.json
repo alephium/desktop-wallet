@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "Es gibt keine Adressen mit verfügbarem Guthaben. Bitte senden Sie etwas Geld an eine Ihrer Adressen und versuchen Sie es erneut.",
   "Select": "Wählen Sie",
   "Amount exceeds available balance": "Betrag übersteigt verfügbares Guthaben",
-  "Available": "Verfügbar",
+  "available": "verfügbar",
   "Use max amount": "Maximalbetrag verwenden",
   "Current network": "Aktuelles Netz",
   "Amount": "Betrag",
@@ -323,6 +323,7 @@
   "Address settings": "Address settings",
   "Asset": "Asset",
   "Assets": "Assets",
+  "Add asset": "Add asset",
   "Info": "Info",
   "Confirm": "Confirm",
   "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings."

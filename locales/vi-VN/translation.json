@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "Không có địa chỉ ví nào có đủ số dư. Vui lòng nạp thêm vào tài khoản và thử lại sau.",
   "Select": "Chọn",
   "Amount exceeds available balance": "Số lượng vượt quá số dư tài khoản",
-  "Available": "Có sẳn",
+  "available": "có sẳn",
   "Use max amount": "Sử dụng tất cả số dư",
   "Current network": "Mạng hiện tại",
   "Amount": "Số lượng",
@@ -323,6 +323,7 @@
   "Address settings": "Address settings",
   "Asset": "Asset",
   "Assets": "Assets",
+  "Add asset": "Add asset",
   "Info": "Info",
   "Confirm": "Confirm",
   "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings."

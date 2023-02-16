@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Fragment } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import DotIcon from '@/components/DotIcon'
@@ -49,13 +50,13 @@ const StepsProgress = ({ currentStep, className }: StepsProgressProps) => {
         const { text, dot, line } = getStepColors(step)
 
         return (
-          <>
-            <StepIndicator key={step}>
+          <Fragment key={step}>
+            <StepIndicator>
               <DotIcon color={dot} strokeColor={text} size={dotSize} />
               <StepTitle style={{ color: text }}>{stepTitles[step]}</StepTitle>
             </StepIndicator>
             {index < steps.length - 1 && <Line color={line} />}
-          </>
+          </Fragment>
         )
       })}
     </div>

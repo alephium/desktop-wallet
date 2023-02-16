@@ -27,8 +27,8 @@ import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
+import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
@@ -37,12 +37,13 @@ import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
-import AssetSelect from '@/modals/SendModals/AssetSelect'
+import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
+import { AssetAmount } from '@/types/tokens'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { ALPH } from '@/utils/constants'
@@ -123,11 +124,12 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
-  const [assetId, setAssetId] = useState(ALPH.id)
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([
+    {
+      id: ALPH.id
+    }
+  ])
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
-
-  // TODO: Remove log after assetId is utilized
-  console.log(assetId)
 
   const handleToAddressChange = (value: string) => {
     setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
@@ -167,9 +169,14 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onContactSelect={handleToAddressChange}
           error={toAddress.error}
         />
-        <AssetSelect id="asset-select" addressHash={fromAddress.hash} onAssetChange={setAssetId} />
-        <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
+        <AssetAmountsInput
+          address={fromAddress}
+          assetAmounts={assetAmounts}
+          onAssetAmountsChange={setAssetAmounts}
+          id="asset-amounts"
+        />
       </InputFieldsColumn>
+      <HorizontalDividerStyled />
       <ToggleSections>
         <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
           <Input
@@ -328,4 +335,8 @@ const UnlocksAt = styled.div`
 
 const FromNow = styled.div`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const HorizontalDividerStyled = styled(HorizontalDivider)`
+  margin: 20px 0;
 `
