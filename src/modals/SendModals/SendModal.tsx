@@ -20,13 +20,14 @@ import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons, ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
@@ -197,43 +198,53 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       title={modalTitle}
       onClose={onCloseExtended}
       isLoading={isLoading}
+      dynamicContent
       header={<StepsProgress currentStep={step} />}
-      key={step}
     >
       {step === 'build-tx' && (
-        <BuildTxModalContent
-          data={transactionData ?? initialTxData}
-          onSubmit={buildTransactionExtended}
-          onCancel={onCloseExtended}
-        />
+        <ScrollableModalContent>
+          <BuildTxModalContent
+            data={transactionData ?? initialTxData}
+            onSubmit={buildTransactionExtended}
+            onCancel={onCloseExtended}
+          />
+        </ScrollableModalContent>
       )}
       {step === 'info-check' && !!transactionData && !!fees && (
-        <>
+        <ScrollableModalContent>
           <CheckTxModalContent data={transactionData} fees={fees} />
           <ModalFooterButtons>
-            <ModalFooterButton secondary onClick={() => setStep('build-tx')}>
-              {t`Back`}
+            <ModalFooterButton role="secondary" onClick={() => setStep('build-tx')}>
+              {t('Back')}
             </ModalFooterButton>
             <ModalFooterButton onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}>
-              {t`Send`}
+              {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
             </ModalFooterButton>
           </ModalFooterButtons>
-        </>
+        </ScrollableModalContent>
       )}
       {step === 'password-check' && settings.passwordRequirement && (
-        <PasswordConfirmation
-          text={t`Enter your password to send the transaction.`}
-          buttonText={t`Send`}
-          onCorrectPasswordEntered={handleSendExtended}
-        />
+        <ScrollableModalContent>
+          <PasswordConfirmation
+            text={t('Enter your password to send the transaction.')}
+            buttonText={t('Send')}
+            onCorrectPasswordEntered={handleSendExtended}
+          >
+            <PasswordConfirmationNote>
+              {t('You can disable this confirmation step from the wallet settings.')}
+            </PasswordConfirmationNote>
+          </PasswordConfirmation>
+        </ScrollableModalContent>
       )}
       <ModalPortal>
         {isConsolidateUTXOsModalVisible && (
-          <ConsolidateUTXOsModal
-            onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-            onConsolidateClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
-            fee={fees}
-          />
+          <ScrollableModalContent>
+            <ConsolidateUTXOsModal
+              onClose={() => setIsConsolidateUTXOsModalVisible(false)}
+              onConsolidateClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+              fee={fees}
+            />
+          </ScrollableModalContent>
         )}
       </ModalPortal>
     </CenteredModal>
@@ -241,3 +252,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
 }
 
 export default SendModal
+
+const PasswordConfirmationNote = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+`

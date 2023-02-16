@@ -38,6 +38,7 @@ interface CenteredModalProps extends ModalContainerProps {
   isLoading?: boolean
   header?: ReactNode
   narrow?: boolean
+  dynamicContent?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -48,6 +49,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   isLoading,
   header,
   narrow = false,
+  dynamicContent = false,
   children
 }) => {
   const { t } = useTranslation()
@@ -70,9 +72,8 @@ const CenteredModal: FC<CenteredModalProps> = ({
           </TitleRow>
           {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
         </ModalHeader>
-        <Scrollbar translateContentSizeYToHolder>
-          <ModalContent>{children}</ModalContent>
-        </Scrollbar>
+        {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
+
         {isLoading && (
           <>
             <ModalBackdrop light />
@@ -86,6 +87,12 @@ const CenteredModal: FC<CenteredModalProps> = ({
     </ModalContainer>
   )
 }
+
+export const ScrollableModalContent: FC = ({ children }) => (
+  <Scrollbar translateContentSizeYToHolder>
+    <ModalContent>{children}</ModalContent>
+  </Scrollbar>
+)
 
 export default CenteredModal
 

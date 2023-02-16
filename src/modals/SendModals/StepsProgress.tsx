@@ -127,6 +127,7 @@ const StepTitle = styled.span`
   font-size: 12px;
   position: absolute;
   top: 28px;
+  transition: color 0.3s ease-out;
 `
 
 const Line = styled.div<{ color: string }>`
@@ -134,4 +135,5 @@ const Line = styled.div<{ color: string }>`
   height: 1px;
   background-color: ${({ color }) => color};
   margin-top: ${dotSize / 2}px;
+  transition: background-color 0.3s ease-out;
 `

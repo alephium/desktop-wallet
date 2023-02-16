@@ -36,4 +36,5 @@ export default styled(DotIcon)`
   width: ${({ size }) => size ?? defaultSize}px;
   height: ${({ size }) => size ?? defaultSize}px;
   stroke: ${({ strokeColor }) => strokeColor};
+  transition: all 0.3s ease-out;
 `

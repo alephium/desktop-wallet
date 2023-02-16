@@ -324,5 +324,6 @@
   "Asset": "Asset",
   "Assets": "Assets",
   "Info": "Info",
-  "Confirm": "Confirm"
+  "Confirm": "Confirm",
+  "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings."
 }
