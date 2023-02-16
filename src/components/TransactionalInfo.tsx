@@ -85,7 +85,7 @@ const TransactionalInfo = ({
         </CellArrow>
         <TokenTimeInner>
           {label}
-          <HiddenLabel text={`${formatAmountForDisplay(BigInt(amount ?? 0))} ${token}`} />
+          <HiddenLabel text={`${formatAmountForDisplay({ amount: BigInt(amount ?? 0) })} ${token}`} />
           <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>

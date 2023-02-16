@@ -20,6 +20,7 @@ import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/types/addresses'
+import { AssetAmount, PendingAssetAmount } from '@/types/tokens'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
@@ -39,6 +40,7 @@ export type PendingTransaction = {
   timestamp: number
   type: PendingTxType
   amount?: string
+  tokens?: PendingAssetAmount[]
   lockTime?: number
   status: 'pending'
 }
@@ -81,7 +83,7 @@ export interface ScriptTxData {
 export interface TransferTxData {
   fromAddress: Address
   toAddress: string
-  alphAmount: string
+  assetAmounts: AssetAmount[]
   gasAmount?: number
   gasPrice?: string
   lockTime?: Date

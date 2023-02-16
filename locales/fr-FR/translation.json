@@ -327,5 +327,6 @@
   "Add asset": "Add asset",
   "Info": "Info",
   "Confirm": "Confirm",
-  "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings."
+  "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings.",
+  "Amount can have maximum {{ decimals }} decimal points": "Amount can have maximum {{ decimals }} decimal points"
 }

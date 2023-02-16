@@ -21,6 +21,7 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
+import { ALPH } from '@/utils/constants'
 
 export const selectAddressTransactions = (
   allAddresses: Address[],
@@ -54,3 +55,14 @@ export const filterAddresses = (addresses: Address[], text: string) =>
         // TODO: Include tokens in search
         (address) => address.label?.toLowerCase().includes(text) || address.hash.toLowerCase().includes(text)
       )
+
+export const getAddressAssetsAvailableBalance = (address: Address) => [
+  ...address.tokens.map((token) => ({
+    id: token.id,
+    availableBalance: BigInt(token.balance) - BigInt(token.lockedBalance)
+  })),
+  {
+    id: ALPH.id,
+    availableBalance: getAvailableBalance(address)
+  }
+]

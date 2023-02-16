@@ -85,15 +85,16 @@ const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) =>
               <TokenSymbol>{asset.symbol}</TokenSymbol>
             </NameColumn>
             <TableCellAmount>
-              <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} />
+              <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} decimals={asset.decimals} />
               {asset.lockedBalance > 0 && (
                 <TokenAvailableAmount>
-                  {`${t('Available')}: `}
+                  {`${t('available')}: `}
                   <Amount
                     fadeDecimals
                     value={asset.balance - asset.lockedBalance}
                     suffix={asset.symbol}
                     color={theme.font.tertiary}
+                    decimals={asset.decimals}
                   />
                 </TokenAvailableAmount>
               )}

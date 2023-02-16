@@ -23,7 +23,10 @@ export type TokenBalances = AddressBalance & {
   id: Token['id']
 }
 
-export type Asset = Omit<TokenInfo, 'decimals'> & TokenDisplayBalances
+export type Asset = Omit<TokenInfo, 'decimals'> &
+  TokenDisplayBalances & {
+    decimals?: TokenInfo['decimals']
+  }
 
 export type TokenDisplayBalances = {
   id: Token['id']
@@ -34,4 +37,9 @@ export type TokenDisplayBalances = {
 export type AssetAmount = {
   id: Asset['id']
   amount?: bigint
+}
+
+export type PendingAssetAmount = {
+  id: Asset['id']
+  amount: string
 }

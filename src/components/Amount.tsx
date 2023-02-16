@@ -24,6 +24,7 @@ import { useAppSelector } from '@/hooks/redux'
 
 interface AmountProps {
   value?: bigint | number
+  decimals?: number
   isFiat?: boolean
   fadeDecimals?: boolean
   fullPrecision?: boolean
@@ -36,6 +37,7 @@ interface AmountProps {
 
 const Amount = ({
   value,
+  decimals,
   isFiat,
   className,
   fadeDecimals,
@@ -56,8 +58,14 @@ const Amount = ({
       value !== undefined
         ? isFiat && typeof value === 'number'
           ? formatFiatAmountForDisplay(value)
-          : formatAmountForDisplay(value as bigint, fullPrecision, nbOfDecimalsToShow)
+          : formatAmountForDisplay({
+              amount: value as bigint,
+              amountDecimals: decimals,
+              displayDecimals: nbOfDecimalsToShow,
+              fullPrecision
+            })
         : ''
+
     if (amount) {
       if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
         quantitySymbol = amount.slice(-1)

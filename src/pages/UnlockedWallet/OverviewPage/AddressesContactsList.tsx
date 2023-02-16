@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToFiat } from '@alephium/sdk'
+import { calculateAmountWorth } from '@alephium/sdk'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -113,7 +113,7 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
             )}
             <TableCellAmount>
               <Amount
-                value={convertSetToFiat(BigInt(address.balance), price ?? 0)}
+                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
                 fadeDecimals
                 isFiat
                 suffix={currencies['USD'].symbol}

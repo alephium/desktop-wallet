@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToFiat } from '@alephium/sdk'
+import { calculateAmountWorth } from '@alephium/sdk'
 import classNames from 'classnames'
 import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
 import { useState } from 'react'
@@ -63,7 +63,7 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const balanceInFiat = convertSetToFiat(totalBalance, price ?? 0)
+  const balanceInFiat = calculateAmountWorth(totalBalance, price ?? 0)
   const isOnline = network.status === 'online'
 
   const lockWallet = () => dispatch(walletLocked())
@@ -89,7 +89,7 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
               <BalancesColumn>
                 <AvailableBalanceRow>
                   <BalanceLabel tabIndex={0} role="representation">
-                    {t('Available')}
+                    {t('available')}
                   </BalanceLabel>
                   <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
                 </AvailableBalanceRow>

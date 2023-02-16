@@ -52,7 +52,7 @@ export default styled(Table)`
   ${({ isLoading }) =>
     isLoading &&
     css`
-      min-height: 300px;
+      min-height: 132px;
       width: 100%;
     `}
 `

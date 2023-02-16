@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, convertSetToAlph, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +38,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/tokens'
+import { ALPH } from '@/utils/constants'
 
 interface AssetAmountsInputProps {
   address: Address
@@ -58,7 +59,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
 
   const selectedAssetId = assetAmounts[selectedAssetRowIndex].id
   const selectedAsset = assets.find((asset) => asset.id === selectedAssetId)
-  const minAmountInAlph = convertSetToAlph(MIN_UTXO_SET_AMOUNT)
+  const minAmountInAlph = toHumanReadableAmount(MIN_UTXO_SET_AMOUNT)
   const selectedAssetIds = assetAmounts.map(({ id }) => id)
   const remainingAvailableAssets = assets.filter((asset) => !selectedAssetIds.includes(asset.id))
   const disabled = remainingAvailableAssets.length === 0
@@ -83,19 +84,26 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
     if (!selectedAsset) return
 
     const amountValueAsFloat = parseFloat(amountInput)
-    const availableAmount = convertSetToAlph(selectedAsset.balance - selectedAsset.lockedBalance)
+    const tooManyDecimals = getNumberOfDecimals(amountInput) > (selectedAsset?.decimals ?? 0)
+
+    const availableAmount = toHumanReadableAmount(
+      selectedAsset.balance - selectedAsset.lockedBalance,
+      selectedAsset.decimals
+    )
     const newError =
       amountValueAsFloat > parseFloat(availableAmount)
         ? t('Amount exceeds available balance')
-        : amountValueAsFloat < parseFloat(minAmountInAlph)
+        : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph)
         ? t('Amount must be greater than {{ minAmountInAlph }}', { minAmountInAlph })
+        : tooManyDecimals
+        ? t('Amount can have maximum {{ decimals }} decimal points', { decimals: selectedAsset.decimals })
         : ''
 
     const newErrors = [...errors]
     newErrors.splice(assetRowIndex, 1, newError)
     setErrors(newErrors)
 
-    const amount = !amountInput ? undefined : convertAlphToSet(amountInput)
+    const amount = !amountInput ? undefined : fromHumanReadableAmount(amountInput, selectedAsset.decimals)
     const newAssetAmounts = [...assetAmounts]
     newAssetAmounts.splice(assetRowIndex, 1, {
       id: selectedAssetId,
@@ -122,9 +130,9 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
           const asset = assets.find((asset) => asset.id === id)
           if (!asset) return
 
-          const amountValue = amount ? convertSetToAlph(amount) : ''
-          const availableAmountInSet = asset.balance - asset.lockedBalance
-          const availableAmount = convertSetToAlph(availableAmountInSet)
+          const amountValue = amount ? toHumanReadableAmount(amount, asset.decimals) : ''
+          const availableAmount = asset.balance - asset.lockedBalance
+          const availableHumanReadableAmount = toHumanReadableAmount(availableAmount, asset.decimals)
 
           return (
             <BoxStyled key={id}>
@@ -147,8 +155,8 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                   onClick={() => setSelectedAssetRowIndex(index)}
                   onMouseDown={() => setSelectedAssetRowIndex(index)}
                   type="number"
-                  min={minAmountInAlph}
-                  max={availableAmount}
+                  min={asset.id === ALPH.id ? minAmountInAlph : 0}
+                  max={availableHumanReadableAmount}
                   aria-label={t('Amount')}
                   label={`${t('Amount')} (${asset.symbol})`}
                   error={errors[index]}
@@ -157,14 +165,15 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                 <AvailableAmountColumn>
                   <AvailableAmount tabIndex={0}>
                     <Amount
-                      value={availableAmountInSet}
+                      value={availableAmount}
                       nbOfDecimalsToShow={4}
                       color={theme.font.secondary}
                       suffix={asset.symbol}
+                      decimals={asset.decimals}
                     />
                     <span> {t('available')}</span>
                   </AvailableAmount>
-                  <ActionLink onClick={() => handleAssetAmountChange(index, availableAmount)}>
+                  <ActionLink onClick={() => handleAssetAmountChange(index, availableHumanReadableAmount)}>
                     {t('Use max amount')}
                   </ActionLink>
                 </AvailableAmountColumn>
@@ -225,7 +234,7 @@ const AssetSelectModal = ({
             <AssetName>
               {asset.name} ({asset.symbol})
             </AssetName>
-            <AmountStyled value={asset.balance} fadeDecimals suffix={asset.symbol} />
+            <AmountStyled value={asset.balance} fadeDecimals suffix={asset.symbol} decimals={asset.decimals} />
           </Option>
         ))}
       </div>

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BILLION } from '@alephium/sdk'
+import { BILLION, NUM_OF_ZEROS_IN_QUINTILLION } from '@alephium/sdk'
 
 export const MINIMAL_GAS_AMOUNT = 20000
 export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
@@ -25,5 +25,6 @@ export const GENESIS_TIMESTAMP = 1231006505000
 export const ALPH = {
   id: '0',
   name: 'Alephium',
-  symbol: 'ALPH'
+  symbol: 'ALPH',
+  decimals: NUM_OF_ZEROS_IN_QUINTILLION
 }

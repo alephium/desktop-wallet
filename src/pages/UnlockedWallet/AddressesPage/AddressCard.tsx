@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToAlph } from '@alephium/sdk'
+import { calculateAmountWorth } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs from 'dayjs'
 import { MouseEvent, useState } from 'react'
@@ -58,8 +58,7 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
 
   if (!address || !walletName || !mnemonic) return null
 
-  const alphBalance = parseFloat(convertSetToAlph(BigInt(address.balance)))
-  const fiatBalance = alphBalance * (price ?? 0)
+  const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
   const assetSymbols = assets.filter((asset) => asset.balance > 0).map((asset) => asset.symbol)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {

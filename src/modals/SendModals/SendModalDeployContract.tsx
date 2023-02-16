@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { fromHumanReadableAmount } from '@alephium/sdk'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -59,7 +59,7 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
 
   const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
-      data.initialAlphAmount !== undefined ? convertAlphToSet(data.initialAlphAmount).toString() : undefined
+      data.initialAlphAmount !== undefined ? fromHumanReadableAmount(data.initialAlphAmount).toString() : undefined
     const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
@@ -149,7 +149,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     !gasPriceError &&
     !gasAmountError &&
     !!bytecode &&
-    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), availableBalance))
+    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
 
   return (
     <>
@@ -185,7 +185,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             fromAddress,
             bytecode: bytecode ?? '',
             issueTokenAmount: issueTokenAmount || undefined,
-            initialAlphAmount: (alphAmount && convertAlphToSet(alphAmount).toString()) || undefined,
+            initialAlphAmount: (alphAmount && fromHumanReadableAmount(alphAmount).toString()) || undefined,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })
