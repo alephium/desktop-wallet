@@ -19,13 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import styled, { css } from 'styled-components'
 
 export default styled.div<{ color?: string }>`
-  flex-grow: 1;
-  justify-content: right;
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-grow: 1;
   min-width: 6em;
   flex-basis: 120px;
   gap: 6px;
-  align-items: center;
   font-weight: var(--fontWeight-semiBold);
 
   ${({ color }) =>

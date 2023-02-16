@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
@@ -69,6 +69,7 @@ const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsT
 
 const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
 
   const displayedAssets = limit ? assets.slice(0, limit) : assets
@@ -87,8 +88,13 @@ const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) =>
               <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} />
               {asset.lockedBalance > 0 && (
                 <TokenAvailableAmount>
-                  {t('Available')}
-                  <Amount fadeDecimals value={asset.balance - asset.lockedBalance} suffix={asset.symbol} />
+                  {`${t('Available')}: `}
+                  <Amount
+                    fadeDecimals
+                    value={asset.balance - asset.lockedBalance}
+                    suffix={asset.symbol}
+                    color={theme.font.tertiary}
+                  />
                 </TokenAvailableAmount>
               )}
             </TableCellAmount>
