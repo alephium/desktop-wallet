@@ -81,6 +81,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
             className={`${className} clipboard`}
             onClick={handleInput}
             onKeyPress={handleInput}
+            onMouseDown={handleInput}
             role="button"
             aria-label={disableA11y ? undefined : t`Copy to clipboard`}
             tabIndex={disableA11y ? undefined : 0}
