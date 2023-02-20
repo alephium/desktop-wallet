@@ -33,6 +33,7 @@ interface AddressDetailsModalProps {
   addressHash: AddressHash
   onClose: () => void
 }
+
 const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps) => {
   const { t } = useTranslation()
   const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])

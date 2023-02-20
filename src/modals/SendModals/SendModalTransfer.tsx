@@ -255,8 +255,6 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
   } else {
     const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
 
-    console.log('Sending tokens:', tokens)
-
     const { data } = await client.clique.transactions.postTransactionsBuild({
       fromPublicKey: fromAddress.publicKey,
       destinations: [
@@ -291,7 +289,6 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
       for (const { txId, unsignedTx } of sweepUnsignedTxs) {
         const data = await signAndSendTransaction(fromAddress, txId, unsignedTx)
 
-        // TODO: Update Pending TX to include tokens
         store.dispatch(
           transactionSent({
             hash: data.txId,
@@ -309,7 +306,6 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
     } else if (unsignedTransaction) {
       const data = await signAndSendTransaction(fromAddress, unsignedTxId, unsignedTransaction.unsignedTx)
 
-      // TODO: Update Pending TX to include tokens
       store.dispatch(
         transactionSent({
           hash: data.txId,

@@ -132,8 +132,6 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
       filteredAssetAmounts.push({ id: ALPH.id })
     }
 
-    console.log('filteredAssetAmounts', filteredAssetAmounts)
-
     setSelectedAssetRowIndex(0)
     onAssetAmountsChange(filteredAssetAmounts)
 
@@ -267,7 +265,7 @@ const AssetSelectModal = ({
   )
 }
 
-export default styled(AssetAmountsInput)``
+export default AssetAmountsInput
 
 const BoxStyled = styled(Box)`
   padding: 10px;
