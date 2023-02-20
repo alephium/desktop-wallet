@@ -16,13 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  DUST_AMOUNT,
-  fromHumanReadableAmount,
-  isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT,
-  removeConsolidationChangeAmount
-} from '@alephium/sdk'
+import { DUST_AMOUNT, isConsolidationTx, MIN_UTXO_SET_AMOUNT, removeConsolidationChangeAmount } from '@alephium/sdk'
 import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '@/types/addresses'
@@ -82,10 +76,10 @@ export const convertUnconfirmedTxToPendingTx = (
 }
 
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? fromHumanReadableAmount(data.alphAmount) : BigInt(0)
-  const amountIncludingFees = amountInSet + fees
+  const amountInPhi = BigInt(data.alphAmount ?? 0)
+  const amountIncludingFees = amountInPhi + fees
   const exceededBy = amountIncludingFees - getAvailableBalance(data.fromAddress)
-  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInSet
+  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInPhi
 
   return expectedAmount
 }

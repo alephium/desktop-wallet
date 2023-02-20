@@ -75,6 +75,8 @@ const TransactionalInfo = ({
 
   const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
+  // TODO: Update display to include tokens
+
   return (
     <div className={className}>
       <CellTime>

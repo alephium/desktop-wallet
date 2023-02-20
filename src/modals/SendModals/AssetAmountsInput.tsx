@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -121,6 +121,26 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
       onAssetAmountsChange(newAssetAmounts)
     }
   }
+
+  useEffect(() => {
+    const addressTokenIds = address.tokens.map((token) => token.id)
+    const filteredAssetAmounts = assetAmounts.filter(
+      (asset) => addressTokenIds.includes(asset.id) || asset.id === ALPH.id
+    )
+
+    if (filteredAssetAmounts.length === 0) {
+      filteredAssetAmounts.push({ id: ALPH.id })
+    }
+
+    console.log('filteredAssetAmounts', filteredAssetAmounts)
+
+    setSelectedAssetRowIndex(0)
+    onAssetAmountsChange(filteredAssetAmounts)
+
+    // We want to potentially update the list of assets ONLY when the address changes because the newly chosen address
+    // might not have the tokens that were selected before
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address])
 
   return (
     <div className={className}>

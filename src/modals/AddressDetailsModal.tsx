@@ -50,7 +50,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
             {address.isDefault && !isPassphraseUsed ? (
               <Star color={address.color}>★</Star>
             ) : (
-              <DotIcon size="big" color={address.color} />
+              <DotIcon size={11} color={address.color} />
             )}
           </AddressColor>
           <Column>

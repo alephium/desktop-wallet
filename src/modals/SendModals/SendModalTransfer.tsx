@@ -87,12 +87,19 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
 
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
   const { t } = useTranslation()
+  const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
+
+  // TODO: Display token amounts
+  console.log(tokens)
 
   return (
     <>
       <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
       <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
-      <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
+      <AlphAmountInfoBox
+        label={t`Amount`}
+        amount={expectedAmount({ fromAddress: data.fromAddress, alphAmount: attoAlphAmount }, fees)}
+      />
       {data.lockTime && (
         <InfoBox label={t('Unlocks at')}>
           <UnlocksAt>
@@ -105,6 +112,8 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
     </>
   )
 }
+
+const defaultAssetAmounts = [{ id: ALPH.id }]
 
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
   const { t } = useTranslation()
@@ -123,11 +132,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
-  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([
-    {
-      id: ALPH.id
-    }
-  ])
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>(data.assetAmounts || defaultAssetAmounts)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
   const handleToAddressChange = (value: string) => {
