@@ -25,6 +25,9 @@ import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
+import ActionLink from '@/components/ActionLink'
+import AddressBadge from '@/components/AddressBadge'
+import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
@@ -44,13 +47,14 @@ import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
+import { selectContactByAddress } from '@/storage/app-state/slices/contactsSlice'
 import { store } from '@/storage/app-state/store'
 import { AssetAmount } from '@/types/tokens'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
 import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
-import { formatDateForDisplay } from '@/utils/misc'
+import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 import { expectedAmount, getAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
@@ -90,7 +94,11 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
   const { t } = useTranslation()
   const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
-  const tokensInfo = useAppSelector((state) => state.tokens.entities)
+  const [tokensInfo, contact, explorerUrl] = useAppSelector((s) => [
+    s.tokens.entities,
+    selectContactByAddress(s, data.toAddress),
+    s.network.settings.explorerUrl
+  ])
 
   return (
     <Content>
@@ -117,8 +125,32 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
           )
         })}
       </Box>
-      <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
-      <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
+      <Box>
+        <AddressRow>
+          <AddressLabel>{t('From')}</AddressLabel>
+          <AddressLabelHash>
+            <AddressBadge addressHash={data.fromAddress.hash} truncate showHashWhenNoLabel />
+            <AddressEllipsedStyled addressHash={data.fromAddress.hash} />
+          </AddressLabelHash>
+        </AddressRow>
+        <HorizontalDivider />
+        <AddressRow>
+          <AddressLabel>{t('To')}</AddressLabel>
+          <AddressLabelHash>
+            {contact ? (
+              <AddressLabelHash>
+                {contact.name}
+
+                <AddressEllipsedStyled addressHash={contact.address} />
+              </AddressLabelHash>
+            ) : (
+              <ActionLinkStyled onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${data.toAddress}`)}>
+                <AddressEllipsed addressHash={data.toAddress} />
+              </ActionLinkStyled>
+            )}
+          </AddressLabelHash>
+        </AddressRow>
+      </Box>
       <AlphAmountInfoBox
         label={t`Amount`}
         amount={expectedAmount({ fromAddress: data.fromAddress, alphAmount: attoAlphAmount }, fees)}
@@ -401,4 +433,33 @@ const AssetAmountStyled = styled(Amount)`
 
 const Content = styled.div`
   margin-top: 36px;
+
+  & > ${Box}:not(:last-child) {
+    margin-bottom: 35px;
+  }
+`
+
+const AddressRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 15px;
+`
+
+const AddressLabel = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const AddressLabelHash = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
+const AddressEllipsedStyled = styled(AddressEllipsed)`
+  max-width: 90px;
+  color: ${({ theme }) => theme.font.tertiary};
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  font-weight: var(--fontWeight-semiBold);
 `

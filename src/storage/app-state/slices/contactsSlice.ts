@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
+import { createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
 import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
 import { RootState } from '@/storage/app-state/store'
@@ -50,6 +50,11 @@ export const {
   selectAll: selectAllContacts,
   selectIds: selectContactIds
 } = contactsAdapter.getSelectors<RootState>((state) => state[sliceName])
+
+export const selectContactByAddress = createSelector(
+  [selectAllContacts, (_, addressHash) => addressHash],
+  (contacts, addressHash) => contacts.find((contact) => contact.address === addressHash)
+)
 
 export const {
   contactStoredInPersistentStorage,
