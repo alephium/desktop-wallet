@@ -28,11 +28,9 @@ interface AssetLogoProps {
   className?: string
 }
 
-const AssetLogo = ({ className }: AssetLogoProps) => (
+const AssetLogo = ({ asset, className }: AssetLogoProps) => (
   <div className={className}>
-    {/* TODO: uncomment when metadata repo is accessible by the public */}
-    {/* <LogoImage src={token.logoURI ?? AlephiumLogoSVG} /> */}
-    <LogoImage src={AlephiumLogoSVG} />
+    <LogoImage src={asset.logoURI ?? AlephiumLogoSVG} />
   </div>
 )
 
@@ -52,7 +50,7 @@ export default styled(AssetLogo)`
           background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
         `
       : css`
-          background-color: ${theme.font.tertiary};
+          background-color: ${theme.bg.contrast};
         `}
 `
 
