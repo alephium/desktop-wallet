@@ -34,6 +34,8 @@ import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
 import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
@@ -110,11 +112,11 @@ const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployCo
 
   return (
     <>
-      <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
+      <CheckAddressesBox fromAddress={data.fromAddress.hash} />
       <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
       {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label={t`Issue token amount`} wordBreak />}
-      <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
+      <CheckFeeLockTimeBox fee={fees} />
     </>
   )
 }

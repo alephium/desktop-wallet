@@ -25,13 +25,7 @@ import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
-import ActionLink from '@/components/ActionLink'
-import AddressBadge from '@/components/AddressBadge'
-import AddressEllipsed from '@/components/AddressEllipsed'
-import Amount from '@/components/Amount'
-import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
-import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
@@ -41,21 +35,21 @@ import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
-import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
+import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
+import CheckFeeLocktimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
 import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
-import { selectContactByAddress } from '@/storage/app-state/slices/contactsSlice'
 import { store } from '@/storage/app-state/store'
 import { AssetAmount } from '@/types/tokens'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
 import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
-import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
-import { expectedAmount, getAssetAmounts } from '@/utils/transactions'
+import { getAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
   onClose: () => void
@@ -91,82 +85,13 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   )
 }
 
-const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
-  const { t } = useTranslation()
-  const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
-  const [tokensInfo, contact, explorerUrl] = useAppSelector((s) => [
-    s.tokens.entities,
-    selectContactByAddress(s, data.toAddress),
-    s.network.settings.explorerUrl
-  ])
-
-  return (
-    <Content>
-      <Box>
-        <AssetAmountRow>
-          <AssetLogoStyled asset={{ id: ALPH.id }} size={30} />
-          <AssetAmountStyled value={BigInt(attoAlphAmount)} />
-        </AssetAmountRow>
-        {tokens.map((token) => {
-          const tokenInfo = tokensInfo[token.id]
-
-          return (
-            <Fragment key={token.id}>
-              <HorizontalDivider />
-              <AssetAmountRow>
-                {tokenInfo && <AssetLogoStyled asset={tokenInfo} size={30} />}
-                <AssetAmountStyled
-                  value={BigInt(token.amount)}
-                  suffix={tokenInfo?.symbol}
-                  decimals={tokenInfo?.decimals}
-                />
-              </AssetAmountRow>
-            </Fragment>
-          )
-        })}
-      </Box>
-      <Box>
-        <AddressRow>
-          <AddressLabel>{t('From')}</AddressLabel>
-          <AddressLabelHash>
-            <AddressBadge addressHash={data.fromAddress.hash} truncate showHashWhenNoLabel />
-            <AddressEllipsedStyled addressHash={data.fromAddress.hash} />
-          </AddressLabelHash>
-        </AddressRow>
-        <HorizontalDivider />
-        <AddressRow>
-          <AddressLabel>{t('To')}</AddressLabel>
-          <AddressLabelHash>
-            {contact ? (
-              <AddressLabelHash>
-                {contact.name}
-
-                <AddressEllipsedStyled addressHash={contact.address} />
-              </AddressLabelHash>
-            ) : (
-              <ActionLinkStyled onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${data.toAddress}`)}>
-                <AddressEllipsed addressHash={data.toAddress} />
-              </ActionLinkStyled>
-            )}
-          </AddressLabelHash>
-        </AddressRow>
-      </Box>
-      <AlphAmountInfoBox
-        label={t`Amount`}
-        amount={expectedAmount({ fromAddress: data.fromAddress, alphAmount: attoAlphAmount }, fees)}
-      />
-      {data.lockTime && (
-        <InfoBox label={t('Unlocks at')}>
-          <UnlocksAt>
-            {formatDateForDisplay(data.lockTime)}
-            <FromNow>({dayjs(data.lockTime).fromNow()})</FromNow>
-          </UnlocksAt>
-        </InfoBox>
-      )}
-      <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
-    </Content>
-  )
-}
+const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => (
+  <Content>
+    <CheckAmountsBox assetAmounts={data.assetAmounts} />
+    <CheckAddressesBox fromAddress={data.fromAddress.hash} toAddress={data.toAddress} />
+    <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
+  </Content>
+)
 
 const defaultAssetAmounts = [{ id: ALPH.id }]
 
@@ -245,6 +170,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         title={t('Show advanced options')}
         subtitle={t('Set gas and lock time')}
         onClick={clearAdvancedSettings}
+        isOpen={!!lockTime || !!gasAmount || !!gasPrice}
       >
         <Input
           id="locktime"
@@ -402,33 +328,8 @@ function useStateWithError<T>(initialValue: T) {
 
 export default TransferTxModal
 
-const UnlocksAt = styled.div`
-  display: flex;
-  gap: var(--spacing-1);
-`
-
-const FromNow = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
-`
-
-const AssetAmountRow = styled.div`
-  display: flex;
-  padding: 23px 0;
-  justify-content: center;
-  align-items: center;
-`
-
-const AssetLogoStyled = styled(AssetLogo)`
-  margin-right: 25px;
-`
-
-const AssetAmountStyled = styled(Amount)`
-  font-weight: var(--fontWeight-semiBold);
-  font-size: 26px;
 `
 
 const Content = styled.div`
@@ -437,29 +338,4 @@ const Content = styled.div`
   & > ${Box}:not(:last-child) {
     margin-bottom: 35px;
   }
-`
-
-const AddressRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 15px;
-`
-
-const AddressLabel = styled.div`
-  font-weight: var(--fontWeight-semiBold);
-  color: ${({ theme }) => theme.font.secondary};
-`
-
-const AddressLabelHash = styled.div`
-  display: flex;
-  gap: 10px;
-`
-
-const AddressEllipsedStyled = styled(AddressEllipsed)`
-  max-width: 90px;
-  color: ${({ theme }) => theme.font.tertiary};
-`
-
-const ActionLinkStyled = styled(ActionLink)`
-  font-weight: var(--fontWeight-semiBold);
 `
