@@ -49,7 +49,6 @@ export default OverviewPage
 const Row = styled.div`
   display: flex;
   gap: 30px;
-  align-items: flex-start;
 `
 
 const TokensNFTsListStyled = styled(TokensNFTsList)`
