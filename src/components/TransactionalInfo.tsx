@@ -143,13 +143,13 @@ const TransactionalInfo = ({
       </CellAddress>
       <TableCellAmount aria-hidden="true" color={amountTextColor}>
         {amount !== undefined && (
-          <>
+          <AmountContainer>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {amountSign}
               <Amount value={amount} fadeDecimals color={amountTextColor} />
             </div>
-          </>
+          </AmountContainer>
         )}
       </TableCellAmount>
     </div>
@@ -241,4 +241,10 @@ const TransactionIcon = styled.span<{ color?: string }>`
   height: 25px;
   border-radius: 25px;
   background-color: ${({ color, theme }) => color || theme.font.primary};
+`
+
+const AmountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `

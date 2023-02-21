@@ -154,7 +154,7 @@ const ContactRow = styled(motion.div)`
   display: flex;
   gap: var(--spacing-2);
   position: absolute;
-  width: 90%;
+  width: 85%;
   height: 100%;
   align-items: center;
   top: 6px;
