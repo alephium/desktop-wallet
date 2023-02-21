@@ -35,8 +35,8 @@ const OverviewPage = () => {
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <Row>
-          <TokensNFTsList />
-          <AddressesContactsList limit={5} />
+          <TokensNFTsListStyled />
+          <AddressesContactsListStyled limit={5} />
         </Row>
         <TransactionsList limit={5} />
       </UnlockedWalletPanel>
@@ -50,4 +50,12 @@ const Row = styled.div`
   display: flex;
   gap: 30px;
   align-items: flex-start;
+`
+
+const TokensNFTsListStyled = styled(TokensNFTsList)`
+  flex: 4;
+`
+
+const AddressesContactsListStyled = styled(AddressesContactsList)`
+  flex: 3;
 `

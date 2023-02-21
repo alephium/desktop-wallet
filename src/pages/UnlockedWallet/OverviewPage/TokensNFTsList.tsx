@@ -55,7 +55,7 @@ const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsT
   const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
 
   return (
-    <Table isLoading={showSkeletonLoading} className={className} minWidth="450px">
+    <Table isLoading={showSkeletonLoading} className={className}>
       <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {
         {
