@@ -328,5 +328,6 @@
   "Confirm": "Confirm",
   "You can disable this confirmation step from the wallet settings.": "You can disable this confirmation step from the wallet settings.",
   "This asset cannot have more than {{ decimals }} decimals": "This asset cannot have more than {{ decimals }} decimals",
-  "Lock time must be in the future.": "Le temps de verrouillage doit être dans le futur."
+  "Lock time must be in the future.": "Le temps de verrouillage doit être dans le futur.",
+  "Set gas and lock time": "Set gas and lock time"
 }

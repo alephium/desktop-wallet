@@ -34,7 +34,7 @@ import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
-import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
+import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
@@ -170,7 +170,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
           onChange={(e) => setTxPrepProp('issueTokenAmount')(e.target.value)}
         />
       </InputFieldsColumn>
-      <GasSettingsExpandableSection
+      <GasSettings
         gasAmount={gasAmount}
         gasAmountError={gasAmountError}
         gasPrice={gasPrice}

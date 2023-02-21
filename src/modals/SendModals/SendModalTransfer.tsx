@@ -39,7 +39,7 @@ import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
-import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
+import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
@@ -149,8 +149,10 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const handleLocktimeChange = (lockTimeInput: string) =>
     setLockTime(lockTimeInput ? dayjs(lockTimeInput).toDate() : undefined)
 
-  const onClickClearLockTime = (isShown: boolean) =>
-    setLockTime(isShown ? undefined : dayjs().add(1, 'minute').toDate())
+  const clearAdvancedSettings = () => {
+    clearGasSettings()
+    setLockTime(undefined)
+  }
 
   const lockTimeInPast = lockTime && dayjs(lockTime).toDate() < dayjs().toDate()
   const atLeastOneAssetWithAmountIsSet = assetAmounts.some((asset) => asset?.amount && asset.amount > 0)
@@ -183,31 +185,31 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         />
       </InputFieldsColumn>
       <HorizontalDividerStyled />
-      <ToggleSections>
-        <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
-          <Input
-            id="locktime"
-            label={t('Lock time')}
-            value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
-            onChange={(e) => handleLocktimeChange(e.target.value)}
-            type="datetime-local"
-            hint="DD/MM/YYYY hh:mm"
-            min={dayjs().format('YYYY-MM-DDTHH:mm')}
-            error={lockTimeInPast && t('Lock time must be in the future.')}
-            liftLabel
-          />
-        </ToggleSection>
-        <GasSettingsExpandableSection
+      <ToggleSection
+        title={t('Show advanced options')}
+        subtitle={t('Set gas and lock time')}
+        onClick={clearAdvancedSettings}
+      >
+        <Input
+          id="locktime"
+          label={t('Lock time')}
+          value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
+          onChange={(e) => handleLocktimeChange(e.target.value)}
+          type="datetime-local"
+          hint="DD/MM/YYYY hh:mm"
+          min={dayjs().format('YYYY-MM-DDTHH:mm')}
+          error={lockTimeInPast && t('Lock time must be in the future.')}
+          liftLabel
+        />
+        <GasSettings
           gasAmount={gasAmount}
           gasAmountError={gasAmountError}
           gasPrice={gasPrice}
           gasPriceError={gasPriceError}
           onGasAmountChange={handleGasAmountChange}
           onGasPriceChange={handleGasPriceChange}
-          onClearGasSettings={clearGasSettings}
-          isOpen={!!gasAmount || !!gasPrice}
         />
-      </ToggleSections>
+      </ToggleSection>
       <BuildTxFooterButtons
         onSubmit={() =>
           onSubmit({
@@ -342,12 +344,6 @@ function useStateWithError<T>(initialValue: T) {
 }
 
 export default TransferTxModal
-
-const ToggleSections = styled.div`
-  > * {
-    margin-top: 20px;
-  }
-`
 
 const UnlocksAt = styled.div`
   display: flex;
