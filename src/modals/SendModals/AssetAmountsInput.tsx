@@ -96,7 +96,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
         : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph)
         ? t('Amount must be greater than {{ minAmountInAlph }}', { minAmountInAlph })
         : tooManyDecimals
-        ? t('Amount can have maximum {{ decimals }} decimal points', { decimals: selectedAsset.decimals })
+        ? t('This asset cannot have more than {{ decimals }} decimals', { decimals: selectedAsset.decimals })
         : ''
 
     const newErrors = [...errors]
