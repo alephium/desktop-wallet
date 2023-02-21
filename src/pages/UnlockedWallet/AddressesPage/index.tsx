@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
 import { fadeIn } from '@/animations'
@@ -51,6 +52,7 @@ const tabs = [
 
 const AddressesPage = () => {
   const { t } = useTranslation()
+  const { state } = useLocation()
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
@@ -62,7 +64,7 @@ const AddressesPage = () => {
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[state?.activeTab === 'contacts' ? 1 : 0])
 
   const handleOneAddressPerGroupClick = () => {
     if (isPassphraseUsed) {

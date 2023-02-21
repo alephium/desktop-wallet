@@ -330,5 +330,6 @@
   "This asset cannot have more than {{ decimals }} decimals": "This asset cannot have more than {{ decimals }} decimals",
   "Lock time must be in the future.": "Le temps de verrouillage doit être dans le futur.",
   "Set gas and lock time": "Set gas and lock time",
-  "Set gas settings": "Set gas settings"
+  "Set gas settings": "Set gas settings",
+  "No contacts found. You can create contacts in the Addresses page.": "No contacts found. You can create contacts in the Addresses page."
 }
