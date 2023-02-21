@@ -221,7 +221,6 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
             lockTime
           })
         }
-        onCancel={onCancel}
         isSubmitButtonActive={isSubmitButtonActive}
       />
     </>

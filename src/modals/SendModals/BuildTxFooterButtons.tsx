@@ -17,28 +17,31 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import Button from '@/components/Button'
 
 interface BuildTxFooterButtons {
   onSubmit: () => void
-  onCancel: () => void
   isSubmitButtonActive: boolean | string
 }
 
-const BuildTxFooterButtons = ({ onSubmit, onCancel, isSubmitButtonActive }: BuildTxFooterButtons) => {
+const BuildTxFooterButtons = ({ onSubmit, isSubmitButtonActive }: BuildTxFooterButtons) => {
   const { t } = useTranslation()
 
   return (
-    <ModalFooterButtons>
-      <ModalFooterButton role="secondary" onClick={onCancel}>
-        {t('Cancel')}
-      </ModalFooterButton>
-      <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
+    <ModalFooter>
+      <Button onClick={onSubmit} disabled={!isSubmitButtonActive}>
         {t('Check')}
-      </ModalFooterButton>
-    </ModalFooterButtons>
+      </Button>
+    </ModalFooter>
   )
 }
 
 export default BuildTxFooterButtons
+
+const ModalFooter = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+`

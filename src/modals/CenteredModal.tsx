@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { ChevronLeft, X } from 'lucide-react'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -39,6 +39,7 @@ interface CenteredModalProps extends ModalContainerProps {
   header?: ReactNode
   narrow?: boolean
   dynamicContent?: boolean
+  onBack?: () => void
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -50,6 +51,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   header,
   narrow = false,
   dynamicContent = false,
+  onBack,
   children
 }) => {
   const { t } = useTranslation()
@@ -60,13 +62,18 @@ const CenteredModal: FC<CenteredModalProps> = ({
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader contrast={!!header}>
           <TitleRow>
+            {onBack && (
+              <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
+                <ChevronLeft />
+              </BackButton>
+            )}
             <PanelTitle size="small" useLayoutId={false}>
               <span ref={elRef} tabIndex={0} role="heading">
                 {title}
               </span>
               {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
             </PanelTitle>
-            <CloseButton aria-label={t`Close`} squared role="secondary" transparent onClick={onClose}>
+            <CloseButton aria-label={t`Close`} squared role="secondary" transparent onClick={onClose} borderless>
               <X />
             </CloseButton>
           </TitleRow>
@@ -156,6 +163,11 @@ const TitleRow = styled.div`
 const CloseButton = styled(Button)`
   color: ${({ theme }) => theme.font.primary};
   margin-right: var(--spacing-2);
+`
+
+const BackButton = styled(Button)`
+  color: ${({ theme }) => theme.font.primary};
+  margin-left: var(--spacing-2);
 `
 
 const ModalContent = styled.div`

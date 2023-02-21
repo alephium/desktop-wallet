@@ -61,7 +61,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const settings = useAppSelector((s) => s.settings)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const [modalTitle, setModalTitle] = useState(title)
   const [transactionData, setTransactionData] = useState<T | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<Step>('build-tx')
@@ -72,16 +71,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
-
-  useEffect(() => {
-    if (step === 'info-check') {
-      setModalTitle(t`Review`)
-    } else if (step === 'password-check') {
-      setModalTitle(t`Password Check`)
-    } else if (step === 'build-tx') {
-      setModalTitle(title)
-    }
-  }, [step, t, title])
 
   useEffect(() => {
     if (!consolidationRequired || !transactionData) return
@@ -193,13 +182,21 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setStep('password-check')
   }
 
+  const onBackCallback = {
+    'build-tx': undefined,
+    'info-check': () => setStep('build-tx'),
+    'password-check': () => setStep('info-check'),
+    'tx-sent': undefined
+  }[step]
+
   return (
     <CenteredModal
-      title={modalTitle}
+      title={title}
       onClose={onCloseExtended}
       isLoading={isLoading}
       dynamicContent
       header={<StepsProgress currentStep={step} />}
+      onBack={onBackCallback}
     >
       {step === 'build-tx' && (
         <ScrollableModalContent>
