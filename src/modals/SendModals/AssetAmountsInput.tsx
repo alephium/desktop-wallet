@@ -35,6 +35,7 @@ import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
+import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/tokens'
@@ -141,8 +142,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
   }, [address])
 
   return (
-    <div className={className}>
-      <Title>{t(assetAmounts.length < 2 ? 'Asset' : 'Assets')}</Title>
+    <InputsSection title={t(assetAmounts.length < 2 ? 'Asset' : 'Assets')} className={className}>
       <AssetAmounts>
         {assetAmounts.map(({ id, amount }, index) => {
           const asset = assets.find((asset) => asset.id === id)
@@ -217,7 +217,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
           />
         )}
       </ModalPortal>
-    </div>
+    </InputsSection>
   )
 }
 
@@ -269,12 +269,6 @@ export default AssetAmountsInput
 
 const BoxStyled = styled(Box)`
   padding: 10px;
-`
-
-const Title = styled.div`
-  font-size: 15px;
-  font-weight: var(--fontWeight-semiBold);
-  margin: 0 12px 15px;
 `
 
 const AssetSelect = styled(SelectContainer)`

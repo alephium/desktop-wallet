@@ -43,6 +43,7 @@ interface AddressSelectProps {
   label?: string
   disabled?: boolean
   hideEmptyAvailableBalance?: boolean
+  simpleMode?: boolean
   className?: string
 }
 
@@ -55,7 +56,8 @@ function AddressSelect({
   className,
   id,
   onAddressChange,
-  hideEmptyAvailableBalance
+  hideEmptyAvailableBalance,
+  simpleMode = false
 }: AddressSelectProps) {
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [address, setAddress] = useState(defaultAddress)
@@ -84,18 +86,20 @@ function AddressSelect({
         custom={disabled}
         onMouseDown={() => !disabled && setIsAddressSelectModalOpen(true)}
         disabled={!!disabled}
+        heightSize={simpleMode ? 'normal' : 'big'}
+        simpleMode={simpleMode}
       >
         <InputLabel inputHasValue={!!address} htmlFor={id}>
           {label}
         </InputLabel>
-        {!disabled && (
+        {!disabled && !simpleMode && (
           <MoreIcon>
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInput type="button" className={className} disabled={disabled} id={id}>
-          <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
-          {!!address.label && <AddressEllipsed addressHash={address.hash} />}
+        <ClickableInput type="button" className={className} disabled={disabled} id={id} simpleMode={simpleMode}>
+          <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel />
+          {!!address.label && !simpleMode && <AddressEllipsed addressHash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
       <ModalPortal>
@@ -181,11 +185,17 @@ const AddressSelectModal = ({
 
 export default AddressSelect
 
-const AddressSelectContainer = styled(SelectContainer)<{ disabled: boolean }>`
+const AddressSelectContainer = styled(SelectContainer)<Pick<AddressSelectProps, 'disabled' | 'simpleMode'>>`
   ${({ disabled }) =>
     disabled &&
     css`
       cursor: not-allowed;
+    `}
+
+  ${({ simpleMode }) =>
+    simpleMode &&
+    css`
+      margin: 0;
     `}
 `
 
@@ -194,13 +204,23 @@ const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const ClickableInput = styled.div<InputProps>`
-  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true, 'big')};
+const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleMode'>>`
+  ${({ isValid, Icon, simpleMode }) => inputDefaultStyle(isValid || !!Icon, true, true, simpleMode ? 'normal' : 'big')};
   display: flex;
   align-items: center;
   padding-right: 50px;
   gap: var(--spacing-2);
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'auto' : 'pointer')};
+
+  ${({ simpleMode }) =>
+    simpleMode &&
+    css`
+      border: 0;
+
+      &:not(:hover) {
+        background-color: transparent;
+      }
+    `}
 `
 
 const AmountStyled = styled(Amount)`

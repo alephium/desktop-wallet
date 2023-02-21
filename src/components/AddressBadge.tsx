@@ -55,15 +55,15 @@ const AddressBadge = ({
 
   return showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>
-      {!isPassphraseUsed && address.isDefault && !hideStar && <Star>★</Star>}
+      {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
       <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.isDefault && !hideStar && <Star>★</Star>}
+        {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
+        {!!address.label && !address.isDefault && <DotIcon color={address.color} />}
         <Label {...props}>{getName(address)}</Label>
-        {!!address.label && <DotIcon color={address.color} />}
       </RoundBorders>
     </ClipboardButton>
   )
@@ -103,8 +103,8 @@ const Hash = styled.div`
   width: 100%;
 `
 
-const Star = styled.span`
-  opacity: 0.6;
+const Star = styled.span<{ color: string }>`
+  color: ${({ color }) => color};
 `
 
 const RoundBorders = styled.div<{ withBorders?: boolean }>`

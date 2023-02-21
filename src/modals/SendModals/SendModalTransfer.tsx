@@ -34,8 +34,7 @@ import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
-import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
+import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
@@ -170,12 +169,13 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   return (
     <>
       <InputFieldsColumn>
-        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
-        <AddressSelectTo
-          value={toAddress.value}
-          onChange={(e) => handleToAddressChange(e.target.value)}
+        <AddressInputs
+          defaultFromAddress={fromAddress}
+          fromAddresses={addresses}
+          onFromAddressChange={setTxPrepProp('fromAddress')}
+          toAddress={toAddress}
+          onToAddressChange={handleToAddressChange}
           onContactSelect={handleToAddressChange}
-          error={toAddress.error}
         />
         <AssetAmountsInput
           address={fromAddress}
