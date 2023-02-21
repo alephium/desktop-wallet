@@ -19,12 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount, isAddressValid } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
+import Amount from '@/components/Amount'
+import AssetLogo from '@/components/AssetLogo'
+import Box from '@/components/Box'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
@@ -37,7 +40,7 @@ import useStateObject from '@/hooks/useStateObject'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
-import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
+import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
@@ -87,12 +90,33 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
   const { t } = useTranslation()
   const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
-
-  // TODO: Display token amounts
-  console.log(tokens)
+  const tokensInfo = useAppSelector((state) => state.tokens.entities)
 
   return (
-    <>
+    <Content>
+      <Box>
+        <AssetAmountRow>
+          <AssetLogoStyled asset={{ id: ALPH.id }} size={30} />
+          <AssetAmountStyled value={BigInt(attoAlphAmount)} />
+        </AssetAmountRow>
+        {tokens.map((token) => {
+          const tokenInfo = tokensInfo[token.id]
+
+          return (
+            <Fragment key={token.id}>
+              <HorizontalDivider />
+              <AssetAmountRow>
+                {tokenInfo && <AssetLogoStyled asset={tokenInfo} size={30} />}
+                <AssetAmountStyled
+                  value={BigInt(token.amount)}
+                  suffix={tokenInfo?.symbol}
+                  decimals={tokenInfo?.decimals}
+                />
+              </AssetAmountRow>
+            </Fragment>
+          )
+        })}
+      </Box>
       <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
       <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
       <AlphAmountInfoBox
@@ -108,7 +132,7 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
         </InfoBox>
       )}
       <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
-    </>
+    </Content>
   )
 }
 
@@ -210,8 +234,8 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onGasPriceChange={handleGasPriceChange}
         />
       </ToggleSection>
-      <BuildTxFooterButtons
-        onSubmit={() =>
+      <FooterButton
+        onClick={() =>
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
@@ -221,8 +245,10 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
             lockTime
           })
         }
-        isSubmitButtonActive={isSubmitButtonActive}
-      />
+        disabled={!isSubmitButtonActive}
+      >
+        {t('Check')}
+      </FooterButton>
     </>
   )
 }
@@ -355,4 +381,24 @@ const FromNow = styled.div`
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
+`
+
+const AssetAmountRow = styled.div`
+  display: flex;
+  padding: 23px 0;
+  justify-content: center;
+  align-items: center;
+`
+
+const AssetLogoStyled = styled(AssetLogo)`
+  margin-right: 25px;
+`
+
+const AssetAmountStyled = styled(Amount)`
+  font-weight: var(--fontWeight-semiBold);
+  font-size: 26px;
+`
+
+const Content = styled.div`
+  margin-top: 36px;
 `

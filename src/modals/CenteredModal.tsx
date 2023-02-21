@@ -139,8 +139,6 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
 `
 
 export const ModalHeader = styled.header<{ contrast?: boolean }>`
-  margin-bottom: var(--spacing-3);
-
   ${({ contrast }) =>
     contrast &&
     css`

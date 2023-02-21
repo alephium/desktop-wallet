@@ -16,29 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 
-interface BuildTxFooterButtons {
-  onSubmit: () => void
-  isSubmitButtonActive: boolean | string
-}
+const FooterButton: FC<ButtonProps> = ({ children, ...props }) => (
+  <ModalFooter>
+    <Button {...props}>{children}</Button>
+  </ModalFooter>
+)
 
-const BuildTxFooterButtons = ({ onSubmit, isSubmitButtonActive }: BuildTxFooterButtons) => {
-  const { t } = useTranslation()
-
-  return (
-    <ModalFooter>
-      <Button onClick={onSubmit} disabled={!isSubmitButtonActive}>
-        {t('Check')}
-      </Button>
-    </ModalFooter>
-  )
-}
-
-export default BuildTxFooterButtons
+export default FooterButton
 
 const ModalFooter = styled.div`
   display: flex;

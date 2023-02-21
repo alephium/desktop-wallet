@@ -27,13 +27,14 @@ import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
+import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
-import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
+import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
@@ -170,17 +171,18 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
           onChange={(e) => setTxPrepProp('issueTokenAmount')(e.target.value)}
         />
       </InputFieldsColumn>
-      <GasSettings
-        gasAmount={gasAmount}
-        gasAmountError={gasAmountError}
-        gasPrice={gasPrice}
-        gasPriceError={gasPriceError}
-        onGasAmountChange={handleGasAmountChange}
-        onGasPriceChange={handleGasPriceChange}
-        onClearGasSettings={clearGasSettings}
-      />
-      <BuildTxFooterButtons
-        onSubmit={() =>
+      <ToggleSection title={t('Show advanced options')} subtitle={t('Set gas settings')} onClick={clearGasSettings}>
+        <GasSettings
+          gasAmount={gasAmount}
+          gasAmountError={gasAmountError}
+          gasPrice={gasPrice}
+          gasPriceError={gasPriceError}
+          onGasAmountChange={handleGasAmountChange}
+          onGasPriceChange={handleGasPriceChange}
+        />
+      </ToggleSection>
+      <FooterButton
+        onClick={() =>
           onSubmit({
             fromAddress,
             bytecode: bytecode ?? '',
@@ -190,9 +192,10 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             gasPrice
           })
         }
-        onCancel={onCancel}
-        isSubmitButtonActive={isSubmitButtonActive}
-      />
+        disabled={!isSubmitButtonActive}
+      >
+        {t('Check')}
+      </FooterButton>
     </>
   )
 }

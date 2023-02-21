@@ -32,6 +32,7 @@ interface PasswordConfirmationProps {
   isSubmitDisabled?: boolean
   text?: string
   buttonText?: string
+  highlightButton?: boolean
   walletName?: string
 }
 
@@ -41,6 +42,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   onCorrectPasswordEntered,
   walletName,
   isSubmitDisabled = false,
+  highlightButton = false,
   children
 }) => {
   const { t } = useTranslation()
@@ -70,7 +72,12 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         {children && <Children>{children}</Children>}
       </Section>
       <Section>
-        <ButtonStyled onClick={validatePassword} submit disabled={isSubmitDisabled || !password}>
+        <ButtonStyled
+          onClick={validatePassword}
+          submit
+          disabled={isSubmitDisabled || !password}
+          variant={highlightButton ? 'valid' : 'default'}
+        >
           {buttonText || t('Submit')}
         </ButtonStyled>
       </Section>
@@ -85,5 +92,5 @@ const Children = styled.div`
 `
 
 const ButtonStyled = styled(Button)`
-  margin-top: 20px;
+  margin-top: 50px;
 `

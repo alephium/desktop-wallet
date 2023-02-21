@@ -27,9 +27,10 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons, ScrollableModalContent } from '@/modals/CenteredModal'
+import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
+import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
@@ -210,14 +211,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       {step === 'info-check' && !!transactionData && !!fees && (
         <ScrollableModalContent>
           <CheckTxModalContent data={transactionData} fees={fees} />
-          <ModalFooterButtons>
-            <ModalFooterButton role="secondary" onClick={() => setStep('build-tx')}>
-              {t('Back')}
-            </ModalFooterButton>
-            <ModalFooterButton onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}>
-              {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
-            </ModalFooterButton>
-          </ModalFooterButtons>
+          <FooterButton
+            onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+            variant={settings.passwordRequirement ? 'default' : 'valid'}
+          >
+            {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
+          </FooterButton>
         </ScrollableModalContent>
       )}
       {step === 'password-check' && settings.passwordRequirement && (
@@ -225,6 +224,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           <PasswordConfirmation
             text={t('Enter your password to send the transaction.')}
             buttonText={t('Send')}
+            highlightButton
             onCorrectPasswordEntered={handleSendExtended}
           >
             <PasswordConfirmationNote>
