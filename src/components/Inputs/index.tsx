@@ -21,6 +21,8 @@ import { HTMLMotionProps, motion, Variants } from 'framer-motion'
 import { InputHTMLAttributes, ReactNode, RefObject } from 'react'
 import styled, { css, CSSProperties } from 'styled-components'
 
+export type InputHeight = 'small' | 'normal' | 'big'
+
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: ReactNode
   error?: ReactNode
@@ -33,6 +35,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   inputFieldRef?: RefObject<HTMLInputElement>
   liftLabel?: boolean
   className?: string
+  heightSize?: InputHeight
 }
 
 export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
@@ -42,7 +45,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { y: -17, fontSize: '9px' },
+  up: { y: -15, fontSize: '9px' },
   down: { y: 0, scale: 1 }
 }
 
@@ -51,9 +54,14 @@ export const inputStyling = {
   paddingLeftRight: '15px'
 }
 
-export const inputDefaultStyle = (hasIcon?: boolean, hasValue?: boolean, hasLabel?: boolean) => css`
+export const inputDefaultStyle = (
+  hasIcon?: boolean,
+  hasValue?: boolean,
+  hasLabel?: boolean,
+  heightSize?: InputHeight
+) => css`
   background-image: none;
-  height: var(--inputHeight);
+  height: ${heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   border-radius: var(--radius-big);
   background-color: ${({ theme }) => theme.bg.primary};

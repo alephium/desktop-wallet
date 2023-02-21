@@ -42,6 +42,7 @@ const Input = ({
   inputFieldStyle,
   inputFieldRef,
   liftLabel = false,
+  heightSize = 'normal',
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -65,6 +66,7 @@ const Input = ({
       custom={disabled}
       noMargin={noMargin}
       className={className}
+      heightSize={heightSize}
     >
       <InputRow>
         <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
@@ -81,6 +83,7 @@ const Input = ({
           onWheel={handleScroll}
           Icon={Icon}
           ref={inputFieldRef}
+          heightSize={heightSize}
         />
 
         {!!Icon && !isValid && (
@@ -103,15 +106,17 @@ const Input = ({
 
 export default Input
 
-export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
+export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin' | 'heightSize'>>`
   position: relative;
-  min-height: var(--inputHeight);
+  min-height: ${({ heightSize }) =>
+    heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
 export const InputBase = styled.input<InputProps>`
-  ${({ isValid, value, label, Icon }) => inputDefaultStyle(isValid || !!Icon, !!value, !!label)};
+  ${({ isValid, value, label, Icon, heightSize }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 
