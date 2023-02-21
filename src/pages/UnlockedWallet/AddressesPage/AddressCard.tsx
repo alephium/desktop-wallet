@@ -158,6 +158,7 @@ const AssetsSection = styled.div`
   border-top: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 `
 
 const LastActivity = styled.div`

@@ -33,9 +33,11 @@ interface BadgeProps {
 }
 
 const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tooltip }) => (
-  <TooltipWrapper content={tooltip}>
-    {truncate ? <Truncate className={className}>{children}</Truncate> : <span className={className}>{children}</span>}
-  </TooltipWrapper>
+  <div className={className}>
+    <TooltipWrapper content={tooltip}>
+      {truncate ? <Truncate>{children}</Truncate> : <span>{children}</span>}
+    </TooltipWrapper>
+  </div>
 )
 
 export default styled(Badge)`
