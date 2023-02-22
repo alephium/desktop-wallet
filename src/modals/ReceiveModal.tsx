@@ -23,7 +23,7 @@ import styled, { useTheme } from 'styled-components'
 
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import CenteredModal from '@/modals/CenteredModal'
 import {
   selectAddressByHash,
   selectAllAddresses,
@@ -61,11 +61,6 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
           )}
         </QRCodeSection>
       </Content>
-      <ModalFooterButtons>
-        <ModalFooterButton role="secondary" onClick={onClose}>
-          {t('Close')}
-        </ModalFooterButton>
-      </ModalFooterButtons>
     </CenteredModal>
   )
 }
