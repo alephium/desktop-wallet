@@ -28,6 +28,7 @@ import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
@@ -132,7 +133,7 @@ const AssetLogoStyled = styled(AssetLogo)`
   margin-right: 25px;
 `
 
-const TokenName = styled.div`
+const TokenName = styled(Truncate)`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
   width: 200px;
