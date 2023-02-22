@@ -26,16 +26,17 @@ import { Coordinates } from '@/types/numbers'
 import { useWindowSize } from '@/utils/hooks'
 
 interface PopupProps {
-  onBackgroundClick: () => void
+  onClose: () => void
   children?: ReactNode | ReactNode[]
   title?: string
+  extraHeaderContent?: ReactNode
   hookCoordinates?: Coordinates
 }
 
 const minMarginToEdge = 20
 const headerHeight = 50
 
-const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupProps) => {
+const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }: PopupProps) => {
   const { height: windowHeight, width: windowWidth } = useWindowSize() // Recompute position on window resize
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -75,8 +76,9 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
       {...fastTransition}
     >
       {title && (
-        <Header>
+        <Header hasExtraHeaderContent={!!extraHeaderContent}>
           <h2>{title}</h2>
+          {extraHeaderContent}
         </Header>
       )}
       {children}
@@ -84,7 +86,7 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
   )
 
   return (
-    <ModalContainer onClose={onBackgroundClick}>
+    <ModalContainer onClose={onClose}>
       {hookCoordinates ? (
         <Hook hookCoordinates={hookCoordinates} contentWidth={contentRef.current?.clientWidth || 0}>
           {PopupContent}
@@ -123,13 +125,13 @@ const Content = styled(motion.div)`
   background-color: ${({ theme }) => theme.bg.background1};
 `
 
-const Header = styled.div`
+const Header = styled.div<{ hasExtraHeaderContent?: boolean }>`
   position: sticky;
   top: 0;
-  height: 50px;
-  padding: var(--spacing-1) var(--spacing-3);
+  padding: var(--spacing-1) var(--spacing-4)
+    ${({ hasExtraHeaderContent }) => hasExtraHeaderContent && 'var(--spacing-4)'};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background1};
   display: flex;
-  align-items: center;
+  flex-direction: column;
 `

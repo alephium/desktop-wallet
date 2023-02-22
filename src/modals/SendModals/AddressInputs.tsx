@@ -28,14 +28,16 @@ import Box from '@/components/Box'
 import { inputStyling } from '@/components/Inputs'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
+import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import ContactSelectModal from '@/modals/ContactSelectModal'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
-import { Address } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
+import { filterContacts } from '@/utils/contacts'
 
 interface AddressInputsProps {
   defaultFromAddress: Address
@@ -66,9 +68,14 @@ const AddressInputs = ({
 
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
   const [contact, setContact] = useState<Contact>()
+  const [filteredContacts, setFilteredContacts] = useState(contacts)
   const [inputFieldMode, setInputFieldMode] = useState<InputFieldMode>('view')
 
   const isContactVisible = contact && inputFieldMode === 'view'
+  const contactSelectOptions: SelectOption<AddressHash>[] = contacts.map((contact) => ({
+    value: contact.address,
+    label: contact.name
+  }))
 
   useEffect(() => {
     const existingContact = contacts.find((c) => c.address === toAddress.value)
@@ -76,11 +83,19 @@ const AddressInputs = ({
     setContact(existingContact)
   }, [contacts, toAddress.value])
 
-  const handleContactSelect = (c: Contact) => onContactSelect(c.address)
+  const handleContactSelect = (contactAddress: SelectOption<AddressHash>) => onContactSelect(contactAddress.value)
 
   const handleFocus = () => {
     inputRef.current?.focus()
     setInputFieldMode('edit')
+  }
+
+  const handleContactsSearch = (searchInput: string) =>
+    setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
+
+  const handleContactSelectModalClose = () => {
+    setIsAddressSelectModalOpen(false)
+    setFilteredContacts(contacts)
   }
 
   return (
@@ -113,8 +128,9 @@ const AddressInputs = ({
             color: isContactVisible ? 'transparent' : undefined,
             transition: 'all 0.2s ease-out'
           }}
+          Icon={ContactIcon}
+          onIconPress={() => setIsAddressSelectModalOpen(true)}
         >
-          <ContactIconStyled onClick={() => setIsAddressSelectModalOpen(true)} />
           {isContactVisible && (
             <ContactRow onClick={handleFocus}>
               <Badge rounded transparent border truncate>
@@ -127,7 +143,21 @@ const AddressInputs = ({
       </BoxStyled>
       <ModalPortal>
         {isAddressSelectModalOpen && (
-          <ContactSelectModal setContact={handleContactSelect} onClose={() => setIsAddressSelectModalOpen(false)} />
+          <SelectOptionsModal
+            title={t('Choose a contact')}
+            options={contactSelectOptions}
+            showOnly={filteredContacts.map((contact) => contact.address)}
+            setValue={handleContactSelect}
+            onClose={handleContactSelectModalClose}
+            onSearchInput={handleContactsSearch}
+            searchPlaceholder={t('Search for name or a hash...')}
+            optionRender={(contact) => (
+              <ContactOption>
+                <Name>{contact.label}</Name>
+                <AddressEllipsedStyled addressHash={contact.value} />
+              </ContactOption>
+            )}
+          />
         )}
       </ModalPortal>
     </InputsSection>
@@ -136,18 +166,19 @@ const AddressInputs = ({
 
 export default AddressInputs
 
-const ContactIconStyled = styled(ContactIcon)`
+const ContactOption = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 100px;
+`
+const Name = styled(Truncate)`
+  font-weight: var(--fontWeight-semiBold);
+  max-width: 200px;
+`
+const AddressEllipsedStyled = styled(AddressEllipsed)`
+  margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};
-  transition: color 0.2s ease-out;
-  cursor: pointer;
-  position: absolute;
-  right: ${inputStyling.paddingLeftRight};
-  top: 0;
-  height: 100%;
-
-  &:hover {
-    color: ${({ theme }) => theme.font.primary};
-  }
+  max-width: 120px;
 `
 
 const ContactRow = styled(motion.div)`

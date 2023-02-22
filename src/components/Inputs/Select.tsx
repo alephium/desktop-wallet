@@ -16,21 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { isEqual } from 'lodash'
-import { MoreVertical } from 'lucide-react'
+import { isEqual, partition } from 'lodash'
+import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
   OptionHTMLAttributes,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
-import { InputBase } from '@/components/Inputs/Input'
+import Input, { InputBase } from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
@@ -188,13 +190,13 @@ function Select<T extends OptionValue>({
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
-          <SelectOptionsPopup
+          <SelectOptionsModal
             options={options}
             selectedOption={value}
             setValue={setInputValue}
             title={title}
             hookCoordinates={hookCoordinates}
-            onBackgroundClick={handlePopupClose}
+            onClose={handlePopupClose}
           />
         )}
       </ModalPortal>
@@ -202,54 +204,69 @@ function Select<T extends OptionValue>({
   )
 }
 
-function SelectOptionsPopup<T extends OptionValue>({
-  options,
-  selectedOption,
-  setValue,
-  onBackgroundClick,
-  hookCoordinates,
-  title
-}: {
+interface SelectOptionsModalProps<T extends OptionValue> {
   options: SelectOption<T>[]
   selectedOption?: SelectOption<T>
   setValue: (value: SelectOption<T>) => void | undefined
-  onBackgroundClick: () => void
+  onClose: () => void
   hookCoordinates?: Coordinates
   title?: string
-}) {
+  optionRender?: (option: SelectOption<T>) => ReactNode
+  onSearchInput?: (input: string) => void
+  searchPlaceholder?: string
+  showOnly?: T[]
+}
+
+export function SelectOptionsModal<T extends OptionValue>({
+  options,
+  selectedOption,
+  setValue,
+  onClose,
+  hookCoordinates,
+  title,
+  optionRender,
+  onSearchInput,
+  searchPlaceholder,
+  showOnly
+}: SelectOptionsModalProps<T>) {
+  const { t } = useTranslation()
   const selectRef = useRef<HTMLDivElement>(null)
   const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
-  useEffect(() => {
-    const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
+  // We hide instead of simply not rendering filtered options to avoid changing the height/width of the modal when
+  // filtering. When the size of the modal depends on its contents, its size might change when filtering some options
+  // out, unless its size is fixed.
+  const [visibleOptions, invisibleOptions] = showOnly
+    ? partition(options, (option) => showOnly.includes(option.value))
+    : [options, []]
 
-    if (options && options.length > 0) {
+  useEffect(() => {
+    const selectedOptionIndex = visibleOptions.findIndex((o) => o.value === selectedOption?.value)
+
+    if (visibleOptions && visibleOptions.length > 0) {
       setFocusedOptionIndex(selectedOptionIndex > 0 ? selectedOptionIndex : 0)
     }
-  }, [options, selectedOption?.value])
+  }, [visibleOptions, selectedOption?.value])
 
   const handleOptionSelect = useCallback(
     (value: T) => {
-      const selectedValue = options.find((o) => o.value === value)
+      const selectedValue = visibleOptions.find((o) => o.value === value)
       if (!selectedValue) return
 
       setValue(selectedValue)
-      onBackgroundClick()
+      onClose()
     },
-    [onBackgroundClick, options, setValue]
+    [onClose, visibleOptions, setValue]
   )
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'ArrowDown') {
-        setFocusedOptionIndex((i) => (i < options.length - 1 ? i + 1 : i))
+        setFocusedOptionIndex((i) => (i < visibleOptions.length - 1 ? i + 1 : i))
       } else if (e.code === 'ArrowUp') {
         setFocusedOptionIndex((i) => (i > 0 ? i - 1 : i))
       } else if (['Space', ' ', 'Enter'].includes(e.code)) {
-        handleOptionSelect(options[focusedOptionIndex].value)
-      } else if (e.code === 'Tab') {
-        e.preventDefault()
-        onBackgroundClick()
+        handleOptionSelect(visibleOptions[focusedOptionIndex].value)
       } else {
         return
       }
@@ -260,12 +277,26 @@ function SelectOptionsPopup<T extends OptionValue>({
     return () => {
       document.removeEventListener('keydown', listener)
     }
-  }, [focusedOptionIndex, handleOptionSelect, onBackgroundClick, options])
+  }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
   return (
-    <Popup title={title} onBackgroundClick={onBackgroundClick} hookCoordinates={hookCoordinates}>
+    <Popup
+      title={title}
+      onClose={onClose}
+      hookCoordinates={hookCoordinates}
+      extraHeaderContent={
+        onSearchInput && (
+          <Searchbar
+            placeholder={searchPlaceholder}
+            Icon={SearchIcon}
+            onChange={(e) => onSearchInput(e.target.value)}
+            heightSize="small"
+          />
+        )
+      }
+    >
       <OptionSelect title={title} aria-label={title} ref={selectRef}>
-        {options.map((o, i) => (
+        {visibleOptions.map((o, i) => (
           <OptionItem
             key={o.value}
             onClick={() => handleOptionSelect(o.value as T)}
@@ -274,9 +305,19 @@ function SelectOptionsPopup<T extends OptionValue>({
             focused={i === focusedOptionIndex}
             aria-label={o.label}
           >
-            {o.label}
+            {optionRender ? optionRender(o) : o.label}
           </OptionItem>
         ))}
+        {invisibleOptions.map((o, i) => (
+          <OptionItem key={o.value} selected={false} focused={false} invisible>
+            {optionRender ? optionRender(o) : o.label}
+          </OptionItem>
+        ))}
+        {visibleOptions.length === 0 && onSearchInput && (
+          <OptionItem selected={false} focused={false}>
+            {t('No options match the search criteria.')}
+          </OptionItem>
+        )}
       </OptionSelect>
     </Popup>
   )
@@ -318,7 +359,7 @@ export const OptionSelect = styled.div`
   flex-direction: column;
 `
 
-export const OptionItem = styled.button<{ selected: boolean; focused: boolean }>`
+export const OptionItem = styled.button<{ selected: boolean; focused: boolean; invisible?: boolean }>`
   padding: var(--spacing-4);
   cursor: pointer;
   color: inherit;
@@ -326,6 +367,7 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean }>
   text-align: left;
   background-color: ${({ theme, selected, focused }) =>
     selected ? theme.global.accent : focused ? theme.bg.accent : theme.bg.primary};
+  visibility: ${({ invisible }) => invisible && 'hidden'};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -336,4 +378,12 @@ const ClickableInput = styled(InputBase)`
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
   cursor: pointer;
+`
+
+const Searchbar = styled(Input)`
+  margin: 0;
+
+  svg {
+    color: ${({ theme }) => theme.font.tertiary};
+  }
 `
