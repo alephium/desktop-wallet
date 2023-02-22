@@ -113,10 +113,10 @@ const CenteredBox = styled(motion.div)`
   position: relative;
   overflow: hidden;
 
-  width: 100%;
-  margin: auto;
+  width: 85vw;
   max-width: 748px;
-  max-height: 95vh;
+  height: 85vh;
+  margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius);
