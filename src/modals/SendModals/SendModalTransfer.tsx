@@ -45,7 +45,7 @@ import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/
 import { store } from '@/storage/app-state/store'
 import { AssetAmount } from '@/types/tokens'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { getAddressAssetsAvailableBalance } from '@/utils/addresses'
+import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
 import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
 import { formatDateForDisplay } from '@/utils/misc'
@@ -120,7 +120,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const addresses = useAppSelector(selectAllAddresses)
   const [lockTime, setLockTime] = useState(data.lockTime)
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
-    fromAddress: data.fromAddress ?? ''
+    fromAddress: data.fromAddress
   })
   const {
     gasAmount,
@@ -135,6 +135,13 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>(data.assetAmounts || defaultAssetAmounts)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
+  const { fromAddress } = txPrep
+
+  if (fromAddress === undefined) {
+    onCancel()
+    return null
+  }
+
   const handleToAddressChange = (value: string) => {
     setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
   }
@@ -145,24 +152,9 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const onClickClearLockTime = (isShown: boolean) =>
     setLockTime(isShown ? undefined : dayjs().add(1, 'minute').toDate())
 
-  const { fromAddress } = txPrep
   const lockTimeInPast = lockTime && dayjs(lockTime).toDate() < dayjs().toDate()
   const atLeastOneAssetWithAmountIsSet = assetAmounts.some((asset) => asset?.amount && asset.amount > 0)
-  const assetsAvailableBalance = getAddressAssetsAvailableBalance(fromAddress)
-
-  const allAssetAmountsAreWithinAvailableBalance = assetAmounts.every((asset) => {
-    if (!asset?.amount) return true
-
-    const assetAvailableBalance = assetsAvailableBalance.find((token) => token.id === asset.id)?.availableBalance
-
-    if (!assetAvailableBalance) return false
-    return asset.amount <= assetAvailableBalance
-  })
-
-  if (fromAddress === undefined) {
-    onCancel()
-    return null
-  }
+  const allAssetAmountsAreWithinAvailableBalance = assetAmountsWithinAvailableBalance(fromAddress, assetAmounts)
 
   const isSubmitButtonActive =
     !gasPriceError &&

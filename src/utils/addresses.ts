@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
+import { AssetAmount } from '@/types/tokens'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
 import { ALPH } from '@/utils/constants'
@@ -66,3 +67,16 @@ export const getAddressAssetsAvailableBalance = (address: Address) => [
     availableBalance: getAvailableBalance(address)
   }
 ]
+
+export const assetAmountsWithinAvailableBalance = (address: Address, assetAmounts: AssetAmount[]) => {
+  const assetsAvailableBalance = getAddressAssetsAvailableBalance(address)
+
+  return assetAmounts.every((asset) => {
+    if (!asset?.amount) return true
+
+    const assetAvailableBalance = assetsAvailableBalance.find((token) => token.id === asset.id)?.availableBalance
+
+    if (!assetAvailableBalance) return false
+    return asset.amount <= assetAvailableBalance
+  })
+}
