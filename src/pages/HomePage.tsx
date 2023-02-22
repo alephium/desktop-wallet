@@ -137,10 +137,6 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphraseStyled
-          onPassphraseConfirmed={setPassphrase}
-          setIsPassphraseConfirmed={setIsPassphraseConfirmed}
-        />
       </SectionStyled>
       <ButtonsSection>
         <ButtonStyled
@@ -154,6 +150,10 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           {t('Import or create a wallet')}
         </ButtonStyled>
       </ButtonsSection>
+      <WalletPassphraseStyled
+        onPassphraseConfirmed={setPassphrase}
+        setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+      />
     </>
   )
 }
