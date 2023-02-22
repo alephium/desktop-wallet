@@ -29,6 +29,7 @@ import { inputStyling } from '@/components/Inputs'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
+import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
@@ -152,10 +153,10 @@ const AddressInputs = ({
             onSearchInput={handleContactsSearch}
             searchPlaceholder={t('Search for name or a hash...')}
             optionRender={(contact) => (
-              <ContactOption>
-                <Name>{contact.label}</Name>
-                <AddressEllipsedStyled addressHash={contact.value} />
-              </ContactOption>
+              <SelectOptionItemContent
+                ContentLeft={<Name>{contact.label}</Name>}
+                ContentRight={<AddressEllipsedStyled addressHash={contact.value} />}
+              />
             )}
           />
         )}
@@ -166,15 +167,11 @@ const AddressInputs = ({
 
 export default AddressInputs
 
-const ContactOption = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 100px;
-`
 const Name = styled(Truncate)`
   font-weight: var(--fontWeight-semiBold);
   max-width: 200px;
 `
+
 const AddressEllipsedStyled = styled(AddressEllipsed)`
   margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};

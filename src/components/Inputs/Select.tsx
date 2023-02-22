@@ -38,6 +38,7 @@ import { sectionChildrenVariants } from '@/components/PageComponents/PageContain
 import Popup from '@/components/Popup'
 import ModalPortal from '@/modals/ModalPortal'
 import { Coordinates } from '@/types/numbers'
+import { onTabPress } from '@/utils/misc'
 
 type Writable<T> = T extends string
   ? string
@@ -215,6 +216,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   onSearchInput?: (input: string) => void
   searchPlaceholder?: string
   showOnly?: T[]
+  emptyListPlaceholder?: string
 }
 
 export function SelectOptionsModal<T extends OptionValue>({
@@ -227,7 +229,8 @@ export function SelectOptionsModal<T extends OptionValue>({
   optionRender,
   onSearchInput,
   searchPlaceholder,
-  showOnly
+  showOnly,
+  emptyListPlaceholder
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
   const selectRef = useRef<HTMLDivElement>(null)
@@ -239,14 +242,18 @@ export function SelectOptionsModal<T extends OptionValue>({
   const [visibleOptions, invisibleOptions] = showOnly
     ? partition(options, (option) => showOnly.includes(option.value))
     : [options, []]
+  const isEmpty = options.length === 0 && emptyListPlaceholder
+  const emptySearchResults = visibleOptions.length === 0 && onSearchInput
+  // To display the message without changing the height, remove one of the invisible options
+  if (emptySearchResults) invisibleOptions.pop()
 
   useEffect(() => {
-    const selectedOptionIndex = visibleOptions.findIndex((o) => o.value === selectedOption?.value)
+    const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
 
-    if (visibleOptions && visibleOptions.length > 0) {
+    if (options && options.length > 0) {
       setFocusedOptionIndex(selectedOptionIndex > 0 ? selectedOptionIndex : 0)
     }
-  }, [visibleOptions, selectedOption?.value])
+  }, [options, selectedOption?.value])
 
   const handleOptionSelect = useCallback(
     (value: T) => {
@@ -259,9 +266,12 @@ export function SelectOptionsModal<T extends OptionValue>({
     [onClose, visibleOptions, setValue]
   )
 
+  const selectFirstOption = () => setFocusedOptionIndex(0)
+
   useEffect(() => {
+    const selectOptions = selectRef?.current
     const listener = (e: KeyboardEvent) => {
-      if (e.code === 'ArrowDown') {
+      if (['ArrowDown', 'Tab'].includes(e.code)) {
         setFocusedOptionIndex((i) => (i < visibleOptions.length - 1 ? i + 1 : i))
       } else if (e.code === 'ArrowUp') {
         setFocusedOptionIndex((i) => (i > 0 ? i - 1 : i))
@@ -272,10 +282,10 @@ export function SelectOptionsModal<T extends OptionValue>({
       }
     }
 
-    document.addEventListener('keydown', listener)
+    selectOptions?.addEventListener('keydown', listener)
 
     return () => {
-      document.removeEventListener('keydown', listener)
+      selectOptions?.removeEventListener('keydown', listener)
     }
   }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
@@ -285,22 +295,35 @@ export function SelectOptionsModal<T extends OptionValue>({
       onClose={onClose}
       hookCoordinates={hookCoordinates}
       extraHeaderContent={
-        onSearchInput && (
+        onSearchInput &&
+        !isEmpty && (
           <Searchbar
             placeholder={searchPlaceholder}
             Icon={SearchIcon}
             onChange={(e) => onSearchInput(e.target.value)}
             heightSize="small"
+            onKeyDown={(e) => onTabPress(e, selectFirstOption)}
           />
         )
       }
     >
       <OptionSelect title={title} aria-label={title} ref={selectRef}>
+        {isEmpty ? (
+          <OptionItem selected={false} focused={false}>
+            {emptyListPlaceholder}
+          </OptionItem>
+        ) : emptySearchResults ? (
+          <OptionItem selected={false} focused={false}>
+            {t('No options match the search criteria.')}
+          </OptionItem>
+        ) : null}
         {visibleOptions.map((o, i) => (
           <OptionItem
             key={o.value}
+            tabIndex={0}
+            role="listitem"
             onClick={() => handleOptionSelect(o.value as T)}
-            onMouseEnter={(e) => setFocusedOptionIndex(i)}
+            onMouseEnter={() => setFocusedOptionIndex(i)}
             selected={o.value === selectedOption?.value}
             focused={i === focusedOptionIndex}
             aria-label={o.label}
@@ -308,16 +331,11 @@ export function SelectOptionsModal<T extends OptionValue>({
             {optionRender ? optionRender(o) : o.label}
           </OptionItem>
         ))}
-        {invisibleOptions.map((o, i) => (
+        {invisibleOptions.map((o) => (
           <OptionItem key={o.value} selected={false} focused={false} invisible>
             {optionRender ? optionRender(o) : o.label}
           </OptionItem>
         ))}
-        {visibleOptions.length === 0 && onSearchInput && (
-          <OptionItem selected={false} focused={false}>
-            {t('No options match the search criteria.')}
-          </OptionItem>
-        )}
       </OptionSelect>
     </Popup>
   )

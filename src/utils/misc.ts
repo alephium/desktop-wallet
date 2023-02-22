@@ -84,3 +84,10 @@ export const onEnterOrSpace = (event: KeyboardEvent, callback: () => void) => {
   event.stopPropagation()
   callback()
 }
+
+export const onTabPress = (event: KeyboardEvent, callback: () => void) => {
+  if (event.key !== 'Tab') return
+
+  event.stopPropagation()
+  callback()
+}

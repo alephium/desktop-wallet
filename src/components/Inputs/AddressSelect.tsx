@@ -24,15 +24,13 @@ import styled, { css } from 'styled-components'
 import AddressBadge from '@/components/AddressBadge'
 import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
-import InfoBox from '@/components/InfoBox'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
-import Option from '@/components/Inputs/Option'
-import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
+import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
+import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-import { Address } from '@/types/addresses'
-import { getAvailableBalance } from '@/utils/addresses'
+import { Address, AddressHash } from '@/types/addresses'
+import { filterAddresses } from '@/utils/addresses'
 
 interface AddressSelectProps {
   id: string
@@ -59,15 +57,36 @@ function AddressSelect({
   hideEmptyAvailableBalance,
   simpleMode = false
 }: AddressSelectProps) {
+  const { t } = useTranslation()
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [address, setAddress] = useState(defaultAddress)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
+  const addresses = hideEmptyAvailableBalance ? options.filter((address) => address.balance !== '0') : options
+  const [filteredAddresses, setFilteredAddresses] = useState(addresses)
+
+  const addressSelectOptions: SelectOption<AddressHash>[] = addresses.map((address) => ({
+    value: address.hash,
+    label: address.label ?? address.hash
+  }))
+
+  const selectAddress = (option: SelectOption<AddressHash>) => {
+    const selectedAddress = addresses.find((address) => address.hash === option.value)
+    selectedAddress && setAddress(selectedAddress)
+  }
+
+  const handleSearch = (searchInput: string) =>
+    setFilteredAddresses(filterAddresses(addresses, searchInput.toLowerCase()))
+
+  const handleAddressSelectModalClose = () => {
+    setIsAddressSelectModalOpen(false)
+    setFilteredAddresses(addresses)
+  }
 
   useEffect(() => {
-    if (!address && options.length === 1) {
-      setAddress(options[0])
+    if (!address && addresses.length === 1) {
+      setAddress(addresses[0])
     }
-  }, [options, setAddress, address])
+  }, [addresses, setAddress, address])
 
   useEffect(() => {
     if (address && address.hash !== defaultAddress?.hash) {
@@ -104,82 +123,33 @@ function AddressSelect({
       </AddressSelectContainer>
       <ModalPortal>
         {isAddressSelectModalOpen && (
-          <AddressSelectModal
-            options={options}
-            selectedOption={address}
-            setAddress={setAddress}
+          <SelectOptionsModal
             title={title}
-            hideEmptyAvailableBalance={hideEmptyAvailableBalance}
-            onClose={() => {
-              setIsAddressSelectModalOpen(false)
+            options={addressSelectOptions}
+            selectedOption={addressSelectOptions.find((a) => a.value === address.hash)}
+            showOnly={filteredAddresses.map((address) => address.hash)}
+            setValue={selectAddress}
+            onClose={handleAddressSelectModalClose}
+            onSearchInput={handleSearch}
+            searchPlaceholder={t('Search for name or a hash...')}
+            optionRender={(option) => {
+              const address = addresses.find((address) => address.hash === option.value)
+              if (!address) return
+
+              return (
+                <SelectOptionItemContent
+                  ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
+                  ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
+                />
+              )
             }}
+            emptyListPlaceholder={t(
+              'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'
+            )}
           />
         )}
       </ModalPortal>
     </>
-  )
-}
-
-const AddressSelectModal = ({
-  options,
-  selectedOption,
-  setAddress,
-  onClose,
-  title,
-  hideEmptyAvailableBalance
-}: {
-  options: Address[]
-  selectedOption?: Address
-  setAddress: (address: Address) => void | undefined
-  onClose: () => void
-  title: string
-  hideEmptyAvailableBalance?: boolean
-}) => {
-  const { t } = useTranslation()
-  const [selectedAddress, setSelectedAddress] = useState(selectedOption)
-  const displayedOptions = hideEmptyAvailableBalance
-    ? options.filter((address) => getAvailableBalance(address) > 0)
-    : options
-  const noAddressesWithAvailableBalance = hideEmptyAvailableBalance && displayedOptions.length === 0
-
-  const onOptionAddressSelect = (address: Address) => {
-    setAddress(address)
-    onClose()
-  }
-
-  return (
-    <CenteredModal title={t`Addresses`} onClose={onClose}>
-      <Description>{title}</Description>
-      <div>
-        {displayedOptions.map((address) => (
-          <Option
-            key={address.hash}
-            onSelect={() => setSelectedAddress(address)}
-            isSelected={selectedAddress?.hash === address.hash}
-          >
-            <AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel />
-            <AmountStyled value={BigInt(address.balance)} fadeDecimals />
-          </Option>
-        ))}
-        {noAddressesWithAvailableBalance && (
-          <InfoBox
-            importance="accent"
-            text={t`There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.`}
-          />
-        )}
-      </div>
-      <ModalFooterButtons>
-        <ModalFooterButton role="secondary" onClick={onClose}>
-          {t`Cancel`}
-        </ModalFooterButton>
-        <ModalFooterButton
-          onClick={() => selectedAddress && onOptionAddressSelect(selectedAddress)}
-          disabled={!selectedAddress || noAddressesWithAvailableBalance}
-        >
-          {t`Select`}
-        </ModalFooterButton>
-      </ModalFooterButtons>
-    </CenteredModal>
   )
 }
 
@@ -197,11 +167,6 @@ const AddressSelectContainer = styled(SelectContainer)<Pick<AddressSelectProps, 
     css`
       margin: 0;
     `}
-`
-
-const Description = styled.div`
-  margin-bottom: var(--spacing-5);
-  color: ${({ theme }) => theme.font.secondary};
 `
 
 const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleMode'>>`
@@ -225,7 +190,7 @@ const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleM
 
 const AmountStyled = styled(Amount)`
   flex: 1;
-  text-align: right;
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
