@@ -25,27 +25,27 @@ import styled, { css } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
 import Amount from '@/components/Amount'
+import AssetBadge from '@/components/AssetBadge'
 import Badge from '@/components/Badge'
 import HiddenLabel from '@/components/HiddenLabel'
 import IOList from '@/components/IOList'
 import Lock from '@/components/Lock'
 import TableCellAmount from '@/components/TableCellAmount'
 import TimeSince from '@/components/TimeSince'
-import Token from '@/components/Token'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
+import { ALPH } from '@/utils/constants'
 import { isPendingTx } from '@/utils/transactions'
-
-const token = 'alph'
 
 interface TransactionalInfoProps {
   transaction: AddressTransaction
   addressHash?: AddressHash
   showInternalInflows?: boolean
+  compact?: boolean
   className?: string
 }
 
@@ -53,14 +53,17 @@ const TransactionalInfo = ({
   transaction: tx,
   addressHash: addressHashProp,
   className,
-  showInternalInflows
+  showInternalInflows,
+  compact
 }: TransactionalInfoProps) => {
   const { t } = useTranslation()
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
+  const tokens = useAppSelector((state) => state.tokens.entities)
+  const { amounts, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+
   const isPending = isPendingTx(tx)
 
   if (!address) return null
@@ -87,12 +90,29 @@ const TransactionalInfo = ({
         </CellArrow>
         <TokenTimeInner>
           {label}
-          <HiddenLabel text={`${formatAmountForDisplay({ amount: BigInt(amount ?? 0) })} ${token}`} />
+          <HiddenLabel text={`${formatAmountForDisplay({ amount: BigInt(amounts.alph ?? 0) })} ALPH`} />
+          {amounts.tokens.map((token) => {
+            const tokenInfo = tokens[token.id]
+
+            return (
+              <HiddenLabel
+                text={`${formatAmountForDisplay({ amount: token.amount, amountDecimals: tokenInfo?.decimals })} ${
+                  tokenInfo?.symbol
+                }`}
+                key={token.id}
+              />
+            )
+          })}
           <TimeSince timestamp={tx.timestamp} faded />
         </TokenTimeInner>
       </CellTime>
-      <CellToken>
-        <TokenStyled type={token} disableA11y />
+      <CellToken compact={compact}>
+        <AssetBadges>
+          <AssetBadge assetId={ALPH.id} />
+          {amounts.tokens.map((token) => (
+            <AssetBadge assetId={token.id} key={token.id} />
+          ))}
+        </AssetBadges>
       </CellToken>
       {!showInternalInflows && (
         <CellAddress alignRight>
@@ -142,15 +162,34 @@ const TransactionalInfo = ({
         </DirectionalAddress>
       </CellAddress>
       <TableCellAmount aria-hidden="true" color={amountTextColor}>
-        {amount !== undefined && (
+        {amounts.alph !== undefined && (
           <AmountContainer>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {amountSign}
-              <Amount value={amount} fadeDecimals color={amountTextColor} />
+              <Amount value={amounts.alph} fadeDecimals color={amountTextColor} />
             </div>
           </AmountContainer>
         )}
+        {amounts.tokens.map((token) => {
+          const tokenInfo = tokens[token.id]
+
+          return (
+            <AmountContainer key={token.id}>
+              {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
+              <div>
+                {amountSign}
+                <Amount
+                  value={token.amount}
+                  fadeDecimals
+                  color={amountTextColor}
+                  decimals={tokenInfo?.decimals}
+                  suffix={tokenInfo?.symbol}
+                />
+              </div>
+            </AmountContainer>
+          )
+        })}
       </TableCellAmount>
     </div>
   )
@@ -198,10 +237,6 @@ const CellAddress = styled.div<{ alignRight?: boolean }>`
     `}
 `
 
-const TokenStyled = styled(Token)`
-  font-weight: var(--fontWeight-semiBold);
-`
-
 const DirectionText = styled.div`
   min-width: 50px;
   display: flex;
@@ -228,9 +263,11 @@ const LockStyled = styled(Lock)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const CellToken = styled.div`
+const CellToken = styled.div<Pick<TransactionalInfoProps, 'compact'>>`
   flex-grow: 1;
+  flex-shrink: 0;
   margin-right: 28px;
+  width: ${({ compact }) => (compact ? '80px' : '180px')};
 `
 
 const TransactionIcon = styled.span<{ color?: string }>`
@@ -247,4 +284,11 @@ const AmountContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`
+
+const AssetBadges = styled.div`
+  display: flex;
+  gap: 20px;
+  row-gap: 10px;
+  flex-wrap: wrap;
 `

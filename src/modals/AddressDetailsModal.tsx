@@ -44,7 +44,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     <SideModal
       onClose={onClose}
       label={t('Address details')}
-      width={670}
+      width={800}
       header={
         <Header>
           <AddressColor>
@@ -73,7 +73,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}
         />
-        <TransactionList title={t('Address transactions')} addressHash={address.hash} />
+        <TransactionList title={t('Address transactions')} addressHash={address.hash} compact />
       </Content>
     </SideModal>
   )

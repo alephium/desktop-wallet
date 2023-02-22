@@ -17,13 +17,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
-  calcTxAmountDeltaForAddress,
+  calcTxAmountsDeltaForAddress,
   getDirection,
   isConsolidationTx,
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
-import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
+import { AssetOutput, Output, Token } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
@@ -39,21 +39,34 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
   let infoType: TransactionInfoType
   let outputs: Output[] = []
   let lockTime: Date | undefined
+  let tokens: {
+    id: Token['id']
+    amount: bigint
+  }[] = []
 
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
+    // TODO: Consider tokens...
     amount = tx.amount ? BigInt(tx.amount) : undefined
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
-    amount = calcTxAmountDeltaForAddress(tx, addressHash)
-    amount = amount < 0 ? amount * BigInt(-1) : amount
+    const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, addressHash)
+
+    amount = alphAmount < 0 ? alphAmount * BigInt(-1) : alphAmount
+    tokens = tokenAmounts.map((token) => ({
+      id: token.id,
+      amount: token.amount < 0 ? token.amount * BigInt(-1) : token.amount
+    }))
 
     if (isConsolidationTx(tx)) {
+      // TODO: Consider tokens
       direction = 'out'
       infoType = 'move'
     } else {
+      // TODO: Should the direction be defined only by the direction of ALPH?
+      // Can one transaction have multiple directions for different tokens/ALPH?
       direction = getDirection(tx, addressHash)
       const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
       infoType =
@@ -71,7 +84,10 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
   }
 
   return {
-    amount,
+    amounts: {
+      alph: amount,
+      tokens
+    },
     direction,
     infoType,
     outputs,

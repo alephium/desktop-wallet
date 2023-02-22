@@ -45,9 +45,10 @@ interface TransactionListProps {
   className?: string
   title?: string
   limit?: number
+  compact?: boolean
 }
 
-const TransactionList = ({ className, addressHash, title, limit }: TransactionListProps) => {
+const TransactionList = ({ className, addressHash, title, limit, compact }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -89,7 +90,12 @@ const TransactionList = ({ className, addressHash, title, limit }: TransactionLi
         </TableHeaderRow>
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
-            <TransactionalInfo transaction={tx} addressHash={tx.address.hash} showInternalInflows={singleAddress} />
+            <TransactionalInfo
+              transaction={tx}
+              addressHash={tx.address.hash}
+              showInternalInflows={singleAddress}
+              compact
+            />
           </TableRow>
         ))}
         {displayedConfirmedTxs.map((tx) => (
@@ -100,7 +106,12 @@ const TransactionList = ({ className, addressHash, title, limit }: TransactionLi
             onClick={() => setSelectedTransaction(tx)}
             onKeyPress={() => setSelectedTransaction(tx)}
           >
-            <TransactionalInfo transaction={tx} addressHash={tx.address.hash} showInternalInflows={singleAddress} />
+            <TransactionalInfo
+              transaction={tx}
+              addressHash={tx.address.hash}
+              showInternalInflows={singleAddress}
+              compact
+            />
           </TableRow>
         ))}
         {limit === undefined && confirmedTxs.length !== totalNumberOfTransactions && (

@@ -57,7 +57,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
-  const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { amounts, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const amount = amounts.alph
   const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()

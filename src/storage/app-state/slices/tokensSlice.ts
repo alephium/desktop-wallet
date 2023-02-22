@@ -21,6 +21,7 @@ import { createAsyncThunk, createEntityAdapter, createSlice, EntityState } from 
 
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { RootState } from '@/storage/app-state/store'
+import { ALPH } from '@/utils/constants'
 
 const sliceName = 'tokens'
 
@@ -32,9 +33,14 @@ const tokensAdapter = createEntityAdapter<TokenInfo>({
   sortComparer: (a, b) => a.name.localeCompare(b.name)
 })
 
-const initialState: TokensState = tokensAdapter.getInitialState({
-  status: 'uninitialized'
-})
+const initialState: TokensState = tokensAdapter.addOne(
+  tokensAdapter.getInitialState({
+    status: 'uninitialized'
+  }),
+  {
+    ...ALPH
+  }
+)
 
 export const syncNetworkTokensInfo = createAsyncThunk(`${sliceName}/syncNetworkTokensInfo`, async (_, { getState }) => {
   const state = getState() as RootState
