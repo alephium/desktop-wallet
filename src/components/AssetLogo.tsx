@@ -20,7 +20,7 @@ import { TokenInfo } from '@alephium/token-list'
 import styled, { css } from 'styled-components'
 
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
-import { ALPH } from '@/utils/constants'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 
 interface AssetLogoProps {
   asset: Pick<TokenInfo, 'id' | 'logoURI'>

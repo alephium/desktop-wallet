@@ -40,15 +40,14 @@ import {
   walletSwitched,
   walletUnlocked
 } from '@/storage/app-state/slices/activeWalletSlice'
+import { ALPH, selectAllAssetsInfo } from '@/storage/app-state/slices/assetsInfoSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
-import { selectAllTokens } from '@/storage/app-state/slices/tokensSlice'
 import { RootState } from '@/storage/app-state/store'
 import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
-import { Asset, TokenDisplayBalances } from '@/types/tokens'
+import { Asset, TokenDisplayBalances } from '@/types/assets'
 import { PendingTransaction } from '@/types/transactions'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
-import { ALPH } from '@/utils/constants'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 const sliceName = 'addresses'
@@ -353,8 +352,13 @@ export const selectAddressesAlphAsset = createSelector(
 )
 
 export const selectAddressesAssets = createSelector(
-  [selectAllAddresses, selectAllTokens, selectAddressesAlphAsset, (_, addressHashes?: AddressHash[]) => addressHashes],
-  (allAddresses, tokens, alphAsset, addressHashes): Asset[] => {
+  [
+    selectAllAddresses,
+    selectAllAssetsInfo,
+    selectAddressesAlphAsset,
+    (_, addressHashes?: AddressHash[]) => addressHashes
+  ],
+  (allAddresses, assetsInfo, alphAsset, addressHashes): Asset[] => {
     const addresses = addressHashes
       ? allAddresses.filter((address) => addressHashes.includes(address.hash))
       : allAddresses
@@ -377,23 +381,23 @@ export const selectAddressesAssets = createSelector(
       return acc
     }, [] as TokenDisplayBalances[])
 
-    const tokenResults = tokenBalances.map((token) => {
-      const tokenMetadata = tokens.find((t) => t.id === token.id)
-      const trailingZeros = produceZeros(tokenMetadata?.decimals ?? 0)
+    const tokenAssets = tokenBalances.map((token) => {
+      const assetInfo = assetsInfo.find((t) => t.id === token.id)
+      const trailingZeros = produceZeros(assetInfo?.decimals ?? 0)
 
       return {
         id: token.id,
         balance: BigInt(token.balance.toString() + trailingZeros),
         lockedBalance: BigInt(token.lockedBalance.toString() + trailingZeros),
-        name: tokenMetadata?.name ?? token.id,
-        symbol: tokenMetadata?.symbol ?? '',
-        description: tokenMetadata?.description,
-        logoURI: tokenMetadata?.logoURI,
-        decimals: tokenMetadata?.decimals ?? 0
+        name: assetInfo?.name ?? token.id,
+        symbol: assetInfo?.symbol ?? '',
+        description: assetInfo?.description,
+        logoURI: assetInfo?.logoURI,
+        decimals: assetInfo?.decimals ?? 0
       }
     })
 
-    return [alphAsset, ...tokenResults]
+    return [alphAsset, ...tokenAssets]
   }
 )
 

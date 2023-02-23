@@ -25,7 +25,7 @@ import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import SideModal from '@/modals/SideModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
-import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
+import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 
@@ -68,7 +68,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     >
       <Content>
         <AmountsOverviewPanel addressHash={addressHash} />
-        <TokensNFTsList
+        <AssetsList
           addressHashes={[address.hash]}
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}

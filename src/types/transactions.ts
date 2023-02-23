@@ -17,10 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { Token, Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/types/addresses'
-import { AssetAmount, PendingAssetAmount } from '@/types/tokens'
+import { AssetAmount } from '@/types/assets'
 
 export type TransactionDirection = 'out' | 'in'
 export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
@@ -40,7 +40,7 @@ export type PendingTransaction = {
   timestamp: number
   type: PendingTxType
   amount?: string
-  tokens?: PendingAssetAmount[]
+  tokens?: Token[]
   lockTime?: number
   status: 'pending'
 }

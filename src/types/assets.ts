@@ -19,27 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressBalance, Token } from '@alephium/sdk/api/explorer'
 import { TokenInfo } from '@alephium/token-list'
 
-export type TokenBalances = AddressBalance & {
-  id: Token['id']
-}
+// Used in Redux, amounts need to be in string format
+export type TokenBalances = AddressBalance & { id: Token['id'] }
 
-export type Asset = Omit<TokenInfo, 'decimals'> &
-  TokenDisplayBalances & {
-    decimals?: TokenInfo['decimals']
-  }
-
-export type TokenDisplayBalances = {
-  id: Token['id']
+// Same as TokenBalances, but amounts are in BigInt, useful for display purposes
+export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalance'> & {
   balance: bigint
   lockedBalance: bigint
 }
 
-export type AssetAmount = {
-  id: Asset['id']
-  amount?: bigint
-}
+export type Asset = TokenDisplayBalances & TokenInfo
 
-export type PendingAssetAmount = {
-  id: Asset['id']
-  amount: string
-}
+export type AssetAmount = { id: Asset['id']; amount?: bigint }

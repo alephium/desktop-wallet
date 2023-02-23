@@ -91,3 +91,5 @@ export const onTabPress = (event: KeyboardEvent, callback: () => void) => {
   event.stopPropagation()
   callback()
 }
+
+export const convertToPositive = (num: bigint): bigint => (num < 0 ? num * BigInt(-1) : num)

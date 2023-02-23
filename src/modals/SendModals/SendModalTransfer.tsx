@@ -43,13 +43,13 @@ import FooterButton from '@/modals/SendModals/FooterButton'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { store } from '@/storage/app-state/store'
-import { AssetAmount } from '@/types/tokens'
+import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
-import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
-import { getAssetAmounts } from '@/utils/transactions'
+import { getTransactionAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
   onClose: () => void
@@ -214,7 +214,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 const buildTransaction = async (transactionData: TransferTxData, context: TxContext) => {
   const { fromAddress, toAddress, assetAmounts, gasAmount, gasPrice, lockTime } = transactionData
   const assetsWithAvailableBalance = getAddressAssetsAvailableBalance(fromAddress).filter(
-    (token) => token.availableBalance > 0
+    (asset) => asset.availableBalance > 0
   )
 
   const shouldSweep =
@@ -230,7 +230,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
     context.setSweepUnsignedTxs(unsignedTxs)
     context.setFees(fees)
   } else {
-    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
+    const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
 
     const { data } = await client.clique.transactions.postTransactionsBuild({
       fromPublicKey: fromAddress.publicKey,
@@ -256,7 +256,7 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
   const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
   if (toAddress) {
-    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
+    const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
     const lockTime = lockDateTime?.getTime()
 
     if (isSweeping && sweepUnsignedTxs) {

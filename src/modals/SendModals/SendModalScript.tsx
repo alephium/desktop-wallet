@@ -167,7 +167,6 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
-    tokens: undefined,
     gasAmount: txData.gasAmount,
     gasPrice: txData.gasPrice ? fromHumanReadableAmount(txData.gasPrice).toString() : undefined
   })

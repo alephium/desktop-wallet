@@ -34,6 +34,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import {
   DappTxData,
   DeployContractTxData,
@@ -43,7 +44,6 @@ import {
   TxType
 } from '@/types/transactions'
 import { AlephiumWindow } from '@/types/window'
-import { ALPH } from '@/utils/constants'
 import { extractErrorMsg } from '@/utils/misc'
 
 export interface WalletConnectContextProps {
@@ -152,15 +152,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as SignTransferTxParams
+            const alphAssetAmount = { id: ALPH.id, amount: p.destinations[0].attoAlphAmount }
+            const tokenAssetAmounts = p.destinations[0].tokens
             const txData: TransferTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
-              assetAmounts: [
-                {
-                  id: ALPH.id,
-                  amount: p.destinations[0].attoAlphAmount
-                }
-              ],
+              assetAmounts: tokenAssetAmounts ? [alphAssetAmount, ...tokenAssetAmounts] : [alphAssetAmount],
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }

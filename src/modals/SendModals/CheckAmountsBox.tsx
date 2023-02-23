@@ -24,9 +24,9 @@ import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import { AssetAmount } from '@/types/tokens'
-import { ALPH } from '@/utils/constants'
-import { getAssetAmounts } from '@/utils/transactions'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
+import { AssetAmount } from '@/types/assets'
+import { getTransactionAssetAmounts } from '@/utils/transactions'
 
 interface CheckAmountsBoxProps {
   assetAmounts: AssetAmount[]
@@ -34,27 +34,25 @@ interface CheckAmountsBoxProps {
 }
 
 const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
-  const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
-  const tokensInfo = useAppSelector((state) => state.tokens.entities)
+  const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
+  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
+
+  const assets = [{ id: ALPH.id, amount: attoAlphAmount }, ...tokens]
 
   return (
     <Box className={className}>
-      <AssetAmountRow>
-        <AssetLogoStyled asset={{ id: ALPH.id }} size={30} />
-        <AssetAmountStyled value={BigInt(attoAlphAmount)} />
-      </AssetAmountRow>
-      {tokens.map((token) => {
-        const tokenInfo = tokensInfo[token.id]
+      {assets.map((asset) => {
+        const assetInfo = assetsInfo[asset.id]
 
         return (
-          <Fragment key={token.id}>
+          <Fragment key={asset.id}>
             <HorizontalDivider />
             <AssetAmountRow>
-              {tokenInfo && <AssetLogoStyled asset={tokenInfo} size={30} />}
+              {assetInfo && <AssetLogoStyled asset={assetInfo} size={30} />}
               <AssetAmountStyled
-                value={BigInt(token.amount)}
-                suffix={tokenInfo?.symbol}
-                decimals={tokenInfo?.decimals}
+                value={BigInt(asset.amount)}
+                suffix={assetInfo?.symbol}
+                decimals={assetInfo?.decimals}
               />
             </AssetAmountRow>
           </Fragment>

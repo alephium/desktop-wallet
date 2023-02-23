@@ -20,28 +20,28 @@ import styled from 'styled-components'
 
 import AssetLogo from '@/components/AssetLogo'
 import { useAppSelector } from '@/hooks/redux'
-import { selectTokenById } from '@/storage/app-state/slices/tokensSlice'
-import { Asset } from '@/types/tokens'
+import { selectAssetInfoById } from '@/storage/app-state/slices/assetsInfoSlice'
+import { Asset } from '@/types/assets'
 
-interface TokenBadgeProps {
+interface AssetBadgeProps {
   assetId: Asset['id']
   className?: string
 }
 
-const TokenBadge = ({ assetId, className }: TokenBadgeProps) => {
-  const tokenInfo = useAppSelector((state) => selectTokenById(state, assetId))
+const AssetBadge = ({ assetId, className }: AssetBadgeProps) => {
+  const assetInfo = useAppSelector((state) => selectAssetInfoById(state, assetId))
 
-  if (!tokenInfo) return null
+  if (!assetInfo) return null
 
   return (
     <div className={className}>
-      <AssetLogo asset={tokenInfo} size={20} />
-      <AssetSymbol>{tokenInfo.symbol}</AssetSymbol>
+      <AssetLogo asset={assetInfo} size={20} />
+      <AssetSymbol>{assetInfo.symbol}</AssetSymbol>
     </div>
   )
 }
 
-export default styled(TokenBadge)`
+export default styled(AssetBadge)`
   display: flex;
   align-items: center;
   gap: 16px;

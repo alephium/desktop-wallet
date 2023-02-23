@@ -37,9 +37,9 @@ import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/C
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { Address } from '@/types/addresses'
-import { Asset, AssetAmount } from '@/types/tokens'
-import { ALPH } from '@/utils/constants'
+import { Asset, AssetAmount } from '@/types/assets'
 
 interface AssetAmountsInputProps {
   address: Address

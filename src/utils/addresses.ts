@@ -18,11 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from '@alephium/sdk/api/explorer'
 
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
-import { AssetAmount } from '@/types/tokens'
+import { AssetAmount } from '@/types/assets'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
-import { ALPH } from '@/utils/constants'
 
 export const selectAddressTransactions = (
   allAddresses: Address[],
@@ -58,14 +58,14 @@ export const filterAddresses = (addresses: Address[], text: string) =>
       )
 
 export const getAddressAssetsAvailableBalance = (address: Address) => [
-  ...address.tokens.map((token) => ({
-    id: token.id,
-    availableBalance: BigInt(token.balance) - BigInt(token.lockedBalance)
-  })),
   {
     id: ALPH.id,
     availableBalance: getAvailableBalance(address)
-  }
+  },
+  ...address.tokens.map((token) => ({
+    id: token.id,
+    availableBalance: BigInt(token.balance) - BigInt(token.lockedBalance)
+  }))
 ]
 
 export const assetAmountsWithinAvailableBalance = (address: Address, assetAmounts: AssetAmount[]) => {
@@ -74,7 +74,7 @@ export const assetAmountsWithinAvailableBalance = (address: Address, assetAmount
   return assetAmounts.every((asset) => {
     if (!asset?.amount) return true
 
-    const assetAvailableBalance = assetsAvailableBalance.find((token) => token.id === asset.id)?.availableBalance
+    const assetAvailableBalance = assetsAvailableBalance.find(({ id }) => id === asset.id)?.availableBalance
 
     if (!assetAvailableBalance) return false
     return asset.amount <= assetAvailableBalance

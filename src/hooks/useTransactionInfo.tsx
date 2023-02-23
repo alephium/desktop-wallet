@@ -23,12 +23,15 @@ import {
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
-import { AssetOutput, Output, Token } from '@alephium/sdk/api/explorer'
+import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { AddressHash } from '@/types/addresses'
+import { AssetAmount } from '@/types/assets'
 import { AddressTransaction } from '@/types/transactions'
+import { convertToPositive } from '@/utils/misc'
 import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'
 
 export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressHash, showInternalInflows?: boolean) => {
@@ -39,10 +42,7 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
   let infoType: TransactionInfoType
   let outputs: Output[] = []
   let lockTime: Date | undefined
-  let tokens: {
-    id: Token['id']
-    amount: bigint
-  }[] = []
+  let tokens: Required<AssetAmount>[] = []
 
   if (isPendingTx(tx)) {
     direction = 'out'
@@ -54,11 +54,8 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     outputs = tx.outputs ?? outputs
     const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, addressHash)
 
-    amount = alphAmount < 0 ? alphAmount * BigInt(-1) : alphAmount
-    tokens = tokenAmounts.map((token) => ({
-      id: token.id,
-      amount: token.amount < 0 ? token.amount * BigInt(-1) : token.amount
-    }))
+    amount = convertToPositive(alphAmount)
+    tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
 
     if (isConsolidationTx(tx)) {
       // TODO: Consider tokens
@@ -83,11 +80,10 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime
   }
 
+  const assetAmounts = amount !== undefined ? [{ id: ALPH.id, amount }, ...tokens] : tokens
+
   return {
-    amounts: {
-      alph: amount,
-      tokens
-    },
+    assetAmounts,
     direction,
     infoType,
     outputs,
