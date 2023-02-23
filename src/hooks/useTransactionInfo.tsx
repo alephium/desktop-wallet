@@ -58,12 +58,9 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
 
     if (isConsolidationTx(tx)) {
-      // TODO: Consider tokens
       direction = 'out'
       infoType = 'move'
     } else {
-      // TODO: Should the direction be defined only by the direction of ALPH?
-      // Can one transaction have multiple directions for different tokens/ALPH?
       direction = getDirection(tx, addressHash)
       const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
       infoType =

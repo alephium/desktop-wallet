@@ -178,7 +178,7 @@ const addressesSlice = createSlice({
       const toAddress = state.entities[pendingTransaction.toAddress]
 
       fromAddress.transactions.push(pendingTransaction.hash)
-      if (toAddress) toAddress.transactions.push(pendingTransaction.hash)
+      if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
     },
     newAddressesSaved: (state, action: PayloadAction<AddressBase[]>) => {
       const addresses = action.payload
