@@ -42,8 +42,8 @@ export const convertUnconfirmedTxToPendingTx = (
 ): PendingTransaction => {
   if (!tx.outputs) throw 'Missing transaction details'
 
-  const amount = calcTxAmountsDeltaForAddress(tx, fromAddress).toString()
   const toAddress = tx.outputs[0].address
+  const { alph: alphAmount, tokens } = calcTxAmountsDeltaForAddress(tx, toAddress)
 
   if (!fromAddress) throw new Error('fromAddress is not defined')
   if (!toAddress) throw new Error('toAddress is not defined')
@@ -55,7 +55,8 @@ export const convertUnconfirmedTxToPendingTx = (
     // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
     timestamp: tx.lastSeen,
     type: 'transfer',
-    amount,
+    amount: alphAmount.toString(),
+    tokens: tokens.map((token) => ({ ...token, amount: token.amount.toString() })),
     status: 'pending'
   }
 }

@@ -33,8 +33,13 @@ export const selectAddressTransactions = (
   const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
 
   return transactions.reduce((txs, tx) => {
-    const addressTx = addressesTxs.find(({ txHash }) => txHash === tx.hash)
-    if (addressTx) txs.push({ ...tx, address: addressTx.address })
+    const addressTxs = addressesTxs.filter(({ txHash }) => txHash === tx.hash)
+
+    addressTxs.forEach((addressTx) => {
+      if ((isPendingTransaction(tx) && tx.fromAddress === addressTx.address.hash) || !isPendingTransaction(tx)) {
+        txs.push({ ...tx, address: addressTx.address })
+      }
+    })
 
     return txs
   }, [] as AddressTransaction[])
@@ -80,3 +85,6 @@ export const assetAmountsWithinAvailableBalance = (address: Address, assetAmount
     return asset.amount <= assetAvailableBalance
   })
 }
+
+const isPendingTransaction = (tx: Transaction | PendingTransaction): tx is PendingTransaction =>
+  (tx as PendingTransaction).status === 'pending'

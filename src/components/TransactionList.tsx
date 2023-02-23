@@ -94,7 +94,7 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
               transaction={tx}
               addressHash={tx.address.hash}
               showInternalInflows={singleAddress}
-              compact
+              compact={compact}
             />
           </TableRow>
         ))}
@@ -110,7 +110,7 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
               transaction={tx}
               addressHash={tx.address.hash}
               showInternalInflows={singleAddress}
-              compact
+              compact={compact}
             />
           </TableRow>
         ))}

@@ -47,8 +47,8 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
-    // TODO: Consider tokens...
     amount = tx.amount ? BigInt(tx.amount) : undefined
+    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : []
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
