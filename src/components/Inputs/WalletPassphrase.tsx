@@ -65,6 +65,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
       title={t('Use optional passphrase')}
       subtitle={t('Advanced feature')}
       onClick={onExpandableSectionToggle}
+      shadow
       className={className}
     >
       <InfoBox importance="alert">

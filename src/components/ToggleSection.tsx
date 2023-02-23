@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { ReactNode, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { fastTransition } from '@/animations'
 import Toggle from '@/components/Inputs/Toggle'
@@ -29,6 +29,7 @@ export interface ToggleSectionProps {
   subtitle?: string
   isOpen?: boolean
   onClick?: (b: boolean) => void
+  shadow?: boolean
   className?: string
 }
 
@@ -37,10 +38,12 @@ const ToggleSection = ({
   subtitle,
   isOpen = false,
   onClick = () => null,
+  shadow,
   children,
   className
 }: ToggleSectionProps) => {
   const [isShown, setIsShown] = useState(isOpen)
+  const theme = useTheme()
 
   const handleToggle = () => {
     setIsShown(!isShown)
@@ -48,7 +51,7 @@ const ToggleSection = ({
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={{ boxShadow: shadow && isShown ? theme.shadow.tertiary : undefined }}>
       <Header>
         <TitleColumn>
           <Title>{title}</Title>
