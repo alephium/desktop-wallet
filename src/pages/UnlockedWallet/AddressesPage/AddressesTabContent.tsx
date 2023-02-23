@@ -31,6 +31,7 @@ import { filterAddresses } from '@/utils/addresses'
 
 const AddressesTabContent = () => {
   const addresses = useAppSelector(selectAllAddresses)
+  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const { t } = useTranslation()
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
@@ -39,13 +40,13 @@ const AddressesTabContent = () => {
   const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
 
   useEffect(() => {
-    const filteredByText = filterAddresses(addresses, searchInput.toLowerCase())
+    const filteredByText = filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo)
     const filteredByToggle = hideEmptyAddresses
       ? filteredByText.filter((address) => address.balance !== '0')
       : filteredByText
 
     setVisibleAddresses(filteredByToggle)
-  }, [addresses, hideEmptyAddresses, searchInput])
+  }, [addresses, assetsInfo, hideEmptyAddresses, searchInput])
 
   return (
     <TabContent

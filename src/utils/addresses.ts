@@ -17,6 +17,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Transaction } from '@alephium/sdk/api/explorer'
+import { TokenInfo } from '@alephium/token-list'
+import { Dictionary } from '@reduxjs/toolkit'
 
 import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
@@ -54,13 +56,27 @@ export const getInitialAddressSettings = (): AddressSettings => ({
   color: getRandomLabelColor()
 })
 
-export const filterAddresses = (addresses: Address[], text: string) =>
+export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<TokenInfo>) =>
   text.length < 2
     ? addresses
-    : addresses.filter(
-        // TODO: Include tokens in search
-        (address) => address.label?.toLowerCase().includes(text) || address.hash.toLowerCase().includes(text)
-      )
+    : addresses.filter((address) => {
+        const addressTokenIds = address.tokens.filter((token) => token.balance !== '0').map((token) => token.id)
+        const addressTokenNames = addressTokenIds
+          .map((tokenId) => {
+            const tokenInfo = assetsInfo[tokenId]
+            return tokenInfo ? `${tokenInfo.name} ${tokenInfo.symbol}` : undefined
+          })
+          .filter((searchableText) => searchableText !== undefined)
+          .join(' ')
+
+        const addressAssetNames = `${address.balance !== '0' ? 'Alephium ALPH ' : ''}${addressTokenNames}`.toLowerCase()
+
+        return (
+          address.label?.toLowerCase().includes(text) ||
+          address.hash.toLowerCase().includes(text) ||
+          addressAssetNames.includes(text)
+        )
+      })
 
 export const getAddressAssetsAvailableBalance = (address: Address) => [
   {

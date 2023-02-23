@@ -28,6 +28,7 @@ import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
+import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import { Address, AddressHash } from '@/types/addresses'
 import { filterAddresses } from '@/utils/addresses'
@@ -58,6 +59,8 @@ function AddressSelect({
   simpleMode = false
 }: AddressSelectProps) {
   const { t } = useTranslation()
+  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
+
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [address, setAddress] = useState(defaultAddress)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
@@ -75,7 +78,7 @@ function AddressSelect({
   }
 
   const handleSearch = (searchInput: string) =>
-    setFilteredAddresses(filterAddresses(addresses, searchInput.toLowerCase()))
+    setFilteredAddresses(filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo))
 
   const handleAddressSelectModalClose = () => {
     setIsAddressSelectModalOpen(false)
