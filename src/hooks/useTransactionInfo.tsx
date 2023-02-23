@@ -36,6 +36,7 @@ import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'
 
 export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressHash, showInternalInflows?: boolean) => {
   const addresses = useAppSelector(selectAllAddresses)
+  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
 
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
@@ -77,10 +78,11 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime
   }
 
-  const assetAmounts = amount !== undefined ? [{ id: ALPH.id, amount }, ...tokens] : tokens
+  const tokenAssets = [...tokens.map((token) => ({ ...token, ...assetsInfo[token.id] }))]
+  const assets = amount !== undefined ? [{ ...ALPH, amount }, ...tokenAssets] : tokenAssets
 
   return {
-    assetAmounts,
+    assets,
     direction,
     infoType,
     outputs,

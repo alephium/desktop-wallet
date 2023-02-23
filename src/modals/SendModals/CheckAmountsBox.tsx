@@ -41,12 +41,12 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
 
   return (
     <Box className={className}>
-      {assets.map((asset) => {
+      {assets.map((asset, index) => {
         const assetInfo = assetsInfo[asset.id]
 
         return (
           <Fragment key={asset.id}>
-            <HorizontalDivider />
+            {index > 0 && <HorizontalDivider />}
             <AssetAmountRow>
               {assetInfo && <AssetLogoStyled asset={assetInfo} size={30} />}
               <AssetAmountStyled

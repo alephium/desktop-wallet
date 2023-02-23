@@ -56,9 +56,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const { t } = useTranslation()
   const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const theme = useTheme()
-  const { assetAmounts, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { assets, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
   const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
@@ -75,23 +74,19 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {amountSign}
-          {assetAmounts.map((asset) => {
-            const assetInfo = assetsInfo[asset.id]
-
-            return (
-              <AmountContainer key={asset.id}>
-                {amountSign}
-                <Amount
-                  tabIndex={0}
-                  value={asset.amount}
-                  fadeDecimals
-                  color={amountTextColor}
-                  decimals={assetInfo?.decimals}
-                  suffix={assetInfo?.symbol}
-                />
-              </AmountContainer>
-            )
-          })}
+          {assets.map(({ id, amount, decimals, symbol }) => (
+            <AmountContainer key={id}>
+              {amountSign}
+              <Amount
+                tabIndex={0}
+                value={amount}
+                fadeDecimals
+                color={amountTextColor}
+                decimals={decimals}
+                suffix={symbol}
+              />
+            </AmountContainer>
+          ))}
         </AmountWrapper>
         <HeaderInfo>
           <Direction>
@@ -158,24 +153,20 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
-            {assetAmounts.map((asset) => {
-              const assetInfo = assetsInfo[asset.id]
-
-              return (
-                <AmountContainer key={asset.id}>
-                  {amountSign}
-                  <Amount
-                    tabIndex={0}
-                    value={asset.amount}
-                    fadeDecimals
-                    fullPrecision
-                    color={amountTextColor}
-                    decimals={assetInfo?.decimals}
-                    suffix={assetInfo?.symbol}
-                  />
-                </AmountContainer>
-              )
-            })}
+            {assets.map(({ id, amount, decimals, symbol }) => (
+              <AmountContainer key={id}>
+                {amountSign}
+                <Amount
+                  tabIndex={0}
+                  value={amount}
+                  fadeDecimals
+                  fullPrecision
+                  color={amountTextColor}
+                  decimals={decimals}
+                  suffix={symbol}
+                />
+              </AmountContainer>
+            ))}
           </Amounts>
         </DetailsRow>
         <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>

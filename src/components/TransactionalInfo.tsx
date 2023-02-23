@@ -59,12 +59,7 @@ const TransactionalInfo = ({
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
-  const { assetAmounts, direction, outputs, lockTime, infoType } = useTransactionInfo(
-    tx,
-    addressHash,
-    showInternalInflows
-  )
+  const { assets, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
   const isPending = isPendingTx(tx)
@@ -91,24 +86,15 @@ const TransactionalInfo = ({
         </CellArrow>
         <AssetTime>
           {label}
-          {assetAmounts.map((asset) => {
-            const assetInfo = assetsInfo[asset.id]
-
-            return (
-              <HiddenLabel
-                text={`${formatAmountForDisplay({ amount: asset.amount, amountDecimals: assetInfo?.decimals })} ${
-                  assetInfo?.symbol
-                }`}
-                key={asset.id}
-              />
-            )
-          })}
+          {assets.map(({ id, amount, decimals, symbol }) => (
+            <HiddenLabel key={id} text={`${formatAmountForDisplay({ amount, amountDecimals: decimals })} ${symbol}`} />
+          ))}
           <TimeSince timestamp={tx.timestamp} faded />
         </AssetTime>
       </CellTime>
       <CellAssetBadges compact={compact}>
         <AssetBadges>
-          {assetAmounts.map(({ id }) => (
+          {assets.map(({ id }) => (
             <AssetBadge assetId={id} key={id} />
           ))}
         </AssetBadges>
@@ -161,25 +147,15 @@ const TransactionalInfo = ({
         </DirectionalAddress>
       </CellAddress>
       <TableCellAmount aria-hidden="true" color={amountTextColor}>
-        {assetAmounts.map((asset) => {
-          const assetInfo = assetsInfo[asset.id]
-
-          return (
-            <AmountContainer key={asset.id}>
-              {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
-              <div>
-                {amountSign}
-                <Amount
-                  value={asset.amount}
-                  fadeDecimals
-                  color={amountTextColor}
-                  decimals={assetInfo?.decimals}
-                  suffix={assetInfo?.symbol}
-                />
-              </div>
-            </AmountContainer>
-          )
-        })}
+        {assets.map(({ id, amount, decimals, symbol }) => (
+          <AmountContainer key={id}>
+            {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
+            <div>
+              {amountSign}
+              <Amount value={amount} fadeDecimals color={amountTextColor} decimals={decimals} suffix={symbol} />
+            </div>
+          </AmountContainer>
+        ))}
       </TableCellAmount>
     </div>
   )
