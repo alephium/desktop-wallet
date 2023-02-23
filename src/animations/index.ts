@@ -45,7 +45,7 @@ export const slowTransition = {
 }
 
 export const fastTransition = {
-  transition: { duration: 0.15 }
+  transition: { type: 'spring', damping: 40, stiffness: 500 }
 }
 
 export const fadeInSlowly = {

@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-import { fadeInOutScaleFast } from '@/animations'
+import { fadeInOutScaleFast, fastTransition } from '@/animations'
 import ModalContainer from '@/modals/ModalContainer'
 import { Coordinates } from '@/types/numbers'
 import { useWindowSize } from '@/utils/hooks'
@@ -32,7 +32,7 @@ interface PopupProps {
   hookCoordinates?: Coordinates
 }
 
-const minMarginToEdge = 25
+const minMarginToEdge = 20
 const headerHeight = 50
 
 const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupProps) => {
@@ -66,7 +66,14 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
   }, [windowHeight, windowWidth])
 
   const PopupContent = (
-    <Content role="dialog" ref={contentRef} {...fadeInOutScaleFast}>
+    <Content
+      role="dialog"
+      ref={contentRef}
+      style={hookOffset && { x: hookOffset.x, y: hookOffset.y - 15 }}
+      animate={hookOffset && { ...fadeInOutScaleFast.animate, ...hookOffset }}
+      exit={fadeInOutScaleFast.exit}
+      {...fastTransition}
+    >
       {title && (
         <Header>
           <h2>{title}</h2>
@@ -79,12 +86,7 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
   return (
     <ModalContainer onClose={onBackgroundClick}>
       {hookCoordinates ? (
-        <Hook
-          hookCoordinates={hookCoordinates}
-          contentWidth={contentRef.current?.clientWidth || 0}
-          animate={hookOffset}
-          transition={{ duration: 0.1 }}
-        >
+        <Hook hookCoordinates={hookCoordinates} contentWidth={contentRef.current?.clientWidth || 0}>
           {PopupContent}
         </Hook>
       ) : (
@@ -96,16 +98,17 @@ const Popup = ({ children, onBackgroundClick, title, hookCoordinates }: PopupPro
 
 export default Popup
 
-const Hook = styled(motion.div)<{ hookCoordinates: Coordinates; contentWidth: number }>`
+const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  top: ${({ hookCoordinates }) => hookCoordinates.y - headerHeight * 1.5}px;
+  top: ${({ hookCoordinates }) => hookCoordinates.y - headerHeight / 2}px;
   left: ${({ hookCoordinates, contentWidth }) => hookCoordinates.x - contentWidth / 2}px;
 `
 
 const Content = styled(motion.div)`
+  opacity: 0; // for initial mount computation
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
