@@ -29,11 +29,10 @@ import Box from '@/components/Box'
 import Button from '@/components/Button'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
-import Option from '@/components/Inputs/Option'
-import { SelectContainer } from '@/components/Inputs/Select'
+import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
+import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
@@ -64,6 +63,10 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
   const selectedAssetIds = assetAmounts.map(({ id }) => id)
   const remainingAvailableAssets = assets.filter((asset) => !selectedAssetIds.includes(asset.id))
   const disabled = remainingAvailableAssets.length === 0
+  const availableAssetOptions: SelectOption<Asset['id']>[] = remainingAvailableAssets.map((asset) => ({
+    value: asset.id,
+    label: asset.name
+  }))
 
   const openAssetSelectModal = (assetRowIndex: number) => {
     setSelectedAssetRowIndex(assetRowIndex)
@@ -121,6 +124,15 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
       })
       onAssetAmountsChange(newAssetAmounts)
     }
+  }
+
+  const handleAssetSelectModalClose = () => {
+    setIsAssetSelectModalOpen(false)
+  }
+
+  const selectAsset = (option: SelectOption<Asset['id']>) => {
+    const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
+    asset && handleAssetSelect(asset)
   }
 
   useEffect(() => {
@@ -209,59 +221,38 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
       )}
       <ModalPortal>
         {isAssetSelectModalOpen && selectedAsset && remainingAvailableAssets.length > 0 && (
-          <AssetSelectModal
-            options={remainingAvailableAssets}
-            selectedOption={selectedAsset}
-            onAssetSelect={handleAssetSelect}
-            onClose={() => setIsAssetSelectModalOpen(false)}
+          <SelectOptionsModal
+            title={t('Select an asset')}
+            options={availableAssetOptions}
+            selectedOption={availableAssetOptions.find((option) => option.value === selectedAsset.id)}
+            setValue={selectAsset}
+            onClose={handleAssetSelectModalClose}
+            optionRender={(option) => {
+              const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
+              if (asset)
+                return (
+                  <SelectOptionItemContent
+                    ContentLeft={
+                      <AssetName>
+                        <AssetLogo asset={asset} size={20} />
+                        {asset.name} ({asset.symbol})
+                      </AssetName>
+                    }
+                    ContentRight={
+                      <AmountStyled
+                        value={asset.balance}
+                        fadeDecimals
+                        suffix={asset.symbol}
+                        decimals={asset.decimals}
+                      />
+                    }
+                  />
+                )
+            }}
           />
         )}
       </ModalPortal>
     </InputsSection>
-  )
-}
-
-const AssetSelectModal = ({
-  options,
-  selectedOption,
-  onAssetSelect,
-  onClose
-}: {
-  options: Asset[]
-  selectedOption?: Asset
-  onAssetSelect: (asset: Asset) => void | undefined
-  onClose: () => void
-}) => {
-  const { t } = useTranslation()
-
-  const onOptionAddressSelect = (asset: Asset) => {
-    onAssetSelect(asset)
-    onClose()
-  }
-
-  return (
-    <CenteredModal title={t('Assets')} onClose={onClose}>
-      <div>
-        {options.map((asset) => (
-          <Option
-            key={asset.id}
-            onSelect={() => onOptionAddressSelect(asset)}
-            isSelected={selectedOption?.id === asset.id}
-          >
-            <AssetLogo asset={asset} size={20} />
-            <AssetName>
-              {asset.name} ({asset.symbol})
-            </AssetName>
-            <AmountStyled value={asset.balance} fadeDecimals suffix={asset.symbol} decimals={asset.decimals} />
-          </Option>
-        ))}
-      </div>
-      <ModalFooterButtons>
-        <ModalFooterButton role="secondary" onClick={onClose}>
-          {t('Close')}
-        </ModalFooterButton>
-      </ModalFooterButtons>
-    </CenteredModal>
   )
 }
 
@@ -289,11 +280,14 @@ const SelectInput = styled.div<InputProps>`
 `
 
 const AmountStyled = styled(Amount)`
-  flex: 1;
-  text-align: right;
+  font-weight: var(--fontWeight-semiBold);
 `
 
-const AssetName = styled.div``
+const AssetName = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
 
 const AssetAmountInput = styled(Input)`
   margin: 0;
