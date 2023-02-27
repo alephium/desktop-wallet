@@ -54,7 +54,7 @@ export const selectAddressTransactions = (
 
 export const getAvailableBalance = (address: Address): bigint => BigInt(address.balance) - BigInt(address.lockedBalance)
 
-export const getName = (address: Address): string => address.label ?? `${address.hash.substring(0, 10)}...`
+export const getName = (address: Address): string => address.label || `${address.hash.substring(0, 10)}...`
 
 export const getInitialAddressSettings = (): AddressSettings => ({
   isDefault: true,
