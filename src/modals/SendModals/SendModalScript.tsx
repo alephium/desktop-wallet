@@ -77,7 +77,7 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
 
   return (
     <>
-      <CheckAddressesBox fromAddress={data.fromAddress.hash} />
+      <CheckAddressesBox fromAddress={data.fromAddress} />
       <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
       <CheckFeeLockTimeBox fee={fees} />

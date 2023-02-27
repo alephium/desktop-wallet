@@ -112,7 +112,7 @@ const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployCo
 
   return (
     <>
-      <CheckAddressesBox fromAddress={data.fromAddress.hash} />
+      <CheckAddressesBox fromAddress={data.fromAddress} />
       <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
       {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label={t`Issue token amount`} wordBreak />}

@@ -26,19 +26,19 @@ import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import { selectContactByAddress } from '@/storage/app-state/slices/contactsSlice'
-import { AddressHash } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface CheckAddressesBoxProps {
-  fromAddress: AddressHash
-  toAddress?: AddressHash
+  fromAddress: Address
+  toAddressHash?: AddressHash
   className?: string
 }
 
-const CheckAddressesBox = ({ fromAddress, toAddress, className }: CheckAddressesBoxProps) => {
+const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddressesBoxProps) => {
   const { t } = useTranslation()
   const [contact, explorerUrl] = useAppSelector((s) => [
-    selectContactByAddress(s, toAddress),
+    selectContactByAddress(s, toAddressHash),
     s.network.settings.explorerUrl
   ])
 
@@ -47,11 +47,11 @@ const CheckAddressesBox = ({ fromAddress, toAddress, className }: CheckAddresses
       <AddressRow>
         <AddressLabel>{t('From')}</AddressLabel>
         <AddressLabelHash>
-          <AddressBadge addressHash={fromAddress} truncate showHashWhenNoLabel />
-          <AddressEllipsedStyled addressHash={fromAddress} />
+          <AddressBadge addressHash={fromAddress.hash} truncate showHashWhenNoLabel />
+          {fromAddress.label && <AddressEllipsedStyled addressHash={fromAddress.hash} />}
         </AddressLabelHash>
       </AddressRow>
-      {toAddress && (
+      {toAddressHash && (
         <>
           <HorizontalDivider />
           <AddressRow>
@@ -64,8 +64,8 @@ const CheckAddressesBox = ({ fromAddress, toAddress, className }: CheckAddresses
                   <AddressEllipsedStyled addressHash={contact.address} />
                 </AddressLabelHash>
               ) : (
-                <ActionLinkStyled onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${toAddress}`)}>
-                  <AddressEllipsed addressHash={toAddress} />
+                <ActionLinkStyled onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${toAddressHash}`)}>
+                  <AddressEllipsed addressHash={toAddressHash} />
                 </ActionLinkStyled>
               )}
             </AddressLabelHash>

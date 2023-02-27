@@ -88,7 +88,7 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => (
   <Content>
     <CheckAmountsBox assetAmounts={data.assetAmounts} />
-    <CheckAddressesBox fromAddress={data.fromAddress.hash} toAddress={data.toAddress} />
+    <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
     <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
   </Content>
 )
