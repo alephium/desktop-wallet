@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
-import TransactionsList from '@/components/TransactionsList'
+import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
@@ -38,7 +38,7 @@ const OverviewPage = () => {
           <TokensNFTsListStyled />
           <AddressesContactsListStyled limit={5} />
         </Row>
-        <TransactionsList limit={5} />
+        <TransactionList limit={5} />
       </UnlockedWalletPanel>
     </motion.div>
   )

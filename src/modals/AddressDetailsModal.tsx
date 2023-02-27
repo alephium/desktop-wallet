@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 import AddressEllipsed from '@/components/AddressEllipsed'
 import DotIcon from '@/components/DotIcon'
-import TransactionsList from '@/components/TransactionsList'
+import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import SideModal from '@/modals/SideModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
@@ -73,7 +73,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}
         />
-        <TransactionsList title={t('Address transactions')} addressHash={address.hash} />
+        <TransactionList title={t('Address transactions')} addressHash={address.hash} />
       </Content>
     </SideModal>
   )

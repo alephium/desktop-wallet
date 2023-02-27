@@ -40,14 +40,14 @@ import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/p
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
-interface TransactionsListProps {
+interface TransactionListProps {
   addressHash?: AddressHash
   className?: string
   title?: string
   limit?: number
 }
 
-const TransactionsList = ({ className, addressHash, title, limit }: TransactionsListProps) => {
+const TransactionList = ({ className, addressHash, title, limit }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -133,7 +133,7 @@ const TransactionsList = ({ className, addressHash, title, limit }: Transactions
   )
 }
 
-export default TransactionsList
+export default TransactionList
 
 const TableHeaderRow = styled(TableRow)`
   display: flex;

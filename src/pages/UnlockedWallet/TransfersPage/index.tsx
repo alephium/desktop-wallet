@@ -20,13 +20,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 
 import { fadeIn } from '@/animations'
-import TransactionsList from '@/components/TransactionsList'
+import TransactionList from '@/components/TransactionList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
 const TransfersPage = () => (
   <motion.div {...fadeIn}>
     <UnlockedWalletPanel top>
-      <TransactionsList />
+      <TransactionList />
     </UnlockedWalletPanel>
   </motion.div>
 )
