@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
+import AppSpinner from '@/components/AppSpinner'
 import { CenteredSection } from '@/components/PageComponents/PageContainers'
 import SnackbarManager from '@/components/SnackbarManager'
 import SplashScreen from '@/components/SplashScreen'
@@ -53,12 +54,13 @@ const App = () => {
   const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
     (tx) => tx.address.hash
   )
-  const [settings, network, addressesStatus, isPassphraseUsed, assetsInfo] = useAppSelector((s) => [
+  const [settings, network, addressesStatus, isPassphraseUsed, assetsInfo, loading] = useAppSelector((s) => [
     s.settings,
     s.network,
     s.addresses.status,
     s.activeWallet.isPassphraseUsed,
-    s.assetsInfo
+    s.assetsInfo,
+    s.app.loading
   ])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -153,6 +155,7 @@ const App = () => {
       </AppContainer>
 
       <SnackbarManager message={snackbarMessage} />
+      {loading && <AppSpinner />}
       <AnimatePresence>
         {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
       </AnimatePresence>

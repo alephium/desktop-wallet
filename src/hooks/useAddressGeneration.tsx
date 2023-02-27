@@ -138,12 +138,14 @@ const useAddressGeneration = () => {
   }
 
   const discoverAndSaveUsedAddresses = async ({
-    mnemonic,
-    walletName,
+    mnemonic: mnemonicProp,
+    walletName: walletNameProp,
     skipIndexes,
     enableLoading = true
   }: DiscoverUsedAddressesProps = {}) => {
-    if (!mnemonic || !walletName) throw new Error('Could not generate addresses, active wallet not found')
+    const _mnemonic = mnemonicProp ?? mnemonic
+    const _walletName = walletNameProp ?? walletName
+    if (!_mnemonic || !_walletName) throw new Error('Could not generate addresses, active wallet not found')
 
     addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
       const addresses: AddressBase[] = data.map((address) => ({
@@ -152,7 +154,7 @@ const useAddressGeneration = () => {
         color: getRandomLabelColor()
       }))
 
-      saveNewAddresses(addresses, { walletName, mnemonic })
+      saveNewAddresses(addresses, { walletName: _walletName, mnemonic: _mnemonic })
 
       dispatch(addressDiscoveryFinished(enableLoading))
     }
@@ -160,7 +162,7 @@ const useAddressGeneration = () => {
     dispatch(addressDiscoveryStarted(enableLoading))
 
     addressDiscoveryWorker.postMessage({
-      mnemonic,
+      mnemonic: _mnemonic,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : currentAddressIndexes,
       clientUrl: client.explorer.baseUrl
     })
