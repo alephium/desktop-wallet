@@ -16,81 +16,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ChevronRight } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
-import ActionLink from '@/components/ActionLink'
-import { TabBarProps } from '@/components/TabBar'
+import TabBar, { Tab, TabBarProps } from '@/components/TabBar'
 
-interface TableTabBarProps extends TabBarProps {
-  linkText?: string
-  onLinkClick?: () => void
-}
-
-const TableTabBar = ({ items, onTabChange, activeTab, className, linkText, onLinkClick }: TableTabBarProps) => {
-  const { t } = useTranslation()
-
-  return (
-    <div className={className} role="tablist" aria-label={t('Tab navigation')}>
-      {items.map((item, index) => {
-        const isActive = activeTab.value === item.value
-
-        return (
-          <Tab
-            key={item.value}
-            onClick={() => onTabChange(item)}
-            onKeyPress={() => onTabChange(item)}
-            role="tab"
-            tabIndex={0}
-            aria-selected={isActive}
-            isActive={isActive}
-          >
-            {item.label}
-          </Tab>
-        )
-      })}
-      {linkText && onLinkClick && (
-        <ActionLinkStyled onClick={onLinkClick} Icon={ChevronRight}>
-          {linkText}
-        </ActionLinkStyled>
-      )}
-    </div>
-  )
-}
+const TableTabBar = (props: TabBarProps) => <TabBar {...props} TabComponent={TableTab} />
 
 export default styled(TableTabBar)`
-  display: flex;
-  justify-content: flex-start;
   background-color: ${({ theme }) => theme.bg.secondary};
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
-const Tab = styled.div<{ isActive: boolean }>`
+const TableTab = styled(Tab)`
   min-width: 60px;
-  text-align: center;
   padding: 22px 20px;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
-  cursor: pointer;
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.primary : theme.bg.secondary)};
+  border-top: none;
+  border-left: none;
+  border-bottom: none;
 
-  ${({ isActive, theme }) =>
-    isActive
-      ? css`
-          color: ${theme.font.primary};
-          background-color: ${theme.bg.primary};
-          margin-bottom: -1px;
-        `
-      : css`
-          color: ${theme.font.tertiary};
-          background-color: ${theme.bg.secondary};
-        `}
-
-  &:hover {
-    color: ${({ theme }) => theme.font.primary};
+  &:first-child,
+  &:last-child {
+    border-radius: 0;
   }
-`
-
-const ActionLinkStyled = styled(ActionLink)`
-  margin-left: auto;
-  margin-right: 20px;
 `

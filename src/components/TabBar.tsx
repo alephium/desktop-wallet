@@ -16,8 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
+
+import ActionLink from '@/components/ActionLink'
 
 export interface TabItem {
   value: string
@@ -28,10 +31,21 @@ export interface TabBarProps {
   items: TabItem[]
   onTabChange: (tab: TabItem) => void
   activeTab: TabItem
+  linkText?: string
+  onLinkClick?: () => void
+  TabComponent?: typeof Tab
   className?: string
 }
 
-const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
+const TabBar = ({
+  items,
+  onTabChange,
+  activeTab,
+  linkText,
+  onLinkClick,
+  TabComponent = Tab,
+  className
+}: TabBarProps) => {
   const { t } = useTranslation()
 
   return (
@@ -40,7 +54,7 @@ const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
         const isActive = activeTab.value === item.value
 
         return (
-          <Tab
+          <TabComponent
             key={item.value}
             onClick={() => onTabChange(item)}
             onKeyPress={() => onTabChange(item)}
@@ -50,34 +64,60 @@ const TabBar = ({ items, onTabChange, activeTab, className }: TabBarProps) => {
             isActive={isActive}
           >
             {item.label}
-          </Tab>
+          </TabComponent>
         )
       })}
+      {linkText && onLinkClick && (
+        <ActionLinkStyled onClick={onLinkClick} Icon={ChevronRight}>
+          {linkText}
+        </ActionLinkStyled>
+      )}
     </div>
   )
 }
 
 export default styled(TabBar)`
-  margin-left: 22px;
   display: flex;
   justify-content: flex-start;
-  gap: 10px;
 `
 
-const Tab = styled.div<{ isActive: boolean }>`
+export const Tab = styled.div<{ isActive: boolean }>`
   min-width: 50px;
   text-align: center;
   padding: 16px 36px;
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : theme.bg.background1)};
   border: 1px solid ${({ theme }) => theme.border.secondary};
-  border-top-left-radius: var(--radius-big);
-  border-top-right-radius: var(--radius-big);
   border-bottom: none;
   cursor: pointer;
 
-  color: ${({ isActive, theme }) => (isActive ? theme.font.primary : theme.font.tertiary)};
-  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : theme.bg.background1)};
+  ${({ isActive, theme }) =>
+    isActive
+      ? css`
+          color: ${theme.font.primary};
+          margin-bottom: -1px;
+        `
+      : css`
+          color: ${theme.font.tertiary};
+        `}
+
+  &:first-child {
+    border-top-left-radius: var(--radius-big);
+  }
+
+  &:not(:first-child) {
+    border-left: none;
+  }
+
+  &:last-child {
+    border-top-right-radius: var(--radius-big);
+  }
 
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  margin-left: auto;
+  margin-right: 20px;
 `
