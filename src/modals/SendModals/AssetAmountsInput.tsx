@@ -292,6 +292,10 @@ const AssetName = styled.div`
 const AssetAmountInput = styled(Input)`
   margin: 0;
   border: 0;
+
+  &:not(:hover) {
+    background-color: transparent;
+  }
 `
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
