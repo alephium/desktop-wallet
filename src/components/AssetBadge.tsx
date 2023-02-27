@@ -44,7 +44,7 @@ const AssetBadge = ({ assetId, className }: AssetBadgeProps) => {
 export default styled(AssetBadge)`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 `
 
 const AssetSymbol = styled.div`
