@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import AddressEllipsed from '@/components/AddressEllipsed'
-import Badge from '@/components/Badge'
 import Box from '@/components/Box'
 import { inputStyling } from '@/components/Inputs'
 import AddressSelect from '@/components/Inputs/AddressSelect'
@@ -134,10 +133,8 @@ const AddressInputs = ({
         >
           {isContactVisible && (
             <ContactRow onClick={handleFocus}>
-              <Badge rounded transparent border truncate>
-                {contact.name}
-              </Badge>
-              <AddressEllipsed addressHash={contact.address} disableA11y />
+              <Truncate>{contact.name}</Truncate>
+              <AddressEllipsedStyled addressHash={contact.address} disableA11y />
             </ContactRow>
           )}
         </AddressToInput>
