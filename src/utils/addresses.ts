@@ -33,12 +33,17 @@ export const selectAddressTransactions = (
 ) => {
   const addresses = allAddresses.filter((address) => addressHashes.includes(address.hash))
   const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
+  const processedTxHashes: Transaction['hash'][] = []
 
   return transactions.reduce((txs, tx) => {
     const addressTxs = addressesTxs.filter(({ txHash }) => txHash === tx.hash)
 
     addressTxs.forEach((addressTx) => {
-      if ((isPendingTransaction(tx) && tx.fromAddress === addressTx.address.hash) || !isPendingTransaction(tx)) {
+      if (
+        (!isPendingTransaction(tx) || tx.fromAddress === addressTx.address.hash) &&
+        !processedTxHashes.includes(tx.hash)
+      ) {
+        processedTxHashes.push(tx.hash)
         txs.push({ ...tx, address: addressTx.address })
       }
     })
