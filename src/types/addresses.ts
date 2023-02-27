@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressKeyPair } from '@alephium/sdk'
-import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { AddressInfo, MempoolTransaction, Transaction } from '@alephium/sdk/api/explorer'
 
 import { TokenBalances } from '@/types/assets'
 import { TimeInMs } from '@/types/numbers'
@@ -63,6 +63,6 @@ export type AddressDataSyncResult = {
   hash: AddressHash
   details: AddressInfo
   transactions: Transaction[]
-  unconfirmedTransactions: UnconfirmedTransaction[]
+  mempoolTransactions: MempoolTransaction[]
   tokens: TokenBalances[]
 }

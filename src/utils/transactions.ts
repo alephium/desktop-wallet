@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calcTxAmountsDeltaForAddress, DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
-import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
 
 import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { Address, AddressHash } from '@/types/addresses'
@@ -37,7 +37,7 @@ export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boo
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (
-  tx: UnconfirmedTransaction,
+  tx: MempoolTransaction,
   fromAddress: AddressHash
 ): PendingTransaction => {
   if (!tx.outputs) throw 'Missing transaction details'

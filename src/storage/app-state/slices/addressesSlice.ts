@@ -214,12 +214,12 @@ const addressesSlice = createSlice({
     builder
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
-        const updatedAddresses = addressData.map(({ hash, details, tokens, transactions, unconfirmedTransactions }) => {
+        const updatedAddresses = addressData.map(({ hash, details, tokens, transactions, mempoolTransactions }) => {
           const address = state.entities[hash] as Address
-          const transactionHashes = [...transactions, ...unconfirmedTransactions].map((tx) => tx.hash)
+          const transactionHashes = [...transactions, ...mempoolTransactions].map((tx) => tx.hash)
           const lastUsed =
-            unconfirmedTransactions.length > 0
-              ? unconfirmedTransactions[0].lastSeen
+            mempoolTransactions.length > 0
+              ? mempoolTransactions[0].lastSeen
               : transactions.length > 0
               ? transactions[0].timestamp
               : address.lastUsed
