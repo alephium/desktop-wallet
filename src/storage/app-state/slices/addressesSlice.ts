@@ -411,7 +411,7 @@ export const selectAddressesAssets = createSelector(
         balance: BigInt(token.balance.toString() + trailingZeros),
         lockedBalance: BigInt(token.lockedBalance.toString() + trailingZeros),
         name: assetInfo?.name ?? token.id,
-        symbol: assetInfo?.symbol ?? '',
+        symbol: assetInfo?.symbol ?? token.id.substring(0, 4).toUpperCase(),
         description: assetInfo?.description,
         logoURI: assetInfo?.logoURI,
         decimals: assetInfo?.decimals ?? 0

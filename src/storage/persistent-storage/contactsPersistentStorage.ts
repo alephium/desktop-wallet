@@ -19,16 +19,22 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { nanoid } from 'nanoid'
 
 import i18n from '@/i18n'
-import { DataKey, PersistentEncryptedStorage } from '@/storage/persistent-storage/encryptedPersistentStorage'
+import {
+  getEncryptedStoragePropsFromActiveWallet,
+  PersistentEncryptedStorage
+} from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { Contact } from '@/types/contacts'
 
 class ContactsStorage extends PersistentEncryptedStorage {
-  store({ mnemonic, walletName }: DataKey, contact: Contact, isPassphraseUsed?: boolean) {
-    if (isPassphraseUsed) throw new Error('Cannot use contact feature in passphrase-enabled wallets')
+  store(contact: Contact) {
+    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+
+    if (encryptedStorageProps.isPassphraseUsed)
+      throw new Error('Cannot use contact feature in passphrase-enabled wallets')
 
     let contactId = contact.id
     const isNewContact = !contactId
-    const contacts: Contact[] = this.load({ walletName, mnemonic })
+    const contacts: Contact[] = this.load()
 
     const indexOfContactWithSameAddress = contacts.findIndex((c: Contact) => c.address === contact.address)
     const indexOfContactWithSameName = contacts.findIndex(
@@ -55,7 +61,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)
-    super._store(JSON.stringify(contacts), { mnemonic, walletName }, isPassphraseUsed)
+    super._store(JSON.stringify(contacts), encryptedStorageProps)
 
     return contactId
   }

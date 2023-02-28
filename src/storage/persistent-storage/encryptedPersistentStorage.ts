@@ -18,11 +18,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { decrypt, encrypt } from '@alephium/sdk'
 
-import { stringToDoubleSHA256HexString } from '@/utils/misc'
+import { store } from '@/storage/app-state/store'
+import { StoredWallet } from '@/types/wallet'
 
-export interface DataKey {
+export interface EncryptedStorageProps {
   mnemonic: string
-  walletName: string
+  walletId: string
+  isPassphraseUsed?: boolean
+}
+
+type LocalStorageEncryptedValue = {
+  version: string
+  encrypted: string
 }
 
 export class PersistentEncryptedStorage {
@@ -34,32 +41,46 @@ export class PersistentEncryptedStorage {
     this.version = version
   }
 
-  load({ mnemonic, walletName }: DataKey, isPassphraseUsed?: boolean) {
+  getKey(id: StoredWallet['id']) {
+    if (!id) throw new Error('Wallet ID not set.')
+
+    return `${this.localStorageKeyPrefix}-${id}`
+  }
+
+  load() {
+    const { walletId, mnemonic, isPassphraseUsed } = getEncryptedStoragePropsFromActiveWallet()
+
     if (isPassphraseUsed) return []
 
-    const json = localStorage.getItem(getMetadataKey(this.localStorageKeyPrefix, walletName))
+    const json = localStorage.getItem(this.getKey(walletId))
 
     if (json === null) return []
-    const { encryptedSettings } = JSON.parse(json)
-    return JSON.parse(decrypt(mnemonic, encryptedSettings))
+
+    const { encrypted } = JSON.parse(json) as LocalStorageEncryptedValue
+
+    return JSON.parse(decrypt(mnemonic, encrypted))
   }
 
-  protected _store(data: string, { mnemonic, walletName }: DataKey, isPassphraseUsed?: boolean) {
+  protected _store(data: string, { mnemonic, walletId, isPassphraseUsed }: EncryptedStorageProps) {
     if (isPassphraseUsed) return
 
-    const key = getMetadataKey(this.localStorageKeyPrefix, walletName)
-    const encryptedValue = JSON.stringify({
+    const encryptedValue: LocalStorageEncryptedValue = {
       version: this.version,
-      encryptedSettings: encrypt(mnemonic, data)
-    })
+      encrypted: encrypt(mnemonic, data)
+    }
 
-    localStorage.setItem(key, encryptedValue)
+    localStorage.setItem(this.getKey(walletId), JSON.stringify(encryptedValue))
   }
 
-  delete(walletName: string) {
-    localStorage.removeItem(getMetadataKey(this.localStorageKeyPrefix, walletName))
+  delete(walletId: EncryptedStorageProps['walletId']) {
+    localStorage.removeItem(this.getKey(walletId))
   }
 }
 
-const getMetadataKey = (localStorageKeyPrefix: string, walletName: string) =>
-  `${localStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
+export const getEncryptedStoragePropsFromActiveWallet = (): EncryptedStorageProps => {
+  const { id, mnemonic, isPassphraseUsed } = store.getState().activeWallet
+
+  if (!id || !mnemonic) throw new Error('Active wallet not found.')
+
+  return { walletId: id, mnemonic, isPassphraseUsed }
+}

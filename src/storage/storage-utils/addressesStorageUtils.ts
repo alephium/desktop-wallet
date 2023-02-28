@@ -24,13 +24,11 @@ import {
 } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import { DataKey } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { Address, AddressBase, AddressSettings } from '@/types/addresses'
 
-export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => {
+export const saveNewAddresses = (addresses: AddressBase[]) => {
   addresses.forEach((address) =>
     AddressMetadataStorage.store({
-      dataKey,
       index: address.index,
       settings: {
         isDefault: address.isDefault,
@@ -44,9 +42,8 @@ export const saveNewAddresses = (addresses: AddressBase[], dataKey: DataKey) => 
   store.dispatch(syncAddressesData(addresses.map((address) => address.hash)))
 }
 
-export const changeDefaultAddress = (address: Address, dataKey: DataKey) => {
+export const changeDefaultAddress = (address: Address) => {
   AddressMetadataStorage.store({
-    dataKey,
     index: address.index,
     settings: {
       isDefault: true,
@@ -58,12 +55,7 @@ export const changeDefaultAddress = (address: Address, dataKey: DataKey) => {
   store.dispatch(defaultAddressChanged(address))
 }
 
-export const saveAddressSettings = (address: AddressBase, settings: AddressSettings, dataKey: DataKey) => {
-  AddressMetadataStorage.store({
-    dataKey,
-    index: address.index,
-    settings
-  })
-
+export const saveAddressSettings = (address: AddressBase, settings: AddressSettings) => {
+  AddressMetadataStorage.store({ index: address.index, settings })
   store.dispatch(addressSettingsSaved({ addressHash: address.hash, settings }))
 }

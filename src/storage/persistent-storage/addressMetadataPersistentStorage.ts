@@ -16,28 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { DataKey, PersistentEncryptedStorage } from '@/storage/persistent-storage/encryptedPersistentStorage'
+import {
+  getEncryptedStoragePropsFromActiveWallet,
+  PersistentEncryptedStorage
+} from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 
 interface AddressMetadataStorageStoreProps {
-  dataKey: DataKey
   index: number
   settings: AddressSettings
-  isPassphraseUsed?: boolean
-}
-
-interface AddressesMetadataStorageStoreAppProps {
-  dataKey: DataKey
-  addressesMetadata: AddressMetadata[]
-  isPassphraseUsed?: boolean
 }
 
 class AddressMetadataStorage extends PersistentEncryptedStorage {
-  store({ dataKey, index, settings, isPassphraseUsed }: AddressMetadataStorageStoreProps) {
-    if (isPassphraseUsed) return
+  store({ index, settings }: AddressMetadataStorageStoreProps) {
+    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+    if (encryptedStorageProps.isPassphraseUsed) return
 
-    const addressesMetadata = this.load(dataKey)
+    const addressesMetadata = this.load()
     const existingAddressMetadata: AddressMetadata | undefined = addressesMetadata.find(
       (data: AddressMetadata) => data.index === index
     )
@@ -63,11 +59,13 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
 
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
-    super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)
+    super._store(JSON.stringify(addressesMetadata), encryptedStorageProps)
   }
 
-  storeAll({ addressesMetadata, dataKey, isPassphraseUsed }: AddressesMetadataStorageStoreAppProps) {
-    super._store(JSON.stringify(addressesMetadata), dataKey, isPassphraseUsed)
+  storeAll(addressesMetadata: AddressMetadata[]) {
+    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+
+    super._store(JSON.stringify(addressesMetadata), encryptedStorageProps)
   }
 }
 

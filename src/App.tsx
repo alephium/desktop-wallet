@@ -31,14 +31,10 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { localStorageDataMigrated } from '@/storage/app-state/slices/appSlice'
 import { syncNetworkTokensInfo } from '@/storage/app-state/slices/assetsInfoSlice'
-import {
-  apiClientInitFailed,
-  apiClientInitSucceeded,
-  networkSettingsMigrated
-} from '@/storage/app-state/slices/networkSlice'
+import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/app-state/slices/networkSlice'
 import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
-import { generalSettingsMigrated } from '@/storage/app-state/slices/settingsSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
@@ -52,11 +48,10 @@ const App = () => {
   const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
     (tx) => tx.address.hash
   )
-  const [network, addressesStatus, theme, isPassphraseUsed, assetsInfo, loading] = useAppSelector((s) => [
+  const [network, addressesStatus, theme, assetsInfo, loading] = useAppSelector((s) => [
     s.network,
     s.addresses.status,
     s.app.theme,
-    s.activeWallet.isPassphraseUsed,
     s.assetsInfo,
     s.app.loading
   ])
@@ -65,14 +60,12 @@ const App = () => {
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
   useEffect(() => {
-    const localStorageGeneralSettings = migrateGeneralSettings()
-    const localStorageNetworkSettings = migrateNetworkSettings()
+    migrateGeneralSettings()
+    migrateNetworkSettings()
+    migrateWalletData()
 
-    dispatch(generalSettingsMigrated(localStorageGeneralSettings))
-    dispatch(networkSettingsMigrated(localStorageNetworkSettings))
-
-    if (!isPassphraseUsed) migrateWalletData()
-  }, [dispatch, isPassphraseUsed])
+    dispatch(localStorageDataMigrated())
+  }, [dispatch])
 
   const initializeClient = useCallback(async () => {
     try {

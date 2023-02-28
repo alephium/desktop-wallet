@@ -47,22 +47,19 @@ interface AddressCardProps {
 const AddressCard = ({ hash, className }: AddressCardProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const [address, { name: walletName, mnemonic }] = useAppSelector((s) => [
-    selectAddressByHash(s, hash),
-    s.activeWallet
-  ])
+  const address = useAppSelector((state) => selectAddressByHash(state, hash))
   const assets = useAppSelector((state) => selectAddressesAssets(state, address?.hash ? [address.hash] : undefined))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 
-  if (!address || !walletName || !mnemonic) return null
+  if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
   const assetSymbols = assets.filter((asset) => asset.balance > 0).map((asset) => asset.symbol)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {
-    changeDefaultAddress(address, { walletName, mnemonic })
+    changeDefaultAddress(address)
     event.stopPropagation()
   }
 

@@ -42,7 +42,7 @@ interface AddressOptionsModalProps {
 const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const { name: walletName, mnemonic, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -53,35 +53,33 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
   const [isDefaultAddress, setIsDefaultAddress] = useState(address.isDefault ?? false)
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
 
-  if (!address || !defaultAddress || !mnemonic || !walletName) return null
+  if (!address || !defaultAddress) return null
 
   const availableBalance = getAvailableBalance(address)
   const isDefaultAddressToggleEnabled = defaultAddress.hash !== address.hash
   const isSweepButtonEnabled = addresses.length > 1 && availableBalance > 0
 
   const onSaveClick = () => {
-    saveAddressSettings(
-      address,
-      {
-        isDefault: isDefaultAddressToggleEnabled ? isDefaultAddress : address.isDefault,
-        label: addressLabel.title,
-        color: addressLabel.color
-      },
-      { walletName, mnemonic }
-    )
+    const settings = {
+      isDefault: isDefaultAddressToggleEnabled ? isDefaultAddress : address.isDefault,
+      label: addressLabel.title,
+      color: addressLabel.color
+    }
+
+    saveAddressSettings(address, settings)
     onClose()
   }
 
-  let defaultAddressMessage = `${t`Default address for sending transactions.`} `
+  let defaultAddressMessage = `${t('Default address for sending transactions.')} `
   defaultAddressMessage += isDefaultAddressToggleEnabled
     ? t('Note that if activated, "{{ address }}" will not be the default address anymore.', {
         address: getName(defaultAddress)
       })
-    : t`To remove this address from being the default address, you must set another one as default first.`
+    : t('To remove this address from being the default address, you must set another one as default first.')
 
   return (
     <>
-      <CenteredModal title={t`Address options`} subtitle={getName(address)} onClose={onClose}>
+      <CenteredModal title={t('Address options')} subtitle={getName(address)} onClose={onClose}>
         {!isPassphraseUsed && (
           <>
             <AddressMetadataForm
@@ -97,8 +95,8 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
           </>
         )}
         <KeyValueInput
-          label={t`Sweep address`}
-          description={t`Sweep all the unlocked funds of this address to another address.`}
+          label={t('Sweep address')}
+          description={t('Sweep all the unlocked funds of this address to another address.')}
           InputComponent={
             <SweepButton>
               <ModalFooterButton
@@ -106,10 +104,10 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
                 onClick={() => isSweepButtonEnabled && setIsAddressSweepModalOpen(true)}
                 disabled={!isSweepButtonEnabled}
               >
-                {t`Sweep`}
+                {t('Sweep')}
               </ModalFooterButton>
               <AvailableAmount tabIndex={0}>
-                {t`Available`}: <Amount value={availableBalance} color={theme.font.secondary} />
+                {t('Available')}: <Amount value={availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
             </SweepButton>
           }
@@ -117,9 +115,9 @@ const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => 
         <HorizontalDivider narrow />
         <ModalFooterButtons>
           <ModalFooterButton role="secondary" onClick={onClose}>
-            {t`Cancel`}
+            {t('Cancel')}
           </ModalFooterButton>
-          <ModalFooterButton onClick={onSaveClick}>{t`Save`}</ModalFooterButton>
+          <ModalFooterButton onClick={onSaveClick}>{t('Save')}</ModalFooterButton>
         </ModalFooterButtons>
       </CenteredModal>
       <ModalPortal>

@@ -41,7 +41,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const { t } = useTranslation()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const walletNames = useAppSelector((state) => state.app.storedWalletNames)
+  const wallets = useAppSelector((state) => state.app.wallets)
 
   const [walletName, setWalletNameState] = useState(existingWalletName)
   const [walletNameError, setWalletNameError] = useState('')
@@ -69,7 +69,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
 
     if (walletName.length < 3) {
       walletNameError = t`Wallet name is too short`
-    } else if (walletNames.includes(walletName)) {
+    } else if (wallets.some((wallet) => wallet.name === walletName)) {
       walletNameError = t`Wallet name already taken`
     }
 

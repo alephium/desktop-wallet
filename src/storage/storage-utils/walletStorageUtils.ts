@@ -23,6 +23,7 @@ import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { StoredWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { getWalletInitialAddress } from '@/utils/wallet'
 
@@ -32,30 +33,19 @@ interface SaveNewWalletProps {
   wallet: Wallet
 }
 
-export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletProps) => {
+export const saveNewWallet = ({ walletName, password, wallet }: SaveNewWalletProps): StoredWallet['id'] => {
   const initialAddressSettings = getInitialAddressSettings()
-
-  WalletStorage.store(walletName, password, wallet)
-  AddressMetadataStorage.store({
-    index: 0,
-    settings: initialAddressSettings,
-    dataKey: {
-      mnemonic: wallet.mnemonic,
-      walletName: walletName
-    }
-  })
+  const storedWallet = WalletStorage.store(walletName, password, wallet)
 
   store.dispatch(
     walletSaved({
-      wallet: {
-        name: walletName,
-        mnemonic: wallet.mnemonic
-      },
-      initialAddress: {
-        ...getWalletInitialAddress(wallet),
-        ...initialAddressSettings
-      }
+      wallet: { ...storedWallet, mnemonic: wallet.mnemonic },
+      initialAddress: { ...getWalletInitialAddress(wallet), ...initialAddressSettings }
     })
   )
+
+  AddressMetadataStorage.store({ index: 0, settings: initialAddressSettings })
   store.dispatch(syncAddressesData())
+
+  return storedWallet.id
 }

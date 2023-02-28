@@ -28,6 +28,7 @@ import {
   selectAllAddresses
 } from '@/storage/app-state/slices/addressesSlice'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
@@ -38,15 +39,9 @@ interface GenerateAddressProps {
 
 interface DiscoverUsedAddressesProps {
   mnemonic?: string
-  walletName?: string
+  walletId?: string
   skipIndexes?: number[]
   enableLoading?: boolean
-}
-
-interface RestoreAddressesFromMetadataProps {
-  mnemonic: string
-  walletName: string
-  isPassphraseUsed?: boolean
 }
 
 interface GenerateOneAddressPerGroupProps {
@@ -69,7 +64,7 @@ const deriveAddressesFromIndexesWorker = new Worker(
 const useAddressGeneration = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
-  const { name: walletName, mnemonic } = useAppSelector((state) => state.activeWallet)
+  const { mnemonic } = useAppSelector((state) => state.activeWallet)
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 
@@ -84,8 +79,6 @@ const useAddressGeneration = () => {
   const generateAndSaveOneAddressPerGroup = (
     { labelPrefix, labelColor, skipGroups = [] }: GenerateOneAddressPerGroupProps = { skipGroups: [] }
   ) => {
-    if (!mnemonic || !walletName) throw new Error('Could not generate addresses, active wallet not found')
-
     const groups = Array.from({ length: TOTAL_NUMBER_OF_GROUPS }, (_, group) => group).filter(
       (group) => !skipGroups.includes(group)
     )
@@ -99,24 +92,19 @@ const useAddressGeneration = () => {
         color: labelColor ?? randomLabelColor
       }))
 
-      saveNewAddresses(addresses, { walletName, mnemonic })
+      saveNewAddresses(addresses)
     }
 
     deriveAddressesInGroupsWorker.postMessage({
-      mnemonic: mnemonic,
+      mnemonic,
       groups,
       skipIndexes: currentAddressIndexes
     })
   }
 
-  const restoreAddressesFromMetadata = async ({
-    mnemonic,
-    walletName,
-    isPassphraseUsed = false
-  }: RestoreAddressesFromMetadataProps) => {
-    const addressesMetadata: AddressMetadata[] = isPassphraseUsed
-      ? []
-      : AddressMetadataStorage.load({ mnemonic, walletName })
+  const restoreAddressesFromMetadata = async () => {
+    const { mnemonic, isPassphraseUsed } = getEncryptedStoragePropsFromActiveWallet()
+    const addressesMetadata: AddressMetadata[] = isPassphraseUsed ? [] : AddressMetadataStorage.load()
 
     if (addressesMetadata.length > 0) {
       dispatch(addressRestorationStarted())
@@ -131,7 +119,7 @@ const useAddressGeneration = () => {
       }
 
       deriveAddressesFromIndexesWorker.postMessage({
-        mnemonic: mnemonic,
+        mnemonic,
         indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
       })
     }
@@ -139,14 +127,9 @@ const useAddressGeneration = () => {
 
   const discoverAndSaveUsedAddresses = async ({
     mnemonic: mnemonicProp,
-    walletName: walletNameProp,
     skipIndexes,
     enableLoading = true
   }: DiscoverUsedAddressesProps = {}) => {
-    const _mnemonic = mnemonicProp ?? mnemonic
-    const _walletName = walletNameProp ?? walletName
-    if (!_mnemonic || !_walletName) throw new Error('Could not generate addresses, active wallet not found')
-
     addressDiscoveryWorker.onmessage = ({ data }: { data: AddressKeyPair[] }) => {
       const addresses: AddressBase[] = data.map((address) => ({
         ...address,
@@ -154,15 +137,14 @@ const useAddressGeneration = () => {
         color: getRandomLabelColor()
       }))
 
-      saveNewAddresses(addresses, { walletName: _walletName, mnemonic: _mnemonic })
-
+      saveNewAddresses(addresses)
       dispatch(addressDiscoveryFinished(enableLoading))
     }
 
     dispatch(addressDiscoveryStarted(enableLoading))
 
     addressDiscoveryWorker.postMessage({
-      mnemonic: _mnemonic,
+      mnemonic: mnemonicProp ?? mnemonic,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : currentAddressIndexes,
       clientUrl: client.explorer.baseUrl
     })

@@ -25,6 +25,7 @@ const sliceName = 'activeWallet'
 type ActiveWalletState = Partial<ActiveWallet>
 
 const initialState: ActiveWalletState = {
+  id: undefined,
   name: undefined,
   mnemonic: undefined,
   isPassphraseUsed: undefined
