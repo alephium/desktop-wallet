@@ -89,7 +89,7 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
               <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} decimals={asset.decimals} />
               {asset.lockedBalance > 0 && (
                 <TokenAvailableAmount>
-                  {`${t('available')}: `}
+                  {`${t('Available')}: `}
                   <Amount
                     fadeDecimals
                     value={asset.balance - asset.lockedBalance}

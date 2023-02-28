@@ -17,51 +17,74 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wallet, walletOpen } from '@alephium/sdk'
+import { nanoid } from 'nanoid'
 
-type WalletName = string
+import { StoredWallet, UnencryptedWallet } from '@/types/wallet'
 
 class WalletStorage {
   private static localStorageKey = 'wallet'
 
-  getKey(name: WalletName) {
-    if (!name) throw new Error('Wallet name not set.')
+  getKey(id: StoredWallet['id']) {
+    if (!id) throw new Error('Wallet ID not set.')
 
-    return `${WalletStorage.localStorageKey}-${name}`
+    return `${WalletStorage.localStorageKey}-${id}`
   }
 
-  list(): WalletName[] {
-    const prefixLength = WalletStorage.localStorageKey.length + 1
-    const walletNames = []
+  list(): StoredWallet[] {
+    const wallets = []
 
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const key = window.localStorage.key(i)
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
 
-      if (key && key.startsWith(WalletStorage.localStorageKey)) {
-        walletNames.push(key.substring(prefixLength))
+      if (key?.startsWith(WalletStorage.localStorageKey)) {
+        const data = localStorage.getItem(key)
+
+        if (!data) continue
+
+        const wallet = JSON.parse(data) as StoredWallet
+
+        if (!wallet.name) continue
+
+        wallets.push(wallet)
       }
     }
 
-    return walletNames
+    return wallets
   }
 
-  load(name: WalletName, password: string): Wallet {
-    if (!password) throw new Error(`Unable to load wallet ${name}, password not set.`)
+  load(id: StoredWallet['id'], password: string): UnencryptedWallet {
+    if (!password) throw new Error(`Unable to load wallet ${id}, password not set.`)
 
-    const encryptedWallet = window.localStorage.getItem(this.getKey(name))
+    const data = localStorage.getItem(this.getKey(id))
 
-    if (!encryptedWallet) throw new Error(`Unable to load wallet ${name}, wallet doesn't exist.`)
+    if (!data) throw new Error(`Unable to load wallet ${id}, wallet doesn't exist.`)
 
-    return walletOpen(password, encryptedWallet)
+    const wallet = JSON.parse(data) as StoredWallet
+
+    return {
+      name: wallet.name,
+      ...walletOpen(password, wallet.encrypted)
+    }
   }
 
-  store(name: WalletName, password: string, wallet: Wallet) {
+  store(name: StoredWallet['name'], password: string, wallet: Wallet): StoredWallet {
     if (!password) throw new Error(`Unable to store wallet ${name}, password not set.`)
 
-    window.localStorage.setItem(this.getKey(name), wallet.encrypt(password))
+    const id = nanoid()
+
+    const dataToStore: StoredWallet = {
+      id,
+      name,
+      encrypted: wallet.encrypt(password)
+    }
+
+    localStorage.setItem(this.getKey(id), JSON.stringify(dataToStore))
+
+    return dataToStore
   }
 
-  delete(name: WalletName) {
-    localStorage.removeItem(this.getKey(name))
+  delete(id: StoredWallet['id']) {
+    localStorage.removeItem(this.getKey(id))
   }
 }
 

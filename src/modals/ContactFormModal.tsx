@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import { useGlobalContext } from '@/contexts/global'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
 import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
@@ -43,28 +43,20 @@ interface ContactFormModalProps {
 const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { mnemonic, name: walletName, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const { setSnackbarMessage } = useGlobalContext()
   const { control, handleSubmit, formState } = useForm<Contact>({
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
   })
 
-  if (!mnemonic || !walletName) return null
-
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
 
-  const saveContact = (formData: Contact) => {
-    const result = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
+  const saveContact = (contactData: Contact) => {
+    const result = ContactStorage.store(contactData)
 
     if (!result.error) {
-      dispatch(
-        contactStoredInPersistentStorage({
-          ...formData,
-          id: result.contactId
-        })
-      )
+      dispatch(contactStoredInPersistentStorage({ ...contactData, id: result.contactId }))
       setSnackbarMessage({ text: t('Contact saved'), type: 'success' })
       onClose()
     } else {

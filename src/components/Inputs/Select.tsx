@@ -118,7 +118,10 @@ function Select<T extends OptionValue>({
   )
 
   const handleClick = (e: MouseEvent) => {
-    if (options.length <= 1) return
+    if (options.length <= 1) {
+      options.length === 1 && onValueChange(options[0])
+      return
+    }
 
     setHookCoordinates({ x: e.clientX, y: e.clientY })
     setShowPopup(true)

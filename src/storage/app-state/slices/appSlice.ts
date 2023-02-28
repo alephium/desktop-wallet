@@ -25,6 +25,7 @@ import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { GeneralSettings, ThemeType } from '@/types/settings'
+import { StoredWallet } from '@/types/wallet'
 
 const sliceName = 'app'
 
@@ -32,7 +33,7 @@ interface AppState {
   loading: boolean
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
-  storedWalletNames: string[]
+  wallets: StoredWallet[]
   theme: Omit<ThemeType, 'system'>
 }
 
@@ -42,7 +43,7 @@ const initialState: AppState = {
   loading: false,
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
-  storedWalletNames: WalletStorage.list(),
+  wallets: WalletStorage.list(),
   theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme
 }
 
@@ -65,9 +66,12 @@ const appSlice = createSlice({
       state.addressesPageInfoMessageClosed = true
     },
     walletDeleted: (state, action: PayloadAction<string>) => {
-      const deletedWalletName = action.payload
+      const deletedWalletId = action.payload
 
-      state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
+      state.wallets = state.wallets.filter(({ id }) => id !== deletedWalletId)
+    },
+    localStorageDataMigrated: (state) => {
+      state.wallets = WalletStorage.list()
     },
     osThemeChangeDetected: (state, action: PayloadAction<AppState['theme']>) => {
       state.theme = action.payload
@@ -84,9 +88,9 @@ const appSlice = createSlice({
         state.loading = false
       })
       .addCase(walletSaved, (state, action) => {
-        const newWallet = action.payload.wallet
+        const { id, name, encrypted } = action.payload.wallet
 
-        state.storedWalletNames.push(newWallet.name)
+        state.wallets.push({ id, name, encrypted })
       })
       .addCase(walletLocked, resetState)
       .addCase(activeWalletDeleted, resetState)
@@ -103,7 +107,8 @@ export const {
   modalClosed,
   addressesPageInfoMessageClosed,
   walletDeleted,
-  osThemeChangeDetected
+  osThemeChangeDetected,
+  localStorageDataMigrated
 } = appSlice.actions
 
 export default appSlice

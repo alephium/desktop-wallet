@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 
+import { localStorageDataMigrated } from '@/storage/app-state/slices/appSlice'
 import { RootState } from '@/storage/app-state/store'
 import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
 import { NetworkName, NetworkPreset, NetworkStatus } from '@/types/network'
@@ -64,7 +65,6 @@ const networkSlice = createSlice({
       }
     },
     customNetworkSettingsSaved: (_, action: PayloadAction<NetworkSettings>) => parseSettingsUpdate(action.payload),
-    networkSettingsMigrated: (_, action: PayloadAction<NetworkSettings>) => parseSettingsUpdate(action.payload),
     apiClientInitSucceeded: (state, action: PayloadAction<NetworkSettings['networkId']>) => {
       state.settings.networkId = action.payload
       state.status = 'online'
@@ -72,22 +72,22 @@ const networkSlice = createSlice({
     apiClientInitFailed: (state) => {
       state.status = 'offline'
     }
+  },
+  extraReducers(builder) {
+    builder.addCase(localStorageDataMigrated, () =>
+      parseSettingsUpdate(SettingsStorage.load('network') as NetworkSettings)
+    )
   }
 })
 
-export const {
-  networkSettingsMigrated,
-  networkPresetSwitched,
-  apiClientInitSucceeded,
-  apiClientInitFailed,
-  customNetworkSettingsSaved
-} = networkSlice.actions
+export const { networkPresetSwitched, apiClientInitSucceeded, apiClientInitFailed, customNetworkSettingsSaved } =
+  networkSlice.actions
 
 export const networkListenerMiddleware = createListenerMiddleware()
 
 // When the network changes, store settings in persistent storage
 networkListenerMiddleware.startListening({
-  matcher: isAnyOf(networkSettingsMigrated, networkPresetSwitched, customNetworkSettingsSaved, apiClientInitSucceeded),
+  matcher: isAnyOf(networkPresetSwitched, customNetworkSettingsSaved, apiClientInitSucceeded),
   effect: (_, { getState }) => {
     const state = getState() as RootState
 

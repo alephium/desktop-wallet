@@ -33,14 +33,14 @@ interface PasswordConfirmationProps {
   text?: string
   buttonText?: string
   highlightButton?: boolean
-  walletName?: string
+  walletId?: string
 }
 
 const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   text,
   buttonText,
   onCorrectPasswordEntered,
-  walletName,
+  walletId,
   isSubmitDisabled = false,
   highlightButton = false,
   children
@@ -51,13 +51,13 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
 
   const [password, setPassword] = useState('')
 
-  const storedWalletName = walletName || activeWallet.name
+  const storedWalletId = walletId || activeWallet.id
 
-  if (!storedWalletName) return null
+  if (!storedWalletId) return null
 
   const validatePassword = () => {
     try {
-      if (WalletStorage.load(storedWalletName, password)) {
+      if (WalletStorage.load(storedWalletId, password)) {
         onCorrectPasswordEntered(password)
       }
     } catch (e) {

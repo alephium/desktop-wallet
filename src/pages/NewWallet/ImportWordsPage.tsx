@@ -77,7 +77,7 @@ const ImportWordsPage = () => {
 
       saveNewWallet({ wallet, walletName, password })
 
-      discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, walletName, skipIndexes: [0], enableLoading: false })
+      discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, skipIndexes: [0], enableLoading: false })
       onButtonNext()
     } catch (e) {
       setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })

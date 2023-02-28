@@ -22,57 +22,45 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import InfoBox from '@/components/InfoBox'
-import Select from '@/components/Inputs/Select'
+import Select, { SelectOption } from '@/components/Inputs/Select'
 import WalletPassphrase from '@/components/Inputs/WalletPassphrase'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-
-interface WalletNameSelectOptions {
-  label: string
-  value: string
-}
+import { StoredWallet } from '@/types/wallet'
 
 const WalletSwitcher = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeWallet, walletNames] = useAppSelector((s) => [s.activeWallet, s.app.storedWalletNames])
+  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.app.wallets])
   const { unlockWallet } = useGlobalContext()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
-  const [switchToWalletName, setSwitchToWalletName] = useState(activeWallet.name)
 
-  if (!activeWallet.name) return null
+  const walletSelectOptions = wallets.map((wallet) => ({ value: wallet.id, label: wallet.name }))
+  const [selectedWalletOption, setSelectedWalletOption] = useState(
+    walletSelectOptions.find((wallet) => wallet.value === activeWallet.id)
+  )
 
-  const walletNameSelectOptions = walletNames.map((walletName) => ({
-    label: walletName,
-    value: walletName
-  }))
-
-  const handleWalletNameChange = (option: WalletNameSelectOptions | undefined) => {
+  const handleWalletSelect = (option: SelectOption<StoredWallet['id']> | undefined) => {
     if (option) {
-      setSwitchToWalletName(option.value)
+      setSelectedWalletOption(option)
       setIsPasswordModalOpen(true)
     }
   }
 
-  const onPasswordModalClose = () => {
-    setSwitchToWalletName(undefined)
-    setIsPasswordModalOpen(false)
-  }
-
   const onLoginClick = (password: string) => {
-    if (!switchToWalletName) return
+    if (!selectedWalletOption) return
 
     setIsPasswordModalOpen(false)
     unlockWallet({
       event: 'switch',
-      walletName: switchToWalletName,
+      walletId: selectedWalletOption.value,
       password,
       passphrase,
       afterUnlock: () => {
@@ -85,17 +73,14 @@ const WalletSwitcher = () => {
 
   return (
     <>
-      {walletNameSelectOptions.length === 0 ? (
+      {walletSelectOptions.length === 0 ? (
         <InfoBox text={activeWallet.name} label={t`Wallet`} />
       ) : (
         <Select
           label={t`Current wallet`}
-          options={walletNameSelectOptions}
-          controlledValue={{
-            label: activeWallet.name,
-            value: activeWallet.name
-          }}
-          onValueChange={handleWalletNameChange}
+          controlledValue={selectedWalletOption}
+          options={walletSelectOptions}
+          onValueChange={handleWalletSelect}
           title={t`Select a wallet`}
           id="wallet"
           raised
@@ -104,12 +89,14 @@ const WalletSwitcher = () => {
       )}
       <ModalPortal>
         {isPasswordModalOpen && (
-          <CenteredModal narrow title={t`Enter password`} onClose={onPasswordModalClose}>
+          <CenteredModal narrow title={t('Enter password')} onClose={() => setIsPasswordModalOpen(false)}>
             <PasswordConfirmation
-              text={t('Enter password for "{{ switchToWalletName }}"', { switchToWalletName })}
+              text={t('Enter password for "{{ switchToWalletName }}"', {
+                switchToWalletName: selectedWalletOption?.label
+              })}
               buttonText={t('Unlock')}
               onCorrectPasswordEntered={onLoginClick}
-              walletName={switchToWalletName}
+              walletId={selectedWalletOption?.value}
               isSubmitDisabled={!isPassphraseConfirmed}
             >
               <WalletPassphraseStyled

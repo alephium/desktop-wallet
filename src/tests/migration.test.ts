@@ -16,15 +16,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { encrypt, getStorage, walletGenerate } from '@alephium/sdk'
+import { encrypt, walletGenerate } from '@alephium/sdk'
+import { nanoid } from 'nanoid'
 
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata, DeprecatedAddressSettings } from '@/types/addresses'
 import { NetworkSettings } from '@/types/settings'
 import * as migrate from '@/utils/migration'
 import { stringToDoubleSHA256HexString } from '@/utils/misc'
+
+vi.mock('@/storage/app-state/store', async () => ({
+  ...(await vi.importActual<typeof import('@/storage/app-state/store')>('@/storage/app-state/store')),
+  store: {
+    getState: () => ({
+      activeWallet: {
+        id: nanoid(),
+        name: 'Test wallet',
+        mnemonic: walletGenerate().mnemonic,
+        isPassphraseUsed: false
+      }
+    })
+  }
+}))
 
 describe('_20220511_074100', () => {
   const settings = {
@@ -99,8 +113,10 @@ describe('_20220527_120000', () => {
     label: 'test',
     color: 'blue'
   }
+
   const wallets = new Array(10).fill({}).map((wallet, index) => ({
     walletName: 'walletName' + index,
+    walletId: nanoid(),
     wallet: walletGenerate(),
     index,
     settings
@@ -134,60 +150,19 @@ describe('_20220527_120000', () => {
   it('properly encrypts and decrypts multiple user wallets', () => {
     wallets.forEach(({ walletName, index, settings }) => _storeAddressMetadataOfWallet(walletName, index, settings))
 
-    wallets.forEach(({ walletName, wallet }) => migrate._20220527_120000({ mnemonic: wallet.mnemonic, walletName }))
+    wallets.forEach(({ walletId, wallet }) => migrate._20220527_120000())
 
-    wallets.forEach(({ walletName, wallet, index, settings }) => {
-      const addresses = AddressMetadataStorage.load({
-        mnemonic: wallet.mnemonic,
-        walletName
-      })
+    wallets.forEach(({ walletId, wallet, index, settings }) => {
+      const addresses = AddressMetadataStorage.load()
       expect(addresses[0]).toStrictEqual({ ...settings, index })
     })
   })
 
   it('does not use the same wallet to encrypt address metadata', () => {
-    const walletFirst = AddressMetadataStorage.load({
-      mnemonic: wallets[0].wallet.mnemonic,
-      walletName: wallets[0].walletName
-    })
+    const walletFirst = AddressMetadataStorage.load()
 
-    const walletLast = AddressMetadataStorage.load({
-      mnemonic: wallets[wallets.length - 1].wallet.mnemonic,
-      walletName: wallets[wallets.length - 1].walletName
-    })
+    const walletLast = AddressMetadataStorage.load()
     expect(walletFirst).not.toStrictEqual(walletLast)
-  })
-})
-
-describe('_20230124_164900', () => {
-  const wallet = {
-    name: 'John Doe',
-    unencryptedWallet: walletGenerate()
-  }
-
-  it('replaces the JSON stringified encrypted wallet string with simply the encrypted wallet string', () => {
-    const Storage = getStorage()
-    let storedWallet
-
-    Storage.save(wallet.name, wallet.unencryptedWallet.encrypt('passw0rd'))
-
-    storedWallet = localStorage.getItem(`wallet-${wallet.name}`)
-
-    if (storedWallet) {
-      expect(typeof JSON.parse(storedWallet)).toEqual('string')
-      expect(typeof JSON.parse(JSON.parse(storedWallet))).toEqual('object')
-    }
-
-    migrate._20230124_164900()
-
-    storedWallet = localStorage.getItem(`wallet-${wallet.name}`)
-
-    if (storedWallet) {
-      expect(typeof JSON.parse(storedWallet)).toEqual('object')
-    }
-
-    const unencryptedWallet = WalletStorage.load(wallet.name, 'passw0rd')
-    expect(unencryptedWallet.mnemonic).toEqual(wallet.unencryptedWallet.mnemonic)
   })
 })
 
@@ -317,12 +292,12 @@ describe('_20230209_124300', () => {
   const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
   const addressesMetadataEncryptionVersion = '2022-05-27T12:00:00Z'
   const wallet = {
+    id: nanoid(),
     name: 'John Doe',
     unencryptedWallet: walletGenerate()
   }
 
   it('should replace the isMain address metadata settings with isDefault and ensure there is a color', () => {
-    const dataKey = { mnemonic: wallet.unencryptedWallet.mnemonic, walletName: wallet.name }
     const deprecatedAddressMetadata: DeprecatedAddressMetadata[] = [
       {
         index: 0,
@@ -340,13 +315,13 @@ describe('_20230209_124300', () => {
       `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(wallet.name)}`,
       JSON.stringify({
         version: addressesMetadataEncryptionVersion,
-        encryptedSettings: encrypt(wallet.unencryptedWallet.mnemonic, JSON.stringify(deprecatedAddressMetadata))
+        encrypted: encrypt(wallet.unencryptedWallet.mnemonic, JSON.stringify(deprecatedAddressMetadata))
       })
     )
 
-    migrate._20230209_124300(dataKey)
+    migrate._20230209_124300()
 
-    const metadata = AddressMetadataStorage.load(dataKey) as AddressMetadata[]
+    const metadata = AddressMetadataStorage.load() as AddressMetadata[]
 
     expect(Object.prototype.hasOwnProperty.call(metadata[0], 'isMain')).toBeFalsy()
     expect(metadata[0].isDefault).toEqual(false)

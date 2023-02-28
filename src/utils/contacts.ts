@@ -29,11 +29,7 @@ export const filterContacts = (contacts: Contact[], text: string) =>
       )
 
 export const loadContacts = () => {
-  const state = store.getState()
-  const { mnemonic, name: walletName, isPassphraseUsed } = state.activeWallet
+  const contacts: Contact[] = ContactStorage.load()
 
-  if (!mnemonic || !walletName) return
-
-  const contacts: Contact[] = ContactStorage.load({ mnemonic, walletName }, isPassphraseUsed)
   if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
 }
