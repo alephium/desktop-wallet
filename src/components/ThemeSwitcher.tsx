@@ -21,22 +21,17 @@ import { useTranslation } from 'react-i18next'
 
 import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
-import useSwitchTheme from '@/hooks/useSwitchTheme'
+import { switchTheme } from '@/storage/storage-utils/settingsStorageUtils'
 
-interface ThemeSwitcherProps {
-  className?: string
-}
-
-const ThemeSwitcher: FC<ThemeSwitcherProps> = ({ className }) => {
+const ThemeSwitcher = () => {
   const { t } = useTranslation()
-  const switchTheme = useSwitchTheme()
-  const { theme: currentTheme } = useAppSelector((state) => state.settings)
+  const { theme } = useAppSelector((state) => state.app)
 
-  const isDark = currentTheme === 'dark'
+  const isDark = theme === 'dark'
 
   return (
     <Toggle
-      label={t`Activate dark mode`}
+      label={t('Activate dark mode')}
       ToggleIcons={[Sun, Moon]}
       handleColors={['var(--color-orange)', 'var(--color-purple)']}
       toggled={isDark}

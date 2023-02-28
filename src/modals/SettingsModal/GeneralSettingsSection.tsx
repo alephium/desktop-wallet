@@ -27,7 +27,6 @@ import Toggle from '@/components/Inputs/Toggle'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import useSwitchTheme from '@/hooks/useSwitchTheme'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import {
@@ -36,6 +35,7 @@ import {
   passwordRequirementToggled,
   walletLockTimeChanged
 } from '@/storage/app-state/slices/settingsSlice'
+import { switchTheme } from '@/storage/storage-utils/settingsStorageUtils'
 import { Language, ThemeType } from '@/types/settings'
 
 interface GeneralSettingsSectionProps {
@@ -58,7 +58,6 @@ const themeOptions = [
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const switchTheme = useSwitchTheme()
   const [isAuthenticated, { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme }] =
     useAppSelector((s) => [!!s.activeWallet.mnemonic, s.settings])
 

@@ -16,21 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useAppDispatch } from '@/hooks/redux'
-import { themeChanged } from '@/storage/app-state/slices/settingsSlice'
+import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
+import { store } from '@/storage/app-state/store'
 import { ThemeType } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
-const useSwitchTheme = () => {
-  const dispatch = useAppDispatch()
-
-  return (theme: ThemeType) => {
-    electron?.theme.setNativeTheme(theme)
-    dispatch(themeChanged(theme))
-  }
+export const switchTheme = (theme: ThemeType) => {
+  electron?.theme.setNativeTheme(theme)
+  store.dispatch(themeSettingsChanged(theme))
 }
-
-export default useSwitchTheme
