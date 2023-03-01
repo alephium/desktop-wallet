@@ -27,9 +27,10 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons, ScrollableModalContent } from '@/modals/CenteredModal'
+import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
+import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
@@ -61,7 +62,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const settings = useAppSelector((s) => s.settings)
   const { setSnackbarMessage } = useGlobalContext()
 
-  const [modalTitle, setModalTitle] = useState(title)
   const [transactionData, setTransactionData] = useState<T | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<Step>('build-tx')
@@ -72,16 +72,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
-
-  useEffect(() => {
-    if (step === 'info-check') {
-      setModalTitle(t`Review`)
-    } else if (step === 'password-check') {
-      setModalTitle(t`Password Check`)
-    } else if (step === 'build-tx') {
-      setModalTitle(title)
-    }
-  }, [step, t, title])
 
   useEffect(() => {
     if (!consolidationRequired || !transactionData) return
@@ -193,13 +183,21 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setStep('password-check')
   }
 
+  const onBackCallback = {
+    'build-tx': undefined,
+    'info-check': () => setStep('build-tx'),
+    'password-check': () => setStep('info-check'),
+    'tx-sent': undefined
+  }[step]
+
   return (
     <CenteredModal
-      title={modalTitle}
+      title={title}
       onClose={onCloseExtended}
       isLoading={isLoading}
       dynamicContent
       header={<StepsProgress currentStep={step} />}
+      onBack={onBackCallback}
     >
       {step === 'build-tx' && (
         <ScrollableModalContent>
@@ -213,14 +211,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       {step === 'info-check' && !!transactionData && !!fees && (
         <ScrollableModalContent>
           <CheckTxModalContent data={transactionData} fees={fees} />
-          <ModalFooterButtons>
-            <ModalFooterButton role="secondary" onClick={() => setStep('build-tx')}>
-              {t('Back')}
-            </ModalFooterButton>
-            <ModalFooterButton onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}>
-              {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
-            </ModalFooterButton>
-          </ModalFooterButtons>
+          <FooterButton
+            onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+            variant={settings.passwordRequirement ? 'default' : 'valid'}
+          >
+            {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
+          </FooterButton>
         </ScrollableModalContent>
       )}
       {step === 'password-check' && settings.passwordRequirement && (
@@ -228,6 +224,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           <PasswordConfirmation
             text={t('Enter your password to send the transaction.')}
             buttonText={t('Send')}
+            highlightButton
             onCorrectPasswordEntered={handleSendExtended}
           >
             <PasswordConfirmationNote>

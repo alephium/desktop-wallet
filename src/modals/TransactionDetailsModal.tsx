@@ -57,7 +57,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
-  const { amount, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { assets, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
   const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
@@ -74,7 +74,19 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {amountSign}
-          <Amount value={amount} fadeDecimals color={amountTextColor} />
+          {assets.map(({ id, amount, decimals, symbol }) => (
+            <AmountContainer key={id}>
+              {amountSign}
+              <Amount
+                tabIndex={0}
+                value={amount}
+                fadeDecimals
+                color={amountTextColor}
+                decimals={decimals}
+                suffix={symbol}
+              />
+            </AmountContainer>
+          ))}
         </AmountWrapper>
         <HeaderInfo>
           <Direction>
@@ -140,7 +152,22 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
-          <Amount tabIndex={0} value={amount} fadeDecimals fullPrecision />
+          <Amounts>
+            {assets.map(({ id, amount, decimals, symbol }) => (
+              <AmountContainer key={id}>
+                {amountSign}
+                <Amount
+                  tabIndex={0}
+                  value={amount}
+                  fadeDecimals
+                  fullPrecision
+                  color={amountTextColor}
+                  decimals={decimals}
+                  suffix={symbol}
+                />
+              </AmountContainer>
+            ))}
+          </Amounts>
         </DetailsRow>
         <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
           <DetailsRow label={t`Gas amount`}>
@@ -262,4 +289,16 @@ const AddressList = styled.div`
 const ActionLinkStyled = styled(ActionLink)`
   width: 100%;
   justify-content: right;
+`
+
+const AmountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+const Amounts = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 `

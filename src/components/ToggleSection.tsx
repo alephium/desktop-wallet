@@ -76,7 +76,7 @@ const ToggleSection = ({
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.background1};
+  background-color: ${({ theme }) => theme.bg.background2};
   border-radius: var(--radius-big);
   padding-bottom: 16px;
 `

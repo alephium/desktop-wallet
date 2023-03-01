@@ -16,23 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { TokenInfo } from '@alephium/token-list'
 import styled, { css } from 'styled-components'
 
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
-import { Asset } from '@/types/tokens'
-import { ALPH } from '@/utils/constants'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 
 interface AssetLogoProps {
-  asset: Asset
+  asset: Pick<TokenInfo, 'id' | 'logoURI'>
   size: number
   className?: string
 }
 
-const AssetLogo = ({ className }: AssetLogoProps) => (
+const AssetLogo = ({ asset, className }: AssetLogoProps) => (
   <div className={className}>
-    {/* TODO: uncomment when metadata repo is accessible by the public */}
-    {/* <LogoImage src={token.logoURI ?? AlephiumLogoSVG} /> */}
-    <LogoImage src={AlephiumLogoSVG} />
+    <LogoImage src={asset.logoURI ?? AlephiumLogoSVG} />
   </div>
 )
 
@@ -52,7 +50,7 @@ export default styled(AssetLogo)`
           background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
         `
       : css`
-          background-color: ${theme.font.tertiary};
+          background-color: ${theme.bg.contrast};
         `}
 `
 

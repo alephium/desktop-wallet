@@ -48,8 +48,8 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
     <CenteredModal title={t('Receive')} onClose={onClose}>
       <Content>
         <AddressSelect
-          label={t`Address`}
-          title={t`Select the address to receive funds to.`}
+          label={t('Address')}
+          title={t('Select the address to receive funds to.')}
           options={addresses}
           defaultAddress={address ?? defaultAddress}
           onAddressChange={setSelectedAddress}

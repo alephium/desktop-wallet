@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { Transaction } from '@alephium/sdk/api/explorer'
 
 import client from '@/api/client'
 import { Address, AddressDataSyncResult, AddressHash } from '@/types/addresses'
@@ -27,8 +27,9 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
   for (const addressHash of addressHashes) {
     const { data: details } = await client.explorer.getAddressDetails(addressHash)
     const { data: transactions } = await client.explorer.getAddressTransactions(addressHash, 1)
-    const { data: unconfirmedTransactions } =
-      await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(addressHash)
+    const { data: mempoolTransactions } = await client.explorer.addresses.getAddressesAddressMempoolTransactions(
+      addressHash
+    )
     const { data: tokenIds } = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
 
     const tokens = await Promise.all(
@@ -44,8 +45,7 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
       hash: addressHash,
       details,
       transactions,
-      // Type casting needed due to https://github.com/alephium/explorer-backend/issues/427
-      unconfirmedTransactions: unconfirmedTransactions as UnconfirmedTransaction[],
+      mempoolTransactions,
       tokens
     })
   }

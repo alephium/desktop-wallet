@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
+import AppSpinner from '@/components/AppSpinner'
 import { CenteredSection } from '@/components/PageComponents/PageContainers'
 import SnackbarManager from '@/components/SnackbarManager'
 import SplashScreen from '@/components/SplashScreen'
@@ -31,6 +32,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { syncNetworkTokensInfo } from '@/storage/app-state/slices/assetsInfoSlice'
 import {
   apiClientInitFailed,
   apiClientInitSucceeded,
@@ -38,7 +40,6 @@ import {
 } from '@/storage/app-state/slices/networkSlice'
 import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { generalSettingsMigrated } from '@/storage/app-state/slices/settingsSlice'
-import { syncNetworkTokensInfo } from '@/storage/app-state/slices/tokensSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { useInterval } from '@/utils/hooks'
@@ -53,12 +54,13 @@ const App = () => {
   const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
     (tx) => tx.address.hash
   )
-  const [settings, network, addressesStatus, isPassphraseUsed, tokens] = useAppSelector((s) => [
+  const [settings, network, addressesStatus, isPassphraseUsed, assetsInfo, loading] = useAppSelector((s) => [
     s.settings,
     s.network,
     s.addresses.status,
     s.activeWallet.isPassphraseUsed,
-    s.tokens
+    s.assetsInfo,
+    s.app.loading
   ])
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -126,10 +128,10 @@ const App = () => {
   useInterval(refreshAddressesData, 2000, pendingTxHashes.length === 0)
 
   useEffect(() => {
-    if (network.status === 'online' && tokens.status === 'uninitialized') {
+    if (network.status === 'online' && assetsInfo.status === 'uninitialized') {
       dispatch(syncNetworkTokensInfo())
     }
-  }, [dispatch, network.status, tokens.status])
+  }, [dispatch, network.status, assetsInfo.status])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
@@ -153,6 +155,7 @@ const App = () => {
       </AppContainer>
 
       <SnackbarManager message={snackbarMessage} />
+      {loading && <AppSpinner />}
       <AnimatePresence>
         {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
       </AnimatePresence>

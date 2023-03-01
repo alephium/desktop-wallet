@@ -16,29 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useTranslation } from 'react-i18next'
+import { AddressBalance, Token } from '@alephium/sdk/api/explorer'
+import { TokenInfo } from '@alephium/token-list'
 
-import { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+// Used in Redux, amounts need to be in string format
+export type TokenBalances = AddressBalance & { id: Token['id'] }
 
-interface BuildTxFooterButtons {
-  onSubmit: () => void
-  onCancel: () => void
-  isSubmitButtonActive: boolean | string
+// Same as TokenBalances, but amounts are in BigInt, useful for display purposes
+export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalance'> & {
+  balance: bigint
+  lockedBalance: bigint
 }
 
-const BuildTxFooterButtons = ({ onSubmit, onCancel, isSubmitButtonActive }: BuildTxFooterButtons) => {
-  const { t } = useTranslation()
+export type Asset = TokenDisplayBalances & TokenInfo
 
-  return (
-    <ModalFooterButtons>
-      <ModalFooterButton role="secondary" onClick={onCancel}>
-        {t('Cancel')}
-      </ModalFooterButton>
-      <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
-        {t('Check')}
-      </ModalFooterButton>
-    </ModalFooterButtons>
-  )
-}
-
-export default BuildTxFooterButtons
+export type AssetAmount = { id: Asset['id']; amount?: bigint }

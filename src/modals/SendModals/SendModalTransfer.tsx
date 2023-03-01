@@ -19,13 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount, isAddressValid } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
-import InfoBox from '@/components/InfoBox'
+import Box from '@/components/Box'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
@@ -34,22 +34,22 @@ import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
-import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
-import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
-import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
-import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
+import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
+import CheckFeeLocktimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
+import FooterButton from '@/modals/SendModals/FooterButton'
+import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { store } from '@/storage/app-state/store'
-import { AssetAmount } from '@/types/tokens'
+import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
-import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
-import { formatDateForDisplay } from '@/utils/misc'
-import { expectedAmount, getAssetAmounts } from '@/utils/transactions'
+import { getTransactionAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
   onClose: () => void
@@ -85,33 +85,13 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   )
 }
 
-const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
-  const { t } = useTranslation()
-  const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
-
-  // TODO: Display token amounts
-  console.log(tokens)
-
-  return (
-    <>
-      <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
-      <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
-      <AlphAmountInfoBox
-        label={t`Amount`}
-        amount={expectedAmount({ fromAddress: data.fromAddress, alphAmount: attoAlphAmount }, fees)}
-      />
-      {data.lockTime && (
-        <InfoBox label={t('Unlocks at')}>
-          <UnlocksAt>
-            {formatDateForDisplay(data.lockTime)}
-            <FromNow>({dayjs(data.lockTime).fromNow()})</FromNow>
-          </UnlocksAt>
-        </InfoBox>
-      )}
-      <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
-    </>
-  )
-}
+const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => (
+  <Content>
+    <CheckAmountsBox assetAmounts={data.assetAmounts} />
+    <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
+    <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
+  </Content>
+)
 
 const defaultAssetAmounts = [{ id: ALPH.id }]
 
@@ -149,8 +129,10 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const handleLocktimeChange = (lockTimeInput: string) =>
     setLockTime(lockTimeInput ? dayjs(lockTimeInput).toDate() : undefined)
 
-  const onClickClearLockTime = (isShown: boolean) =>
-    setLockTime(isShown ? undefined : dayjs().add(1, 'minute').toDate())
+  const clearAdvancedSettings = () => {
+    clearGasSettings()
+    setLockTime(undefined)
+  }
 
   const lockTimeInPast = lockTime && dayjs(lockTime).toDate() < dayjs().toDate()
   const atLeastOneAssetWithAmountIsSet = assetAmounts.some((asset) => asset?.amount && asset.amount > 0)
@@ -168,12 +150,13 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   return (
     <>
       <InputFieldsColumn>
-        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
-        <AddressSelectTo
-          value={toAddress.value}
-          onChange={(e) => handleToAddressChange(e.target.value)}
+        <AddressInputs
+          defaultFromAddress={fromAddress}
+          fromAddresses={addresses}
+          onFromAddressChange={setTxPrepProp('fromAddress')}
+          toAddress={toAddress}
+          onToAddressChange={handleToAddressChange}
           onContactSelect={handleToAddressChange}
-          error={toAddress.error}
         />
         <AssetAmountsInput
           address={fromAddress}
@@ -183,33 +166,34 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         />
       </InputFieldsColumn>
       <HorizontalDividerStyled />
-      <ToggleSections>
-        <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
-          <Input
-            id="locktime"
-            label={t('Lock time')}
-            value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
-            onChange={(e) => handleLocktimeChange(e.target.value)}
-            type="datetime-local"
-            hint="DD/MM/YYYY hh:mm"
-            min={dayjs().format('YYYY-MM-DDTHH:mm')}
-            error={lockTimeInPast && t('Lock time must be in the future.')}
-            liftLabel
-          />
-        </ToggleSection>
-        <GasSettingsExpandableSection
+      <ToggleSection
+        title={t('Show advanced options')}
+        subtitle={t('Set gas and lock time')}
+        onClick={clearAdvancedSettings}
+        isOpen={!!lockTime || !!gasAmount || !!gasPrice}
+      >
+        <Input
+          id="locktime"
+          label={t('Lock time')}
+          value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
+          onChange={(e) => handleLocktimeChange(e.target.value)}
+          type="datetime-local"
+          hint="DD/MM/YYYY hh:mm"
+          min={dayjs().format('YYYY-MM-DDTHH:mm')}
+          error={lockTimeInPast && t('Lock time must be in the future.')}
+          liftLabel
+        />
+        <GasSettings
           gasAmount={gasAmount}
           gasAmountError={gasAmountError}
           gasPrice={gasPrice}
           gasPriceError={gasPriceError}
           onGasAmountChange={handleGasAmountChange}
           onGasPriceChange={handleGasPriceChange}
-          onClearGasSettings={clearGasSettings}
-          isOpen={!!gasAmount || !!gasPrice}
         />
-      </ToggleSections>
-      <BuildTxFooterButtons
-        onSubmit={() =>
+      </ToggleSection>
+      <FooterButton
+        onClick={() =>
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
@@ -219,9 +203,10 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
             lockTime
           })
         }
-        onCancel={onCancel}
-        isSubmitButtonActive={isSubmitButtonActive}
-      />
+        disabled={!isSubmitButtonActive}
+      >
+        {t('Check')}
+      </FooterButton>
     </>
   )
 }
@@ -229,7 +214,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 const buildTransaction = async (transactionData: TransferTxData, context: TxContext) => {
   const { fromAddress, toAddress, assetAmounts, gasAmount, gasPrice, lockTime } = transactionData
   const assetsWithAvailableBalance = getAddressAssetsAvailableBalance(fromAddress).filter(
-    (token) => token.availableBalance > 0
+    (asset) => asset.availableBalance > 0
   )
 
   const shouldSweep =
@@ -245,7 +230,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
     context.setSweepUnsignedTxs(unsignedTxs)
     context.setFees(fees)
   } else {
-    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
+    const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
 
     const { data } = await client.clique.transactions.postTransactionsBuild({
       fromPublicKey: fromAddress.publicKey,
@@ -271,7 +256,7 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
   const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
   if (toAddress) {
-    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
+    const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
     const lockTime = lockDateTime?.getTime()
 
     if (isSweeping && sweepUnsignedTxs) {
@@ -343,21 +328,14 @@ function useStateWithError<T>(initialValue: T) {
 
 export default TransferTxModal
 
-const ToggleSections = styled.div`
-  > * {
-    margin-top: 20px;
-  }
-`
-
-const UnlocksAt = styled.div`
-  display: flex;
-  gap: var(--spacing-1);
-`
-
-const FromNow = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
+`
+
+const Content = styled.div`
+  margin-top: 36px;
+
+  & > ${Box}:not(:last-child) {
+    margin-bottom: 35px;
+  }
 `

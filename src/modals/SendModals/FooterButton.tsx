@@ -16,18 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type TokenType = 'alph'
+import styled from 'styled-components'
 
-interface TokenProps {
-  type: TokenType
-  disableA11y?: boolean
-  className?: string
-}
+import Button, { ButtonProps } from '@/components/Button'
 
-const Token = ({ type, disableA11y = false, className }: TokenProps) => (
-  <div className={className} aria-hidden={disableA11y}>
-    {type.toUpperCase()}
-  </div>
+const FooterButton: FC<ButtonProps> = ({ children, ...props }) => (
+  <ModalFooter>
+    <Button {...props}>{children}</Button>
+  </ModalFooter>
 )
 
-export default Token
+export default FooterButton
+
+const ModalFooter = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+`

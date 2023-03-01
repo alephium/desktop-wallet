@@ -24,7 +24,7 @@ import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
-import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
+import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
 const OverviewPage = () => {
@@ -35,7 +35,7 @@ const OverviewPage = () => {
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
         <Row>
-          <TokensNFTsListStyled />
+          <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
         </Row>
         <TransactionList limit={5} />
@@ -51,7 +51,7 @@ const Row = styled.div`
   gap: 30px;
 `
 
-const TokensNFTsListStyled = styled(TokensNFTsList)`
+const AssetsListStyled = styled(AssetsList)`
   flex: 4;
 `
 

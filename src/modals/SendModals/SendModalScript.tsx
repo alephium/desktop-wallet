@@ -26,14 +26,17 @@ import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
+import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
-import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
-import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
+import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
+import FooterButton from '@/modals/SendModals/FooterButton'
+import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
@@ -74,10 +77,10 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
 
   return (
     <>
-      <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
+      <CheckAddressesBox fromAddress={data.fromAddress} />
       <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
-      <AlphAmountInfoBox label={t`Expected fee`} amount={fees} fullPrecision />
+      <CheckFeeLockTimeBox fee={fees} />
     </>
   )
 }
@@ -126,17 +129,18 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
           onChange={(e) => setTxPrepProp('bytecode')(e.target.value)}
         />
       </InputFieldsColumn>
-      <GasSettingsExpandableSection
-        gasAmount={gasAmount}
-        gasAmountError={gasAmountError}
-        gasPrice={gasPrice}
-        gasPriceError={gasPriceError}
-        onGasAmountChange={handleGasAmountChange}
-        onGasPriceChange={handleGasPriceChange}
-        onClearGasSettings={clearGasSettings}
-      />
-      <BuildTxFooterButtons
-        onSubmit={() =>
+      <ToggleSection title={t('Show advanced options')} subtitle={t('Set gas settings')} onClick={clearGasSettings}>
+        <GasSettings
+          gasAmount={gasAmount}
+          gasAmountError={gasAmountError}
+          gasPrice={gasPrice}
+          gasPriceError={gasPriceError}
+          onGasAmountChange={handleGasAmountChange}
+          onGasPriceChange={handleGasPriceChange}
+        />
+      </ToggleSection>
+      <FooterButton
+        onClick={() =>
           onSubmit({
             fromAddress,
             bytecode: bytecode ?? '',
@@ -145,9 +149,10 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
             gasPrice
           })
         }
-        onCancel={onCancel}
-        isSubmitButtonActive={isSubmitButtonActive}
-      />
+        disabled={!isSubmitButtonActive}
+      >
+        {t('Check')}
+      </FooterButton>
     </>
   )
 }
@@ -162,7 +167,6 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
-    tokens: undefined,
     gasAmount: txData.gasAmount,
     gasPrice: txData.gasPrice ? fromHumanReadableAmount(txData.gasPrice).toString() : undefined
   })

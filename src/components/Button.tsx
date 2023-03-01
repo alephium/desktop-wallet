@@ -23,7 +23,7 @@ import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
-interface ButtonProps extends HTMLMotionProps<'button'> {
+export interface ButtonProps extends HTMLMotionProps<'button'> {
   role?: 'primary' | 'secondary'
   variant?: 'default' | 'contrast' | 'valid' | 'alert'
   transparent?: boolean
@@ -142,7 +142,7 @@ export default styled(Button)`
           primary: {
             default: 'white',
             contrast: theme.font.secondary,
-            valid: theme.font.contrastPrimary,
+            valid: theme.font.primary,
             alert: theme.font.contrastPrimary
           }[variant],
           secondary: {

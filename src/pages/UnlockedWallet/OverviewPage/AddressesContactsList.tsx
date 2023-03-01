@@ -132,6 +132,8 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
   )
 }
 const ContactsList = ({ className, limit }: AddressesContactsListProps) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
   const contacts = useAppSelector(selectAllContacts)
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
@@ -148,6 +150,8 @@ const ContactsList = ({ className, limit }: AddressesContactsListProps) => {
     setSelectedContact(undefined)
     setIsSendModalOpen(false)
   }
+
+  const goToContacts = () => navigate('/wallet/addresses', { state: { activeTab: 'contacts' } })
 
   return (
     <motion.div {...fadeIn} className={className}>
@@ -167,6 +171,11 @@ const ContactsList = ({ className, limit }: AddressesContactsListProps) => {
           </Row>
         </TableRow>
       ))}
+      {displayedContacts.length === 0 && (
+        <TableRow role="row" tabIndex={0} onClick={goToContacts} onKeyPress={goToContacts}>
+          {t('No contacts found. You can create contacts in the Addresses page.')}
+        </TableRow>
+      )}
       <ModalPortal>
         {isSendModalOpen && (
           <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />

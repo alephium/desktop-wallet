@@ -25,7 +25,15 @@ import { useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { fadeInBottom } from '@/animations'
-import { inputDefaultStyle, InputErrorMessage, InputIconContainer, InputLabel, InputProps } from '@/components/Inputs'
+import Button from '@/components/Button'
+import {
+  inputDefaultStyle,
+  InputErrorMessage,
+  InputIconContainer,
+  InputLabel,
+  InputProps,
+  inputStyling
+} from '@/components/Inputs'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 const Input = ({
@@ -38,6 +46,7 @@ const Input = ({
   noMargin,
   hint,
   Icon,
+  onIconPress,
   children,
   inputFieldStyle,
   inputFieldRef,
@@ -85,11 +94,15 @@ const Input = ({
           ref={inputFieldRef}
           heightSize={heightSize}
         />
-
-        {!!Icon && !isValid && (
+        {!!Icon && !onIconPress && !isValid && (
           <InputIconContainer>
             <Icon />
           </InputIconContainer>
+        )}
+        {!!Icon && !!onIconPress && (
+          <InputButtonContainer>
+            <Button onClick={onIconPress} Icon={Icon} transparent squared borderless />
+          </InputButtonContainer>
         )}
         {!disabled && isValid && (
           <InputIconContainer {...fadeInBottom}>
@@ -129,4 +142,13 @@ const Hint = styled.div`
 
 const InputRow = styled.div`
   position: relative;
+`
+
+const InputButtonContainer = styled.div`
+  position: absolute;
+  right: ${inputStyling.paddingRight};
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
 `

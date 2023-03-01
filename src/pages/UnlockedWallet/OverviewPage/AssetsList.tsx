@@ -28,11 +28,12 @@ import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
 
-interface TokensNFTsListProps {
+interface AssetsListProps {
   className?: string
   limit?: number
   addressHashes?: AddressHash[]
@@ -42,9 +43,9 @@ interface TokensNFTsListProps {
   showNfts?: boolean
 }
 
-const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: TokensNFTsListProps) => {
+const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: AssetsListProps) => {
   const { t } = useTranslation()
-  const [isLoadingAddresses, tokensStatus] = useAppSelector((s) => [s.addresses.loading, s.tokens.status])
+  const [isLoadingAddresses, assetsInfo] = useAppSelector((s) => [s.addresses.loading, s.assetsInfo])
 
   const tabs = [
     { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
@@ -52,7 +53,7 @@ const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsT
   ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
-  const showSkeletonLoading = isLoadingAddresses || tokensStatus === 'uninitialized'
+  const showSkeletonLoading = isLoadingAddresses || assetsInfo.status === 'uninitialized'
 
   return (
     <Table isLoading={showSkeletonLoading} className={className}>
@@ -67,7 +68,7 @@ const TokensNFTsList = ({ className, limit, addressHashes, tokensTabTitle, nftsT
   )
 }
 
-const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) => {
+const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
@@ -106,7 +107,7 @@ const TokensList = ({ className, limit, addressHashes }: TokensNFTsListProps) =>
   )
 }
 
-const NFTsList = ({ className }: TokensNFTsListProps) => {
+const NFTsList = ({ className }: AssetsListProps) => {
   const { t } = useTranslation()
 
   return (
@@ -118,7 +119,7 @@ const NFTsList = ({ className }: TokensNFTsListProps) => {
   )
 }
 
-export default styled(TokensNFTsList)`
+export default styled(AssetsList)`
   margin-bottom: 45px;
 `
 
@@ -132,7 +133,7 @@ const AssetLogoStyled = styled(AssetLogo)`
   margin-right: 25px;
 `
 
-const TokenName = styled.div`
+const TokenName = styled(Truncate)`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
   width: 200px;

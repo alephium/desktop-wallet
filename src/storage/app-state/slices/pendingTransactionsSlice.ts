@@ -79,7 +79,7 @@ const updateTransactions = (state: PendingTransactionsState, action: PayloadActi
   // Converting unconfirmed txs to pending txs because the amount delta calculation doesn't work for unconfirmed txs.
   // See: https://github.com/alephium/explorer-backend/issues/360
   const pendingTransactions = addresses
-    .flatMap((address) => address.unconfirmedTransactions.map((tx) => ({ tx, address: address.hash })))
+    .flatMap((address) => address.mempoolTransactions.map((tx) => ({ tx, address: address.hash })))
     .map(({ tx, address }) => convertUnconfirmedTxToPendingTx(tx, address))
 
   pendingTransactionsAdapter.removeMany(state, confirmedTransactionsHashes)

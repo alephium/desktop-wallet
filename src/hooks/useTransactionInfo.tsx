@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
-  calcTxAmountDeltaForAddress,
+  calcTxAmountsDeltaForAddress,
   getDirection,
   isConsolidationTx,
   TransactionDirection,
@@ -27,28 +27,36 @@ import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { AddressHash } from '@/types/addresses'
+import { AssetAmount } from '@/types/assets'
 import { AddressTransaction } from '@/types/transactions'
+import { convertToPositive } from '@/utils/misc'
 import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'
 
 export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressHash, showInternalInflows?: boolean) => {
   const addresses = useAppSelector(selectAllAddresses)
+  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
 
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
   let infoType: TransactionInfoType
   let outputs: Output[] = []
   let lockTime: Date | undefined
+  let tokens: Required<AssetAmount>[] = []
 
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
     amount = tx.amount ? BigInt(tx.amount) : undefined
+    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : []
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
-    amount = calcTxAmountDeltaForAddress(tx, addressHash)
-    amount = amount < 0 ? amount * BigInt(-1) : amount
+    const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, addressHash)
+
+    amount = convertToPositive(alphAmount)
+    tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
 
     if (isConsolidationTx(tx)) {
       direction = 'out'
@@ -70,8 +78,11 @@ export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressH
     lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime
   }
 
+  const tokenAssets = [...tokens.map((token) => ({ ...token, ...assetsInfo[token.id] }))]
+  const assets = amount !== undefined ? [{ ...ALPH, amount }, ...tokenAssets] : tokenAssets
+
   return {
-    amount,
+    assets,
     direction,
     infoType,
     outputs,
