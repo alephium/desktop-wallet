@@ -32,6 +32,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     esbuildOptions: {
+      target: 'es2020',
       // Node.js global to browser globalThis
       define: {
         global: 'globalThis'
@@ -57,6 +58,7 @@ export default defineConfig({
     }
   },
   build: {
+    target: 'es2020',
     outDir: 'build'
   },
   base: ''

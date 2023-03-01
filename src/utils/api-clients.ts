@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
-import { NodeProvider as Web3Client } from '@alephium/web3'
+import { NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
 
 import { Address, AddressHash } from '../contexts/addresses'
 import { PendingTxType } from '../types/transactions'
@@ -26,13 +26,15 @@ import { NetworkName, Settings } from './settings'
 export async function createClient(settings: Settings['network']) {
   try {
     const cliqueClient = new CliqueClient({
-      baseUrl: settings.nodeHost
+      baseUrl: settings.nodeHost,
+      customFetch: throttledFetch(5)
     })
 
     const web3Client = new Web3Client(settings.nodeHost)
 
     const explorerClient = new ExplorerClient({
-      baseUrl: settings.explorerApiHost
+      baseUrl: settings.explorerApiHost,
+      customFetch: throttledFetch(5)
     })
 
     //TODO: Support multi-node clique
