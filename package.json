@@ -124,7 +124,10 @@
       ]
     },
     "win": {
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}",
+      "publisherName": [
+        "Panda Software SA"
+      ]
     },
     "mac": {
       "hardenedRuntime": true,
