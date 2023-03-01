@@ -33,8 +33,8 @@ interface TableCellProps {
 }
 
 const Table: FC<TableProps> = ({ className, children, isLoading }) => (
-  <ScrollableWrapper>
-    <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
+  <ScrollableWrapper className={className}>
+    <div role="table" tabIndex={0} className={classNames({ 'skeleton-loader': isLoading })}>
       {children}
     </div>
   </ScrollableWrapper>
@@ -52,7 +52,7 @@ export default styled(Table)`
   ${({ isLoading }) =>
     isLoading &&
     css`
-      min-height: 300px;
+      min-height: 132px;
       width: 100%;
     `}
 `
@@ -93,7 +93,7 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 8px 20px;
+  padding: 18px 20px;
   min-height: 52px;
 `
 

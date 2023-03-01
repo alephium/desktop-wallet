@@ -107,7 +107,7 @@ const WalletSwitcher = () => {
           <CenteredModal narrow title={t`Enter password`} onClose={onPasswordModalClose}>
             <PasswordConfirmation
               text={t('Enter password for "{{ switchToWalletName }}"', { switchToWalletName })}
-              buttonText={t`Login`}
+              buttonText={t('Unlock')}
               onCorrectPasswordEntered={onLoginClick}
               walletName={switchToWalletName}
               isSubmitDisabled={!isPassphraseConfirmed}

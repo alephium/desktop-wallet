@@ -42,6 +42,7 @@ const Input = ({
   inputFieldStyle,
   inputFieldRef,
   liftLabel = false,
+  heightSize = 'normal',
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -65,32 +66,37 @@ const Input = ({
       custom={disabled}
       noMargin={noMargin}
       className={className}
+      heightSize={heightSize}
     >
-      <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
-        {label}
-      </InputLabel>
-      <InputBase
-        {...props}
-        style={inputFieldStyle}
-        label={label}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        isValid={isValid}
-        onWheel={handleScroll}
-        Icon={Icon}
-        ref={inputFieldRef}
-      />
-      {!!Icon && !isValid && (
-        <InputIconContainer>
-          <Icon />
-        </InputIconContainer>
-      )}
-      {!disabled && isValid && (
-        <InputIconContainer {...fadeInBottom}>
-          <Check strokeWidth={3} color={theme.global.valid} />
-        </InputIconContainer>
-      )}
+      <InputRow>
+        <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
+          {label}
+        </InputLabel>
+        <InputBase
+          {...props}
+          style={inputFieldStyle}
+          label={label}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          isValid={isValid}
+          onWheel={handleScroll}
+          Icon={Icon}
+          ref={inputFieldRef}
+          heightSize={heightSize}
+        />
+
+        {!!Icon && !isValid && (
+          <InputIconContainer>
+            <Icon />
+          </InputIconContainer>
+        )}
+        {!disabled && isValid && (
+          <InputIconContainer {...fadeInBottom}>
+            <Check strokeWidth={3} color={theme.global.valid} />
+          </InputIconContainer>
+        )}
+      </InputRow>
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
       {hint && <Hint>{hint}</Hint>}
       {children}
@@ -100,15 +106,17 @@ const Input = ({
 
 export default Input
 
-export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
+export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin' | 'heightSize'>>`
   position: relative;
-  min-height: var(--inputHeight);
+  min-height: ${({ heightSize }) =>
+    heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
 export const InputBase = styled.input<InputProps>`
-  ${({ isValid, value, label, Icon }) => inputDefaultStyle(isValid || !!Icon, !!value, !!label)};
+  ${({ isValid, value, label, Icon, heightSize }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 
@@ -117,4 +125,8 @@ const Hint = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   margin-left: 12px;
   margin-top: 6px;
+`
+
+const InputRow = styled.div`
+  position: relative;
 `

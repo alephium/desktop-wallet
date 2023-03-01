@@ -95,14 +95,18 @@ const AddressesPage = () => {
           </div>
         </Header>
         <Tabs>
-          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+          <TabPanel>
+            <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+          </TabPanel>
           <TabContent>
-            {
+            <TabPanel>
               {
-                addresses: <AddressesTabContent />,
-                contacts: <ContactsTabContent />
-              }[currentTab.value]
-            }
+                {
+                  addresses: <AddressesTabContent />,
+                  contacts: <ContactsTabContent />
+                }[currentTab.value]
+              }
+            </TabPanel>
           </TabContent>
         </Tabs>
       </MainPanel>
@@ -186,16 +190,17 @@ export default AddressesPage
 
 const advancedOperationsHeaderHeightPx = 80
 
-const MainPanel = styled(UnlockedWalletPanel)`
+const MainPanel = styled.div`
   padding-bottom: 130px;
 `
 
-const Header = styled.div`
+const Header = styled(UnlockedWalletPanel)`
   display: flex;
   justify-content: space-between;
   gap: 40px;
   margin-top: 35px;
   margin-bottom: 50px;
+  padding-bottom: 0;
 `
 
 const Title = styled.h1`
@@ -259,5 +264,13 @@ const AdvancedOperationsToggle = styled(InlineLabelValueInput)`
 const Tabs = styled.div``
 
 const TabContent = styled(Box)`
-  padding: 30px 25px 45px 25px;
+  padding-top: 30px;
+  padding-bottom: 45px;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+`
+
+const TabPanel = styled(UnlockedWalletPanel)`
+  padding-bottom: 0;
 `

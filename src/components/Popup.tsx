@@ -111,7 +111,7 @@ const Content = styled(motion.div)`
   overflow-y: auto;
 
   min-width: 300px;
-  max-height: 500px;
+  max-height: 510px;
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
@@ -121,6 +121,8 @@ const Content = styled(motion.div)`
 `
 
 const Header = styled.div`
+  position: sticky;
+  top: 0;
   height: 50px;
   padding: var(--spacing-1) var(--spacing-3);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};

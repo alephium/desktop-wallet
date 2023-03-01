@@ -79,9 +79,9 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
         <ClipboardWrapper>
           <Copy
             className={`${className} clipboard`}
-            size={15}
             onClick={handleInput}
             onKeyPress={handleInput}
+            onMouseDown={handleInput}
             role="button"
             aria-label={disableA11y ? undefined : t`Copy to clipboard`}
             tabIndex={disableA11y ? undefined : 0}
@@ -89,7 +89,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
         </ClipboardWrapper>
       ) : (
         <ClipboardWrapper className={className}>
-          <Check className={`${className} check`} size={15} />
+          <Check className={`${className} check`} />
         </ClipboardWrapper>
       )}
     </TooltipWrapper>
@@ -112,7 +112,7 @@ const CellClipboard = styled.div`
 
 const CellChildren = styled.div`
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
-  margin-right: -15px;
+  margin-right: -1em;
   overflow: hidden;
   width: 100%;
 `
@@ -131,8 +131,14 @@ const ClipboardWrapper = styled.div`
     }
   }
 
-  &.check {
+  & > .check {
     color: ${({ theme }) => theme.font.primary};
+  }
+
+  & > .clipboard,
+  & > .check {
+    width: 1em;
+    height: 1em;
   }
 `
 

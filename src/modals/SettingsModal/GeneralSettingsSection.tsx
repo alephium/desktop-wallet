@@ -104,6 +104,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             step={1}
             min={1}
             noMargin
+            heightSize="small"
           />
         }
       />
@@ -119,6 +120,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}
+            heightSize="small"
           />
         }
       />

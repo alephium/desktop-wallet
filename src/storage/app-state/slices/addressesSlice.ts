@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { addressToGroup, produceZeros, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import {
   createAsyncThunk,
@@ -41,11 +41,14 @@ import {
   walletUnlocked
 } from '@/storage/app-state/slices/activeWalletSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
+import { selectAllTokens } from '@/storage/app-state/slices/tokensSlice'
 import { RootState } from '@/storage/app-state/store'
 import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
+import { Asset, TokenDisplayBalances } from '@/types/tokens'
 import { PendingTransaction } from '@/types/transactions'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
+import { ALPH } from '@/utils/constants'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 const sliceName = 'addresses'
@@ -326,6 +329,72 @@ export const selectDefaultAddress = createSelector(selectAllAddresses, (addresse
 
 export const selectTotalBalance = createSelector([selectAllAddresses], (addresses) =>
   addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
+)
+
+export const selectAddressesAlphAsset = createSelector(
+  [selectAllAddresses, (_, addressHashes?: AddressHash[]) => addressHashes],
+  (allAddresses, addressHashes): Asset => {
+    const addresses = addressHashes
+      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
+      : allAddresses
+    const alphBalances = addresses.reduce(
+      (acc, { balance, lockedBalance }) => ({
+        balance: acc.balance + BigInt(balance),
+        lockedBalance: acc.lockedBalance + BigInt(lockedBalance)
+      }),
+      { balance: BigInt(0), lockedBalance: BigInt(0) }
+    )
+
+    return {
+      ...ALPH,
+      ...alphBalances
+    }
+  }
+)
+
+export const selectAddressesAssets = createSelector(
+  [selectAllAddresses, selectAllTokens, selectAddressesAlphAsset, (_, addressHashes?: AddressHash[]) => addressHashes],
+  (allAddresses, tokens, alphAsset, addressHashes): Asset[] => {
+    const addresses = addressHashes
+      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
+      : allAddresses
+    const tokenBalances = addresses.reduce((acc, { tokens }) => {
+      tokens.forEach((token) => {
+        const existingToken = acc.find((t) => t.id === token.id)
+
+        if (!existingToken) {
+          acc.push({
+            id: token.id,
+            balance: BigInt(token.balance),
+            lockedBalance: BigInt(token.lockedBalance)
+          })
+        } else {
+          existingToken.balance = existingToken.balance + BigInt(token.balance)
+          existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
+        }
+      })
+
+      return acc
+    }, [] as TokenDisplayBalances[])
+
+    const tokenResults = tokenBalances.map((token) => {
+      const tokenMetadata = tokens.find((t) => t.id === token.id)
+      const trailingZeros = produceZeros(tokenMetadata?.decimals ?? 0)
+
+      return {
+        id: token.id,
+        balance: BigInt(token.balance.toString() + trailingZeros),
+        lockedBalance: BigInt(token.lockedBalance.toString() + trailingZeros),
+        name: tokenMetadata?.name ?? token.id,
+        symbol: tokenMetadata?.symbol ?? '',
+        description: tokenMetadata?.description,
+        logoURI: tokenMetadata?.logoURI,
+        decimals: tokenMetadata?.decimals ?? 0
+      }
+    })
+
+    return [alphAsset, ...tokenResults]
+  }
 )
 
 const getAddresses = (state: AddressesState) => Object.values(state.entities) as Address[]

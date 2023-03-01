@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, isAddressValid } from '@alephium/sdk'
+import { fromHumanReadableAmount, isAddressValid } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
 import { useState } from 'react'
@@ -27,8 +27,8 @@ import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
+import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
@@ -37,16 +37,19 @@ import useStateObject from '@/hooks/useStateObject'
 import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
 import AddressSelectTo from '@/modals/SendModals/AddressSelectTo'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import BuildTxFooterButtons from '@/modals/SendModals/BuildTxFooterButtons'
 import GasSettingsExpandableSection from '@/modals/SendModals/GasSettingsExpandableSection'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { store } from '@/storage/app-state/store'
+import { AssetAmount } from '@/types/tokens'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { getAvailableBalance } from '@/utils/addresses'
+import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
+import { ALPH } from '@/utils/constants'
 import { requiredErrorMessage } from '@/utils/form-validation'
 import { formatDateForDisplay } from '@/utils/misc'
-import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
+import { expectedAmount, getAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
   onClose: () => void
@@ -84,12 +87,19 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
 
 const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => {
   const { t } = useTranslation()
+  const { attoAlphAmount, tokens } = getAssetAmounts(data.assetAmounts)
+
+  // TODO: Display token amounts
+  console.log(tokens)
 
   return (
     <>
       <InfoBox label={t`From address`} text={data.fromAddress.hash} wordBreak />
       <InfoBox label={t`To address`} text={data.toAddress} wordBreak />
-      <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
+      <AlphAmountInfoBox
+        label={t`Amount`}
+        amount={expectedAmount({ fromAddress: data.fromAddress, alphAmount: attoAlphAmount }, fees)}
+      />
       {data.lockTime && (
         <InfoBox label={t('Unlocks at')}>
           <UnlocksAt>
@@ -103,13 +113,14 @@ const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData
   )
 }
 
+const defaultAssetAmounts = [{ id: ALPH.id }]
+
 const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
   const [lockTime, setLockTime] = useState(data.lockTime)
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
-    fromAddress: data.fromAddress ?? '',
-    alphAmount: data.alphAmount ?? ''
+    fromAddress: data.fromAddress
   })
   const {
     gasAmount,
@@ -121,7 +132,15 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>(data.assetAmounts || defaultAssetAmounts)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
+
+  const { fromAddress } = txPrep
+
+  if (fromAddress === undefined) {
+    onCancel()
+    return null
+  }
 
   const handleToAddressChange = (value: string) => {
     setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
@@ -133,23 +152,18 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const onClickClearLockTime = (isShown: boolean) =>
     setLockTime(isShown ? undefined : dayjs().add(1, 'minute').toDate())
 
-  const { fromAddress, alphAmount } = txPrep
   const lockTimeInPast = lockTime && dayjs(lockTime).toDate() < dayjs().toDate()
-  const availableBalance = getAvailableBalance(fromAddress)
-
-  if (fromAddress === undefined) {
-    onCancel()
-    return null
-  }
+  const atLeastOneAssetWithAmountIsSet = assetAmounts.some((asset) => asset?.amount && asset.amount > 0)
+  const allAssetAmountsAreWithinAvailableBalance = assetAmountsWithinAvailableBalance(fromAddress, assetAmounts)
 
   const isSubmitButtonActive =
     !gasPriceError &&
     !gasAmountError &&
     toAddress.value &&
     !toAddress.error &&
-    !!alphAmount &&
     !lockTimeInPast &&
-    isAmountWithinRange(convertAlphToSet(alphAmount), availableBalance)
+    atLeastOneAssetWithAmountIsSet &&
+    allAssetAmountsAreWithinAvailableBalance
 
   return (
     <>
@@ -161,8 +175,14 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onContactSelect={handleToAddressChange}
           error={toAddress.error}
         />
-        <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
+        <AssetAmountsInput
+          address={fromAddress}
+          assetAmounts={assetAmounts}
+          onAssetAmountsChange={setAssetAmounts}
+          id="asset-amounts"
+        />
       </InputFieldsColumn>
+      <HorizontalDividerStyled />
       <ToggleSections>
         <ToggleSection title={t`Set lock time`} onClick={onClickClearLockTime} isOpen={!!lockTime}>
           <Input
@@ -193,7 +213,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
           onSubmit({
             fromAddress: fromAddress,
             toAddress: toAddress.value,
-            alphAmount: alphAmount || '',
+            assetAmounts,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice,
             lockTime
@@ -207,26 +227,39 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 }
 
 const buildTransaction = async (transactionData: TransferTxData, context: TxContext) => {
-  const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice, lockTime } = transactionData
-  const amountInSet = convertAlphToSet(alphAmount)
-  const sweep = amountInSet === getAvailableBalance(fromAddress)
+  const { fromAddress, toAddress, assetAmounts, gasAmount, gasPrice, lockTime } = transactionData
+  const assetsWithAvailableBalance = getAddressAssetsAvailableBalance(fromAddress).filter(
+    (token) => token.availableBalance > 0
+  )
 
-  context.setIsSweeping(sweep)
+  const shouldSweep =
+    assetsWithAvailableBalance.length === assetAmounts.length &&
+    assetsWithAvailableBalance.every(
+      (asset) => assetAmounts.find((a) => a.id === asset.id)?.amount === asset.availableBalance
+    )
 
-  if (sweep) {
+  context.setIsSweeping(shouldSweep)
+
+  if (shouldSweep) {
     const { unsignedTxs, fees } = await buildSweepTransactions(fromAddress, toAddress)
     context.setSweepUnsignedTxs(unsignedTxs)
     context.setFees(fees)
   } else {
-    const { data } = await client.clique.transactionCreate(
-      fromAddress.hash,
-      fromAddress.publicKey,
-      toAddress,
-      amountInSet.toString(),
-      lockTime ? lockTime.getTime() : undefined,
-      gasAmount ? gasAmount : undefined,
-      gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
-    )
+    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
+
+    const { data } = await client.clique.transactions.postTransactionsBuild({
+      fromPublicKey: fromAddress.publicKey,
+      destinations: [
+        {
+          address: toAddress,
+          attoAlphAmount,
+          tokens,
+          lockTime: lockTime ? lockTime.getTime() : undefined
+        }
+      ],
+      gasAmount: gasAmount ? gasAmount : undefined,
+      gasPrice: gasPrice ? fromHumanReadableAmount(gasPrice).toString() : undefined
+    })
     context.setUnsignedTransaction(data)
     context.setUnsignedTxId(data.txId)
     context.setFees(BigInt(data.gasAmount) * BigInt(data.gasPrice))
@@ -234,11 +267,11 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
 }
 
 const handleSend = async (transactionData: TransferTxData, context: TxContext) => {
-  const { fromAddress, toAddress, lockTime: lockDateTime, alphAmount } = transactionData
+  const { fromAddress, toAddress, lockTime: lockDateTime, assetAmounts } = transactionData
   const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
   if (toAddress) {
-    const amount = convertAlphToSet(alphAmount).toString()
+    const { attoAlphAmount, tokens } = getAssetAmounts(assetAmounts)
     const lockTime = lockDateTime?.getTime()
 
     if (isSweeping && sweepUnsignedTxs) {
@@ -253,7 +286,8 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
             hash: data.txId,
             fromAddress: fromAddress.hash,
             toAddress: sendToAddress,
-            amount,
+            amount: attoAlphAmount,
+            tokens,
             timestamp: new Date().getTime(),
             lockTime,
             type,
@@ -269,7 +303,8 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
           hash: data.txId,
           fromAddress: fromAddress.hash,
           toAddress,
-          amount,
+          amount: attoAlphAmount,
+          tokens,
           timestamp: new Date().getTime(),
           lockTime,
           type: 'transfer',
@@ -321,4 +356,8 @@ const UnlocksAt = styled.div`
 
 const FromNow = styled.div`
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const HorizontalDividerStyled = styled(HorizontalDivider)`
+  margin: 20px 0;
 `

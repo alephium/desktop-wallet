@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressKeyPair } from '@alephium/sdk'
-import { AddressBalance, AddressInfo, Token, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { TimeInMs } from '@/types/numbers'
+import { TokenBalances } from '@/types/tokens'
 import { PendingTransaction } from '@/types/transactions'
 
 export type DeprecatedAddressSettings = {
@@ -50,10 +51,7 @@ export type Address = AddressBase &
     transactions: (Transaction['hash'] | PendingTransaction['hash'])[]
     transactionsPageLoaded: number
     allTransactionPagesLoaded: boolean
-    tokens: {
-      id: Token['id']
-      balances: AddressBalance
-    }[]
+    tokens: TokenBalances[]
     lastUsed: TimeInMs
   }
 
@@ -66,8 +64,5 @@ export type AddressDataSyncResult = {
   details: AddressInfo
   transactions: Transaction[]
   unconfirmedTransactions: UnconfirmedTransaction[]
-  tokens: {
-    id: string
-    balances: AddressBalance
-  }[]
+  tokens: TokenBalances[]
 }

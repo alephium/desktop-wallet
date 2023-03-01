@@ -18,14 +18,20 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import AddressBadge from '@/components/AddressBadge'
 import Badge from '@/components/Badge'
-import useAddressLinkHandler from '@/hooks/useAddressLinkHandler'
+import { useAppSelector } from '@/hooks/redux'
+import AddressDetailsModal from '@/modals/AddressDetailsModal'
+import ModalPortal from '@/modals/ModalPortal'
+import { selectAddressIds } from '@/storage/app-state/slices/addressesSlice'
+import { AddressHash } from '@/types/addresses'
 import { GENESIS_TIMESTAMP } from '@/utils/constants'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface IOListProps {
   currentAddress: string
@@ -49,9 +55,17 @@ const IOList = ({
   disableA11y = false
 }: IOListProps) => {
   const { t } = useTranslation()
-  const handleShowAddress = useAddressLinkHandler()
+  const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+  const { explorerUrl } = useAppSelector((state) => state.network.settings)
+
+  const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
+
+  const handleShowAddress = (addressHash: AddressHash) =>
+    internalAddressHashes.includes(addressHash)
+      ? setSelectedAddressHash(addressHash)
+      : openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)
 
   if (io && io.length > 0) {
     const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
@@ -95,6 +109,11 @@ const IOList = ({
             addressComponent
           )
         })}
+        <ModalPortal>
+          {selectedAddressHash && (
+            <AddressDetailsModal addressHash={selectedAddressHash} onClose={() => setSelectedAddressHash(undefined)} />
+          )}
+        </ModalPortal>
       </Addresses>
     )
   } else if (timestamp === GENESIS_TIMESTAMP) {

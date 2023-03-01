@@ -33,9 +33,11 @@ interface BadgeProps {
 }
 
 const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tooltip }) => (
-  <TooltipWrapper content={tooltip}>
-    {truncate ? <Truncate className={className}>{children}</Truncate> : <span className={className}>{children}</span>}
-  </TooltipWrapper>
+  <div className={className}>
+    <TooltipWrapper content={tooltip}>
+      {truncate ? <Truncate>{children}</Truncate> : <span>{children}</span>}
+    </TooltipWrapper>
+  </div>
 )
 
 export default styled(Badge)`
@@ -44,13 +46,13 @@ export default styled(Badge)`
 
     return css`
       display: inline;
-      padding: 5px 10px;
+      padding: 8px 16px;
       color: ${usedColor};
-      border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
+      border-radius: ${rounded ? '20px' : 'var(--radius-big)'};
       background-color: ${!transparent && colord(usedColor).alpha(0.08).toRgbString()};
       ${border &&
       css`
-        border: 1px solid ${theme.border.secondary};
+        border: 1px solid ${theme.border.primary};
       `};
       ${truncate &&
       css`

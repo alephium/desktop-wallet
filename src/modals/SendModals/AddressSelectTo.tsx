@@ -104,6 +104,7 @@ const ContactIconStyled = styled(ContactIcon)`
   cursor: pointer;
   position: absolute;
   right: ${inputStyling.paddingLeftRight};
+  top: 0;
   height: 100%;
 
   &:hover {

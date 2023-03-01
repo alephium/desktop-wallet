@@ -17,24 +17,34 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import Badge from '@/components/Badge'
+import DotIcon from '@/components/DotIcon'
 import { useAppSelector } from '@/hooks/redux'
 
 const NetworkBadge = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const network = useAppSelector((state) => state.network)
+
+  const networkStatusColor = {
+    online: theme.global.valid,
+    offline: theme.global.alert,
+    connecting: theme.global.accent,
+    uninitialized: theme.font.tertiary
+  }[network.status]
 
   return (
     <Badge className={className} border tooltip={t('Current network')}>
-      {network.name}
+      <NetworkName>{network.name}</NetworkName>
+      <DotIcon color={networkStatusColor} />
     </Badge>
   )
 }
 
-export default styled(NetworkBadge)`
-  color: ${({ theme }) => theme.font.primary};
-  background-color: ${({ theme }) => theme.bg.accent};
-  font-weight: var(--fontWeight-semiBold);
+export default NetworkBadge
+
+const NetworkName = styled.span`
+  margin-right: 8px;
 `

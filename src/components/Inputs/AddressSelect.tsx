@@ -195,7 +195,7 @@ const Description = styled.div`
 `
 
 const ClickableInput = styled.div<InputProps>`
-  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true)};
+  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true, 'big')};
   display: flex;
   align-items: center;
   padding-right: 50px;

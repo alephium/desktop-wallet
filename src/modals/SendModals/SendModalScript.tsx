@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { fromHumanReadableAmount } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
 import { useTranslation } from 'react-i18next'
 
@@ -112,7 +112,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     !gasPriceError &&
     !gasAmountError &&
     !!bytecode &&
-    (!alphAmount || isAmountWithinRange(convertAlphToSet(alphAmount), availableBalance))
+    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
 
   return (
     <>
@@ -156,14 +156,15 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
   if (!txData.alphAmount) {
     txData.alphAmount = undefined
   }
-  const attoAlphAmount = txData.alphAmount !== undefined ? convertAlphToSet(txData.alphAmount).toString() : undefined
+  const attoAlphAmount =
+    txData.alphAmount !== undefined ? fromHumanReadableAmount(txData.alphAmount).toString() : undefined
   const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
     tokens: undefined,
     gasAmount: txData.gasAmount,
-    gasPrice: txData.gasPrice ? convertAlphToSet(txData.gasPrice).toString() : undefined
+    gasPrice: txData.gasPrice ? fromHumanReadableAmount(txData.gasPrice).toString() : undefined
   })
   ctx.setUnsignedTransaction(response)
   ctx.setUnsignedTxId(response.txId)
@@ -180,7 +181,7 @@ const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxCont
       hash: data.txId,
       fromAddress: fromAddress.hash,
       toAddress: '',
-      amount: alphAmount ? convertAlphToSet(alphAmount).toString() : undefined,
+      amount: alphAmount ? fromHumanReadableAmount(alphAmount).toString() : undefined,
       timestamp: new Date().getTime(),
       type: 'contract',
       status: 'pending'

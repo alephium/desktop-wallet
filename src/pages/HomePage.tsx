@@ -31,9 +31,11 @@ import Select from '@/components/Inputs/Select'
 import WalletPassphrase from '@/components/Inputs/WalletPassphrase'
 import { FloatingPanel, Section } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
+import SideBar from '@/components/PageComponents/SideBar'
 import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
+import { ReactComponent as AlephiumLogotype } from '@/images/logotype.svg'
 
 const HomePage = () => {
   const { t } = useTranslation()
@@ -48,37 +50,44 @@ const HomePage = () => {
 
   return (
     <HomeContainer {...fadeInSlowly}>
-      <InteractionArea>
-        <FloatingPanel verticalAlign="center" horizontalAlign="center">
-          {!showInitialActions && !hasWallet && (
-            <>
-              <PanelTitle useLayoutId={false}>{t`Welcome!`}</PanelTitle>
-              <InitialActions />
-            </>
-          )}
-          {!showInitialActions && hasWallet && (
-            <>
-              <PanelTitle useLayoutId={false} isSticky={false}>{t`Welcome back!`}</PanelTitle>
-              <Paragraph centered secondary>
-                {t`Please choose a wallet and enter your password to continue.`}
-              </Paragraph>
-              <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
-            </>
-          )}
-          {showInitialActions && (
-            <>
-              <PanelTitle useLayoutId={false}>{t`New wallet`}</PanelTitle>
-              <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
-            </>
-          )}
-        </FloatingPanel>
-      </InteractionArea>
+      <SideBar>
+        <Logo>
+          <AlephiumLogotypeStyled />
+        </Logo>
+      </SideBar>
+      <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
+        {!showInitialActions && !hasWallet && (
+          <>
+            <PanelTitle useLayoutId={false} size="big">
+              {t('Welcome.')}
+            </PanelTitle>
+            <InitialActions />
+          </>
+        )}
+        {!showInitialActions && hasWallet && (
+          <>
+            <PanelTitle useLayoutId={false} isSticky={false} size="big">
+              {t('Welcome back.')}
+            </PanelTitle>
+            <ParagraphStyled centered secondary>
+              {t('Unlock a wallet to continue.')}
+            </ParagraphStyled>
+            <Login onLinkClick={displayInitialActions} walletNames={walletNames} />
+          </>
+        )}
+        {showInitialActions && (
+          <>
+            <PanelTitle useLayoutId={false} size="big">
+              {t('New wallet')}
+            </PanelTitle>
+            <InitialActions showLinkToExistingWallets onLinkClick={hideInitialActions} />
+          </>
+        )}
+      </FloatingPanel>
       <AppHeader />
     </HomeContainer>
   )
 }
-
-// === Components
 
 interface LoginProps {
   walletNames: string[]
@@ -128,21 +137,23 @@ const Login = ({ walletNames, onLinkClick }: LoginProps) => {
           value={credentials.password}
           id="password"
         />
-        <WalletPassphraseStyled
-          onPassphraseConfirmed={setPassphrase}
-          setIsPassphraseConfirmed={setIsPassphraseConfirmed}
-        />
       </SectionStyled>
-      <SectionStyled>
+      <ButtonsSection>
         <ButtonStyled
           onClick={handleLogin}
           submit
           disabled={!credentials.walletName || !credentials.password || !isPassphraseConfirmed}
         >
-          {t`Login`}
+          {t('Unlock')}
         </ButtonStyled>
-      </SectionStyled>
-      <SwitchLink onClick={onLinkClick}>{t`Create / import a new wallet`}</SwitchLink>
+        <ButtonStyled onClick={onLinkClick} role="secondary" borderless variant="contrast">
+          {t('Import or create a wallet')}
+        </ButtonStyled>
+      </ButtonsSection>
+      <WalletPassphraseStyled
+        onPassphraseConfirmed={setPassphrase}
+        setIsPassphraseConfirmed={setIsPassphraseConfirmed}
+      />
     </>
   )
 }
@@ -177,20 +188,15 @@ const HomeContainer = styled(motion.main)`
   display: flex;
   flex: 1;
   height: 100%;
-  background-color: ${({ theme }) => theme.bg.secondary};
-`
-
-const InteractionArea = styled.div`
-  flex: 1.5;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--spacing-5);
+  background-color: ${({ theme }) => theme.bg.background1};
 `
 
 const SectionStyled = styled(Section)`
-  min-width: 400px;
+  min-width: 328px;
+`
+
+const ButtonsSection = styled(SectionStyled)`
+  margin-top: 30px;
 `
 
 const ButtonStyled = styled(Button)`
@@ -207,4 +213,22 @@ const SwitchLink = styled(ActionLink)`
 const WalletPassphraseStyled = styled(WalletPassphrase)`
   margin: 16px 0;
   width: 100%;
+  position: fixed;
+  bottom: 5px;
+  right: 20px;
+  border: 1px solid ${({ theme }) => theme.border.secondary};
+`
+
+const ParagraphStyled = styled(Paragraph)`
+  font-weight: var(--fontWeight-bold);
+  font-size: 16px;
+`
+
+const Logo = styled.div`
+  padding: 5px;
+`
+
+const AlephiumLogotypeStyled = styled(AlephiumLogotype)`
+  fill: ${({ theme }) => theme.font.primary};
+  color: ${({ theme }) => theme.font.primary};
 `

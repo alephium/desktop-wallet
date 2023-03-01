@@ -70,7 +70,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         {children && <Children>{children}</Children>}
       </Section>
       <Section>
-        <ButtonStyled onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
+        <ButtonStyled onClick={validatePassword} submit disabled={isSubmitDisabled || !password}>
           {buttonText || t('Submit')}
         </ButtonStyled>
       </Section>

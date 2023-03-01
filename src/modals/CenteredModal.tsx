@@ -38,6 +38,7 @@ interface CenteredModalProps extends ModalContainerProps {
   isLoading?: boolean
   header?: ReactNode
   narrow?: boolean
+  dynamicContent?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -48,6 +49,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   isLoading,
   header,
   narrow = false,
+  dynamicContent = false,
   children
 }) => {
   const { t } = useTranslation()
@@ -58,7 +60,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader contrast={!!header}>
           <TitleRow>
-            <PanelTitle smaller useLayoutId={false}>
+            <PanelTitle size="small" useLayoutId={false}>
               <span ref={elRef} tabIndex={0} role="heading">
                 {title}
               </span>
@@ -70,9 +72,8 @@ const CenteredModal: FC<CenteredModalProps> = ({
           </TitleRow>
           {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
         </ModalHeader>
-        <Scrollbar translateContentSizeYToHolder>
-          <ModalContent>{children}</ModalContent>
-        </Scrollbar>
+        {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
+
         {isLoading && (
           <>
             <ModalBackdrop light />
@@ -86,6 +87,12 @@ const CenteredModal: FC<CenteredModalProps> = ({
     </ModalContainer>
   )
 }
+
+export const ScrollableModalContent: FC = ({ children }) => (
+  <Scrollbar translateContentSizeYToHolder>
+    <ModalContent>{children}</ModalContent>
+  </Scrollbar>
+)
 
 export default CenteredModal
 
@@ -116,7 +123,7 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.background1};
 
   ${TitleContainer} {
     flex: 1;
@@ -138,7 +145,7 @@ export const ModalHeader = styled.header<{ contrast?: boolean }>`
 const ModalHeaderContent = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 45px;
+  margin-bottom: 30px;
 `
 
 const TitleRow = styled.div`

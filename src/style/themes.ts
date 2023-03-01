@@ -87,7 +87,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {
-    accent: 'rgba(89, 139, 237)',
+    accent: '#598BED',
     complementary: '#FF5D51',
     alert: '#ed4a34',
     valid: '#3ed282',

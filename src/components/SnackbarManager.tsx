@@ -16,12 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import styled from 'styled-components'
 
 import { fadeInBottom, fadeOut } from '@/animations'
 import { useGlobalContext } from '@/contexts/global'
+import ModalPortal from '@/modals/ModalPortal'
 import { deviceBreakPoints } from '@/style/globalStyles'
 
 export interface SnackbarMessage {
@@ -46,15 +47,15 @@ const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) 
   }, [message, setSnackbarMessage])
 
   return (
-    <SnackbarManagerContainer>
-      <AnimatePresence>
-        {message && (
+    <ModalPortal>
+      {message && (
+        <SnackbarManagerContainer>
           <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message?.type}>
             {message?.text}
           </SnackbarPopup>
-        )}
-      </AnimatePresence>
-    </SnackbarManagerContainer>
+        </SnackbarManagerContainer>
+      )}
+    </ModalPortal>
   )
 }
 

@@ -17,41 +17,44 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
+import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
-import ModalPortal from '@/modals/ModalPortal'
-import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
+import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
-import TransactionList from '@/pages/UnlockedWallet/OverviewPage/TransactionList'
+import TokensNFTsList from '@/pages/UnlockedWallet/OverviewPage/TokensNFTsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { AddressConfirmedTransaction } from '@/types/transactions'
 
 const OverviewPage = () => {
   const isLoadingData = useAppSelector((state) => state.addresses.loading)
-
-  const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
 
   return (
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
         <AmountsOverviewPanel isLoading={isLoadingData} />
-        <TransactionList onTransactionClick={setSelectedTransaction} limit={5} />
-
-        <ModalPortal>
-          {selectedTransaction?.hash}
-          {selectedTransaction && (
-            <TransactionDetailsModal
-              address={selectedTransaction.address}
-              transaction={selectedTransaction}
-              onClose={() => setSelectedTransaction(undefined)}
-            />
-          )}
-        </ModalPortal>
+        <Row>
+          <TokensNFTsListStyled />
+          <AddressesContactsListStyled limit={5} />
+        </Row>
+        <TransactionList limit={5} />
       </UnlockedWalletPanel>
     </motion.div>
   )
 }
 
 export default OverviewPage
+
+const Row = styled.div`
+  display: flex;
+  gap: 30px;
+`
+
+const TokensNFTsListStyled = styled(TokensNFTsList)`
+  flex: 4;
+`
+
+const AddressesContactsListStyled = styled(AddressesContactsList)`
+  flex: 3;
+`

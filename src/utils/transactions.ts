@@ -16,17 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  convertAlphToSet,
-  isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT,
-  removeConsolidationChangeAmount
-} from '@alephium/sdk'
+import { DUST_AMOUNT, isConsolidationTx, MIN_UTXO_SET_AMOUNT, removeConsolidationChangeAmount } from '@alephium/sdk'
 import { Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '@/types/addresses'
+import { AssetAmount } from '@/types/tokens'
 import { AddressPendingTransaction, AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
+import { ALPH } from '@/utils/constants'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -79,10 +76,10 @@ export const convertUnconfirmedTxToPendingTx = (
 }
 
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)
-  const amountIncludingFees = amountInSet + fees
+  const amountInPhi = BigInt(data.alphAmount ?? 0)
+  const amountIncludingFees = amountInPhi + fees
   const exceededBy = amountIncludingFees - getAvailableBalance(data.fromAddress)
-  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInSet
+  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInPhi
 
   return expectedAmount
 }
@@ -101,3 +98,18 @@ export const getTransactionsOfAddress = (transactions: Transaction[], address: A
       tx.inputs?.some((input) => input.address === address.hash) ||
       tx.outputs?.some((output) => output.address === address.hash)
   )
+
+export const getAssetAmounts = (assetAmounts: AssetAmount[]) => {
+  const alphAmount = assetAmounts.find((asset) => asset.id === ALPH.id)?.amount ?? BigInt(0)
+  const tokens = assetAmounts
+    .filter((asset): asset is { id: string; amount: bigint } => asset.id !== ALPH.id && asset.amount !== undefined)
+    .map((asset) => ({ id: asset.id, amount: asset.amount.toString() }))
+
+  const dustAmount = DUST_AMOUNT * BigInt(tokens.length)
+  const attoAlphAmount = (alphAmount + dustAmount).toString()
+
+  return {
+    attoAlphAmount,
+    tokens
+  }
+}

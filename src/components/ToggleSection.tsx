@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { ReactNode, useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { fastTransition } from '@/animations'
 import Toggle from '@/components/Inputs/Toggle'
@@ -26,13 +26,24 @@ import Toggle from '@/components/Inputs/Toggle'
 export interface ToggleSectionProps {
   title: string
   children: ReactNode
+  subtitle?: string
   isOpen?: boolean
   onClick?: (b: boolean) => void
+  shadow?: boolean
   className?: string
 }
 
-const ToggleSection = ({ title, isOpen = false, onClick = () => null, children, className }: ToggleSectionProps) => {
+const ToggleSection = ({
+  title,
+  subtitle,
+  isOpen = false,
+  onClick = () => null,
+  shadow,
+  children,
+  className
+}: ToggleSectionProps) => {
   const [isShown, setIsShown] = useState(isOpen)
+  const theme = useTheme()
 
   const handleToggle = () => {
     setIsShown(!isShown)
@@ -40,11 +51,14 @@ const ToggleSection = ({ title, isOpen = false, onClick = () => null, children, 
   }
 
   return (
-    <div className={className}>
-      <Title>
-        {title}
+    <div className={className} style={{ boxShadow: shadow && isShown ? theme.shadow.tertiary : undefined }}>
+      <Header>
+        <TitleColumn>
+          <Title>{title}</Title>
+          {subtitle && <Subtitle>{subtitle}</Subtitle>}
+        </TitleColumn>
         <Toggle onToggle={handleToggle} label={title} toggled={isShown} hasDarkerBgOnLightTheme />
-      </Title>
+      </Header>
       <Content
         animate={{
           height: isShown ? 'auto' : 0,
@@ -67,12 +81,25 @@ export default styled(ToggleSection)`
   padding-bottom: 16px;
 `
 
-const Title = styled.div`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 400;
   padding: 16px 21px 0 21px;
+`
+
+const TitleColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const Title = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const Subtitle = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const Content = styled(motion.div)`

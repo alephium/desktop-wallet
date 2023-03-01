@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToAlph } from '@alephium/sdk'
+import { toHumanReadableAmount } from '@alephium/sdk'
 import { RelayMethod } from '@alephium/walletconnect-provider'
 import {
   ApiRequestArguments,
@@ -43,6 +43,7 @@ import {
   TxType
 } from '@/types/transactions'
 import { AlephiumWindow } from '@/types/window'
+import { ALPH } from '@/utils/constants'
 import { extractErrorMsg } from '@/utils/misc'
 
 export interface WalletConnectContextProps {
@@ -151,11 +152,15 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as SignTransferTxParams
-            const alphAmount = convertSetToAlph(p.destinations[0].attoAlphAmount)
             const txData: TransferTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
-              alphAmount: alphAmount,
+              assetAmounts: [
+                {
+                  id: ALPH.id,
+                  amount: p.destinations[0].attoAlphAmount
+                }
+              ],
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
@@ -166,7 +171,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           case 'alph_signAndSubmitDeployContractTx': {
             const p = request.params as SignDeployContractTxParams
             const initialAlphAmount =
-              p.initialAttoAlphAmount !== undefined ? convertSetToAlph(p.initialAttoAlphAmount) : undefined
+              p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(p.initialAttoAlphAmount) : undefined
             const txData: DeployContractTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
@@ -181,7 +186,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as SignExecuteScriptTxParams
-            const alphAmount = p.attoAlphAmount !== undefined ? convertSetToAlph(p.attoAlphAmount) : undefined
+            const alphAmount = p.attoAlphAmount !== undefined ? toHumanReadableAmount(p.attoAlphAmount) : undefined
             const txData: ScriptTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,

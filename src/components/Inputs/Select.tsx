@@ -29,7 +29,7 @@ import {
 } from 'react'
 import styled from 'styled-components'
 
-import { InputLabel, InputProps } from '@/components/Inputs'
+import { InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
 import { InputBase } from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
@@ -66,6 +66,7 @@ interface SelectProps<T extends OptionValue> {
   skipEqualityCheck?: boolean
   noMargin?: boolean
   className?: string
+  heightSize?: InputHeight
 }
 
 function Select<T extends OptionValue>({
@@ -79,7 +80,8 @@ function Select<T extends OptionValue>({
   raised,
   skipEqualityCheck = false,
   noMargin,
-  className
+  className,
+  heightSize
 }: SelectProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -162,6 +164,7 @@ function Select<T extends OptionValue>({
         onMouseDown={handleClick}
         onKeyDown={handleKeyDown}
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
+        heightSize={heightSize}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
@@ -291,14 +294,18 @@ const InputContainer = styled(InputArea)`
 
 export const MoreIcon = styled.div`
   position: absolute;
-  top: 14px;
-  right: 10px;
+  right: ${inputStyling.paddingLeftRight};
+  height: 100%;
+  display: flex;
+  align-items: center;
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin'>>`
+export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize'>>`
   cursor: pointer;
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
+  height: ${({ heightSize }) =>
+    heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
 `
 
 export const OptionSelect = styled.div`

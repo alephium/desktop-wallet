@@ -32,10 +32,10 @@ const BuildTxFooterButtons = ({ onSubmit, onCancel, isSubmitButtonActive }: Buil
   return (
     <ModalFooterButtons>
       <ModalFooterButton role="secondary" onClick={onCancel}>
-        {t`Cancel`}
+        {t('Cancel')}
       </ModalFooterButton>
       <ModalFooterButton onClick={onSubmit} disabled={!isSubmitButtonActive}>
-        {t`Check`}
+        {t('Check')}
       </ModalFooterButton>
     </ModalFooterButtons>
   )

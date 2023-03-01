@@ -215,7 +215,7 @@ export default styled(Button)`
   height: ${({ squared, short }) => (squared || short ? '40px' : 'var(--inputHeight)')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
-  border-radius: var(--radius-medium);
+  border-radius: var(--radius-big);
   font-weight: var(--fontWeight-medium);
   font-size: 13px;
   font-family: inherit;
