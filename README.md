@@ -68,6 +68,38 @@ To release a new version:
    git push [remote] <tag>
    ```
 
+## Adding new translation
+
+1. Copy `locales/fr-FR/translation.json` into `locales/[xx-YY]/translation.json` and add your translations.
+2. Import new translation file and add it to the resources in `src/i18n.ts`
+
+   ```ts
+   import en from '../locales/en-US/translation.json'
+   import fr from '../locales/fr-FR/translation.json'
+
+   i18next.use(initReactI18next).init({
+     resources: {
+       'en-US': { translation: en },
+       'fr-FR': { translation: fr }
+     }
+   })
+   ```
+
+3. Add new language option in `src/modals/SettingsModal/GeneralSettingsSection.tsx`
+
+   ```ts
+   const languageOptions = [
+     { label: 'English', value: 'en-US' as Language },
+     { label: 'Français', value: 'fr-FR' as Language }
+   ]
+   ```
+
+4. Import `dayjs` translation file in `src/App.tsx`
+
+   ```ts
+   import 'dayjs/locale/fr'
+   ```
+
 ## Credits
 
 The implementation is inspired by Coinbarn's wallet codebase.
