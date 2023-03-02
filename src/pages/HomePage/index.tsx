@@ -28,8 +28,8 @@ import PanelTitle from '@/components/PageComponents/PanelTitle'
 import SideBar from '@/components/PageComponents/SideBar'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as AlephiumLogotype } from '@/images/logotype.svg'
-import LoginPanel from '@/pages/HomePage/LoginPanel'
 import NewWalletActions from '@/pages/HomePage/NewWalletActions'
+import UnlockPanel from '@/pages/HomePage/UnlockPanel'
 
 const HomePage = () => {
   const { t } = useTranslation()
@@ -53,7 +53,7 @@ const HomePage = () => {
             <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
           </>
         ) : hasAtLeastOneWallet ? (
-          <LoginPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
+          <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
         ) : (
           <>
             <PanelTitle useLayoutId={false} size="big">

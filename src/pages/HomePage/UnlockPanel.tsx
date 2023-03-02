@@ -31,11 +31,11 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useAppSelector } from '@/hooks/redux'
 
-interface LoginPanelProps {
+interface UnlockPanelProps {
   onNewWalletLinkClick: () => void
 }
 
-const LoginPanel = ({ onNewWalletLinkClick }: LoginPanelProps) => {
+const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const { t } = useTranslation()
   const wallets = useAppSelector((state) => state.app.wallets)
   const { unlockWallet } = useGlobalContext()
@@ -51,13 +51,13 @@ const LoginPanel = ({ onNewWalletLinkClick }: LoginPanelProps) => {
 
   if (walletOptions.length === 0) return null
 
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleUnlock = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
 
     if (!selectedWalletOption) return
 
     unlockWallet({
-      event: 'login',
+      event: 'unlock',
       walletId: selectedWalletOption.value,
       password,
       passphrase,
@@ -94,7 +94,7 @@ const LoginPanel = ({ onNewWalletLinkClick }: LoginPanelProps) => {
       </SectionStyled>
       <ButtonsSection>
         <ButtonStyled
-          onClick={handleLogin}
+          onClick={handleUnlock}
           submit
           disabled={!selectedWalletOption || !password || !isPassphraseConfirmed}
         >
@@ -112,7 +112,7 @@ const LoginPanel = ({ onNewWalletLinkClick }: LoginPanelProps) => {
   )
 }
 
-export default LoginPanel
+export default UnlockPanel
 
 const SectionStyled = styled(Section)`
   min-width: 328px;
