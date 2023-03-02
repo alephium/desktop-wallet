@@ -31,7 +31,11 @@ import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { StoredWallet } from '@/types/wallet'
 
-const WalletSwitcher = () => {
+interface WalletSwitcherProps {
+  onUnlock: () => void
+}
+
+const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -54,9 +58,10 @@ const WalletSwitcher = () => {
     }
   }
 
-  const onLoginClick = (password: string) => {
+  const onUnlockClick = (password: string) => {
     if (!selectedWalletOption) return
 
+    onUnlock()
     setIsPasswordModalOpen(false)
     unlockWallet({
       event: 'switch',
@@ -95,7 +100,7 @@ const WalletSwitcher = () => {
                 switchToWalletName: selectedWalletOption?.label
               })}
               buttonText={t('Unlock')}
-              onCorrectPasswordEntered={onLoginClick}
+              onCorrectPasswordEntered={onUnlockClick}
               walletId={selectedWalletOption?.value}
               isSubmitDisabled={!isPassphraseConfirmed}
             >
