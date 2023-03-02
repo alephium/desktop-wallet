@@ -52,7 +52,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const onUpdatePassword = (password: string): void => {
     let passwordError = ''
 
-    if (password.length) {
+    if (password.length && !import.meta.env.DEV) {
       const strength = zxcvbn(password)
       if (strength.score < 1) {
         passwordError = t`Password is too weak`
@@ -67,7 +67,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const onUpdateWalletName = (walletName: string) => {
     let walletNameError = ''
 
-    if (walletName.length < 3) {
+    if (walletName.length < 3 && !import.meta.env.DEV) {
       walletNameError = t`Wallet name is too short`
     } else if (wallets.some((wallet) => wallet.name === walletName)) {
       walletNameError = t`Wallet name already taken`
