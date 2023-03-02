@@ -260,6 +260,11 @@ const addressesSlice = createSlice({
         state.status = 'initialized'
         state.loading = false
       })
+      .addCase(syncAddressesData.rejected, (state, action) => {
+        state.loading = false
+        // TODO: Fix https://github.com/alephium/desktop-wallet/issues/544
+        console.error(action.error)
+      })
       .addCase(syncAddressTransactionsNextPage.fulfilled, (state, action) => {
         const addressTransactionsData = action.payload
 
