@@ -35,7 +35,7 @@ import { migrateUserData } from '@/utils/migration'
 import { getWalletInitialAddress } from '@/utils/wallet'
 
 interface WalletUnlockProps {
-  event: 'login' | 'switch'
+  event: 'unlock' | 'switch'
   walletId: string
   password: string
   afterUnlock: () => void
@@ -104,7 +104,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         },
         initialAddress: getWalletInitialAddress(wallet)
       }
-      dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))
+      dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
 
       if (!isPassphraseUsed) {
         migrateUserData()
