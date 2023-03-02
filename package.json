@@ -1,7 +1,7 @@
 {
   "name": "alephium-wallet",
   "description": "The official Alephium wallet",
-  "version": "1.5.0",
+  "version": "1.5.2",
   "homepage": "./",
   "author": "Alephium dev <dev@alephium.org>",
   "main": "public/electron.js",
@@ -36,7 +36,7 @@
     "@alephium/sdk": "0.6.1",
     "@alephium/token-list": "0.0.1",
     "@alephium/walletconnect-provider": "0.2.1",
-    "@alephium/web3": "0.2.0",
+    "@alephium/web3": "0.5.2",
     "@electron/notarize": "^1.2.3",
     "@json-rpc-tools/utils": "^1.7.6",
     "@reduxjs/toolkit": "^1.9.1",
@@ -131,7 +131,10 @@
       ]
     },
     "win": {
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}",
+      "publisherName": [
+        "Panda Software SA"
+      ]
     },
     "mac": {
       "hardenedRuntime": true,

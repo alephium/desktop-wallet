@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
-import { NodeProvider as Web3Client } from '@alephium/web3'
+import { NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
 
 import { defaultSettings } from '@/storage/persistent-storage/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
@@ -30,8 +30,8 @@ export class Client {
   constructor() {
     const { nodeHost, explorerApiHost } = defaultSettings.network
 
-    this.clique = new CliqueClient({ baseUrl: nodeHost })
-    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost })
+    this.clique = new CliqueClient({ baseUrl: nodeHost, customFetch: throttledFetch(5) })
+    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost, customFetch: throttledFetch(5) })
     this.web3 = new Web3Client(nodeHost)
   }
 

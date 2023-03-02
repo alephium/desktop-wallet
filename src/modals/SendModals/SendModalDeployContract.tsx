@@ -81,8 +81,7 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
     if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
 
     return {
-      fromGroup: context.unsignedTransaction.fromGroup,
-      toGroup: context.unsignedTransaction.toGroup,
+      groupIndex: context.unsignedTransaction.fromGroup,
       unsignedTx: context.unsignedTransaction.unsignedTx,
       txId: context.unsignedTxId,
       signature,

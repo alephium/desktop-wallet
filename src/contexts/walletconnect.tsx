@@ -152,8 +152,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as SignTransferTxParams
-            const alphAssetAmount = { id: ALPH.id, amount: p.destinations[0].attoAlphAmount }
-            const tokenAssetAmounts = p.destinations[0].tokens
+            const alphAssetAmount = { id: ALPH.id, amount: BigInt(p.destinations[0].attoAlphAmount) }
+            const tokenAssetAmounts = p.destinations[0].tokens?.map((token) => ({
+              ...token,
+              amount: BigInt(token.amount)
+            }))
             const txData: TransferTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
@@ -168,7 +171,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           case 'alph_signAndSubmitDeployContractTx': {
             const p = request.params as SignDeployContractTxParams
             const initialAlphAmount =
-              p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(p.initialAttoAlphAmount) : undefined
+              p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.initialAttoAlphAmount)) : undefined
             const txData: DeployContractTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
@@ -183,7 +186,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as SignExecuteScriptTxParams
-            const alphAmount = p.attoAlphAmount !== undefined ? toHumanReadableAmount(p.attoAlphAmount) : undefined
+            const alphAmount =
+              p.attoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.attoAlphAmount)) : undefined
             const txData: ScriptTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
