@@ -73,16 +73,13 @@ const appSlice = createSlice({
       .addCase(languageChangeFinished, (state) => {
         state.loading = false
       })
-      .addCase(walletLocked, () => initialState)
       .addCase(walletSaved, (state, action) => {
         const newWallet = action.payload.wallet
 
         state.storedWalletNames.push(newWallet.name)
       })
-      .addCase(activeWalletDeleted, () => ({
-        ...initialState,
-        storedWalletNames: WalletStorage.list()
-      }))
+      .addCase(walletLocked, resetState)
+      .addCase(activeWalletDeleted, resetState)
   }
 })
 
@@ -94,3 +91,5 @@ export default appSlice
 const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean) => {
   if (enableLoading !== false) state.loading = toggle
 }
+
+const resetState = () => ({ ...initialState, storedWalletNames: WalletStorage.list() })
