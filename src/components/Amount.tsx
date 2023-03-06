@@ -51,7 +51,7 @@ const Amount = ({
   let suffix = ''
 
   if (!discreetMode && value !== undefined) {
-    let amount = formatAmountForDisplay(value, fullPrecision, nbOfDecimalsToShow)
+    let amount = formatAmountForDisplay({ amount: value, fullPrecision, displayDecimals: nbOfDecimalsToShow })
     if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
       suffix = amount.slice(-1)
       amount = amount.slice(0, -1)

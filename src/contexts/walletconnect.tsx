@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToAlph } from '@alephium/sdk'
+import { toHumanReadableAmount } from '@alephium/sdk'
 import { RelayMethod } from '@alephium/walletconnect-provider'
 import {
   ApiRequestArguments,
@@ -137,7 +137,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as SignTransferTxParams
-            const alphAmount = convertSetToAlph(BigInt(p.destinations[0].attoAlphAmount))
+            const alphAmount = toHumanReadableAmount(BigInt(p.destinations[0].attoAlphAmount))
             const txData: TransferTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
@@ -152,7 +152,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           case 'alph_signAndSubmitDeployContractTx': {
             const p = request.params as SignDeployContractTxParams
             const initialAlphAmount =
-              p.initialAttoAlphAmount !== undefined ? convertSetToAlph(BigInt(p.initialAttoAlphAmount)) : undefined
+              p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.initialAttoAlphAmount)) : undefined
             const txData: DeployContractTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
@@ -167,7 +167,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as SignExecuteScriptTxParams
-            const alphAmount = p.attoAlphAmount !== undefined ? convertSetToAlph(BigInt(p.attoAlphAmount)) : undefined
+            const alphAmount =
+              p.attoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.attoAlphAmount)) : undefined
             const txData: ScriptTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,

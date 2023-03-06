@@ -16,13 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  convertAlphToSet,
-  isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT,
-  removeConsolidationChangeAmount
-} from '@alephium/sdk'
-import { Input, Output, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { calcTxAmountsDeltaForAddress, fromHumanReadableAmount, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { Input, MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address, AddressHash } from '../contexts/addresses'
 import { PendingTx, TransactionStatus } from '../types/transactions'
@@ -74,32 +69,17 @@ export const hasOnlyInputsWith = (inputs: Input[], addresses: Address[]): boolea
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
-export const calculateUnconfirmedTxSentAmount = (tx: UnconfirmedTransaction, address: AddressHash): bigint => {
-  if (!tx.inputs || !tx.outputs) throw 'Missing transaction details'
-
-  const totalOutputAmount = tx.outputs.reduce((acc, output) => acc + BigInt(output.attoAlphAmount), BigInt(0))
-
-  if (isConsolidationTx(tx)) return removeConsolidationChangeAmount(totalOutputAmount, tx.outputs)
-
-  const totalOutputAmountOfAddress = tx.outputs.reduce(
-    (acc, output) => (output.address === address ? acc + BigInt(output.attoAlphAmount) : acc),
-    BigInt(0)
-  )
-
-  return totalOutputAmount - totalOutputAmountOfAddress
-}
-
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (
-  tx: UnconfirmedTransaction,
+  tx: MempoolTransaction,
   fromAddress: AddressHash,
   network: NetworkName
 ): PendingTx => {
   if (!tx.outputs) throw 'Missing transaction details'
 
-  const amount = calculateUnconfirmedTxSentAmount(tx, fromAddress)
   const toAddress = tx.outputs[0].address
+  const { alph: amount } = calcTxAmountsDeltaForAddress(tx, toAddress)
 
   if (!fromAddress) throw new Error('fromAddress is not defined')
   if (!toAddress) throw new Error('toAddress is not defined')
@@ -119,7 +99,7 @@ export const convertUnconfirmedTxToPendingTx = (
 }
 
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInSet = data.alphAmount ? convertAlphToSet(data.alphAmount) : BigInt(0)
+  const amountInSet = data.alphAmount ? fromHumanReadableAmount(data.alphAmount) : BigInt(0)
   const amountIncludingFees = amountInSet + fees
   const exceededBy = amountIncludingFees - data.fromAddress.availableBalance
   const expectedAmount = exceededBy > 0 ? data.fromAddress.availableBalance - exceededBy : amountInSet

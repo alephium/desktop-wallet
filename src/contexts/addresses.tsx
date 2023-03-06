@@ -23,7 +23,7 @@ import {
   TOTAL_NUMBER_OF_GROUPS,
   Wallet
 } from '@alephium/sdk'
-import { AddressInfo, Transaction, UnconfirmedTransaction } from '@alephium/sdk/api/explorer'
+import { AddressInfo, MempoolTransaction, Transaction } from '@alephium/sdk/api/explorer'
 import { merge } from 'lodash'
 import { createContext, FC, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -242,15 +242,11 @@ export const AddressesContextProvider: FC<{ overrideContextValue?: PartialDeep<A
       for (const address of addressesToCheck) {
         try {
           console.log('🤷 Fetching unconfirmed txs for', address.hash)
-          const { data: txs } = await client.explorer.addresses.getAddressesAddressUnconfirmedTransactions(address.hash)
+          const { data: txs } = await client.explorer.addresses.getAddressesAddressMempoolTransactions(address.hash)
 
           txs.forEach((tx) => {
-            if (tx.type === 'Unconfirmed' && !address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
-              const pendingTx = convertUnconfirmedTxToPendingTx(
-                tx as UnconfirmedTransaction,
-                address.hash,
-                currentNetwork
-              )
+            if (!address.transactions.pending.some((t: PendingTx) => t.txId === tx.hash)) {
+              const pendingTx = convertUnconfirmedTxToPendingTx(tx as MempoolTransaction, address.hash, currentNetwork)
 
               address.addPendingTransaction(pendingTx)
             }

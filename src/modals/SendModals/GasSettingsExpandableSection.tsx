@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, formatAmountForDisplay } from '@alephium/sdk'
+import { formatAmountForDisplay, fromHumanReadableAmount } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
@@ -51,9 +51,9 @@ const GasSettingsExpandableSection = ({
   const { t } = useTranslation()
   const theme = useTheme()
 
-  const expectedFeeInALPH = !!gasAmount && !!gasPrice && BigInt(gasAmount) * convertAlphToSet(gasPrice)
+  const expectedFeeInALPH = !!gasAmount && !!gasPrice && BigInt(gasAmount) * fromHumanReadableAmount(gasPrice)
 
-  const minimalGasPriceInALPH = formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+  const minimalGasPriceInALPH = formatAmountForDisplay({ amount: MINIMAL_GAS_PRICE, fullPrecision: true })
 
   return (
     <ToggleSection {...props} title={t`Gas`} onClick={onClearGasSettings} className={className}>

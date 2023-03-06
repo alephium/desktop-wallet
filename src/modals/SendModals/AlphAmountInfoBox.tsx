@@ -35,7 +35,8 @@ const AlphAmountInfoBox = ({ amount, label, fullPrecision = false, ...props }: A
   return (
     <InfoBox label={label ?? t`Amount`} {...props}>
       <Amount>
-        {formatAmountForDisplay(amount, fullPrecision, !fullPrecision ? 7 : undefined)} <AlefSymbol />
+        {formatAmountForDisplay({ amount, fullPrecision, displayDecimals: !fullPrecision ? 7 : undefined })}{' '}
+        <AlefSymbol />
       </Amount>
     </InfoBox>
   )
