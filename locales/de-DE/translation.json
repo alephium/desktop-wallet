@@ -1,6 +1,5 @@
 {
-  "By default, the address is generated in a random group. You can select the group you want the address to be generated in using the Advanced options.": "Die Adresse wird automatisch in einer zufälligen Gruppe generiert.
-   In den erweiterten Optionen können Sie die Gruppe auswählen, in der die Adresse generiert werdeden soll.",
+  "By default, the address is generated in a random group. You can select the group you want the address to be generated in using the Advanced options.": "Die Adresse wird automatisch in einer zufälligen Gruppe generiert. In den erweiterten Optionen können Sie die Gruppe auswählen, in der die Adresse generiert werdeden soll.",
   "Use an existing wallet": "Vorhandene Wallet verwenden",
   "Please choose whether you want to create a new wallet or import an existing one.": "Bitte wählen Sie, ob Sie eine neue Wallet erstellen oder eine bestehende importieren möchten.",
   "New wallet": "Neue Wallet",
@@ -94,7 +93,7 @@
   "Type your password to change this setting.": "Geben Sie Ihr Passwort ein, um diese Einstellung zu ändern.",
   "Enter": "Eingabe",
   "Custom network settings saved.": "Benutzerdefinierte Netzwerkeinstellungen gespeichert.",
-  "Make sure to always check what is the selected network before sending transactions.": Prüfen Sie immer welches Netzwerk ausgewählt ist, bevor Sie Transaktionen senden.",
+  "Make sure to always check what is the selected network before sending transactions.": "Prüfen Sie immer welches Netzwerk ausgewählt ist, bevor Sie Transaktionen senden.",
   "Network": "Netzwerk",
   "Node host": "Node Host",
   "Explorer API host": "Explorer API Host",
@@ -181,7 +180,7 @@
   "Retype password": "Passwort erneut eingeben",
   "Passwords are different": "Passwörter sind verschieden",
   "Make sure to keep your password secured as it cannot be changed in the future.": "Stellen Sie sicher, dass Sie Ihr Passwort sicher aufbewahren, da es in Zukunft nicht mehr geändert werden kann.",
-  "Alephium doesn't have access to your wallet.\nYou are the only owner.": "Alephium hat keinen Zugriff auf Ihre Wallet. \ Sie sind der einzige Besitzer.",
+  "Alephium doesn't have access to your wallet.\nYou are the only owner.": "Alephium hat keinen Zugriff auf Ihre Wallet. \nSie sind der einzige Besitzer.",
   "Back": "Zurück",
   "Type your recovery phrase": "Geben Sie Ihre Wiederherstellungsphrase ein",
   "Error while importing wallet": "Fehler beim Importieren der Wallet",
@@ -199,7 +198,7 @@
   "Your address": "Ihre Adresse",
   "I've copied the words, continue": "Ich habe die Worte kopiert, weiter",
   "Advanced operations reserved to more experienced users. A \"normal\" user should not need to use them very often, if not at all.": "Fortgeschrittene Tätigkeit die erfahreneren Benutzern vorbehalten sind. Ein \"normaler\" Benutzer sollte sie nicht sehr oft, wenn überhaupt, verwenden müssen.",
-  "It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.": ""Es scheint, dass Ihre Wallet zu viele UTXOs hat, um diese Transaktion senden zu können. Bitte konsolidieren (fusionieren) Sie zunächst Ihre UTXOs. Dies wird eine kleine Gebühr kosten.",
+  "It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.": "Es scheint, dass Ihre Wallet zu viele UTXOs hat, um diese Transaktion senden zu können. Bitte konsolidieren (fusionieren) Sie zunächst Ihre UTXOs. Dies wird eine kleine Gebühr kosten.",
   "Welcome!": "Willkommen!",
   "Welcome back!": "Willkommen zurück!",
   "Please choose a wallet and enter your password to continue.": "Bitte wählen Sie eine Wallet und geben Sie Ihr Passwort ein, um fortzufahren.",
@@ -277,5 +276,5 @@
   "Localhost": "Localhost",
   "Delete": "Löschen",
   "Timestamp": "Zeitpunkt",
-  "Lock time must be in the future.": "Sperrzeit muss in der Zukunft liegen.",
+  "Lock time must be in the future.": "Sperrzeit muss in der Zukunft liegen."
 }
