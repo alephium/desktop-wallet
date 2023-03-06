@@ -31,6 +31,7 @@ import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadata
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
+import { getInitialAddressSettings } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 interface GenerateAddressProps {
@@ -106,23 +107,28 @@ const useAddressGeneration = () => {
     const { mnemonic, isPassphraseUsed } = getEncryptedStoragePropsFromActiveWallet()
     const addressesMetadata: AddressMetadata[] = isPassphraseUsed ? [] : AddressMetadataStorage.load()
 
-    if (addressesMetadata.length > 0) {
-      dispatch(addressRestorationStarted())
-
-      deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
-        const restoredAddresses: AddressBase[] = data.map((address) => ({
-          ...address,
-          ...(addressesMetadata.find((metadata) => metadata.index === address.index) as AddressMetadata)
-        }))
-
-        dispatch(addressesRestoredFromMetadata(restoredAddresses))
-      }
-
-      deriveAddressesFromIndexesWorker.postMessage({
-        mnemonic,
-        indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
-      })
+    // When no metadata found (ie, upgrading from a version older then v1.2.0) initialize with default address
+    if (addressesMetadata.length === 0) {
+      const initialAddressSettings = getInitialAddressSettings()
+      AddressMetadataStorage.store({ index: 0, settings: initialAddressSettings })
+      addressesMetadata.push({ index: 0, ...initialAddressSettings })
     }
+
+    dispatch(addressRestorationStarted())
+
+    deriveAddressesFromIndexesWorker.onmessage = async ({ data }: { data: AddressKeyPair[] }) => {
+      const restoredAddresses: AddressBase[] = data.map((address) => ({
+        ...address,
+        ...(addressesMetadata.find((metadata) => metadata.index === address.index) as AddressMetadata)
+      }))
+
+      dispatch(addressesRestoredFromMetadata(restoredAddresses))
+    }
+
+    deriveAddressesFromIndexesWorker.postMessage({
+      mnemonic,
+      indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
+    })
   }
 
   const discoverAndSaveUsedAddresses = async ({
