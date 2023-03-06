@@ -221,28 +221,34 @@ export const _20230228_155100 = () => {
         localStorage.setItem(newKey, JSON.stringify(newValue))
         localStorage.removeItem(walletOldKey)
 
-        const addressMetadataOldKey = `${addressesMetadataPrefix}${stringToDoubleSHA256HexString(name)}`
-        const addressesMetadataRaw = localStorage.getItem(addressMetadataOldKey)
+        const addressMetadataOldKeys = [
+          `${addressesMetadataPrefix}${name}`,
+          `${addressesMetadataPrefix}${stringToDoubleSHA256HexString(name)}`
+        ]
 
-        if (addressesMetadataRaw) {
-          // Use new wallet ID as key to store address metadata, instead of wallet name
+        addressMetadataOldKeys.forEach((oldKey) => {
+          const addressesMetadataRaw = localStorage.getItem(oldKey)
 
-          let addressesMetadata = JSON.parse(addressesMetadataRaw)
+          if (addressesMetadataRaw) {
+            // Use new wallet ID as key to store address metadata, instead of wallet name
 
-          // Rename encryptedSettings property to encrypted
-          if (
-            typeof addressesMetadata === 'object' &&
-            Object.prototype.hasOwnProperty.call(addressesMetadata, 'encryptedSettings')
-          ) {
-            addressesMetadata = {
-              version: addressesMetadata.version,
-              encrypted: addressesMetadata.encryptedSettings
+            let addressesMetadata = JSON.parse(addressesMetadataRaw)
+
+            // Rename encryptedSettings property to encrypted
+            if (
+              typeof addressesMetadata === 'object' &&
+              Object.prototype.hasOwnProperty.call(addressesMetadata, 'encryptedSettings')
+            ) {
+              addressesMetadata = {
+                version: addressesMetadata.version,
+                encrypted: addressesMetadata.encryptedSettings
+              }
             }
-          }
 
-          localStorage.setItem(AddressMetadataStorage.getKey(id), JSON.stringify(addressesMetadata))
-          localStorage.removeItem(addressMetadataOldKey)
-        }
+            localStorage.setItem(AddressMetadataStorage.getKey(id), JSON.stringify(addressesMetadata))
+            localStorage.removeItem(oldKey)
+          }
+        })
       }
     }
   }
