@@ -23,6 +23,7 @@ import de from '../locales/de-DE/translation.json'
 import en from '../locales/en-US/translation.json'
 import fr from '../locales/fr-FR/translation.json'
 import pt from '../locales/pt-PT/translation.json'
+import ru from '../locales/ru-RU/translation.json'
 import vi from '../locales/vi-VN/translation.json'
 
 i18next.use(initReactI18next).init({
@@ -30,8 +31,9 @@ i18next.use(initReactI18next).init({
     'en-US': { translation: en },
     'de-DE': { translation: de },
     'fr-FR': { translation: fr },
-    'vi-VN': { translation: vi },
-    'pt-PT': { translation: pt }
+    'pt-PT': { translation: pt },
+    'ru-RU': { translation: ru },
+    'vi-VN': { translation: vi }
   },
   lng: 'en-US',
   fallbackLng: 'en-US',

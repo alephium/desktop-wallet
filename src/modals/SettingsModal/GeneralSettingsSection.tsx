@@ -37,6 +37,7 @@ const languageOptions = [
   { label: 'English', value: 'en-US' as Language },
   { label: 'Français', value: 'fr-FR' as Language },
   { label: 'Português', value: 'pt-PT' as Language },
+  { label: 'Русский', value: 'ru-RU' as Language },
   { label: 'Tiếng Việt', value: 'vi-VN' as Language }
 ]
 
