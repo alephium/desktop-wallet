@@ -21,7 +21,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
 import { activeWalletDeleted, walletLocked, walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
+import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
+import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { GeneralSettings, ThemeType } from '@/types/settings'
 
 const sliceName = 'app'
 
@@ -30,13 +33,17 @@ interface AppState {
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
   storedWalletNames: string[]
+  theme: Omit<ThemeType, 'system'>
 }
+
+const storedSettings = SettingsStorage.load('general') as GeneralSettings
 
 const initialState: AppState = {
   loading: false,
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
-  storedWalletNames: WalletStorage.list()
+  storedWalletNames: WalletStorage.list(),
+  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme
 }
 
 const appSlice = createSlice({
@@ -61,6 +68,9 @@ const appSlice = createSlice({
       const deletedWalletName = action.payload
 
       state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
+    },
+    osThemeChangeDetected: (state, action: PayloadAction<AppState['theme']>) => {
+      state.theme = action.payload
     }
   },
   extraReducers(builder) {
@@ -80,11 +90,21 @@ const appSlice = createSlice({
       })
       .addCase(walletLocked, resetState)
       .addCase(activeWalletDeleted, resetState)
+      .addCase(themeSettingsChanged, (state, action) => {
+        const theme = action.payload
+        if (theme !== 'system') state.theme = theme
+      })
   }
 })
 
-export const { appLoadingToggled, modalOpened, modalClosed, addressesPageInfoMessageClosed, walletDeleted } =
-  appSlice.actions
+export const {
+  appLoadingToggled,
+  modalOpened,
+  modalClosed,
+  addressesPageInfoMessageClosed,
+  walletDeleted,
+  osThemeChangeDetected
+} = appSlice.actions
 
 export default appSlice
 

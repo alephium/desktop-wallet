@@ -37,7 +37,7 @@ const settingsSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    themeChanged: (state, action: PayloadAction<Settings['general']['theme']>) => {
+    themeSettingsChanged: (state, action: PayloadAction<Settings['general']['theme']>) => {
       state.theme = action.payload
     },
     discreetModeToggled: (state) => {
@@ -61,7 +61,7 @@ const settingsSlice = createSlice({
 
 export const {
   generalSettingsMigrated,
-  themeChanged,
+  themeSettingsChanged,
   discreetModeToggled,
   passwordRequirementToggled,
   devToolsToggled,
@@ -74,7 +74,7 @@ export const settingsListenerMiddleware = createListenerMiddleware()
 // When the settings change, store them in persistent storage
 settingsListenerMiddleware.startListening({
   matcher: isAnyOf(
-    themeChanged,
+    themeSettingsChanged,
     discreetModeToggled,
     passwordRequirementToggled,
     devToolsToggled,

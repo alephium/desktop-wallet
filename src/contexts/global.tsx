@@ -28,7 +28,7 @@ import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/app-state/slices/activeWalletSlice'
-import { themeChanged } from '@/storage/app-state/slices/settingsSlice'
+import { osThemeChangeDetected } from '@/storage/app-state/slices/appSlice'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AlephiumWindow } from '@/types/window'
 import { migrateUserData } from '@/utils/migration'
@@ -125,11 +125,11 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
     if (!shouldListenToOSThemeChanges) return
 
     const removeOSThemeChangeListener = electron?.theme.onShouldUseDarkColors((useDark: boolean) =>
-      dispatch(themeChanged(useDark ? 'dark' : 'light'))
+      dispatch(osThemeChangeDetected(useDark ? 'dark' : 'light'))
     )
 
     const removeGetNativeThemeListener = electron?.theme.onGetNativeTheme((nativeTheme) =>
-      dispatch(themeChanged(nativeTheme.shouldUseDarkColors ? 'dark' : 'light'))
+      dispatch(osThemeChangeDetected(nativeTheme.shouldUseDarkColors ? 'dark' : 'light'))
     )
 
     electron?.theme.getNativeTheme()
