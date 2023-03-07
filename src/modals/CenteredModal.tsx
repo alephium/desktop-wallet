@@ -32,7 +32,7 @@ import Tooltip from '@/components/Tooltip'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
 import ModalContainer, { ModalBackdrop, ModalContainerProps } from '@/modals/ModalContainer'
 
-interface CenteredModalProps extends ModalContainerProps {
+export interface CenteredModalProps extends ModalContainerProps {
   title?: ReactNode
   subtitle?: string
   isLoading?: boolean

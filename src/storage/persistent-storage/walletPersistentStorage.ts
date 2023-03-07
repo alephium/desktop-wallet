@@ -86,6 +86,23 @@ class WalletStorage {
   delete(id: StoredWallet['id']) {
     localStorage.removeItem(this.getKey(id))
   }
+
+  update(id: StoredWallet['id'], data: Omit<Partial<StoredWallet>, 'encrypted' | 'id'>) {
+    const key = this.getKey(id)
+    const walletRaw = localStorage.getItem(key)
+
+    if (!walletRaw) throw new Error(`Unable to load wallet ${id}, wallet doesn't exist.`)
+
+    const wallet = JSON.parse(walletRaw) as StoredWallet
+
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        ...wallet,
+        ...data
+      })
+    )
+  }
 }
 
 const Storage = new WalletStorage()

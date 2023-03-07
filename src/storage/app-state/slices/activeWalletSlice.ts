@@ -38,12 +38,15 @@ const activeWalletSlice = createSlice({
     walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload.wallet,
     walletUnlocked: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
     walletSwitched: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
+    newWalletNameStored: (state, action: PayloadAction<string>) => {
+      state.name = action.payload
+    },
     walletLocked: () => initialState,
     activeWalletDeleted: () => initialState
   }
 })
 
-export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, activeWalletDeleted } =
+export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, activeWalletDeleted, newWalletNameStored } =
   activeWalletSlice.actions
 
 export default activeWalletSlice

@@ -45,3 +45,12 @@ export const validateIsContactNameValid = ({ name, id }: Omit<Contact, 'address'
     ? i18n.t('A contact with this name already exists') + `: ${existingContact.address}`
     : true
 }
+
+export const validateIsWalletNameValid = ({ name, previousName }: { name: string; previousName?: string }) =>
+  previousName && name === previousName
+    ? true
+    : name.length < 3
+    ? i18n.t('Wallet name is too short')
+    : store.getState().app.wallets.some((wallet) => wallet.name === name)
+    ? i18n.t('Wallet name already taken')
+    : true
