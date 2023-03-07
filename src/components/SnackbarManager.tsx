@@ -22,7 +22,9 @@ import styled from 'styled-components'
 
 import { fadeInBottom, fadeOut } from '@/animations'
 import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
+import { snackbarDisplayTimeExpired } from '@/storage/app-state/slices/snackbarSlice'
 import { deviceBreakPoints } from '@/style/globalStyles'
 
 export interface SnackbarMessage {
@@ -31,27 +33,34 @@ export interface SnackbarMessage {
   duration?: number
 }
 
-const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  const { setSnackbarMessage } = useGlobalContext()
+const SnackbarManager = () => {
+  const dispatch = useAppDispatch()
+  const { snackbarMessage: messageFromContext, setSnackbarMessage } = useGlobalContext()
+  const messageFromRedux = useAppSelector((state) => state.snackbarSlice)
+
+  const message = messageFromContext || messageFromRedux
 
   // Remove snackbar popup after its duration
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
 
     if (message) {
-      timer = setTimeout(() => setSnackbarMessage(undefined), message.duration || 3000)
+      timer = setTimeout(() => {
+        setSnackbarMessage(undefined)
+        dispatch(snackbarDisplayTimeExpired())
+      }, message.duration || 3000)
     }
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [message, setSnackbarMessage])
+  }, [dispatch, message, setSnackbarMessage])
 
   return (
     <ModalPortal>
-      {message && (
+      {message.text && (
         <SnackbarManagerContainer>
-          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message?.type}>
-            {message?.text}
+          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message.type}>
+            {message.text}
           </SnackbarPopup>
         </SnackbarManagerContainer>
       )}

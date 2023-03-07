@@ -47,7 +47,7 @@ import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } fro
 
 const App = () => {
   const { t } = useTranslation()
-  const { snackbarMessage, newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
+  const { newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = addresses.map((address) => address.hash)
@@ -154,7 +154,7 @@ const App = () => {
         <BannerSection>{newVersion && <UpdateWalletBanner />}</BannerSection>
       </AppContainer>
 
-      <SnackbarManager message={snackbarMessage} />
+      <SnackbarManager />
       {loading && <AppSpinner />}
       <AnimatePresence>
         {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
