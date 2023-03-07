@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Trash } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -27,6 +27,7 @@ import { BoxContainer, Section } from '@/components/PageComponents/PageContainer
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
+import EditWalletNameModal from '@/modals/SettingsModal/EditWalletNameModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
 import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
@@ -43,6 +44,7 @@ const WalletsSettingsSection = () => {
   const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
   const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false)
+  const [isEditWalletNameModalOpen, setIsEditWalletNameModalOpen] = useState(false)
 
   const isAuthenticated = !!activeWallet.mnemonic && !!activeWallet.id
 
@@ -75,7 +77,22 @@ const WalletsSettingsSection = () => {
       {isAuthenticated && (
         <CurrentWalletSection align="flex-start">
           <h2>{t('Current wallet')}</h2>
-          <InfoBox label={t('Wallet name')} text={activeWallet.name} />
+          <InfoBox label={t('Wallet name')} short>
+            <CurrentWalletBox>
+              <WalletName>{activeWallet.name}</WalletName>
+              <Button
+                aria-label={t('Delete')}
+                tabIndex={0}
+                squared
+                role="secondary"
+                transparent
+                borderless
+                onClick={() => setIsEditWalletNameModalOpen(true)}
+              >
+                <Pencil size={15} />
+              </Button>
+            </CurrentWalletBox>
+          </InfoBox>
           <ActionButtons>
             <Button role="secondary" onClick={lockWallet}>
               {t('Lock current wallet')}
@@ -95,6 +112,7 @@ const WalletsSettingsSection = () => {
       <ModalPortal>
         {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
         {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
+        {isEditWalletNameModalOpen && <EditWalletNameModal onClose={() => setIsEditWalletNameModalOpen(false)} />}
         {walletToRemove && (
           <WalletRemovalModal
             walletName={walletToRemove.name}
@@ -175,4 +193,10 @@ const ActionButtons = styled.div`
 
 const CurrentWalletSection = styled(Section)`
   margin-top: var(--spacing-8);
+`
+
+const CurrentWalletBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `

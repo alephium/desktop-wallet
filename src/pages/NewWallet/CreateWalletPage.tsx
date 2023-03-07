@@ -35,13 +35,12 @@ import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import { useAppSelector } from '@/hooks/redux'
+import { validateIsWalletNameValid } from '@/utils/form-validation'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const wallets = useAppSelector((state) => state.app.wallets)
 
   const [walletName, setWalletNameState] = useState(existingWalletName)
   const [walletNameError, setWalletNameError] = useState('')
@@ -65,16 +64,10 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   }
 
   const onUpdateWalletName = (walletName: string) => {
-    let walletNameError = ''
-
-    if (walletName.length < 3 && !import.meta.env.DEV) {
-      walletNameError = t`Wallet name is too short`
-    } else if (wallets.some((wallet) => wallet.name === walletName)) {
-      walletNameError = t`Wallet name already taken`
-    }
+    const isValidOrError = import.meta.env.DEV || validateIsWalletNameValid({ name: walletName })
 
     setWalletNameState(walletName)
-    setWalletNameError(walletNameError)
+    setWalletNameError(isValidOrError !== true ? isValidOrError : '')
   }
 
   const isNextButtonActive =

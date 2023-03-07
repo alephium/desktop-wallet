@@ -19,7 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
-import { activeWalletDeleted, walletLocked, walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
+import {
+  activeWalletDeleted,
+  newWalletNameStored,
+  walletLocked,
+  walletSaved
+} from '@/storage/app-state/slices/activeWalletSlice'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
 import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
@@ -96,6 +101,9 @@ const appSlice = createSlice({
         if (theme !== 'system') state.theme = theme
       })
       .addCase(localStorageDataMigrated, (state) => {
+        state.wallets = WalletStorage.list()
+      })
+      .addCase(newWalletNameStored, (state) => {
         state.wallets = WalletStorage.list()
       })
   }
