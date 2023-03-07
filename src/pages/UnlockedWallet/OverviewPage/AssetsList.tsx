@@ -31,6 +31,7 @@ import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
+import { selectIsLoadingAssetsInfo } from '@/storage/app-state/slices/assetsInfoSlice'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -45,7 +46,10 @@ interface AssetsListProps {
 
 const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: AssetsListProps) => {
   const { t } = useTranslation()
-  const [isLoadingAddresses, assetsInfo] = useAppSelector((s) => [s.addresses.loading, s.assetsInfo])
+  const [isLoadingAddresses, isLoadingAssetsInfo] = useAppSelector((s) => [
+    s.addresses.loading,
+    selectIsLoadingAssetsInfo(s)
+  ])
 
   const tabs = [
     { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
@@ -53,10 +57,8 @@ const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTi
   ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
-  const showSkeletonLoading = isLoadingAddresses || assetsInfo.status === 'uninitialized'
-
   return (
-    <Table isLoading={showSkeletonLoading} className={className}>
+    <Table isLoading={isLoadingAddresses || isLoadingAssetsInfo} className={className}>
       <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {
         {

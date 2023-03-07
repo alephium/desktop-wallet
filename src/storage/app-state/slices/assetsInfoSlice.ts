@@ -18,10 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { NUM_OF_ZEROS_IN_QUINTILLION } from '@alephium/sdk'
 import TokensMetadata, { TokenInfo } from '@alephium/token-list'
-import { createAsyncThunk, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { RootState } from '@/storage/app-state/store'
+import { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
 
 const sliceName = 'assetsInfo'
 
@@ -84,6 +85,13 @@ const assetsSlice = createSlice({
 
 export const { selectAll: selectAllAssetsInfo, selectById: selectAssetInfoById } =
   assetsInfoAdapter.getSelectors<RootState>((state) => state[sliceName])
+
+export const selectIsLoadingAssetsInfo = createSelector(
+  [(state: RootState) => state.assetsInfo.status, (state: RootState) => state.network.settings.networkId],
+  (status, networkId) =>
+    (networkId === networkPresets.mainnet.networkId || networkId === networkPresets.testnet.networkId) &&
+    status === 'uninitialized'
+)
 
 export default assetsSlice
 
