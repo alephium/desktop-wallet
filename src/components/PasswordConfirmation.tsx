@@ -23,8 +23,8 @@ import styled from 'styled-components'
 import Button from '@/components/Button'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { passwordValidationFailed } from '@/storage/app-state/slices/snackbarSlice'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 interface PasswordConfirmationProps {
@@ -46,8 +46,8 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   children
 }) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const activeWallet = useAppSelector((state) => state.activeWallet)
-  const { setSnackbarMessage } = useGlobalContext()
 
   const [password, setPassword] = useState('')
 
@@ -61,7 +61,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
-      setSnackbarMessage({ text: t('Invalid password'), type: 'alert' })
+      dispatch(passwordValidationFailed())
     }
   }
 

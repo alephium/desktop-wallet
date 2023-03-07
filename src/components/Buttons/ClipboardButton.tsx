@@ -24,7 +24,8 @@ import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch } from '@/hooks/redux'
+import { copiedToClipboard } from '@/storage/app-state/slices/snackbarSlice'
 
 interface ClipboardButtonProps {
   textToCopy: string
@@ -36,8 +37,8 @@ interface ClipboardButtonProps {
 
 const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
-  const { setSnackbarMessage } = useGlobalContext()
 
   const handleInput = useCallback(
     (e: SyntheticEvent) => {
@@ -59,7 +60,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
     let interval: ReturnType<typeof setInterval>
     // Reset icon after copy
     if (hasBeenCopied) {
-      setSnackbarMessage({ text: t`Copied to clipboard!`, type: 'info' })
+      dispatch(copiedToClipboard())
 
       interval = setInterval(() => {
         setHasBeenCopied(false)
@@ -71,7 +72,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
         clearInterval(interval)
       }
     }
-  }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
+  }, [dispatch, hasBeenCopied])
 
   const clipboard = (
     <TooltipWrapper content={!hasBeenCopied ? tooltip ?? t`Copy to clipboard` : t`Copied`} tooltipId="copy">

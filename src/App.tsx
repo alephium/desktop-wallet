@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import styled, { ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
@@ -46,8 +45,7 @@ import { useInterval } from '@/utils/hooks'
 import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
 
 const App = () => {
-  const { t } = useTranslation()
-  const { newVersion, newVersionDownloadTriggered, setSnackbarMessage } = useGlobalContext()
+  const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = addresses.map((address) => address.hash)
@@ -80,40 +78,18 @@ const App = () => {
     try {
       await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
       const { networkId } = await client.web3.infos.getInfosChainParams()
-      dispatch(apiClientInitSucceeded(networkId))
+      dispatch(apiClientInitSucceeded({ networkId, networkName: network.name }))
     } catch (e) {
-      dispatch(apiClientInitFailed())
-      console.error('Could not connect to network: ', network.name, e)
+      dispatch(apiClientInitFailed({ networkName: network.name, networkStatus: network.status }))
     }
-  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, dispatch])
+  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])
 
-  // Is there a better way to trigger the initial client initialization?
-  // Currently we trigger it is a side-effect of setting the networkSlice status to 'connecting', which is happening
-  // when loading the stored network settings and when network settings are updated by the user.
   useEffect(() => {
-    if (network.status === 'connecting') {
-      initializeClient()
-    } else if (network.status === 'offline') {
-      setSnackbarMessage({
-        text: t('Could not connect to the {{ currentNetwork }} network.', { currentNetwork: network.name }),
-        type: 'alert',
-        duration: 5000
-      })
-    } else if (network.status === 'online') {
-      setSnackbarMessage({
-        text: `${t('Current network')}: ${network.name}.`,
-        type: 'info',
-        duration: 4000
-      })
-    }
-  }, [initializeClient, network.name, network.status, setSnackbarMessage, t])
+    if (network.status === 'connecting') initializeClient()
+  }, [initializeClient, network.status])
 
-  // Is there a better way to trying to re-initialize the client? This gets "magically" triggered when the networkSlice
-  // status becomes 'offline' (which is done by the `apiClientInitFailed` action)
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
-  // Is there a better way to re-fetch addresses data when client goes back online?
-  // Currently we trigger it "magically" by setting the addressesSlice status to 'uninitialized'
   useEffect(() => {
     if (network.status === 'online' && addressesStatus === 'uninitialized' && addresses.length > 0) {
       dispatch(syncAddressesData())

@@ -16,16 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getHumanReadableError } from '@alephium/sdk'
 import { isEmpty } from 'lodash'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
+import { contactStorageFailed } from '@/storage/app-state/slices/snackbarSlice'
 import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
 import {
@@ -44,7 +45,6 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const { mnemonic, name: walletName, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
-  const { setSnackbarMessage } = useGlobalContext()
   const { control, handleSubmit, formState } = useForm<Contact>({
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
@@ -56,19 +56,12 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const isFormValid = isEmpty(errors)
 
   const saveContact = (formData: Contact) => {
-    const result = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
-
-    if (!result.error) {
-      dispatch(
-        contactStoredInPersistentStorage({
-          ...formData,
-          id: result.contactId
-        })
-      )
-      setSnackbarMessage({ text: t('Contact saved'), type: 'success' })
+    try {
+      const id = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
+      dispatch(contactStoredInPersistentStorage({ ...formData, id }))
       onClose()
-    } else {
-      setSnackbarMessage({ text: result.error, type: 'alert' })
+    } catch (e) {
+      dispatch(contactStorageFailed(getHumanReadableError(e, t('Could not save contact.'))))
     }
   }
 

@@ -34,6 +34,7 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import { SnackbarMessage } from '@/components/SnackbarManager'
+import i18n from '@/i18n'
 import {
   activeWalletDeleted,
   walletLocked,
@@ -100,7 +101,7 @@ export const syncAddressesData = createAsyncThunk<
     return await fetchAddressesData(addresses)
   } catch (e) {
     return rejectWithValue({
-      text: getHumanReadableError(e, "Encountered error while synching your addresses' data"),
+      text: getHumanReadableError(e, i18n.t("Encountered error while synching your addresses' data.")),
       type: 'alert'
     })
   }

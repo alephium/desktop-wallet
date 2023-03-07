@@ -35,9 +35,10 @@ import {
 } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
-import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
+import { useAppDispatch } from '@/hooks/redux'
+import { walletCreationFailed } from '@/storage/app-state/slices/snackbarSlice'
 import { saveNewWallet } from '@/storage/storage-utils/walletStorageUtils'
 
 interface WordKey {
@@ -47,9 +48,9 @@ interface WordKey {
 
 const CheckWordsPage = () => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const { setSnackbarMessage } = useGlobalContext()
 
   const splitMnemonic = mnemonic.split(' ')
 
@@ -192,7 +193,7 @@ const CheckWordsPage = () => {
     const success = createEncryptedWallet()
     if (success) onButtonNext()
     else {
-      setSnackbarMessage({ text: t`Something went wrong when creating encrypted wallet.`, type: 'alert' })
+      dispatch(walletCreationFailed(t('Something went wrong when creating encrypted wallet.')))
     }
   }
 

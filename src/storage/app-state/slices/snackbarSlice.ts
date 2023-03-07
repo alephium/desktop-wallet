@@ -16,30 +16,115 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
+import i18n from '@/i18n'
 import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
+import {
+  apiClientInitFailed,
+  apiClientInitSucceeded,
+  customNetworkSettingsSaved
+} from '@/storage/app-state/slices/networkSlice'
 
 const sliceName = 'snackbarSlice'
 
-const initialState: SnackbarMessage = {
-  text: '',
-  type: 'info',
-  duration: 3000 // ms
+interface SnackbarSliceState {
+  messages: SnackbarMessage[]
+  offlineMessageWasVisibleOnce: boolean
 }
+
+const initialState: SnackbarSliceState = {
+  messages: [],
+  offlineMessageWasVisibleOnce: false
+}
+
+const displayError = (state: SnackbarSliceState, action: PayloadAction<string>) =>
+  displayMessageImmediately(state, { text: action.payload, type: 'alert', duration: 5000 })
 
 const snackbarSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    snackbarDisplayTimeExpired: () => initialState
+    snackbarDisplayTimeExpired: (state) => {
+      if (state.messages.length > 0) state.messages.shift()
+    },
+    passwordValidationFailed: (state) =>
+      displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' }),
+    copiedToClipboard: (state) => displayMessageImmediately(state, { text: i18n.t('Copied to clipboard!') }),
+    transactionBuildFailed: displayError,
+    transactionSendFailed: displayError,
+    contactStorageFailed: displayError,
+    walletCreationFailed: displayError,
+    transactionsSendSucceeded: (state, action: PayloadAction<number>) => {
+      const nbOfTransactionsSent = action.payload
+
+      displayMessageImmediately(state, {
+        text: nbOfTransactionsSent > 1 ? i18n.t('Transactions sent!') : i18n.t('Transaction sent!'),
+        type: 'success'
+      })
+    }
   },
   extraReducers(builder) {
-    builder.addCase(syncAddressesData.rejected, (state, action) => ({ ...state, ...action.payload }))
+    builder
+      .addCase(syncAddressesData.rejected, (state, action) => {
+        const message = action.payload
+
+        if (message) queueMessage(state, message)
+      })
+      .addCase(apiClientInitSucceeded, (state, action) => {
+        state.offlineMessageWasVisibleOnce = false
+
+        queueMessage(state, {
+          text: `${i18n.t('Current network')}: ${action.payload.networkName}.`,
+          duration: 4000
+        })
+      })
+      .addCase(apiClientInitFailed, (state, action) => {
+        if (!state.offlineMessageWasVisibleOnce)
+          queueMessage(state, {
+            text: i18n.t('Could not connect to the {{ currentNetwork }} network.', {
+              currentNetwork: action.payload.networkName
+            }),
+            type: 'alert',
+            duration: 5000
+          })
+
+        state.offlineMessageWasVisibleOnce = true
+      })
+      .addCase(contactStoredInPersistentStorage, (state) =>
+        displayMessageImmediately(state, { text: i18n.t('Contact saved'), type: 'success' })
+      )
+      .addCase(customNetworkSettingsSaved, (state) =>
+        displayMessageImmediately(state, { text: i18n.t('Custom network settings saved.') })
+      )
   }
 })
 
-export const { snackbarDisplayTimeExpired } = snackbarSlice.actions
+export const {
+  snackbarDisplayTimeExpired,
+  passwordValidationFailed,
+  copiedToClipboard,
+  transactionBuildFailed,
+  transactionSendFailed,
+  contactStorageFailed,
+  transactionsSendSucceeded,
+  walletCreationFailed
+} = snackbarSlice.actions
 
 export default snackbarSlice
+
+const defaultSnackbarMessageSettings: SnackbarMessage = {
+  text: '',
+  type: 'info',
+  duration: 3000 // ms
+}
+
+const queueMessage = (state: SnackbarSliceState, message: SnackbarMessage) => {
+  state.messages.push({ ...defaultSnackbarMessageSettings, ...message })
+}
+
+const displayMessageImmediately = (state: SnackbarSliceState, message: SnackbarMessage) => {
+  state.messages = [{ ...defaultSnackbarMessageSettings, ...message }]
+}
