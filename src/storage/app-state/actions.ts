@@ -26,6 +26,7 @@ export const languageChangeFinished = createAction('app/languageChangeFinished')
 export const copiedToClipboard = createAction<OptionalMessage>('app/copiedToClipboard')
 export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToClipboardFailed')
 export const passwordValidationFailed = createAction('app/passwordValidationFailed')
+export const localStorageDataMigrated = createAction('app/localStorageDataMigrated')
 
 export const transactionBuildFailed = createAction<Message>('tx/transactionBuildFailed')
 export const transactionSendFailed = createAction<Message>('tx/transactionSendFailed')
