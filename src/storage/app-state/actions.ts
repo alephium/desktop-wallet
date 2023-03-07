@@ -20,3 +20,4 @@ import { createAction } from '@reduxjs/toolkit'
 
 export const languageChangeStarted = createAction('app/languageChangeStarted')
 export const languageChangeFinished = createAction('app/languageChangeFinished')
+export const localStorageDataMigrated = createAction('app/localStorageDataMigrated')

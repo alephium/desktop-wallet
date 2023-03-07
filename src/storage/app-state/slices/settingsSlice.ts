@@ -24,8 +24,7 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
-import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
-import { localStorageDataMigrated } from '@/storage/app-state/slices/appSlice'
+import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
 import { RootState } from '@/storage/app-state/store'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import { GeneralSettings, Settings } from '@/types/settings'

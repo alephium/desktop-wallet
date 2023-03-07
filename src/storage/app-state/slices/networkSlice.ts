@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 
-import { localStorageDataMigrated } from '@/storage/app-state/slices/appSlice'
+import { localStorageDataMigrated } from '@/storage/app-state/actions'
 import { RootState } from '@/storage/app-state/store'
 import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
 import { NetworkName, NetworkPreset, NetworkStatus } from '@/types/network'

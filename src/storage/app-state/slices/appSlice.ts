@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
+import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
 import { activeWalletDeleted, walletLocked, walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
 import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
@@ -70,9 +70,6 @@ const appSlice = createSlice({
 
       state.wallets = state.wallets.filter(({ id }) => id !== deletedWalletId)
     },
-    localStorageDataMigrated: (state) => {
-      state.wallets = WalletStorage.list()
-    },
     osThemeChangeDetected: (state, action: PayloadAction<AppState['theme']>) => {
       state.theme = action.payload
     }
@@ -98,6 +95,9 @@ const appSlice = createSlice({
         const theme = action.payload
         if (theme !== 'system') state.theme = theme
       })
+      .addCase(localStorageDataMigrated, (state) => {
+        state.wallets = WalletStorage.list()
+      })
   }
 })
 
@@ -107,8 +107,7 @@ export const {
   modalClosed,
   addressesPageInfoMessageClosed,
   walletDeleted,
-  osThemeChangeDetected,
-  localStorageDataMigrated
+  osThemeChangeDetected
 } = appSlice.actions
 
 export default appSlice
