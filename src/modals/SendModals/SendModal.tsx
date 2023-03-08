@@ -31,11 +31,7 @@ import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
-import {
-  transactionBuildFailed,
-  transactionSendFailed,
-  transactionsSendSucceeded
-} from '@/storage/app-state/slices/snackbarSlice'
+import { transactionBuildFailed, transactionSendFailed, transactionsSendSucceeded } from '@/storage/app-state/actions'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
@@ -158,7 +154,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         })
       }
 
-      dispatch(transactionsSendSucceeded(isSweeping ? sweepUnsignedTxs.length : 1))
+      dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
       onCloseExtended()
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))

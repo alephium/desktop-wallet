@@ -25,7 +25,7 @@ import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useAppDispatch } from '@/hooks/redux'
-import { copiedToClipboard } from '@/storage/app-state/slices/snackbarSlice'
+import { copiedToClipboard } from '@/storage/app-state/actions'
 
 interface ClipboardButtonProps {
   textToCopy: string

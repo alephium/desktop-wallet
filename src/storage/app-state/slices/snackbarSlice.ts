@@ -20,8 +20,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
 import i18n from '@/i18n'
+import {
+  copiedToClipboard,
+  ErrorMessage,
+  passwordValidationFailed,
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionsSendSucceeded,
+  walletCreationFailed
+} from '@/storage/app-state/actions'
 import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
-import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
+import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
 import {
   apiClientInitFailed,
   apiClientInitSucceeded,
@@ -40,30 +49,12 @@ const initialState: SnackbarSliceState = {
   offlineMessageWasVisibleOnce: false
 }
 
-const displayError = (state: SnackbarSliceState, action: PayloadAction<string>) =>
-  displayMessageImmediately(state, { text: action.payload, type: 'alert', duration: 5000 })
-
 const snackbarSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
     snackbarDisplayTimeExpired: (state) => {
       if (state.messages.length > 0) state.messages.shift()
-    },
-    passwordValidationFailed: (state) =>
-      displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' }),
-    copiedToClipboard: (state) => displayMessageImmediately(state, { text: i18n.t('Copied to clipboard!') }),
-    transactionBuildFailed: displayError,
-    transactionSendFailed: displayError,
-    contactStorageFailed: displayError,
-    walletCreationFailed: displayError,
-    transactionsSendSucceeded: (state, action: PayloadAction<number>) => {
-      const nbOfTransactionsSent = action.payload
-
-      displayMessageImmediately(state, {
-        text: nbOfTransactionsSent > 1 ? i18n.t('Transactions sent!') : i18n.t('Transaction sent!'),
-        type: 'success'
-      })
     }
   },
   extraReducers(builder) {
@@ -99,19 +90,26 @@ const snackbarSlice = createSlice({
       .addCase(customNetworkSettingsSaved, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Custom network settings saved.') })
       )
+      .addCase(transactionBuildFailed, displayError)
+      .addCase(transactionSendFailed, displayError)
+      .addCase(contactStorageFailed, displayError)
+      .addCase(walletCreationFailed, displayError)
+      .addCase(transactionsSendSucceeded, (state, action) => {
+        const { nbOfTransactionsSent } = action.payload
+
+        displayMessageImmediately(state, {
+          text: nbOfTransactionsSent > 1 ? i18n.t('Transactions sent!') : i18n.t('Transaction sent!'),
+          type: 'success'
+        })
+      })
+      .addCase(copiedToClipboard, (state) => displayMessageImmediately(state, { text: i18n.t('Copied to clipboard!') }))
+      .addCase(passwordValidationFailed, (state) =>
+        displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
+      )
   }
 })
 
-export const {
-  snackbarDisplayTimeExpired,
-  passwordValidationFailed,
-  copiedToClipboard,
-  transactionBuildFailed,
-  transactionSendFailed,
-  contactStorageFailed,
-  transactionsSendSucceeded,
-  walletCreationFailed
-} = snackbarSlice.actions
+export const { snackbarDisplayTimeExpired } = snackbarSlice.actions
 
 export default snackbarSlice
 
@@ -128,3 +126,6 @@ const queueMessage = (state: SnackbarSliceState, message: SnackbarMessage) => {
 const displayMessageImmediately = (state: SnackbarSliceState, message: SnackbarMessage) => {
   state.messages = [{ ...defaultSnackbarMessageSettings, ...message }]
 }
+
+const displayError = (state: SnackbarSliceState, action: PayloadAction<ErrorMessage>) =>
+  displayMessageImmediately(state, { text: action.payload, type: 'alert', duration: 5000 })

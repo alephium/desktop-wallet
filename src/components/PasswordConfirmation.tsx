@@ -24,7 +24,7 @@ import Button from '@/components/Button'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { passwordValidationFailed } from '@/storage/app-state/slices/snackbarSlice'
+import { passwordValidationFailed } from '@/storage/app-state/actions'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 
 interface PasswordConfirmationProps {
