@@ -29,10 +29,10 @@ import { contactStoredInPersistentStorage } from '@/storage/app-state/slices/con
 import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
 import {
-  requiredErrorMessage,
-  validateIsAddressValid,
-  validateIsContactAddressValid,
-  validateIsContactNameValid
+  isAddressValid,
+  isContactAddressValid,
+  isContactNameValid,
+  requiredErrorMessage
 } from '@/utils/form-validation'
 
 interface ContactFormModalProps {
@@ -81,7 +81,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
           )}
           rules={{
             required: true,
-            validate: (name) => validateIsContactNameValid({ name, id: contact?.id })
+            validate: (name) => isContactNameValid({ name, id: contact?.id })
           }}
           control={control}
         />
@@ -100,8 +100,8 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
           rules={{
             required: true,
             validate: {
-              validateIsAddressValid,
-              validateIsContactAddressValid: (address) => validateIsContactAddressValid({ address, id: contact?.id })
+              isAddressValid,
+              isContactAddressValid: (address) => isContactAddressValid({ address, id: contact?.id })
             }
           }}
           control={control}

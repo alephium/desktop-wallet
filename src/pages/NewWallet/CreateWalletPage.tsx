@@ -35,7 +35,7 @@ import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
-import { validateIsWalletNameValid } from '@/utils/form-validation'
+import { isWalletNameValid } from '@/utils/form-validation'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
@@ -64,7 +64,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   }
 
   const onUpdateWalletName = (walletName: string) => {
-    const isValidOrError = import.meta.env.DEV || validateIsWalletNameValid({ name: walletName })
+    const isValidOrError = import.meta.env.DEV || isWalletNameValid({ name: walletName })
 
     setWalletNameState(walletName)
     setWalletNameError(isValidOrError !== true ? isValidOrError : '')

@@ -29,7 +29,7 @@ import CenteredModal, { CenteredModalProps, ModalFooterButton, ModalFooterButton
 import { newWalletNameStored } from '@/storage/app-state/slices/activeWalletSlice'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { ActiveWallet } from '@/types/wallet'
-import { requiredErrorMessage, validateIsWalletNameValid } from '@/utils/form-validation'
+import { isWalletNameValid, requiredErrorMessage } from '@/utils/form-validation'
 
 type FormData = {
   name: ActiveWallet['name']
@@ -84,7 +84,7 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
           )}
           rules={{
             required: true,
-            validate: (name) => validateIsWalletNameValid({ name, previousName: activeWallet.name })
+            validate: (name) => isWalletNameValid({ name, previousName: activeWallet.name })
           }}
           control={control}
         />
