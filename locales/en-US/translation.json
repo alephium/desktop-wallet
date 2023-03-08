@@ -352,5 +352,6 @@
   "Anyone with your private keys can steal any assets held in your addresses.": "Anyone with your private keys can steal any assets held in your addresses.",
   "Copy to clipboard failed": "Copy to clipboard failed",
   "Change wallet name": "Change wallet name",
-  "Could not save new wallet name.": "Could not save new wallet name."
+  "Could not save new wallet name.": "Could not save new wallet name.",
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
 }
