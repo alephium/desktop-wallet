@@ -25,8 +25,8 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import AddressEllipsed from '@/components/AddressEllipsed'
+import AddressRow from '@/components/AddressRow'
 import Amount from '@/components/Amount'
-import DotIcon from '@/components/DotIcon'
 import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
@@ -90,38 +90,17 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
   return (
     <motion.div {...fadeIn} className={className}>
       {displayedAddresses.map((address) => (
-        <TableRow
-          key={address.hash}
-          role="row"
-          tabIndex={0}
-          onClick={() => setSelectedAddress(address)}
-          onKeyPress={() => setSelectedAddress(address)}
-        >
-          <Row>
-            <AddressColor>
-              {address.isDefault ? <Star color={address.color}>★</Star> : <DotIcon size={11} color={address.color} />}
-            </AddressColor>
-            {address.label ? (
-              <Column>
-                <Label>{address.label}</Label>
-                <Hash addressHash={address.hash} />
-              </Column>
-            ) : (
-              <Label>
-                <AddressEllipsed addressHash={address.hash} />
-              </Label>
-            )}
-            <TableCellAmount>
-              <Amount
-                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
-                fadeDecimals
-                isFiat
-                suffix={currencies['USD'].symbol}
-                tabIndex={0}
-              />
-            </TableCellAmount>
-          </Row>
-        </TableRow>
+        <AddressRow address={address} onClick={setSelectedAddress} key={address.hash}>
+          <TableCellAmount>
+            <Amount
+              value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
+              fadeDecimals
+              isFiat
+              suffix={currencies['USD'].symbol}
+              tabIndex={0}
+            />
+          </TableCellAmount>
+        </AddressRow>
       ))}
       <ModalPortal>
         {selectedAddress && (
@@ -211,16 +190,4 @@ const Hash = styled(AddressEllipsed)`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 11px;
   max-width: 100px;
-`
-
-const AddressColor = styled.div`
-  width: 18px;
-  display: flex;
-  justify-content: center;
-  margin-right: 15px;
-`
-
-const Star = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
-  font-size: 18px;
 `

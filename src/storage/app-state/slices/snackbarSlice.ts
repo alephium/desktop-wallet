@@ -22,7 +22,8 @@ import { SnackbarMessage } from '@/components/SnackbarManager'
 import i18n from '@/i18n'
 import {
   copiedToClipboard,
-  ErrorMessage,
+  copyToClipboardFailed,
+  Message,
   passwordValidationFailed,
   transactionBuildFailed,
   transactionSendFailed,
@@ -102,7 +103,12 @@ const snackbarSlice = createSlice({
           type: 'success'
         })
       })
-      .addCase(copiedToClipboard, (state) => displayMessageImmediately(state, { text: i18n.t('Copied to clipboard!') }))
+      .addCase(copiedToClipboard, (state, action) =>
+        displayMessageImmediately(state, { text: action.payload || i18n.t('Copied to clipboard!') })
+      )
+      .addCase(copyToClipboardFailed, (state, action) =>
+        displayMessageImmediately(state, { text: action.payload || i18n.t('Copy to clipboard failed') })
+      )
       .addCase(passwordValidationFailed, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
       )
@@ -127,5 +133,5 @@ const displayMessageImmediately = (state: SnackbarSliceState, message: SnackbarM
   state.messages = [{ ...defaultSnackbarMessageSettings, ...message }]
 }
 
-const displayError = (state: SnackbarSliceState, action: PayloadAction<ErrorMessage>) =>
+const displayError = (state: SnackbarSliceState, action: PayloadAction<Message>) =>
   displayMessageImmediately(state, { text: action.payload, type: 'alert', duration: 5000 })
