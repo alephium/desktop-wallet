@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet } from '@alephium/sdk'
+import { fromHumanReadableAmount } from '@alephium/sdk'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
 import { useState } from 'react'
@@ -134,7 +134,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     !toAddress.error &&
     !!alphAmount &&
     !lockTimeInPast &&
-    isAmountWithinRange(convertAlphToSet(alphAmount), fromAddress.availableBalance)
+    isAmountWithinRange(fromHumanReadableAmount(alphAmount), fromAddress.availableBalance)
 
   return (
     <>
@@ -198,7 +198,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 
 const buildTransaction = async (client: Client, transactionData: TransferTxData, context: TxContext) => {
   const { fromAddress, toAddress, alphAmount, gasAmount, gasPrice, lockTime } = transactionData
-  const amountInSet = convertAlphToSet(alphAmount)
+  const amountInSet = fromHumanReadableAmount(alphAmount)
   const sweep = amountInSet === fromAddress.availableBalance
 
   context.setIsSweeping(sweep)
@@ -215,7 +215,7 @@ const buildTransaction = async (client: Client, transactionData: TransferTxData,
       amountInSet.toString(),
       lockTime ? lockTime.getTime() : undefined,
       gasAmount ? gasAmount : undefined,
-      gasPrice ? convertAlphToSet(gasPrice).toString() : undefined
+      gasPrice ? fromHumanReadableAmount(gasPrice).toString() : undefined
     )
     context.setUnsignedTransaction(data)
     context.setUnsignedTxId(data.txId)
@@ -251,7 +251,7 @@ const handleSend = async (client: Client, transactionData: TransferTxData, conte
         toAddress,
         'transfer',
         context.currentNetwork,
-        convertAlphToSet(alphAmount),
+        fromHumanReadableAmount(alphAmount),
         lockTime
       )
 

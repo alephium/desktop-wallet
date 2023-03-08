@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertSetToAlph, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import { MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -36,8 +36,8 @@ const AmountInput = ({ className, availableAmount, ...props }: AmountInputProps)
   const { value, onChange, ...restProps } = props
   const { t } = useTranslation()
   const [amountValue, setAmountValue] = useState(value)
-  const availableAmountInAlph = convertSetToAlph(availableAmount)
-  const minAmountInAlph = convertSetToAlph(MIN_UTXO_SET_AMOUNT)
+  const availableAmountInAlph = toHumanReadableAmount(availableAmount)
+  const minAmountInAlph = toHumanReadableAmount(MIN_UTXO_SET_AMOUNT)
   const [error, setError] = useState('')
   const theme = useTheme()
 

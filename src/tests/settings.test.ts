@@ -89,15 +89,23 @@ describe('Settings migration', () => {
           explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
           explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
         }
+      },
+      {
+        network: {
+          networkId: 0,
+          nodeHost: 'https://wallet-v16.mainnet.alephium.org',
+          explorerApiHost: 'https://backend-v112.mainnet.alephium.org',
+          explorerUrl: 'https://explorer.alephium.org'
+        }
       }
     ]
 
     for (const settings of mainnetSettings) {
       localStorage.setItem('settings', JSON.stringify(settings))
       const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.mainnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.mainnet.alephium.org')
-      expect(migratedSettings.network.explorerUrl).toBe('https://explorer.alephium.org')
+      expect(migratedSettings.network.nodeHost).toBe(networkEndpoints.mainnet.nodeHost)
+      expect(migratedSettings.network.explorerApiHost).toBe(networkEndpoints.mainnet.explorerApiHost)
+      expect(migratedSettings.network.explorerUrl).toBe(networkEndpoints.mainnet.explorerUrl)
       expect(migratedSettings.network.networkId).toBe(0)
     }
 
@@ -117,15 +125,23 @@ describe('Settings migration', () => {
           explorerApiHost: 'https://backend-v18.testnet.alephium.org',
           explorerUrl: 'https://explorer-v18.testnet.alephium.org'
         }
+      },
+      {
+        network: {
+          networkId: 1,
+          nodeHost: 'https://wallet-v16.testnet.alephium.org',
+          explorerApiHost: 'https://backend-v112.testnet.alephium.org',
+          explorerUrl: 'https://explorer.testnet.alephium.org'
+        }
       }
     ]
 
     for (const settings of testnetSettings) {
       localStorage.setItem('settings', JSON.stringify(settings))
       const migratedSettings = migrateDeprecatedSettings()
-      expect(migratedSettings.network.nodeHost).toBe('https://wallet-v16.testnet.alephium.org')
-      expect(migratedSettings.network.explorerApiHost).toBe('https://backend-v112.testnet.alephium.org')
-      expect(migratedSettings.network.explorerUrl).toBe('https://explorer.testnet.alephium.org')
+      expect(migratedSettings.network.nodeHost).toBe(networkEndpoints.testnet.nodeHost)
+      expect(migratedSettings.network.explorerApiHost).toBe(networkEndpoints.testnet.explorerApiHost)
+      expect(migratedSettings.network.explorerUrl).toBe(networkEndpoints.testnet.explorerUrl)
       expect(migratedSettings.network.networkId).toBe(1)
     }
   })

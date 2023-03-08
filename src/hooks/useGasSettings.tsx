@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { convertAlphToSet, formatAmountForDisplay, MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@alephium/sdk'
+import { formatAmountForDisplay, fromHumanReadableAmount, MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@alephium/sdk'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -47,13 +47,13 @@ const useGasSettings = (initialGasAmount?: string, initialGasPrice?: string) => 
     let newPriceNumber
 
     try {
-      newPriceNumber = convertAlphToSet(newPrice || '0')
+      newPriceNumber = fromHumanReadableAmount(newPrice || '0')
 
       setGasPrice(newPrice)
       setGasPriceError(
         newPriceNumber && newPriceNumber < MINIMAL_GAS_PRICE
           ? t('Gas price must be greater than {{ amount }}', {
-              amount: formatAmountForDisplay(MINIMAL_GAS_PRICE, true)
+              amount: formatAmountForDisplay({ amount: MINIMAL_GAS_PRICE, fullPrecision: true })
             })
           : ''
       )
