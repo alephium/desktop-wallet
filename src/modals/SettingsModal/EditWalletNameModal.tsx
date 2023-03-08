@@ -55,6 +55,10 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
       WalletStorage.update(activeWallet.id, data)
       dispatch(newWalletNameStored(data.name))
       props.onClose()
+      setSnackbarMessage({
+        text: t('Wallet name updated to: {{ newWalletName }}', { newWalletName: data.name }),
+        type: 'success'
+      })
     } catch (e) {
       setSnackbarMessage({
         text: getHumanReadableError(e, t('Could not save new wallet name.')),

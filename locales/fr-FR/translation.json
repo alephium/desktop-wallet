@@ -338,5 +338,6 @@
   "No options match the search criteria.": "No options match the search criteria.",
   "Select an asset": "Select an asset",
   "Change wallet name": "Change wallet name",
-  "Could not save new wallet name.": "Could not save new wallet name."
+  "Could not save new wallet name.": "Could not save new wallet name.",
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
 }
