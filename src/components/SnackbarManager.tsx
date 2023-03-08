@@ -24,7 +24,7 @@ import { fadeInBottom, fadeOut } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import { snackbarDisplayTimeExpired } from '@/storage/app-state/slices/snackbarSlice'
-import { deviceBreakPoints } from '@/style/globalStyles'
+import { deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
 
 export interface SnackbarMessage {
   text: string
@@ -69,7 +69,7 @@ export default SnackbarManager
 const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: ${walletSidebarWidthPx}px;
   display: flex;
   justify-content: flex-end;
   z-index: 1;
