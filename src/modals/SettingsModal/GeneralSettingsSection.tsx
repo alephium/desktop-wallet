@@ -33,10 +33,11 @@ import { loadSettings } from '../../utils/settings'
 import CenteredModal from '../CenteredModal'
 
 const languageOptions = [
+  { label: 'Deutsch', value: 'de-DE' as Language },
   { label: 'English', value: 'en-US' as Language },
   { label: 'Français', value: 'fr-FR' as Language },
-  { label: 'Tiếng Việt', value: 'vi-VN' as Language },
-  { label: 'Deutsch', value: 'de-DE' as Language }
+  { label: 'Português', value: 'pt-PT' as Language },
+  { label: 'Tiếng Việt', value: 'vi-VN' as Language }
 ]
 
 const themeOptions = [
