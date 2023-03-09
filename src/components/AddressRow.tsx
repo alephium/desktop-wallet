@@ -25,11 +25,12 @@ import { Address } from '@/types/addresses'
 
 interface AddressRowProps {
   address: Address
+  disableAddressCopy?: boolean
   onClick?: (address: Address) => void
   className?: string
 }
 
-const AddressRow: FC<AddressRowProps> = ({ address, onClick, children, className }) => (
+const AddressRow: FC<AddressRowProps> = ({ address, disableAddressCopy, onClick, children, className }) => (
   <TableRow
     key={address.hash}
     role="row"
@@ -45,11 +46,11 @@ const AddressRow: FC<AddressRowProps> = ({ address, onClick, children, className
       {address.label ? (
         <Column>
           <Label>{address.label}</Label>
-          <Hash addressHash={address.hash} />
+          <AddressEllipsedStyled addressHash={address.hash} disableCopy={disableAddressCopy} />
         </Column>
       ) : (
         <Label>
-          <AddressEllipsed addressHash={address.hash} />
+          <AddressEllipsed addressHash={address.hash} disableCopy={disableAddressCopy} />
         </Label>
       )}
       {children}
@@ -77,7 +78,7 @@ const Label = styled.div`
   width: 200px;
 `
 
-const Hash = styled(AddressEllipsed)`
+const AddressEllipsedStyled = styled(AddressEllipsed)`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 11px;
   max-width: 100px;

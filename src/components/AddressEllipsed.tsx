@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import Ellipsed from '@/components/Ellipsed'
@@ -26,13 +27,24 @@ import { AddressHash } from '@/types/addresses'
 interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
   addressHash: AddressHash
   disableA11y?: boolean
+  disableCopy?: boolean
   className?: string
 }
 
-const AddressEllipsed = ({ addressHash, disableA11y = false, className, ...props }: AddressEllipsedProps) => {
+const AddressEllipsed = ({
+  addressHash,
+  disableA11y = false,
+  disableCopy = false,
+  className,
+  ...props
+}: AddressEllipsedProps) => {
   const { t } = useTranslation()
 
-  return (
+  return disableCopy ? (
+    <Container className={className}>
+      <Ellipsed text={addressHash} {...props} />
+    </Container>
+  ) : (
     <ClipboardButton textToCopy={addressHash} tooltip={t`Copy address`} disableA11y={disableA11y} className={className}>
       <Ellipsed text={addressHash} {...props} />
     </ClipboardButton>
@@ -40,3 +52,9 @@ const AddressEllipsed = ({ addressHash, disableA11y = false, className, ...props
 }
 
 export default AddressEllipsed
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+`

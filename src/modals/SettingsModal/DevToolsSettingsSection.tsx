@@ -111,7 +111,12 @@ const DevToolsSettingsSection = () => {
             <Paragraph>{t('Click on an address to copy its private key.')}</Paragraph>
             <Table>
               {addresses.map((address) => (
-                <AddressRow address={address} onClick={confirmAddressPrivateKeyCopyWithPassword} key={address.hash} />
+                <AddressRow
+                  address={address}
+                  onClick={confirmAddressPrivateKeyCopyWithPassword}
+                  disableAddressCopy
+                  key={address.hash}
+                />
               ))}
             </Table>
           </PrivateKeySection>
