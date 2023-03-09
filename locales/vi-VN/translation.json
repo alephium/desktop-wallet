@@ -294,7 +294,7 @@
   "Smart contract": "Smart contract",
   "All transactions loaded!": "All transactions loaded!",
   "Tokens": "Tokens",
-  "Today": "Today",
+  "Value today": "Value today",
   "NFTs": "NFTs",
   "Coming soon!": "Coming soon!",
   "Address tokens": "Address tokens",
@@ -355,5 +355,6 @@
   "Localhost": "Localhost",
   "Delete": "Xoá",
   "Timestamp": "Thời gian",
-  "Lock time must be in the future.": "Thời gian khoá trong tương lai."
+  "Lock time must be in the future.": "Thời gian khoá trong tương lai.",
+  "Shortcuts": "Shortcuts"
 }

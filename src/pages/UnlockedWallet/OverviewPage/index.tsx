@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
@@ -28,12 +29,20 @@ import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
 const OverviewPage = () => {
+  const { t } = useTranslation()
   const isLoadingData = useAppSelector((state) => state.addresses.loading)
+  const activeWalletName = useAppSelector((s) => s.activeWallet.name)
 
   return (
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
+        <WalletNameRow>
+          <WalletName>{activeWalletName}</WalletName>
+          <Subtitle>{t('Current wallet')}</Subtitle>
+        </WalletNameRow>
+
         <AmountsOverviewPanel isLoading={isLoadingData} />
+
         <Row>
           <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
@@ -52,9 +61,22 @@ const Row = styled.div`
 `
 
 const AssetsListStyled = styled(AssetsList)`
-  flex: 4;
+  flex: 2;
 `
 
 const AddressesContactsListStyled = styled(AddressesContactsList)`
-  flex: 3;
+  flex: 1;
+`
+
+const WalletNameRow = styled.div``
+
+const WalletName = styled.div`
+  font-size: 32px;
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const Subtitle = styled.div`
+  font-size: 14px;
+  color: ${({ theme }) => theme.font.tertiary};
+  margin-top: 8px;
 `

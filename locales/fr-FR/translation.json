@@ -315,7 +315,7 @@
   "Smart contract": "Smart contract",
   "All transactions loaded!": "All transactions loaded!",
   "Tokens": "Tokens",
-  "Today": "Today",
+  "Value today": "Value today",
   "NFTs": "NFTs",
   "Coming soon!": "Coming soon!",
   "Address tokens": "Address tokens",
@@ -354,5 +354,6 @@
   "Copy to clipboard failed": "Copy to clipboard failed",
   "Change wallet name": "Change wallet name",
   "Could not save new wallet name.": "Could not save new wallet name.",
-  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
+  "Shortcuts": "Shortcuts"
 }

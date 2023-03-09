@@ -17,14 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
-import classNames from 'classnames'
 import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import Amount from '@/components/Amount'
+import Box from '@/components/Box'
 import Button from '@/components/Button'
+import { TableRow } from '@/components/Table'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
@@ -46,10 +47,11 @@ interface AmountsOverviewPanelProps {
 const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOverviewPanelProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const theme = useTheme()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
   const addresses = address ? [address] : allAddresses
-  const [activeWallet, network] = useAppSelector((s) => [s.activeWallet, s.network])
+  const network = useAppSelector((s) => s.network)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
@@ -69,24 +71,19 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
   const lockWallet = () => dispatch(walletLocked())
 
   return (
-    <div className={classNames(className, { 'skeleton-loader': isLoading || isPriceLoading })}>
+    <div className={className}>
       <Balances>
-        {!singleAddress && (
-          <WalletNameRow>
-            <WalletName>{activeWallet.name}</WalletName>
-          </WalletNameRow>
-        )}
         <BalancesRow>
           <BalancesColumn>
+            <Today>{t('Value today')}</Today>
             {!isPriceLoading && (
               <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
             )}
-            <Today>{t('Today')}</Today>
           </BalancesColumn>
           {!singleAddress && (
             <>
               <Divider />
-              <BalancesColumn>
+              <AvailableLockedBalancesColumn>
                 <AvailableBalanceRow>
                   <BalanceLabel tabIndex={0} role="representation">
                     {t('Available')}
@@ -99,32 +96,48 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
                   </BalanceLabel>
                   <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
                 </LockedBalanceRow>
-              </BalancesColumn>
+              </AvailableLockedBalancesColumn>
             </>
           )}
         </BalancesRow>
       </Balances>
-      <Buttons>
-        <ShortcutButton transparent borderless onClick={() => setIsReceiveModalOpen(true)} Icon={ArrowDown}>
-          <ButtonText>{t('Receive')}</ButtonText>
-        </ShortcutButton>
-        <ShortcutButton transparent borderless onClick={() => setIsSendModalOpen(true)} Icon={ArrowUp}>
-          <ButtonText>{t('Send')}</ButtonText>
-        </ShortcutButton>
-        <ShortcutButton
-          transparent
-          borderless
-          onClick={() => (singleAddress ? setIsAddressOptionsModalOpen(true) : setIsSettingsModalOpen(true))}
-          Icon={Settings}
-        >
-          <ButtonText>{t(singleAddress ? 'Address settings' : 'Settings')}</ButtonText>
-        </ShortcutButton>
-        {!singleAddress && (
+      <Shortcuts>
+        <ShortcutsHeader>
+          <ShortcutsTitle>{t('Shortcuts')}</ShortcutsTitle>
+        </ShortcutsHeader>
+        <ButtonsGrid>
+          <ShortcutButton
+            transparent
+            borderless
+            onClick={() => setIsReceiveModalOpen(true)}
+            Icon={ArrowDown}
+            iconColor={theme.global.valid}
+          >
+            <ButtonText>{t('Receive')}</ButtonText>
+          </ShortcutButton>
+          <ShortcutButton
+            transparent
+            borderless
+            onClick={() => (singleAddress ? setIsAddressOptionsModalOpen(true) : setIsSettingsModalOpen(true))}
+            Icon={Settings}
+          >
+            <ButtonText>{t(singleAddress ? 'Address settings' : 'Settings')}</ButtonText>
+          </ShortcutButton>
+          <ShortcutButton
+            transparent
+            borderless
+            onClick={() => setIsSendModalOpen(true)}
+            Icon={ArrowUp}
+            iconColor={theme.global.accent}
+          >
+            <ButtonText>{t('Send')}</ButtonText>
+          </ShortcutButton>
+
           <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
             <ButtonText>{t('Lock wallet')}</ButtonText>
           </ShortcutButton>
-        )}
-      </Buttons>
+        </ButtonsGrid>
+      </Shortcuts>
       <ModalPortal>
         {isSendModalOpen && (
           <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
@@ -143,38 +156,63 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
 
 export default styled(AmountsOverviewPanel)`
   display: flex;
-  border-radius: var(--radius-huge);
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.background1};
+  gap: 30px;
   margin-bottom: 45px;
-  overflow: hidden;
-  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.3); // TODO: Add in theme?
+  padding: 36px 0;
 `
 
 const Balances = styled.div`
-  flex-grow: 1;
-  padding-top: 25px;
-`
-const WalletNameRow = styled.div`
-  padding: 0 40px 25px 40px;
+  flex: 2;
 `
 
 const BalancesRow = styled.div`
   display: flex;
   align-items: stretch;
   flex-grow: 1;
+  padding: 0 22px;
 `
 
-const Buttons = styled.div`
-  background-color: ${({ theme }) => theme.bg.secondary};
+const Shortcuts = styled(Box)`
   display: flex;
   flex-direction: column;
-  border-left: 1px solid ${({ theme }) => theme.border.primary};
+  flex: 1;
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.border.primary};
+`
+
+const ShortcutsHeader = styled(TableRow)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+`
+
+const ShortcutsTitle = styled.div`
+  font-size: 15px;
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const ButtonsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+`
+
+const ShortcutButton = styled(Button)`
+  border-radius: 0;
+  margin: 0;
+  width: auto;
+  background-color: ${({ theme }) => theme.bg.primary};
+  color: ${({ theme }) => theme.font.primary};
 `
 
 const BalancesColumn = styled.div`
   flex: 1;
-  padding-left: 40px;
+`
+
+const AvailableLockedBalancesColumn = styled(BalancesColumn)`
+  padding-left: 55px;
 `
 
 const Divider = styled.div`
@@ -183,21 +221,14 @@ const Divider = styled.div`
   margin: 17px 0;
 `
 
-const WalletName = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
-  font-size: 14px;
-  font-weight: var(--fontWeight-medium);
-`
-
 const AvailableBalanceRow = styled.div`
   margin-bottom: 20px;
 `
 const LockedBalanceRow = styled.div``
 
 const FiatTotalAmount = styled(Amount)`
-  font-size: 32px;
+  font-size: 38px;
   font-weight: var(--fontWeight-bold);
-  color: ${({ theme }) => theme.font.primary};
 `
 
 const AlphAmount = styled(Amount)`
@@ -213,19 +244,6 @@ const BalanceLabel = styled.label`
   margin-bottom: 3px;
 `
 
-const ShortcutButton = styled(Button)`
-  border-radius: 0;
-  margin: 0;
-  padding: 20px 25px;
-  min-width: 200px;
-  justify-content: flex-start;
-  height: auto;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-  }
-`
-
 const ButtonText = styled.div`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
@@ -233,6 +251,6 @@ const ButtonText = styled.div`
 
 const Today = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
-  font-size: 14px;
-  margin-top: 6px;
+  font-size: 16px;
+  margin-bottom: 8px;
 `
