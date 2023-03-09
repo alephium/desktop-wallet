@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
 import {
@@ -27,6 +27,7 @@ import {
 } from '@/storage/app-state/slices/activeWalletSlice'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
 import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
+import { RootState } from '@/storage/app-state/store'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { GeneralSettings, ThemeType } from '@/types/settings'
@@ -123,6 +124,11 @@ export const {
   osThemeChangeDetected,
   devModeShortcutDetected
 } = appSlice.actions
+
+export const selectDevModeStatus = createSelector(
+  (s: RootState) => s.app.devMode,
+  (devMode) => devMode && import.meta.env.DEV
+)
 
 export default appSlice
 

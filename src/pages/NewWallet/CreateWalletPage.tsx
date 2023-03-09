@@ -36,13 +36,14 @@ import Paragraph from '@/components/Paragraph'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import { useAppSelector } from '@/hooks/redux'
+import { selectDevModeStatus } from '@/storage/app-state/slices/appSlice'
 import { isWalletNameValid } from '@/utils/form-validation'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const devMode = useAppSelector((s) => s.app.devMode)
+  const devMode = useAppSelector(selectDevModeStatus)
 
   const [walletName, setWalletNameState] = useState(existingWalletName)
   const [walletNameError, setWalletNameError] = useState('')
@@ -50,12 +51,10 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const [passwordError, setPasswordError] = useState('')
   const [passwordCheck, setPasswordCheck] = useState(existingPassword)
 
-  const isDevEnvAndDevModeEnabled = import.meta.env.DEV && devMode
-
   const onUpdatePassword = (password: string): void => {
     let passwordError = ''
 
-    if (password.length && !isDevEnvAndDevModeEnabled) {
+    if (password.length && !devMode) {
       const strength = zxcvbn(password)
       if (strength.score < 1) {
         passwordError = t`Password is too weak`
@@ -68,7 +67,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   }
 
   const onUpdateWalletName = (walletName: string) => {
-    const isValidOrError = isDevEnvAndDevModeEnabled || isWalletNameValid({ name: walletName })
+    const isValidOrError = devMode || isWalletNameValid({ name: walletName })
 
     setWalletNameState(walletName)
     setWalletNameError(isValidOrError !== true ? isValidOrError : '')
