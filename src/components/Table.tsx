@@ -153,3 +153,22 @@ const ScrollableWrapper = styled.div`
   border-radius: var(--radius-medium);
   border: 1px solid ${({ theme }) => theme.border.primary};
 `
+
+export const TableHeader: FC<{ title: string; className?: string }> = ({ title, children, className }) => (
+  <TableHeaderRow className={className}>
+    <TableTitle>{title}</TableTitle>
+    {children}
+  </TableHeaderRow>
+)
+
+const TableHeaderRow = styled(TableRow)`
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+`
+
+const TableTitle = styled.div`
+  font-size: 15px;
+  font-weight: var(--fontWeight-semiBold);
+`

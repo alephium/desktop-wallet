@@ -20,10 +20,9 @@ import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
-import Table, { TableCell, TableCellPlaceholder, TableRow } from '@/components/Table'
+import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
@@ -80,14 +79,13 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
   return (
     <>
       <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
-        <TableHeaderRow>
-          <TableTitle>{title ?? t('Transactions')}</TableTitle>
+        <TableHeader title={title ?? t('Transactions')}>
           {limit !== undefined && (
             <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
               {t('See more')}
             </ActionLink>
           )}
-        </TableHeaderRow>
+        </TableHeader>
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
             <TransactionalInfo
@@ -145,15 +143,3 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
 }
 
 export default TransactionList
-
-const TableHeaderRow = styled(TableRow)`
-  display: flex;
-  justify-content: space-between;
-  height: 60px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-`
-
-const TableTitle = styled.div`
-  font-size: 16px;
-  font-weight: var(--fontWeight-semiBold);
-`

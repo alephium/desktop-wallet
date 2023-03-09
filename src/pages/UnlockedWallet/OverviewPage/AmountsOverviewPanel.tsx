@@ -25,7 +25,7 @@ import styled, { useTheme } from 'styled-components'
 import Amount from '@/components/Amount'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
-import { TableRow } from '@/components/Table'
+import { TableHeader } from '@/components/Table'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
@@ -102,9 +102,7 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
         </BalancesRow>
       </Balances>
       <Shortcuts>
-        <ShortcutsHeader>
-          <ShortcutsTitle>{t('Shortcuts')}</ShortcutsTitle>
-        </ShortcutsHeader>
+        <ShortcutsHeader title={t('Shortcuts')} />
         <ButtonsGrid>
           <ShortcutButton
             transparent
@@ -180,17 +178,8 @@ const Shortcuts = styled(Box)`
   background-color: ${({ theme }) => theme.border.primary};
 `
 
-const ShortcutsHeader = styled(TableRow)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const ShortcutsHeader = styled(TableHeader)`
   height: 50px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-`
-
-const ShortcutsTitle = styled.div`
-  font-size: 15px;
-  font-weight: var(--fontWeight-semiBold);
 `
 
 const ButtonsGrid = styled.div`
