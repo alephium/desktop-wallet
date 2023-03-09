@@ -29,6 +29,7 @@ import networkSlice, { networkListenerMiddleware } from '@/storage/app-state/sli
 import pendingTransactionsSlice from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { priceApi } from '@/storage/app-state/slices/priceApiSlice'
 import settingsSlice, { settingsListenerMiddleware } from '@/storage/app-state/slices/settingsSlice'
+import snackbarSlice from '@/storage/app-state/slices/snackbarSlice'
 
 export const store = configureStore({
   reducer: {
@@ -41,6 +42,7 @@ export const store = configureStore({
     [confirmedTransactionsSlice.name]: confirmedTransactionsSlice.reducer,
     [pendingTransactionsSlice.name]: pendingTransactionsSlice.reducer,
     [assetsInfoSlice.name]: assetsInfoSlice.reducer,
+    [snackbarSlice.name]: snackbarSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },
   middleware: (getDefaultMiddleware) =>

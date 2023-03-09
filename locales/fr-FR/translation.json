@@ -335,5 +335,7 @@
   "Select the address to receive funds to.": "Select the address to receive funds to.",
   "Choose a contact": "Choose a contact",
   "No options match the search criteria.": "No options match the search criteria.",
-  "Select an asset": "Select an asset"
+  "Select an asset": "Select an asset",
+  "Could not save contact.": "Could not save contact.",
+  "Encountered error while synching your addresses' data.": "Encountered error while synching your addresses' data."
 }

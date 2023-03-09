@@ -16,8 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
+import { createAction, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
+import { ErrorMessage } from '@/storage/app-state/actions'
 import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
 import { RootState } from '@/storage/app-state/store'
 import { Contact } from '@/types/contacts'
@@ -61,5 +62,7 @@ export const {
   contactsLoadedFromPersistentStorage,
   contactDeletedFromPeristentStorage
 } = contactsSlice.actions
+
+export const contactStorageFailed = createAction<ErrorMessage>(`${sliceName}/contactStorageFailed`)
 
 export default contactsSlice

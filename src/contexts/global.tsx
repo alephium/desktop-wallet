@@ -16,10 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError, getWalletFromMnemonic } from '@alephium/sdk'
+import { getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { PartialDeep } from 'type-fest'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
@@ -27,6 +26,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import { passwordValidationFailed } from '@/storage/app-state/actions'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/app-state/slices/activeWalletSlice'
 import { osThemeChangeDetected } from '@/storage/app-state/slices/appSlice'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
@@ -45,7 +45,6 @@ interface WalletUnlockProps {
 export interface GlobalContextProps {
   unlockWallet: (props: WalletUnlockProps) => void
   snackbarMessage: SnackbarMessage | undefined
-  setSnackbarMessage: (message: SnackbarMessage | undefined) => void
   newVersion: string
   requiresManualDownload: boolean
   newVersionDownloadTriggered: boolean
@@ -56,7 +55,6 @@ export interface GlobalContextProps {
 export const initialGlobalContext: GlobalContextProps = {
   unlockWallet: () => null,
   snackbarMessage: undefined,
-  setSnackbarMessage: () => null,
   newVersion: '',
   requiresManualDownload: false,
   newVersionDownloadTriggered: false,
@@ -73,12 +71,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   children,
   overrideContextValue
 }) => {
-  const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const settings = useAppSelector((s) => s.settings)
   const { restoreAddressesFromMetadata } = useAddressGeneration()
 
-  const [snackbarMessage, setSnackbarMessage] = useState<SnackbarMessage | undefined>()
   const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
 
@@ -110,10 +106,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
 
       afterUnlock()
     } catch (e) {
-      setSnackbarMessage({
-        text: getHumanReadableError(e, t('Invalid password')),
-        type: 'alert'
-      })
+      dispatch(passwordValidationFailed())
     }
   }
 
@@ -145,8 +138,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       value={merge(
         {
           unlockWallet,
-          snackbarMessage,
-          setSnackbarMessage,
           newVersion,
           requiresManualDownload,
           newVersionDownloadTriggered,

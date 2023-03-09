@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, produceZeros, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { addressToGroup, getHumanReadableError, produceZeros, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import {
   createAsyncThunk,
@@ -33,6 +33,8 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
+import { SnackbarMessage } from '@/components/SnackbarManager'
+import i18n from '@/i18n'
 import {
   activeWalletDeleted,
   walletLocked,
@@ -43,7 +45,14 @@ import {
 import { ALPH, selectAllAssetsInfo } from '@/storage/app-state/slices/assetsInfoSlice'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
 import { RootState } from '@/storage/app-state/store'
-import { Address, AddressBase, AddressHash, AddressSettings, LoadingEnabled } from '@/types/addresses'
+import {
+  Address,
+  AddressBase,
+  AddressDataSyncResult,
+  AddressHash,
+  AddressSettings,
+  LoadingEnabled
+} from '@/types/addresses'
 import { Asset, TokenDisplayBalances } from '@/types/assets'
 import { PendingTransaction } from '@/types/transactions'
 import { UnlockedWallet } from '@/types/wallet'
@@ -78,18 +87,25 @@ const initialState: AddressesState = addressesAdapter.getInitialState({
   status: 'uninitialized'
 })
 
-export const syncAddressesData = createAsyncThunk(
-  `${sliceName}/syncAddressesData`,
-  async (payload: AddressHash[] | undefined, { getState, dispatch }) => {
-    dispatch(loadingStarted())
+export const syncAddressesData = createAsyncThunk<
+  AddressDataSyncResult[],
+  AddressHash[] | undefined,
+  { rejectValue: SnackbarMessage }
+>(`${sliceName}/syncAddressesData`, async (payload, { getState, dispatch, rejectWithValue }) => {
+  dispatch(loadingStarted())
 
-    const state = getState() as RootState
-    const addresses = payload ?? (state.addresses.ids as AddressHash[])
-    const results = await fetchAddressesData(addresses)
+  const state = getState() as RootState
+  const addresses = payload ?? (state.addresses.ids as AddressHash[])
 
-    return results
+  try {
+    return await fetchAddressesData(addresses)
+  } catch (e) {
+    return rejectWithValue({
+      text: getHumanReadableError(e, i18n.t("Encountered error while synching your addresses' data.")),
+      type: 'alert'
+    })
   }
-)
+})
 
 export const syncAddressTransactionsNextPage = createAsyncThunk(
   `${sliceName}/syncAddressTransactionsNextPage`,
@@ -212,6 +228,9 @@ const addressesSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addCase(syncAddressesData.rejected, (state) => {
+        state.loading = false
+      })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
         const updatedAddresses = addressData.map(({ hash, details, tokens, transactions, mempoolTransactions }) => {

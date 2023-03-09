@@ -21,37 +21,42 @@ import { useEffect } from 'react'
 import styled from 'styled-components'
 
 import { fadeInBottom, fadeOut } from '@/animations'
-import { useGlobalContext } from '@/contexts/global'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
-import { deviceBreakPoints } from '@/style/globalStyles'
+import { snackbarDisplayTimeExpired } from '@/storage/app-state/slices/snackbarSlice'
+import { deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
 
 export interface SnackbarMessage {
   text: string
-  type: 'info' | 'alert' | 'success'
+  type?: 'info' | 'alert' | 'success'
   duration?: number
 }
 
-const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  const { setSnackbarMessage } = useGlobalContext()
+const SnackbarManager = () => {
+  const dispatch = useAppDispatch()
+  const messages = useAppSelector((state) => state.snackbarSlice.messages)
+
+  const message = messages.length > 0 ? messages[0] : undefined
 
   // Remove snackbar popup after its duration
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
 
     if (message) {
-      timer = setTimeout(() => setSnackbarMessage(undefined), message.duration || 3000)
+      timer = setTimeout(() => dispatch(snackbarDisplayTimeExpired()), message.duration || 3000)
     }
+
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [message, setSnackbarMessage])
+  }, [dispatch, message])
 
   return (
     <ModalPortal>
-      {message && (
+      {message?.text && (
         <SnackbarManagerContainer>
-          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message?.type}>
-            {message?.text}
+          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message.type}>
+            {message.text}
           </SnackbarPopup>
         </SnackbarManagerContainer>
       )}
@@ -64,7 +69,7 @@ export default SnackbarManager
 const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: ${walletSidebarWidthPx}px;
   display: flex;
   justify-content: flex-end;
   z-index: 1;

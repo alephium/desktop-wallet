@@ -28,7 +28,6 @@ import InfoBox from '@/components/InfoBox'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
@@ -59,7 +58,6 @@ const NetworkSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
-  const { setSnackbarMessage } = useGlobalContext()
 
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
@@ -132,16 +130,7 @@ const NetworkSettingsSection = () => {
 
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
     dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
-    setSnackbarMessage({ text: t`Custom network settings saved.`, type: 'info' })
-  }, [
-    dispatch,
-    network.name,
-    overrideSelectionIfMatchesPreset,
-    selectedNetwork,
-    setSnackbarMessage,
-    t,
-    tempAdvancedSettings
-  ])
+  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, selectedNetwork, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {

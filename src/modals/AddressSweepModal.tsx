@@ -28,9 +28,9 @@ import Amount from '@/components/Amount'
 import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { transactionBuildFailed, transactionSendFailed } from '@/storage/app-state/actions'
 import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/storage/app-state/slices/addressesSlice'
 import { Address } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
@@ -46,7 +46,6 @@ interface AddressSweepModal {
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { setSnackbarMessage } = useGlobalContext()
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
 
@@ -73,17 +72,13 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         setBuiltUnsignedTxs(unsignedTxs)
         setFee(fees)
       } catch (e) {
-        setSnackbarMessage({
-          text: getHumanReadableError(e, t`Error while building transaction`),
-          type: 'alert',
-          duration: 5000
-        })
+        dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
       }
       setIsLoading(false)
     }
 
     buildTransactions()
-  }, [setSnackbarMessage, sweepAddresses.from, sweepAddresses.to, t])
+  }, [dispatch, sweepAddresses.from, sweepAddresses.to, t])
 
   const onSweepClick = async () => {
     if (!sweepAddresses.from || !sweepAddresses.to) return
@@ -106,11 +101,11 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
     } catch (e) {
-      setSnackbarMessage({
-        text: getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from })),
-        type: 'alert',
-        duration: 5000
-      })
+      dispatch(
+        transactionSendFailed(
+          getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from }))
+        )
+      )
     }
     setIsLoading(false)
   }

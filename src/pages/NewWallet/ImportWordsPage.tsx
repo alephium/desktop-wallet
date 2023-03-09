@@ -31,16 +31,17 @@ import {
 } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
-import { useGlobalContext } from '@/contexts/global'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
+import { useAppDispatch } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
+import { walletCreationFailed } from '@/storage/app-state/actions'
 import { saveNewWallet } from '@/storage/storage-utils/walletStorageUtils'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {
   const { t } = useTranslation()
-  const { setSnackbarMessage } = useGlobalContext()
+  const dispatch = useAppDispatch()
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { discoverAndSaveUsedAddresses } = useAddressGeneration()
@@ -80,7 +81,7 @@ const ImportWordsPage = () => {
       discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, walletName, skipIndexes: [0], enableLoading: false })
       onButtonNext()
     } catch (e) {
-      setSnackbarMessage({ text: getHumanReadableError(e, t`Error while importing wallet`), type: 'alert' })
+      dispatch(walletCreationFailed(getHumanReadableError(e, t('Error while importing wallet'))))
     }
   }
 

@@ -24,14 +24,14 @@ import styled from 'styled-components'
 
 import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
-import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
+import { transactionBuildFailed, transactionSendFailed, transactionsSendSucceeded } from '@/storage/app-state/actions'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
@@ -58,9 +58,9 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   getWalletConnectResult
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
   const settings = useAppSelector((s) => s.settings)
-  const { setSnackbarMessage } = useGlobalContext()
 
   const [transactionData, setTransactionData] = useState<T | undefined>()
   const [isLoading, setIsLoading] = useState(false)
@@ -121,11 +121,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         setIsConsolidateUTXOsModalVisible(true)
         setConsolidationRequired(true)
       } else {
-        setSnackbarMessage({
-          text: getHumanReadableError(e, t`Error while building the transaction`),
-          type: 'alert',
-          duration: 5000
-        })
+        dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
       }
     }
 
@@ -158,21 +154,11 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         })
       }
 
-      setSnackbarMessage({
-        text: isSweeping && sweepUnsignedTxs.length > 1 ? t`Transactions sent!` : t`Transaction sent!`,
-        type: 'success'
-      })
+      dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
       onCloseExtended()
     } catch (e) {
-      console.error(e)
-
-      const error = extractErrorMsg(e)
-      setSnackbarMessage({
-        text: getHumanReadableError(e, `${t('Error while sending the transaction')}: ${error}`),
-        type: 'alert',
-        duration: 5000
-      })
-      onError(error)
+      dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
+      onError(extractErrorMsg(e))
     }
 
     setIsLoading(false)
