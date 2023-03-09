@@ -16,13 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { ArrowDown, ArrowUp, Settings } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import AddressEllipsed from '@/components/AddressEllipsed'
+import Box from '@/components/Box'
+import Button from '@/components/Button'
 import DotIcon from '@/components/DotIcon'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
+import AddressOptionsModal from '@/modals/AddressOptionsModal'
+import ModalPortal from '@/modals/ModalPortal'
+import ReceiveModal from '@/modals/ReceiveModal'
+import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SideModal from '@/modals/SideModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
@@ -36,7 +44,12 @@ interface AddressDetailsModalProps {
 
 const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])
+
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
+  const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
 
   if (!address) return null
 
@@ -68,6 +81,31 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     >
       <Content>
         <AmountsOverviewPanel addressHash={addressHash} />
+        <Shortcuts>
+          <ButtonsGrid>
+            <ShortcutButton
+              transparent
+              borderless
+              onClick={() => setIsReceiveModalOpen(true)}
+              Icon={ArrowDown}
+              iconColor={theme.global.valid}
+            >
+              <ButtonText>{t('Receive')}</ButtonText>
+            </ShortcutButton>
+            <ShortcutButton
+              transparent
+              borderless
+              onClick={() => setIsSendModalOpen(true)}
+              Icon={ArrowUp}
+              iconColor={theme.global.accent}
+            >
+              <ButtonText>{t('Send')}</ButtonText>
+            </ShortcutButton>
+            <ShortcutButton transparent borderless onClick={() => setIsAddressOptionsModalOpen(true)} Icon={Settings}>
+              <ButtonText>{t('Settings')}</ButtonText>
+            </ShortcutButton>
+          </ButtonsGrid>
+        </Shortcuts>
         <AssetsList
           addressHashes={[address.hash]}
           tokensTabTitle={t('Address tokens')}
@@ -75,6 +113,15 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         />
         <TransactionList title={t('Address transactions')} addressHash={address.hash} compact />
       </Content>
+      <ModalPortal>
+        {isSendModalOpen && (
+          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
+        )}
+        {isReceiveModalOpen && <ReceiveModal addressHash={address.hash} onClose={() => setIsReceiveModalOpen(false)} />}
+        {isAddressOptionsModalOpen && address && (
+          <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
+        )}
+      </ModalPortal>
     </SideModal>
   )
 }
@@ -132,4 +179,28 @@ const Subtitle = styled.div`
 
 const Content = styled.div`
   padding: 22px 28px;
+`
+
+const Shortcuts = styled(Box)`
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.border.primary};
+  margin-bottom: 30px;
+`
+
+const ButtonsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+`
+
+const ShortcutButton = styled(Button)`
+  border-radius: 0;
+  margin: 0;
+  width: auto;
+  background-color: ${({ theme }) => theme.bg.primary};
+  color: ${({ theme }) => theme.font.primary};
+`
+
+const ButtonText = styled.div`
+  font-weight: var(--fontWeight-semiBold);
 `

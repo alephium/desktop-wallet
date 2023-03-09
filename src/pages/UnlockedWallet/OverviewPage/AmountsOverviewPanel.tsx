@@ -101,41 +101,38 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
           )}
         </BalancesRow>
       </Balances>
-      <Shortcuts>
-        <ShortcutsHeader title={t('Shortcuts')} />
-        <ButtonsGrid>
-          <ShortcutButton
-            transparent
-            borderless
-            onClick={() => setIsReceiveModalOpen(true)}
-            Icon={ArrowDown}
-            iconColor={theme.global.valid}
-          >
-            <ButtonText>{t('Receive')}</ButtonText>
-          </ShortcutButton>
-          <ShortcutButton
-            transparent
-            borderless
-            onClick={() => (singleAddress ? setIsAddressOptionsModalOpen(true) : setIsSettingsModalOpen(true))}
-            Icon={Settings}
-          >
-            <ButtonText>{t(singleAddress ? 'Address settings' : 'Settings')}</ButtonText>
-          </ShortcutButton>
-          <ShortcutButton
-            transparent
-            borderless
-            onClick={() => setIsSendModalOpen(true)}
-            Icon={ArrowUp}
-            iconColor={theme.global.accent}
-          >
-            <ButtonText>{t('Send')}</ButtonText>
-          </ShortcutButton>
+      {!singleAddress && (
+        <Shortcuts>
+          <ShortcutsHeader title={t('Shortcuts')} />
+          <ButtonsGrid>
+            <ShortcutButton
+              transparent
+              borderless
+              onClick={() => setIsReceiveModalOpen(true)}
+              Icon={ArrowDown}
+              iconColor={theme.global.valid}
+            >
+              <ButtonText>{t('Receive')}</ButtonText>
+            </ShortcutButton>
+            <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
+              <ButtonText>{t('Settings')}</ButtonText>
+            </ShortcutButton>
+            <ShortcutButton
+              transparent
+              borderless
+              onClick={() => setIsSendModalOpen(true)}
+              Icon={ArrowUp}
+              iconColor={theme.global.accent}
+            >
+              <ButtonText>{t('Send')}</ButtonText>
+            </ShortcutButton>
 
-          <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
-            <ButtonText>{t('Lock wallet')}</ButtonText>
-          </ShortcutButton>
-        </ButtonsGrid>
-      </Shortcuts>
+            <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
+              <ButtonText>{t('Lock wallet')}</ButtonText>
+            </ShortcutButton>
+          </ButtonsGrid>
+        </Shortcuts>
+      )}
       <ModalPortal>
         {isSendModalOpen && (
           <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
@@ -234,7 +231,6 @@ const BalanceLabel = styled.label`
 `
 
 const ButtonText = styled.div`
-  font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
 `
 
