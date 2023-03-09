@@ -26,6 +26,7 @@ import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
+import { useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
 import ModalContainer from '@/modals/ModalContainer'
 import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSection'
@@ -47,8 +48,11 @@ const tabs: TabItem[] = [
 const SettingsModal = ({ onClose }: SettingsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
+  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
 
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+
+  const enabledTabs = !isAuthenticated ? tabs.filter(({ value }) => value !== 'devtools') : tabs
 
   return (
     <ModalContainer onClose={onClose}>
@@ -62,7 +66,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
           </TabTitlesColumnHeader>
           <TabTitlesColumnContent>
             <TabTitles>
-              {tabs.map((tab) => (
+              {enabledTabs.map((tab) => (
                 <TabTitleButton
                   key={tab.value}
                   role="secondary"
