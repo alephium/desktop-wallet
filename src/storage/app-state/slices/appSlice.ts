@@ -40,6 +40,7 @@ interface AppState {
   addressesPageInfoMessageClosed: boolean
   wallets: StoredWallet[]
   theme: Omit<ThemeType, 'system'>
+  devMode: boolean
 }
 
 const storedSettings = SettingsStorage.load('general') as GeneralSettings
@@ -49,7 +50,8 @@ const initialState: AppState = {
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
   wallets: WalletStorage.list(),
-  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme
+  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme,
+  devMode: false
 }
 
 const appSlice = createSlice({
@@ -77,6 +79,9 @@ const appSlice = createSlice({
     },
     osThemeChangeDetected: (state, action: PayloadAction<AppState['theme']>) => {
       state.theme = action.payload
+    },
+    devModeShortcutDetected: (state, action: PayloadAction<{ activate: boolean }>) => {
+      state.devMode = action.payload.activate
     }
   },
   extraReducers(builder) {
@@ -115,7 +120,8 @@ export const {
   modalClosed,
   addressesPageInfoMessageClosed,
   walletDeleted,
-  osThemeChangeDetected
+  osThemeChangeDetected,
+  devModeShortcutDetected
 } = appSlice.actions
 
 export default appSlice

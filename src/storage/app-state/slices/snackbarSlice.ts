@@ -31,6 +31,7 @@ import {
   walletCreationFailed
 } from '@/storage/app-state/actions'
 import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
 import {
   apiClientInitFailed,
@@ -111,6 +112,14 @@ const snackbarSlice = createSlice({
       )
       .addCase(passwordValidationFailed, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
+      )
+      .addCase(devModeShortcutDetected, (state, action) =>
+        displayMessageImmediately(
+          state,
+          action.payload.activate
+            ? { text: '💪 GOD mode activated!', type: 'success' }
+            : { text: '👩‍🌾 Back to a common mortal...' }
+        )
       )
   }
 })

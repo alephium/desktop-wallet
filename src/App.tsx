@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
-import styled, { ThemeProvider } from 'styled-components'
+import styled, { css, ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
 import AppSpinner from '@/components/AppSpinner'
@@ -32,6 +32,7 @@ import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { localStorageDataMigrated } from '@/storage/app-state/actions'
 import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
 import { syncNetworkTokensInfo } from '@/storage/app-state/slices/assetsInfoSlice'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/app-state/slices/networkSlice'
 import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
@@ -55,6 +56,7 @@ const App = () => {
     s.assetsInfo,
     s.app.loading
   ])
+  const showDevIndication = useDevModeShortcut()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
@@ -116,7 +118,7 @@ const App = () => {
 
       {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
 
-      <AppContainer>
+      <AppContainer showDevIndication={showDevIndication}>
         <CenteredSection>
           <Router />
         </CenteredSection>
@@ -134,14 +136,43 @@ const App = () => {
 
 export default App
 
-const AppContainer = styled.div`
+const AppContainer = styled.div<{ showDevIndication: boolean }>`
   display: flex;
   flex-direction: column;
   flex: 1;
 
   background-color: ${({ theme }) => theme.bg.secondary};
+
+  ${({ showDevIndication, theme }) =>
+    showDevIndication &&
+    css`
+      border: 5px solid ${theme.global.valid};
+    `};
 `
 
 const BannerSection = styled.div`
   flex-shrink: 0;
 `
+
+const useDevModeShortcut = () => {
+  const dispatch = useAppDispatch()
+  const devMode = useAppSelector((s) => s.app.devMode)
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const isCommandDShortcutPressed = event.metaKey === true && event.key === 'd' // Cmd + d (for dev)
+
+      if (!isCommandDShortcutPressed) return
+
+      dispatch(devModeShortcutDetected({ activate: !devMode }))
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [devMode, dispatch])
+
+  return devMode
+}
