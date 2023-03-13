@@ -37,6 +37,7 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { selectAddressByHash } from '@/storage/app-state/slices/addressesSlice'
 import { AddressHash } from '@/types/addresses'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface AddressDetailsModalProps {
   addressHash: AddressHash
@@ -47,6 +48,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const { t } = useTranslation()
   const theme = useTheme()
   const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])
+  const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
@@ -61,22 +63,32 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       width={800}
       header={
         <Header>
-          <AddressColor>
-            {address.isDefault && !isPassphraseUsed ? (
-              <Star color={address.color}>★</Star>
-            ) : (
-              <DotIcon size={11} color={address.color} />
-            )}
-          </AddressColor>
-          <Column>
-            <Label>{address.label || <AddressEllipsedStyled addressHash={address.hash} />}</Label>
-            <Subtitle>
-              {address.label && <Hash addressHash={address.hash} />}
-              <Group>
-                {t('Group')} {address.group}
-              </Group>
-            </Subtitle>
-          </Column>
+          <LeftSide>
+            <AddressColor>
+              {address.isDefault && !isPassphraseUsed ? (
+                <Star color={address.color}>★</Star>
+              ) : (
+                <DotIcon size={11} color={address.color} />
+              )}
+            </AddressColor>
+            <Column>
+              <Label>{address.label || <AddressEllipsedStyled addressHash={address.hash} />}</Label>
+              <Subtitle>
+                {address.label && <Hash addressHash={address.hash} />}
+                <Group>
+                  {t('Group')} {address.group}
+                </Group>
+              </Subtitle>
+            </Column>
+          </LeftSide>
+          <ExplorerButton
+            role="secondary"
+            transparent
+            short
+            onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)}
+          >
+            {t('Show in explorer')} ↗
+          </ExplorerButton>
         </Header>
       }
     >
@@ -136,6 +148,17 @@ export default AddressDetailsModal
 const Header = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
+`
+
+const LeftSide = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const ExplorerButton = styled(Button)`
+  width: auto;
+  margin-right: 30px;
 `
 
 const Label = styled.div`
