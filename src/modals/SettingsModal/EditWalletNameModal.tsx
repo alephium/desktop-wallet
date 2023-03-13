@@ -23,9 +23,9 @@ import { useTranslation } from 'react-i18next'
 
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
-import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { CenteredModalProps, ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { walletNameStorageFailed } from '@/storage/app-state/actions'
 import { newWalletNameStored } from '@/storage/app-state/slices/activeWalletSlice'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { ActiveWallet } from '@/types/wallet'
@@ -39,7 +39,6 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const activeWallet = useAppSelector((state) => state.activeWallet)
-  const { setSnackbarMessage } = useGlobalContext()
   const { control, handleSubmit, formState } = useForm<FormData>({
     defaultValues: { name: activeWallet.name },
     mode: 'onChange'
@@ -55,15 +54,8 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
       WalletStorage.update(activeWallet.id, data)
       dispatch(newWalletNameStored(data.name))
       props.onClose()
-      setSnackbarMessage({
-        text: t('Wallet name updated to: {{ newWalletName }}', { newWalletName: data.name }),
-        type: 'success'
-      })
     } catch (e) {
-      setSnackbarMessage({
-        text: getHumanReadableError(e, t('Could not save new wallet name.')),
-        type: 'alert'
-      })
+      dispatch(walletNameStorageFailed(getHumanReadableError(e, t('Could not save new wallet name.'))))
     }
   }
 

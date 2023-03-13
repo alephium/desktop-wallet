@@ -33,3 +33,4 @@ export const transactionSendFailed = createAction<Message>('tx/transactionSendFa
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
 
 export const walletCreationFailed = createAction<Message>('wallet/walletCreationFailed')
+export const walletNameStorageFailed = createAction<Message>('wallet/walletNameStorageFailed')
