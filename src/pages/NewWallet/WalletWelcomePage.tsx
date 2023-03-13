@@ -34,7 +34,7 @@ import Paragraph from '@/components/Paragraph'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
-import { getRandomLabelColor } from '@/utils/colors'
+import { saveAddressSettings } from '@/storage/storage-utils/addressesStorageUtils'
 import { useTimeout, useWindowSize } from '@/utils/hooks'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
@@ -59,8 +59,14 @@ const WalletWelcomePage = () => {
     if (shouldGenerateOneAddressPerGroup && defaultAddress) {
       generateAndSaveOneAddressPerGroup({
         labelPrefix: 'Address',
-        labelColor: getRandomLabelColor(),
+        labelColor: defaultAddress.color,
         skipGroups: [defaultAddress.group]
+      })
+
+      saveAddressSettings(defaultAddress, {
+        isDefault: true,
+        color: defaultAddress.color,
+        label: `Address ${defaultAddress.group}`
       })
     }
 
