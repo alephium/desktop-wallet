@@ -50,7 +50,7 @@ export default styled(AssetLogo)`
           background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
         `
       : css`
-          background-color: ${theme.bg.contrast};
+          background-color: ${theme.name === 'dark' ? theme.bg.contrast : theme.bg.secondary};
         `}
 `
 
