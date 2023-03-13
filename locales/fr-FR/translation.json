@@ -307,7 +307,7 @@
   "Addresses": "Addresses",
   "Developer tools": "Developer tools",
   "Enable developer tools": "Enable developer tools",
-  "Deploy and call smart contracts": "Deploy and call smart contracts",
+  "Features for developers only": "Features for developers only",
   "Transfers": "Transfers",
   "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.": "Gas amount must be greater than {{ MINIMAL_GAS_AMOUNT }}.",
   "Gas price must be greater than {{ amount }}": "Gas price must be greater than {{ amount }}",
@@ -337,5 +337,18 @@
   "No options match the search criteria.": "No options match the search criteria.",
   "Select an asset": "Select an asset",
   "Could not save contact.": "Could not save contact.",
-  "Encountered error while synching your addresses' data.": "Encountered error while synching your addresses' data."
+  "Encountered error while synching your addresses' data.": "Encountered error while synching your addresses' data.",
+  "Private key copied!": "Private key copied!",
+  "Could not copy private key.": "Could not copy private key.",
+  "Smart contracts": "Smart contracts",
+  "Private key export": "Private key export",
+  "Click on an address to copy its private key.": "Click on an address to copy its private key.",
+  "Enter your password to copy the private key.": "Enter your password to copy the private key.",
+  "Copy private key": "Copy private key",
+  "This is a feature for developers only.": "This is a feature for developers only.",
+  "You will not be able to recover your account with the private key!": "You will not be able to recover your account with the private key!",
+  "Please, backup your secret phrase instead.": "Please, backup your secret phrase instead.",
+  "Never disclose this key.": "Never disclose this key.",
+  "Anyone with your private keys can steal any assets held in your addresses.": "Anyone with your private keys can steal any assets held in your addresses.",
+  "Copy to clipboard failed": "Copy to clipboard failed"
 }

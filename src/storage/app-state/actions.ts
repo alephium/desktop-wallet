@@ -18,15 +18,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createAction } from '@reduxjs/toolkit'
 
-export type ErrorMessage = string
+export type Message = string
+export type OptionalMessage = string | undefined
 
 export const languageChangeStarted = createAction('app/languageChangeStarted')
 export const languageChangeFinished = createAction('app/languageChangeFinished')
-export const copiedToClipboard = createAction('app/copiedToClipboard')
+export const copiedToClipboard = createAction<OptionalMessage>('app/copiedToClipboard')
+export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToClipboardFailed')
 export const passwordValidationFailed = createAction('app/passwordValidationFailed')
 
-export const transactionBuildFailed = createAction<ErrorMessage>('tx/transactionBuildFailed')
-export const transactionSendFailed = createAction<ErrorMessage>('tx/transactionSendFailed')
+export const transactionBuildFailed = createAction<Message>('tx/transactionBuildFailed')
+export const transactionSendFailed = createAction<Message>('tx/transactionSendFailed')
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
 
-export const walletCreationFailed = createAction<ErrorMessage>('wallet/walletCreationFailed')
+export const walletCreationFailed = createAction<Message>('wallet/walletCreationFailed')
