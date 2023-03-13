@@ -26,7 +26,13 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
-import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
+import {
+  languageChangeFinished,
+  languageChangeStarted,
+  localStorageDataMigrated,
+  systemLanguageMatchFailed,
+  systemLanguageMatchSucceeded
+} from '@/storage/app-state/actions'
 import { RootState } from '@/storage/app-state/store'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import { GeneralSettings, Settings } from '@/types/settings'
@@ -59,7 +65,14 @@ const settingsSlice = createSlice({
     }
   },
   extraReducers(builder) {
-    builder.addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
+    builder
+      .addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
+      .addCase(systemLanguageMatchSucceeded, (state, action) => {
+        state.language = action.payload
+      })
+      .addCase(systemLanguageMatchFailed, (state) => {
+        state.language = 'en-US'
+      })
   }
 })
 
@@ -82,6 +95,8 @@ settingsListenerMiddleware.startListening({
     passwordRequirementToggled,
     devToolsToggled,
     languageChanged,
+    systemLanguageMatchSucceeded,
+    systemLanguageMatchFailed,
     walletLockTimeChanged
   ),
   effect: (_, { getState }) => {
@@ -92,13 +107,15 @@ settingsListenerMiddleware.startListening({
 })
 
 settingsListenerMiddleware.startListening({
-  matcher: isAnyOf(localStorageDataMigrated, languageChanged),
+  matcher: isAnyOf(localStorageDataMigrated, languageChanged, systemLanguageMatchSucceeded, systemLanguageMatchFailed),
   effect: async (_, { getState, dispatch }) => {
     const state = getState() as RootState
 
     const settings = state[sliceName]
 
     const handleLanguageChange = async () => {
+      if (!settings.language) return
+
       dispatch(languageChangeStarted())
 
       try {
@@ -111,7 +128,7 @@ settingsListenerMiddleware.startListening({
       }
     }
 
-    if (i18next.language !== settings.language) {
+    if (settings.language && i18next.language !== settings.language) {
       handleLanguageChange()
     }
   }

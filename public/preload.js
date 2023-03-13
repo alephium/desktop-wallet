@@ -60,6 +60,7 @@ contextBridge.exposeInMainWorld('electron', {
     }
   },
   app: {
-    hide: () => ipcRenderer.invoke('app:hide')
+    hide: () => ipcRenderer.invoke('app:hide'),
+    getSystemLanguage: async () => ipcRenderer.invoke('app:getSystemLanguage')
   }
 })

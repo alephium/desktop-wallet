@@ -23,7 +23,7 @@ export interface GeneralSettings {
   walletLockTimeInMinutes: number | null
   discreetMode: boolean
   passwordRequirement: boolean
-  language: Language
+  language: Language | undefined
   devTools: boolean
 }
 
