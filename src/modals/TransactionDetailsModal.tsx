@@ -74,7 +74,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {assets.map(({ id, amount, decimals, symbol }) => (
-            <AmountContainer key={id}>
+            <AmountContainer key={id} color={amountTextColor}>
               {amountSign}
               <Amount
                 tabIndex={0}
@@ -153,7 +153,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <DetailsRow label={t`Total value`}>
           <Amounts>
             {assets.map(({ id, amount, decimals, symbol }) => (
-              <AmountContainer key={id}>
+              <AmountContainer key={id} color={amountTextColor}>
                 {amountSign}
                 <Amount
                   tabIndex={0}
@@ -290,10 +290,11 @@ const ActionLinkStyled = styled(ActionLink)`
   justify-content: right;
 `
 
-const AmountContainer = styled.div`
+const AmountContainer = styled.div<{ color: string }>`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
+  color: ${({ color }) => color};
 `
 
 const Amounts = styled.div`
