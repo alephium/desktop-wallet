@@ -333,7 +333,7 @@ const HorizontalDividerStyled = styled(HorizontalDivider)`
 `
 
 const Content = styled.div`
-  margin-top: 36px;
+  padding-top: 36px;
 
   & > ${Box}:not(:last-child) {
     margin-bottom: 35px;
