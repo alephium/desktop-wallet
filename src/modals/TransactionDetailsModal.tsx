@@ -73,7 +73,6 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
-          {amountSign}
           {assets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id}>
               {amountSign}
