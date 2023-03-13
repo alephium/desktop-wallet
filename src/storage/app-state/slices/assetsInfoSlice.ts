@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { NUM_OF_ZEROS_IN_QUINTILLION } from '@alephium/sdk'
-import TokensMetadata, { TokenInfo } from '@alephium/token-list'
+import { TokenInfo, TokenList } from '@alephium/token-list'
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
@@ -53,13 +53,20 @@ const initialState: AssetsInfoState = assetsInfoAdapter.addOne(
 export const syncNetworkTokensInfo = createAsyncThunk(`${sliceName}/syncNetworkTokensInfo`, async (_, { getState }) => {
   const state = getState() as RootState
 
-  // TODO: Fetch metadata from GitHub instead of NPM package?
-  const metadata =
-    state.network.settings.networkId === 0
-      ? TokensMetadata.mainnet
-      : state.network.settings.networkId === 1
-      ? TokensMetadata.testnet
-      : undefined
+  let metadata = undefined
+  const network =
+    state.network.settings.networkId === 0 ? 'mainnet' : state.network.settings.networkId === 1 ? 'testnet' : undefined
+
+  if (network) {
+    try {
+      const response = await fetch(
+        `https://raw.githubusercontent.com/alephium/token-list/master/tokens/${network}.json`
+      )
+      metadata = (await response.json()) as TokenList
+    } catch (e) {
+      console.warn('No metadata for network ID ', state.network.settings.networkId)
+    }
+  }
 
   return metadata
 })
