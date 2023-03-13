@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ArrowDown, ArrowUp, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import AddressEllipsed from '@/components/AddressEllipsed'
@@ -80,7 +81,11 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       }
     >
       <Content>
-        <AmountsOverviewPanel addressHash={addressHash} />
+        <AmountsOverviewPanel addressHash={addressHash}>
+          <QrCodeBox>
+            <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
+          </QrCodeBox>
+        </AmountsOverviewPanel>
         <Shortcuts>
           <ButtonsGrid>
             <ShortcutButton
@@ -203,4 +208,11 @@ const ShortcutButton = styled(Button)`
 
 const ButtonText = styled.div`
   font-weight: var(--fontWeight-semiBold);
+`
+
+const QrCodeBox = styled(Box)`
+  padding: 12px;
+  width: auto;
+  margin-left: auto;
+  margin-right: 16px;
 `

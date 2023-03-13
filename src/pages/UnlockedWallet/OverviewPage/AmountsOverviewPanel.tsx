@@ -17,22 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
-import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
-import Box from '@/components/Box'
-import Button from '@/components/Button'
-import { TableHeader } from '@/components/Table'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import AddressOptionsModal from '@/modals/AddressOptionsModal'
-import ModalPortal from '@/modals/ModalPortal'
-import ReceiveModal from '@/modals/ReceiveModal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
-import SettingsModal from '@/modals/SettingsModal'
-import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { useAppSelector } from '@/hooks/redux'
 import { selectAddressByHash, selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
 import { getAvailableBalance } from '@/utils/addresses'
@@ -44,10 +33,8 @@ interface AmountsOverviewPanelProps {
   addressHash?: string
 }
 
-const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOverviewPanelProps) => {
+const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children }) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-  const theme = useTheme()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
   const addresses = address ? [address] : allAddresses
@@ -56,19 +43,12 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
     pollingInterval: 60000
   })
 
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
-  const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
-
   const singleAddress = !!address
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
   const balanceInFiat = calculateAmountWorth(totalBalance, price ?? 0)
   const isOnline = network.status === 'online'
-
-  const lockWallet = () => dispatch(walletLocked())
 
   return (
     <div className={className}>
@@ -101,50 +81,7 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
           )}
         </BalancesRow>
       </Balances>
-      {!singleAddress && (
-        <Shortcuts>
-          <ShortcutsHeader title={t('Shortcuts')} />
-          <ButtonsGrid>
-            <ShortcutButton
-              transparent
-              borderless
-              onClick={() => setIsReceiveModalOpen(true)}
-              Icon={ArrowDown}
-              iconColor={theme.global.valid}
-            >
-              <ButtonText>{t('Receive')}</ButtonText>
-            </ShortcutButton>
-            <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
-              <ButtonText>{t('Settings')}</ButtonText>
-            </ShortcutButton>
-            <ShortcutButton
-              transparent
-              borderless
-              onClick={() => setIsSendModalOpen(true)}
-              Icon={ArrowUp}
-              iconColor={theme.global.accent}
-            >
-              <ButtonText>{t('Send')}</ButtonText>
-            </ShortcutButton>
-
-            <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
-              <ButtonText>{t('Lock wallet')}</ButtonText>
-            </ShortcutButton>
-          </ButtonsGrid>
-        </Shortcuts>
-      )}
-      <ModalPortal>
-        {isSendModalOpen && (
-          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
-        )}
-        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-        {isReceiveModalOpen && (
-          <ReceiveModal addressHash={address?.hash} onClose={() => setIsReceiveModalOpen(false)} />
-        )}
-        {isAddressOptionsModalOpen && address && (
-          <AddressOptionsModal address={address} onClose={() => setIsAddressOptionsModalOpen(false)} />
-        )}
-      </ModalPortal>
+      {children && <RightColumnContent>{children}</RightColumnContent>}
     </div>
   )
 }
@@ -167,30 +104,10 @@ const BalancesRow = styled.div`
   padding: 0 22px;
 `
 
-const Shortcuts = styled(Box)`
+const RightColumnContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: hidden;
-  background-color: ${({ theme }) => theme.border.primary};
-`
-
-const ShortcutsHeader = styled(TableHeader)`
-  height: 50px;
-`
-
-const ButtonsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-`
-
-const ShortcutButton = styled(Button)`
-  border-radius: 0;
-  margin: 0;
-  width: auto;
-  background-color: ${({ theme }) => theme.bg.primary};
-  color: ${({ theme }) => theme.font.primary};
 `
 
 const BalancesColumn = styled.div`
@@ -228,10 +145,6 @@ const BalanceLabel = styled.label`
   font-size: 11px;
   display: block;
   margin-bottom: 3px;
-`
-
-const ButtonText = styled.div`
-  font-weight: var(--fontWeight-semiBold);
 `
 
 const Today = styled.div`
