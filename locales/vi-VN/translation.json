@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "Không có địa chỉ ví nào có đủ số dư. Vui lòng nạp thêm vào tài khoản và thử lại sau.",
   "Select": "Chọn",
   "Amount exceeds available balance": "Số lượng vượt quá số dư tài khoản",
-  "available": "có sẳn",
+  "Available": "Có sẳn",
   "Use max amount": "Sử dụng tất cả số dư",
   "Current network": "Mạng hiện tại",
   "Amount": "Số lượng",
@@ -191,6 +191,7 @@
   "Welcome.": "Chào mừng.",
   "Welcome back.": "Chào mừng bạn quay trở lại.",
   "Unlock a wallet to continue.": "Unlock a wallet to continue.",
+  "Unlock your wallet to continue.": "Unlock your wallet to continue.",
   "Import or create a wallet": "Import or create a wallet",
   "(current)": "(hiện tại)",
   "Default address for sending transactions.": "Địa chỉ ví mặc định để gửi các giao dịch.",
@@ -349,5 +350,8 @@
   "Please, backup your secret phrase instead.": "Please, backup your secret phrase instead.",
   "Never disclose this key.": "Never disclose this key.",
   "Anyone with your private keys can steal any assets held in your addresses.": "Anyone with your private keys can steal any assets held in your addresses.",
-  "Copy to clipboard failed": "Copy to clipboard failed"
+  "Copy to clipboard failed": "Copy to clipboard failed",
+  "Change wallet name": "Change wallet name",
+  "Could not save new wallet name.": "Could not save new wallet name.",
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
 }

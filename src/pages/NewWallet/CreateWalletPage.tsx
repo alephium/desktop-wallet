@@ -36,12 +36,14 @@ import Paragraph from '@/components/Paragraph'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import { useAppSelector } from '@/hooks/redux'
+import { selectDevModeStatus } from '@/storage/app-state/slices/appSlice'
+import { isWalletNameValid } from '@/utils/form-validation'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
   const { t } = useTranslation()
   const { setWalletName, setPassword, walletName: existingWalletName, password: existingPassword } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
-  const walletNames = useAppSelector((state) => state.app.storedWalletNames)
+  const devMode = useAppSelector(selectDevModeStatus)
 
   const [walletName, setWalletNameState] = useState(existingWalletName)
   const [walletNameError, setWalletNameError] = useState('')
@@ -52,7 +54,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   const onUpdatePassword = (password: string): void => {
     let passwordError = ''
 
-    if (password.length) {
+    if (password.length && !devMode) {
       const strength = zxcvbn(password)
       if (strength.score < 1) {
         passwordError = t`Password is too weak`
@@ -65,16 +67,10 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
   }
 
   const onUpdateWalletName = (walletName: string) => {
-    let walletNameError = ''
-
-    if (walletName.length < 3) {
-      walletNameError = t`Wallet name is too short`
-    } else if (walletNames.includes(walletName)) {
-      walletNameError = t`Wallet name already taken`
-    }
+    const isValidOrError = devMode || isWalletNameValid({ name: walletName })
 
     setWalletNameState(walletName)
-    setWalletNameError(walletNameError)
+    setWalletNameError(isValidOrError !== true ? isValidOrError : '')
   }
 
   const isNextButtonActive =

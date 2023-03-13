@@ -42,7 +42,7 @@ interface NewAddressModalProps {
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
   const { t } = useTranslation()
-  const { mnemonic, isPassphraseUsed, name: walletName } = useAppSelector((state) => state.activeWallet)
+  const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
 
   const { generateAddress, generateAndSaveOneAddressPerGroup } = useAddressGeneration()
@@ -65,8 +65,6 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [singleAddress])
 
-  if (!mnemonic || !walletName) return null
-
   const onGenerateClick = () => {
     if (singleAddress && newAddressData) {
       const settings = {
@@ -74,7 +72,8 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         color: addressLabel.color,
         label: addressLabel.title
       }
-      saveNewAddresses([{ ...newAddressData, ...settings }], { walletName, mnemonic })
+
+      saveNewAddresses([{ ...newAddressData, ...settings }])
     } else {
       generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
     }

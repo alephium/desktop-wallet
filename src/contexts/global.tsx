@@ -35,8 +35,8 @@ import { migrateUserData } from '@/utils/migration'
 import { getWalletInitialAddress } from '@/utils/wallet'
 
 interface WalletUnlockProps {
-  event: 'login' | 'switch'
-  walletName: string
+  event: 'unlock' | 'switch'
+  walletId: string
   password: string
   afterUnlock: () => void
   passphrase?: string
@@ -81,28 +81,31 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const triggerNewVersionDownload = () => setNewVersionDownloadTriggered(true)
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
-  const unlockWallet = async ({ event, walletName, password, afterUnlock, passphrase }: WalletUnlockProps) => {
+  const unlockWallet = async ({ event, walletId, password, afterUnlock, passphrase }: WalletUnlockProps) => {
     const isPassphraseUsed = !!passphrase
 
     try {
-      let wallet = WalletStorage.load(walletName, password)
+      let wallet = WalletStorage.load(walletId, password)
 
       if (isPassphraseUsed) {
-        wallet = getWalletFromMnemonic(wallet.mnemonic, passphrase)
-        migrateUserData(wallet.mnemonic, walletName)
+        wallet = { ...wallet, ...getWalletFromMnemonic(wallet.mnemonic, passphrase) }
       }
 
       const payload = {
         wallet: {
-          name: walletName,
+          id: walletId,
+          name: wallet.name,
           mnemonic: wallet.mnemonic,
           isPassphraseUsed
         },
         initialAddress: getWalletInitialAddress(wallet)
       }
-      dispatch(event === 'login' ? walletUnlocked(payload) : walletSwitched(payload))
+      dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
 
-      if (!isPassphraseUsed) restoreAddressesFromMetadata({ walletName, mnemonic: wallet.mnemonic, isPassphraseUsed })
+      if (!isPassphraseUsed) {
+        migrateUserData()
+        restoreAddressesFromMetadata()
+      }
 
       afterUnlock()
     } catch (e) {

@@ -18,9 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
+import { nanoid } from 'nanoid'
 
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import { DataKey } from '@/storage/persistent-storage/encryptedPersistentStorage'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/persistent-storage/encryptedPersistentStorage'
 import SettingsStorage, {
   defaultSettings,
   networkPresets
@@ -28,6 +29,7 @@ import SettingsStorage, {
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
 import { GeneralSettings, NetworkSettings, ThemeType } from '@/types/settings'
+import { StoredWallet } from '@/types/wallet'
 import { getRandomLabelColor } from '@/utils/colors'
 import { stringToDoubleSHA256HexString } from '@/utils/misc'
 
@@ -44,18 +46,13 @@ export const latestAddressMetadataVersion = '2022-05-27T12:00:00Z'
 //
 // ANY MODIFICATIONS MUST HAVE TESTS ADDED TO tests/migration.test.ts!
 //
-export const migrateUserData = (mnemonic: string, walletName: string) => {
-  console.log('🚚 Migrating user data')
 
-  _20220511_074100()
-  _20220527_120000({ mnemonic, walletName })
-  _20230209_124300({ mnemonic, walletName })
-}
-
+// We first run the migration that do not require authentication, on app launch
 export const migrateWalletData = () => {
   console.log('🚚 Migrating wallet data')
 
-  _20230124_164900()
+  _20220511_074100()
+  _20230228_155100()
 }
 
 export const migrateGeneralSettings = (): GeneralSettings => {
@@ -75,52 +72,64 @@ export const migrateNetworkSettings = (): NetworkSettings => {
   return SettingsStorage.load('network') as NetworkSettings
 }
 
+// Then we run user data migrations after the user has authenticated
+export const migrateUserData = () => {
+  console.log('🚚 Migrating user data')
+
+  _20220527_120000()
+  _20230209_124300()
+}
+
 // Change localStorage address metadata key from "{walletName}-addresses-metadata" to "addresses-metadata-{walletName}"
 // See https://github.com/alephium/desktop-wallet/issues/236
 export const _20220511_074100 = () => {
-  const walletNames = WalletStorage.list()
+  const prefix = 'wallet-'
+  const prefixLength = prefix.length
+  const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata-'
 
-  for (const walletName of walletNames) {
-    const keyDeprecated = `${walletName}-addresses-metadata`
-    const data = localStorage.getItem(keyDeprecated)
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
 
-    if (data) {
-      const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
-      const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+    if (key?.startsWith(prefix)) {
+      const data = localStorage.getItem(key)
 
-      localStorage.setItem(keyNew, data)
-      localStorage.removeItem(keyDeprecated)
+      if (!data) continue
+
+      const walletName = key.substring(prefixLength)
+      const keyDeprecated = `${walletName}-addresses-metadata`
+      const addressesMetadata = localStorage.getItem(keyDeprecated)
+
+      if (addressesMetadata) {
+        const keyNew = `${addressesMetadataLocalStorageKeyPrefix}${walletName}`
+
+        localStorage.setItem(keyNew, addressesMetadata)
+        localStorage.removeItem(keyDeprecated)
+      }
     }
   }
 }
 
-// Encrypt address metadata key and value
-export const _20220527_120000 = ({ mnemonic, walletName }: DataKey) => {
+// Encrypt address metadata value
+export const _20220527_120000 = () => {
+  const { mnemonic, walletId } = getEncryptedStoragePropsFromActiveWallet()
   const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
-  const keyDeprecated = `${addressesMetadataLocalStorageKeyPrefix}-${walletName}`
+  const key = `${addressesMetadataLocalStorageKeyPrefix}-${walletId}`
 
-  const json = localStorage.getItem(keyDeprecated)
+  const json = localStorage.getItem(key)
   if (json === null) return
 
   const addressSettingsList = JSON.parse(json)
 
-  //
-  // The old format is not encrypted and is a list.
-  // The data structure can be deserialized and then encrypted.
-  // We can also take this opportunity to start versioning our data.
-  //
+  // The old format is not encrypted and is a list. The data structure can be deserialized and then encrypted. We can
+  // also take this opportunity to start versioning our data.
   if (Array.isArray(addressSettingsList)) {
-    const keyNew = `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
-
     localStorage.setItem(
-      keyNew,
+      key,
       JSON.stringify({
         version: '2022-05-27T12:00:00Z',
-        encryptedSettings: encrypt(mnemonic, JSON.stringify(addressSettingsList))
+        encrypted: encrypt(mnemonic, JSON.stringify(addressSettingsList))
       })
     )
-
-    localStorage.removeItem(keyDeprecated)
   }
 }
 
@@ -170,24 +179,84 @@ const migrateReleaseNetworkSettings = (migrationsMapping: Record<string, string>
   SettingsStorage.store('network', newNetworkSettings)
 }
 
-// Instead of storing the wallet as a JSON stringified string, simply store a string
-export const _20230124_164900 = () => {
-  WalletStorage.list().forEach((name) => {
-    const wallet = window.localStorage.getItem(WalletStorage.getKey(name))
+// 1. Generate a unique wallet ID for every wallet entry
+// 2. Use wallet ID as key to store wallet and address data, instead of wallet name
+// 3. Store wallet ID and wallet name in entry value
+export const _20230228_155100 = () => {
+  const walletPrefix = 'wallet-'
+  const walletPrefixLength = walletPrefix.length
+  const addressesMetadataPrefix = 'addresses-metadata-'
 
-    if (!wallet) return
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
 
-    const parsedWallet = JSON.parse(wallet)
+    if (key?.startsWith(walletPrefix)) {
+      const data = localStorage.getItem(key)
 
-    if (typeof parsedWallet === 'string') {
-      window.localStorage.setItem(WalletStorage.getKey(name), parsedWallet)
+      if (!data) continue
+
+      const nameOrId = key.substring(walletPrefixLength)
+      const walletOldKey = `${walletPrefix}${nameOrId}`
+      const walletRaw = localStorage.getItem(walletOldKey)
+
+      if (!walletRaw) continue
+
+      const wallet = JSON.parse(walletRaw)
+
+      if (
+        typeof wallet === 'string' ||
+        (typeof wallet === 'object' &&
+          !Object.prototype.hasOwnProperty.call(wallet, 'id') &&
+          !Object.prototype.hasOwnProperty.call(wallet, 'name'))
+      ) {
+        const id = nanoid()
+        const name = nameOrId // Since the wallet didn't have a "name" property, we know that the name was used as key
+        const newKey = WalletStorage.getKey(id)
+        const newValue: StoredWallet = {
+          id,
+          name,
+          encrypted: typeof wallet === 'string' ? wallet : JSON.stringify(wallet)
+        }
+
+        localStorage.setItem(newKey, JSON.stringify(newValue))
+        localStorage.removeItem(walletOldKey)
+
+        const addressMetadataOldKeys = [
+          `${addressesMetadataPrefix}${name}`,
+          `${addressesMetadataPrefix}${stringToDoubleSHA256HexString(name)}`
+        ]
+
+        addressMetadataOldKeys.forEach((oldKey) => {
+          const addressesMetadataRaw = localStorage.getItem(oldKey)
+
+          if (addressesMetadataRaw) {
+            // Use new wallet ID as key to store address metadata, instead of wallet name
+
+            let addressesMetadata = JSON.parse(addressesMetadataRaw)
+
+            // Rename encryptedSettings property to encrypted
+            if (
+              typeof addressesMetadata === 'object' &&
+              Object.prototype.hasOwnProperty.call(addressesMetadata, 'encryptedSettings')
+            ) {
+              addressesMetadata = {
+                version: addressesMetadata.version,
+                encrypted: addressesMetadata.encryptedSettings
+              }
+            }
+
+            localStorage.setItem(AddressMetadataStorage.getKey(id), JSON.stringify(addressesMetadata))
+            localStorage.removeItem(oldKey)
+          }
+        })
+      }
     }
-  })
+  }
 }
 
 // Change isMain to isDefault settings of each address and ensure it has a color
-export const _20230209_124300 = (dataKey: DataKey) => {
-  const currentAddressMetadata: (AddressMetadata | DeprecatedAddressMetadata)[] = AddressMetadataStorage.load(dataKey)
+export const _20230209_124300 = () => {
+  const currentAddressMetadata: (AddressMetadata | DeprecatedAddressMetadata)[] = AddressMetadataStorage.load()
   const newAddressesMetadata: AddressMetadata[] = []
 
   currentAddressMetadata.forEach((currentMetadata: AddressMetadata | DeprecatedAddressMetadata) => {
@@ -202,5 +271,5 @@ export const _20230209_124300 = (dataKey: DataKey) => {
     newAddressesMetadata.push(newMetadata)
   })
 
-  AddressMetadataStorage.storeAll({ addressesMetadata: newAddressesMetadata, dataKey })
+  AddressMetadataStorage.storeAll(newAddressesMetadata)
 }

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { isAddressValid } from '@alephium/sdk'
+import { isAddressValid as isAddressHashValid } from '@alephium/sdk'
 
 import i18n from '@/i18n'
 import { store } from '@/storage/app-state/store'
@@ -24,9 +24,9 @@ import { Contact } from '@/types/contacts'
 
 export const requiredErrorMessage = i18n.t('This field is required')
 
-export const validateIsAddressValid = (value: string) => isAddressValid(value) || i18n.t('This address is not valid')
+export const isAddressValid = (value: string) => isAddressHashValid(value) || i18n.t('This address is not valid')
 
-export const validateIsContactAddressValid = ({ address, id }: Omit<Contact, 'name'>) => {
+export const isContactAddressValid = ({ address, id }: Omit<Contact, 'name'>) => {
   const state = store.getState()
   const contacts = Object.values(state.contacts.entities) as Contact[]
   const existingContact = contacts.find((contact) => contact.address === address)
@@ -36,7 +36,7 @@ export const validateIsContactAddressValid = ({ address, id }: Omit<Contact, 'na
     : true
 }
 
-export const validateIsContactNameValid = ({ name, id }: Omit<Contact, 'address'>) => {
+export const isContactNameValid = ({ name, id }: Omit<Contact, 'address'>) => {
   const state = store.getState()
   const contacts = Object.values(state.contacts.entities) as Contact[]
   const existingContact = contacts.find((contact) => contact.name.toLowerCase() === name.toLowerCase())
@@ -45,3 +45,12 @@ export const validateIsContactNameValid = ({ name, id }: Omit<Contact, 'address'
     ? i18n.t('A contact with this name already exists') + `: ${existingContact.address}`
     : true
 }
+
+export const isWalletNameValid = ({ name, previousName }: { name: string; previousName?: string }) =>
+  previousName && name === previousName
+    ? true
+    : name.length < 3
+    ? i18n.t('Wallet name is too short')
+    : store.getState().app.wallets.some((wallet) => wallet.name === name)
+    ? i18n.t('Wallet name already taken')
+    : true

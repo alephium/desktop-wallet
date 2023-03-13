@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.",
   "Select": "Select",
   "Amount exceeds available balance": "Amount exceeds available balance",
-  "available": "available",
+  "Available": "Available",
   "Use max amount": "Use max amount",
   "Current network": "Current network",
   "Amount": "Amount",
@@ -191,6 +191,7 @@
   "Welcome.": "Welcome.",
   "Welcome back.": "Welcome back.",
   "Unlock a wallet to continue.": "Unlock a wallet to continue.",
+  "Unlock your wallet to continue.": "Unlock your wallet to continue.",
   "Import or create a wallet": "Import or create a wallet",
   "(current)": "(current)",
   "Default address for sending transactions.": "Default address for sending transactions.",
@@ -349,5 +350,8 @@
   "Please, backup your secret phrase instead.": "Please, backup your secret phrase instead.",
   "Never disclose this key.": "Never disclose this key.",
   "Anyone with your private keys can steal any assets held in your addresses.": "Anyone with your private keys can steal any assets held in your addresses.",
-  "Copy to clipboard failed": "Copy to clipboard failed"
+  "Copy to clipboard failed": "Copy to clipboard failed",
+  "Change wallet name": "Change wallet name",
+  "Could not save new wallet name.": "Could not save new wallet name.",
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
 }

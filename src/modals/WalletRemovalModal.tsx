@@ -28,11 +28,11 @@ import CenteredModal from '@/modals/CenteredModal'
 
 interface WalletRemovalModalProps {
   walletName: string
-  onWalletRemove: () => void
+  onConfirm: () => void
   onClose: () => void
 }
 
-const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemovalModalProps) => {
+const WalletRemovalModal = ({ walletName, onConfirm, onClose }: WalletRemovalModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
 
@@ -51,7 +51,7 @@ const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemov
         </Paragraph>
       </Section>
       <Section inList>
-        <Button variant="alert" onClick={onWalletRemove}>
+        <Button variant="alert" onClick={onConfirm}>
           {t`CONFIRM REMOVAL`}
         </Button>
       </Section>

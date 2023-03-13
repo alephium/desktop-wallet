@@ -28,9 +28,12 @@ import {
   transactionBuildFailed,
   transactionSendFailed,
   transactionsSendSucceeded,
-  walletCreationFailed
+  walletCreationFailed,
+  walletNameStorageFailed
 } from '@/storage/app-state/actions'
+import { newWalletNameStored } from '@/storage/app-state/slices/activeWalletSlice'
 import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
 import {
   apiClientInitFailed,
@@ -112,6 +115,21 @@ const snackbarSlice = createSlice({
       .addCase(passwordValidationFailed, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
       )
+      .addCase(devModeShortcutDetected, (state, action) =>
+        displayMessageImmediately(
+          state,
+          action.payload.activate
+            ? { text: '💪 GOD mode activated!', type: 'success' }
+            : { text: '👩‍🌾 Back to a common mortal...' }
+        )
+      )
+      .addCase(newWalletNameStored, (state, action) =>
+        displayMessageImmediately(state, {
+          text: i18n.t('Wallet name updated to: {{ newWalletName }}', { newWalletName: action.payload }),
+          type: 'success'
+        })
+      )
+      .addCase(walletNameStorageFailed, displayError)
   }
 })
 

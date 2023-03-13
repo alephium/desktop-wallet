@@ -16,15 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
-import { activeWalletDeleted, walletLocked, walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
+import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
+import {
+  activeWalletDeleted,
+  newWalletNameStored,
+  walletLocked,
+  walletSaved
+} from '@/storage/app-state/slices/activeWalletSlice'
 import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
 import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
+import { RootState } from '@/storage/app-state/store'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { GeneralSettings, ThemeType } from '@/types/settings'
+import { StoredWallet } from '@/types/wallet'
 
 const sliceName = 'app'
 
@@ -32,8 +39,9 @@ interface AppState {
   loading: boolean
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
-  storedWalletNames: string[]
+  wallets: StoredWallet[]
   theme: Omit<ThemeType, 'system'>
+  devMode: boolean
 }
 
 const storedSettings = SettingsStorage.load('general') as GeneralSettings
@@ -42,8 +50,9 @@ const initialState: AppState = {
   loading: false,
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
-  storedWalletNames: WalletStorage.list(),
-  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme
+  wallets: WalletStorage.list(),
+  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme,
+  devMode: false
 }
 
 const appSlice = createSlice({
@@ -65,12 +74,15 @@ const appSlice = createSlice({
       state.addressesPageInfoMessageClosed = true
     },
     walletDeleted: (state, action: PayloadAction<string>) => {
-      const deletedWalletName = action.payload
+      const deletedWalletId = action.payload
 
-      state.storedWalletNames = state.storedWalletNames.filter((walletName) => walletName !== deletedWalletName)
+      state.wallets = state.wallets.filter(({ id }) => id !== deletedWalletId)
     },
     osThemeChangeDetected: (state, action: PayloadAction<AppState['theme']>) => {
       state.theme = action.payload
+    },
+    devModeShortcutDetected: (state, action: PayloadAction<{ activate: boolean }>) => {
+      state.devMode = action.payload.activate
     }
   },
   extraReducers(builder) {
@@ -84,15 +96,21 @@ const appSlice = createSlice({
         state.loading = false
       })
       .addCase(walletSaved, (state, action) => {
-        const newWallet = action.payload.wallet
+        const { id, name, encrypted } = action.payload.wallet
 
-        state.storedWalletNames.push(newWallet.name)
+        state.wallets.push({ id, name, encrypted })
       })
       .addCase(walletLocked, resetState)
       .addCase(activeWalletDeleted, resetState)
       .addCase(themeSettingsChanged, (state, action) => {
         const theme = action.payload
         if (theme !== 'system') state.theme = theme
+      })
+      .addCase(localStorageDataMigrated, (state) => {
+        state.wallets = WalletStorage.list()
+      })
+      .addCase(newWalletNameStored, (state) => {
+        state.wallets = WalletStorage.list()
       })
   }
 })
@@ -103,8 +121,14 @@ export const {
   modalClosed,
   addressesPageInfoMessageClosed,
   walletDeleted,
-  osThemeChangeDetected
+  osThemeChangeDetected,
+  devModeShortcutDetected
 } = appSlice.actions
+
+export const selectDevModeStatus = createSelector(
+  (s: RootState) => s.app.devMode,
+  (devMode) => devMode && import.meta.env.DEV
+)
 
 export default appSlice
 
@@ -112,4 +136,4 @@ const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean
   if (enableLoading !== false) state.loading = toggle
 }
 
-const resetState = () => ({ ...initialState, storedWalletNames: WalletStorage.list() })
+const resetState = () => ({ ...initialState, wallets: WalletStorage.list() })

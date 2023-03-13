@@ -24,7 +24,7 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
-import { languageChangeFinished, languageChangeStarted } from '@/storage/app-state/actions'
+import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
 import { RootState } from '@/storage/app-state/store'
 import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
 import { GeneralSettings, Settings } from '@/types/settings'
@@ -54,13 +54,14 @@ const settingsSlice = createSlice({
     },
     walletLockTimeChanged: (state, action: PayloadAction<Settings['general']['walletLockTimeInMinutes']>) => {
       state.walletLockTimeInMinutes = action.payload
-    },
-    generalSettingsMigrated: (_, action: PayloadAction<GeneralSettings>) => action.payload
+    }
+  },
+  extraReducers(builder) {
+    builder.addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
   }
 })
 
 export const {
-  generalSettingsMigrated,
   themeSettingsChanged,
   discreetModeToggled,
   passwordRequirementToggled,
@@ -89,7 +90,7 @@ settingsListenerMiddleware.startListening({
 })
 
 settingsListenerMiddleware.startListening({
-  matcher: isAnyOf(generalSettingsMigrated, languageChanged),
+  matcher: isAnyOf(localStorageDataMigrated, languageChanged),
   effect: async (_, { getState, dispatch }) => {
     const state = getState() as RootState
 

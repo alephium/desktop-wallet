@@ -89,7 +89,7 @@ const AmountsOverviewPanel = ({ className, isLoading, addressHash }: AmountsOver
               <BalancesColumn>
                 <AvailableBalanceRow>
                   <BalanceLabel tabIndex={0} role="representation">
-                    {t('available')}
+                    {t('Available')}
                   </BalanceLabel>
                   <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
                 </AvailableBalanceRow>

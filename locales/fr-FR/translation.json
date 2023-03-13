@@ -26,7 +26,7 @@
   "There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.": "Aucune adresse avec des fonds. Envoyez s'il vous plaît des fonds sur une de vos adresse puis recommencer.",
   "Select": "Sélectionner",
   "Amount exceeds available balance": "Le montant est supérieur au fonds disponible",
-  "available": "disponible",
+  "Available": "Disponible",
   "Use max amount": "Utiliser le montant max",
   "Current network": "Réseau actif",
   "Direction": "Direction",
@@ -192,6 +192,7 @@
   "Welcome.": "Bienvenue.",
   "Welcome back.": "De retour.",
   "Unlock a wallet to continue.": "Unlock a wallet to continue.",
+  "Unlock your wallet to continue.": "Unlock your wallet to continue.",
   "Import or create a wallet": "Import or create a wallet",
   "(current)": "(actif)",
   "Default address for sending transactions.": "Adresse par défaut pour effectuer des transactions.",
@@ -350,5 +351,8 @@
   "Please, backup your secret phrase instead.": "Please, backup your secret phrase instead.",
   "Never disclose this key.": "Never disclose this key.",
   "Anyone with your private keys can steal any assets held in your addresses.": "Anyone with your private keys can steal any assets held in your addresses.",
-  "Copy to clipboard failed": "Copy to clipboard failed"
+  "Copy to clipboard failed": "Copy to clipboard failed",
+  "Change wallet name": "Change wallet name",
+  "Could not save new wallet name.": "Could not save new wallet name.",
+  "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}"
 }

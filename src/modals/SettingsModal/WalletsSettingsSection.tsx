@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Trash } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -27,35 +27,32 @@ import { BoxContainer, Section } from '@/components/PageComponents/PageContainer
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SecretPhraseModal from '@/modals/SecretPhraseModal'
+import EditWalletNameModal from '@/modals/SettingsModal/EditWalletNameModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
 import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
 import { walletDeleted } from '@/storage/app-state/slices/appSlice'
 import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { ActiveWallet, StoredWallet } from '@/types/wallet'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [{ mnemonic, name: activeWalletName }, walletNames] = useAppSelector((s) => [
-    s.activeWallet,
-    s.app.storedWalletNames
-  ])
+  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.app.wallets])
 
+  const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [walletToRemove, setWalletToRemove] = useState('')
   const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false)
+  const [isEditWalletNameModalOpen, setIsEditWalletNameModalOpen] = useState(false)
 
-  const openRemoveWalletModal = (walletName: string) => setWalletToRemove(walletName)
+  const isAuthenticated = !!activeWallet.mnemonic && !!activeWallet.id
 
-  const isAuthenticated = !!mnemonic && !!activeWalletName
-
-  const handleRemoveWallet = (walletName: string) => {
-    WalletStorage.delete(walletName)
-    AddressMetadataStorage.delete(walletName)
-    dispatch(walletName === activeWalletName ? activeWalletDeleted() : walletDeleted(walletName))
-
-    setWalletToRemove('')
+  const handleRemoveWallet = (walletId: string) => {
+    WalletStorage.delete(walletId)
+    AddressMetadataStorage.delete(walletId)
+    dispatch(walletId === activeWallet.id ? activeWalletDeleted() : walletDeleted(walletId))
+    setWalletToRemove(undefined)
   }
 
   const lockWallet = () => dispatch(walletLocked())
@@ -64,18 +61,38 @@ const WalletsSettingsSection = () => {
     <>
       <Section align="flex-start" role="table">
         <h2 tabIndex={0} role="label">
-          {t('Wallet list')} ({walletNames.length})
+          {t('Wallet list')} ({wallets.length})
         </h2>
         <BoxContainer role="rowgroup">
-          {walletNames.map((n) => (
-            <WalletItem key={n} walletName={n} isCurrent={n === activeWalletName} onWalletDelete={setWalletToRemove} />
+          {wallets.map((wallet) => (
+            <WalletItem
+              key={wallet.id}
+              wallet={wallet}
+              isCurrent={wallet.id === activeWallet.id}
+              onWalletDelete={setWalletToRemove}
+            />
           ))}
         </BoxContainer>
       </Section>
       {isAuthenticated && (
         <CurrentWalletSection align="flex-start">
           <h2>{t('Current wallet')}</h2>
-          <InfoBox label={t('Wallet name')} text={activeWalletName} />
+          <InfoBox label={t('Wallet name')} short>
+            <CurrentWalletBox>
+              <WalletName>{activeWallet.name}</WalletName>
+              <Button
+                aria-label={t('Delete')}
+                tabIndex={0}
+                squared
+                role="secondary"
+                transparent
+                borderless
+                onClick={() => setIsEditWalletNameModalOpen(true)}
+              >
+                <Pencil size={15} />
+              </Button>
+            </CurrentWalletBox>
+          </InfoBox>
           <ActionButtons>
             <Button role="secondary" onClick={lockWallet}>
               {t('Lock current wallet')}
@@ -86,7 +103,7 @@ const WalletsSettingsSection = () => {
             <Button transparent variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
               {t('Show your secret recovery phrase')}
             </Button>
-            <Button variant="alert" onClick={() => openRemoveWalletModal(activeWalletName)}>
+            <Button variant="alert" onClick={() => setWalletToRemove(activeWallet as ActiveWallet)}>
               {t('Remove current wallet')}
             </Button>
           </ActionButtons>
@@ -95,11 +112,12 @@ const WalletsSettingsSection = () => {
       <ModalPortal>
         {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
         {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
+        {isEditWalletNameModalOpen && <EditWalletNameModal onClose={() => setIsEditWalletNameModalOpen(false)} />}
         {walletToRemove && (
           <WalletRemovalModal
-            walletName={walletToRemove}
-            onClose={() => setWalletToRemove('')}
-            onWalletRemove={() => handleRemoveWallet(walletToRemove)}
+            walletName={walletToRemove.name}
+            onClose={() => setWalletToRemove(undefined)}
+            onConfirm={() => handleRemoveWallet(walletToRemove.id)}
           />
         )}
       </ModalPortal>
@@ -108,12 +126,12 @@ const WalletsSettingsSection = () => {
 }
 
 interface WalletItemProps {
-  walletName: string
+  wallet: StoredWallet
   isCurrent: boolean
-  onWalletDelete: (walletName: string) => void
+  onWalletDelete: (wallet: StoredWallet) => void
 }
 
-const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
+const WalletItem = ({ wallet, isCurrent, onWalletDelete }: WalletItemProps) => {
   const { t } = useTranslation()
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
@@ -124,7 +142,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
-        {walletName}
+        {wallet.name}
         {isCurrent && <CurrentWalletLabel> {t('(current)')}</CurrentWalletLabel>}
       </WalletName>
       {isShowingDeleteButton && (
@@ -135,7 +153,7 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
           role="secondary"
           transparent
           borderless
-          onClick={() => onWalletDelete(walletName)}
+          onClick={() => onWalletDelete(wallet)}
           onBlur={() => setIsShowingDeleteButton(false)}
         >
           <Trash size={15} />
@@ -175,4 +193,10 @@ const ActionButtons = styled.div`
 
 const CurrentWalletSection = styled(Section)`
   margin-top: var(--spacing-8);
+`
+
+const CurrentWalletBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `

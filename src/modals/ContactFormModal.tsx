@@ -23,16 +23,16 @@ import { useTranslation } from 'react-i18next'
 
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
 import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
 import {
-  requiredErrorMessage,
-  validateIsAddressValid,
-  validateIsContactAddressValid,
-  validateIsContactNameValid
+  isAddressValid,
+  isContactAddressValid,
+  isContactNameValid,
+  requiredErrorMessage
 } from '@/utils/form-validation'
 
 interface ContactFormModalProps {
@@ -43,21 +43,18 @@ interface ContactFormModalProps {
 const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { mnemonic, name: walletName, isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const { control, handleSubmit, formState } = useForm<Contact>({
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
   })
 
-  if (!mnemonic || !walletName) return null
-
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
 
-  const saveContact = (formData: Contact) => {
+  const saveContact = (contactData: Contact) => {
     try {
-      const id = ContactStorage.store({ mnemonic, walletName }, formData, isPassphraseUsed)
-      dispatch(contactStoredInPersistentStorage({ ...formData, id }))
+      const id = ContactStorage.store(contactData)
+      dispatch(contactStoredInPersistentStorage({ ...contactData, id }))
       onClose()
     } catch (e) {
       dispatch(contactStorageFailed(getHumanReadableError(e, t('Could not save contact.'))))
@@ -81,7 +78,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
           )}
           rules={{
             required: true,
-            validate: (name) => validateIsContactNameValid({ name, id: contact?.id })
+            validate: (name) => isContactNameValid({ name, id: contact?.id })
           }}
           control={control}
         />
@@ -100,8 +97,8 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
           rules={{
             required: true,
             validate: {
-              validateIsAddressValid,
-              validateIsContactAddressValid: (address) => validateIsContactAddressValid({ address, id: contact?.id })
+              isAddressValid,
+              isContactAddressValid: (address) => isContactAddressValid({ address, id: contact?.id })
             }
           }}
           control={control}

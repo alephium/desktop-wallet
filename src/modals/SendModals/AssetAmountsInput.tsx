@@ -201,7 +201,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                       suffix={asset.symbol}
                       decimals={asset.decimals}
                     />
-                    <span> {t('available')}</span>
+                    <span> {t('Available').toLowerCase()}</span>
                   </AvailableAmount>
                   <ActionLink onClick={() => handleAssetAmountChange(index, availableHumanReadableAmount)}>
                     {t('Use max amount')}
