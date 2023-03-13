@@ -28,7 +28,7 @@ import SettingsStorage, {
 } from '@/storage/persistent-storage/settingsPersistentStorage'
 import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
-import { GeneralSettings, NetworkSettings, ThemeType } from '@/types/settings'
+import { GeneralSettings, NetworkSettings, ThemeSettings } from '@/types/settings'
 import { StoredWallet } from '@/types/wallet'
 import { getRandomLabelColor } from '@/utils/colors'
 import { stringToDoubleSHA256HexString } from '@/utils/misc'
@@ -141,7 +141,7 @@ export const _20211220_194004 = () => {
   deprecatedThemeSetting && window.localStorage.removeItem('theme')
 
   const migratedGeneralSettings = deprecatedThemeSetting
-    ? { ...generalSettings, theme: deprecatedThemeSetting as ThemeType }
+    ? { ...generalSettings, theme: deprecatedThemeSetting as ThemeSettings }
     : generalSettings
   const newGeneralSettings = merge({}, defaultSettings.general, migratedGeneralSettings)
 

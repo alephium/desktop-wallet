@@ -36,7 +36,7 @@ import {
   walletLockTimeChanged
 } from '@/storage/app-state/slices/settingsSlice'
 import { switchTheme } from '@/storage/storage-utils/settingsStorageUtils'
-import { Language, ThemeType } from '@/types/settings'
+import { Language, ThemeSettings } from '@/types/settings'
 
 interface GeneralSettingsSectionProps {
   className?: string
@@ -52,9 +52,9 @@ const languageOptions = [
 ]
 
 const themeOptions = [
-  { label: 'System', value: 'system' as ThemeType },
-  { label: 'Light', value: 'light' as ThemeType },
-  { label: 'Dark', value: 'dark' as ThemeType }
+  { label: 'System', value: 'system' as ThemeSettings },
+  { label: 'Light', value: 'light' as ThemeSettings },
+  { label: 'Dark', value: 'dark' as ThemeSettings }
 ]
 
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {

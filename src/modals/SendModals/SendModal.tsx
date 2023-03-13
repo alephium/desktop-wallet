@@ -18,10 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
@@ -128,10 +131,10 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setIsLoading(false)
   }
 
-  const onCloseExtended = () => {
+  const onCloseExtended = useCallback(() => {
     setDappTxData(undefined)
     onClose()
-  }
+  }, [onClose, setDappTxData])
 
   const handleSendExtended = async () => {
     if (!transactionData) return
@@ -155,14 +158,18 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       }
 
       dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
-      onCloseExtended()
+      setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
       onError(extractErrorMsg(e))
+    } finally {
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
+
+  useEffect(() => {
+    if (step === 'tx-sent') setTimeout(onCloseExtended, 2000)
+  }, [onCloseExtended, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
@@ -219,6 +226,13 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           </PasswordConfirmation>
         </ScrollableModalContent>
       )}
+      {step === 'tx-sent' && (
+        <ScrollableModalContent>
+          <ConfirmationAnimation {...fadeIn}>
+            <CheckIcon size={130} />
+          </ConfirmationAnimation>
+        </ScrollableModalContent>
+      )}
       <ModalPortal>
         {isConsolidateUTXOsModalVisible && (
           <ScrollableModalContent>
@@ -238,4 +252,15 @@ export default SendModal
 
 const PasswordConfirmationNote = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
+`
+
+const ConfirmationAnimation = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+`
+
+const CheckIcon = styled(Check)`
+  color: ${({ theme }) => theme.global.valid};
 `
