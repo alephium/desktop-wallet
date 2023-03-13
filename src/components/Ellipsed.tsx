@@ -77,7 +77,7 @@ const Ellipsed = ({ text, className }: EllipsedProps) => {
 }
 
 export default styled(Ellipsed)`
-  font-family: monospace;
+  font-family: 'JetBrainsMono';
   overflow: hidden;
 `
 

@@ -63,3 +63,9 @@ a {
   src: url('./style/fonts/Inter.var.woff2') format('woff2');
   font-weight: 100 1000;
 }
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('./style/fonts/JetBrainsMono.var.woff2') format('woff2');
+  font-weight: 100 1000;
+}
