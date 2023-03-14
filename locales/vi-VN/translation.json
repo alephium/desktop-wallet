@@ -34,7 +34,7 @@
   "No transactions to display": "Không có giao dịch nào để hiển thị",
   "Invalid password": "Mật khẩu không chính xác",
   "Submit": "Gửi",
-  "LOCKED": "Khoá",
+  "Locked": "Khoá",
   "Could not fetch data because the wallet is offline": "Không thể đẩy dữ liệu bởi vì Ví đang ngoại tuyến",
   "Unknown wallet name": "Tên ví không xác định",
   "To remove this address from being the default address, you must set another one as default first.": "Bạn cần phải đặt một địa chỉ ví mặc định mới trước khi gỡ nhãn mặc định của địa chỉ ví này.",
