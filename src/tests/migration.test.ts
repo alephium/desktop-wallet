@@ -266,6 +266,61 @@ describe('_v150_networkSettingsMigration', () => {
   })
 })
 
+describe('_v153_networkSettingsMigration', () => {
+  it('should migrate pre-v1.5.3 deprecated mainnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 0,
+      nodeHost: 'https://wallet-v16.mainnet.alephium.org',
+      explorerApiHost: 'https://backend-v112.mainnet.alephium.org',
+      explorerUrl: 'https://explorer.alephium.org'
+    })
+
+    migrate._v153_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.mainnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.mainnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.mainnet.explorerUrl)
+  })
+
+  it('should migrate pre-v1.5.3 deprecated testnet network settings', () => {
+    SettingsStorage.store('network', {
+      networkId: 1,
+      nodeHost: 'https://wallet-v16.testnet.alephium.org',
+      explorerApiHost: 'https://backend-v112.testnet.alephium.org',
+      explorerUrl: 'https://explorer.testnet.alephium.org'
+    })
+
+    migrate._v153_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(networkPresets.testnet.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(networkPresets.testnet.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(networkPresets.testnet.explorerUrl)
+  })
+
+  it('should not migrate pre-v1.5.3 custom network settings', () => {
+    const customSettings = {
+      networkId: 3,
+      nodeHost: 'https://mainnet-wallet.custom.com',
+      explorerApiHost: 'https://mainnet-backend.custom.com',
+      explorerUrl: 'https://explorer.custom.com'
+    }
+
+    SettingsStorage.store('network', customSettings)
+
+    migrate._v153_networkSettingsMigration()
+
+    const migratedSettings = SettingsStorage.load('network') as NetworkSettings
+
+    expect(migratedSettings.nodeHost).toEqual(customSettings.nodeHost)
+    expect(migratedSettings.explorerApiHost).toEqual(customSettings.explorerApiHost)
+    expect(migratedSettings.explorerUrl).toEqual(customSettings.explorerUrl)
+  })
+})
+
 describe('_20230209_124300', () => {
   it('should replace the isMain address metadata settings with isDefault and ensure there is a color', () => {
     const deprecatedAddressMetadata: DeprecatedAddressMetadata[] = [
