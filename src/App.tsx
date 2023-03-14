@@ -36,7 +36,7 @@ import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
 import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/global/globalActions'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
-import { selectAddressesPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import { selectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AlephiumWindow } from '@/types/window'
@@ -49,9 +49,7 @@ const App = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const addressHashes = addresses.map((address) => address.hash)
-  const pendingTxHashes = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes)).map(
-    (tx) => tx.address.hash
-  )
+  const addressesWithPendingTxs = useAppSelector((s) => selectAddressesHashesWithPendingTransactions(s, addressHashes))
   const [network, addressesStatus, theme, assetsInfo, loading] = useAppSelector((s) => [
     s.network,
     s.addresses.status,
@@ -121,11 +119,11 @@ const App = () => {
   }, [addresses.length, addressesStatus, dispatch, network.status])
 
   const refreshAddressesData = useCallback(
-    () => dispatch(syncAddressesData(pendingTxHashes)),
-    [dispatch, pendingTxHashes]
+    () => dispatch(syncAddressesData(addressesWithPendingTxs)),
+    [dispatch, addressesWithPendingTxs]
   )
 
-  useInterval(refreshAddressesData, 2000, pendingTxHashes.length === 0)
+  useInterval(refreshAddressesData, 2000, addressesWithPendingTxs.length === 0)
 
   useEffect(() => {
     if (network.status === 'online' && assetsInfo.status === 'uninitialized') {

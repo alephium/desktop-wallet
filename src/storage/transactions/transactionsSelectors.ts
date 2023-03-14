@@ -44,3 +44,18 @@ export const selectAddressesPendingTransactions = createSelector(
   (allAddresses, pendingTransactions, addressHashes): AddressPendingTransaction[] =>
     selectAddressTransactions(allAddresses, pendingTransactions, addressHashes) as AddressPendingTransaction[]
 )
+
+export const selectAddressesHashesWithPendingTransactions = createSelector(
+  [selectAllAddresses, selectAllPendingTransactions, (_, addressHashes?: AddressHash[]) => addressHashes],
+  (allAddresses, allPendingTransactions, addressHashes) => {
+    const addresses = addressHashes
+      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
+      : allAddresses
+
+    return addresses
+      .filter(({ hash }) =>
+        allPendingTransactions.some(({ fromAddress, toAddress }) => fromAddress === hash || toAddress === hash)
+      )
+      .map(({ hash }) => hash)
+  }
+)
