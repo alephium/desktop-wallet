@@ -23,9 +23,9 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import HashEllipsed from '@/components/HashEllipsed'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
@@ -83,7 +83,7 @@ const ContactsTabContent = () => {
           <Card key={contact.address}>
             <ContentRow>
               <Name>{contact.name}</Name>
-              <AddressEllipsedStyled addressHash={contact.address} />
+              <HashEllipsedStyled hash={contact.address} />
             </ContentRow>
             <ButtonsRow>
               <SendButton transparent borderless onClick={() => openSendModal(contact)}>
@@ -126,7 +126,7 @@ const ButtonsRow = styled.div`
   display: flex;
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   font-size: 16px;
   font-weight: var(--fontWeight-medium);
 `

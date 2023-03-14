@@ -354,5 +354,9 @@
   "Change wallet name": "Change wallet name",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
-  "Shortcuts": "Shortcuts"
+  "Shortcuts": "Shortcuts",
+  "Raw amount": "Raw amount",
+  "Unknown token": "Unknown token",
+  "Unknown tokens": "Unknown tokens",
+  "Copy token hash": "Copy token hash"
 }

@@ -24,6 +24,7 @@ import styled, { useTheme } from 'styled-components'
 import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
+import HashEllipsed from '@/components/HashEllipsed'
 import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
@@ -84,13 +85,21 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
           <TokenRow>
             <AssetLogoStyled asset={asset} size={30} />
             <NameColumn>
-              <TokenName>{asset.name}</TokenName>
-              <TokenSymbol>{asset.symbol}</TokenSymbol>
+              <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
+              <TokenSymbol>
+                {asset.symbol ?? <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} />}
+              </TokenSymbol>
             </NameColumn>
             <TableCellAmount>
-              <TokenAmount fadeDecimals value={asset.balance} suffix={asset.symbol} decimals={asset.decimals} />
+              <TokenAmount
+                fadeDecimals
+                value={asset.balance}
+                suffix={asset.symbol}
+                decimals={asset.decimals}
+                isUnknownToken={!asset.symbol}
+              />
               {asset.lockedBalance > 0 && (
-                <TokenAvailableAmount>
+                <AmountSubtitle>
                   {`${t('Available')}: `}
                   <Amount
                     fadeDecimals
@@ -98,9 +107,11 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
                     suffix={asset.symbol}
                     color={theme.font.tertiary}
                     decimals={asset.decimals}
+                    isUnknownToken={!asset.symbol}
                   />
-                </TokenAvailableAmount>
+                </AmountSubtitle>
               )}
+              {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
             </TableCellAmount>
           </TokenRow>
         </TableRow>
@@ -144,6 +155,7 @@ const TokenName = styled(Truncate)`
 const TokenSymbol = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 11px;
+  width: 200px;
 `
 
 const Column = styled.div`
@@ -156,7 +168,7 @@ const TokenAmount = styled(Amount)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const TokenAvailableAmount = styled.div`
+const AmountSubtitle = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 10px;
 `

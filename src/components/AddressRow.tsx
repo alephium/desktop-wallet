@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import AddressEllipsed from '@/components/AddressEllipsed'
 import DotIcon from '@/components/DotIcon'
+import HashEllipsed from '@/components/HashEllipsed'
 import { TableRow } from '@/components/Table'
 import { Address } from '@/types/addresses'
 
@@ -46,11 +46,11 @@ const AddressRow: FC<AddressRowProps> = ({ address, disableAddressCopy, onClick,
       {address.label ? (
         <Column>
           <Label>{address.label}</Label>
-          <AddressEllipsedStyled addressHash={address.hash} disableCopy={disableAddressCopy} />
+          <HashEllipsedStyled hash={address.hash} disableCopy={disableAddressCopy} />
         </Column>
       ) : (
         <Label>
-          <AddressEllipsed addressHash={address.hash} disableCopy={disableAddressCopy} />
+          <HashEllipsed hash={address.hash} disableCopy={disableAddressCopy} />
         </Label>
       )}
       {children}
@@ -78,7 +78,7 @@ const Label = styled.div`
   width: 200px;
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 11px;
   max-width: 100px;

@@ -29,7 +29,13 @@ interface AssetLogoProps {
 
 const AssetLogo = ({ asset, className }: AssetLogoProps) => (
   <div className={className}>
-    <LogoImage src={asset.logoURI ?? AlephiumLogoSVG} />
+    {asset.logoURI ? (
+      <LogoImage src={asset.logoURI} />
+    ) : asset.id === ALPH.id ? (
+      <LogoImage src={AlephiumLogoSVG} />
+    ) : (
+      '?'
+    )}
   </div>
 )
 
@@ -42,12 +48,16 @@ export default styled(AssetLogo)`
   border-radius: ${({ size }) => size}px;
   flex-shrink: 0;
 
-  ${({ asset }) =>
-    asset.id === ALPH.id &&
-    css`
-      padding: 5px;
-      background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
-    `}
+  ${({ asset, theme }) =>
+    asset.id === ALPH.id
+      ? css`
+          padding: 5px;
+          background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
+        `
+      : !asset.logoURI &&
+        css`
+          background: ${theme.bg.tertiary};
+        `}
 `
 
 const LogoImage = styled.img`

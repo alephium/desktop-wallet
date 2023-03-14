@@ -103,8 +103,8 @@ export const selectAddressesAssets = createSelector(
         id: token.id,
         balance: BigInt(token.balance.toString()),
         lockedBalance: BigInt(token.lockedBalance.toString()),
-        name: assetInfo?.name ?? token.id,
-        symbol: assetInfo?.symbol ?? token.id.substring(0, 4).toUpperCase(),
+        name: assetInfo?.name,
+        symbol: assetInfo?.symbol,
         description: assetInfo?.description,
         logoURI: assetInfo?.logoURI,
         decimals: assetInfo?.decimals ?? 0

@@ -22,10 +22,10 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import DotIcon from '@/components/DotIcon'
+import HashEllipsed from '@/components/HashEllipsed'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
@@ -72,9 +72,9 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
               )}
             </AddressColor>
             <Column>
-              <Label>{address.label || <AddressEllipsedStyled addressHash={address.hash} />}</Label>
+              <Label>{address.label || <HashEllipsedStyled hash={address.hash} />}</Label>
               <Subtitle>
-                {address.label && <Hash addressHash={address.hash} />}
+                {address.label && <Hash hash={address.hash} />}
                 <Group>
                   {t('Group')} {address.group}
                 </Group>
@@ -166,11 +166,11 @@ const Label = styled.div`
   font-weight: var(--fontWeight-semiBold);
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   max-width: 300px;
 `
 
-const Hash = styled(AddressEllipsed)`
+const Hash = styled(HashEllipsed)`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 16px;
   max-width: 250px;

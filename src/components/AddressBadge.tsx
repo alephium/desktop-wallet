@@ -20,10 +20,10 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import DotIcon from '@/components/DotIcon'
+import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
@@ -51,12 +51,12 @@ const AddressBadge = ({
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
 
-  if (!address) return <AddressEllipsed addressHash={addressHash} />
+  if (!address) return <HashEllipsed hash={addressHash} />
 
   return showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>
       {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
-      <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
+      <HashEllipsed hash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
     <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>

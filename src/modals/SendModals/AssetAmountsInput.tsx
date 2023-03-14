@@ -28,6 +28,7 @@ import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
+import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
@@ -65,7 +66,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
   const disabled = remainingAvailableAssets.length === 0
   const availableAssetOptions: SelectOption<Asset['id']>[] = remainingAvailableAssets.map((asset) => ({
     value: asset.id,
-    label: asset.name
+    label: asset.name ?? asset.id
   }))
 
   const openAssetSelectModal = (assetRowIndex: number) => {
@@ -173,7 +174,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                 <SelectInput type="button" className={className} disabled={disabled} id={id}>
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
-                    {asset.name} ({asset.symbol})
+                    {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
                   </AssetName>
                 </SelectInput>
               </AssetSelect>
@@ -188,7 +189,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                   min={asset.id === ALPH.id ? minAmountInAlph : 0}
                   max={availableHumanReadableAmount}
                   aria-label={t('Amount')}
-                  label={`${t('Amount')} (${asset.symbol})`}
+                  label={`${t('Amount')} ${asset.symbol ? `(${asset.symbol})` : ''}`}
                   error={errors[index]}
                 />
 
@@ -200,6 +201,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                       color={theme.font.secondary}
                       suffix={asset.symbol}
                       decimals={asset.decimals}
+                      isUnknownToken={!asset.symbol}
                     />
                     <span> {t('Available').toLowerCase()}</span>
                   </AvailableAmount>
@@ -235,7 +237,11 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                     ContentLeft={
                       <AssetName>
                         <AssetLogo asset={asset} size={20} />
-                        {asset.name} ({asset.symbol})
+                        {asset.name && asset.symbol ? (
+                          `${asset.name} (${asset.symbol})`
+                        ) : (
+                          <HashEllipsed hash={asset.id} />
+                        )}
                       </AssetName>
                     }
                     ContentRight={
@@ -244,6 +250,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
                         fadeDecimals
                         suffix={asset.symbol}
                         decimals={asset.decimals}
+                        isUnknownToken={!asset.symbol}
                       />
                     }
                   />
@@ -287,6 +294,7 @@ const AssetName = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: 200px;
 `
 
 const AssetAmountInput = styled(Input)`

@@ -53,6 +53,7 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
                 value={BigInt(asset.amount)}
                 suffix={assetInfo?.symbol}
                 decimals={assetInfo?.decimals}
+                isUnknownToken={!assetInfo?.symbol}
               />
             </AssetAmountRow>
           </Fragment>

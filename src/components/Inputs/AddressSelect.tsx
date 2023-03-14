@@ -22,8 +22,8 @@ import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
+import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
@@ -121,7 +121,7 @@ function AddressSelect({
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id} simpleMode={simpleMode}>
           <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel />
-          {!!address.label && !simpleMode && <AddressEllipsed addressHash={address.hash} />}
+          {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
       <ModalPortal>

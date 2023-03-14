@@ -22,36 +22,42 @@ import styled from 'styled-components'
 
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import Ellipsed from '@/components/Ellipsed'
-import { AddressHash } from '@/types/addresses'
 
-interface AddressEllipsedProps extends HTMLAttributes<HTMLDivElement> {
-  addressHash: AddressHash
+interface HashEllipsedProps extends HTMLAttributes<HTMLDivElement> {
+  hash: string
+  tooltipText?: string
   disableA11y?: boolean
   disableCopy?: boolean
   className?: string
 }
 
-const AddressEllipsed = ({
-  addressHash,
+const HashEllipsed = ({
+  hash,
   disableA11y = false,
   disableCopy = false,
+  tooltipText,
   className,
   ...props
-}: AddressEllipsedProps) => {
+}: HashEllipsedProps) => {
   const { t } = useTranslation()
 
   return disableCopy ? (
     <Container className={className}>
-      <Ellipsed text={addressHash} {...props} />
+      <Ellipsed text={hash} {...props} />
     </Container>
   ) : (
-    <ClipboardButton textToCopy={addressHash} tooltip={t`Copy address`} disableA11y={disableA11y} className={className}>
-      <Ellipsed text={addressHash} {...props} />
+    <ClipboardButton
+      textToCopy={hash}
+      tooltip={tooltipText ?? t`Copy address`}
+      disableA11y={disableA11y}
+      className={className}
+    >
+      <Ellipsed text={hash} {...props} />
     </ClipboardButton>
   )
 }
 
-export default AddressEllipsed
+export default HashEllipsed
 
 const Container = styled.div`
   display: flex;

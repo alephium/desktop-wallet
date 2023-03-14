@@ -32,6 +32,7 @@ interface AmountProps {
   color?: string
   tabIndex?: number
   suffix?: string
+  isUnknownToken?: boolean
   className?: string
 }
 
@@ -45,7 +46,8 @@ const Amount = ({
   color,
   nbOfDecimalsToShow,
   suffix,
-  tabIndex
+  tabIndex,
+  isUnknownToken
 }: AmountProps) => {
   const { discreetMode } = useAppSelector((state) => state.settings)
 
@@ -58,6 +60,8 @@ const Amount = ({
       value !== undefined
         ? isFiat && typeof value === 'number'
           ? formatFiatAmountForDisplay(value)
+          : isUnknownToken
+          ? value.toString()
           : formatAmountForDisplay({
               amount: value as bigint,
               amountDecimals: decimals,
@@ -85,17 +89,19 @@ const Amount = ({
         fadeDecimals ? (
           <>
             <span>{integralPart}</span>
-            <Decimals>.{fractionalPart}</Decimals>
+            {fractionalPart && <Decimals>.{fractionalPart}</Decimals>}
             {quantitySymbol && <span>{quantitySymbol}</span>}
           </>
-        ) : (
+        ) : fractionalPart ? (
           `${integralPart}.${fractionalPart}`
+        ) : (
+          integralPart
         )
       ) : (
         '-'
       )}
 
-      {suffix && suffix !== 'ALPH' ? ` ${suffix}` : <AlefSymbol color={color} />}
+      {!isUnknownToken && (suffix && suffix !== 'ALPH' ? ` ${suffix}` : <AlefSymbol color={color} />)}
     </span>
   )
 }

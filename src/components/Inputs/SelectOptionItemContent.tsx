@@ -46,5 +46,5 @@ const OptionItemContentLeft = styled.div`
 const OptionItemContentRight = styled.div`
   margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};
-  max-width: 120px;
+  max-width: 200px;
 `
