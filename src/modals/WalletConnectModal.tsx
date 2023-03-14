@@ -105,7 +105,7 @@ const WalletConnectModal = ({ onClose, onConnect }: Props) => {
         setErrorState(t`Invalid address group for the WallectConnect connection`)
       }
 
-      return [`${formatChain(chain.networkId, chain.chainGroup)}:${address.publicKey}`]
+      return [`${formatChain(chain.networkId, chain.chainGroup)}:${address.publicKey}/default`]
     },
     [setErrorState, t]
   )
