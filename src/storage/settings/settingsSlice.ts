@@ -26,15 +26,15 @@ import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
+import { localStorageDataMigrated } from '@/storage/global/globalActions'
 import {
   languageChangeFinished,
   languageChangeStarted,
-  localStorageDataMigrated,
   systemLanguageMatchFailed,
   systemLanguageMatchSucceeded
-} from '@/storage/app-state/actions'
-import { RootState } from '@/storage/app-state/store'
-import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
+} from '@/storage/settings/settingsActions'
+import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
+import { RootState } from '@/storage/store'
 import { GeneralSettings, Settings } from '@/types/settings'
 
 const sliceName = 'settings'

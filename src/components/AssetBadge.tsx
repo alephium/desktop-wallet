@@ -20,7 +20,7 @@ import styled from 'styled-components'
 
 import AssetLogo from '@/components/AssetLogo'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAssetInfoById } from '@/storage/app-state/slices/assetsInfoSlice'
+import { selectAssetInfoById } from '@/storage/assets/assetsInfoSlice'
 import { Asset } from '@/types/assets'
 
 interface AssetBadgeProps {

@@ -33,7 +33,7 @@ import UnlockPanel from '@/pages/HomePage/UnlockPanel'
 
 const HomePage = () => {
   const { t } = useTranslation()
-  const hasAtLeastOneWallet = useAppSelector((state) => state.app.wallets.length > 0)
+  const hasAtLeastOneWallet = useAppSelector((state) => state.global.wallets.length > 0)
 
   const [showNewWalletActions, setShowNewWalletActions] = useState(false)
 

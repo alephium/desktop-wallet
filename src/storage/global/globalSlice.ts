@@ -18,22 +18,23 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { languageChangeFinished, languageChangeStarted, localStorageDataMigrated } from '@/storage/app-state/actions'
+import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/addresses/addressesSlice'
+import { localStorageDataMigrated } from '@/storage/global/globalActions'
+import { languageChangeFinished, languageChangeStarted } from '@/storage/settings/settingsActions'
+import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
+import { themeSettingsChanged } from '@/storage/settings/settingsSlice'
+import { RootState } from '@/storage/store'
 import {
   activeWalletDeleted,
   newWalletNameStored,
   walletLocked,
   walletSaved
-} from '@/storage/app-state/slices/activeWalletSlice'
-import { addressDiscoveryFinished, addressDiscoveryStarted } from '@/storage/app-state/slices/addressesSlice'
-import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
-import { RootState } from '@/storage/app-state/store'
-import SettingsStorage from '@/storage/persistent-storage/settingsPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+} from '@/storage/wallets/activeWalletSlice'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { GeneralSettings, ThemeType } from '@/types/settings'
 import { StoredWallet } from '@/types/wallet'
 
-const sliceName = 'app'
+const sliceName = 'global'
 
 interface AppState {
   loading: boolean
@@ -55,7 +56,7 @@ const initialState: AppState = {
   devMode: false
 }
 
-const appSlice = createSlice({
+const globalSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
@@ -123,14 +124,14 @@ export const {
   walletDeleted,
   osThemeChangeDetected,
   devModeShortcutDetected
-} = appSlice.actions
+} = globalSlice.actions
 
 export const selectDevModeStatus = createSelector(
-  (s: RootState) => s.app.devMode,
+  (s: RootState) => s.global.devMode,
   (devMode) => devMode && import.meta.env.DEV
 )
 
-export default appSlice
+export default globalSlice
 
 const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean) => {
   if (enableLoading !== false) state.loading = toggle

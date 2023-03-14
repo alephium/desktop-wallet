@@ -30,16 +30,13 @@ import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
-import {
-  localStorageDataMigrated,
-  systemLanguageMatchFailed,
-  systemLanguageMatchSucceeded
-} from '@/storage/app-state/actions'
-import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
-import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
-import { syncNetworkTokensInfo } from '@/storage/app-state/slices/assetsInfoSlice'
-import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/app-state/slices/networkSlice'
-import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
+import { selectAllAddresses, syncAddressesData } from '@/storage/addresses/addressesSlice'
+import { syncNetworkTokensInfo } from '@/storage/assets/assetsInfoSlice'
+import { localStorageDataMigrated } from '@/storage/global/globalActions'
+import { devModeShortcutDetected } from '@/storage/global/globalSlice'
+import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkSlice'
+import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
+import { selectAddressesPendingTransactions } from '@/storage/transactions/pendingTransactionsSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AlephiumWindow } from '@/types/window'
@@ -58,9 +55,9 @@ const App = () => {
   const [network, addressesStatus, theme, assetsInfo, loading] = useAppSelector((s) => [
     s.network,
     s.addresses.status,
-    s.app.theme,
+    s.global.theme,
     s.assetsInfo,
-    s.app.loading
+    s.global.loading
   ])
   const language = useAppSelector((s) => s.settings.language)
   const showDevIndication = useDevModeShortcut()
@@ -188,7 +185,7 @@ const BannerSection = styled.div`
 
 const useDevModeShortcut = () => {
   const dispatch = useAppDispatch()
-  const devMode = useAppSelector((s) => s.app.devMode)
+  const devMode = useAppSelector((s) => s.global.devMode)
 
   useEffect(() => {
     if (!import.meta.env.DEV) return

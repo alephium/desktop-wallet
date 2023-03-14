@@ -32,7 +32,7 @@ import Tooltips from '@/components/Tooltips'
 import { GlobalContextProvider } from '@/contexts/global'
 import { WalletConnectContextProvider } from '@/contexts/walletconnect'
 import * as serviceWorker from '@/serviceWorker'
-import { store } from '@/storage/app-state/store'
+import { store } from '@/storage/store'
 import { GlobalStyle } from '@/style/globalStyles'
 import { lightTheme } from '@/style/themes'
 

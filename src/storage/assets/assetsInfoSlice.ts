@@ -20,9 +20,9 @@ import { NUM_OF_ZEROS_IN_QUINTILLION } from '@alephium/sdk'
 import { TokenInfo, TokenList } from '@alephium/token-list'
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
-import { RootState } from '@/storage/app-state/store'
-import { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkSlice'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { RootState } from '@/storage/store'
 
 const sliceName = 'assetsInfo'
 

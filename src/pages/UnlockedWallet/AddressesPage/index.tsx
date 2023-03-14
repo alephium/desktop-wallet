@@ -40,7 +40,7 @@ import AddressesTabContent from '@/pages/UnlockedWallet/AddressesPage/AddressesT
 import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTabContent'
 import OperationBox from '@/pages/UnlockedWallet/AddressesPage/OperationBox'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { addressesPageInfoMessageClosed } from '@/storage/app-state/slices/appSlice'
+import { addressesPageInfoMessageClosed } from '@/storage/global/globalSlice'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
@@ -58,7 +58,7 @@ const AddressesPage = () => {
   const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
   const [{ mnemonic, isPassphraseUsed, name: walletName }, infoMessageClosed] = useAppSelector((s) => [
     s.activeWallet,
-    s.app.addressesPageInfoMessageClosed
+    s.global.addressesPageInfoMessageClosed
   ])
 
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)

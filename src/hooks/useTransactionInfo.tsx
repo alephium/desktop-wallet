@@ -26,8 +26,8 @@ import {
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 
 import { useAppSelector } from '@/hooks/redux'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
+import { selectAllAddresses } from '@/storage/addresses/addressesSlice'
+import { ALPH } from '@/storage/assets/assetsInfoSlice'
 import { AddressHash } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressTransaction } from '@/types/transactions'

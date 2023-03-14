@@ -18,11 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Wallet } from '@alephium/sdk'
 
-import { walletSaved } from '@/storage/app-state/slices/activeWalletSlice'
-import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
-import { store } from '@/storage/app-state/store'
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { syncAddressesData } from '@/storage/addresses/addressesSlice'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { store } from '@/storage/store'
+import { walletSaved } from '@/storage/wallets/activeWalletSlice'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { StoredWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { getWalletInitialAddress } from '@/utils/wallet'

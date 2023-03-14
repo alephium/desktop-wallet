@@ -23,7 +23,7 @@ import styled from 'styled-components'
 import { fadeInBottom, fadeOut } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
-import { snackbarDisplayTimeExpired } from '@/storage/app-state/slices/snackbarSlice'
+import { snackbarDisplayTimeExpired } from '@/storage/global/snackbarSlice'
 import { deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
 
 export interface SnackbarMessage {

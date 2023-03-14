@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
-import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
+import { selectDefaultAddress } from '@/storage/addresses/addressesSlice'
 import { Address } from '@/types/addresses'
 
 const useDappTxData = () => {

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { isAddressValid as isAddressHashValid } from '@alephium/sdk'
 
 import i18n from '@/i18n'
-import { store } from '@/storage/app-state/store'
+import { store } from '@/storage/store'
 import { Contact } from '@/types/contacts'
 
 export const requiredErrorMessage = i18n.t('This field is required')
@@ -51,6 +51,6 @@ export const isWalletNameValid = ({ name, previousName }: { name: string; previo
     ? true
     : name.length < 3
     ? i18n.t('Wallet name is too short')
-    : store.getState().app.wallets.some((wallet) => wallet.name === name)
+    : store.getState().global.wallets.some((wallet) => wallet.name === name)
     ? i18n.t('Wallet name already taken')
     : true

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName } from '@/types/network'
 import { Language, NetworkSettings } from '@/types/settings'
 

@@ -20,7 +20,7 @@ import { Transaction } from '@alephium/sdk/api/explorer'
 import { TokenInfo } from '@alephium/token-list'
 import { Dictionary } from '@reduxjs/toolkit'
 
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
+import { ALPH } from '@/storage/assets/assetsInfoSlice'
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'

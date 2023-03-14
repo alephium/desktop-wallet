@@ -19,14 +19,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
-import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/app-state/slices/activeWalletSlice'
 import {
   selectAllAddresses,
   syncAddressesData,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
-} from '@/storage/app-state/slices/addressesSlice'
-import { RootState } from '@/storage/app-state/store'
+} from '@/storage/addresses/addressesSlice'
+import { RootState } from '@/storage/store'
+import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/activeWalletSlice'
 import { AddressDataSyncResult, AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { selectAddressTransactions } from '@/utils/addresses'

@@ -25,8 +25,8 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
-import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
-import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
+import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
+import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/contactsSlice'
 import { Contact } from '@/types/contacts'
 import {
   isAddressValid,

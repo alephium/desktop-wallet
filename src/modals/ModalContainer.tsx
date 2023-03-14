@@ -23,7 +23,7 @@ import styled from 'styled-components'
 import { fadeInOutFast } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
-import { modalClosed, modalOpened } from '@/storage/app-state/slices/appSlice'
+import { modalClosed, modalOpened } from '@/storage/global/globalSlice'
 
 export interface ModalContainerProps {
   onClose: () => void
@@ -35,7 +35,7 @@ export interface ModalContainerProps {
 
 const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
   const dispatch = useAppDispatch()
-  const visibleModals = useAppSelector((state) => state.app.visibleModals)
+  const visibleModals = useAppSelector((state) => state.global.visibleModals)
   const modalRef = useFocusOnMount<HTMLDivElement>()
   const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
 

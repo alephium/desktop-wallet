@@ -35,16 +35,16 @@ import {
 } from '@/api/addresses'
 import { SnackbarMessage } from '@/components/SnackbarManager'
 import i18n from '@/i18n'
+import { ALPH, selectAllAssetsInfo } from '@/storage/assets/assetsInfoSlice'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkSlice'
+import { RootState } from '@/storage/store'
 import {
   activeWalletDeleted,
   walletLocked,
   walletSaved,
   walletSwitched,
   walletUnlocked
-} from '@/storage/app-state/slices/activeWalletSlice'
-import { ALPH, selectAllAssetsInfo } from '@/storage/app-state/slices/assetsInfoSlice'
-import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/app-state/slices/networkSlice'
-import { RootState } from '@/storage/app-state/store'
+} from '@/storage/wallets/activeWalletSlice'
 import {
   Address,
   AddressBase,

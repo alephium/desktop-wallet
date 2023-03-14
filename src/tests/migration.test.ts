@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { encrypt, walletGenerate } from '@alephium/sdk'
 import { nanoid } from 'nanoid'
 
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import SettingsStorage, { networkPresets } from '@/storage/persistent-storage/settingsPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import SettingsStorage, { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
 import { NetworkSettings } from '@/types/settings'
 import * as migrate from '@/utils/migration'
@@ -40,7 +40,7 @@ const activeWallet = {
 const activeWalletAddressSettings = { index: 0, isMain: true, label: 'test', color: 'blue' }
 
 vi.mock('@/storage/app-state/store', async () => ({
-  ...(await vi.importActual<typeof import('@/storage/app-state/store')>('@/storage/app-state/store')),
+  ...(await vi.importActual<typeof import('@/storage/store')>('@/storage/app-state/store')),
   store: { getState: () => ({ activeWallet }) }
 }))
 

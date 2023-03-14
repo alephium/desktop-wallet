@@ -22,7 +22,7 @@ import i18n from '@/i18n'
 import {
   getEncryptedStoragePropsFromActiveWallet,
   PersistentEncryptedStorage
-} from '@/storage/persistent-storage/encryptedPersistentStorage'
+} from '@/storage/encryptedPersistentStorage'
 import { Contact } from '@/types/contacts'
 
 class ContactsStorage extends PersistentEncryptedStorage {

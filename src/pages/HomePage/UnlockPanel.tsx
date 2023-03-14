@@ -37,7 +37,7 @@ interface UnlockPanelProps {
 
 const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const { t } = useTranslation()
-  const wallets = useAppSelector((state) => state.app.wallets)
+  const wallets = useAppSelector((state) => state.global.wallets)
   const { unlockWallet } = useGlobalContext()
   const navigate = useNavigate()
 

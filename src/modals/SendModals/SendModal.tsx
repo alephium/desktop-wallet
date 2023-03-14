@@ -34,7 +34,11 @@ import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
-import { transactionBuildFailed, transactionSendFailed, transactionsSendSucceeded } from '@/storage/app-state/actions'
+import {
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionsSendSucceeded
+} from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
 import { TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'

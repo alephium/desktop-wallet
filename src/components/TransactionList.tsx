@@ -33,9 +33,9 @@ import {
   selectAllAddresses,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
-} from '@/storage/app-state/slices/addressesSlice'
-import { selectAddressesConfirmedTransactions } from '@/storage/app-state/slices/confirmedTransactionsSlice'
-import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
+} from '@/storage/addresses/addressesSlice'
+import { selectAddressesConfirmedTransactions } from '@/storage/transactions/confirmedTransactionsSlice'
+import { selectAddressesPendingTransactions } from '@/storage/transactions/pendingTransactionsSlice'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 

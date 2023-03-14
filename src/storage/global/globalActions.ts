@@ -16,11 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import { createAction } from '@reduxjs/toolkit'
 
-import type { AppDispatch, RootState } from '@/storage/store'
+import { OptionalMessage } from '@/types/snackbar'
 
-// Use throughout your app instead of plain `useDispatch` and `useSelector`.
-// See: https://redux-toolkit.js.org/tutorials/typescript#define-typed-hooks
-export const useAppDispatch = () => useDispatch<AppDispatch>()
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+export const copiedToClipboard = createAction<OptionalMessage>('app/copiedToClipboard')
+export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToClipboardFailed')
+export const localStorageDataMigrated = createAction('app/localStorageDataMigrated')

@@ -19,21 +19,21 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
-import activeWalletSlice from '@/storage/app-state/slices/activeWalletSlice'
-import addressesSlice from '@/storage/app-state/slices/addressesSlice'
-import appSlice from '@/storage/app-state/slices/appSlice'
-import assetsInfoSlice from '@/storage/app-state/slices/assetsInfoSlice'
-import confirmedTransactionsSlice from '@/storage/app-state/slices/confirmedTransactionsSlice'
-import contactsSlice from '@/storage/app-state/slices/contactsSlice'
-import networkSlice, { networkListenerMiddleware } from '@/storage/app-state/slices/networkSlice'
-import pendingTransactionsSlice from '@/storage/app-state/slices/pendingTransactionsSlice'
-import { priceApi } from '@/storage/app-state/slices/priceApiSlice'
-import settingsSlice, { settingsListenerMiddleware } from '@/storage/app-state/slices/settingsSlice'
-import snackbarSlice from '@/storage/app-state/slices/snackbarSlice'
+import addressesSlice from '@/storage/addresses/addressesSlice'
+import contactsSlice from '@/storage/addresses/contactsSlice'
+import assetsInfoSlice from '@/storage/assets/assetsInfoSlice'
+import { priceApi } from '@/storage/assets/priceApiSlice'
+import globalSlice from '@/storage/global/globalSlice'
+import snackbarSlice from '@/storage/global/snackbarSlice'
+import networkSlice, { networkListenerMiddleware } from '@/storage/settings/networkSlice'
+import settingsSlice, { settingsListenerMiddleware } from '@/storage/settings/settingsSlice'
+import confirmedTransactionsSlice from '@/storage/transactions/confirmedTransactionsSlice'
+import pendingTransactionsSlice from '@/storage/transactions/pendingTransactionsSlice'
+import activeWalletSlice from '@/storage/wallets/activeWalletSlice'
 
 export const store = configureStore({
   reducer: {
-    [appSlice.name]: appSlice.reducer,
+    [globalSlice.name]: globalSlice.reducer,
     [activeWalletSlice.name]: activeWalletSlice.reducer,
     [contactsSlice.name]: contactsSlice.reducer,
     [settingsSlice.name]: settingsSlice.reducer,

@@ -20,13 +20,10 @@ import { encrypt } from '@alephium/sdk'
 import { merge } from 'lodash'
 import { nanoid } from 'nanoid'
 
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/persistent-storage/encryptedPersistentStorage'
-import SettingsStorage, {
-  defaultSettings,
-  networkPresets
-} from '@/storage/persistent-storage/settingsPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
+import SettingsStorage, { defaultSettings, networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { AddressMetadata, DeprecatedAddressMetadata } from '@/types/addresses'
 import { GeneralSettings, NetworkSettings, ThemeSettings } from '@/types/settings'
 import { StoredWallet } from '@/types/wallet'

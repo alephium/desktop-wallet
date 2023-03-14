@@ -35,7 +35,7 @@ import Spinner from '@/components/Spinner'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
-import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
+import { syncAddressesData } from '@/storage/addresses/addressesSlice'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 

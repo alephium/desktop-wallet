@@ -21,9 +21,9 @@ import {
   defaultAddressChanged,
   newAddressesSaved,
   syncAddressesData
-} from '@/storage/app-state/slices/addressesSlice'
-import { store } from '@/storage/app-state/store'
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
+} from '@/storage/addresses/addressesSlice'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { store } from '@/storage/store'
 import { Address, AddressBase, AddressSettings } from '@/types/addresses'
 
 export const saveNewAddresses = (addresses: AddressBase[]) => {

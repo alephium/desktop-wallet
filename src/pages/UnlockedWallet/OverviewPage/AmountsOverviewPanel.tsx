@@ -22,8 +22,8 @@ import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash, selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
-import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
+import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSlice'
+import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 

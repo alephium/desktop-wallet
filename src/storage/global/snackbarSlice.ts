@@ -20,26 +20,24 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { SnackbarMessage } from '@/components/SnackbarManager'
 import i18n from '@/i18n'
-import {
-  copiedToClipboard,
-  copyToClipboardFailed,
-  Message,
-  passwordValidationFailed,
-  transactionBuildFailed,
-  transactionSendFailed,
-  transactionsSendSucceeded,
-  walletCreationFailed,
-  walletNameStorageFailed
-} from '@/storage/app-state/actions'
-import { newWalletNameStored } from '@/storage/app-state/slices/activeWalletSlice'
-import { syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
-import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
-import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
+import { syncAddressesData } from '@/storage/addresses/addressesSlice'
+import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/contactsSlice'
+import { passwordValidationFailed } from '@/storage/auth/authActions'
+import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
+import { devModeShortcutDetected } from '@/storage/global/globalSlice'
 import {
   apiClientInitFailed,
   apiClientInitSucceeded,
   customNetworkSettingsSaved
-} from '@/storage/app-state/slices/networkSlice'
+} from '@/storage/settings/networkSlice'
+import {
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionsSendSucceeded
+} from '@/storage/transactions/transactionsActions'
+import { newWalletNameStored } from '@/storage/wallets/activeWalletSlice'
+import { walletCreationFailed, walletNameStorageFailed } from '@/storage/wallets/walletActions'
+import { Message } from '@/types/snackbar'
 
 const sliceName = 'snackbarSlice'
 

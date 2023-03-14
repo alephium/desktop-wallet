@@ -30,8 +30,8 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
-import { selectIsLoadingAssetsInfo } from '@/storage/app-state/slices/assetsInfoSlice'
+import { selectAddressesAssets } from '@/storage/addresses/addressesSlice'
+import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsInfoSlice'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {

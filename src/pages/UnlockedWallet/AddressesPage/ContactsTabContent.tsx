@@ -32,7 +32,7 @@ import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
-import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
+import { selectAllContacts } from '@/storage/addresses/contactsSlice'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 

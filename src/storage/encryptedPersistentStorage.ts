@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { decrypt, encrypt } from '@alephium/sdk'
 
-import { store } from '@/storage/app-state/store'
+import { store } from '@/storage/store'
 import { StoredWallet } from '@/types/wallet'
 
 export interface EncryptedStorageProps {

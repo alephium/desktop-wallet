@@ -26,7 +26,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
+import { selectAllAddresses } from '@/storage/addresses/addressesSlice'
 import { filterAddresses } from '@/utils/addresses'
 
 const AddressesTabContent = () => {

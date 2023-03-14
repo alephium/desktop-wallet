@@ -26,10 +26,10 @@ import {
   addressesRestoredFromMetadata,
   addressRestorationStarted,
   selectAllAddresses
-} from '@/storage/app-state/slices/addressesSlice'
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/persistent-storage/encryptedPersistentStorage'
-import { saveNewAddresses } from '@/storage/storage-utils/addressesStorageUtils'
+} from '@/storage/addresses/addressesSlice'
+import { saveNewAddresses } from '@/storage/addresses/addressesStorageUtils'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
 import { AddressBase, AddressMetadata } from '@/types/addresses'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
