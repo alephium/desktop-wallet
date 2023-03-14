@@ -16,16 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
+import { createListenerMiddleware, createSlice, isAnyOf } from '@reduxjs/toolkit'
 
 import { localStorageDataMigrated } from '@/storage/global/globalActions'
+import {
+  apiClientInitFailed,
+  apiClientInitSucceeded,
+  customNetworkSettingsSaved,
+  networkPresetSwitched
+} from '@/storage/settings/networkActions'
 import SettingsStorage, { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
-import { NetworkName, NetworkPreset, NetworkStatus } from '@/types/network'
+import { NetworkName, NetworkStatus } from '@/types/network'
 import { NetworkSettings } from '@/types/settings'
 import { getNetworkName } from '@/utils/settings'
-
-const sliceName = 'network'
 
 interface NetworkState {
   name: NetworkName
@@ -41,50 +45,32 @@ const initialState: NetworkState = {
   status: 'uninitialized'
 }
 
-const parseSettingsUpdate = (settings: NetworkSettings) => {
-  const missingNetworkSettings = !settings.nodeHost || !settings.explorerApiHost
-
-  return {
-    name: getNetworkName(settings),
-    settings,
-    status: missingNetworkSettings ? ('offline' as NetworkStatus) : ('connecting' as NetworkStatus)
-  }
-}
-
 const networkSlice = createSlice({
-  name: sliceName,
+  name: 'network',
   initialState,
-  reducers: {
-    networkPresetSwitched: (_, action: PayloadAction<NetworkPreset>) => {
-      const networkName = action.payload
-
-      return {
-        name: networkName,
-        settings: networkPresets[networkName],
-        status: 'connecting'
-      }
-    },
-    customNetworkSettingsSaved: (_, action: PayloadAction<NetworkSettings>) => parseSettingsUpdate(action.payload),
-    apiClientInitSucceeded: (
-      state,
-      action: PayloadAction<{ networkId: NetworkSettings['networkId']; networkName: NetworkName }>
-    ) => {
-      state.settings.networkId = action.payload.networkId
-      state.status = 'online'
-    },
-    apiClientInitFailed: (state, action: PayloadAction<{ networkName: NetworkName; networkStatus: NetworkStatus }>) => {
-      state.status = 'offline'
-    }
-  },
+  reducers: {},
   extraReducers(builder) {
-    builder.addCase(localStorageDataMigrated, () =>
-      parseSettingsUpdate(SettingsStorage.load('network') as NetworkSettings)
-    )
+    builder
+      .addCase(localStorageDataMigrated, () => parseSettingsUpdate(SettingsStorage.load('network') as NetworkSettings))
+      .addCase(customNetworkSettingsSaved, (_, action) => parseSettingsUpdate(action.payload))
+      .addCase(networkPresetSwitched, (_, action) => {
+        const networkName = action.payload
+
+        return {
+          name: networkName,
+          settings: networkPresets[networkName],
+          status: 'connecting'
+        }
+      })
+      .addCase(apiClientInitSucceeded, (state, action) => {
+        state.settings.networkId = action.payload.networkId
+        state.status = 'online'
+      })
+      .addCase(apiClientInitFailed, (state) => {
+        state.status = 'offline'
+      })
   }
 })
-
-export const { networkPresetSwitched, apiClientInitSucceeded, apiClientInitFailed, customNetworkSettingsSaved } =
-  networkSlice.actions
 
 export const networkListenerMiddleware = createListenerMiddleware()
 
@@ -94,8 +80,20 @@ networkListenerMiddleware.startListening({
   effect: (_, { getState }) => {
     const state = getState() as RootState
 
-    SettingsStorage.store('network', state[sliceName].settings)
+    SettingsStorage.store('network', state.network.settings)
   }
 })
 
 export default networkSlice
+
+// Reducers helper function
+
+const parseSettingsUpdate = (settings: NetworkSettings) => {
+  const missingNetworkSettings = !settings.nodeHost || !settings.explorerApiHost
+
+  return {
+    name: getNetworkName(settings),
+    settings,
+    status: missingNetworkSettings ? ('offline' as NetworkStatus) : ('connecting' as NetworkStatus)
+  }
+}

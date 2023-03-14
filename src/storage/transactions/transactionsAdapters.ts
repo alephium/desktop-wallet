@@ -16,20 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
-import { store } from '@/storage/store'
-import { Contact } from '@/types/contacts'
+import { Transaction } from '@alephium/sdk/api/explorer'
+import { createEntityAdapter } from '@reduxjs/toolkit'
 
-export const filterContacts = (contacts: Contact[], text: string) =>
-  text.length < 2
-    ? contacts
-    : contacts.filter(
-        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
-      )
+import { PendingTransaction } from '@/types/transactions'
 
-export const loadContacts = () => {
-  const contacts: Contact[] = ContactStorage.load()
+export const confirmedTransactionsAdapter = createEntityAdapter<Transaction>({
+  selectId: (transaction) => transaction.hash,
+  sortComparer: (a, b) => b.timestamp - a.timestamp
+})
 
-  if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
-}
+export const pendingTransactionsAdapter = createEntityAdapter<PendingTransaction>({
+  selectId: (transaction) => transaction.hash,
+  sortComparer: (a, b) => b.timestamp - a.timestamp
+})

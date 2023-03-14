@@ -23,7 +23,7 @@ import styled from 'styled-components'
 import { fadeInOutFast } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
-import { modalClosed, modalOpened } from '@/storage/global/globalSlice'
+import { modalClosed, modalOpened } from '@/storage/global/globalActions'
 
 export interface ModalContainerProps {
   onClose: () => void

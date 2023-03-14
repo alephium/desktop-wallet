@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calcTxAmountsDeltaForAddress, DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 import { MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
+import { ALPH } from '@alephium/token-list'
 
-import { ALPH } from '@/storage/assets/assetsInfoSlice'
 import { Address, AddressHash } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressPendingTransaction, AddressTransaction, PendingTransaction } from '@/types/transactions'

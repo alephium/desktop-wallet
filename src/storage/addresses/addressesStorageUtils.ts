@@ -21,7 +21,7 @@ import {
   defaultAddressChanged,
   newAddressesSaved,
   syncAddressesData
-} from '@/storage/addresses/addressesSlice'
+} from '@/storage/addresses/addressesActions'
 import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
 import { store } from '@/storage/store'
 import { Address, AddressBase, AddressSettings } from '@/types/addresses'

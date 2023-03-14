@@ -22,7 +22,7 @@ import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSlice'
+import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'

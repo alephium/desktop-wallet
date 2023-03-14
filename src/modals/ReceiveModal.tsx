@@ -24,7 +24,7 @@ import styled, { useTheme } from 'styled-components'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
-import { selectAddressByHash, selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSlice'
+import { selectAddressByHash, selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 
 interface ReceiveModalProps {
   onClose: () => void

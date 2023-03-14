@@ -30,8 +30,12 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
-import { selectAllAddresses, selectDefaultAddress, transactionSent } from '@/storage/addresses/addressesSlice'
-import { transactionBuildFailed, transactionSendFailed } from '@/storage/transactions/transactionsActions'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import {
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionSent
+} from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 

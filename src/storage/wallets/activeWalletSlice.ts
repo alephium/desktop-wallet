@@ -16,11 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
-import { ActiveWallet, GeneratedWallet, UnlockedWallet } from '@/types/wallet'
-
-const sliceName = 'activeWallet'
+import {
+  activeWalletDeleted,
+  newWalletNameStored,
+  walletLocked,
+  walletSaved,
+  walletSwitched,
+  walletUnlocked
+} from '@/storage/wallets/walletActions'
+import { ActiveWallet } from '@/types/wallet'
 
 type ActiveWalletState = Partial<ActiveWallet>
 
@@ -32,21 +38,24 @@ const initialState: ActiveWalletState = {
 }
 
 const activeWalletSlice = createSlice({
-  name: sliceName,
+  name: 'activeWallet',
   initialState,
-  reducers: {
-    walletSaved: (_, action: PayloadAction<GeneratedWallet>) => action.payload.wallet,
-    walletUnlocked: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
-    walletSwitched: (_, action: PayloadAction<UnlockedWallet>) => action.payload.wallet,
-    newWalletNameStored: (state, action: PayloadAction<string>) => {
-      state.name = action.payload
-    },
-    walletLocked: () => initialState,
-    activeWalletDeleted: () => initialState
+  reducers: {},
+  extraReducers(builder) {
+    builder
+      .addCase(walletSaved, (_, action) => action.payload.wallet)
+      .addCase(walletUnlocked, (_, action) => action.payload.wallet)
+      .addCase(walletSwitched, (_, action) => action.payload.wallet)
+      .addCase(walletLocked, resetState)
+      .addCase(activeWalletDeleted, resetState)
+      .addCase(newWalletNameStored, (state, action) => {
+        state.name = action.payload
+      })
   }
 })
 
-export const { walletSaved, walletLocked, walletUnlocked, walletSwitched, activeWalletDeleted, newWalletNameStored } =
-  activeWalletSlice.actions
-
 export default activeWalletSlice
+
+// Reducers helper functions
+
+const resetState = () => initialState

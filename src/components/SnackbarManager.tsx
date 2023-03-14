@@ -23,18 +23,12 @@ import styled from 'styled-components'
 import { fadeInBottom, fadeOut } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
-import { snackbarDisplayTimeExpired } from '@/storage/global/snackbarSlice'
+import { snackbarDisplayTimeExpired } from '@/storage/global/globalActions'
 import { deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
-
-export interface SnackbarMessage {
-  text: string
-  type?: 'info' | 'alert' | 'success'
-  duration?: number
-}
 
 const SnackbarManager = () => {
   const dispatch = useAppDispatch()
-  const messages = useAppSelector((state) => state.snackbarSlice.messages)
+  const messages = useAppSelector((state) => state.snackbar.messages)
 
   const message = messages.length > 0 ? messages[0] : undefined
 

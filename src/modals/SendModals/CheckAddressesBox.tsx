@@ -25,7 +25,7 @@ import AddressEllipsed from '@/components/AddressEllipsed'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import { selectContactByAddress } from '@/storage/addresses/contactsSlice'
+import { selectContactByAddress } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 

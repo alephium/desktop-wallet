@@ -19,7 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { createAction } from '@reduxjs/toolkit'
 
 import { Message } from '@/types/snackbar'
+import { PendingTransaction } from '@/types/transactions'
 
 export const transactionBuildFailed = createAction<Message>('tx/transactionBuildFailed')
+
 export const transactionSendFailed = createAction<Message>('tx/transactionSendFailed')
+
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
+
+export const transactionSent = createAction<PendingTransaction>('tx/transactionSent')

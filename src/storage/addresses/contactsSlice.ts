@@ -16,53 +16,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createAction, createEntityAdapter, createSelector, createSlice, EntityState } from '@reduxjs/toolkit'
+import { createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { RootState } from '@/storage/store'
-import { activeWalletDeleted, walletLocked } from '@/storage/wallets/activeWalletSlice'
+import {
+  contactDeletedFromPeristentStorage,
+  contactsLoadedFromPersistentStorage,
+  contactStoredInPersistentStorage
+} from '@/storage/addresses/addressesActions'
+import { contactsAdapter } from '@/storage/addresses/addressesAdapters'
+import { activeWalletDeleted, walletLocked } from '@/storage/wallets/walletActions'
 import { Contact } from '@/types/contacts'
-import { Message } from '@/types/snackbar'
-
-const sliceName = 'contacts'
 
 type ContactsState = EntityState<Contact>
-
-const contactsAdapter = createEntityAdapter<Contact>({
-  sortComparer: (a, b) => a.name.localeCompare(b.name)
-})
 
 const initialState: ContactsState = contactsAdapter.getInitialState()
 
 export const contactsSlice = createSlice({
-  name: sliceName,
+  name: 'contacts',
   initialState,
-  reducers: {
-    contactStoredInPersistentStorage: contactsAdapter.upsertOne,
-    contactsLoadedFromPersistentStorage: contactsAdapter.setAll,
-    contactDeletedFromPeristentStorage: contactsAdapter.removeOne
-  },
+  reducers: {},
   extraReducers(builder) {
-    builder.addCase(walletLocked, () => initialState).addCase(activeWalletDeleted, () => initialState)
+    builder
+      .addCase(walletLocked, resetState)
+      .addCase(activeWalletDeleted, resetState)
+      .addCase(contactStoredInPersistentStorage, contactsAdapter.upsertOne)
+      .addCase(contactsLoadedFromPersistentStorage, contactsAdapter.setAll)
+      .addCase(contactDeletedFromPeristentStorage, contactsAdapter.removeOne)
   }
 })
 
-export const {
-  selectById: selectContactById,
-  selectAll: selectAllContacts,
-  selectIds: selectContactIds
-} = contactsAdapter.getSelectors<RootState>((state) => state[sliceName])
-
-export const selectContactByAddress = createSelector(
-  [selectAllContacts, (_, addressHash) => addressHash],
-  (contacts, addressHash) => contacts.find((contact) => contact.address === addressHash)
-)
-
-export const {
-  contactStoredInPersistentStorage,
-  contactsLoadedFromPersistentStorage,
-  contactDeletedFromPeristentStorage
-} = contactsSlice.actions
-
-export const contactStorageFailed = createAction<Message>(`${sliceName}/contactStorageFailed`)
-
 export default contactsSlice
+
+// Reducers helper functions
+
+const resetState = () => initialState

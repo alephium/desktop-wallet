@@ -22,48 +22,34 @@ import 'dayjs/locale/vi'
 import 'dayjs/locale/pt'
 import 'dayjs/locale/ru'
 
-import { createListenerMiddleware, createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
+import { createListenerMiddleware, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import dayjs from 'dayjs'
 
 import i18next from '@/i18n'
 import { localStorageDataMigrated } from '@/storage/global/globalActions'
 import {
+  devToolsToggled,
+  discreetModeToggled,
+  languageChanged,
   languageChangeFinished,
   languageChangeStarted,
+  passwordRequirementToggled,
   systemLanguageMatchFailed,
-  systemLanguageMatchSucceeded
+  systemLanguageMatchSucceeded,
+  themeSettingsChanged,
+  themeToggled,
+  walletLockTimeChanged
 } from '@/storage/settings/settingsActions'
 import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
-import { GeneralSettings, Settings } from '@/types/settings'
-
-const sliceName = 'settings'
+import { GeneralSettings } from '@/types/settings'
 
 const initialState: GeneralSettings = SettingsStorage.load('general') as GeneralSettings
 
 const settingsSlice = createSlice({
-  name: sliceName,
+  name: 'settings',
   initialState,
-  reducers: {
-    themeSettingsChanged: (state, action: PayloadAction<Settings['general']['theme']>) => {
-      state.theme = action.payload
-    },
-    discreetModeToggled: (state) => {
-      state.discreetMode = !state.discreetMode
-    },
-    passwordRequirementToggled: (state) => {
-      state.passwordRequirement = !state.passwordRequirement
-    },
-    devToolsToggled: (state) => {
-      state.devTools = !state.devTools
-    },
-    languageChanged: (state, action: PayloadAction<Settings['general']['language']>) => {
-      state.language = action.payload
-    },
-    walletLockTimeChanged: (state, action: PayloadAction<Settings['general']['walletLockTimeInMinutes']>) => {
-      state.walletLockTimeInMinutes = action.payload
-    }
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
@@ -73,17 +59,29 @@ const settingsSlice = createSlice({
       .addCase(systemLanguageMatchFailed, (state) => {
         state.language = 'en-US'
       })
+      .addCase(themeSettingsChanged, (state, action) => {
+        state.theme = action.payload
+      })
+      .addCase(themeToggled, (state, action) => {
+        state.theme = action.payload
+      })
+      .addCase(discreetModeToggled, (state) => {
+        state.discreetMode = !state.discreetMode
+      })
+      .addCase(passwordRequirementToggled, (state) => {
+        state.passwordRequirement = !state.passwordRequirement
+      })
+      .addCase(devToolsToggled, (state) => {
+        state.devTools = !state.devTools
+      })
+      .addCase(languageChanged, (state, action) => {
+        state.language = action.payload
+      })
+      .addCase(walletLockTimeChanged, (state, action) => {
+        state.walletLockTimeInMinutes = action.payload
+      })
   }
 })
-
-export const {
-  themeSettingsChanged,
-  discreetModeToggled,
-  passwordRequirementToggled,
-  devToolsToggled,
-  languageChanged,
-  walletLockTimeChanged
-} = settingsSlice.actions
 
 export const settingsListenerMiddleware = createListenerMiddleware()
 
@@ -91,6 +89,7 @@ export const settingsListenerMiddleware = createListenerMiddleware()
 settingsListenerMiddleware.startListening({
   matcher: isAnyOf(
     themeSettingsChanged,
+    themeToggled,
     discreetModeToggled,
     passwordRequirementToggled,
     devToolsToggled,
@@ -102,7 +101,7 @@ settingsListenerMiddleware.startListening({
   effect: (_, { getState }) => {
     const state = getState() as RootState
 
-    SettingsStorage.store('general', state[sliceName])
+    SettingsStorage.store('general', state.settings)
   }
 })
 
@@ -111,7 +110,7 @@ settingsListenerMiddleware.startListening({
   effect: async (_, { getState, dispatch }) => {
     const state = getState() as RootState
 
-    const settings = state[sliceName]
+    const settings = state.settings
 
     const handleLanguageChange = async () => {
       if (!settings.language) return

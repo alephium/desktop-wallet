@@ -16,20 +16,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
-import { store } from '@/storage/store'
-import { Contact } from '@/types/contacts'
+import { createAction } from '@reduxjs/toolkit'
 
-export const filterContacts = (contacts: Contact[], text: string) =>
-  text.length < 2
-    ? contacts
-    : contacts.filter(
-        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
-      )
+import { NetworkName, NetworkPreset, NetworkStatus } from '@/types/network'
+import { NetworkSettings } from '@/types/settings'
 
-export const loadContacts = () => {
-  const contacts: Contact[] = ContactStorage.load()
+export const networkPresetSwitched = createAction<NetworkPreset>('network/networkPresetSwitched')
 
-  if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
-}
+export const customNetworkSettingsSaved = createAction<NetworkSettings>('network/customNetworkSettingsSaved')
+
+export const apiClientInitSucceeded = createAction<{
+  networkId: NetworkSettings['networkId']
+  networkName: NetworkName
+}>('network/apiClientInitSucceeded')
+
+export const apiClientInitFailed = createAction<{ networkName: NetworkName; networkStatus: NetworkStatus }>(
+  'network/apiClientInitFailed'
+)

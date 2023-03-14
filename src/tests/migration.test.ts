@@ -39,8 +39,8 @@ const activeWallet = {
 
 const activeWalletAddressSettings = { index: 0, isMain: true, label: 'test', color: 'blue' }
 
-vi.mock('@/storage/app-state/store', async () => ({
-  ...(await vi.importActual<typeof import('@/storage/store')>('@/storage/app-state/store')),
+vi.mock('@/storage/store', async () => ({
+  ...(await vi.importActual<typeof import('@/storage/store')>('@/storage/store')),
   store: { getState: () => ({ activeWallet }) }
 }))
 

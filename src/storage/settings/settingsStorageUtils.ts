@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { themeSettingsChanged } from '@/storage/settings/settingsSlice'
+import { themeSettingsChanged, themeToggled } from '@/storage/settings/settingsActions'
 import { store } from '@/storage/store'
-import { ThemeSettings } from '@/types/settings'
+import { ThemeSettings, ThemeType } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
 
 const _window = window as unknown as AlephiumWindow
@@ -27,4 +27,9 @@ const electron = _window.electron
 export const switchTheme = (theme: ThemeSettings) => {
   electron?.theme.setNativeTheme(theme)
   store.dispatch(themeSettingsChanged(theme))
+}
+
+export const toggleTheme = (theme: ThemeType) => {
+  electron?.theme.setNativeTheme(theme)
+  store.dispatch(themeToggled(theme))
 }

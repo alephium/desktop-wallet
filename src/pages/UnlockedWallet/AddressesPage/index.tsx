@@ -40,7 +40,7 @@ import AddressesTabContent from '@/pages/UnlockedWallet/AddressesPage/AddressesT
 import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTabContent'
 import OperationBox from '@/pages/UnlockedWallet/AddressesPage/OperationBox'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { addressesPageInfoMessageClosed } from '@/storage/global/globalSlice'
+import { addressesPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'

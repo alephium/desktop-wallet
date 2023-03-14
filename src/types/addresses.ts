@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AddressKeyPair } from '@alephium/sdk'
 import { AddressInfo, MempoolTransaction, Transaction } from '@alephium/sdk/api/explorer'
+import { EntityState } from '@reduxjs/toolkit'
 
 import { TokenBalances } from '@/types/assets'
 import { TimeInMs } from '@/types/numbers'
@@ -65,4 +66,12 @@ export type AddressDataSyncResult = {
   transactions: Transaction[]
   mempoolTransactions: MempoolTransaction[]
   tokens: TokenBalances[]
+}
+
+export interface AddressesState extends EntityState<Address> {
+  loading: boolean
+  transactionsPageLoaded: number
+  allTransactionsLoaded: boolean
+  isRestoringAddressesFromMetadata: boolean
+  status: 'uninitialized' | 'initialized'
 }

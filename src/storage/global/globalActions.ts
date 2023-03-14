@@ -18,8 +18,25 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createAction } from '@reduxjs/toolkit'
 
+import { ThemeType } from '@/types/settings'
 import { OptionalMessage } from '@/types/snackbar'
 
+type ModalId = string
+
 export const copiedToClipboard = createAction<OptionalMessage>('app/copiedToClipboard')
+
 export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToClipboardFailed')
+
 export const localStorageDataMigrated = createAction('app/localStorageDataMigrated')
+
+export const modalOpened = createAction<ModalId>('app/modalOpened')
+
+export const modalClosed = createAction('app/modalClosed')
+
+export const addressesPageInfoMessageClosed = createAction('app/addressesPageInfoMessageClosed')
+
+export const osThemeChangeDetected = createAction<ThemeType>('app/osThemeChangeDetected')
+
+export const devModeShortcutDetected = createAction<{ activate: boolean }>('app/devModeShortcutDetected')
+
+export const snackbarDisplayTimeExpired = createAction('app/snackbarDisplayTimeExpired')

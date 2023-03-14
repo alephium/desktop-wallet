@@ -37,9 +37,9 @@ import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
-import { selectAllAddresses } from '@/storage/addresses/addressesSlice'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
-import { devToolsToggled } from '@/storage/settings/settingsSlice'
+import { devToolsToggled } from '@/storage/settings/settingsActions'
 import { Address } from '@/types/addresses'
 
 const DevToolsSettingsSection = () => {

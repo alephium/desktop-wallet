@@ -18,4 +18,4 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createAction } from '@reduxjs/toolkit'
 
-export const passwordValidationFailed = createAction('app/passwordValidationFailed')
+export const passwordValidationFailed = createAction('auth/passwordValidationFailed')

@@ -17,4 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 export type Message = string
-export type OptionalMessage = string | undefined
+
+export type OptionalMessage = Message | undefined
+
+export interface SnackbarMessage {
+  text: Message
+  type?: 'info' | 'alert' | 'success'
+  duration?: number
+}

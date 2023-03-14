@@ -35,7 +35,7 @@ import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SideModal from '@/modals/SideModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
-import { selectAddressByHash } from '@/storage/addresses/addressesSlice'
+import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 

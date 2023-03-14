@@ -33,7 +33,7 @@ import { FooterActionsContainer, Section } from '@/components/PageComponents/Pag
 import Paragraph from '@/components/Paragraph'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSlice'
+import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { saveAddressSettings } from '@/storage/addresses/addressesStorageUtils'
 import { useTimeout, useWindowSize } from '@/utils/hooks'
 import { links } from '@/utils/links'

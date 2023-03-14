@@ -24,9 +24,9 @@ import {
   addressDiscoveryFinished,
   addressDiscoveryStarted,
   addressesRestoredFromMetadata,
-  addressRestorationStarted,
-  selectAllAddresses
-} from '@/storage/addresses/addressesSlice'
+  addressRestorationStarted
+} from '@/storage/addresses/addressesActions'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { saveNewAddresses } from '@/storage/addresses/addressesStorageUtils'
 import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'

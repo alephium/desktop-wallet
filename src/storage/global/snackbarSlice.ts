@@ -18,28 +18,25 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { SnackbarMessage } from '@/components/SnackbarManager'
 import i18n from '@/i18n'
-import { syncAddressesData } from '@/storage/addresses/addressesSlice'
-import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/contactsSlice'
+import { syncAddressesData } from '@/storage/addresses/addressesActions'
+import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
-import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
-import { devModeShortcutDetected } from '@/storage/global/globalSlice'
+import { copiedToClipboard, copyToClipboardFailed, snackbarDisplayTimeExpired } from '@/storage/global/globalActions'
+import { devModeShortcutDetected } from '@/storage/global/globalActions'
 import {
   apiClientInitFailed,
   apiClientInitSucceeded,
   customNetworkSettingsSaved
-} from '@/storage/settings/networkSlice'
+} from '@/storage/settings/networkActions'
 import {
   transactionBuildFailed,
   transactionSendFailed,
   transactionsSendSucceeded
 } from '@/storage/transactions/transactionsActions'
-import { newWalletNameStored } from '@/storage/wallets/activeWalletSlice'
+import { newWalletNameStored } from '@/storage/wallets/walletActions'
 import { walletCreationFailed, walletNameStorageFailed } from '@/storage/wallets/walletActions'
-import { Message } from '@/types/snackbar'
-
-const sliceName = 'snackbarSlice'
+import { Message, SnackbarMessage } from '@/types/snackbar'
 
 interface SnackbarSliceState {
   messages: SnackbarMessage[]
@@ -52,15 +49,14 @@ const initialState: SnackbarSliceState = {
 }
 
 const snackbarSlice = createSlice({
-  name: sliceName,
+  name: 'snackbar',
   initialState,
-  reducers: {
-    snackbarDisplayTimeExpired: (state) => {
-      if (state.messages.length > 0) state.messages.shift()
-    }
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(snackbarDisplayTimeExpired, (state) => {
+        if (state.messages.length > 0) state.messages.shift()
+      })
       .addCase(syncAddressesData.rejected, (state, action) => {
         const message = action.payload
 
@@ -131,9 +127,9 @@ const snackbarSlice = createSlice({
   }
 })
 
-export const { snackbarDisplayTimeExpired } = snackbarSlice.actions
-
 export default snackbarSlice
+
+// Reducers helper functions
 
 const defaultSnackbarMessageSettings: SnackbarMessage = {
   text: '',

@@ -16,68 +16,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
-import {
-  createAsyncThunk,
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-  EntityState,
-  PayloadAction
-} from '@reduxjs/toolkit'
-import { chunk, uniq } from 'lodash'
+import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { uniq } from 'lodash'
 
 import {
-  fetchAddressesData,
-  fetchAddressesTransactionsNextPage,
-  fetchAddressTransactionsNextPage
-} from '@/api/addresses'
-import { SnackbarMessage } from '@/components/SnackbarManager'
-import i18n from '@/i18n'
-import { ALPH, selectAllAssetsInfo } from '@/storage/assets/assetsInfoSlice'
-import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkSlice'
-import { RootState } from '@/storage/store'
+  addressDiscoveryFinished,
+  addressDiscoveryStarted,
+  addressesRestoredFromMetadata,
+  addressRestorationStarted,
+  addressSettingsSaved,
+  defaultAddressChanged,
+  loadingStarted,
+  newAddressesSaved,
+  syncAddressesData,
+  syncAddressTransactionsNextPage,
+  syncAllAddressesTransactionsNextPage
+} from '@/storage/addresses/addressesActions'
+import { addressesAdapter } from '@/storage/addresses/addressesAdapters'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
+import { transactionSent } from '@/storage/transactions/transactionsActions'
 import {
   activeWalletDeleted,
   walletLocked,
   walletSaved,
   walletSwitched,
   walletUnlocked
-} from '@/storage/wallets/activeWalletSlice'
-import {
-  Address,
-  AddressBase,
-  AddressDataSyncResult,
-  AddressHash,
-  AddressSettings,
-  LoadingEnabled
-} from '@/types/addresses'
-import { Asset, TokenDisplayBalances } from '@/types/assets'
-import { PendingTransaction } from '@/types/transactions'
+} from '@/storage/wallets/walletActions'
+import { Address, AddressBase, AddressesState } from '@/types/addresses'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
-
-const sliceName = 'addresses'
-
-const addressesAdapter = createEntityAdapter<Address>({
-  selectId: (address) => address.hash,
-  sortComparer: (a, b) => {
-    // Always keep main address to the top of the list
-    if (a.isDefault) return -1
-    if (b.isDefault) return 1
-    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
-  }
-})
-
-interface AddressesState extends EntityState<Address> {
-  loading: boolean
-  transactionsPageLoaded: number
-  allTransactionsLoaded: boolean
-  isRestoringAddressesFromMetadata: boolean
-  status: 'uninitialized' | 'initialized'
-}
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,
@@ -87,147 +56,73 @@ const initialState: AddressesState = addressesAdapter.getInitialState({
   status: 'uninitialized'
 })
 
-export const syncAddressesData = createAsyncThunk<
-  AddressDataSyncResult[],
-  AddressHash[] | undefined,
-  { rejectValue: SnackbarMessage }
->(`${sliceName}/syncAddressesData`, async (payload, { getState, dispatch, rejectWithValue }) => {
-  dispatch(loadingStarted())
-
-  const state = getState() as RootState
-  const addresses = payload ?? (state.addresses.ids as AddressHash[])
-
-  try {
-    return await fetchAddressesData(addresses)
-  } catch (e) {
-    return rejectWithValue({
-      text: getHumanReadableError(e, i18n.t("Encountered error while synching your addresses' data.")),
-      type: 'alert'
-    })
-  }
-})
-
-export const syncAddressTransactionsNextPage = createAsyncThunk(
-  `${sliceName}/syncAddressTransactionsNextPage`,
-  async (payload: AddressHash, { getState, dispatch }) => {
-    dispatch(loadingStarted())
-
-    const state = getState() as RootState
-    const address = selectAddressByHash(state, payload)
-
-    if (!address) return
-
-    return await fetchAddressTransactionsNextPage(address)
-  }
-)
-
-export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
-  `${sliceName}/syncAllAddressesTransactionsNextPage`,
-  async (_, { getState, dispatch }) => {
-    dispatch(loadingStarted())
-
-    const state = getState() as RootState
-    const addresses = selectAllAddresses(state)
-    let nextPage = state.addresses.transactionsPageLoaded
-    let newTransactionsFound = false
-    let allTransactionsLoaded = state.addresses.allTransactionsLoaded
-    let transactions: Transaction[] = []
-
-    while (!allTransactionsLoaded && !newTransactionsFound) {
-      nextPage += 1
-
-      // NOTE: Explorer backend limits this query to 80 addresses
-      const results = await Promise.all(
-        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
-      )
-
-      transactions = results.flat()
-
-      if (transactions.length === 0) {
-        allTransactionsLoaded = true
-        break
-      }
-
-      newTransactionsFound = addresses.some((address) => {
-        const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
-        const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
-
-        return newTxHashes.length > 0
-      })
-    }
-
-    return { page: nextPage, transactions }
-  }
-)
-
 const addressesSlice = createSlice({
-  name: sliceName,
+  name: 'addresses',
   initialState,
-  reducers: {
-    loadingStarted: (state) => {
-      state.loading = true
-    },
-    addressRestorationStarted: (state) => {
-      state.isRestoringAddressesFromMetadata = true
-    },
-    addressDiscoveryStarted: (state, action: PayloadAction<LoadingEnabled>) => {
-      const loadingEnabled = action.payload
-
-      if (loadingEnabled) state.loading = true
-    },
-    addressDiscoveryFinished: (state, action: PayloadAction<LoadingEnabled>) => {
-      const loadingEnabled = action.payload
-
-      if (loadingEnabled) state.loading = false
-    },
-    addressesRestoredFromMetadata: (state, action: PayloadAction<AddressBase[]>) => {
-      const addresses = action.payload
-
-      addressesAdapter.setAll(state, [])
-      addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
-      state.isRestoringAddressesFromMetadata = false
-      state.status = 'uninitialized'
-    },
-    transactionSent: (state, action: PayloadAction<PendingTransaction>) => {
-      const pendingTransaction = action.payload
-      const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
-      const toAddress = state.entities[pendingTransaction.toAddress]
-
-      fromAddress.transactions.push(pendingTransaction.hash)
-      if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
-    },
-    newAddressesSaved: (state, action: PayloadAction<AddressBase[]>) => {
-      const addresses = action.payload
-
-      if (addresses.some((address) => address.isDefault)) updateOldDefaultAddress(state)
-
-      addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
-    },
-    defaultAddressChanged: (state, action: PayloadAction<Address>) => {
-      const address = action.payload
-
-      updateOldDefaultAddress(state)
-
-      addressesAdapter.updateOne(state, {
-        id: address.hash,
-        changes: {
-          isDefault: true
-        }
-      })
-    },
-    addressSettingsSaved: (state, action: PayloadAction<{ addressHash: AddressHash; settings: AddressSettings }>) => {
-      const { addressHash, settings } = action.payload
-
-      if (settings.isDefault) updateOldDefaultAddress(state)
-
-      addressesAdapter.updateOne(state, {
-        id: addressHash,
-        changes: settings
-      })
-    }
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(addressSettingsSaved, (state, action) => {
+        const { addressHash, settings } = action.payload
+
+        if (settings.isDefault) updateOldDefaultAddress(state)
+
+        addressesAdapter.updateOne(state, {
+          id: addressHash,
+          changes: settings
+        })
+      })
+      .addCase(defaultAddressChanged, (state, action) => {
+        const address = action.payload
+
+        updateOldDefaultAddress(state)
+
+        addressesAdapter.updateOne(state, {
+          id: address.hash,
+          changes: {
+            isDefault: true
+          }
+        })
+      })
+      .addCase(transactionSent, (state, action) => {
+        const pendingTransaction = action.payload
+        const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
+        const toAddress = state.entities[pendingTransaction.toAddress]
+
+        fromAddress.transactions.push(pendingTransaction.hash)
+        if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
+      })
+      .addCase(newAddressesSaved, (state, action) => {
+        const addresses = action.payload
+
+        if (addresses.some((address) => address.isDefault)) updateOldDefaultAddress(state)
+
+        addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
+      })
+      .addCase(addressesRestoredFromMetadata, (state, action) => {
+        const addresses = action.payload
+
+        addressesAdapter.setAll(state, [])
+        addressesAdapter.addMany(state, addresses.map(getDefaultAddressState))
+        state.isRestoringAddressesFromMetadata = false
+        state.status = 'uninitialized'
+      })
+      .addCase(addressDiscoveryStarted, (state, action) => {
+        const loadingEnabled = action.payload
+
+        if (loadingEnabled) state.loading = true
+      })
+      .addCase(addressDiscoveryFinished, (state, action) => {
+        const loadingEnabled = action.payload
+
+        if (loadingEnabled) state.loading = false
+      })
+      .addCase(addressRestorationStarted, (state) => {
+        state.isRestoringAddressesFromMetadata = true
+      })
+      .addCase(loadingStarted, (state) => {
+        state.loading = true
+      })
       .addCase(syncAddressesData.rejected, (state) => {
         state.loading = false
       })
@@ -319,111 +214,11 @@ const addressesSlice = createSlice({
   }
 })
 
-export const {
-  loadingStarted,
-  addressesRestoredFromMetadata,
-  addressRestorationStarted,
-  transactionSent,
-  newAddressesSaved,
-  defaultAddressChanged,
-  addressSettingsSaved,
-  addressDiscoveryStarted,
-  addressDiscoveryFinished
-} = addressesSlice.actions
+export default addressesSlice
 
-export const {
-  selectById: selectAddressByHash,
-  selectAll: selectAllAddresses,
-  selectIds: selectAddressIds
-} = addressesAdapter.getSelectors<RootState>((state) => state[sliceName])
-
-export const selectHaveAllPagesLoaded = createSelector(
-  [selectAllAddresses, (state: AddressesState) => state.allTransactionsLoaded],
-  (addresses, allTransactionsLoaded) =>
-    addresses.every((address) => address.allTransactionPagesLoaded) || allTransactionsLoaded
-)
-
-export const selectDefaultAddress = createSelector(selectAllAddresses, (addresses) =>
-  addresses.find((address) => address.isDefault)
-)
-
-export const selectTotalBalance = createSelector([selectAllAddresses], (addresses) =>
-  addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
-)
-
-export const selectAddressesAlphAsset = createSelector(
-  [selectAllAddresses, (_, addressHashes?: AddressHash[]) => addressHashes],
-  (allAddresses, addressHashes): Asset => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
-    const alphBalances = addresses.reduce(
-      (acc, { balance, lockedBalance }) => ({
-        balance: acc.balance + BigInt(balance),
-        lockedBalance: acc.lockedBalance + BigInt(lockedBalance)
-      }),
-      { balance: BigInt(0), lockedBalance: BigInt(0) }
-    )
-
-    return {
-      ...ALPH,
-      ...alphBalances
-    }
-  }
-)
-
-export const selectAddressesAssets = createSelector(
-  [
-    selectAllAddresses,
-    selectAllAssetsInfo,
-    selectAddressesAlphAsset,
-    (_, addressHashes?: AddressHash[]) => addressHashes
-  ],
-  (allAddresses, assetsInfo, alphAsset, addressHashes): Asset[] => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
-    const tokenBalances = addresses.reduce((acc, { tokens }) => {
-      tokens.forEach((token) => {
-        const existingToken = acc.find((t) => t.id === token.id)
-
-        if (!existingToken) {
-          acc.push({
-            id: token.id,
-            balance: BigInt(token.balance),
-            lockedBalance: BigInt(token.lockedBalance)
-          })
-        } else {
-          existingToken.balance = existingToken.balance + BigInt(token.balance)
-          existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
-        }
-      })
-
-      return acc
-    }, [] as TokenDisplayBalances[])
-
-    const tokenAssets = tokenBalances.map((token) => {
-      const assetInfo = assetsInfo.find((t) => t.id === token.id)
-
-      return {
-        id: token.id,
-        balance: BigInt(token.balance.toString()),
-        lockedBalance: BigInt(token.lockedBalance.toString()),
-        name: assetInfo?.name ?? token.id,
-        symbol: assetInfo?.symbol ?? token.id.substring(0, 4).toUpperCase(),
-        description: assetInfo?.description,
-        logoURI: assetInfo?.logoURI,
-        decimals: assetInfo?.decimals ?? 0
-      }
-    })
-
-    return [alphAsset, ...tokenAssets]
-  }
-)
+// Reducers helper functions
 
 const getAddresses = (state: AddressesState) => Object.values(state.entities) as Address[]
-
-export default addressesSlice
 
 const getDefaultAddressState = (address: AddressBase): Address => ({
   ...address,

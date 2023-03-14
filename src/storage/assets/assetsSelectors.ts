@@ -16,20 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
-import { store } from '@/storage/store'
-import { Contact } from '@/types/contacts'
+import { createSelector } from '@reduxjs/toolkit'
 
-export const filterContacts = (contacts: Contact[], text: string) =>
-  text.length < 2
-    ? contacts
-    : contacts.filter(
-        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
-      )
+import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { RootState } from '@/storage/store'
 
-export const loadContacts = () => {
-  const contacts: Contact[] = ContactStorage.load()
+export const { selectAll: selectAllAssetsInfo, selectById: selectAssetInfoById } =
+  assetsInfoAdapter.getSelectors<RootState>((state) => state.assetsInfo)
 
-  if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
-}
+export const selectIsLoadingAssetsInfo = createSelector(
+  [(state: RootState) => state.assetsInfo.status, (state: RootState) => state.network.settings.networkId],
+  (status, networkId) =>
+    (networkId === networkPresets.mainnet.networkId || networkId === networkPresets.testnet.networkId) &&
+    status === 'uninitialized'
+)

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { toHumanReadableAmount } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
 import { RelayMethod } from '@alephium/walletconnect-provider'
 import {
   ApiRequestArguments,
@@ -33,8 +34,7 @@ import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
-import { selectAllAddresses } from '@/storage/addresses/addressesSlice'
-import { ALPH } from '@/storage/assets/assetsInfoSlice'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import {
   DappTxData,
   DeployContractTxData,
