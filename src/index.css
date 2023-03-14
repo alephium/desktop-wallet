@@ -65,7 +65,7 @@ a {
 }
 
 @font-face {
-  font-family: 'JetBrainsMono';
-  src: url('./style/fonts/JetBrainsMono.var.woff2') format('woff2');
+  font-family: 'Roboto Mono';
+  src: url('./style/fonts/RobotoMono-var.ttf') format('truetype');
   font-weight: 100 1000;
 }
