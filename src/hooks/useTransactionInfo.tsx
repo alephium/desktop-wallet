@@ -24,10 +24,10 @@ import {
   TransactionInfoType
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
+import { ALPH } from '@alephium/token-list'
 
 import { useAppSelector } from '@/hooks/redux'
-import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressTransaction } from '@/types/transactions'

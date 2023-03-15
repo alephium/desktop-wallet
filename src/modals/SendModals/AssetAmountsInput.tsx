@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
 import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -35,8 +36,7 @@ import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
-import { selectAddressesAssets } from '@/storage/app-state/slices/addressesSlice'
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
+import { selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/assets'
 

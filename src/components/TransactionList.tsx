@@ -28,14 +28,14 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import {
-  selectAddressByHash,
-  selectAddressIds,
-  selectAllAddresses,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
-} from '@/storage/app-state/slices/addressesSlice'
-import { selectAddressesConfirmedTransactions } from '@/storage/app-state/slices/confirmedTransactionsSlice'
-import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
+} from '@/storage/addresses/addressesActions'
+import { selectAddressByHash, selectAddressIds, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddressesConfirmedTransactions,
+  selectAddressesPendingTransactions
+} from '@/storage/transactions/transactionsSelectors'
 import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 

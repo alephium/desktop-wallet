@@ -21,15 +21,14 @@ import { merge } from 'lodash'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { PartialDeep } from 'type-fest'
 
-import { SnackbarMessage } from '@/components/SnackbarManager'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
-import { passwordValidationFailed } from '@/storage/app-state/actions'
-import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/app-state/slices/activeWalletSlice'
-import { osThemeChangeDetected } from '@/storage/app-state/slices/appSlice'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import { passwordValidationFailed } from '@/storage/auth/authActions'
+import { osThemeChangeDetected } from '@/storage/global/globalActions'
+import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { AlephiumWindow } from '@/types/window'
 import { migrateUserData } from '@/utils/migration'
 import { getWalletInitialAddress } from '@/utils/wallet'
@@ -44,7 +43,6 @@ interface WalletUnlockProps {
 
 export interface GlobalContextProps {
   unlockWallet: (props: WalletUnlockProps) => void
-  snackbarMessage: SnackbarMessage | undefined
   newVersion: string
   requiresManualDownload: boolean
   newVersionDownloadTriggered: boolean
@@ -54,7 +52,6 @@ export interface GlobalContextProps {
 
 export const initialGlobalContext: GlobalContextProps = {
   unlockWallet: () => null,
-  snackbarMessage: undefined,
   newVersion: '',
   requiresManualDownload: false,
   newVersionDownloadTriggered: false,

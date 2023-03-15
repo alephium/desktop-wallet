@@ -22,18 +22,17 @@ import i18n from '@/i18n'
 import {
   getEncryptedStoragePropsFromActiveWallet,
   PersistentEncryptedStorage
-} from '@/storage/persistent-storage/encryptedPersistentStorage'
-import { Contact } from '@/types/contacts'
+} from '@/storage/encryptedPersistentStorage'
+import { Contact, ContactFormData } from '@/types/contacts'
 
 class ContactsStorage extends PersistentEncryptedStorage {
-  store(contact: Contact) {
+  store(contact: ContactFormData) {
     const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
 
     if (encryptedStorageProps.isPassphraseUsed)
       throw new Error('Cannot use contact feature in passphrase-enabled wallets')
 
     let contactId = contact.id
-    const isNewContact = !contactId
     const contacts: Contact[] = this.load()
 
     const indexOfContactWithSameAddress = contacts.findIndex((c: Contact) => c.address === contact.address)
@@ -41,7 +40,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
       (c: Contact) => c.name.toLowerCase() === contact.name.toLowerCase()
     )
 
-    if (isNewContact) {
+    if (contactId === undefined) {
       if (indexOfContactWithSameAddress >= 0) throw new Error(i18n.t('A contact with this address already exists'))
       if (indexOfContactWithSameName >= 0) throw new Error(i18n.t('A contact with this name already exists'))
 
@@ -57,7 +56,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
       if (indexOfContactWithSameName >= 0 && indexOfContactWithSameName !== indexOfContactWithSameId)
         throw new Error(i18n.t('A contact with this name already exists'))
 
-      contacts.splice(indexOfContactWithSameId, 1, contact)
+      contacts.splice(indexOfContactWithSameId, 1, contact as Contact)
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)

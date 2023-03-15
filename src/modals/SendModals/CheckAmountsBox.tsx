@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { ALPH } from '@alephium/token-list'
 import { Fragment } from 'react'
 import styled from 'styled-components'
 
@@ -24,7 +25,6 @@ import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { AssetAmount } from '@/types/assets'
 import { getTransactionAssetAmounts } from '@/utils/transactions'
 

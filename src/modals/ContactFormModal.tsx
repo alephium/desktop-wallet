@@ -25,9 +25,9 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
-import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
-import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
-import { Contact } from '@/types/contacts'
+import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
+import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
+import { Contact, ContactFormData } from '@/types/contacts'
 import {
   isAddressValid,
   isContactAddressValid,
@@ -43,7 +43,7 @@ interface ContactFormModalProps {
 const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { control, handleSubmit, formState } = useForm<Contact>({
+  const { control, handleSubmit, formState } = useForm<ContactFormData>({
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
   })
@@ -51,7 +51,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
 
-  const saveContact = (contactData: Contact) => {
+  const saveContact = (contactData: ContactFormData) => {
     try {
       const id = ContactStorage.store(contactData)
       dispatch(contactStoredInPersistentStorage({ ...contactData, id }))

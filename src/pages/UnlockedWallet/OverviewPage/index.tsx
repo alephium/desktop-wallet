@@ -36,7 +36,7 @@ import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/Addresses
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { walletLocked } from '@/storage/wallets/walletActions'
 
 const OverviewPage = () => {
   const { t } = useTranslation()

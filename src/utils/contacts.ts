@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { contactsLoadedFromPersistentStorage } from '@/storage/app-state/slices/contactsSlice'
-import { store } from '@/storage/app-state/store'
-import ContactStorage from '@/storage/persistent-storage/contactsPersistentStorage'
+import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
+import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
+import { store } from '@/storage/store'
 import { Contact } from '@/types/contacts'
 
 export const filterContacts = (contacts: Contact[], text: string) =>

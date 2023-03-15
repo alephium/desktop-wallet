@@ -30,16 +30,16 @@ import SecretPhraseModal from '@/modals/SecretPhraseModal'
 import EditWalletNameModal from '@/modals/SettingsModal/EditWalletNameModal'
 import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
 import WalletRemovalModal from '@/modals/WalletRemovalModal'
-import { activeWalletDeleted, walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
-import { walletDeleted } from '@/storage/app-state/slices/appSlice'
-import AddressMetadataStorage from '@/storage/persistent-storage/addressMetadataPersistentStorage'
-import WalletStorage from '@/storage/persistent-storage/walletPersistentStorage'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { activeWalletDeleted, walletLocked } from '@/storage/wallets/walletActions'
+import { walletDeleted } from '@/storage/wallets/walletActions'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { ActiveWallet, StoredWallet } from '@/types/wallet'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.app.wallets])
+  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.global.wallets])
 
   const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)

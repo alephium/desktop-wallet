@@ -18,9 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { TokenInfo } from '@alephium/token-list'
+import { ALPH } from '@alephium/token-list'
 import { Dictionary } from '@reduxjs/toolkit'
 
-import { ALPH } from '@/storage/app-state/slices/assetsInfoSlice'
 import { Address, AddressHash, AddressSettings } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'

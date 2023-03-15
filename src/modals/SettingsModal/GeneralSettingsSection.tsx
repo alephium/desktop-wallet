@@ -34,8 +34,8 @@ import {
   languageChanged,
   passwordRequirementToggled,
   walletLockTimeChanged
-} from '@/storage/app-state/slices/settingsSlice'
-import { switchTheme } from '@/storage/storage-utils/settingsStorageUtils'
+} from '@/storage/settings/settingsActions'
+import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Language, ThemeSettings } from '@/types/settings'
 import { getAvailableLanguageOptions } from '@/utils/settings'
 

@@ -17,9 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AddressHash } from '@/types/addresses'
+import { PartialBy } from '@/types/generics'
 
 export type Contact = {
-  id?: string
+  id: string
   name: string
   address: AddressHash
 }
+
+export type ContactFormData = PartialBy<Contact, 'id'>

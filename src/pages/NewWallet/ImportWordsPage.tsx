@@ -35,8 +35,8 @@ import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import { useAppDispatch } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
-import { walletCreationFailed } from '@/storage/app-state/actions'
-import { saveNewWallet } from '@/storage/storage-utils/walletStorageUtils'
+import { walletCreationFailed } from '@/storage/wallets/walletActions'
+import { saveNewWallet } from '@/storage/wallets/walletStorageUtils'
 import { bip39Words } from '@/utils/bip39'
 
 const ImportWordsPage = () => {

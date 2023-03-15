@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import {
   getEncryptedStoragePropsFromActiveWallet,
   PersistentEncryptedStorage
-} from '@/storage/persistent-storage/encryptedPersistentStorage'
+} from '@/storage/encryptedPersistentStorage'
 import { AddressMetadata, AddressSettings } from '@/types/addresses'
 import { latestAddressMetadataVersion } from '@/utils/migration'
 

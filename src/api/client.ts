@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { CliqueClient, ExplorerClient } from '@alephium/sdk'
 import { NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
 
-import { defaultSettings } from '@/storage/persistent-storage/settingsPersistentStorage'
+import { defaultSettings } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
 
 export class Client {

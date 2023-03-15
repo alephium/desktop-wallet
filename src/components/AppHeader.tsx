@@ -35,8 +35,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
-import { selectDefaultAddress } from '@/storage/app-state/slices/addressesSlice'
-import { discreetModeToggled } from '@/storage/app-state/slices/settingsSlice'
+import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { discreetModeToggled } from '@/storage/settings/settingsActions'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 interface AppHeader {

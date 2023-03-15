@@ -26,7 +26,7 @@ import Button from '@/components/Button'
 import WalletSwitcher from '@/components/WalletSwitcher'
 import { useAppDispatch } from '@/hooks/redux'
 import ModalContainer, { ModalContainerProps } from '@/modals/ModalContainer'
-import { walletLocked } from '@/storage/app-state/slices/activeWalletSlice'
+import { walletLocked } from '@/storage/wallets/walletActions'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {

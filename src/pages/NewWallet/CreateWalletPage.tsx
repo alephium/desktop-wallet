@@ -36,7 +36,7 @@ import Paragraph from '@/components/Paragraph'
 import { useStepsContext } from '@/contexts/steps'
 import { useWalletContext } from '@/contexts/wallet'
 import { useAppSelector } from '@/hooks/redux'
-import { selectDevModeStatus } from '@/storage/app-state/slices/appSlice'
+import { selectDevModeStatus } from '@/storage/global/globalSlice'
 import { isWalletNameValid } from '@/utils/form-validation'
 
 const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) => {
