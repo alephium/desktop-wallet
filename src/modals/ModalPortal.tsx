@@ -19,6 +19,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 
-const ModalPortal: FC = ({ children }) => createPortal(<AnimatePresence>{children}</AnimatePresence>, document.body)
+import Tooltips from '@/components/Tooltips'
+
+const ModalPortal: FC = ({ children }) =>
+  createPortal(
+    <>
+      <AnimatePresence>{children}</AnimatePresence>
+      <Tooltips />
+    </>,
+    document.body
+  )
 
 export default ModalPortal
