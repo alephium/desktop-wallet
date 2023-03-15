@@ -71,9 +71,6 @@ const OverviewPage = () => {
               >
                 <ButtonText>{t('Receive')}</ButtonText>
               </ShortcutButton>
-              <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
-                <ButtonText>{t('Settings')}</ButtonText>
-              </ShortcutButton>
               <ShortcutButton
                 transparent
                 borderless
@@ -83,7 +80,9 @@ const OverviewPage = () => {
               >
                 <ButtonText>{t('Send')}</ButtonText>
               </ShortcutButton>
-
+              <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
+                <ButtonText>{t('Settings')}</ButtonText>
+              </ShortcutButton>
               <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
                 <ButtonText>{t('Lock wallet')}</ButtonText>
               </ShortcutButton>
