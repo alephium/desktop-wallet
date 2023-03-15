@@ -67,8 +67,8 @@ const settingsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
-      .addCase(systemLanguageMatchSucceeded, (state, action) => {
-        state.language = action.payload
+      .addCase(systemLanguageMatchSucceeded, (state, { payload: language }) => {
+        state.language = language
       })
       .addCase(systemLanguageMatchFailed, (state) => {
         state.language = 'en-US'
