@@ -33,3 +33,6 @@ export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalanc
 export type Asset = TokenDisplayBalances & PartialBy<TokenInfo, 'symbol' | 'name'>
 
 export type AssetAmount = { id: Asset['id']; amount?: bigint }
+
+export type TransactionInfoAsset = PartialBy<Omit<Asset, 'balance' | 'lockedBalance'>, 'decimals'> &
+  Required<AssetAmount>
