@@ -18,29 +18,24 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import { motion } from 'framer-motion'
+import { ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
-import AddressEllipsed from '@/components/AddressEllipsed'
+import ActionLink from '@/components/ActionLink'
 import AddressRow from '@/components/AddressRow'
 import Amount from '@/components/Amount'
-import { TabItem } from '@/components/TabBar'
-import Table, { TableRow } from '@/components/Table'
+import Table, { TableHeader } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
-import TableTabBar from '@/components/TableTabBar'
 import { useAppSelector } from '@/hooks/redux'
-import i18next from '@/i18n'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import { selectAllAddresses } from '@/storage/app-state/slices/addressesSlice'
-import { selectAllContacts } from '@/storage/app-state/slices/contactsSlice'
 import { useGetPriceQuery } from '@/storage/app-state/slices/priceApiSlice'
 import { Address } from '@/types/addresses'
-import { Contact } from '@/types/contacts'
 import { currencies } from '@/utils/currencies'
 
 interface AddressesContactsListProps {
@@ -48,33 +43,19 @@ interface AddressesContactsListProps {
   limit?: number
 }
 
-const tabs = [
-  { value: 'addresses', label: i18next.t('Addresses') },
-  { value: 'contacts', label: i18next.t('Contacts') }
-]
-
 const AddressesContactsList = ({ className, limit }: AddressesContactsListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [isLoadingAddresses] = useAppSelector((s) => [s.addresses.loading])
 
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
-
   return (
     <Table isLoading={isLoadingAddresses} className={className}>
-      <TableTabBar
-        items={tabs}
-        onTabChange={(tab) => setCurrentTab(tab)}
-        activeTab={currentTab}
-        linkText={t('See more')}
-        onLinkClick={() => navigate('/wallet/addresses')}
-      />
-      {
-        {
-          addresses: <AddressesList limit={limit} />,
-          contacts: <ContactsList limit={limit} />
-        }[currentTab.value]
-      }
+      <TableHeader title={t('Your addresses')}>
+        <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight}>
+          {t('See more')}
+        </ActionLink>
+      </TableHeader>
+      <AddressesList limit={limit} />
     </Table>
   )
 }
@@ -110,84 +91,7 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
     </motion.div>
   )
 }
-const ContactsList = ({ className, limit }: AddressesContactsListProps) => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const contacts = useAppSelector(selectAllContacts)
-
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [selectedContact, setSelectedContact] = useState<Contact>()
-
-  const displayedContacts = limit ? contacts.slice(0, limit) : contacts
-
-  const handleContactClick = (contact: Contact) => {
-    setSelectedContact(contact)
-    setIsSendModalOpen(true)
-  }
-
-  const closeSendModal = () => {
-    setSelectedContact(undefined)
-    setIsSendModalOpen(false)
-  }
-
-  const goToContacts = () => navigate('/wallet/addresses', { state: { activeTab: 'contacts' } })
-
-  return (
-    <motion.div {...fadeIn} className={className}>
-      {displayedContacts.map((contact) => (
-        <TableRow
-          key={contact.address}
-          role="row"
-          tabIndex={0}
-          onClick={() => handleContactClick(contact)}
-          onKeyPress={() => handleContactClick(contact)}
-        >
-          <Row>
-            <Column>
-              <Label>{contact.name}</Label>
-              <Hash addressHash={contact.address} />
-            </Column>
-          </Row>
-        </TableRow>
-      ))}
-      {displayedContacts.length === 0 && (
-        <TableRow role="row" tabIndex={0} onClick={goToContacts} onKeyPress={goToContacts}>
-          {t('No contacts found. You can create contacts in the Addresses page.')}
-        </TableRow>
-      )}
-      <ModalPortal>
-        {isSendModalOpen && (
-          <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
-        )}
-      </ModalPortal>
-    </motion.div>
-  )
-}
 
 export default styled(AddressesContactsList)`
   margin-bottom: 45px;
-`
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-`
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`
-
-const Label = styled.div`
-  font-size: 14px;
-  font-weight: var(--fontWeight-semiBold);
-  width: 200px;
-`
-
-const Hash = styled(AddressEllipsed)`
-  color: ${({ theme }) => theme.font.tertiary};
-  font-size: 11px;
-  max-width: 100px;
 `

@@ -20,12 +20,12 @@ import SettingsStorage, {
   defaultSettings,
   networkPresets
 } from '@/storage/persistent-storage/settingsPersistentStorage'
-import { Language, ThemeType } from '@/types/settings'
+import { Language, ThemeSettings } from '@/types/settings'
 import { getNetworkName } from '@/utils/settings'
 
 const mockSettings = {
   general: {
-    theme: 'light' as ThemeType,
+    theme: 'light' as ThemeSettings,
     walletLockTimeInMinutes: 999,
     discreetMode: false,
     passwordRequirement: false,

@@ -18,13 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { themeSettingsChanged } from '@/storage/app-state/slices/settingsSlice'
 import { store } from '@/storage/app-state/store'
-import { ThemeType } from '@/types/settings'
+import { ThemeSettings } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
-export const switchTheme = (theme: ThemeType) => {
+export const switchTheme = (theme: ThemeSettings) => {
   electron?.theme.setNativeTheme(theme)
   store.dispatch(themeSettingsChanged(theme))
 }

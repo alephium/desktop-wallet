@@ -119,6 +119,10 @@ export const InputErrorMessage = styled(motion.label)<InputProps>`
   opacity: 0;
   font-size: 0.8em;
   color: ${({ theme }) => theme.global.alert};
+  border: 1px solid ${({ theme }) => theme.global.alert};
+  border-radius: var(--radius-huge);
+  padding: 6px 12px;
+  background-color: ${({ theme }) => theme.bg.primary};
 `
 
 export const InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }> = ({ inputHasValue, ...props }) => (

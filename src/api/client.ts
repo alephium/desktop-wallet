@@ -29,10 +29,11 @@ export class Client {
 
   constructor() {
     const { nodeHost, explorerApiHost } = defaultSettings.network
+    const { clique, explorer, web3 } = this.getClients(nodeHost, explorerApiHost)
 
-    this.clique = new CliqueClient({ baseUrl: nodeHost, customFetch: throttledFetch(5) })
-    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost, customFetch: throttledFetch(5) })
-    this.web3 = new Web3Client(nodeHost)
+    this.clique = clique
+    this.explorer = explorer
+    this.web3 = web3
   }
 
   async init(
@@ -40,11 +41,21 @@ export class Client {
     explorerApiHost: NetworkSettings['explorerApiHost'],
     isMultiNodesClique = false
   ) {
-    this.clique = new CliqueClient({ baseUrl: nodeHost })
-    this.explorer = new ExplorerClient({ baseUrl: explorerApiHost })
-    this.web3 = new Web3Client(nodeHost)
+    const { clique, explorer, web3 } = this.getClients(nodeHost, explorerApiHost)
+
+    this.clique = clique
+    this.explorer = explorer
+    this.web3 = web3
 
     await this.clique.init(isMultiNodesClique)
+  }
+
+  private getClients(nodeHost: NetworkSettings['nodeHost'], explorerApiHost: NetworkSettings['explorerApiHost']) {
+    return {
+      clique: new CliqueClient({ baseUrl: nodeHost, customFetch: throttledFetch(5) }),
+      explorer: new ExplorerClient({ baseUrl: explorerApiHost, customFetch: throttledFetch(5) }),
+      web3: new Web3Client(nodeHost, undefined, throttledFetch(5))
+    }
   }
 }
 

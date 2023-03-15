@@ -18,11 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createAction } from '@reduxjs/toolkit'
 
+import { Language } from '@/types/settings'
+
 export type Message = string
 export type OptionalMessage = string | undefined
 
 export const languageChangeStarted = createAction('app/languageChangeStarted')
 export const languageChangeFinished = createAction('app/languageChangeFinished')
+export const systemLanguageMatchSucceeded = createAction<Language>('app/systemLanguageMatchSucceeded')
+export const systemLanguageMatchFailed = createAction('app/systemLanguageMatchFailed')
 export const copiedToClipboard = createAction<OptionalMessage>('app/copiedToClipboard')
 export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToClipboardFailed')
 export const passwordValidationFailed = createAction('app/passwordValidationFailed')

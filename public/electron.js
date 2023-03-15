@@ -23,13 +23,13 @@ const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
 const { autoUpdater } = require('electron-updater')
 
-// Handle deep linking for alephium-desktop://
+// Handle deep linking for alephium://
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('alephium-desktop', process.execPath, [path.resolve(process.argv[1])])
+    app.setAsDefaultProtocolClient('alephium', process.execPath, [path.resolve(process.argv[1])])
   }
 } else {
-  app.setAsDefaultProtocolClient('alephium-desktop')
+  app.setAsDefaultProtocolClient('alephium')
 }
 
 contextMenu()
@@ -238,6 +238,12 @@ if (!gotTheLock) {
 
     ipcMain.handle('app:hide', () => app.hide())
 
+    ipcMain.handle('app:getSystemLanguage', () => {
+      const preferedLanguages = app.getPreferredSystemLanguages()
+
+      if (preferedLanguages.length > 0) return preferedLanguages[0]
+    })
+
     createWindow()
   })
 
@@ -255,7 +261,7 @@ if (!gotTheLock) {
   })
 
   app.on('open-url', (event, url) => {
-    const wcUri = url.replace('alephium-desktop://wc?uri=', '')
+    const wcUri = url.replace('alephium://wc?uri=', '')
     mainWindow.webContents.send('wc:setDeepLinkUri', wcUri)
   })
 }

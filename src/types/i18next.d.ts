@@ -18,15 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import 'i18next'
 
-import de from '../../locales/de-DE/translation.json'
 import en from '../../locales/en-US/translation.json'
-import fr from '../../locales/fr-FR/translation.json'
-import vi from '../../locales/vi-VN/translation.json'
 
 declare module 'i18next' {
   interface CustomTypeOptions {
     resources: {
-      translation: typeof en | typeof de | typeof fr | typeof vi
+      translation: typeof en
     }
   }
 }

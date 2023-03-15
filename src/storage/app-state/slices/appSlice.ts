@@ -40,7 +40,7 @@ interface AppState {
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
   wallets: StoredWallet[]
-  theme: Omit<ThemeType, 'system'>
+  theme: ThemeType
   devMode: boolean
 }
 

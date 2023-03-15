@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, getHumanReadableError, produceZeros, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { addressToGroup, getHumanReadableError, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import {
   createAsyncThunk,
@@ -404,12 +404,11 @@ export const selectAddressesAssets = createSelector(
 
     const tokenAssets = tokenBalances.map((token) => {
       const assetInfo = assetsInfo.find((t) => t.id === token.id)
-      const trailingZeros = produceZeros(assetInfo?.decimals ?? 0)
 
       return {
         id: token.id,
-        balance: BigInt(token.balance.toString() + trailingZeros),
-        lockedBalance: BigInt(token.lockedBalance.toString() + trailingZeros),
+        balance: BigInt(token.balance.toString()),
+        lockedBalance: BigInt(token.lockedBalance.toString()),
         name: assetInfo?.name ?? token.id,
         symbol: assetInfo?.symbol ?? token.id.substring(0, 4).toUpperCase(),
         description: assetInfo?.description,

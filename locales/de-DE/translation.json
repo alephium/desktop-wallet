@@ -304,6 +304,7 @@
   "See more": "See more",
   "Latest transactions": "Latest transactions",
   "Addresses": "Adressen",
+  "Your addresses": "Ihre Adressen",
   "Developer tools": "Developer tools",
   "Enable developer tools": "Enable developer tools",
   "Features for developers only": "Features for developers only",
@@ -313,13 +314,12 @@
   "Smart contract": "Smart contract",
   "All transactions loaded!": "All transactions loaded!",
   "Tokens": "Tokens",
-  "Today": "Heute",
+  "Value today": "Value today",
   "NFTs": "NFTs",
   "Coming soon!": "Coming soon!",
   "Address tokens": "Address tokens",
   "Address NFTs": "Address NFTs",
   "Address transactions": "Address transactions",
-  "Address settings": "Address settings",
   "Asset": "Asset",
   "Assets": "Assets",
   "Add asset": "Add asset",
@@ -354,5 +354,6 @@
   "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
   "Delete": "Löschen",
   "Timestamp": "Zeitpunkt",
-  "Lock time must be in the future.": "Sperrzeit muss in der Zukunft liegen."
+  "Lock time must be in the future.": "Sperrzeit muss in der Zukunft liegen.",
+  "Shortcuts": "Shortcuts"
 }

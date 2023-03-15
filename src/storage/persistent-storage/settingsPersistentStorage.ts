@@ -48,7 +48,7 @@ export const defaultSettings: Settings = {
     walletLockTimeInMinutes: 3,
     discreetMode: false,
     passwordRequirement: false,
-    language: 'en-US',
+    language: undefined,
     devTools: false
   },
   network: clone(networkPresets.mainnet) as NetworkSettings

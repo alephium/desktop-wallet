@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Error, ProgressInfo, UpdateDownloadedEvent } from 'electron-updater'
 
-import { ThemeType } from './settings'
+import { ThemeSettings } from './settings'
 
 interface NativeTheme {
   shouldUseDarkColors: boolean
@@ -28,7 +28,7 @@ interface NativeTheme {
 export interface AlephiumWindow extends Window {
   electron?: {
     theme: {
-      setNativeTheme: (theme: ThemeType) => void
+      setNativeTheme: (theme: ThemeSettings) => void
       getNativeTheme: () => void
       onGetNativeTheme: (callback: (nativeTheme: NativeTheme) => void) => () => void
       onShouldUseDarkColors: (callback: (useDark: boolean) => void) => () => void
@@ -46,6 +46,7 @@ export interface AlephiumWindow extends Window {
     }
     app: {
       hide: () => void
+      getSystemLanguage: () => Promise<string | undefined>
     }
   }
 }

@@ -86,7 +86,7 @@ const useStepsUI = (currentStep: Step) => {
 
   const dotFill: Record<StepStatus, string> = {
     completed: theme.global.valid,
-    active: theme.font.primary,
+    active: theme.name === 'dark' ? theme.font.primary : 'transparent',
     next: 'transparent'
   }
 

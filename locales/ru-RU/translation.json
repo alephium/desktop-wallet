@@ -37,7 +37,7 @@
   "Submit": "Отправить",
   "TOTAL BALANCE": "Итоговый баланс",
   "AVAILABLE": "ДОСТУПНО",
-  "LOCKED": "ЗАБЛОКИРОВАНО",
+  "Locked": "Заблокировано",
   "Could not fetch data because the wallet is offline": "Не удалось получить данные, так как кошелек находится в режиме оффлайн",
   "Unknown wallet name": "Неизвестное имя кошелька",
   "To remove this address from being the default address, you must set another one as default first.": "Чтобы этот адрес перестал быть адресом по умолчанию, необходимо установить другой адрес по умолчанию.",

@@ -19,11 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import 'styled-components'
 
 export interface GeneralSettings {
-  theme: ThemeType
+  theme: ThemeSettings
   walletLockTimeInMinutes: number | null
   discreetMode: boolean
   passwordRequirement: boolean
-  language: Language
+  language: Language | undefined
   devTools: boolean
 }
 
@@ -41,7 +41,9 @@ export interface Settings {
 
 export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN'
 
-export type ThemeType = 'light' | 'dark' | 'system'
+export type ThemeType = 'light' | 'dark'
+
+export type ThemeSettings = ThemeType | 'system'
 
 declare module 'styled-components' {
   export interface DefaultTheme {

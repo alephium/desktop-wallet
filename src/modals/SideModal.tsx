@@ -81,6 +81,7 @@ const Sidebar = styled(motion.div)<{ width: number }>`
 
 const ModalHeader = styled.div`
   display: flex;
+  align-items: center;
   padding: 15px 25px;
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 `

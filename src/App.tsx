@@ -30,7 +30,11 @@ import { useGlobalContext } from '@/contexts/global'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
-import { localStorageDataMigrated } from '@/storage/app-state/actions'
+import {
+  localStorageDataMigrated,
+  systemLanguageMatchFailed,
+  systemLanguageMatchSucceeded
+} from '@/storage/app-state/actions'
 import { selectAllAddresses, syncAddressesData } from '@/storage/app-state/slices/addressesSlice'
 import { devModeShortcutDetected } from '@/storage/app-state/slices/appSlice'
 import { syncNetworkTokensInfo } from '@/storage/app-state/slices/assetsInfoSlice'
@@ -38,8 +42,10 @@ import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/app-state
 import { selectAddressesPendingTransactions } from '@/storage/app-state/slices/pendingTransactionsSlice'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
+import { AlephiumWindow } from '@/types/window'
 import { useInterval } from '@/utils/hooks'
 import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
+import { getAvailableLanguageOptions } from '@/utils/settings'
 
 const App = () => {
   const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
@@ -56,6 +62,7 @@ const App = () => {
     s.assetsInfo,
     s.app.loading
   ])
+  const language = useAppSelector((s) => s.settings.language)
   const showDevIndication = useDevModeShortcut()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
@@ -68,6 +75,31 @@ const App = () => {
 
     dispatch(localStorageDataMigrated())
   }, [dispatch])
+
+  const setSystemLanguage = useCallback(async () => {
+    const _window = window as unknown as AlephiumWindow
+    const electron = _window.electron
+    const systemLanguage = await electron?.app.getSystemLanguage()
+
+    if (!systemLanguage) {
+      dispatch(systemLanguageMatchFailed())
+      return
+    }
+
+    const availableLanguageOptions = getAvailableLanguageOptions()
+    const systemLanguageCode = systemLanguage.substring(0, 2)
+    const matchedLanguage = availableLanguageOptions.find((lang) => lang.value.startsWith(systemLanguageCode))
+
+    if (matchedLanguage) {
+      dispatch(systemLanguageMatchSucceeded(matchedLanguage.value))
+    } else {
+      dispatch(systemLanguageMatchFailed())
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (language === undefined) setSystemLanguage()
+  }, [language, setSystemLanguage])
 
   const initializeClient = useCallback(async () => {
     try {

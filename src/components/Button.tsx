@@ -33,11 +33,12 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   short?: boolean
   wide?: boolean
   Icon?: LucideIconType
+  iconColor?: string
   borderless?: boolean
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, style, ...props }: ButtonProps) => {
+const Button = ({ children, disabled, submit, Icon, className, iconColor, style, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -71,7 +72,7 @@ const Button = ({ children, disabled, submit, Icon, className, style, ...props }
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={18} />
+          <Icon size={18} color={iconColor} />
         </ButtonIcon>
       )}
       {children}
