@@ -19,10 +19,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { calcTxAmountsDeltaForAddress, DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
 import { MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
+import dayjs from 'dayjs'
 
+import { SelectOption } from '@/components/Inputs/Select'
+import i18n from '@/i18n'
 import { Address, AddressHash } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
-import { AddressPendingTransaction, AddressTransaction, PendingTransaction } from '@/types/transactions'
+import {
+  AddressPendingTransaction,
+  AddressTransaction,
+  PendingTransaction,
+  TransactionTimePeriod
+} from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
@@ -99,3 +107,41 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
     tokens
   }
 }
+
+const now = dayjs()
+const currentYear = now.year()
+const today = now.format('DD/MM/YYYY')
+
+export const timePeriodsOptions: SelectOption<TransactionTimePeriod>[] = [
+  {
+    value: '24h',
+    label: i18n.t('Last 24h')
+  },
+  {
+    value: '1w',
+    label: i18n.t('Last week')
+  },
+  {
+    value: '1m',
+    label: i18n.t('Last month')
+  },
+  {
+    value: '6m',
+    label: i18n.t('Last 6 months')
+  },
+  {
+    value: '12m',
+    label: `${i18n.t('Last 12 months')}
+    (${now.subtract(1, 'year').format('DD/MM/YYYY')}
+    - ${today})`
+  },
+  {
+    value: 'previousYear',
+    label: `${i18n.t('Previous year')}
+    (01/01/${currentYear - 1} - 31/12/${currentYear - 1})`
+  },
+  {
+    value: 'thisYear',
+    label: `${i18n.t('This year')} (01/01/${currentYear - 1} - ${today})`
+  }
+]
