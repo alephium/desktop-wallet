@@ -40,13 +40,13 @@ import { appHeaderHeightPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
-  headerTitle?: string
+  title?: string
   className?: string
 }
 
 dayjs.extend(relativeTime)
 
-const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerTitle, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, className }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const [network, activeWallet, isLoadingData] = useAppSelector((s) => [s.network, s.activeWallet, s.addresses.loading])
@@ -79,7 +79,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerT
         <Scrollbar>
           <MainContent>{children}</MainContent>
 
-          <AppHeader title={headerTitle}>
+          <AppHeader title={title}>
             {network.status === 'online' && (
               <TooltipWrapper content={t`Refresh data`}>
                 <RefreshButton

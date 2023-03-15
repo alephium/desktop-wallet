@@ -16,16 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
-import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
-import InfoMessage from '@/components/InfoMessage'
 import InlineLabelValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Toggle from '@/components/Inputs/Toggle'
 import TabBar, { TabItem } from '@/components/TabBar'
@@ -40,6 +38,7 @@ import AddressesTabContent from '@/pages/UnlockedWallet/AddressesPage/AddressesT
 import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTabContent'
 import OperationBox from '@/pages/UnlockedWallet/AddressesPage/OperationBox'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { addressesPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
@@ -79,39 +78,31 @@ const AddressesPage = () => {
   if (!mnemonic || !walletName) return null
 
   return (
-    <motion.div {...fadeIn}>
-      <MainPanel>
-        <Header>
-          <div>
-            <Title>{t`Addresses & contacts`}</Title>
-            <Subtitle>{t`Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.`}</Subtitle>
-          </div>
-          <div>
-            <AnimatePresence>
-              {!infoMessageClosed && (
-                <InfoMessage link={links.faq} onClose={closeInfoMessage}>
-                  {t`Want to know more? Click here to take a look at our FAQ!`}
-                </InfoMessage>
-              )}
-            </AnimatePresence>
-          </div>
-        </Header>
-        <Tabs>
+    <UnlockedWalletPage
+      title={t('Addresses & contacts')}
+      subtitle={t(
+        'Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.'
+      )}
+      isInfoMessageVisible={!infoMessageClosed}
+      closeInfoMessage={closeInfoMessage}
+      infoMessageLink={links.faq}
+      infoMessage={t('Want to know more? Click here to take a look at our FAQ!')}
+    >
+      <Tabs>
+        <TabPanel>
+          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+        </TabPanel>
+        <TabContent>
           <TabPanel>
-            <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-          </TabPanel>
-          <TabContent>
-            <TabPanel>
+            {
               {
-                {
-                  addresses: <AddressesTabContent />,
-                  contacts: <ContactsTabContent />
-                }[currentTab.value]
-              }
-            </TabPanel>
-          </TabContent>
-        </Tabs>
-      </MainPanel>
+                addresses: <AddressesTabContent />,
+                contacts: <ContactsTabContent />
+              }[currentTab.value]
+            }
+          </TabPanel>
+        </TabContent>
+      </Tabs>
       {currentTab.value === 'addresses' && (
         <AdvancedOperationsPanel>
           <AnimatePresence>
@@ -184,38 +175,13 @@ const AddressesPage = () => {
           />
         )}
       </ModalPortal>
-    </motion.div>
+    </UnlockedWalletPage>
   )
 }
 
 export default AddressesPage
 
 const advancedOperationsHeaderHeightPx = 80
-
-const MainPanel = styled.div`
-  padding-bottom: 130px;
-`
-
-const Header = styled(UnlockedWalletPanel)`
-  display: flex;
-  justify-content: space-between;
-  gap: 40px;
-  margin-top: 35px;
-  margin-bottom: 50px;
-  padding-bottom: 0;
-`
-
-const Title = styled.h1`
-  font-size: 26px;
-  font-weight: var(--fontWeight-semiBold);
-  margin-top: 0;
-  margin-bottom: 20px;
-`
-
-const Subtitle = styled.div`
-  max-width: 394px;
-  color: ${({ theme }) => theme.font.tertiary};
-`
 
 const AdvancedOperationsPanel = styled.div`
   position: fixed;
@@ -263,7 +229,9 @@ const AdvancedOperationsToggle = styled(InlineLabelValueInput)`
   padding: 0;
 `
 
-const Tabs = styled.div``
+const Tabs = styled.div`
+  padding-bottom: 80px;
+`
 
 const TabContent = styled(Box)`
   padding-top: 30px;

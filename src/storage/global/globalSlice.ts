@@ -25,7 +25,8 @@ import {
   localStorageDataMigrated,
   modalClosed,
   modalOpened,
-  osThemeChangeDetected
+  osThemeChangeDetected,
+  transfersPageInfoMessageClosed
 } from '@/storage/global/globalActions'
 import { languageChangeFinished, languageChangeStarted, themeToggled } from '@/storage/settings/settingsActions'
 import { themeSettingsChanged } from '@/storage/settings/settingsActions'
@@ -41,6 +42,7 @@ interface AppState {
   loading: boolean
   visibleModals: string[]
   addressesPageInfoMessageClosed: boolean
+  transfersPageInfoMessageClosed: boolean
   wallets: StoredWallet[]
   theme: ThemeType
   devMode: boolean
@@ -52,6 +54,7 @@ const initialState: AppState = {
   loading: false,
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
+  transfersPageInfoMessageClosed: false,
   wallets: WalletStorage.list(),
   theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme,
   devMode: false
@@ -73,6 +76,9 @@ const globalSlice = createSlice({
       })
       .addCase(addressesPageInfoMessageClosed, (state) => {
         state.addressesPageInfoMessageClosed = true
+      })
+      .addCase(transfersPageInfoMessageClosed, (state) => {
+        state.transfersPageInfoMessageClosed = true
       })
       .addCase(walletDeleted, (state, action) => {
         const deletedWalletId = action.payload
