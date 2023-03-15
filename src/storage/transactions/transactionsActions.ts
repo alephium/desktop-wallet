@@ -28,3 +28,5 @@ export const transactionSendFailed = createAction<Message>('tx/transactionSendFa
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
 
 export const transactionSent = createAction<PendingTransaction>('tx/transactionSent')
+
+export const csvGenerationStarted = createAction('tx/csvGenerationStarted')

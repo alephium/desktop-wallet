@@ -30,6 +30,7 @@ import {
   customNetworkSettingsSaved
 } from '@/storage/settings/networkActions'
 import {
+  csvGenerationStarted,
   transactionBuildFailed,
   transactionSendFailed,
   transactionsSendSucceeded
@@ -124,6 +125,12 @@ const snackbarSlice = createSlice({
         })
       )
       .addCase(walletNameStorageFailed, displayError)
+      .addCase(csvGenerationStarted, (state) =>
+        displayMessageImmediately(state, {
+          text: i18n.t('Your CSV is being compiled in the background'),
+          duration: -1
+        })
+      )
   }
 })
 
