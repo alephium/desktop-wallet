@@ -45,9 +45,17 @@ interface TransactionListProps {
   title?: string
   limit?: number
   compact?: boolean
+  hideHeader?: boolean
 }
 
-const TransactionList = ({ className, addressHash, title, limit, compact }: TransactionListProps) => {
+const TransactionList = ({
+  className,
+  addressHash,
+  title,
+  limit,
+  compact,
+  hideHeader = false
+}: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -79,13 +87,15 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
   return (
     <>
       <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
-        <TableHeader title={title ?? t('Transactions')}>
-          {limit !== undefined && (
-            <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
-              {t('See more')}
-            </ActionLink>
-          )}
-        </TableHeader>
+        {!hideHeader && (
+          <TableHeader title={title ?? t('Transactions')}>
+            {limit !== undefined && (
+              <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+                {t('See more')}
+              </ActionLink>
+            )}
+          </TableHeader>
+        )}
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
             <TransactionalInfo
