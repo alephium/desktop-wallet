@@ -37,6 +37,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   liftLabel?: boolean
   className?: string
   heightSize?: InputHeight
+  simpleMode?: boolean
 }
 
 export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
@@ -68,7 +69,7 @@ export const inputDefaultStyle = (
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
-  padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingRight}` : `0 ${inputStyling.paddingLeftRight}`};
+  padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingLeftRight}` : `0 ${inputStyling.paddingLeftRight}`};
   font-weight: var(--fontWeight-medium);
   font-size: 1em;
   text-align: left;

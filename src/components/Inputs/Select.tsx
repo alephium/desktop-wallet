@@ -29,13 +29,14 @@ import {
   useState
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
-import { InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
-import Input, { InputBase } from '@/components/Inputs/Input'
+import { inputDefaultStyle, InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
+import Input from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import Popup from '@/components/Popup'
+import Truncate from '@/components/Truncate'
 import ModalPortal from '@/modals/ModalPortal'
 import { Coordinates } from '@/types/numbers'
 import { onTabPress } from '@/utils/misc'
@@ -64,11 +65,12 @@ interface SelectProps<T extends OptionValue> {
   options: SelectOption<T>[]
   title?: string
   id: string
-  onValueChange: (value: SelectOption<T> | undefined) => void
+  onSelect: (value: T) => void
   raised?: boolean
   skipEqualityCheck?: boolean
   noMargin?: boolean
   className?: string
+  simpleMode?: boolean
   heightSize?: InputHeight
 }
 
@@ -79,14 +81,15 @@ function Select<T extends OptionValue>({
   disabled,
   controlledValue,
   id,
-  onValueChange,
+  onSelect,
   raised,
   skipEqualityCheck = false,
   noMargin,
+  simpleMode,
   className,
   heightSize
 }: SelectProps<T>) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const selectedValueRef = useRef<HTMLDivElement>(null)
 
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [value, setValue] = useState(controlledValue)
@@ -95,8 +98,8 @@ function Select<T extends OptionValue>({
 
   let containerCenter: Coordinates
 
-  if (inputRef?.current) {
-    const containerElement = inputRef.current
+  if (selectedValueRef?.current) {
+    const containerElement = selectedValueRef.current
     const containerElementRect = containerElement.getBoundingClientRect()
 
     containerCenter = {
@@ -108,18 +111,18 @@ function Select<T extends OptionValue>({
   const setInputValue = useCallback(
     (option: SelectOption<T>) => {
       if (!value || !isEqual(option, value) || skipEqualityCheck) {
-        onValueChange(option)
+        onSelect(option.value)
         setValue(option)
 
-        inputRef.current?.focus()
+        selectedValueRef.current?.focus()
       }
     },
-    [onValueChange, skipEqualityCheck, value]
+    [onSelect, skipEqualityCheck, value]
   )
 
   const handleClick = (e: MouseEvent) => {
     if (options.length <= 1) {
-      options.length === 1 && onValueChange(options[0])
+      options.length === 1 && onSelect(options[0].value)
       return
     }
 
@@ -136,7 +139,7 @@ function Select<T extends OptionValue>({
 
   const handlePopupClose = () => {
     setShowPopup(false)
-    inputRef.current?.focus()
+    selectedValueRef.current?.focus()
   }
 
   useEffect(() => {
@@ -171,26 +174,27 @@ function Select<T extends OptionValue>({
         onKeyDown={handleKeyDown}
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
         heightSize={heightSize}
+        simpleMode={simpleMode}
       >
         <InputLabel inputHasValue={!!value} htmlFor={id}>
           {label}
         </InputLabel>
-        {options.length > 1 && (
+        {options.length > 1 && !simpleMode && (
           <MoreIcon>
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInput
-          type="text"
+        <SelectedValue
           tabIndex={-1}
           className={className}
-          disabled={disabled}
+          ref={selectedValueRef}
           id={id}
-          value={value?.label ?? ''}
-          readOnly
+          simpleMode={simpleMode}
           label={label}
-          ref={inputRef}
-        />
+          heightSize={heightSize}
+        >
+          <Truncate>{value?.label}</Truncate>
+        </SelectedValue>
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
@@ -363,9 +367,9 @@ export const MoreIcon = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize'>>`
+export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize' | 'simpleMode'>>`
   cursor: pointer;
-  margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
+  margin: ${({ noMargin, simpleMode }) => (noMargin || simpleMode ? 0 : '16px 0')};
   height: ${({ heightSize }) =>
     heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
 `
@@ -395,10 +399,26 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
   }
 `
 
-const ClickableInput = styled(InputBase)`
+const SelectedValue = styled.div<InputProps>`
+  ${({ heightSize, label }) => inputDefaultStyle(true, true, !!label, heightSize)};
+
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  ${({ simpleMode }) =>
+    simpleMode &&
+    css`
+      border: 0;
+
+      &:not(:hover) {
+        background-color: transparent;
+      }
+    `}
 `
 
 const Searchbar = styled(Input)`

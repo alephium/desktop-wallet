@@ -84,21 +84,21 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    async (option: typeof networkSelectOptions[number] | undefined) => {
-      if (option && option.value !== selectedNetwork) {
-        setSelectedNetwork(option.value)
+    async (networkName: NetworkName) => {
+      if (networkName !== selectedNetwork) {
+        setSelectedNetwork(networkName)
 
-        if (option.value === 'custom') {
+        if (networkName === 'custom') {
           setAdvancedSectionOpen(true)
           return
         }
 
-        const newNetworkSettings = networkPresets[option.value]
+        const newNetworkSettings = networkPresets[networkName]
 
         let networkId = newNetworkSettings.networkId
 
         if (networkId !== undefined) {
-          dispatch(networkPresetSwitched(option.value))
+          dispatch(networkPresetSwitched(networkName))
           setTempAdvancedSettings(newNetworkSettings)
           return
         }
@@ -145,7 +145,7 @@ const NetworkSettingsSection = () => {
       />
       <Select
         options={networkSelectOptions}
-        onValueChange={handleNetworkPresetChange}
+        onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title={t`Network`}
         label={t`Current network`}

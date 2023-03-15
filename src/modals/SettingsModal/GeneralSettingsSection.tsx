@@ -111,7 +111,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Select
             id="theme"
             options={themeOptions}
-            onValueChange={(v) => v?.value && switchTheme(v.value)}
+            onSelect={switchTheme}
             controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}
@@ -143,10 +143,11 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Select
             id="language"
             options={languageOptions}
-            onValueChange={(v) => v?.value && handleLanguageChange(v.value)}
+            onSelect={handleLanguageChange}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
             title={t`Language`}
+            heightSize="small"
           />
         }
       />
