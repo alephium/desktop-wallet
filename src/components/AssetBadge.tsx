@@ -25,18 +25,17 @@ import { Asset } from '@/types/assets'
 
 interface AssetBadgeProps {
   assetId: Asset['id']
+  simple?: boolean
   className?: string
 }
 
-const AssetBadge = ({ assetId, className }: AssetBadgeProps) => {
-  const assetInfo = useAppSelector((state) => selectAssetInfoById(state, assetId))
-
-  if (!assetInfo) return null
+const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
+  const assetInfo = useAppSelector((state) => selectAssetInfoById(state, assetId)) ?? { id: assetId, symbol: undefined }
 
   return (
     <div className={className}>
       <AssetLogo asset={assetInfo} size={20} />
-      <AssetSymbol>{assetInfo.symbol}</AssetSymbol>
+      {!simple && assetInfo.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
   )
 }

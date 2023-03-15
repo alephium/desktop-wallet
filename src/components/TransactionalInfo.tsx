@@ -92,15 +92,15 @@ const TransactionalInfo = ({
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <HiddenLabel key={id} text={`${formatAmountForDisplay({ amount, amountDecimals: decimals })} ${symbol}`} />
           ))}
+          {unknownAssets.length > 0 && <HiddenLabel text={` + ${unknownAssets} ${t('Unknown tokens')}`} />}
           <TimeSince timestamp={tx.timestamp} faded />
         </AssetTime>
       </CellTime>
       <CellAssetBadges compact={compact}>
         <AssetBadges>
-          {knownAssets.map(({ id }) => (
-            <AssetBadge assetId={id} key={id} />
+          {assets.map(({ id }) => (
+            <AssetBadge assetId={id} simple key={id} />
           ))}
-          {unknownAssets.length > 0 && <UnknownTokenNumber>(+{unknownAssets.length})</UnknownTokenNumber>}
         </AssetBadges>
       </CellAssetBadges>
       {!showInternalInflows && (
@@ -262,8 +262,4 @@ const AssetBadges = styled.div`
   row-gap: 10px;
   flex-wrap: wrap;
   align-items: center;
-`
-
-const UnknownTokenNumber = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
 `
