@@ -27,7 +27,7 @@ import { OptionItem } from '@/components/Inputs/Select'
 import Popup from '@/components/Popup'
 import Truncate from '@/components/Truncate'
 import ModalPortal from '@/modals/ModalPortal'
-import { onEnterOrSpace } from '@/utils/misc'
+import { onEnterOrSpace, removeItemFromArray } from '@/utils/misc'
 
 interface MultiSelectOptionsProps<T> {
   options: T[]
@@ -50,6 +50,11 @@ interface MultiSelectProps<T> extends MultiSelectOptionsProps<T> {
 
 interface MultiSelectOptionsModalProps<T> extends MultiSelectOptionsProps<T> {
   onClose: () => void
+}
+
+export interface MultiSelectOption<T> {
+  value: T
+  label: string
 }
 
 function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className, ...props }: MultiSelectProps<T>) {
@@ -126,6 +131,30 @@ export function MultiSelectOptionsModal<T>({
       </Options>
     </Popup>
   )
+}
+
+export function handleOptionClick<T>(
+  optionClicked: T,
+  selectedOptions: T[],
+  selectedOptionsSetter: (options: T[]) => void
+) {
+  const index = selectedOptions.findIndex((option) => option === optionClicked)
+
+  index !== -1
+    ? selectedOptionsSetter(removeItemFromArray(selectedOptions, index))
+    : selectedOptionsSetter([optionClicked, ...selectedOptions])
+}
+
+export function handleAllButtonClick<T>(
+  selectedOptions: T[],
+  options: T[],
+  selectedOptionsSetter: (options: T[]) => void
+) {
+  selectedOptions.length === options.length ? selectedOptionsSetter([]) : selectedOptionsSetter(options)
+}
+
+export function renderOption<T>(option: MultiSelectOption<T>) {
+  return option.label
 }
 
 export default MultiSelect

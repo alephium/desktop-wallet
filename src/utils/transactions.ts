@@ -16,11 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calcTxAmountsDeltaForAddress, DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
+import {
+  calcTxAmountsDeltaForAddress,
+  DUST_AMOUNT,
+  getDirection,
+  isConsolidationTx,
+  MIN_UTXO_SET_AMOUNT
+} from '@alephium/sdk'
 import { MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
 import dayjs from 'dayjs'
 
+import { MultiSelectOption } from '@/components/Inputs/MultiSelect'
 import { SelectOption } from '@/components/Inputs/Select'
 import i18n from '@/i18n'
 import { Address, AddressHash } from '@/types/addresses'
@@ -28,6 +35,7 @@ import { AssetAmount } from '@/types/assets'
 import {
   AddressPendingTransaction,
   AddressTransaction,
+  Direction,
   PendingTransaction,
   TransactionTimePeriod
 } from '@/types/transactions'
@@ -145,3 +153,38 @@ export const timePeriodsOptions: SelectOption<TransactionTimePeriod>[] = [
     label: `${i18n.t('This year')} (01/01/${currentYear - 1} - ${today})`
   }
 ]
+
+export const directionOptions: MultiSelectOption<Direction>[] = [
+  {
+    label: i18n.t('Sent'),
+    value: 'out'
+  },
+  {
+    label: i18n.t('Received'),
+    value: 'in'
+  },
+  {
+    label: i18n.t('Moved'),
+    value: 'move'
+  }
+]
+
+export const getTxDirection = (
+  tx: AddressTransaction,
+  internalAddresses: Address[],
+  showInternalInflows?: boolean
+): Direction => {
+  if (isPendingTx(tx)) {
+    return 'out'
+  } else if (isConsolidationTx(tx)) {
+    return 'move'
+  } else {
+    const direction = getDirection(tx, tx.address.hash)
+    const isInternalTransfer = hasOnlyOutputsWith(tx.outputs ?? [], internalAddresses)
+
+    return (isInternalTransfer && showInternalInflows && direction === 'out') ||
+      (isInternalTransfer && !showInternalInflows)
+      ? 'move'
+      : direction
+  }
+}

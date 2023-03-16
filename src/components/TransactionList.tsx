@@ -37,7 +37,8 @@ import {
   selectAddressesPendingTransactions
 } from '@/storage/transactions/transactionsSelectors'
 import { AddressHash } from '@/types/addresses'
-import { AddressConfirmedTransaction } from '@/types/transactions'
+import { AddressConfirmedTransaction, Direction } from '@/types/transactions'
+import { getTxDirection } from '@/utils/transactions'
 
 interface TransactionListProps {
   addressHashes?: AddressHash[]
@@ -47,6 +48,7 @@ interface TransactionListProps {
   compact?: boolean
   hideHeader?: boolean
   hideFromColumn?: boolean
+  directions?: Direction[]
 }
 
 const TransactionList = ({
@@ -56,7 +58,8 @@ const TransactionList = ({
   limit,
   compact,
   hideHeader = false,
-  hideFromColumn = false
+  hideFromColumn = false,
+  directions
 }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -74,14 +77,21 @@ const TransactionList = ({
     s.addresses.loading
   ])
 
+  const directionalConfirmedTxs =
+    directions && directions.length > 0
+      ? confirmedTxs.filter((tx) => directions.includes(getTxDirection(tx, addresses, hideFromColumn)))
+      : confirmedTxs
+
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
   const [pageLoaded, setPageLoaded] = useState<number>()
   const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
 
   const singleAddress = addresses.length === 1
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoading && !confirmedTxs.length && !pendingTxs.length
-  const displayedConfirmedTxs = limit ? confirmedTxs.slice(0, limit - pendingTxs.length) : confirmedTxs
+  const showSkeletonLoading = isLoading && !directionalConfirmedTxs.length && !pendingTxs.length
+  const displayedConfirmedTxs = limit
+    ? directionalConfirmedTxs.slice(0, limit - pendingTxs.length)
+    : directionalConfirmedTxs
 
   const loadNextTransactionsPage = async () => {
     if (singleAddress) {

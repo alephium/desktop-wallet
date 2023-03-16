@@ -375,5 +375,7 @@
   "{{ number }} selected": "{{ number }} selected",
   "All selected": "All selected",
   "Select all": "Select all",
-  "Unselect all": "Unselect all"
+  "Unselect all": "Unselect all",
+  "Directions": "Directions",
+  "Select directions": "Select directions"
 }
