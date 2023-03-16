@@ -19,15 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { calculateAmountWorth } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs from 'dayjs'
+import { partition } from 'lodash'
 import { MouseEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled, { css, useTheme } from 'styled-components'
 
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import Badge from '@/components/Badge'
 import Card from '@/components/Card'
+import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as RibbonSVG } from '@/images/ribbon.svg'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
@@ -55,7 +56,8 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
   if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
-  const assetSymbols = assets.filter((asset) => asset.balance > 0).map((asset) => asset.symbol)
+  const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
+  const [knownAssets, unknownAssets] = partition(assetsWithBalance, (asset) => !!asset.symbol)
 
   const setAsDefaultAddress = (event: MouseEvent<HTMLDivElement>) => {
     changeDefaultAddress(address)
@@ -88,17 +90,18 @@ const AddressCard = ({ hash, className }: AddressCardProps) => {
           <TotalBalance>
             {!isPriceLoading && <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />}
           </TotalBalance>
-          <AddressEllipsedStyled addressHash={address.hash} />
+          <HashEllipsedStyled hash={address.hash} />
           <LastActivity>
             {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
           </LastActivity>
         </InfoSection>
         <AssetsSection>
-          {assetSymbols.map((symbol) => (
+          {knownAssets.map(({ symbol }) => (
             <Badge rounded border transparent color={theme.font.secondary} key={symbol}>
               {symbol}
             </Badge>
           ))}
+          {unknownAssets.length > 0 && <UnknownTokenNumber>(+{unknownAssets.length})</UnknownTokenNumber>}
         </AssetsSection>
       </CardWithRibbon>
       <ModalPortal>
@@ -155,6 +158,7 @@ const AssetsSection = styled.div`
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 `
 
 const LastActivity = styled.div`
@@ -163,7 +167,7 @@ const LastActivity = styled.div`
   margin-top: 25px;
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   font-size: 16px;
   font-weight: var(--fontWeight-medium);
 `
@@ -203,4 +207,8 @@ const TotalBalance = styled.div`
   font-size: 28px;
   font-weight: var(--fontWeight-semiBold);
   margin-bottom: 10px;
+`
+
+const UnknownTokenNumber = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
 `

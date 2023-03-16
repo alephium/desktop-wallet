@@ -22,8 +22,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Box from '@/components/Box'
+import HashEllipsed from '@/components/HashEllipsed'
 import { inputStyling } from '@/components/Inputs'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
@@ -134,7 +134,7 @@ const AddressInputs = ({
           {isContactVisible && (
             <ContactRow onClick={handleFocus}>
               <Truncate>{contact.name}</Truncate>
-              <AddressEllipsedStyled addressHash={contact.address} disableA11y />
+              <HashEllipsedStyled hash={contact.address} disableA11y />
             </ContactRow>
           )}
         </AddressToInput>
@@ -152,7 +152,7 @@ const AddressInputs = ({
             optionRender={(contact) => (
               <SelectOptionItemContent
                 ContentLeft={<Name>{contact.label}</Name>}
-                ContentRight={<AddressEllipsedStyled addressHash={contact.value} />}
+                ContentRight={<HashEllipsedStyled hash={contact.value} />}
               />
             )}
           />
@@ -169,7 +169,7 @@ const Name = styled(Truncate)`
   max-width: 200px;
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};
   max-width: 120px;

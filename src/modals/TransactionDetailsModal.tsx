@@ -17,16 +17,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addApostrophes } from '@alephium/sdk'
+import { partition } from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import AddressBadge from '@/components/AddressBadge'
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Amount from '@/components/Amount'
 import Badge from '@/components/Badge'
 import ExpandableSection from '@/components/ExpandableSection'
+import HashEllipsed from '@/components/HashEllipsed'
 import IOList from '@/components/IOList'
 import Tooltip from '@/components/Tooltip'
 import { useAppSelector } from '@/hooks/redux'
@@ -69,11 +70,13 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       ? setSelectedAddressHash(addressHash)
       : openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)
 
+  const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
+
   return (
     <SideModal onClose={onClose} label={t`Transaction details`}>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
-          {assets.map(({ id, amount, decimals, symbol }) => (
+          {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id} color={amountTextColor}>
               {amountSign}
               <Amount
@@ -152,7 +155,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
-            {assets.map(({ id, amount, decimals, symbol }) => (
+            {knownAssets.map(({ id, amount, decimals, symbol }) => (
               <AmountContainer key={id} color={amountTextColor}>
                 {amountSign}
                 <Amount
@@ -163,11 +166,26 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                   color={amountTextColor}
                   decimals={decimals}
                   suffix={symbol}
+                  isUnknownToken={!symbol}
                 />
+                {!symbol && <TokenHash hash={id} />}
               </AmountContainer>
             ))}
           </Amounts>
         </DetailsRow>
+        {unknownAssets.length > 0 && (
+          <DetailsRow label={t('Unknown tokens')}>
+            <Amounts>
+              {unknownAssets.map(({ id, amount, decimals, symbol }) => (
+                <AmountContainer key={id} color={amountTextColor}>
+                  {amountSign}
+                  <Amount tabIndex={0} value={amount} color={amountTextColor} isUnknownToken={!symbol} />
+                  {!symbol && <TokenHash hash={id} />}
+                </AmountContainer>
+              ))}
+            </Amounts>
+          </DetailsRow>
+        )}
         <ExpandableSectionStyled sectionTitleClosed={t`Click to see more`} sectionTitleOpen={t`Click to see less`}>
           <DetailsRow label={t`Gas amount`}>
             <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
@@ -184,7 +202,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                       key={`${input.outputRef.key}`}
                       onClick={() => handleShowAddress(input.address as string)}
                     >
-                      <AddressEllipsed key={`${input.outputRef.key}`} addressHash={input.address} />
+                      <HashEllipsed key={`${input.outputRef.key}`} hash={input.address} />
                     </ActionLinkStyled>
                   )
               )}
@@ -194,7 +212,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <AddressList>
               {transaction.outputs?.map((output) => (
                 <ActionLinkStyled key={`${output.key}`} onClick={() => handleShowAddress(output.address ?? '')}>
-                  <AddressEllipsed key={`${output.key}`} addressHash={output.address} />
+                  <HashEllipsed key={`${output.key}`} hash={output.address} />
                 </ActionLinkStyled>
               ))}
             </AddressList>
@@ -301,4 +319,9 @@ const Amounts = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+`
+
+const TokenHash = styled(HashEllipsed)`
+  max-width: 80px;
+  color: ${({ theme }) => theme.font.primary};
 `

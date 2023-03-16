@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { formatAmountForDisplay, isConsolidationTx } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
+import { partition } from 'lodash'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -76,6 +77,8 @@ const TransactionalInfo = ({
 
   const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
+  const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
+
   return (
     <div className={className}>
       <CellTime>
@@ -86,16 +89,17 @@ const TransactionalInfo = ({
         </CellArrow>
         <AssetTime>
           {label}
-          {assets.map(({ id, amount, decimals, symbol }) => (
+          {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <HiddenLabel key={id} text={`${formatAmountForDisplay({ amount, amountDecimals: decimals })} ${symbol}`} />
           ))}
+          {unknownAssets.length > 0 && <HiddenLabel text={` + ${unknownAssets} ${t('Unknown tokens')}`} />}
           <TimeSince timestamp={tx.timestamp} faded />
         </AssetTime>
       </CellTime>
       <CellAssetBadges compact={compact}>
         <AssetBadges>
           {assets.map(({ id }) => (
-            <AssetBadge assetId={id} key={id} />
+            <AssetBadge assetId={id} simple key={id} />
           ))}
         </AssetBadges>
       </CellAssetBadges>
@@ -147,7 +151,7 @@ const TransactionalInfo = ({
         </DirectionalAddress>
       </CellAddress>
       <TableCellAmount aria-hidden="true" color={amountTextColor}>
-        {assets.map(({ id, amount, decimals, symbol }) => (
+        {knownAssets.map(({ id, amount, decimals, symbol }) => (
           <AmountContainer key={id}>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
@@ -257,4 +261,5 @@ const AssetBadges = styled.div`
   gap: 20px;
   row-gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 `

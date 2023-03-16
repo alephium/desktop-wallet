@@ -21,8 +21,8 @@ import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import AddressBadge from '@/components/AddressBadge'
-import AddressEllipsed from '@/components/AddressEllipsed'
 import Box from '@/components/Box'
+import HashEllipsed from '@/components/HashEllipsed'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import { selectContactByAddress } from '@/storage/addresses/addressesSelectors'
@@ -48,7 +48,7 @@ const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddre
         <AddressLabel>{t('From')}</AddressLabel>
         <AddressLabelHash>
           <AddressBadge addressHash={fromAddress.hash} truncate showHashWhenNoLabel />
-          {fromAddress.label && <AddressEllipsedStyled addressHash={fromAddress.hash} />}
+          {fromAddress.label && <HashEllipsedStyled hash={fromAddress.hash} />}
         </AddressLabelHash>
       </AddressRow>
       {toAddressHash && (
@@ -61,11 +61,11 @@ const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddre
                 <AddressLabelHash>
                   {contact.name}
 
-                  <AddressEllipsedStyled addressHash={contact.address} />
+                  <HashEllipsedStyled hash={contact.address} />
                 </AddressLabelHash>
               ) : (
                 <ActionLinkStyled onClick={() => openInWebBrowser(`${explorerUrl}/addresses/${toAddressHash}`)}>
-                  <AddressEllipsed addressHash={toAddressHash} />
+                  <HashEllipsed hash={toAddressHash} />
                 </ActionLinkStyled>
               )}
             </AddressLabelHash>
@@ -94,7 +94,7 @@ const AddressLabelHash = styled.div`
   gap: 10px;
 `
 
-const AddressEllipsedStyled = styled(AddressEllipsed)`
+const HashEllipsedStyled = styled(HashEllipsed)`
   max-width: 90px;
   color: ${({ theme }) => theme.font.tertiary};
 `

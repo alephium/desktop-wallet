@@ -29,12 +29,24 @@ import { ALPH } from '@alephium/token-list'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
+import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 import { AddressTransaction } from '@/types/transactions'
 import { convertToPositive } from '@/utils/misc'
 import { hasOnlyOutputsWith, isPendingTx } from '@/utils/transactions'
 
-export const useTransactionInfo = (tx: AddressTransaction, addressHash: AddressHash, showInternalInflows?: boolean) => {
+interface TransactionInfo {
+  assets: TransactionInfoAsset[]
+  direction: TransactionDirection
+  infoType: TransactionInfoType
+  outputs: Output[]
+  lockTime?: Date
+}
+
+export const useTransactionInfo = (
+  tx: AddressTransaction,
+  addressHash: AddressHash,
+  showInternalInflows?: boolean
+): TransactionInfo => {
   const addresses = useAppSelector(selectAllAddresses)
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
 
