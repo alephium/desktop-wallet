@@ -370,5 +370,10 @@
   "This year": "This year",
   "Period": "Period",
   "Select a period": "Select a period",
-  "Your CSV is being compiled in the background": "Your CSV is being compiled in the background"
+  "Your CSV is being compiled in the background": "Your CSV is being compiled in the background",
+  "Select addresses": "Select addresses",
+  "{{ number }} selected": "{{ number }} selected",
+  "All selected": "All selected",
+  "Select all": "Select all",
+  "Unselect all": "Unselect all"
 }

@@ -128,7 +128,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}
         />
-        <TransactionList title={t('Address transactions')} addressHash={address.hash} compact />
+        <TransactionList title={t('Address transactions')} addressHashes={[address.hash]} compact hideFromColumn />
       </Content>
       <ModalPortal>
         {isSendModalOpen && (

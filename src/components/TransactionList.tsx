@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,10 +28,10 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import {
-  syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAddressesTransactionsNextPage,
+  syncAddressTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { selectAddressByHash, selectAddressIds, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddresses, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import {
   selectAddressesConfirmedTransactions,
   selectAddressesPendingTransactions
@@ -40,49 +40,69 @@ import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 
 interface TransactionListProps {
-  addressHash?: AddressHash
+  addressHashes?: AddressHash[]
   className?: string
   title?: string
   limit?: number
   compact?: boolean
   hideHeader?: boolean
+  hideFromColumn?: boolean
 }
 
 const TransactionList = ({
   className,
-  addressHash,
+  addressHashes,
   title,
   limit,
   compact,
-  hideHeader = false
+  hideHeader = false,
+  hideFromColumn = false
 }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
-  const allAddresses = useAppSelector(selectAllAddresses)
-  const allAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const addressHashes = addressHash ? [addressHash] : allAddressHashes
-  const addresses = addressHash && address ? [address] : allAddresses
+
+  const allAddressesCount = useAppSelector(selectAllAddresses).length
+  const addresses = useAppSelector(
+    addressHashes && addressHashes.length > 0 ? (s) => selectAddresses(s, addressHashes) : selectAllAddresses
+  )
+  const hashes = addresses.map((address) => address.hash)
   const [confirmedTxs, pendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
-    selectAddressesConfirmedTransactions(s, addressHashes),
-    selectAddressesPendingTransactions(s, addressHashes),
+    selectAddressesConfirmedTransactions(s, hashes),
+    selectAddressesPendingTransactions(s, hashes),
     s.addresses.allTransactionsLoaded,
     s.addresses.loading
   ])
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
+  const [pageLoaded, setPageLoaded] = useState<number>()
+  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
 
   const singleAddress = addresses.length === 1
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
   const showSkeletonLoading = isLoading && !confirmedTxs.length && !pendingTxs.length
   const displayedConfirmedTxs = limit ? confirmedTxs.slice(0, limit - pendingTxs.length) : confirmedTxs
-  const showAllTransactionsLoadedMsg = singleAddress ? address?.allTransactionPagesLoaded : allTransactionsLoaded
 
-  const loadNextTransactionsPage = () =>
-    singleAddress
-      ? dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
-      : dispatch(syncAllAddressesTransactionsNextPage())
+  const loadNextTransactionsPage = async () => {
+    if (singleAddress) {
+      dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
+    } else {
+      const { page, transactions } = await dispatch(
+        syncAddressesTransactionsNextPage({ addressHashes: hashes, pageLoaded })
+      ).unwrap()
+
+      setPageLoaded(page)
+      setShowAllTransactionsLoadedMsg(transactions.length === 0)
+    }
+  }
+
+  useEffect(() => {
+    if (singleAddress) {
+      setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
+    } else if (addresses.length === allAddressesCount) {
+      setShowAllTransactionsLoadedMsg(allTransactionsLoaded)
+    }
+  }, [addresses, allAddressesCount, allTransactionsLoaded, singleAddress])
 
   return (
     <>
@@ -101,7 +121,7 @@ const TransactionList = ({
             <TransactionalInfo
               transaction={tx}
               addressHash={tx.address.hash}
-              showInternalInflows={singleAddress}
+              showInternalInflows={hideFromColumn}
               compact={compact}
             />
           </TableRow>
@@ -117,7 +137,7 @@ const TransactionList = ({
             <TransactionalInfo
               transaction={tx}
               addressHash={tx.address.hash}
-              showInternalInflows={singleAddress}
+              showInternalInflows={hideFromColumn}
               compact={compact}
             />
           </TableRow>

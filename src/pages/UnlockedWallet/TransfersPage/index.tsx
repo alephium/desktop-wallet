@@ -16,32 +16,56 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// import { Transaction } from '@alephium/sdk/api/explorer'
-
+import { map } from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Select from '@/components/Inputs/Select'
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import MultiSelect from '@/components/Inputs/MultiSelect'
+import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import TransactionList from '@/components/TransactionList'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
-import { TransactionTimePeriod } from '@/types/transactions'
+import { Address } from '@/types/addresses'
 import { links } from '@/utils/links'
-import { timePeriodsOptions } from '@/utils/transactions'
+import { removeItemFromArray } from '@/utils/misc'
 
 const TransfersPage = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
+  const addresses = useAppSelector(selectAllAddresses)
 
-  const [timePeriod, setTimePeriod] = useState<TransactionTimePeriod>('6m')
-
-  const timePeriodSelectedOption = timePeriodsOptions.find((option) => option.value === timePeriod)
+  const [selectedAddresses, setSelectedAddresses] = useState(addresses)
 
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
+
+  const handleOptionSelect = (selectedAddress: Address) => {
+    const index = selectedAddresses.findIndex((address) => address.hash === selectedAddress.hash)
+
+    if (index !== -1) {
+      setSelectedAddresses(removeItemFromArray(selectedAddresses, index))
+    } else {
+      setSelectedAddresses([selectedAddress, ...selectedAddresses])
+    }
+  }
+
+  const handleAllButtonClick = () =>
+    selectedAddresses.length === addresses.length ? setSelectedAddresses([]) : setSelectedAddresses(addresses)
+
+  const renderSelectedValue = () =>
+    selectedAddresses.length === 0
+      ? ''
+      : selectedAddresses.length === 1
+      ? selectedAddresses[0].hash
+      : selectedAddresses.length === addresses.length
+      ? t('All selected')
+      : t('{{ number }} selected', { number: selectedAddresses.length })
 
   return (
     <UnlockedWalletPage
@@ -53,21 +77,29 @@ const TransfersPage = () => {
       infoMessage={t('You have questions about transfers ? Click here!')}
     >
       <Filters>
-        <TimePeriodTile>
-          <Select
-            label={t('Period')}
-            controlledValue={timePeriodSelectedOption}
-            options={timePeriodsOptions}
-            onSelect={setTimePeriod}
-            title={t('Select a period')}
-            id="period"
-            raised
-            simpleMode
+        <AddressesTile>
+          <MultiSelect
+            label={t('Addresses')}
+            modalTitle={t('Select addresses')}
+            options={addresses}
+            selectedOptions={selectedAddresses}
+            onOptionClick={handleOptionSelect}
+            onAllButtonClick={handleAllButtonClick}
+            renderSelectedValue={renderSelectedValue}
+            getOptionKey={(address) => address.hash}
+            getOptionA11YText={(address) => address.label || address.hash}
+            isOptionSelected={(option) => selectedAddresses.some((address) => option.hash === address.hash)}
+            renderOption={(address: Address) => (
+              <SelectOptionItemContent
+                ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
+                ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
+              />
+            )}
           />
-        </TimePeriodTile>
+        </AddressesTile>
       </Filters>
       <UnlockedWalletPanel top>
-        <TransactionList hideHeader />
+        <TransactionList addressHashes={map(selectedAddresses, 'hash')} hideHeader />
       </UnlockedWalletPanel>
     </UnlockedWalletPage>
   )
@@ -89,6 +121,15 @@ const FilterTile = styled.div`
   border-right: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
-const TimePeriodTile = styled(FilterTile)`
-  max-width: 200px;
+const AddressesTile = styled(FilterTile)`
+  width: 200px;
+`
+
+const AmountStyled = styled(Amount)`
+  flex: 1;
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: auto;
 `

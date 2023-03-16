@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
@@ -176,7 +177,7 @@ function Select<T extends OptionValue>({
         heightSize={heightSize}
         simpleMode={simpleMode}
       >
-        <InputLabel inputHasValue={!!value} htmlFor={id}>
+        <InputLabel isElevated={!!value} htmlFor={id}>
           {label}
         </InputLabel>
         {options.length > 1 && !simpleMode && (
@@ -351,9 +352,6 @@ export function SelectOptionsModal<T extends OptionValue>({
 export default Select
 
 const InputContainer = styled(InputArea)`
-  position: relative;
-  height: var(--inputHeight);
-  width: 100%;
   margin: 16px 0;
   padding: 0;
 `
@@ -396,6 +394,11 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  &:focus {
+    background-color: ${({ theme, selected }) =>
+      !selected ? theme.bg.accent : colord(theme.global.accent).lighten(0.05).toRgbString()};
   }
 `
 

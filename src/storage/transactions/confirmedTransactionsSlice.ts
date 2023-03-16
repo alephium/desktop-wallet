@@ -21,8 +21,8 @@ import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import {
   syncAddressesData,
-  syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAddressesTransactionsNextPage,
+  syncAddressTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { confirmedTransactionsAdapter } from '@/storage/transactions/transactionsAdapters'
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
@@ -40,7 +40,7 @@ const confirmedTransactionsSlice = createSlice({
     builder
       .addCase(syncAddressesData.fulfilled, addTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, addTransactions)
-      .addCase(syncAllAddressesTransactionsNextPage.fulfilled, addTransactions)
+      .addCase(syncAddressesTransactionsNextPage.fulfilled, addTransactions)
       .addCase(walletLocked, resetState)
       .addCase(walletSwitched, resetState)
       .addCase(activeWalletDeleted, resetState)

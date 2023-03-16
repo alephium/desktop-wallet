@@ -168,7 +168,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
           return (
             <BoxStyled key={id}>
               <AssetSelect onMouseDown={() => !disabled && openAssetSelectModal(index)}>
-                <InputLabel inputHasValue htmlFor={id}>
+                <InputLabel isElevated htmlFor={id}>
                   {t('Asset')}
                 </InputLabel>
                 <SelectInput type="button" className={className} disabled={disabled} id={id}>

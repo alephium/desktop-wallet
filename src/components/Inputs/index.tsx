@@ -126,11 +126,11 @@ export const InputErrorMessage = styled(motion.label)<InputProps>`
   background-color: ${({ theme }) => theme.bg.primary};
 `
 
-export const InputLabel: FC<HTMLMotionProps<'label'> & { inputHasValue: boolean }> = ({ inputHasValue, ...props }) => (
+export const InputLabel: FC<HTMLMotionProps<'label'> & { isElevated: boolean }> = ({ isElevated, ...props }) => (
   <StyledInputLabel
     {...props}
     variants={inputPlaceHolderVariants}
-    animate={!inputHasValue ? 'down' : 'up'}
+    animate={!isElevated ? 'down' : 'up'}
     transition={{ duration: 0.15 }}
   />
 )

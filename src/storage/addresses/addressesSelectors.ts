@@ -31,6 +31,11 @@ export const {
   selectIds: selectAddressIds
 } = addressesAdapter.getSelectors<RootState>((state) => state.addresses)
 
+export const selectAddresses = createSelector(
+  [selectAllAddresses, (_, addressHashes: AddressHash[]) => addressHashes],
+  (allAddresses, addressHashes) => allAddresses.filter((address) => addressHashes.includes(address.hash))
+)
+
 export const selectHaveAllPagesLoaded = createSelector(
   [selectAllAddresses, (state: AddressesState) => state.allTransactionsLoaded],
   (addresses, allTransactionsLoaded) =>

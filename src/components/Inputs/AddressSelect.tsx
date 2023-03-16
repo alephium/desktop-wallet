@@ -111,7 +111,7 @@ function AddressSelect({
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
       >
-        <InputLabel inputHasValue={!!address} htmlFor={id}>
+        <InputLabel isElevated={!!address} htmlFor={id}>
           {label}
         </InputLabel>
         {!disabled && !simpleMode && (

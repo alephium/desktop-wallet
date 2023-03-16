@@ -27,7 +27,7 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import i18n from '@/i18n'
-import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
 import {
   Address,
@@ -93,14 +93,19 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
   }
 )
 
-export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
-  'addresses/syncAllAddressesTransactionsNextPage',
-  async (_, { getState, dispatch }) => {
+export const syncAddressesTransactionsNextPage = createAsyncThunk(
+  'addresses/syncAddressesTransactionsNextPage',
+  async (
+    { addressHashes, pageLoaded }: { addressHashes: AddressHash[]; pageLoaded?: number },
+    { getState, dispatch }
+  ): Promise<{ page: number; transactions: Transaction[]; addressHashes: AddressHash[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
-    const addresses = selectAllAddresses(state)
-    let nextPage = state.addresses.transactionsPageLoaded
+    const addresses = selectAddresses(state, addressHashes)
+    const syncingAllAddresses = addresses.length === state.addresses.ids.length
+
+    let nextPage = syncingAllAddresses ? state.addresses.transactionsPageLoaded : pageLoaded ?? -1
     let newTransactionsFound = false
     let allTransactionsLoaded = state.addresses.allTransactionsLoaded
     let transactions: Transaction[] = []
@@ -116,7 +121,7 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
       transactions = results.flat()
 
       if (transactions.length === 0) {
-        allTransactionsLoaded = true
+        if (syncingAllAddresses) allTransactionsLoaded = true
         break
       }
 
@@ -128,7 +133,7 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
       })
     }
 
-    return { page: nextPage, transactions }
+    return { page: nextPage, transactions, addressHashes }
   }
 )
 

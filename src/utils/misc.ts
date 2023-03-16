@@ -93,3 +93,9 @@ export const onTabPress = (event: KeyboardEvent, callback: () => void) => {
 }
 
 export const convertToPositive = (num: bigint): bigint => (num < 0 ? num * BigInt(-1) : num)
+
+export function removeItemFromArray<T>(array: T[], index: number) {
+  const newArray = [...array]
+  newArray.splice(index, 1)
+  return newArray
+}

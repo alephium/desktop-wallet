@@ -30,8 +30,8 @@ import {
   loadingStarted,
   newAddressesSaved,
   syncAddressesData,
-  syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAddressesTransactionsNextPage,
+  syncAddressTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter } from '@/storage/addresses/addressesAdapters'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
@@ -43,7 +43,7 @@ import {
   walletSwitched,
   walletUnlocked
 } from '@/storage/wallets/walletActions'
-import { Address, AddressBase, AddressesState } from '@/types/addresses'
+import { Address, AddressBase, AddressesState, AddressHash } from '@/types/addresses'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
@@ -175,29 +175,34 @@ const addressesSlice = createSlice({
 
         state.loading = false
       })
-      .addCase(syncAllAddressesTransactionsNextPage.fulfilled, (state, action) => {
-        const { page, transactions } = action.payload
+      .addCase(
+        syncAddressesTransactionsNextPage.fulfilled,
+        (state, { payload: { page, transactions, addressHashes } }) => {
+          const allAddressesCount = state.ids.length
+          const syncingAllAddresses = allAddressesCount === addressHashes.length
+          const addresses = getAddresses(state, addressHashes)
 
-        const addresses = getAddresses(state)
+          const updatedAddresses = addresses.map((address) => {
+            const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
+            const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
 
-        const updatedAddresses = addresses.map((address) => {
-          const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
-          const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
-
-          return {
-            id: address.hash,
-            changes: {
-              transactions: address.transactions.concat(newTxHashes)
+            return {
+              id: address.hash,
+              changes: {
+                transactions: address.transactions.concat(newTxHashes)
+              }
             }
+          })
+
+          addressesAdapter.updateMany(state, updatedAddresses)
+
+          if (syncingAllAddresses) {
+            state.transactionsPageLoaded = transactions.length > 0 ? page : state.transactionsPageLoaded
+            state.allTransactionsLoaded = transactions.length === 0
           }
-        })
-
-        addressesAdapter.updateMany(state, updatedAddresses)
-
-        state.transactionsPageLoaded = transactions.length > 0 ? page : state.transactionsPageLoaded
-        state.allTransactionsLoaded = transactions.length === 0
-        state.loading = false
-      })
+          state.loading = false
+        }
+      )
       .addCase(walletSaved, (state, action) => addInitialAddress(state, action.payload.initialAddress))
       .addCase(walletUnlocked, addPassphraseInitialAddress)
       .addCase(walletSwitched, (_, action) => {
@@ -218,7 +223,10 @@ export default addressesSlice
 
 // Reducers helper functions
 
-const getAddresses = (state: AddressesState) => Object.values(state.entities) as Address[]
+const getAddresses = (state: AddressesState, addressHashes?: AddressHash[]) => {
+  const allAddresses = Object.values(state.entities) as Address[]
+  return addressHashes ? allAddresses.filter((address) => addressHashes.includes(address.hash)) : allAddresses
+}
 
 const getDefaultAddressState = (address: AddressBase): Address => ({
   ...address,
