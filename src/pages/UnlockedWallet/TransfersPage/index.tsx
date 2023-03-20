@@ -32,6 +32,7 @@ import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
+import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
 import { links } from '@/utils/links'
 import { directionOptions } from '@/utils/transactions'
@@ -134,9 +135,9 @@ const TransfersPage = () => {
           </Tile>
         </FilterTiles>
         <Buttons>
-          <ButtonStyled role="secondary" short onClick={resetFilters}>
+          <Button role="secondary" short onClick={resetFilters}>
             {t('Reset filters')}
-          </ButtonStyled>
+          </Button>
         </Buttons>
       </Filters>
       <UnlockedWalletPanel top>
@@ -160,6 +161,9 @@ const Filters = styled(UnlockedWalletPanel)`
   border-color: ${({ theme }) => theme.border.secondary};
   padding-bottom: 0;
   display: flex;
+  position: sticky;
+  top: ${appHeaderHeightPx}px;
+  z-index: 1;
 `
 
 const FilterTile = styled.div`
@@ -180,8 +184,4 @@ const Buttons = styled.div`
   display: flex;
   align-items: center;
   padding-left: 48px;
-`
-
-const ButtonStyled = styled(Button)`
-  width: auto;
 `
