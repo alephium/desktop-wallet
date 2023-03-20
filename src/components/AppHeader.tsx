@@ -44,9 +44,6 @@ interface AppHeader {
   className?: string
 }
 
-// This shall be removed once v2.0.0 is released
-const hideWalletConnectButton = false
-
 const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { t } = useTranslation()
   const { scroll } = useScrollContext()
@@ -125,7 +122,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           )}
           <HeaderDivider />
           <NetworkBadge />
-          {isAuthenticated && !hideWalletConnectButton && (
+          {isAuthenticated && (
             <>
               <HeaderDivider />
               <TooltipWrapper content={t`Connect wallet to dApp`}>

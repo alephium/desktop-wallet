@@ -22,11 +22,15 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
+import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import MultiSelect from '@/components/Inputs/MultiSelect'
 import SelectOptionAddress from '@/components/SelectOptionAddress'
 import SelectOptionAsset from '@/components/SelectOptionAsset'
 import TransactionList from '@/components/TransactionList'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
+import ReceiveModal from '@/modals/ReceiveModal'
+import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
@@ -40,6 +44,7 @@ import { directionOptions } from '@/utils/transactions'
 const TransfersPage = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
   const assets = useAppSelector(selectAddressesAssets)
@@ -48,6 +53,8 @@ const TransfersPage = () => {
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
   const [selectedAssets, setSelectedAssets] = useState(assets)
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
   useEffect(() => {
     if (!isLoadingAssetsInfo) setSelectedAssets(assets)
@@ -148,6 +155,15 @@ const TransfersPage = () => {
           hideHeader
         />
       </UnlockedWalletPanel>
+      <CornerButtons>
+        <ButtonsGrid>
+          <ShortcutButtons receive send highlight />
+        </ButtonsGrid>
+      </CornerButtons>
+      <ModalPortal>
+        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
+        {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
+      </ModalPortal>
     </UnlockedWalletPage>
   )
 }
@@ -184,4 +200,22 @@ const Buttons = styled.div`
   display: flex;
   align-items: center;
   padding-left: 48px;
+`
+
+const CornerButtons = styled.div`
+  position: fixed;
+  bottom: 26px;
+  right: 22px;
+  border-radius: 47px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+  background-color: ${({ theme }) => theme.bg.background2};
+`
+
+const ButtonsGrid = styled.div`
+  background-color: ${({ theme }) => theme.border.secondary};
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
 `
