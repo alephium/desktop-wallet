@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Button from '@/components/Button'
 import MultiSelect from '@/components/Inputs/MultiSelect'
 import SelectOptionAddress from '@/components/SelectOptionAddress'
 import SelectOptionAsset from '@/components/SelectOptionAsset'
@@ -76,6 +77,12 @@ const TransfersPage = () => {
       ? 'All selected'
       : selectedAssets.map((asset) => asset.symbol ?? asset.id).join(', ')
 
+  const resetFilters = () => {
+    setSelectedAddresses(addresses)
+    setSelectedDirections(directionOptions)
+    setSelectedAssets(assets)
+  }
+
   return (
     <UnlockedWalletPage
       title={t('Transfers')}
@@ -86,44 +93,51 @@ const TransfersPage = () => {
       infoMessage={t('You have questions about transfers ? Click here!')}
     >
       <Filters>
-        <Tile>
-          <MultiSelect
-            label={t('Addresses')}
-            modalTitle={t('Select addresses')}
-            options={addresses}
-            selectedOptions={selectedAddresses}
-            selectedOptionsSetter={setSelectedAddresses}
-            renderSelectedValue={renderAddressesSelectedValue}
-            getOptionKey={(address) => address.hash}
-            getOptionText={(address) => address.label || address.hash}
-            renderOption={(address: Address) => <SelectOptionAddress address={address} />}
-          />
-        </Tile>
-        <Tile>
-          <MultiSelect
-            label={t('Assets')}
-            modalTitle={t('Select assets')}
-            options={assets}
-            selectedOptions={selectedAssets}
-            selectedOptionsSetter={setSelectedAssets}
-            renderSelectedValue={renderAssetsSelectedValue}
-            getOptionKey={(asset) => asset.id}
-            getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
-            renderOption={(asset) => <SelectOptionAsset asset={asset} />}
-          />
-        </Tile>
-        <Tile>
-          <MultiSelect
-            label={t('Directions')}
-            modalTitle={t('Select directions')}
-            options={directionOptions}
-            selectedOptions={selectedDirections}
-            selectedOptionsSetter={setSelectedDirections}
-            renderSelectedValue={renderDirectionsSelectedValue}
-            getOptionKey={(direction) => direction.value.toString()}
-            getOptionText={(direction) => direction.label}
-          />
-        </Tile>
+        <FilterTiles>
+          <Tile>
+            <MultiSelect
+              label={t('Addresses')}
+              modalTitle={t('Select addresses')}
+              options={addresses}
+              selectedOptions={selectedAddresses}
+              selectedOptionsSetter={setSelectedAddresses}
+              renderSelectedValue={renderAddressesSelectedValue}
+              getOptionKey={(address) => address.hash}
+              getOptionText={(address) => address.label || address.hash}
+              renderOption={(address: Address) => <SelectOptionAddress address={address} />}
+            />
+          </Tile>
+          <Tile>
+            <MultiSelect
+              label={t('Assets')}
+              modalTitle={t('Select assets')}
+              options={assets}
+              selectedOptions={selectedAssets}
+              selectedOptionsSetter={setSelectedAssets}
+              renderSelectedValue={renderAssetsSelectedValue}
+              getOptionKey={(asset) => asset.id}
+              getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
+              renderOption={(asset) => <SelectOptionAsset asset={asset} />}
+            />
+          </Tile>
+          <Tile>
+            <MultiSelect
+              label={t('Directions')}
+              modalTitle={t('Select directions')}
+              options={directionOptions}
+              selectedOptions={selectedDirections}
+              selectedOptionsSetter={setSelectedDirections}
+              renderSelectedValue={renderDirectionsSelectedValue}
+              getOptionKey={(direction) => direction.value.toString()}
+              getOptionText={(direction) => direction.label}
+            />
+          </Tile>
+        </FilterTiles>
+        <Buttons>
+          <ButtonStyled role="secondary" short onClick={resetFilters}>
+            {t('Reset filters')}
+          </ButtonStyled>
+        </Buttons>
       </Filters>
       <UnlockedWalletPanel top>
         <TransactionList
@@ -154,5 +168,20 @@ const FilterTile = styled.div`
 `
 
 const Tile = styled(FilterTile)`
-  width: 200px;
+  min-width: 200px;
+  flex: 1;
+`
+
+const FilterTiles = styled.div`
+  display: flex;
+  flex: 1;
+`
+const Buttons = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 48px;
+`
+
+const ButtonStyled = styled(Button)`
+  width: auto;
 `
