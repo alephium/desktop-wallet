@@ -34,12 +34,11 @@ import Lock from '@/components/Lock'
 import TableCellAmount from '@/components/TableCellAmount'
 import TimeSince from '@/components/TimeSince'
 import { useAppSelector } from '@/hooks/redux'
-import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
-import { isPendingTx } from '@/utils/transactions'
+import { getTransactionInfo, isPendingTx } from '@/utils/transactions'
 
 interface TransactionalInfoProps {
   transaction: AddressTransaction
@@ -60,7 +59,7 @@ const TransactionalInfo = ({
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const { assets, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash, showInternalInflows)
+  const { assets, direction, outputs, lockTime, infoType } = getTransactionInfo(tx, showInternalInflows)
   const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
   const isPending = isPendingTx(tx)

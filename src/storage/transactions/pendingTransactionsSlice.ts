@@ -26,10 +26,10 @@ import {
 } from '@/storage/addresses/addressesActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { pendingTransactionsAdapter } from '@/storage/transactions/transactionsAdapters'
+import { convertUnconfirmedTxToPendingTx } from '@/storage/transactions/transactionsUtils'
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
 import { AddressDataSyncResult } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
-import { convertUnconfirmedTxToPendingTx } from '@/utils/transactions'
 
 type PendingTransactionsState = EntityState<PendingTransaction>
 

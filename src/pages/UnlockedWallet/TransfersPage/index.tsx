@@ -17,23 +17,22 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { map } from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import AddressBadge from '@/components/AddressBadge'
-import Amount from '@/components/Amount'
-import MultiSelect, { handleAllButtonClick, handleOptionClick, renderOption } from '@/components/Inputs/MultiSelect'
-import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
+import MultiSelect from '@/components/Inputs/MultiSelect'
+import SelectOptionAddress from '@/components/SelectOptionAddress'
+import SelectOptionAsset from '@/components/SelectOptionAsset'
 import TransactionList from '@/components/TransactionList'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { Address } from '@/types/addresses'
 import { links } from '@/utils/links'
-import { removeItemFromArray } from '@/utils/misc'
 import { directionOptions } from '@/utils/transactions'
 
 const TransfersPage = () => {
@@ -41,25 +40,24 @@ const TransfersPage = () => {
   const dispatch = useAppDispatch()
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
+  const assets = useAppSelector(selectAddressesAssets)
+  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
 
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
+  const [selectedAssets, setSelectedAssets] = useState(assets)
+
+  useEffect(() => {
+    if (!isLoadingAssetsInfo) setSelectedAssets(assets)
+  }, [assets, isLoadingAssetsInfo])
 
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
-
-  const handleAddressOptionClick = (selectedAddress: Address) => {
-    const index = selectedAddresses.findIndex((address) => address.hash === selectedAddress.hash)
-
-    index !== -1
-      ? setSelectedAddresses(removeItemFromArray(selectedAddresses, index))
-      : setSelectedAddresses([selectedAddress, ...selectedAddresses])
-  }
 
   const renderAddressesSelectedValue = () =>
     selectedAddresses.length === 0
       ? ''
       : selectedAddresses.length === 1
-      ? selectedAddresses[0].hash
+      ? selectedAddresses[0].label || selectedAddresses[0].hash
       : selectedAddresses.length === addresses.length
       ? t('All selected')
       : t('{{ number }} selected', { number: selectedAddresses.length })
@@ -70,6 +68,13 @@ const TransfersPage = () => {
       : selectedDirections.length === directionOptions.length
       ? 'All selected'
       : map(selectedDirections, 'label').join(', ')
+
+  const renderAssetsSelectedValue = () =>
+    selectedAssets.length === 0
+      ? ''
+      : selectedAssets.length === assets.length
+      ? 'All selected'
+      : selectedAssets.map((asset) => asset.symbol ?? asset.id).join(', ')
 
   return (
     <UnlockedWalletPage
@@ -87,18 +92,24 @@ const TransfersPage = () => {
             modalTitle={t('Select addresses')}
             options={addresses}
             selectedOptions={selectedAddresses}
-            onOptionClick={handleAddressOptionClick}
-            onAllButtonClick={() => handleAllButtonClick(selectedAddresses, addresses, setSelectedAddresses)}
+            selectedOptionsSetter={setSelectedAddresses}
             renderSelectedValue={renderAddressesSelectedValue}
             getOptionKey={(address) => address.hash}
-            getOptionA11YText={(address) => address.label || address.hash}
-            isOptionSelected={(option) => selectedAddresses.some((address) => option.hash === address.hash)}
-            renderOption={(address: Address) => (
-              <SelectOptionItemContent
-                ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
-                ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
-              />
-            )}
+            getOptionText={(address) => address.label || address.hash}
+            renderOption={(address: Address) => <SelectOptionAddress address={address} />}
+          />
+        </Tile>
+        <Tile>
+          <MultiSelect
+            label={t('Assets')}
+            modalTitle={t('Select assets')}
+            options={assets}
+            selectedOptions={selectedAssets}
+            selectedOptionsSetter={setSelectedAssets}
+            renderSelectedValue={renderAssetsSelectedValue}
+            getOptionKey={(asset) => asset.id}
+            getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
+            renderOption={(asset) => <SelectOptionAsset asset={asset} />}
           />
         </Tile>
         <Tile>
@@ -107,13 +118,10 @@ const TransfersPage = () => {
             modalTitle={t('Select directions')}
             options={directionOptions}
             selectedOptions={selectedDirections}
-            onOptionClick={(option) => handleOptionClick(option, selectedDirections, setSelectedDirections)}
-            onAllButtonClick={() => handleAllButtonClick(selectedDirections, directionOptions, setSelectedDirections)}
+            selectedOptionsSetter={setSelectedDirections}
             renderSelectedValue={renderDirectionsSelectedValue}
             getOptionKey={(direction) => direction.value.toString()}
-            getOptionA11YText={(direction) => direction.label}
-            isOptionSelected={(option) => selectedDirections.some((direction) => option.value === direction.value)}
-            renderOption={renderOption}
+            getOptionText={(direction) => direction.label}
           />
         </Tile>
       </Filters>
@@ -121,6 +129,7 @@ const TransfersPage = () => {
         <TransactionList
           addressHashes={map(selectedAddresses, 'hash')}
           directions={map(selectedDirections, 'value')}
+          assetIds={map(selectedAssets, 'id')}
           hideHeader
         />
       </UnlockedWalletPanel>
@@ -146,13 +155,4 @@ const FilterTile = styled.div`
 
 const Tile = styled(FilterTile)`
   width: 200px;
-`
-
-const AmountStyled = styled(Amount)`
-  flex: 1;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const AddressBadgeStyled = styled(AddressBadge)`
-  width: auto;
 `

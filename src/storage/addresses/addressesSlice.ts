@@ -36,6 +36,7 @@ import {
 import { addressesAdapter } from '@/storage/addresses/addressesAdapters'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
+import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
   activeWalletDeleted,
   walletLocked,
@@ -46,7 +47,6 @@ import {
 import { Address, AddressBase, AddressesState, AddressHash } from '@/types/addresses'
 import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
-import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,

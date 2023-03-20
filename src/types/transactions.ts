@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TransactionInfoType } from '@alephium/sdk'
+import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { Token, Transaction } from '@alephium/sdk/api/explorer'
+import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
 
 import { Address } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
+import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
 export enum TxType {
   TRANSFER,
@@ -131,3 +131,11 @@ export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTra
 export type TransactionTimePeriod = '24h' | '1w' | '1m' | '6m' | '12m' | 'previousYear' | 'thisYear'
 
 export type Direction = Omit<TransactionInfoType, 'pending'>
+
+export type TransactionInfo = {
+  assets: TransactionInfoAsset[]
+  direction: TransactionDirection
+  infoType: TransactionInfoType
+  outputs: Output[]
+  lockTime?: Date
+}

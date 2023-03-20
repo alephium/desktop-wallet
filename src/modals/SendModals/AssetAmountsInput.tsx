@@ -32,8 +32,8 @@ import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
-import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import SelectOptionAsset from '@/components/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
@@ -231,30 +231,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
             onClose={handleAssetSelectModalClose}
             optionRender={(option) => {
               const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
-              if (asset)
-                return (
-                  <SelectOptionItemContent
-                    ContentLeft={
-                      <AssetName>
-                        <AssetLogo asset={asset} size={20} />
-                        {asset.name && asset.symbol ? (
-                          `${asset.name} (${asset.symbol})`
-                        ) : (
-                          <HashEllipsed hash={asset.id} />
-                        )}
-                      </AssetName>
-                    }
-                    ContentRight={
-                      <AmountStyled
-                        value={asset.balance}
-                        fadeDecimals
-                        suffix={asset.symbol}
-                        decimals={asset.decimals}
-                        isUnknownToken={!asset.symbol}
-                      />
-                    }
-                  />
-                )
+              if (asset) return <SelectOptionAsset asset={asset} />
             }}
           />
         )}
@@ -284,10 +261,6 @@ const SelectInput = styled.div<InputProps>`
   &:not(:hover) {
     background-color: transparent;
   }
-`
-
-const AmountStyled = styled(Amount)`
-  font-weight: var(--fontWeight-semiBold);
 `
 
 const AssetName = styled.div`

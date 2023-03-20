@@ -31,7 +31,6 @@ import HashEllipsed from '@/components/HashEllipsed'
 import IOList from '@/components/IOList'
 import Tooltip from '@/components/Tooltip'
 import { useAppSelector } from '@/hooks/redux'
-import { useTransactionInfo } from '@/hooks/useTransactionInfo'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import { ModalHeader } from '@/modals/CenteredModal'
@@ -41,6 +40,7 @@ import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
+import { getTransactionInfo } from '@/utils/transactions'
 
 interface TransactionDetailsModalProps {
   transaction: AddressConfirmedTransaction
@@ -58,7 +58,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const { explorerUrl } = useAppSelector((state) => state.network.settings)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
-  const { assets, direction, lockTime, infoType } = useTransactionInfo(transaction, address.hash)
+  const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
   const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()

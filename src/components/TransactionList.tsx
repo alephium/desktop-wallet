@@ -37,8 +37,9 @@ import {
   selectAddressesPendingTransactions
 } from '@/storage/transactions/transactionsSelectors'
 import { AddressHash } from '@/types/addresses'
+import { Asset } from '@/types/assets'
 import { AddressConfirmedTransaction, Direction } from '@/types/transactions'
-import { getTxDirection } from '@/utils/transactions'
+import { getTransactionInfo } from '@/utils/transactions'
 
 interface TransactionListProps {
   addressHashes?: AddressHash[]
@@ -49,6 +50,7 @@ interface TransactionListProps {
   hideHeader?: boolean
   hideFromColumn?: boolean
   directions?: Direction[]
+  assetIds?: Asset['id'][]
 }
 
 const TransactionList = ({
@@ -59,7 +61,8 @@ const TransactionList = ({
   compact,
   hideHeader = false,
   hideFromColumn = false,
-  directions
+  directions,
+  assetIds
 }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -80,15 +83,10 @@ const TransactionList = ({
   const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
 
   const singleAddress = addresses.length === 1
-  const directionalConfirmedTxs =
-    directions && directions.length > 0
-      ? confirmedTxs.filter((tx) => directions.includes(getTxDirection(tx, addresses, hideFromColumn)))
-      : confirmedTxs
+  const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
+  const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoading && !directionalConfirmedTxs.length && !pendingTxs.length
-  const displayedConfirmedTxs = limit
-    ? directionalConfirmedTxs.slice(0, limit - pendingTxs.length)
-    : directionalConfirmedTxs
+  const showSkeletonLoading = isLoading && !filteredConfirmedTxs.length && !pendingTxs.length
 
   // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
   // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
@@ -183,3 +181,27 @@ const TransactionList = ({
 }
 
 export default TransactionList
+
+const applyFilters = ({
+  txs,
+  hideFromColumn,
+  directions,
+  assetIds
+}: Pick<TransactionListProps, 'directions' | 'assetIds' | 'hideFromColumn'> & {
+  txs: AddressConfirmedTransaction[]
+}) => {
+  const isDirectionsFilterEnabled = directions && directions.length > 0
+  const isAssetsFilterEnabled = assetIds && assetIds.length > 0
+
+  return isDirectionsFilterEnabled || isAssetsFilterEnabled
+    ? txs.filter((tx) => {
+        const { assets, infoType } = getTransactionInfo(tx, hideFromColumn)
+        const dir = infoType === 'pending' ? 'out' : infoType
+
+        const passedDirectionsFilter = !isDirectionsFilterEnabled || directions.includes(dir)
+        const passedAssetsFilter = !isAssetsFilterEnabled || assets.some((asset) => assetIds.includes(asset.id))
+
+        return passedDirectionsFilter && passedAssetsFilter
+      })
+    : txs
+}

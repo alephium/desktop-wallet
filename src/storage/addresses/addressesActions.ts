@@ -29,6 +29,7 @@ import {
 import i18n from '@/i18n'
 import { selectAddressByHash, selectAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
+import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
   Address,
   AddressBase,
@@ -39,7 +40,6 @@ import {
 } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
 import { Message, SnackbarMessage } from '@/types/snackbar'
-import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 export const loadingStarted = createAction('addresses/loadingStarted')
 

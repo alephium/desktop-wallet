@@ -32,14 +32,11 @@ import { onEnterOrSpace, removeItemFromArray } from '@/utils/misc'
 interface MultiSelectOptionsProps<T> {
   options: T[]
   selectedOptions: T[]
-  onOptionClick: (option: T) => void
-  onAllButtonClick: () => void
-  renderOption: (option: T) => ReactNode
+  selectedOptionsSetter: (options: T[]) => void
   getOptionKey: (option: T) => string
-  getOptionA11YText: (option: T) => string
-  isOptionSelected: (option: T, selectedOptions: T[]) => boolean
+  getOptionText: (option: T) => string
   modalTitle: string
-  allowSearch?: boolean
+  renderOption?: (option: T) => ReactNode
 }
 
 interface MultiSelectProps<T> extends MultiSelectOptionsProps<T> {
@@ -88,14 +85,12 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
 export function MultiSelectOptionsModal<T>({
   options,
   selectedOptions,
-  onOptionClick,
-  onAllButtonClick,
   renderOption,
   getOptionKey,
-  getOptionA11YText,
-  isOptionSelected,
+  getOptionText,
   modalTitle,
-  onClose
+  onClose,
+  selectedOptionsSetter
 }: MultiSelectOptionsModalProps<T>) {
   const { t } = useTranslation()
 
@@ -103,12 +98,24 @@ export function MultiSelectOptionsModal<T>({
 
   const allOptionsAreSelected = selectedOptions.length === options.length
 
+  const handleOptionClick = (optionClicked: T) => {
+    const index = selectedOptions.findIndex((option) => option === optionClicked)
+
+    index !== -1
+      ? selectedOptionsSetter(removeItemFromArray(selectedOptions, index))
+      : selectedOptionsSetter([optionClicked, ...selectedOptions])
+  }
+
+  const handleAllButtonsClick = () => {
+    selectedOptions.length === options.length ? selectedOptionsSetter([]) : selectedOptionsSetter(options)
+  }
+
   return (
     <Popup
       title={modalTitle}
       onClose={onClose}
       extraHeaderContent={
-        <AllButton role="secondary" short onClick={onAllButtonClick}>
+        <AllButton role="secondary" short onClick={handleAllButtonsClick}>
           {allOptionsAreSelected ? t('Unselect all') : t('Select all')}
         </AllButton>
       }
@@ -119,42 +126,18 @@ export function MultiSelectOptionsModal<T>({
             key={getOptionKey(option)}
             tabIndex={0}
             role="listitem"
-            onClick={() => onOptionClick(option)}
-            selected={isOptionSelected(option, selectedOptions)}
+            onClick={() => handleOptionClick(option)}
+            selected={selectedOptions.some((o) => o === option)}
             onMouseEnter={() => setFocusedOptionIndex(index)}
             focused={index === focusedOptionIndex}
-            aria-label={getOptionA11YText(option)}
+            aria-label={getOptionText(option)}
           >
-            {renderOption(option)}
+            {renderOption ? renderOption(option) : getOptionText(option)}
           </OptionItem>
         ))}
       </Options>
     </Popup>
   )
-}
-
-export function handleOptionClick<T>(
-  optionClicked: T,
-  selectedOptions: T[],
-  selectedOptionsSetter: (options: T[]) => void
-) {
-  const index = selectedOptions.findIndex((option) => option === optionClicked)
-
-  index !== -1
-    ? selectedOptionsSetter(removeItemFromArray(selectedOptions, index))
-    : selectedOptionsSetter([optionClicked, ...selectedOptions])
-}
-
-export function handleAllButtonClick<T>(
-  selectedOptions: T[],
-  options: T[],
-  selectedOptionsSetter: (options: T[]) => void
-) {
-  selectedOptions.length === options.length ? selectedOptionsSetter([]) : selectedOptionsSetter(options)
-}
-
-export function renderOption<T>(option: MultiSelectOption<T>) {
-  return option.label
 }
 
 export default MultiSelect
