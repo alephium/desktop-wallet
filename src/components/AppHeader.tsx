@@ -64,14 +64,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
   const isAuthenticated = !!mnemonic
-
+  const offlineText = t('The wallet is offline.')
   scrollY.set(scroll?.scrollTop ?? 0)
-
-  const headerBGColor = useTransform(
-    scrollY,
-    [0, 100],
-    [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
-  )
 
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
@@ -79,12 +73,23 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     if (deepLinkUri && isAuthenticated) setIsWalletConnectModalOpen(true)
   }, [isAuthenticated, deepLinkUri])
 
-  const offlineText = t`The wallet is offline.`
+  const headerStyles = {
+    backgroundColor: useTransform(
+      scrollY,
+      [0, 100],
+      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
+    )
+  }
+
+  const titleStyles = {
+    opacity: useTransform(scrollY, [0, 100, 100], [0, 0, 1]),
+    transition: 'opacity 0.2s ease-out'
+  }
 
   return (
     <>
-      <motion.header id="app-header" style={{ backgroundColor: headerBGColor }} className={className}>
-        <Title>{title}</Title>
+      <motion.header id="app-header" style={headerStyles} className={className}>
+        <Title style={titleStyles}>{title}</Title>
         <HeaderButtons>
           <ThemeSwitcher />
           <HeaderDivider />
@@ -178,7 +183,7 @@ const OfflineIcon = styled.div`
   background-color: ${({ theme }) => theme.global.alert};
 `
 
-const Title = styled.div`
+const Title = styled(motion.div)`
   font-size: 16px;
   font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.primary};
