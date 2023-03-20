@@ -65,54 +65,54 @@ const TransactionList = ({
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const allAddressesCount = useAppSelector(selectAllAddresses).length
   const addresses = useAppSelector(
     addressHashes && addressHashes.length > 0 ? (s) => selectAddresses(s, addressHashes) : selectAllAddresses
   )
   const hashes = addresses.map((address) => address.hash)
-  const [confirmedTxs, pendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
+  const [confirmedTxs, pendingTxs, isLoading] = useAppSelector((s) => [
     selectAddressesConfirmedTransactions(s, hashes),
     selectAddressesPendingTransactions(s, hashes),
-    s.addresses.allTransactionsLoaded,
     s.addresses.loading
   ])
 
+  const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
+  const [nextPageToLoad, setNextPageToLoad] = useState(1)
+  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
+
+  const singleAddress = addresses.length === 1
   const directionalConfirmedTxs =
     directions && directions.length > 0
       ? confirmedTxs.filter((tx) => directions.includes(getTxDirection(tx, addresses, hideFromColumn)))
       : confirmedTxs
-
-  const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
-  const [pageLoaded, setPageLoaded] = useState<number>()
-  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
-
-  const singleAddress = addresses.length === 1
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
   const showSkeletonLoading = isLoading && !directionalConfirmedTxs.length && !pendingTxs.length
   const displayedConfirmedTxs = limit
     ? directionalConfirmedTxs.slice(0, limit - pendingTxs.length)
     : directionalConfirmedTxs
 
+  // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
+  // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
+  // simpler way? What if no matter what the filtering criteria are, we always:
+  // 1. fetch the next page of ALL addresses
+  // 2. check to see if we received any results
+  // 3. filter the results
+  // 4. if the filter results are 0 but the results are not 0, fetch again
   const loadNextTransactionsPage = async () => {
     if (singleAddress) {
       dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
     } else {
-      const { page, transactions } = await dispatch(
-        syncAddressesTransactionsNextPage({ addressHashes: hashes, pageLoaded })
+      const { nextPage, transactions } = await dispatch(
+        syncAddressesTransactionsNextPage({ addressHashes: hashes, nextPage: nextPageToLoad })
       ).unwrap()
 
-      setPageLoaded(page)
+      setNextPageToLoad(nextPage)
       setShowAllTransactionsLoadedMsg(transactions.length === 0)
     }
   }
 
   useEffect(() => {
-    if (singleAddress) {
-      setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
-    } else if (addresses.length === allAddressesCount) {
-      setShowAllTransactionsLoadedMsg(allTransactionsLoaded)
-    }
-  }, [addresses, allAddressesCount, allTransactionsLoaded, singleAddress])
+    if (singleAddress) setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
+  }, [addresses, singleAddress])
 
   return (
     <>

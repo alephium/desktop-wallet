@@ -96,34 +96,27 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
 export const syncAddressesTransactionsNextPage = createAsyncThunk(
   'addresses/syncAddressesTransactionsNextPage',
   async (
-    { addressHashes, pageLoaded }: { addressHashes: AddressHash[]; pageLoaded?: number },
+    { addressHashes, nextPage }: { addressHashes: AddressHash[]; nextPage: number },
     { getState, dispatch }
-  ): Promise<{ page: number; transactions: Transaction[]; addressHashes: AddressHash[] }> => {
+  ): Promise<{ nextPage: number; transactions: Transaction[]; addressHashes: AddressHash[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
     const addresses = selectAddresses(state, addressHashes)
-    const syncingAllAddresses = addresses.length === state.addresses.ids.length
 
-    let nextPage = syncingAllAddresses ? state.addresses.transactionsPageLoaded : pageLoaded ?? -1
+    let nextPageToLoad = nextPage
     let newTransactionsFound = false
-    let allTransactionsLoaded = state.addresses.allTransactionsLoaded
     let transactions: Transaction[] = []
 
-    while (!allTransactionsLoaded && !newTransactionsFound) {
-      nextPage += 1
-
+    while (!newTransactionsFound) {
       // NOTE: Explorer backend limits this query to 80 addresses
       const results = await Promise.all(
-        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
+        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPageToLoad))
       )
 
       transactions = results.flat()
 
-      if (transactions.length === 0) {
-        if (syncingAllAddresses) allTransactionsLoaded = true
-        break
-      }
+      if (transactions.length === 0) break
 
       newTransactionsFound = addresses.some((address) => {
         const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
@@ -131,9 +124,11 @@ export const syncAddressesTransactionsNextPage = createAsyncThunk(
 
         return newTxHashes.length > 0
       })
+
+      nextPageToLoad += 1
     }
 
-    return { page: nextPage, transactions, addressHashes }
+    return { nextPage: nextPageToLoad, transactions, addressHashes }
   }
 )
 

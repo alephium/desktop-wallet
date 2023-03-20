@@ -22,7 +22,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { addressesAdapter, contactsAdapter } from '@/storage/addresses/addressesAdapters'
 import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
-import { AddressesState, AddressHash } from '@/types/addresses'
+import { AddressHash } from '@/types/addresses'
 import { Asset, TokenDisplayBalances } from '@/types/assets'
 
 export const {
@@ -34,12 +34,6 @@ export const {
 export const selectAddresses = createSelector(
   [selectAllAddresses, (_, addressHashes: AddressHash[]) => addressHashes],
   (allAddresses, addressHashes) => allAddresses.filter((address) => addressHashes.includes(address.hash))
-)
-
-export const selectHaveAllPagesLoaded = createSelector(
-  [selectAllAddresses, (state: AddressesState) => state.allTransactionsLoaded],
-  (addresses, allTransactionsLoaded) =>
-    addresses.every((address) => address.allTransactionPagesLoaded) || allTransactionsLoaded
 )
 
 export const selectDefaultAddress = createSelector(selectAllAddresses, (addresses) =>

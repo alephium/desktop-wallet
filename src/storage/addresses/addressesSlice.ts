@@ -50,8 +50,6 @@ import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/t
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,
-  transactionsPageLoaded: 0,
-  allTransactionsLoaded: false,
   isRestoringAddressesFromMetadata: false,
   status: 'uninitialized'
 })
@@ -175,34 +173,25 @@ const addressesSlice = createSlice({
 
         state.loading = false
       })
-      .addCase(
-        syncAddressesTransactionsNextPage.fulfilled,
-        (state, { payload: { page, transactions, addressHashes } }) => {
-          const allAddressesCount = state.ids.length
-          const syncingAllAddresses = allAddressesCount === addressHashes.length
-          const addresses = getAddresses(state, addressHashes)
+      .addCase(syncAddressesTransactionsNextPage.fulfilled, (state, { payload: { transactions, addressHashes } }) => {
+        const addresses = getAddresses(state, addressHashes)
 
-          const updatedAddresses = addresses.map((address) => {
-            const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
-            const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
+        const updatedAddresses = addresses.map((address) => {
+          const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
+          const newTxHashes = extractNewTransactionHashes(transactionsOfAddress, address.transactions)
 
-            return {
-              id: address.hash,
-              changes: {
-                transactions: address.transactions.concat(newTxHashes)
-              }
+          return {
+            id: address.hash,
+            changes: {
+              transactions: address.transactions.concat(newTxHashes)
             }
-          })
-
-          addressesAdapter.updateMany(state, updatedAddresses)
-
-          if (syncingAllAddresses) {
-            state.transactionsPageLoaded = transactions.length > 0 ? page : state.transactionsPageLoaded
-            state.allTransactionsLoaded = transactions.length === 0
           }
-          state.loading = false
-        }
-      )
+        })
+
+        addressesAdapter.updateMany(state, updatedAddresses)
+
+        state.loading = false
+      })
       .addCase(walletSaved, (state, action) => addInitialAddress(state, action.payload.initialAddress))
       .addCase(walletUnlocked, addPassphraseInitialAddress)
       .addCase(walletSwitched, (_, action) => {
