@@ -20,7 +20,7 @@ import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
 export enum TxType {
@@ -138,4 +138,13 @@ export type TransactionInfo = {
   infoType: TransactionInfoType
   outputs: Output[]
   lockTime?: Date
+}
+
+export type CsvExportTimerangeQueryParams = {
+  fromTs: number
+  toTs: number
+}
+
+export type CsvExportQueryParams = CsvExportTimerangeQueryParams & {
+  addressHash: AddressHash
 }

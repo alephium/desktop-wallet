@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
@@ -51,6 +52,7 @@ interface TransactionListProps {
   hideFromColumn?: boolean
   directions?: Direction[]
   assetIds?: Asset['id'][]
+  headerExtraContent?: ReactNode
 }
 
 const TransactionList = ({
@@ -62,7 +64,8 @@ const TransactionList = ({
   hideHeader = false,
   hideFromColumn = false,
   directions,
-  assetIds
+  assetIds,
+  headerExtraContent
 }: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -117,10 +120,11 @@ const TransactionList = ({
       <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
         {!hideHeader && (
           <TableHeader title={title ?? t('Transactions')}>
+            {headerExtraContent}
             {limit !== undefined && (
-              <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
                 {t('See more')}
-              </ActionLink>
+              </ActionLinkStyled>
             )}
           </TableHeader>
         )}
@@ -205,3 +209,7 @@ const applyFilters = ({
       })
     : txs
 }
+
+const ActionLinkStyled = styled(ActionLink)`
+  margin-left: 20px;
+`

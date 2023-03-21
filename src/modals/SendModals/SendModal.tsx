@@ -26,13 +26,13 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import { buildSweepTransactions } from '@/api/transactions'
+import FooterButton from '@/components/Buttons/FooterButton'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
-import FooterButton from '@/modals/SendModals/FooterButton'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
 import {
   transactionBuildFailed,

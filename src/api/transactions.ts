@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import client from '@/api/client'
 import { Address, AddressHash } from '@/types/addresses'
+import { CsvExportQueryParams } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 
 export const buildSweepTransactions = async (fromAddress: Address, toAddressHash: AddressHash) => {
@@ -67,4 +68,14 @@ export const signAndSendTransaction = async (fromAddress: Address, txId: string,
   const { data } = await client.clique.transactionSend(fromAddress.hash, unsignedTx, signature)
 
   return { ...data, signature: signature }
+}
+
+export const fetchCsv = async ({ addressHash, ...timeRangeQueryParams }: CsvExportQueryParams) => {
+  const { data } = await client.explorer.addresses.getAddressesAddressExportTransactionsCsv(
+    addressHash,
+    timeRangeQueryParams,
+    { format: 'text' }
+  )
+
+  return data
 }

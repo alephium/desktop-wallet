@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { FileDown } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
@@ -28,8 +29,8 @@ import DotIcon from '@/components/DotIcon'
 import HashEllipsed from '@/components/HashEllipsed'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
+import CSVExportModal from '@/modals/CSVExportModal'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
 import SideModal from '@/modals/SideModal'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
@@ -48,7 +49,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
 
   if (!address) return null
 
@@ -104,11 +105,21 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           tokensTabTitle={t('Address tokens')}
           nftsTabTitle={t('Address NFTs')}
         />
-        <TransactionList title={t('Address transactions')} addressHashes={[address.hash]} compact hideFromColumn />
+        <TransactionList
+          title={t('Address transactions')}
+          addressHashes={[address.hash]}
+          compact
+          hideFromColumn
+          headerExtraContent={
+            <Button short role="secondary" Icon={FileDown} onClick={() => setIsCSVExportModalOpen(true)}>
+              {t('Export')}
+            </Button>
+          }
+        />
       </Content>
       <ModalPortal>
-        {isSendModalOpen && (
-          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
+        {isCSVExportModalOpen && (
+          <CSVExportModal addressHash={addressHash} onClose={() => setIsCSVExportModalOpen(false)} />
         )}
       </ModalPortal>
     </SideModal>

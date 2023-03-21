@@ -30,7 +30,9 @@ import {
   customNetworkSettingsSaved
 } from '@/storage/settings/networkActions'
 import {
-  csvGenerationStarted,
+  csvFileGenerationFinished,
+  csvFileGenerationStarted,
+  fetchTransactionsCsv,
   transactionBuildFailed,
   transactionSendFailed,
   transactionsSendSucceeded
@@ -40,7 +42,7 @@ import { walletCreationFailed, walletNameStorageFailed } from '@/storage/wallets
 import { Message, SnackbarMessage } from '@/types/snackbar'
 
 interface SnackbarSliceState {
-  messages: SnackbarMessage[]
+  messages: Required<SnackbarMessage>[]
   offlineMessageWasVisibleOnce: boolean
 }
 
@@ -125,12 +127,23 @@ const snackbarSlice = createSlice({
         })
       )
       .addCase(walletNameStorageFailed, displayError)
-      .addCase(csvGenerationStarted, (state) =>
+      .addCase(csvFileGenerationStarted, (state) =>
         displayMessageImmediately(state, {
-          text: i18n.t('Your CSV is being compiled in the background'),
+          text: i18n.t('Your CSV file is being compiled in the background.'),
           duration: -1
         })
       )
+      .addCase(csvFileGenerationFinished, (state) =>
+        displayMessageImmediately(state, {
+          text: i18n.t('Your CSV file has been generated successfully.'),
+          type: 'success'
+        })
+      )
+      .addCase(fetchTransactionsCsv.rejected, (state, action) => {
+        const message = action.payload
+
+        if (message) displayMessageImmediately(state, message)
+      })
   }
 })
 
@@ -138,7 +151,7 @@ export default snackbarSlice
 
 // Reducers helper functions
 
-const defaultSnackbarMessageSettings: SnackbarMessage = {
+const defaultSnackbarMessageSettings: Required<SnackbarMessage> = {
   text: '',
   type: 'info',
   duration: 3000 // ms
