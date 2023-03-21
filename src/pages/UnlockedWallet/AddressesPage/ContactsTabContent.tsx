@@ -77,7 +77,6 @@ const ContactsTabContent = () => {
         onSearch={setSearchInput}
         buttonText={`+ ${t('New contact')}`}
         onButtonClick={() => setIsContactFormModalOpen(true)}
-        newItemPlaceholderText={t('Create contacts to avoid mistakes when sending transactions!')}
       >
         {filteredContacts.map((contact) => (
           <Card key={contact.address}>

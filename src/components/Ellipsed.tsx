@@ -79,7 +79,6 @@ const Ellipsed = ({ text, className }: EllipsedProps) => {
 export default styled(Ellipsed)`
   font-family: 'Roboto Mono';
   overflow: hidden;
-  font-size: 13px;
 `
 
 const HiddenText = styled.div`

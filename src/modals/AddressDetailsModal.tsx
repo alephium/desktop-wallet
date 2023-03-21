@@ -22,10 +22,10 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
+import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import DotIcon from '@/components/DotIcon'
 import HashEllipsed from '@/components/HashEllipsed'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
@@ -47,7 +47,6 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const { t } = useTranslation()
   const theme = useTheme()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
-  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
@@ -62,13 +61,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       header={
         <Header>
           <LeftSide>
-            <AddressColor>
-              {address.isDefault && !isPassphraseUsed ? (
-                <Star color={address.color}>★</Star>
-              ) : (
-                <DotIcon size={11} color={address.color} />
-              )}
-            </AddressColor>
+            <AddressColorIndicator addressHash={address.hash} />
             <Column>
               <Label>{address.label || <HashEllipsedStyled hash={address.hash} />}</Label>
               <Subtitle>
@@ -138,6 +131,7 @@ const Header = styled.div`
 const LeftSide = styled.div`
   display: flex;
   align-items: center;
+  gap: 15px;
 `
 
 const ExplorerButton = styled(Button)`
@@ -158,18 +152,6 @@ const Hash = styled(HashEllipsed)`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 16px;
   max-width: 250px;
-`
-
-const AddressColor = styled.div`
-  width: 18px;
-  display: flex;
-  justify-content: center;
-  margin-right: 15px;
-`
-
-const Star = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
-  font-size: 18px;
 `
 
 const Column = styled.div`

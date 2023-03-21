@@ -21,12 +21,13 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Box from '@/components/Box'
 import Button from '@/components/Button'
 import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
+import AddressGridRow from '@/pages/UnlockedWallet/AddressesPage/AddressGridRow'
 import AdvancedOperationsSideModal from '@/pages/UnlockedWallet/AddressesPage/AdvancedOperationsSideModal'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
@@ -68,9 +69,17 @@ const AddressesTabContent = () => {
         </HeaderMiddle>
       }
     >
-      {visibleAddresses.map((address) => (
-        <AddressCard hash={address.hash} key={address.hash} />
-      ))}
+      <TableGrid>
+        <GridHeaderRow>
+          <HeaderCell>{t('Address name')}</HeaderCell>
+          <HeaderCell>{t('Assets')}</HeaderCell>
+          <HeaderCell>{t('ALPH amount')}</HeaderCell>
+          <HeaderCell>{t('Total value')}</HeaderCell>
+        </GridHeaderRow>
+        {visibleAddresses.map((address) => (
+          <AddressGridRow addressHash={address.hash} key={address.hash} />
+        ))}
+      </TableGrid>
 
       <ModalPortal>
         {isAdvancedOperationsModalOpen && (
@@ -111,4 +120,36 @@ const HeaderMiddle = styled.div`
   justify-content: space-between;
   gap: 20px;
   flex: 1;
+`
+
+const TableGrid = styled(Box)`
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: ${({ theme }) => theme.border.secondary};
+`
+
+const GridRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+`
+
+const GridHeaderRow = styled(GridRow)`
+  font-size: 14px;
+  font-weight: var(--fontWeight-semiBold);
+  min-height: var(--inputHeight);
+`
+
+const Cell = styled.div`
+  padding: 15px 20px;
+`
+
+const HeaderCell = styled(Cell)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: ${({ theme }) => theme.bg.tertiary};
 `

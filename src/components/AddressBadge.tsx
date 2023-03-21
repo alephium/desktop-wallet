@@ -35,6 +35,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   showHashWhenNoLabel?: boolean
   withBorders?: boolean
   hideStar?: boolean
+  hideColorIndication?: boolean
   disableA11y?: boolean
 }
 
@@ -44,6 +45,7 @@ const AddressBadge = ({
   withBorders,
   hideStar,
   className,
+  hideColorIndication,
   disableA11y = false,
   ...props
 }: AddressBadgeProps) => {
@@ -55,14 +57,18 @@ const AddressBadge = ({
 
   return showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>
-      {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
+      {!isPassphraseUsed && address.isDefault && !hideStar && !hideColorIndication && (
+        <Star color={address.color}>★</Star>
+      )}
       <HashEllipsed hash={address.hash} disableA11y={disableA11y} />
     </Hash>
   ) : (
-    <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>
+    <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
-        {!!address.label && !address.isDefault && <DotIcon color={address.color} />}
+        {!isPassphraseUsed && address.isDefault && !hideStar && !hideColorIndication && (
+          <Star color={address.color}>★</Star>
+        )}
+        {!!address.label && !address.isDefault && !hideColorIndication && <DotIcon color={address.color} />}
         <Label {...props}>{getName(address)}</Label>
       </RoundBorders>
     </ClipboardButton>

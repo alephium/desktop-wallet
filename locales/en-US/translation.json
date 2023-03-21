@@ -384,5 +384,6 @@
   "Time period": "Time period",
   "You can download the address transaction history for a selected time period. This can be useful for tax reporting.": "You can download the address transaction history for a selected time period. This can be useful for tax reporting.",
   "Encountered error while exporting your transactions.": "Encountered error while exporting your transactions.",
-  "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully."
+  "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
+  "Address name": "Address name"
 }
