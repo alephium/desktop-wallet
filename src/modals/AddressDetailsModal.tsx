@@ -46,7 +46,8 @@ interface AddressDetailsModalProps {
 const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const [address, { isPassphraseUsed }] = useAppSelector((s) => [selectAddressByHash(s, addressHash), s.activeWallet])
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)

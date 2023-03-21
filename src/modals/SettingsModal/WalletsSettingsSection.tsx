@@ -39,7 +39,8 @@ import { ActiveWallet, StoredWallet } from '@/types/wallet'
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.global.wallets])
+  const activeWallet = useAppSelector((s) => s.activeWallet)
+  const wallets = useAppSelector((s) => s.global.wallets)
 
   const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)

@@ -75,11 +75,9 @@ const TransactionList = ({
     addressHashes && addressHashes.length > 0 ? (s) => selectAddresses(s, addressHashes) : selectAllAddresses
   )
   const hashes = addresses.map((address) => address.hash)
-  const [confirmedTxs, pendingTxs, isLoading] = useAppSelector((s) => [
-    selectAddressesConfirmedTransactions(s, hashes),
-    selectAddressesPendingTransactions(s, hashes),
-    s.addresses.loading
-  ])
+  const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
+  const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
+  const isLoading = useAppSelector((s) => s.addresses.loading)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
   const [nextPageToLoad, setNextPageToLoad] = useState(1)

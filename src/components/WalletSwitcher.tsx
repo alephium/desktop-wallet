@@ -39,7 +39,8 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.global.wallets])
+  const activeWallet = useAppSelector((s) => s.activeWallet)
+  const wallets = useAppSelector((s) => s.global.wallets)
   const { unlockWallet } = useGlobalContext()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)

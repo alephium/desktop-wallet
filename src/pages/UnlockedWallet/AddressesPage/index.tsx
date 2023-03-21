@@ -55,27 +55,18 @@ const AddressesPage = () => {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
-  const [{ mnemonic, isPassphraseUsed, name: walletName }, infoMessageClosed] = useAppSelector((s) => [
-    s.activeWallet,
-    s.global.addressesPageInfoMessageClosed
-  ])
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const isInfoMessageClosed = useAppSelector((s) => s.global.addressesPageInfoMessageClosed)
 
   const [isAdvancedSectionOpen, setIsAdvancedSectionOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[state?.activeTab === 'contacts' ? 1 : 0])
 
-  const handleOneAddressPerGroupClick = () => {
-    if (isPassphraseUsed) {
-      generateAndSaveOneAddressPerGroup()
-    } else {
-      setIsAddressesGenerationModalOpen(true)
-    }
-  }
+  const handleOneAddressPerGroupClick = () =>
+    isPassphraseUsed ? generateAndSaveOneAddressPerGroup() : setIsAddressesGenerationModalOpen(true)
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
-
-  if (!mnemonic || !walletName) return null
 
   return (
     <UnlockedWalletPage
@@ -83,7 +74,7 @@ const AddressesPage = () => {
       subtitle={t(
         'Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.'
       )}
-      isInfoMessageVisible={!infoMessageClosed}
+      isInfoMessageVisible={!isInfoMessageClosed}
       closeInfoMessage={closeInfoMessage}
       infoMessageLink={links.faq}
       infoMessage={t('Want to know more? Click here to take a look at our FAQ!')}
@@ -109,41 +100,41 @@ const AddressesPage = () => {
             {isAdvancedSectionOpen && (
               <BottomModalStyled
                 onClose={() => setIsAdvancedSectionOpen(false)}
-                label={t`Advanced operations`}
+                label={t('Advanced operations')}
                 // TODO: Is there a better way than passing a hardcoded height?
                 contentHeight={350}
               >
                 <AdvancedOperations>
                   <OperationBox
-                    title={t`Consolidate UTXOs`}
+                    title={t('Consolidate UTXOs')}
                     Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
-                    description={t`Consolidate (merge) your UTXOs into one.`}
-                    buttonText={t`Start`}
+                    description={t('Consolidate (merge) your UTXOs into one.')}
+                    buttonText={t('Start')}
                     onButtonClick={() => setIsConsolidationModalOpen(true)}
                     infoLink={links.utxoConsolidation}
                   />
                   <OperationBox
-                    title={t`Generate one address per group`}
+                    title={t('Generate one address per group')}
                     Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
-                    description={t`Useful for miners or DeFi use.`}
+                    description={t('Useful for miners or DeFi use.')}
                     buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
                     onButtonClick={handleOneAddressPerGroupClick}
                     infoLink={links.miningWallet}
                   />
                   <OperationBox
-                    title={t`Discover active addresses`}
+                    title={t('Discover active addresses')}
                     Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
-                    description={t`Scan the blockchain for addresses you used in the past.`}
-                    buttonText={t`Search`}
+                    description={t('Scan the blockchain for addresses you used in the past.')}
+                    buttonText={t('Search')}
                     onButtonClick={discoverAndSaveUsedAddresses}
                     infoLink={links.miningWallet}
                   />
                   <OperationBox
                     placeholder
-                    title={t`More to come...`}
+                    title={t('More to come...')}
                     Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
-                    description={t`You have great ideas you want to share?`}
-                    buttonText={t`Tell us!`}
+                    description={t('You have great ideas you want to share?')}
+                    buttonText={t('Tell us!')}
                     onButtonClick={() => openInWebBrowser(links.discord)}
                   />
                 </AdvancedOperations>
@@ -151,13 +142,13 @@ const AddressesPage = () => {
             )}
           </AnimatePresence>
           <AdvancedOperationsHeader>
-            <AdvancedOperationsTitle>{t`Advanced operations`}</AdvancedOperationsTitle>
+            <AdvancedOperationsTitle>{t('Advanced operations')}</AdvancedOperationsTitle>
             <AdvancedOperationsToggle
-              label={t`Show advanced operations`}
-              description={t`Open the advanced feature panel.`}
+              label={t('Show advanced operations')}
+              description={t('Open the advanced feature panel.')}
               InputComponent={
                 <Toggle
-                  label={t`Show advanced operations`}
+                  label={t('Show advanced operations')}
                   toggled={isAdvancedSectionOpen}
                   onToggle={() => setIsAdvancedSectionOpen(!isAdvancedSectionOpen)}
                 />
@@ -170,7 +161,7 @@ const AddressesPage = () => {
         {isConsolidationModalOpen && <AddressSweepModal onClose={() => setIsConsolidationModalOpen(false)} />}
         {isAddressesGenerationModalOpen && (
           <NewAddressModal
-            title={t`Generate one address per group`}
+            title={t('Generate one address per group')}
             onClose={() => setIsAddressesGenerationModalOpen(false)}
           />
         )}
