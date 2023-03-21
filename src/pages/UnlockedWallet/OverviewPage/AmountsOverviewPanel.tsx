@@ -106,11 +106,13 @@ export default styled(AmountsOverviewPanel)`
   display: flex;
   gap: 30px;
   margin-bottom: 45px;
-  padding: 36px 0;
+  padding: 30px 0;
 `
 
 const Balances = styled.div`
   flex: 2;
+  display: flex;
+  align-items: center;
 `
 
 const BalancesRow = styled.div`

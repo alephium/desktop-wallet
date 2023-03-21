@@ -23,6 +23,7 @@ import styled from 'styled-components'
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
+import HistoricalPriceChart from '@/components/HistoricalPriceChart'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
@@ -52,10 +53,14 @@ const OverviewPage = () => {
           </Shortcuts>
         </AmountsOverviewPanel>
 
-        <Row>
+        <ChartContainer>
+          <HistoricalPriceChart currency="USD" />
+        </ChartContainer>
+
+        <AssetAndAddressesRow>
           <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
-        </Row>
+        </AssetAndAddressesRow>
         <TransactionList title={t('Latest transactions')} limit={5} />
       </UnlockedWalletPanel>
     </motion.div>
@@ -64,9 +69,10 @@ const OverviewPage = () => {
 
 export default OverviewPage
 
-const Row = styled.div`
+const AssetAndAddressesRow = styled.div`
   display: flex;
   gap: 30px;
+  margin-top: 100px;
 `
 
 const AssetsListStyled = styled(AssetsList)`
@@ -91,6 +97,8 @@ const Tagline = styled.div`
 
 const Shortcuts = styled(Box)`
   overflow: hidden;
+  background-color: transparent;
+  z-index: 1;
 `
 
 const ShortcutsHeader = styled(TableHeader)`
@@ -102,4 +110,12 @@ const ButtonsGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 1px;
   background-color: ${({ theme }) => theme.border.primary};
+`
+
+const ChartContainer = styled.div`
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 330px;
+  height: 100px;
 `

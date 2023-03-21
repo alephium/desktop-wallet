@@ -22,18 +22,22 @@ import { Currency } from '@/types/settings'
 
 export const priceApi = createApi({
   reducerPath: 'priceApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coingecko.com/api/v3/simple/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coingecko.com/api/v3/' }),
   endpoints: (builder) => ({
     getPrice: builder.query<number, Currency>({
-      query: (currency) => `/price?ids=alephium&vs_currencies=${currency.toLowerCase()}`,
+      query: (currency) => `/simple/price?ids=alephium&vs_currencies=${currency.toLowerCase()}`,
       transformResponse: (response: { alephium: { [key: string]: string } }, meta, arg) => {
         const currency = arg.toLowerCase()
         const price = response.alephium[currency]
 
         return parseFloat(price)
       }
+    }),
+    getHistoricalPrice: builder.query<{ time: number; price: number }[], Currency>({
+      query: (currency) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=91`,
+      transformResponse: (response: { prices: number[][] }) => response.prices.map((p) => ({ time: p[0], price: p[1] }))
     })
   })
 })
 
-export const { useGetPriceQuery } = priceApi
+export const { useGetPriceQuery, useGetHistoricalPriceQuery } = priceApi
