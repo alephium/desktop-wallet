@@ -57,7 +57,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   return (
     <SideModal
       onClose={onClose}
-      label={t('Address details')}
+      title={t('Address details')}
       width={800}
       header={
         <Header>

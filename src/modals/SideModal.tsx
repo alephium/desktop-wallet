@@ -28,13 +28,14 @@ import Scrollbar from '@/components/Scrollbar'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
 import ModalContainer, { ModalContainerProps } from '@/modals/ModalContainer'
 
-interface SideModalProps extends ModalContainerProps {
-  label: string
+export interface SideModalProps extends ModalContainerProps {
+  title: string
   header?: ReactNode
   width?: number
+  hideHeader?: boolean
 }
 
-const SideModal = ({ onClose, children, label, header, width = 500 }: SideModalProps) => {
+const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }: SideModalProps) => {
   const { t } = useTranslation()
   const elRef = useFocusOnMount<HTMLDivElement>()
 
@@ -48,14 +49,14 @@ const SideModal = ({ onClose, children, label, header, width = 500 }: SideModalP
         {...fastTransition}
         width={width}
       >
-        {header && (
+        {!hideHeader && (
           <ModalHeader>
-            <HeaderColumn>{header}</HeaderColumn>
+            <HeaderColumn>{header ?? <Title>{title}</Title>}</HeaderColumn>
             <CloseButton aria-label={t('Close')} squared role="secondary" transparent onClick={onClose} Icon={X} />
           </ModalHeader>
         )}
         <Scrollbar>
-          <div ref={elRef} tabIndex={0} aria-label={label}>
+          <div ref={elRef} tabIndex={0} aria-label={title}>
             {children}
           </div>
         </Scrollbar>
@@ -93,4 +94,9 @@ const HeaderColumn = styled.div`
 const CloseButton = styled(Button)`
   color: ${({ theme }) => theme.font.primary};
   flex-shrink: 0;
+`
+
+const Title = styled.div`
+  font-weight: var(--fontWeight-bold);
+  font-size: 16px;
 `

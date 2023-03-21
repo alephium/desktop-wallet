@@ -16,15 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Button from '@/components/Button'
 import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
 import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
+import AdvancedOperationsSideModal from '@/pages/UnlockedWallet/AddressesPage/AdvancedOperationsSideModal'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { filterAddresses } from '@/utils/addresses'
@@ -38,6 +41,7 @@ const AddressesTabContent = () => {
   const [visibleAddresses, setVisibleAddresses] = useState(addresses)
   const [searchInput, setSearchInput] = useState('')
   const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
+  const [isAdvancedOperationsModalOpen, setIsAdvancedOperationsModalOpen] = useState(false)
 
   useEffect(() => {
     const filteredByText = filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo)
@@ -54,12 +58,14 @@ const AddressesTabContent = () => {
       onSearch={setSearchInput}
       buttonText={`+ ${t('New address')}`}
       onButtonClick={() => setIsGenerateNewAddressModalOpen(true)}
-      newItemPlaceholderText={t('Addresses allow you to organise your funds. You can create as many as you want!')}
       HeaderMiddleComponent={
-        <HideEmptyAddressesToggle>
-          <ToggleText>{t('Hide empty addresses')}</ToggleText>
-          <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
-        </HideEmptyAddressesToggle>
+        <HeaderMiddle>
+          <HideEmptyAddressesToggle>
+            <ToggleText>{t('Hide empty addresses')}</ToggleText>
+            <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
+          </HideEmptyAddressesToggle>
+          <Button role="secondary" squared Icon={Wrench} onClick={() => setIsAdvancedOperationsModalOpen(true)} />
+        </HeaderMiddle>
       }
     >
       {visibleAddresses.map((address) => (
@@ -67,6 +73,9 @@ const AddressesTabContent = () => {
       ))}
 
       <ModalPortal>
+        {isAdvancedOperationsModalOpen && (
+          <AdvancedOperationsSideModal onClose={() => setIsAdvancedOperationsModalOpen(false)} />
+        )}
         {isGenerateNewAddressModalOpen && (
           <NewAddressModal
             singleAddress
@@ -94,4 +103,12 @@ const HideEmptyAddressesToggle = styled.div`
 const ToggleText = styled.div`
   font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const HeaderMiddle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex: 1;
 `

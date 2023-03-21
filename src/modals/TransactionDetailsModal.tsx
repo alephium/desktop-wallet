@@ -73,7 +73,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
 
   return (
-    <SideModal onClose={onClose} label={t`Transaction details`}>
+    <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
