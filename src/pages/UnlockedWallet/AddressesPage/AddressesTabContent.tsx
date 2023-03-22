@@ -17,14 +17,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wrench } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import Toggle from '@/components/Inputs/Toggle'
-import { useScrollContext } from '@/contexts/scroll'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
@@ -35,27 +34,20 @@ import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { filterAddresses } from '@/utils/addresses'
 
-const AddressesTabContent = () => {
+interface AddressesTabContentProps {
+  tabsRowHeight: number
+}
+
+const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const { t } = useTranslation()
-  const tableHeaderRef = useRef<HTMLDivElement>(null)
-  const scroll = useScrollContext()
-  const tableHeaderDistanceFromTop = tableHeaderRef.current?.getBoundingClientRect().y
-  const fixedAt = appHeaderHeightPx + 48 + 55 // 48 is for the tabs height and 55 for the table header height
-
-  useEffect(() => {
-    setIsTableHeaderFixed(!!tableHeaderDistanceFromTop && tableHeaderDistanceFromTop < fixedAt)
-    // Is thre a better way to react to scrolling than this?
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scroll])
 
   const [isGenerateNewAddressModalOpen, setIsGenerateNewAddressModalOpen] = useState(false)
   const [visibleAddresses, setVisibleAddresses] = useState(addresses)
   const [searchInput, setSearchInput] = useState('')
   const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
   const [isAdvancedOperationsModalOpen, setIsAdvancedOperationsModalOpen] = useState(false)
-  const [isTableHeaderFixed, setIsTableHeaderFixed] = useState(true)
 
   useEffect(() => {
     const filteredByText = filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo)
@@ -82,15 +74,14 @@ const AddressesTabContent = () => {
         </HeaderMiddle>
       }
     >
-      <TableGrid hasFixedHeader={isTableHeaderFixed}>
-        <div ref={tableHeaderRef}>
-          <GridHeaderRow isFixed={isTableHeaderFixed} fixedAt={fixedAt}>
-            <HeaderCell>{t('Address name')}</HeaderCell>
-            <HeaderCell>{t('Assets')}</HeaderCell>
-            <HeaderCell>{t('ALPH amount')}</HeaderCell>
-            <HeaderCell>{t('Total value')}</HeaderCell>
-          </GridHeaderRow>
-        </div>
+      <TableGrid>
+        <GridHeaderRow tabsRowHeight={tabsRowHeight}>
+          <HeaderCell>{t('Address name')}</HeaderCell>
+          <HeaderCell>{t('Assets')}</HeaderCell>
+          <HeaderCell>{t('ALPH amount')}</HeaderCell>
+          <HeaderCell>{t('Total value')}</HeaderCell>
+        </GridHeaderRow>
+
         {visibleAddresses.map((address) => (
           <AddressGridRow addressHash={address.hash} key={address.hash} />
         ))}
@@ -137,15 +128,12 @@ const HeaderMiddle = styled.div`
   flex: 1;
 `
 
-const TableGrid = styled(Box)<{ hasFixedHeader: boolean }>`
-  overflow: hidden;
+const TableGrid = styled(Box)`
+  contain: paint; // This is amazing. It replaces "overflow: hidden". Using "overflow" on this prevents us from having a sticky table header.
   display: flex;
   flex-direction: column;
   gap: 1px;
   background-color: ${({ theme }) => theme.border.secondary};
-  position: relative;
-
-  padding-top: var(--inputHeight);
 `
 
 const GridRow = styled.div`
@@ -154,22 +142,15 @@ const GridRow = styled.div`
   gap: 1px;
 `
 
-const GridHeaderRow = styled(GridRow)<{ isFixed: boolean; fixedAt: number }>`
+const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
   min-height: var(--inputHeight);
   width: 100%;
-  position: absolute;
-  top: 0;
 
-  ${({ isFixed, fixedAt }) =>
-    isFixed &&
-    css`
-      position: fixed;
-      top: calc(${fixedAt}px - var(--inputHeight));
-      width: calc(100% - 201px); // 201 is completely magical...
-      z-index: 1;
-    `}
+  position: sticky;
+  top: ${({ tabsRowHeight }) => tabsRowHeight + appHeaderHeightPx - 1}px;
+  z-index: 1;
 `
 
 const Cell = styled.div`

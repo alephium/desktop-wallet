@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -42,12 +42,16 @@ const AddressesPage = () => {
   const { t } = useTranslation()
   const { state } = useLocation()
   const dispatch = useAppDispatch()
+  const tabsRowRef = useRef<HTMLDivElement>(null)
 
   const isInfoMessageClosed = useAppSelector((s) => s.global.addressesPageInfoMessageClosed)
 
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[state?.activeTab === 'contacts' ? 1 : 0])
+  const [tabsRowHeight, setTabsRowHeight] = useState(0)
 
   const closeInfoMessage = () => dispatch(addressesPageInfoMessageClosed())
+
+  useEffect(() => setTabsRowHeight(tabsRowRef.current?.clientHeight ?? 0), [])
 
   return (
     <UnlockedWalletPage
@@ -61,14 +65,15 @@ const AddressesPage = () => {
       infoMessage={t('Want to know more? Click here to take a look at our FAQ!')}
     >
       <Tabs>
-        <TabBarPanel>
+        <TabBarPanel ref={tabsRowRef}>
           <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
         </TabBarPanel>
+
         <TabContent>
           <TabPanel>
             {
               {
-                addresses: <AddressesTabContent />,
+                addresses: <AddressesTabContent tabsRowHeight={tabsRowHeight} />,
                 contacts: <ContactsTabContent />
               }[currentTab.value]
             }
