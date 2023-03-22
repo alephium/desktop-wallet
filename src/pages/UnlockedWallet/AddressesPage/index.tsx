@@ -30,6 +30,7 @@ import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTab
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { addressesPageInfoMessageClosed } from '@/storage/global/globalActions'
+import { appHeaderHeightPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 
 const tabs = [
@@ -60,9 +61,9 @@ const AddressesPage = () => {
       infoMessage={t('Want to know more? Click here to take a look at our FAQ!')}
     >
       <Tabs>
-        <TabPanel>
+        <TabBarPanel>
           <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-        </TabPanel>
+        </TabBarPanel>
         <TabContent>
           <TabPanel>
             {
@@ -94,4 +95,11 @@ const TabContent = styled(Box)`
 
 const TabPanel = styled(UnlockedWalletPanel)`
   padding-bottom: 0;
+`
+
+const TabBarPanel = styled(TabPanel)`
+  position: sticky;
+  top: ${appHeaderHeightPx}px;
+  z-index: 1;
+  background-color: ${({ theme }) => theme.bg.background1};
 `

@@ -72,7 +72,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     backgroundColor: useTransform(
       scrollY,
       [0, 100],
-      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
+      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.background1]
     )
   }
 
