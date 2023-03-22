@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -32,7 +33,7 @@ import {
   syncAddressesTransactionsNextPage,
   syncAddressTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { selectAddresses, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddresses, selectAllAddresses, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import {
   selectAddressesConfirmedTransactions,
   selectAddressesPendingTransactions
@@ -77,7 +78,7 @@ const TransactionList = ({
   const hashes = addresses.map((address) => address.hash)
   const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
-  const isLoading = useAppSelector((s) => s.addresses.loading)
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
   const [nextPageToLoad, setNextPageToLoad] = useState(1)
@@ -87,7 +88,6 @@ const TransactionList = ({
   const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
   const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoading && !filteredConfirmedTxs.length && !pendingTxs.length
 
   // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
   // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
@@ -115,7 +115,7 @@ const TransactionList = ({
 
   return (
     <>
-      <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
+      <Table className={className} minWidth="500px">
         {!hideHeader && (
           <TableHeader title={title ?? t('Transactions')}>
             {headerExtraContent}
@@ -125,6 +125,19 @@ const TransactionList = ({
               </ActionLinkStyled>
             )}
           </TableHeader>
+        )}
+        {stateUninitialized && (
+          <>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+          </>
         )}
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
@@ -163,7 +176,7 @@ const TransactionList = ({
             </TableCell>
           </TableRow>
         )}
-        {!isLoading && !pendingTxs.length && !confirmedTxs.length && (
+        {!stateUninitialized && !pendingTxs.length && !confirmedTxs.length && (
           <TableRow role="row" tabIndex={0}>
             <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
           </TableRow>

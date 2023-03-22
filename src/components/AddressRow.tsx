@@ -64,6 +64,7 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   flex-grow: 1;
+  gap: 15px;
 `
 
 const Column = styled.div`
@@ -88,7 +89,6 @@ const AddressColor = styled.div`
   width: 18px;
   display: flex;
   justify-content: center;
-  margin-right: 15px;
 `
 
 const Star = styled.div<{ color: string }>`

@@ -26,10 +26,16 @@ import styled from 'styled-components'
 import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Amount from '@/components/Amount'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
-import { selectAddressByHash, selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddressByHash,
+  selectAddressesAssets,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
+import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -43,6 +49,8 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const assets = useAppSelector((state) => selectAddressesAssets(state, address?.hash ? [address.hash] : undefined))
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
@@ -61,26 +69,38 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <Label>
             <AddressBadge addressHash={address.hash} hideColorIndication showHashWhenNoLabel truncate />
           </Label>
-          <LastActivity>
-            {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
-          </LastActivity>
+          {stateUninitialized ? (
+            <SkeletonLoader height="15.5px" />
+          ) : (
+            <LastActivity>
+              {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
+            </LastActivity>
+          )}
         </Column>
       </AddressNameCell>
       <Cell>
-        {assetsWithBalance.length > 0 && (
-          <AssetSymbols>
-            {knownAssets.map((asset) => (
-              <span key={asset.id}>{asset.symbol}</span>
-            ))}
-            {unknownAssets.length > 0 && <span>+{unknownAssets.length}</span>}
-          </AssetSymbols>
+        {isLoadingAssetsInfo || stateUninitialized ? (
+          <SkeletonLoader height="33.5px" />
+        ) : (
+          assetsWithBalance.length > 0 && (
+            <AssetSymbols>
+              {knownAssets.map((asset) => (
+                <span key={asset.id}>{asset.symbol}</span>
+              ))}
+              {unknownAssets.length > 0 && <span>+{unknownAssets.length}</span>}
+            </AssetSymbols>
+          )
         )}
       </Cell>
       <AmountCell>
-        <Amount value={BigInt(address.balance)} />
+        {stateUninitialized ? <SkeletonLoader height="18.5px" /> : <Amount value={BigInt(address.balance)} />}
       </AmountCell>
       <FiatAmountCell>
-        {!isPriceLoading && <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />}
+        {stateUninitialized || isPriceLoading ? (
+          <SkeletonLoader height="18.5px" />
+        ) : (
+          <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />
+        )}
       </FiatAmountCell>
       <ModalPortal>
         {isAddressDetailsModalOpen && (

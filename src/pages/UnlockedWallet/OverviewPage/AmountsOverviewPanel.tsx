@@ -21,8 +21,13 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddressByHash,
+  selectAllAddresses,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
@@ -37,6 +42,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const { t } = useTranslation()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const addresses = address ? [address] : allAddresses
   const network = useAppSelector((s) => s.network)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
@@ -56,7 +62,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         <BalancesRow>
           <BalancesColumn>
             <Today>{t('Value today')}</Today>
-            {!isPriceLoading && (
+            {stateUninitialized || isPriceLoading ? (
+              <SkeletonLoader height="46px" />
+            ) : (
               <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
             )}
           </BalancesColumn>
@@ -68,13 +76,21 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                   <BalanceLabel tabIndex={0} role="representation">
                     {t('Available')}
                   </BalanceLabel>
-                  <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
+                  {stateUninitialized ? (
+                    <SkeletonLoader height="25.5px" />
+                  ) : (
+                    <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
+                  )}
                 </AvailableBalanceRow>
                 <LockedBalanceRow>
                   <BalanceLabel tabIndex={0} role="representation">
                     {t('Locked')}
                   </BalanceLabel>
-                  <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
+                  {stateUninitialized ? (
+                    <SkeletonLoader height="25.5px" />
+                  ) : (
+                    <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
+                  )}
                 </LockedBalanceRow>
               </AvailableLockedBalancesColumn>
             </>
@@ -114,14 +130,12 @@ const BalancesColumn = styled.div`
   flex: 1;
 `
 
-const AvailableLockedBalancesColumn = styled(BalancesColumn)`
-  padding-left: 55px;
-`
+const AvailableLockedBalancesColumn = styled(BalancesColumn)``
 
 const Divider = styled.div`
   width: 1px;
   background-color: ${({ theme }) => theme.border.primary};
-  margin: 17px 0;
+  margin: 17px 55px;
 `
 
 const AvailableBalanceRow = styled.div`

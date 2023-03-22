@@ -28,12 +28,13 @@ import { fadeIn } from '@/animations'
 import ActionLink from '@/components/ActionLink'
 import AddressRow from '@/components/AddressRow'
 import Amount from '@/components/Amount'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import Table, { TableHeader } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAllAddresses, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { Address } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -46,10 +47,9 @@ interface AddressesContactsListProps {
 const AddressesContactsList = ({ className, limit }: AddressesContactsListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const isLoadingAddresses = useAppSelector((s) => s.addresses.loading)
 
   return (
-    <Table isLoading={isLoadingAddresses} className={className}>
+    <Table className={className}>
       <TableHeader title={t('Your addresses')}>
         <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight}>
           {t('See more')}
@@ -63,6 +63,7 @@ const AddressesContactsList = ({ className, limit }: AddressesContactsListProps)
 const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const { data: price } = useGetPriceQuery(currencies.USD.ticker)
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedAddress, setSelectedAddress] = useState<Address>()
 
@@ -73,13 +74,17 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
       {displayedAddresses.map((address) => (
         <AddressRow address={address} onClick={setSelectedAddress} key={address.hash}>
           <TableCellAmount>
-            <Amount
-              value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
-              fadeDecimals
-              isFiat
-              suffix={currencies['USD'].symbol}
-              tabIndex={0}
-            />
+            {stateUninitialized ? (
+              <SkeletonLoader height="15.5px" width="50%" />
+            ) : (
+              <Amount
+                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
+                fadeDecimals
+                isFiat
+                suffix={currencies['USD'].symbol}
+                tabIndex={0}
+              />
+            )}
           </TableCellAmount>
         </AddressRow>
       ))}
