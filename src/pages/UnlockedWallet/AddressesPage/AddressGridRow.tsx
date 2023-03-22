@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
-import { partition } from 'lodash'
-import { useState } from 'react'
+import { map } from 'lodash'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -39,11 +39,14 @@ import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
+import { useWindowResize } from '@/utils/hooks'
 
 interface AddressGridRowProps {
   addressHash: AddressHash
   className?: string
 }
+
+const assetSymbolsRowHeight = 34
 
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
@@ -55,11 +58,41 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 
+  const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
+  const knownAssets = assetsWithBalance.filter((asset) => !!asset.symbol)
+  const [assetSymbolTexts, setAssetSymbolTexts] = useState(map(knownAssets, 'symbol'))
+
+  const assetsCellRef = useRef<HTMLDivElement>(null)
+
+  const ensureAssetsDisplayedInOnlyOneRow = useCallback(() => {
+    if (!assetsCellRef.current) return
+
+    if (assetsCellRef.current.offsetHeight > assetSymbolsRowHeight) {
+      const newArray = [...assetSymbolTexts]
+      const lastItem = newArray.pop()
+
+      if (lastItem?.startsWith('+')) {
+        const num = parseInt(lastItem.replace('+', ''))
+        newArray.pop()
+        newArray.push(`+${num + 1}`)
+      }
+      setAssetSymbolTexts(newArray)
+    } else if (!assetSymbolTexts.at(-1)?.startsWith('+') && assetSymbolTexts.length < assetsWithBalance.length) {
+      const newArray = [...assetSymbolTexts]
+      newArray.push(`+${assetsWithBalance.length - assetSymbolTexts.length}`)
+      setAssetSymbolTexts(newArray)
+    }
+  }, [assetSymbolTexts, assetsWithBalance.length])
+
+  useEffect(() => {
+    ensureAssetsDisplayedInOnlyOneRow()
+  }, [ensureAssetsDisplayedInOnlyOneRow])
+
+  useWindowResize(ensureAssetsDisplayedInOnlyOneRow)
+
   if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
-  const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
-  const [knownAssets, unknownAssets] = partition(assetsWithBalance, (asset) => !!asset.symbol)
 
   return (
     <GridRow key={address.hash}>
@@ -83,11 +116,10 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <SkeletonLoader height="33.5px" />
         ) : (
           assetsWithBalance.length > 0 && (
-            <AssetSymbols>
-              {knownAssets.map((asset) => (
-                <span key={asset.id}>{asset.symbol}</span>
+            <AssetSymbols ref={assetsCellRef}>
+              {assetSymbolTexts.map((text) => (
+                <span key={text}>{text}</span>
               ))}
-              {unknownAssets.length > 0 && <span>+{unknownAssets.length}</span>}
             </AssetSymbols>
           )
         )}
