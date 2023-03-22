@@ -49,12 +49,12 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
     <SideModal {...props} title={t('Advanced operations')}>
       <AdvancedOperations>
         <OperationBox
-          title={t('Consolidate UTXOs')}
-          Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
-          description={t('Consolidate (merge) your UTXOs into one.')}
-          buttonText={t('Start')}
-          onButtonClick={() => setIsConsolidationModalOpen(true)}
-          infoLink={links.utxoConsolidation}
+          title={t('Discover active addresses')}
+          Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
+          description={t('Scan the blockchain for addresses you used in the past.')}
+          buttonText={t('Search')}
+          onButtonClick={discoverAndSaveUsedAddresses}
+          infoLink={links.miningWallet}
         />
         <OperationBox
           title={t('Generate one address per group')}
@@ -65,12 +65,12 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
           infoLink={links.miningWallet}
         />
         <OperationBox
-          title={t('Discover active addresses')}
-          Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
-          description={t('Scan the blockchain for addresses you used in the past.')}
-          buttonText={t('Search')}
-          onButtonClick={discoverAndSaveUsedAddresses}
-          infoLink={links.miningWallet}
+          title={t('Consolidate UTXOs')}
+          Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
+          description={t('Consolidate (merge) your UTXOs into one.')}
+          buttonText={t('Start')}
+          onButtonClick={() => setIsConsolidationModalOpen(true)}
+          infoLink={links.utxoConsolidation}
         />
         <OperationBox
           placeholder
