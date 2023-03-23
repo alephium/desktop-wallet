@@ -66,7 +66,7 @@ const SnackbarManagerContainer = styled.div`
   left: ${walletSidebarWidthPx}px;
   display: flex;
   justify-content: flex-end;
-  z-index: 1;
+  z-index: 2;
 
   @media ${deviceBreakPoints.mobile} {
     justify-content: center;
