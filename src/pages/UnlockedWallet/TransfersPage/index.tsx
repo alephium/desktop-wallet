@@ -178,8 +178,15 @@ const Filters = styled(UnlockedWalletPanel)`
   padding-bottom: 0;
   display: flex;
   position: sticky;
+  justify-content: space-between;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
+`
+
+const FilterTiles = styled.div`
+  display: flex;
+  min-width: 0;
+  flex: 1;
 `
 
 const FilterTile = styled.div`
@@ -192,14 +199,11 @@ const Tile = styled(FilterTile)`
   flex: 1;
 `
 
-const FilterTiles = styled.div`
-  display: flex;
-  flex: 1;
-`
 const Buttons = styled.div`
   display: flex;
   align-items: center;
   padding-left: 48px;
+  flex-shrink: 0;
 `
 
 const CornerButtons = styled.div`
