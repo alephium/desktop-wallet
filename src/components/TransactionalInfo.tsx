@@ -36,6 +36,7 @@ import TimeSince from '@/components/TimeSince'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { deviceBreakPoints } from '@/style/globalStyles'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
 import { getTransactionInfo, isPendingTx } from '@/utils/transactions'
@@ -235,6 +236,10 @@ const CellAssetBadges = styled.div<Pick<TransactionalInfoProps, 'compact'>>`
   flex-shrink: 0;
   margin-right: 28px;
   width: ${({ compact }) => (compact ? '80px' : '180px')};
+
+  @media ${deviceBreakPoints.desktop} {
+    width: 80px;
+  }
 `
 
 const TransactionIcon = styled.span<{ color?: string }>`

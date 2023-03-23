@@ -109,6 +109,6 @@ export const deviceSizes = {
 export const deviceBreakPoints = {
   mobile: `(max-width: ${deviceSizes.mobile}px)`,
   tablet: `(max-width: ${deviceSizes.tablet}px)`,
-  desktop: `(min-width: ${deviceSizes.desktop}px)`,
+  desktop: `(max-width: ${deviceSizes.desktop}px)`,
   short: '(max-height: 600px)'
 }
