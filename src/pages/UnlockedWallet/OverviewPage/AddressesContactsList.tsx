@@ -79,7 +79,6 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
             ) : (
               <AmountStyled
                 value={calculateAmountWorth(BigInt(address.balance), price ?? 0) * 1000}
-                fadeDecimals
                 isFiat
                 suffix={currencies['USD'].symbol}
                 tabIndex={0}

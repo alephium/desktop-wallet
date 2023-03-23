@@ -154,7 +154,7 @@ const TransactionalInfo = ({
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {amountSign}
-              <Amount value={amount} fadeDecimals color={amountTextColor} decimals={decimals} suffix={symbol} />
+              <Amount value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
             </div>
           </AmountContainer>
         ))}

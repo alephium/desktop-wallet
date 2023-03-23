@@ -43,7 +43,6 @@ const SelectOptionAsset = ({ asset, hideAmount, className }: SelectOptionAssetPr
       !hideAmount && (
         <AmountStyled
           value={asset.balance}
-          fadeDecimals
           suffix={asset.symbol}
           decimals={asset.decimals}
           isUnknownToken={!asset.symbol}

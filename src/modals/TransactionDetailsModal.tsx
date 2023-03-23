@@ -79,14 +79,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id} color={amountTextColor}>
               {amountSign}
-              <Amount
-                tabIndex={0}
-                value={amount}
-                fadeDecimals
-                color={amountTextColor}
-                decimals={decimals}
-                suffix={symbol}
-              />
+              <Amount tabIndex={0} value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
             </AmountContainer>
           ))}
         </AmountWrapper>
@@ -151,7 +144,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
         )}
         <DetailsRow label={t`Fee`}>
-          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
@@ -161,7 +154,6 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                 <Amount
                   tabIndex={0}
                   value={amount}
-                  fadeDecimals
                   fullPrecision
                   color={amountTextColor}
                   decimals={decimals}
@@ -191,7 +183,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
           </DetailsRow>
           <DetailsRow label={t`Gas price`}>
-            <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+            <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fullPrecision />
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
             <AddressList>
