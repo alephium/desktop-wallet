@@ -18,11 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
-import { map } from 'lodash'
+import { motion } from 'framer-motion'
+import { partition } from 'lodash'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { fadeIn } from '@/animations'
 import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Amount from '@/components/Amount'
@@ -59,36 +61,57 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 
   const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
-  const knownAssets = assetsWithBalance.filter((asset) => !!asset.symbol)
-  const [assetSymbolTexts, setAssetSymbolTexts] = useState(map(knownAssets, 'symbol'))
+  const [knownAssets, unknownAssets] = partition(assetsWithBalance, (asset) => !!asset.symbol)
+  const [assetSymbolTexts, setAssetSymbolTexts] = useState<string[]>([])
+  const [nbOfHiddenSymbols, setNbOfHiddenSymbols] = useState(0)
 
   const assetsCellRef = useRef<HTMLDivElement>(null)
 
-  const ensureAssetsDisplayedInOnlyOneRow = useCallback(() => {
-    if (!assetsCellRef.current) return
+  const ensureAssetsDisplayedInOnlyOneRow = useCallback(
+    (isWindowResizing?: boolean) => {
+      if (!assetsCellRef.current) return
 
-    if (assetsCellRef.current.offsetHeight > assetSymbolsRowHeight) {
-      const newArray = [...assetSymbolTexts]
-      const lastItem = newArray.pop()
+      if (assetSymbolTexts.length + nbOfHiddenSymbols === assetsWithBalance.length) {
+        if (assetsCellRef.current.offsetHeight > assetSymbolsRowHeight) {
+          const newTextsArray = [...assetSymbolTexts]
+          newTextsArray.pop()
+          setNbOfHiddenSymbols(nbOfHiddenSymbols + 1)
+          setAssetSymbolTexts(newTextsArray)
+        } else if (assetSymbolTexts.length < knownAssets.length && isWindowResizing) {
+          const newTextsArray = [...assetSymbolTexts]
+          const newAsset = knownAssets.find((asset) => !newTextsArray.includes(asset.symbol as string))
 
-      if (lastItem?.startsWith('+')) {
-        const num = parseInt(lastItem.replace('+', ''))
-        newArray.pop()
-        newArray.push(`+${num + 1}`)
+          if (newAsset) {
+            newTextsArray.push(newAsset.symbol as string)
+            setNbOfHiddenSymbols(nbOfHiddenSymbols - 1)
+            setAssetSymbolTexts(newTextsArray)
+          }
+        }
+        return
       }
+
+      const newArray: string[] = []
+
+      knownAssets.forEach((asset) => {
+        const newSymbol = asset.symbol as string
+
+        if (!newArray.includes(newSymbol)) {
+          newArray.push(newSymbol)
+          return
+        }
+      })
+
+      setNbOfHiddenSymbols(unknownAssets.length)
       setAssetSymbolTexts(newArray)
-    } else if (!assetSymbolTexts.at(-1)?.startsWith('+') && assetSymbolTexts.length < assetsWithBalance.length) {
-      const newArray = [...assetSymbolTexts]
-      newArray.push(`+${assetsWithBalance.length - assetSymbolTexts.length}`)
-      setAssetSymbolTexts(newArray)
-    }
-  }, [assetSymbolTexts, assetsWithBalance.length])
+    },
+    [assetSymbolTexts, assetsWithBalance.length, knownAssets, nbOfHiddenSymbols, unknownAssets.length]
+  )
 
   useEffect(() => {
     ensureAssetsDisplayedInOnlyOneRow()
   }, [ensureAssetsDisplayedInOnlyOneRow])
 
-  useWindowResize(ensureAssetsDisplayedInOnlyOneRow)
+  useWindowResize(() => ensureAssetsDisplayedInOnlyOneRow(true))
 
   if (!address) return null
 
@@ -116,10 +139,13 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <SkeletonLoader height="33.5px" />
         ) : (
           assetsWithBalance.length > 0 && (
-            <AssetSymbols ref={assetsCellRef}>
+            <AssetSymbols ref={assetsCellRef} layout>
               {assetSymbolTexts.map((text) => (
-                <span key={text}>{text}</span>
+                <motion.span key={text} {...fadeIn}>
+                  {text}
+                </motion.span>
               ))}
+              {nbOfHiddenSymbols > 0 && <span>+{nbOfHiddenSymbols}</span>}
             </AssetSymbols>
           )
         )}
@@ -193,7 +219,7 @@ const AddressNameCell = styled(Cell)`
   cursor: pointer;
 `
 
-const AssetSymbols = styled.div`
+const AssetSymbols = styled(motion.div)`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
   padding: 8px 16px;
