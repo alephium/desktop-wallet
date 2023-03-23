@@ -77,8 +77,8 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
             {stateUninitialized ? (
               <SkeletonLoader height="15.5px" width="50%" />
             ) : (
-              <Amount
-                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
+              <AmountStyled
+                value={calculateAmountWorth(BigInt(address.balance), price ?? 0) * 1000}
                 fadeDecimals
                 isFiat
                 suffix={currencies['USD'].symbol}
@@ -99,4 +99,8 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
 
 export default styled(AddressesContactsList)`
   margin-bottom: 45px;
+`
+
+const AmountStyled = styled(Amount)`
+  flex-shrink: 0;
 `

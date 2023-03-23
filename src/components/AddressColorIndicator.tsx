@@ -26,9 +26,10 @@ import { AddressHash } from '@/types/addresses'
 interface AddressColorIndicatorProps {
   addressHash: AddressHash
   className?: string
+  hideStar?: boolean
 }
 
-const AddressColorIndicator = ({ addressHash, className }: AddressColorIndicatorProps) => {
+const AddressColorIndicator = ({ addressHash, hideStar, className }: AddressColorIndicatorProps) => {
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
 
@@ -36,7 +37,7 @@ const AddressColorIndicator = ({ addressHash, className }: AddressColorIndicator
 
   return (
     <div className={className}>
-      {address.isDefault && !isPassphraseUsed ? (
+      {address.isDefault && !isPassphraseUsed && !hideStar ? (
         <Star color={address.color}>★</Star>
       ) : (
         <DotIcon size={11} color={address.color} />

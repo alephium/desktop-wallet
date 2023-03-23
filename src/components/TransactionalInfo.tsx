@@ -70,7 +70,7 @@ const TransactionalInfo = ({
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
-      <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel />
+      <AddressBadge truncate addressHash={tx.toAddress} />
     )
   ) : null
 
@@ -105,9 +105,7 @@ const TransactionalInfo = ({
       {!showInternalInflows && (
         <CellAddress alignRight>
           <HiddenLabel text={t('from')} />
-          {direction === 'out' && (
-            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel disableA11y />
-          )}
+          {direction === 'out' && <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />}
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
@@ -133,7 +131,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel disableA11y />
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out') &&
             (pendingToAddressComponent || (
@@ -191,7 +189,7 @@ const AssetTime = styled.div`
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 340px;
+  max-width: 120px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;

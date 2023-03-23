@@ -101,13 +101,15 @@ const Amount = ({
         '-'
       )}
 
-      {!isUnknownToken && (suffix && suffix !== 'ALPH' ? ` ${suffix}` : <AlefSymbol color={color} />)}
+      {!isUnknownToken && (suffix && suffix !== 'ALPH' ? <span>{` ${suffix}`}</span> : <AlefSymbol color={color} />)}
     </span>
   )
 }
 
 export default styled(Amount)`
   color: ${({ color }) => color ?? 'inherit'};
+  display: inline-flex;
+  white-space: pre;
 `
 
 const Decimals = styled.span`

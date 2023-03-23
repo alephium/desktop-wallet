@@ -105,7 +105,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} truncate withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -123,7 +123,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (

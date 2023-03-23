@@ -31,7 +31,7 @@ interface SelectOptionAddressProps {
 const SelectOptionAddress = ({ address, className }: SelectOptionAddressProps) => (
   <SelectOptionItemContent
     className={className}
-    ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
+    ContentLeft={<AddressBadgeStyled addressHash={address.hash} disableA11y />}
     ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
   />
 )
