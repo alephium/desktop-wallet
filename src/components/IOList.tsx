@@ -86,20 +86,14 @@ const IOList = ({
 
     return truncate ? (
       <TruncateWrap>
-        <AddressBadge truncate addressHash={addressHash} showHashWhenNoLabel withBorders disableA11y={disableA11y} />
+        <AddressBadge truncate addressHash={addressHash} showHashWhenNoLabel disableA11y={disableA11y} />
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
         {addressesToShow.map((addressHash) => {
           const addressComponent = (
-            <AddressBadge
-              truncate
-              addressHash={addressHash}
-              showHashWhenNoLabel
-              withBorders
-              disableA11y={disableA11y}
-            />
+            <AddressBadge truncate addressHash={addressHash} showHashWhenNoLabel disableA11y={disableA11y} />
           )
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>

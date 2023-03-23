@@ -25,7 +25,7 @@ import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import DotIcon from '@/components/DotIcon'
 import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectContactByAddress } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 import { getName } from '@/utils/addresses'
 
@@ -50,12 +50,15 @@ const AddressBadge = ({
   ...props
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
-  if (!address) return <HashEllipsed hash={addressHash} />
-
-  return showHashWhenNoLabel && !address.label ? (
+  return !address ? (
+    <HashEllipsed hash={addressHash} />
+  ) : contact ? (
+    <Label {...props}>{contact.name}</Label>
+  ) : showHashWhenNoLabel && !address.label ? (
     <Hash className={className}>
       {!isPassphraseUsed && address.isDefault && !hideStar && !hideColorIndication && (
         <Star color={address.color}>★</Star>
