@@ -36,13 +36,17 @@ import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
-import { appHeaderHeightPx } from '@/style/globalStyles'
+import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
 import { Asset } from '@/types/assets'
 import { links } from '@/utils/links'
 import { directionOptions } from '@/utils/transactions'
 
-const TransfersPage = () => {
+interface TransfersPageProps {
+  className?: string
+}
+
+const TransfersPage = ({ className }: TransfersPageProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
 
@@ -103,6 +107,7 @@ const TransfersPage = () => {
       closeInfoMessage={closeInfoMessage}
       infoMessageLink={links.faq}
       infoMessage={t('You have questions about transfers ? Click here!')}
+      className={className}
     >
       <Filters>
         <FilterTiles>
@@ -159,11 +164,13 @@ const TransfersPage = () => {
           hideHeader
         />
       </UnlockedWalletPanel>
-      <CornerButtons>
-        <ButtonsGrid>
-          <ShortcutButtons receive send highlight />
-        </ButtonsGrid>
-      </CornerButtons>
+      <BottomRow>
+        <CornerButtons>
+          <ButtonsGrid>
+            <ShortcutButtons receive send highlight />
+          </ButtonsGrid>
+        </CornerButtons>
+      </BottomRow>
       <ModalPortal>
         {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
         {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
@@ -172,7 +179,9 @@ const TransfersPage = () => {
   )
 }
 
-export default TransfersPage
+export default styled(TransfersPage)`
+  margin-bottom: 50px;
+`
 
 const Filters = styled(UnlockedWalletPanel)`
   background-color: ${({ theme }) => theme.bg.tertiary};
@@ -210,10 +219,15 @@ const Buttons = styled.div`
   flex-shrink: 0;
 `
 
-const CornerButtons = styled.div`
+const BottomRow = styled.div`
   position: fixed;
-  bottom: 26px;
-  right: 22px;
+  bottom: 25px;
+  width: calc(100% - ${walletSidebarWidthPx}px);
+  display: flex;
+  justify-content: center;
+`
+
+const CornerButtons = styled.div`
   border-radius: 47px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
