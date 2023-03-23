@@ -38,6 +38,7 @@ import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
+import { Asset } from '@/types/assets'
 import { links } from '@/utils/links'
 import { directionOptions } from '@/utils/transactions'
 
@@ -49,16 +50,19 @@ const TransfersPage = () => {
   const addresses = useAppSelector(selectAllAddresses)
   const assets = useAppSelector(selectAddressesAssets)
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
+  const stateUninitialized = useAppSelector((s) => s.addresses.status === 'uninitialized') // TODO: Use selector from next PR
 
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
-  const [selectedAssets, setSelectedAssets] = useState(assets)
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([])
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
   useEffect(() => {
-    if (!isLoadingAssetsInfo) setSelectedAssets(assets)
-  }, [assets, isLoadingAssetsInfo])
+    if (!isLoadingAssetsInfo && !stateUninitialized && selectedAssets.length === 0) {
+      setSelectedAssets(assets)
+    }
+  }, [assets, isLoadingAssetsInfo, selectedAssets, stateUninitialized])
 
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
 
