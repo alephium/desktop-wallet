@@ -36,8 +36,8 @@ const SnackbarManager = () => {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
 
-    if (message) {
-      timer = setTimeout(() => dispatch(snackbarDisplayTimeExpired()), message.duration || 3000)
+    if (message && message.duration >= 0) {
+      timer = setTimeout(() => dispatch(snackbarDisplayTimeExpired()), message.duration)
     }
 
     return () => {

@@ -51,11 +51,9 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)
-  const [{ mnemonic, isPassphraseUsed }, { discreetMode }, network] = useAppSelector((s) => [
-    s.activeWallet,
-    s.settings,
-    s.network
-  ])
+  const { mnemonic, isPassphraseUsed } = useAppSelector((s) => s.activeWallet)
+  const discreetMode = useAppSelector((s) => s.settings.discreetMode)
+  const networkStatus = useAppSelector((s) => s.network.status)
   const { deepLinkUri } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
@@ -90,7 +88,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
         <HeaderButtons>
           <ThemeSwitcher />
           <HeaderDivider />
-          {network.status === 'offline' && (
+          {networkStatus === 'offline' && (
             <>
               <TooltipWrapper content={offlineText}>
                 <OfflineIcon tabIndex={0} aria-label={offlineText}>
@@ -109,13 +107,13 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
               <HeaderDivider />
             </>
           )}
-          <TooltipWrapper content={t`Discreet mode`}>
+          <TooltipWrapper content={t('Discreet mode')}>
             <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
           </TooltipWrapper>
           {defaultAddress && !isPassphraseUsed && (
             <>
               <HeaderDivider />
-              <TooltipWrapper content={t`Default address`}>
+              <TooltipWrapper content={t('Default address')}>
                 <AddressBadge addressHash={defaultAddress.hash} />
               </TooltipWrapper>
             </>
@@ -125,7 +123,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           {isAuthenticated && (
             <>
               <HeaderDivider />
-              <TooltipWrapper content={t`Connect wallet to dApp`}>
+              <TooltipWrapper content={t('Connect wallet to dApp')}>
                 <Button
                   transparent
                   squared

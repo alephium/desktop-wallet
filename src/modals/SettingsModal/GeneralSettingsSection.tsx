@@ -54,8 +54,10 @@ const themeOptions = [
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [isAuthenticated, { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme }] =
-    useAppSelector((s) => [!!s.activeWallet.mnemonic, s.settings])
+  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme } = useAppSelector(
+    (s) => s.settings
+  )
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 

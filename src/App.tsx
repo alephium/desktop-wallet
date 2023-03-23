@@ -31,7 +31,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
 import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/global/globalActions'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
@@ -39,6 +39,7 @@ import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/stora
 import { selectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
+import { AddressHash } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { useInterval } from '@/utils/hooks'
 import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
@@ -47,16 +48,13 @@ import { getAvailableLanguageOptions } from '@/utils/settings'
 const App = () => {
   const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
   const dispatch = useAppDispatch()
-  const addresses = useAppSelector(selectAllAddresses)
-  const addressHashes = addresses.map((address) => address.hash)
+  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const addressesWithPendingTxs = useAppSelector((s) => selectAddressesHashesWithPendingTransactions(s, addressHashes))
-  const [network, addressesStatus, theme, assetsInfo, loading] = useAppSelector((s) => [
-    s.network,
-    s.addresses.status,
-    s.global.theme,
-    s.assetsInfo,
-    s.global.loading
-  ])
+  const network = useAppSelector((s) => s.network)
+  const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const theme = useAppSelector((s) => s.global.theme)
+  const assetsInfo = useAppSelector((s) => s.assetsInfo)
+  const loading = useAppSelector((s) => s.global.loading)
   const language = useAppSelector((s) => s.settings.language)
   const showDevIndication = useDevModeShortcut()
 
@@ -113,10 +111,10 @@ const App = () => {
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
   useEffect(() => {
-    if (network.status === 'online' && addressesStatus === 'uninitialized' && addresses.length > 0) {
+    if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
       dispatch(syncAddressesData())
     }
-  }, [addresses.length, addressesStatus, dispatch, network.status])
+  }, [addressHashes.length, addressesStatus, dispatch, network.status])
 
   const refreshAddressesData = useCallback(
     () => dispatch(syncAddressesData(addressesWithPendingTxs)),

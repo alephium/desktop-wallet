@@ -47,10 +47,8 @@ interface AssetsListProps {
 
 const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: AssetsListProps) => {
   const { t } = useTranslation()
-  const [isLoadingAddresses, isLoadingAssetsInfo] = useAppSelector((s) => [
-    s.addresses.loading,
-    selectIsLoadingAssetsInfo(s)
-  ])
+  const isLoadingAddresses = useAppSelector((s) => s.addresses.loading)
+  const isLoadingAssetsInfo = useAppSelector((s) => selectIsLoadingAssetsInfo(s))
 
   const tabs = [
     { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },

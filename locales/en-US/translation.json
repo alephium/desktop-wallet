@@ -370,7 +370,7 @@
   "This year": "This year",
   "Period": "Period",
   "Select a period": "Select a period",
-  "Your CSV is being compiled in the background": "Your CSV is being compiled in the background",
+  "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Select addresses": "Select addresses",
   "{{ number }} selected": "{{ number }} selected",
   "All selected": "All selected",
@@ -379,5 +379,11 @@
   "Directions": "Directions",
   "Select directions": "Select directions",
   "Select assets": "Select assets",
-  "Reset filters": "Reset filters"
+  "Reset filters": "Reset filters",
+  "Export": "Export",
+  "Export address transactions": "Export address transactions",
+  "Time period": "Time period",
+  "You can download the address transaction history for a selected time period. This can be useful for tax reporting.": "You can download the address transaction history for a selected time period. This can be useful for tax reporting.",
+  "Encountered error while exporting your transactions.": "Encountered error while exporting your transactions.",
+  "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully."
 }
