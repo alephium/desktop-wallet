@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
@@ -60,31 +60,12 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 
   const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
-
-  const assetsCellRef = useRef<HTMLDivElement>(null)
+  const [displayedAssets, ...hiddenAssetsChunks] = chunk(assetsWithBalance, maxDisplayedAssets)
+  const hiddenAssets = hiddenAssetsChunks.flat()
 
   if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
-
-  const renderAssetLogos = () => {
-    const [displayedAssets, hiddenAssets] = chunk(assetsWithBalance, maxDisplayedAssets)
-
-    if (!displayedAssets) return
-
-    return (
-      <AssetLogos ref={assetsCellRef}>
-        {displayedAssets.map(({ id }) => (
-          <AssetBadge key={id} assetId={id} simple />
-        ))}
-        {hiddenAssets && hiddenAssets.length > 0 && (
-          <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
-            <span>+{hiddenAssets.length}</span>
-          </TooltipWrapper>
-        )}
-      </AssetLogos>
-    )
-  }
 
   return (
     <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)}>
@@ -103,7 +84,20 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           )}
         </Column>
       </AddressNameCell>
-      <Cell>{isLoadingAssetsInfo || stateUninitialized ? <SkeletonLoader height="33.5px" /> : renderAssetLogos()}</Cell>
+      <Cell>
+        {isLoadingAssetsInfo || stateUninitialized ? (
+          <SkeletonLoader height="33.5px" />
+        ) : (
+          <AssetLogos>
+            {displayedAssets && displayedAssets.map(({ id }) => <AssetBadge key={id} assetId={id} simple />)}
+            {hiddenAssets && hiddenAssets.length > 0 && (
+              <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
+                +{hiddenAssets.length}
+              </TooltipWrapper>
+            )}
+          </AssetLogos>
+        )}
+      </Cell>
       <AmountCell>
         {stateUninitialized ? <SkeletonLoader height="18.5px" /> : <Amount value={BigInt(address.balance)} />}
       </AmountCell>
@@ -182,4 +176,5 @@ const AssetLogos = styled.div`
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
+  align-items: center;
 `
