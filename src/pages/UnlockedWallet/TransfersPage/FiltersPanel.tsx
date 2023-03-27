@@ -39,7 +39,7 @@ interface FiltersPanelProps {
   setSelectedAddresses: (addresses: Address[]) => void
   selectedDirections: MultiSelectOption<Direction>[]
   setSelectedDirections: (directions: MultiSelectOption<Direction>[]) => void
-  selectedAssets: Asset[]
+  selectedAssets?: Asset[]
   setSelectedAssets: (assets: Asset[]) => void
   className?: string
 }
@@ -77,7 +77,9 @@ const FiltersPanel = ({
       : map(selectedDirections, 'label').join(', ')
 
   const renderAssetsSelectedValue = () =>
-    selectedAssets.length === 0
+    !selectedAssets
+      ? null
+      : selectedAssets.length === 0
       ? ''
       : selectedAssets.length === assets.length
       ? t('All selected')
@@ -90,10 +92,10 @@ const FiltersPanel = ({
   }
 
   useEffect(() => {
-    if (!isLoadingAssetsInfo && !stateUninitialized && selectedAssets.length === 0) {
+    if (!isLoadingAssetsInfo && !stateUninitialized && !selectedAssets) {
       setSelectedAssets(assets)
     }
-  }, [assets, isLoadingAssetsInfo, selectedAssets.length, setSelectedAssets, stateUninitialized])
+  }, [assets, isLoadingAssetsInfo, selectedAssets, setSelectedAssets, stateUninitialized])
 
   return (
     <UnlockedWalletPanel className={className}>
@@ -116,7 +118,7 @@ const FiltersPanel = ({
             label={t('Assets')}
             modalTitle={t('Select assets')}
             options={assets}
-            selectedOptions={selectedAssets}
+            selectedOptions={selectedAssets ?? []}
             selectedOptionsSetter={setSelectedAssets}
             renderSelectedValue={renderAssetsSelectedValue}
             getOptionKey={(asset) => asset.id}

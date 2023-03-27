@@ -49,7 +49,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
 
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
-  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([])
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>()
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
