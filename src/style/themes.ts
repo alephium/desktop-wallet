@@ -67,7 +67,7 @@ export const darkTheme: DefaultTheme = {
     contrast: 'white',
     accent: colord('#598BED').alpha(0.15).toRgbString(),
     background1: '#121215',
-    background2: 'rgba(16, 16, 18, 1)'
+    background2: '#0E0E10'
   },
   font: {
     primary: '#e3e3e3',
