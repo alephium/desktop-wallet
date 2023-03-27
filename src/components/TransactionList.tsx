@@ -57,6 +57,8 @@ interface TransactionListProps {
   headerExtraContent?: ReactNode
 }
 
+const maxAttemptsToFindNewTxs = 10
+
 const TransactionList = ({
   className,
   addressHashes,
@@ -80,7 +82,7 @@ const TransactionList = ({
   const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
-  const finishedLoadingNewTransactions = useAppSelector((s) => !s.addresses.loading)
+  const finishedLoadingData = useAppSelector((s) => !s.addresses.loading)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
   const [nextPageToLoad, setNextPageToLoad] = useState(1)
@@ -91,9 +93,11 @@ const TransactionList = ({
   const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
   const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const isLoading = attemptToFindNewFilteredTxs > 0 && attemptToFindNewFilteredTxs <= 10
+  const isFetching = attemptToFindNewFilteredTxs > 0 && attemptToFindNewFilteredTxs <= maxAttemptsToFindNewTxs
 
   const lastFilteredTxsLength = useRef(filteredConfirmedTxs.length)
+  const shouldStopFetchingTxs = lastFilteredTxsLength.current < filteredConfirmedTxs.length
+  const shouldContinueFetchingTxs = finishedLoadingData && lastFilteredTxsLength.current === filteredConfirmedTxs.length
 
   const handleShowMoreClick = () => {
     setAttemptToFindNewFilteredTxs(1)
@@ -114,27 +118,25 @@ const TransactionList = ({
   }, [addresses, dispatch, nextPageToLoad, singleAddress])
 
   useEffect(() => {
-    if (isLoading && !allTransactionsLoaded) {
-      if (lastFilteredTxsLength.current < filteredConfirmedTxs.length) {
-        // New txs found after filtering, stop the search
+    if (!allTransactionsLoaded && isFetching) {
+      if (shouldStopFetchingTxs) {
         lastFilteredTxsLength.current = filteredConfirmedTxs.length
         setAttemptToFindNewFilteredTxs(0)
-      } else if (finishedLoadingNewTransactions && lastFilteredTxsLength.current === filteredConfirmedTxs.length) {
-        // Didn't find new txs after filtering, continue search
+      } else if (shouldContinueFetchingTxs) {
         setAttemptToFindNewFilteredTxs(attemptToFindNewFilteredTxs + 1)
         loadNextTransactionsPage()
       }
     } else {
-      // Exceeded max number of attempts, stop search
       setAttemptToFindNewFilteredTxs(0)
     }
   }, [
     allTransactionsLoaded,
     attemptToFindNewFilteredTxs,
     filteredConfirmedTxs.length,
-    finishedLoadingNewTransactions,
-    isLoading,
-    loadNextTransactionsPage
+    isFetching,
+    loadNextTransactionsPage,
+    shouldContinueFetchingTxs,
+    shouldStopFetchingTxs
   ])
 
   useEffect(() => {
@@ -198,8 +200,10 @@ const TransactionList = ({
             <TableCell align="center" role="gridcell">
               {allTransactionsLoaded ? (
                 <span>{t('All transactions loaded!')}</span>
+              ) : isFetching ? (
+                <Spinner size="15px" />
               ) : (
-                <ActionLink onClick={handleShowMoreClick}>{isLoading ? <Spinner /> : t('Show more')}</ActionLink>
+                <ActionLink onClick={handleShowMoreClick}>{t('Show more')}</ActionLink>
               )}
             </TableCell>
           </TableRow>
