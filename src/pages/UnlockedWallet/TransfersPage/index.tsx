@@ -17,27 +17,22 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { map } from 'lodash'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import MultiSelect from '@/components/Inputs/MultiSelect'
-import SelectOptionAddress from '@/components/SelectOptionAddress'
-import SelectOptionAsset from '@/components/SelectOptionAsset'
 import TransactionList from '@/components/TransactionList'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
 import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import FiltersPanel from '@/pages/UnlockedWallet/TransfersPage/FiltersPanel'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
-import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
-import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
-import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
-import { Address } from '@/types/addresses'
+import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { Asset } from '@/types/assets'
 import { links } from '@/utils/links'
 import { directionOptions } from '@/utils/transactions'
@@ -49,12 +44,8 @@ interface TransfersPageProps {
 const TransfersPage = ({ className }: TransfersPageProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
-  const assets = useAppSelector(selectAddressesAssets)
-  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
-  const stateUninitialized = useAppSelector((s) => s.addresses.status === 'uninitialized') // TODO: Use selector from next PR
 
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
@@ -62,42 +53,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
-  useEffect(() => {
-    if (!isLoadingAssetsInfo && !stateUninitialized && selectedAssets.length === 0) {
-      setSelectedAssets(assets)
-    }
-  }, [assets, isLoadingAssetsInfo, selectedAssets, stateUninitialized])
-
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
-
-  const renderAddressesSelectedValue = () =>
-    selectedAddresses.length === 0
-      ? ''
-      : selectedAddresses.length === 1
-      ? selectedAddresses[0].label || selectedAddresses[0].hash
-      : selectedAddresses.length === addresses.length
-      ? t('All selected')
-      : t('{{ number }} selected', { number: selectedAddresses.length })
-
-  const renderDirectionsSelectedValue = () =>
-    selectedDirections.length === 0
-      ? ''
-      : selectedDirections.length === directionOptions.length
-      ? 'All selected'
-      : map(selectedDirections, 'label').join(', ')
-
-  const renderAssetsSelectedValue = () =>
-    selectedAssets.length === 0
-      ? ''
-      : selectedAssets.length === assets.length
-      ? 'All selected'
-      : selectedAssets.map((asset) => asset.symbol ?? asset.id).join(', ')
-
-  const resetFilters = () => {
-    setSelectedAddresses(addresses)
-    setSelectedDirections(directionOptions)
-    setSelectedAssets(assets)
-  }
 
   return (
     <UnlockedWalletPage
@@ -109,53 +65,14 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
       infoMessage={t('You have questions about transfers ? Click here!')}
       className={className}
     >
-      <Filters>
-        <FilterTiles>
-          <Tile>
-            <MultiSelect
-              label={t('Addresses')}
-              modalTitle={t('Select addresses')}
-              options={addresses}
-              selectedOptions={selectedAddresses}
-              selectedOptionsSetter={setSelectedAddresses}
-              renderSelectedValue={renderAddressesSelectedValue}
-              getOptionKey={(address) => address.hash}
-              getOptionText={(address) => address.label || address.hash}
-              renderOption={(address: Address) => <SelectOptionAddress address={address} />}
-            />
-          </Tile>
-          <Tile>
-            <MultiSelect
-              label={t('Assets')}
-              modalTitle={t('Select assets')}
-              options={assets}
-              selectedOptions={selectedAssets}
-              selectedOptionsSetter={setSelectedAssets}
-              renderSelectedValue={renderAssetsSelectedValue}
-              getOptionKey={(asset) => asset.id}
-              getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
-              renderOption={(asset) => <SelectOptionAsset asset={asset} />}
-            />
-          </Tile>
-          <Tile>
-            <MultiSelect
-              label={t('Directions')}
-              modalTitle={t('Select directions')}
-              options={directionOptions}
-              selectedOptions={selectedDirections}
-              selectedOptionsSetter={setSelectedDirections}
-              renderSelectedValue={renderDirectionsSelectedValue}
-              getOptionKey={(direction) => direction.value.toString()}
-              getOptionText={(direction) => direction.label}
-            />
-          </Tile>
-        </FilterTiles>
-        <Buttons>
-          <Button role="secondary" short onClick={resetFilters}>
-            {t('Reset filters')}
-          </Button>
-        </Buttons>
-      </Filters>
+      <FiltersPanel
+        selectedAddresses={selectedAddresses}
+        setSelectedAddresses={setSelectedAddresses}
+        selectedDirections={selectedDirections}
+        setSelectedDirections={setSelectedDirections}
+        selectedAssets={selectedAssets}
+        setSelectedAssets={setSelectedAssets}
+      />
       <UnlockedWalletPanel top>
         <TransactionList
           addressHashes={map(selectedAddresses, 'hash')}
@@ -181,42 +98,6 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
 
 export default styled(TransfersPage)`
   margin-bottom: 50px;
-`
-
-const Filters = styled(UnlockedWalletPanel)`
-  background-color: ${({ theme }) => theme.bg.tertiary};
-  border-top: 1px solid;
-  border-bottom: 1px solid;
-  border-color: ${({ theme }) => theme.border.secondary};
-  padding-bottom: 0;
-  display: flex;
-  position: sticky;
-  justify-content: space-between;
-  top: ${appHeaderHeightPx}px;
-  z-index: 1;
-`
-
-const FilterTiles = styled.div`
-  display: flex;
-  min-width: 0;
-  flex: 1;
-`
-
-const FilterTile = styled.div`
-  padding: 10px;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
-`
-
-const Tile = styled(FilterTile)`
-  min-width: 200px;
-  flex: 1;
-`
-
-const Buttons = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 48px;
-  flex-shrink: 0;
 `
 
 const BottomRow = styled.div`
