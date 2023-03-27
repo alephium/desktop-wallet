@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wrench } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { CSSProperties, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -76,10 +76,10 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
     >
       <TableGrid>
         <GridHeaderRow tabsRowHeight={tabsRowHeight}>
-          <HeaderCell>{t('Address name')}</HeaderCell>
+          <HeaderCell>{t('Address')}</HeaderCell>
           <HeaderCell>{t('Assets')}</HeaderCell>
-          <HeaderCell>{t('ALPH amount')}</HeaderCell>
-          <HeaderCell>{t('Total value')}</HeaderCell>
+          <HeaderCell justifyContent="flex-end">{t('ALPH amount')}</HeaderCell>
+          <HeaderCell justifyContent="flex-end">{t('Total value')}</HeaderCell>
         </GridHeaderRow>
 
         {visibleAddresses.map((address) => (
@@ -133,7 +133,7 @@ const TableGrid = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 1px;
-  background-color: ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.border.primary};
 `
 
 const GridRow = styled.div`
@@ -157,9 +157,9 @@ const Cell = styled.div`
   padding: 15px 20px;
 `
 
-const HeaderCell = styled(Cell)`
+const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent'] }>`
   display: flex;
-  justify-content: center;
+  justify-content: ${({ justifyContent }) => justifyContent ?? 'center'};
   align-items: center;
   height: 100%;
   background-color: ${({ theme }) => theme.bg.tertiary};

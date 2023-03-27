@@ -18,16 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
-import { motion } from 'framer-motion'
 import { partition } from 'lodash'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { fadeIn } from '@/animations'
 import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Amount from '@/components/Amount'
+import AssetBadge from '@/components/AssetBadge'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
@@ -41,14 +40,13 @@ import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
-import { useWindowResize } from '@/utils/hooks'
 
 interface AddressGridRowProps {
   addressHash: AddressHash
   className?: string
 }
 
-const assetSymbolsRowHeight = 34
+const maxDisplayedAssets = 7
 
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
@@ -62,64 +60,19 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
 
   const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
   const [knownAssets, unknownAssets] = partition(assetsWithBalance, (asset) => !!asset.symbol)
+
   const [assetSymbolTexts, setAssetSymbolTexts] = useState<string[]>([])
   const [nbOfHiddenSymbols, setNbOfHiddenSymbols] = useState(0)
 
   const assetsCellRef = useRef<HTMLDivElement>(null)
-
-  const ensureAssetsDisplayedInOnlyOneRow = useCallback(
-    (isWindowResizing?: boolean) => {
-      if (!assetsCellRef.current) return
-
-      if (assetSymbolTexts.length + nbOfHiddenSymbols === assetsWithBalance.length) {
-        if (assetsCellRef.current.offsetHeight > assetSymbolsRowHeight) {
-          const newTextsArray = [...assetSymbolTexts]
-          newTextsArray.pop()
-          setNbOfHiddenSymbols(nbOfHiddenSymbols + 1)
-          setAssetSymbolTexts(newTextsArray)
-        } else if (assetSymbolTexts.length < knownAssets.length && isWindowResizing) {
-          const newTextsArray = [...assetSymbolTexts]
-          const newAsset = knownAssets.find((asset) => !newTextsArray.includes(asset.symbol as string))
-
-          if (newAsset) {
-            newTextsArray.push(newAsset.symbol as string)
-            setNbOfHiddenSymbols(nbOfHiddenSymbols - 1)
-            setAssetSymbolTexts(newTextsArray)
-          }
-        }
-        return
-      }
-
-      const newArray: string[] = []
-
-      knownAssets.forEach((asset) => {
-        const newSymbol = asset.symbol as string
-
-        if (!newArray.includes(newSymbol)) {
-          newArray.push(newSymbol)
-          return
-        }
-      })
-
-      setNbOfHiddenSymbols(unknownAssets.length)
-      setAssetSymbolTexts(newArray)
-    },
-    [assetSymbolTexts, assetsWithBalance.length, knownAssets, nbOfHiddenSymbols, unknownAssets.length]
-  )
-
-  useEffect(() => {
-    ensureAssetsDisplayedInOnlyOneRow()
-  }, [ensureAssetsDisplayedInOnlyOneRow])
-
-  useWindowResize(() => ensureAssetsDisplayedInOnlyOneRow(true))
 
   if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
 
   return (
-    <GridRow key={address.hash}>
-      <AddressNameCell onClick={() => setIsAddressDetailsModalOpen(true)}>
+    <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)}>
+      <AddressNameCell>
         <AddressColorIndicator addressHash={address.hash} />
         <Column>
           <Label>
@@ -139,14 +92,12 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <SkeletonLoader height="33.5px" />
         ) : (
           assetsWithBalance.length > 0 && (
-            <AssetSymbols ref={assetsCellRef} layout>
-              {assetSymbolTexts.map((text) => (
-                <motion.span key={text} {...fadeIn}>
-                  {text}
-                </motion.span>
+            <AssetLogos ref={assetsCellRef}>
+              {assetsWithBalance.map(({ id }) => (
+                <AssetBadge key={id} assetId={id} simple />
               ))}
               {nbOfHiddenSymbols > 0 && <span>+{nbOfHiddenSymbols}</span>}
-            </AssetSymbols>
+            </AssetLogos>
           )
         )}
       </Cell>
@@ -179,27 +130,31 @@ const Column = styled.div`
 `
 
 const Label = styled.div`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: var(--fontWeight-semiBold);
   display: flex;
 `
 
 const LastActivity = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
-  font-weight: var(--fontWeight-medium);
+`
+
+const Cell = styled.div`
+  padding: 15px 20px;
+  align-items: center;
+  display: flex;
+  background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const GridRow = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
-`
 
-const Cell = styled.div`
-  padding: 15px 20px;
-  background-color: ${({ theme }) => theme.bg.primary};
-  align-items: center;
-  display: flex;
+  &:hover ${Cell} {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.bg.hover};
+  }
 `
 
 const AmountCell = styled(Cell)`
@@ -219,9 +174,7 @@ const AddressNameCell = styled(Cell)`
   cursor: pointer;
 `
 
-const AssetSymbols = styled(motion.div)`
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-big);
+const AssetLogos = styled.div`
   padding: 8px 16px;
   display: flex;
   gap: 15px;
