@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 interface OptionItemContentProps {
   ContentLeft: ReactNode
-  ContentRight: ReactNode
+  ContentRight?: ReactNode
   className?: string
 }
 

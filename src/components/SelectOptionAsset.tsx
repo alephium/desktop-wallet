@@ -26,10 +26,11 @@ import { Asset } from '@/types/assets'
 
 interface SelectOptionAssetProps {
   asset: Asset
+  hideAmount?: boolean
   className?: string
 }
 
-const SelectOptionAsset = ({ asset, className }: SelectOptionAssetProps) => (
+const SelectOptionAsset = ({ asset, hideAmount, className }: SelectOptionAssetProps) => (
   <SelectOptionItemContent
     className={className}
     ContentLeft={
@@ -39,13 +40,15 @@ const SelectOptionAsset = ({ asset, className }: SelectOptionAssetProps) => (
       </AssetName>
     }
     ContentRight={
-      <AmountStyled
-        value={asset.balance}
-        fadeDecimals
-        suffix={asset.symbol}
-        decimals={asset.decimals}
-        isUnknownToken={!asset.symbol}
-      />
+      !hideAmount && (
+        <AmountStyled
+          value={asset.balance}
+          fadeDecimals
+          suffix={asset.symbol}
+          decimals={asset.decimals}
+          isUnknownToken={!asset.symbol}
+        />
+      )
     }
   />
 )

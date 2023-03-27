@@ -123,7 +123,7 @@ const FiltersPanel = ({
             renderSelectedValue={renderAssetsSelectedValue}
             getOptionKey={(asset) => asset.id}
             getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
-            renderOption={(asset) => <SelectOptionAsset asset={asset} />}
+            renderOption={(asset) => <SelectOptionAsset asset={asset} hideAmount />}
           />
         </Tile>
         <Tile>
