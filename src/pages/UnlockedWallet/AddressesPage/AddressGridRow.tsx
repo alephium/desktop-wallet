@@ -18,9 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
-import { partition } from 'lodash'
+import { chunk } from 'lodash'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
@@ -46,7 +47,7 @@ interface AddressGridRowProps {
   className?: string
 }
 
-const maxDisplayedAssets = 7
+const maxDisplayedAssets = 7 // Allow 2 rows by default
 
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
@@ -59,16 +60,31 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 
   const assetsWithBalance = assets.filter((asset) => asset.balance > 0)
-  const [knownAssets, unknownAssets] = partition(assetsWithBalance, (asset) => !!asset.symbol)
-
-  const [assetSymbolTexts, setAssetSymbolTexts] = useState<string[]>([])
-  const [nbOfHiddenSymbols, setNbOfHiddenSymbols] = useState(0)
 
   const assetsCellRef = useRef<HTMLDivElement>(null)
 
   if (!address) return null
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
+
+  const renderAssetLogos = () => {
+    const [displayedAssets, hiddenAssets] = chunk(assetsWithBalance, maxDisplayedAssets)
+
+    if (!displayedAssets) return
+
+    return (
+      <AssetLogos ref={assetsCellRef}>
+        {displayedAssets.map(({ id }) => (
+          <AssetBadge key={id} assetId={id} simple />
+        ))}
+        {hiddenAssets && hiddenAssets.length > 0 && (
+          <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
+            <span>+{hiddenAssets.length}</span>
+          </TooltipWrapper>
+        )}
+      </AssetLogos>
+    )
+  }
 
   return (
     <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)}>
@@ -87,20 +103,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           )}
         </Column>
       </AddressNameCell>
-      <Cell>
-        {isLoadingAssetsInfo || stateUninitialized ? (
-          <SkeletonLoader height="33.5px" />
-        ) : (
-          assetsWithBalance.length > 0 && (
-            <AssetLogos ref={assetsCellRef}>
-              {assetsWithBalance.map(({ id }) => (
-                <AssetBadge key={id} assetId={id} simple />
-              ))}
-              {nbOfHiddenSymbols > 0 && <span>+{nbOfHiddenSymbols}</span>}
-            </AssetLogos>
-          )
-        )}
-      </Cell>
+      <Cell>{isLoadingAssetsInfo || stateUninitialized ? <SkeletonLoader height="33.5px" /> : renderAssetLogos()}</Cell>
       <AmountCell>
         {stateUninitialized ? <SkeletonLoader height="18.5px" /> : <Amount value={BigInt(address.balance)} />}
       </AmountCell>

@@ -24,7 +24,7 @@ import styled from 'styled-components'
 export type HasTooltip<T> = T & { tooltip?: string }
 
 export default styled(Tooltip)`
-  background-color: rgb(34, 34, 38);
+  background-color: rgb(10, 10, 10);
   color: #fff;
   z-index: 1;
 `
