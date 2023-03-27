@@ -34,7 +34,12 @@ import {
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { selectAddresses, selectAllAddresses, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddresses,
+  selectAllAddresses,
+  selectHaveAllPagesLoaded,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import {
   selectAddressesConfirmedTransactions,
   selectAddressesPendingTransactions
@@ -83,10 +88,9 @@ const TransactionList = ({
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const finishedLoadingData = useAppSelector((s) => !s.addresses.loading)
+  const allAddressTxPagesLoaded = useAppSelector(selectHaveAllPagesLoaded)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
-  const [nextPageToLoad, setNextPageToLoad] = useState(1)
-  const [allTransactionsLoaded, setAllTransactionsLoaded] = useState(false)
   const [attemptToFindNewFilteredTxs, setAttemptToFindNewFilteredTxs] = useState(0)
 
   const singleAddress = addresses.length === 1
@@ -94,6 +98,7 @@ const TransactionList = ({
   const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
   const isFetching = attemptToFindNewFilteredTxs > 0 && attemptToFindNewFilteredTxs <= maxAttemptsToFindNewTxs
+  const allTxsLoaded = singleAddress ? addresses[0].allTransactionPagesLoaded : allAddressTxPagesLoaded
 
   const lastFilteredTxsLength = useRef(filteredConfirmedTxs.length)
   const shouldStopFetchingTxs = lastFilteredTxsLength.current < filteredConfirmedTxs.length
@@ -104,21 +109,16 @@ const TransactionList = ({
     loadNextTransactionsPage()
   }
 
-  const loadNextTransactionsPage = useCallback(async () => {
-    if (singleAddress) {
-      dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
-    } else {
-      const { nextPage, transactions } = await dispatch(
-        syncAllAddressesTransactionsNextPage({ nextPage: nextPageToLoad })
-      ).unwrap()
-
-      setNextPageToLoad(nextPage)
-      setAllTransactionsLoaded(transactions.length === 0)
-    }
-  }, [addresses, dispatch, nextPageToLoad, singleAddress])
+  const loadNextTransactionsPage = useCallback(
+    async () =>
+      singleAddress
+        ? dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
+        : dispatch(syncAllAddressesTransactionsNextPage()),
+    [addresses, dispatch, singleAddress]
+  )
 
   useEffect(() => {
-    if (!allTransactionsLoaded && isFetching) {
+    if (!allTxsLoaded && isFetching) {
       if (shouldStopFetchingTxs) {
         lastFilteredTxsLength.current = filteredConfirmedTxs.length
         setAttemptToFindNewFilteredTxs(0)
@@ -130,7 +130,7 @@ const TransactionList = ({
       setAttemptToFindNewFilteredTxs(0)
     }
   }, [
-    allTransactionsLoaded,
+    allTxsLoaded,
     attemptToFindNewFilteredTxs,
     filteredConfirmedTxs.length,
     isFetching,
@@ -138,10 +138,6 @@ const TransactionList = ({
     shouldContinueFetchingTxs,
     shouldStopFetchingTxs
   ])
-
-  useEffect(() => {
-    if (singleAddress) setAllTransactionsLoaded(addresses[0].allTransactionPagesLoaded)
-  }, [addresses, singleAddress])
 
   return (
     <>
@@ -198,7 +194,7 @@ const TransactionList = ({
         {limit === undefined && confirmedTxs.length !== totalNumberOfTransactions && (
           <TableRow role="row">
             <TableCell align="center" role="gridcell">
-              {allTransactionsLoaded ? (
+              {allTxsLoaded ? (
                 <span>{t('All transactions loaded!')}</span>
               ) : isFetching ? (
                 <Spinner size="15px" />

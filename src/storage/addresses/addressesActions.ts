@@ -95,16 +95,13 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
 
 export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
   'addresses/syncAllAddressesTransactionsNextPage',
-  async (
-    { nextPage }: { nextPage: number },
-    { getState, dispatch }
-  ): Promise<{ nextPage: number; transactions: Transaction[] }> => {
+  async (_, { getState, dispatch }): Promise<{ pageLoaded: number; transactions: Transaction[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
     const addresses = selectAllAddresses(state)
 
-    let nextPageToLoad = nextPage
+    let nextPageToLoad = state.confirmedTransactions.pageLoaded + 1
     let newTransactionsFound = false
     let transactions: Transaction[] = []
 
@@ -128,7 +125,7 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
       nextPageToLoad += 1
     }
 
-    return { nextPage: nextPageToLoad, transactions }
+    return { pageLoaded: nextPageToLoad - 1, transactions }
   }
 )
 
