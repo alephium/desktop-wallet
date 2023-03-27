@@ -56,7 +56,7 @@ const OverviewPage = () => {
           <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
         </Row>
-        <TransactionList limit={5} />
+        <TransactionList title={t('Latest transactions')} limit={5} />
       </UnlockedWalletPanel>
     </motion.div>
   )
