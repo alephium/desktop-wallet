@@ -53,7 +53,7 @@ export default TextAreaTags
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
   margin: var(--spacing-3) 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   color: ${({ theme }) => theme.font.secondary};
 
   .tagify__input:empty::before {
@@ -78,5 +78,5 @@ const StyledTags = styled(Tags)`
   height: auto;
   padding: var(--spacing-1);
   line-height: 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
 `

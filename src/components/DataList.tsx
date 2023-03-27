@@ -20,7 +20,7 @@ import styled from 'styled-components'
 
 export default styled.div`
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   background-color: ${({ theme }) => theme.bg.primary};
   box-shadow: ${({ theme }) => theme.shadow.primary};
 `
