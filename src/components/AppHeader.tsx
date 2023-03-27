@@ -114,7 +114,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             <>
               <HeaderDivider />
               <TooltipWrapper content={t('Default address')}>
-                <AddressBadge addressHash={defaultAddress.hash} />
+                <AddressBadgeStyled addressHash={defaultAddress.hash} />
               </TooltipWrapper>
             </>
           )}
@@ -193,4 +193,8 @@ const HeaderButtons = styled.div`
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  max-width: 120px;
 `
