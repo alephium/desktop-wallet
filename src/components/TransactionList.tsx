@@ -17,21 +17,22 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import SkeletonLoader from '@/components/SkeletonLoader'
+import Spinner from '@/components/Spinner'
 import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import {
-  syncAddressesTransactionsNextPage,
-  syncAddressTransactionsNextPage
+  syncAddressTransactionsNextPage,
+  syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { selectAddresses, selectAllAddresses, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import {
@@ -79,38 +80,65 @@ const TransactionList = ({
   const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const finishedLoadingNewTransactions = useAppSelector((s) => !s.addresses.loading)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
   const [nextPageToLoad, setNextPageToLoad] = useState(1)
-  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
+  const [allTransactionsLoaded, setAllTransactionsLoaded] = useState(false)
+  const [attemptToFindNewFilteredTxs, setAttemptToFindNewFilteredTxs] = useState(0)
 
   const singleAddress = addresses.length === 1
   const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
   const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
+  const isLoading = attemptToFindNewFilteredTxs > 0 && attemptToFindNewFilteredTxs <= 10
 
-  // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
-  // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
-  // simpler way? What if no matter what the filtering criteria are, we always:
-  // 1. fetch the next page of ALL addresses
-  // 2. check to see if we received any results
-  // 3. filter the results
-  // 4. if the filter results are 0 but the results are not 0, fetch again
-  const loadNextTransactionsPage = async () => {
+  const lastFilteredTxsLength = useRef(filteredConfirmedTxs.length)
+
+  const handleShowMoreClick = () => {
+    setAttemptToFindNewFilteredTxs(1)
+    loadNextTransactionsPage()
+  }
+
+  const loadNextTransactionsPage = useCallback(async () => {
     if (singleAddress) {
       dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
     } else {
       const { nextPage, transactions } = await dispatch(
-        syncAddressesTransactionsNextPage({ addressHashes: hashes, nextPage: nextPageToLoad })
+        syncAllAddressesTransactionsNextPage({ nextPage: nextPageToLoad })
       ).unwrap()
 
       setNextPageToLoad(nextPage)
-      setShowAllTransactionsLoadedMsg(transactions.length === 0)
+      setAllTransactionsLoaded(transactions.length === 0)
     }
-  }
+  }, [addresses, dispatch, nextPageToLoad, singleAddress])
 
   useEffect(() => {
-    if (singleAddress) setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
+    if (isLoading && !allTransactionsLoaded) {
+      if (lastFilteredTxsLength.current < filteredConfirmedTxs.length) {
+        // New txs found after filtering, stop the search
+        lastFilteredTxsLength.current = filteredConfirmedTxs.length
+        setAttemptToFindNewFilteredTxs(0)
+      } else if (finishedLoadingNewTransactions && lastFilteredTxsLength.current === filteredConfirmedTxs.length) {
+        // Didn't find new txs after filtering, continue search
+        setAttemptToFindNewFilteredTxs(attemptToFindNewFilteredTxs + 1)
+        loadNextTransactionsPage()
+      }
+    } else {
+      // Exceeded max number of attempts, stop search
+      setAttemptToFindNewFilteredTxs(0)
+    }
+  }, [
+    allTransactionsLoaded,
+    attemptToFindNewFilteredTxs,
+    filteredConfirmedTxs.length,
+    finishedLoadingNewTransactions,
+    isLoading,
+    loadNextTransactionsPage
+  ])
+
+  useEffect(() => {
+    if (singleAddress) setAllTransactionsLoaded(addresses[0].allTransactionPagesLoaded)
   }, [addresses, singleAddress])
 
   return (
@@ -168,10 +196,10 @@ const TransactionList = ({
         {limit === undefined && confirmedTxs.length !== totalNumberOfTransactions && (
           <TableRow role="row">
             <TableCell align="center" role="gridcell">
-              {showAllTransactionsLoadedMsg ? (
+              {allTransactionsLoaded ? (
                 <span>{t('All transactions loaded!')}</span>
               ) : (
-                <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
+                <ActionLink onClick={handleShowMoreClick}>{isLoading ? <Spinner /> : t('Show more')}</ActionLink>
               )}
             </TableCell>
           </TableRow>

@@ -30,8 +30,8 @@ import {
   loadingStarted,
   newAddressesSaved,
   syncAddressesData,
-  syncAddressesTransactionsNextPage,
-  syncAddressTransactionsNextPage
+  syncAddressTransactionsNextPage,
+  syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter } from '@/storage/addresses/addressesAdapters'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
@@ -173,8 +173,8 @@ const addressesSlice = createSlice({
 
         state.loading = false
       })
-      .addCase(syncAddressesTransactionsNextPage.fulfilled, (state, { payload: { transactions, addressHashes } }) => {
-        const addresses = getAddresses(state, addressHashes)
+      .addCase(syncAllAddressesTransactionsNextPage.fulfilled, (state, { payload: { transactions } }) => {
+        const addresses = getAddresses(state)
 
         const updatedAddresses = addresses.map((address) => {
           const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
