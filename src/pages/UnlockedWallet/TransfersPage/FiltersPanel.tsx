@@ -15,13 +15,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import { map } from 'lodash'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
-import MultiSelect, { MultiSelectOption } from '@/components/Inputs/MultiSelect'
+import MultiSelect from '@/components/Inputs/MultiSelect'
 import SelectOptionAddress from '@/components/SelectOptionAddress'
 import SelectOptionAsset from '@/components/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
@@ -31,14 +30,13 @@ import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
 import { Asset } from '@/types/assets'
-import { Direction } from '@/types/transactions'
 import { directionOptions } from '@/utils/transactions'
 
 interface FiltersPanelProps {
   selectedAddresses: Address[]
   setSelectedAddresses: (addresses: Address[]) => void
-  selectedDirections: MultiSelectOption<Direction>[]
-  setSelectedDirections: (directions: MultiSelectOption<Direction>[]) => void
+  selectedDirections: typeof directionOptions
+  setSelectedDirections: (directions: typeof directionOptions) => void
   selectedAssets?: Asset[]
   setSelectedAssets: (assets: Asset[]) => void
   className?: string
@@ -74,7 +72,7 @@ const FiltersPanel = ({
       ? ''
       : selectedDirections.length === directionOptions.length
       ? t('All selected')
-      : map(selectedDirections, 'label').join(', ')
+      : selectedDirections.map((direction) => t(direction.label)).join(', ')
 
   const renderAssetsSelectedValue = () =>
     !selectedAssets
@@ -135,7 +133,7 @@ const FiltersPanel = ({
             selectedOptionsSetter={setSelectedDirections}
             renderSelectedValue={renderDirectionsSelectedValue}
             getOptionKey={(direction) => direction.value.toString()}
-            getOptionText={(direction) => direction.label}
+            getOptionText={(direction) => t(direction.label)}
           />
         </Tile>
       </FilterTiles>

@@ -29,12 +29,12 @@ import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
 import dayjs from 'dayjs'
 
-import { MultiSelectOption } from '@/components/Inputs/MultiSelect'
 import { SelectOption } from '@/components/Inputs/Select'
 import i18n from '@/i18n'
 import { store } from '@/storage/store'
 import { Address } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
+import { TranslationKey } from '@/types/i18next'
 import {
   AddressPendingTransaction,
   AddressTransaction,
@@ -116,17 +116,20 @@ export const timePeriodsOptions: SelectOption<TransactionTimePeriod>[] = [
   }
 ]
 
-export const directionOptions: MultiSelectOption<Direction>[] = [
+export const directionOptions: {
+  value: Direction
+  label: TranslationKey
+}[] = [
   {
-    label: i18n.t('Sent'),
+    label: 'Sent',
     value: 'out'
   },
   {
-    label: i18n.t('Received'),
+    label: 'Received',
     value: 'in'
   },
   {
-    label: i18n.t('Moved'),
+    label: 'Moved',
     value: 'move'
   }
 ]

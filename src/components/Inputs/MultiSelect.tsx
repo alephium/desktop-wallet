@@ -49,11 +49,6 @@ interface MultiSelectOptionsModalProps<T> extends MultiSelectOptionsProps<T> {
   onClose: () => void
 }
 
-export interface MultiSelectOption<T> {
-  value: T
-  label: string
-}
-
 function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className, ...props }: MultiSelectProps<T>) {
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
 
