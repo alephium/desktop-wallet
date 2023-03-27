@@ -76,7 +76,7 @@ const Sidebar = styled(motion.div)<{ width: number }>`
   position: relative;
   overflow: auto;
   margin: 25px 20px 25px auto;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
 `
 
 const ModalHeader = styled.div`

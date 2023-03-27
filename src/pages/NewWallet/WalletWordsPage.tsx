@@ -99,14 +99,14 @@ const PhraseBox = styled.div`
   font-weight: var(--fontWeight-medium);
   background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.4).toRgbString()};
   border: 1px solid ${({ theme }) => theme.global.alert};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   margin-bottom: var(--spacing-4);
   flex-wrap: wrap;
 `
 
 const MnemonicWordContainer = styled.div`
   margin: 6px;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-tiny);
   overflow: hidden;
   box-shadow: ${({ theme }) => theme.shadow.primary};
 `

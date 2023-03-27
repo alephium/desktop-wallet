@@ -38,7 +38,7 @@ export default css`
 
     .tagify__dropdown__wrapper {
       border: none;
-      border-radius: var(--radius);
+      border-radius: var(--radius-small);
       background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
     }
 

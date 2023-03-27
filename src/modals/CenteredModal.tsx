@@ -129,7 +129,7 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   max-height: 95vh;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-huge);
   background-color: ${({ theme }) => theme.bg.background1};
 
   ${TitleContainer} {

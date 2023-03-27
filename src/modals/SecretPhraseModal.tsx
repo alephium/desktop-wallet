@@ -64,7 +64,7 @@ const PhraseBox = styled.div`
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: var(--fontWeight-semiBold);
   background-color: ${({ theme }) => theme.global.alert};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   margin-bottom: var(--spacing-4);
 `
 

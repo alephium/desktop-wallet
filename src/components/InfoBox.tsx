@@ -131,7 +131,7 @@ const StyledBox = styled(motion.div)<{
   background-color: ${({ theme, contrast }) => (contrast ? theme.bg.secondary : theme.bg.primary)};
 
   display: flex;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   box-shadow: ${({ theme }) => theme.shadow.primary};
   align-items: center;
 

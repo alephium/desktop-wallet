@@ -80,7 +80,7 @@ const SnackbarPopup = styled(motion.div)`
   padding: var(--spacing-4) var(--spacing-3);
   color: ${({ theme }) => theme.font.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-medium);
   box-shadow: var(--shadow-3);
 
   &.alert {
