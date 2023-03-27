@@ -126,10 +126,11 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   width: 100%;
   margin: auto;
   max-width: ${({ narrow }) => (narrow ? '380px' : '600px')};
-  max-height: 95vh;
+  max-height: 90vh;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius-huge);
+  border: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background1};
 
   ${TitleContainer} {
@@ -142,7 +143,7 @@ export const ModalHeader = styled.header<{ contrast?: boolean }>`
   ${({ contrast }) =>
     contrast &&
     css`
-      background-color: ${({ theme }) => theme.bg.secondary};
+      background-color: ${({ theme }) => theme.bg.background2};
       border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
     `}
 `

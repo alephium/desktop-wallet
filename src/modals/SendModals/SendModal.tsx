@@ -194,6 +194,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       dynamicContent
       header={<StepsProgress currentStep={step} />}
       onBack={onBackCallback}
+      focusMode
     >
       {step === 'build-tx' && (
         <ScrollableModalContent>
