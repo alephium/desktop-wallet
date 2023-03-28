@@ -52,12 +52,12 @@ const AddressBadge = ({
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
-  return !address ? (
-    <HashEllipsed hash={addressHash} disableCopy={disableCopy} />
-  ) : contact ? (
+  return contact ? (
     <div className={className}>
       <Label {...props}>{contact.name}</Label>
     </div>
+  ) : !address ? (
+    <HashEllipsed hash={addressHash} disableCopy={disableCopy} />
   ) : (
     <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
