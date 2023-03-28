@@ -68,52 +68,54 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
 
   return (
-    <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)}>
-      <AddressNameCell>
-        <AddressColorIndicator addressHash={address.hash} />
-        <Column>
-          <Label>
-            <AddressBadge addressHash={address.hash} hideColorIndication showHashWhenNoLabel truncate />
-          </Label>
-          {stateUninitialized ? (
-            <SkeletonLoader height="15.5px" />
-          ) : (
-            <LastActivity>
-              {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
-            </LastActivity>
-          )}
-        </Column>
-      </AddressNameCell>
-      <Cell>
-        {isLoadingAssetsInfo || stateUninitialized ? (
-          <SkeletonLoader height="33.5px" />
-        ) : (
-          <AssetLogos>
-            {displayedAssets && displayedAssets.map(({ id }) => <AssetBadge key={id} assetId={id} simple />)}
-            {hiddenAssets && hiddenAssets.length > 0 && (
-              <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
-                +{hiddenAssets.length}
-              </TooltipWrapper>
+    <>
+      <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)} className={className}>
+        <AddressNameCell>
+          <AddressColorIndicator addressHash={address.hash} />
+          <Column>
+            <Label>
+              <AddressBadge addressHash={address.hash} hideColorIndication showHashWhenNoLabel truncate />
+            </Label>
+            {stateUninitialized ? (
+              <SkeletonLoader height="15.5px" />
+            ) : (
+              <LastActivity>
+                {address.lastUsed ? `${t('Last activity')} ${dayjs(address.lastUsed).fromNow()}` : t('Never used')}
+              </LastActivity>
             )}
-          </AssetLogos>
-        )}
-      </Cell>
-      <AmountCell>
-        {stateUninitialized ? <SkeletonLoader height="18.5px" /> : <Amount value={BigInt(address.balance)} />}
-      </AmountCell>
-      <FiatAmountCell>
-        {stateUninitialized || isPriceLoading ? (
-          <SkeletonLoader height="18.5px" />
-        ) : (
-          <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />
-        )}
-      </FiatAmountCell>
+          </Column>
+        </AddressNameCell>
+        <Cell>
+          {isLoadingAssetsInfo || stateUninitialized ? (
+            <SkeletonLoader height="33.5px" />
+          ) : (
+            <AssetLogos>
+              {displayedAssets && displayedAssets.map(({ id }) => <AssetBadge key={id} assetId={id} simple />)}
+              {hiddenAssets && hiddenAssets.length > 0 && (
+                <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
+                  +{hiddenAssets.length}
+                </TooltipWrapper>
+              )}
+            </AssetLogos>
+          )}
+        </Cell>
+        <AmountCell>
+          {stateUninitialized ? <SkeletonLoader height="18.5px" /> : <Amount value={BigInt(address.balance)} />}
+        </AmountCell>
+        <FiatAmountCell>
+          {stateUninitialized || isPriceLoading ? (
+            <SkeletonLoader height="18.5px" />
+          ) : (
+            <Amount value={fiatBalance} isFiat suffix={currencies.USD.symbol} />
+          )}
+        </FiatAmountCell>
+      </GridRow>
       <ModalPortal>
         {isAddressDetailsModalOpen && (
           <AddressDetailsModal addressHash={address.hash} onClose={() => setIsAddressDetailsModalOpen(false)} />
         )}
       </ModalPortal>
-    </GridRow>
+    </>
   )
 }
 
