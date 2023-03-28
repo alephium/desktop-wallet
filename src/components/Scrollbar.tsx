@@ -18,12 +18,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Used as reference: https://github.com/xobotyi/react-scrollbars-custom/issues/46#issuecomment-897506147
 
+import { useMotionValue } from 'framer-motion'
 import { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
 
-import { ScrollContextProvider } from '@/contexts/scroll'
+import { ScrollContextProvider, ScrollDirection } from '@/contexts/scroll'
+
+const scrollDirectionDeltaThreshold = 10
 
 const paddingRight = '6px'
 const width = `calc(6px + ${paddingRight})`
@@ -59,10 +62,14 @@ interface ScrollbarCustomProps extends ScrollbarProps {
 
 const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProps) => {
   const theme = useTheme()
-  const [scroll, setScroll] = useState<ScrollState>()
+  const scrollY = useMotionValue(0)
+
   const [isScrolling, setIsScrolling] = useState(false)
   const [isMouseOver, setIsMouseOver] = useState(false)
+  const [scrollDirection, setScrollDirection] = useState<ScrollDirection>()
+
   const scrollerElemRef = useRef<HTMLDivElement | null>(null)
+  const prevScrollY = useRef(0)
 
   const isShow = isScrolling || isMouseOver
 
@@ -141,6 +148,23 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
     isDynamic
   )
 
+  const handleScrollUpdate = (s: ScrollState) => {
+    scrollY.set(s.scrollTop)
+
+    const delta = prevScrollY.current - s.scrollTop
+    const direction = delta > 0 ? 'up' : 'down'
+
+    if (s.scrollTop === 0) {
+      setScrollDirection(undefined)
+    } else if (direction === 'up' && delta > scrollDirectionDeltaThreshold) {
+      setScrollDirection('up')
+    } else if (direction === 'down' && delta < -scrollDirectionDeltaThreshold) {
+      setScrollDirection('down')
+    }
+
+    prevScrollY.current = s.scrollTop
+  }
+
   // react-scrollbars-custom has a type issue where you can't just spread props
   // onto the component. That's why needed props are added as necessary.
   return (
@@ -156,7 +180,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
       thumbYProps={thumbProps}
       onScrollStart={onScrollStart}
       onScrollStop={onScrollStop}
-      onUpdate={(s: ScrollState) => setScroll(s)}
+      onUpdate={handleScrollUpdate}
       scrollDetectionThreshold={500} // ms
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -165,7 +189,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
       noScrollX={noScrollX}
       translateContentSizeYToHolder={props.translateContentSizeYToHolder}
     >
-      <ScrollContextProvider value={{ scroll }}>{props.children}</ScrollContextProvider>
+      <ScrollContextProvider value={{ scrollY, scrollDirection }}>{props.children}</ScrollContextProvider>
     </Scrollbar>
   )
 }

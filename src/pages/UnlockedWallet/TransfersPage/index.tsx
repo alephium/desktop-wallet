@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import { map } from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,6 +24,7 @@ import styled from 'styled-components'
 
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import TransactionList from '@/components/TransactionList'
+import { useScrollContext } from '@/contexts/scroll'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
@@ -46,6 +48,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const dispatch = useAppDispatch()
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
+  const scroll = useScrollContext()
 
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
@@ -81,7 +84,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
           hideHeader
         />
       </UnlockedWalletPanel>
-      <BottomRow>
+      <BottomRow animate={{ y: scroll?.scrollDirection === 'down' ? 100 : 0 }}>
         <CornerButtons>
           <ButtonsGrid>
             <ShortcutButtons receive send highlight />
@@ -100,7 +103,7 @@ export default styled(TransfersPage)`
   margin-bottom: 50px;
 `
 
-const BottomRow = styled.div`
+const BottomRow = styled(motion.div)`
   position: fixed;
   bottom: 25px;
   width: calc(100% - ${walletSidebarWidthPx}px);

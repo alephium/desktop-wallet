@@ -16,16 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { MotionValue } from 'framer-motion'
 import { createContext, useContext } from 'react'
-import { ScrollState } from 'react-scrollbars-custom/dist/types/types'
+
+export type ScrollDirection = 'up' | 'down'
 
 interface ScrollContextType {
-  scroll?: ScrollState
+  scrollY: MotionValue<number>
+  scrollDirection?: ScrollDirection
 }
 
-const ScrollContext = createContext<ScrollContextType>({
-  scroll: undefined
-})
+const ScrollContext = createContext<ScrollContextType | undefined>(undefined)
 
 export const ScrollContextProvider = ScrollContext.Provider
 
