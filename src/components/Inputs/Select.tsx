@@ -385,7 +385,7 @@ export const OptionSelect = styled.div`
 export const OptionItem = styled.button<{ selected: boolean; focused: boolean; invisible?: boolean }>`
   padding: var(--spacing-4);
   cursor: pointer;
-  color: inherit;
+  color: ${({ selected }) => (selected ? 'var(--color-white)' : 'inherit')};
   user-select: none;
   text-align: left;
   background-color: ${({ theme, selected, focused }) =>
