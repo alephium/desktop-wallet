@@ -107,8 +107,9 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
   )
 }
 
-const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployContractTxData>) => {
+const DeployContractCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<DeployContractTxData>) => {
   const { t } = useTranslation()
+  const settings = useAppSelector((s) => s.settings)
 
   return (
     <>
@@ -117,6 +118,9 @@ const DeployContractCheckTxModalContent = ({ data, fees }: CheckTxProps<DeployCo
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
       {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label={t`Issue token amount`} wordBreak />}
       <CheckFeeLockTimeBox fee={fees} />
+      <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
+        {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
+      </FooterButton>
     </>
   )
 }
