@@ -64,31 +64,25 @@ const AddressesPage = () => {
       infoMessageLink={links.faq}
       infoMessage={t('Want to know more? Click here to take a look at our FAQ!')}
     >
-      <Tabs>
-        <TabBarPanel ref={tabsRowRef}>
-          <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-        </TabBarPanel>
+      <TabBarPanel ref={tabsRowRef}>
+        <TabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
+      </TabBarPanel>
 
-        <TabContent>
-          <TabPanel>
+      <TabContent>
+        <TabPanel>
+          {
             {
-              {
-                addresses: <AddressesTabContent tabsRowHeight={tabsRowHeight} />,
-                contacts: <ContactsTabContent />
-              }[currentTab.value]
-            }
-          </TabPanel>
-        </TabContent>
-      </Tabs>
+              addresses: <AddressesTabContent tabsRowHeight={tabsRowHeight} />,
+              contacts: <ContactsTabContent />
+            }[currentTab.value]
+          }
+        </TabPanel>
+      </TabContent>
     </UnlockedWalletPage>
   )
 }
 
 export default AddressesPage
-
-const Tabs = styled.div`
-  padding-bottom: 80px;
-`
 
 const TabContent = styled(Box)`
   padding-top: 30px;
@@ -96,6 +90,8 @@ const TabContent = styled(Box)`
   border-radius: 0;
   border-left: none;
   border-right: none;
+  border-bottom: none;
+  flex: 1;
 `
 
 const TabPanel = styled(UnlockedWalletPanel)`
