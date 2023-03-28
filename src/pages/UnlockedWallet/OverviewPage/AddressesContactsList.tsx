@@ -78,7 +78,7 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
               <SkeletonLoader height="15.5px" width="50%" />
             ) : (
               <AmountStyled
-                value={calculateAmountWorth(BigInt(address.balance), price ?? 0) * 1000}
+                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
                 isFiat
                 suffix={currencies['USD'].symbol}
                 tabIndex={0}
