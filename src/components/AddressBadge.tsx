@@ -31,7 +31,6 @@ import { AddressHash } from '@/types/addresses'
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   addressHash: AddressHash
   truncate?: boolean
-  showHashWhenNoLabel?: boolean
   withBorders?: boolean
   hideStar?: boolean
   hideColorIndication?: boolean
@@ -41,7 +40,6 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
 
 const AddressBadge = ({
   addressHash,
-  showHashWhenNoLabel,
   withBorders,
   hideStar,
   className,

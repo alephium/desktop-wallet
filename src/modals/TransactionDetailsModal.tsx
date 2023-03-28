@@ -89,7 +89,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             {label}
           </Direction>
           <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
-          <AddressBadge addressHash={address.hash} truncate withBorders />
+          <AddressBadgeStyled addressHash={address.hash} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
@@ -316,4 +316,8 @@ const Amounts = styled.div`
 const TokenHash = styled(HashEllipsed)`
   max-width: 80px;
   color: ${({ theme }) => theme.font.primary};
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  max-width: 200px;
 `
