@@ -220,7 +220,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   onClose: () => void
   hookCoordinates?: Coordinates
   title?: string
-  optionRender?: (option: SelectOption<T>) => ReactNode
+  optionRender?: (option: SelectOption<T>, isSelected?: boolean) => ReactNode
   onSearchInput?: (input: string) => void
   searchPlaceholder?: string
   showOnly?: T[]
@@ -325,20 +325,23 @@ export function SelectOptionsModal<T extends OptionValue>({
             {t('No options match the search criteria.')}
           </OptionItem>
         ) : null}
-        {visibleOptions.map((o, i) => (
-          <OptionItem
-            key={o.value}
-            tabIndex={0}
-            role="listitem"
-            onClick={() => handleOptionSelect(o.value as T)}
-            onMouseEnter={() => setFocusedOptionIndex(i)}
-            selected={o.value === selectedOption?.value}
-            focused={i === focusedOptionIndex}
-            aria-label={o.label}
-          >
-            {optionRender ? optionRender(o) : o.label}
-          </OptionItem>
-        ))}
+        {visibleOptions.map((o, i) => {
+          const isSelected = o.value === selectedOption?.value
+          return (
+            <OptionItem
+              key={o.value}
+              tabIndex={0}
+              role="listitem"
+              onClick={() => handleOptionSelect(o.value as T)}
+              onMouseEnter={() => setFocusedOptionIndex(i)}
+              selected={isSelected}
+              focused={i === focusedOptionIndex}
+              aria-label={o.label}
+            >
+              {optionRender ? optionRender(o, isSelected) : o.label}
+            </OptionItem>
+          )
+        })}
         {invisibleOptions.map((o) => (
           <OptionItem key={o.value} selected={false} focused={false} invisible>
             {optionRender ? optionRender(o) : o.label}
