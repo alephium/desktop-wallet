@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useEffect, useState } from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
 
@@ -57,9 +58,15 @@ const App = () => {
   const loading = useAppSelector((s) => s.global.loading)
   const language = useAppSelector((s) => s.settings.language)
   const showDevIndication = useDevModeShortcut()
+  const posthog = usePostHog()
+  const analyticsId = useAppSelector((s) => s.analytics.id)
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
+
+  useEffect(() => {
+    posthog?.identify(analyticsId)
+  }, [analyticsId, posthog])
 
   useEffect(() => {
     migrateGeneralSettings()

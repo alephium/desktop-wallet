@@ -20,6 +20,7 @@ import '@/index.css' // Importing CSS through CSS file to avoid font flickering
 import '@/i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
+import { PostHogProvider } from 'posthog-js/react'
 import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -36,6 +37,14 @@ import { store } from '@/storage/store'
 import { GlobalStyle } from '@/style/globalStyles'
 import { lightTheme } from '@/style/themes'
 
+const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST } = import.meta.env
+
+const options = {
+  api_host: VITE_PUBLIC_POSTHOG_HOST,
+  autocapture: false,
+  capture_pageview: false
+}
+
 // The app still behaves as if React 17 is used. This is because
 // `react-custom-scrollbars` is not working with React 18 yet.
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -47,15 +56,17 @@ ReactDOM.render(
       <Router>
         <ThemeProvider theme={lightTheme}>
           <Suspense fallback="loading">
-            <GlobalContextProvider>
-              <WalletConnectContextProvider>
-                <GlobalStyle />
-                <TooltipProvider>
-                  <App />
-                  <Tooltips />
-                </TooltipProvider>
-              </WalletConnectContextProvider>
-            </GlobalContextProvider>
+            <PostHogProvider apiKey={VITE_PUBLIC_POSTHOG_KEY} options={options}>
+              <GlobalContextProvider>
+                <WalletConnectContextProvider>
+                  <GlobalStyle />
+                  <TooltipProvider>
+                    <App />
+                    <Tooltips />
+                  </TooltipProvider>
+                </WalletConnectContextProvider>
+              </GlobalContextProvider>
+            </PostHogProvider>
           </Suspense>
         </ThemeProvider>
       </Router>
