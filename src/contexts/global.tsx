@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { PartialDeep } from 'type-fest'
 
@@ -71,6 +72,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const dispatch = useAppDispatch()
   const settings = useAppSelector((s) => s.settings)
   const { restoreAddressesFromMetadata } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
@@ -98,6 +100,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         initialAddress: getWalletInitialAddress(wallet)
       }
       dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
+
+      posthog?.capture(event === 'unlock' ? 'User unlocked a wallet' : 'User switched wallets', {
+        walletNameLength: wallet.name.length
+      })
 
       if (!isPassphraseUsed) {
         migrateUserData()

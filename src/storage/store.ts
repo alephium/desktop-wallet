@@ -21,7 +21,6 @@ import { setupListeners } from '@reduxjs/toolkit/dist/query'
 
 import addressesSlice from '@/storage/addresses/addressesSlice'
 import contactsSlice from '@/storage/addresses/contactsSlice'
-import analyticsSlice from '@/storage/analytics/analyticsSlice'
 import assetsInfoSlice from '@/storage/assets/assetsInfoSlice'
 import { priceApi } from '@/storage/assets/priceApiSlice'
 import globalSlice from '@/storage/global/globalSlice'
@@ -44,7 +43,6 @@ export const store = configureStore({
     [pendingTransactionsSlice.name]: pendingTransactionsSlice.reducer,
     [assetsInfoSlice.name]: assetsInfoSlice.reducer,
     [snackbarSlice.name]: snackbarSlice.reducer,
-    [analyticsSlice.name]: analyticsSlice.reducer,
     [priceApi.reducerPath]: priceApi.reducer
   },
   middleware: (getDefaultMiddleware) =>

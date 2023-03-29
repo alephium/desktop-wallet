@@ -38,6 +38,7 @@ import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/glo
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
 import { selectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AddressHash } from '@/types/addresses'
@@ -56,17 +57,12 @@ const App = () => {
   const theme = useAppSelector((s) => s.global.theme)
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
   const loading = useAppSelector((s) => s.global.loading)
-  const language = useAppSelector((s) => s.settings.language)
+  const settings = useAppSelector((s) => s.settings)
   const showDevIndication = useDevModeShortcut()
   const posthog = usePostHog()
-  const analyticsId = useAppSelector((s) => s.analytics.id)
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
-
-  useEffect(() => {
-    posthog?.identify(analyticsId)
-  }, [analyticsId, posthog])
 
   useEffect(() => {
     migrateGeneralSettings()
@@ -75,6 +71,19 @@ const App = () => {
 
     dispatch(localStorageDataMigrated())
   }, [dispatch])
+
+  useEffect(() => {
+    const wallets = WalletStorage.list()
+
+    posthog?.people.set({
+      wallets: wallets.length,
+      theme: settings.theme,
+      devTools: settings.devTools,
+      lockTimeInMs: settings.walletLockTimeInMinutes,
+      language: settings.language,
+      passwordRequirement: settings.passwordRequirement
+    })
+  }, [posthog?.people, settings])
 
   const setSystemLanguage = useCallback(async () => {
     const _window = window as unknown as AlephiumWindow
@@ -98,8 +107,8 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (language === undefined) setSystemLanguage()
-  }, [language, setSystemLanguage])
+    if (settings.language === undefined) setSystemLanguage()
+  }, [settings.language, setSystemLanguage])
 
   const initializeClient = useCallback(async () => {
     try {
