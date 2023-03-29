@@ -204,9 +204,9 @@ const TransactionList = ({
             </TableCell>
           </TableRow>
         )}
-        {!stateUninitialized && !pendingTxs.length && !confirmedTxs.length && (
+        {!stateUninitialized && !pendingTxs.length && !displayedConfirmedTxs.length && (
           <TableRow role="row" tabIndex={0}>
-            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+            <TableCellPlaceholder align="center">{t('No transactions to display')}</TableCellPlaceholder>
           </TableRow>
         )}
       </Table>
