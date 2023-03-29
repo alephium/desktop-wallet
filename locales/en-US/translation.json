@@ -385,5 +385,8 @@
   "You can download the address transaction history for a selected time period. This can be useful for tax reporting.": "You can download the address transaction history for a selected time period. This can be useful for tax reporting.",
   "Encountered error while exporting your transactions.": "Encountered error while exporting your transactions.",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
-  "Address name": "Address name"
+  "Address name": "Address name",
+  "Send locked assets": "Send locked assets",
+  "Confirm lock time": "Confirm lock time",
+  "lockTimeConfirmation": "You chose to lock the assets until <1>{{ datetime }}</1>. That is approximately <3>{{ inTimeFromNow }}</3> from now. Are you sure you want to lock the assets until then?"
 }
