@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError } from '@alephium/sdk'
 import { isEmpty } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -26,7 +27,7 @@ import Input from '@/components/Inputs/Input'
 import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
+import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { Contact, ContactFormData } from '@/types/contacts'
 import {
   isAddressValid,
@@ -47,15 +48,20 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
     defaultValues: contact ?? { name: '', address: '', id: undefined },
     mode: 'onChange'
   })
+  const posthog = usePostHog()
 
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
 
   const saveContact = (contactData: ContactFormData) => {
     try {
-      const id = ContactStorage.store(contactData)
+      const id = ContactsStorage.store(contactData)
       dispatch(contactStoredInPersistentStorage({ ...contactData, id }))
       onClose()
+
+      posthog?.capture(contactData.id ? 'Editted contact' : 'Saved new contact', {
+        contact_name_length: contactData.name.length
+      })
     } catch (e) {
       dispatch(contactStorageFailed(getHumanReadableError(e, t('Could not save contact.'))))
     }

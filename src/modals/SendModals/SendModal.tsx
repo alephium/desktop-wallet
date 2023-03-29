@@ -20,6 +20,7 @@ import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
+import { PostHog, usePostHog } from 'posthog-js/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -49,7 +50,7 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
   CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
-  handleSend: (data: T, context: TxContext) => Promise<string | undefined>
+  handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
 }
 
@@ -67,6 +68,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const dispatch = useAppDispatch()
   const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
   const settings = useAppSelector((s) => s.settings)
+  const posthog = usePostHog()
 
   const [transactionData, setTransactionData] = useState<T | undefined>()
   const [isLoading, setIsLoading] = useState(false)
@@ -145,7 +147,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     setIsLoading(true)
 
     try {
-      const signature = await handleSend(transactionData, txContext)
+      const signature = await handleSend(transactionData, txContext, posthog)
 
       if (signature && requestEvent && walletConnectClient) {
         const wcResult = getWalletConnectResult(txContext, signature)

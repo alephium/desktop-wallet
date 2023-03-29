@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Codesandbox, HardHat, Lightbulb, Search } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -38,12 +39,30 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
   const theme = useTheme()
   const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
   const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const posthog = usePostHog()
 
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
   const [isConsolidationModalOpen, setIsConsolidationModalOpen] = useState(false)
 
-  const handleOneAddressPerGroupClick = () =>
+  const handleOneAddressPerGroupClick = () => {
     isPassphraseUsed ? generateAndSaveOneAddressPerGroup() : setIsAddressesGenerationModalOpen(true)
+    posthog?.capture('Advanced operation to generate one address per group clicked')
+  }
+
+  const handleDiscoverAddressesClick = () => {
+    discoverAndSaveUsedAddresses()
+    posthog?.capture('Advanced operation to discover addresses clicked')
+  }
+
+  const handleConsolidationClick = () => {
+    setIsConsolidationModalOpen(true)
+    posthog?.capture('Advanced operation to consolidate UTXOs clicked')
+  }
+
+  const handleTellUsIdeasClick = () => {
+    openInWebBrowser(links.discord)
+    posthog?.capture('Advanced operation to share ideas clicked')
+  }
 
   return (
     <SideModal {...props} title={t('Advanced operations')}>
@@ -53,7 +72,7 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
           Icon={<Search color={theme.global.complementary} strokeWidth={1} size={55} />}
           description={t('Scan the blockchain for addresses you used in the past.')}
           buttonText={t('Search')}
-          onButtonClick={discoverAndSaveUsedAddresses}
+          onButtonClick={handleDiscoverAddressesClick}
           infoLink={links.miningWallet}
         />
         <OperationBox
@@ -69,7 +88,7 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
           Icon={<Codesandbox color="#64f6c2" strokeWidth={1} size={46} />}
           description={t('Consolidate (merge) your UTXOs into one.')}
           buttonText={t('Start')}
-          onButtonClick={() => setIsConsolidationModalOpen(true)}
+          onButtonClick={handleConsolidationClick}
           infoLink={links.utxoConsolidation}
         />
         <OperationBox
@@ -78,7 +97,7 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
           Icon={<Lightbulb color={theme.font.secondary} strokeWidth={1} size={28} />}
           description={t('You have great ideas you want to share?')}
           buttonText={t('Tell us!')}
-          onButtonClick={() => openInWebBrowser(links.discord)}
+          onButtonClick={handleTellUsIdeasClick}
         />
       </AdvancedOperations>
       <ModalPortal>

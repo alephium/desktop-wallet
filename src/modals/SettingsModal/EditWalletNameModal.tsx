@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError } from '@alephium/sdk'
 import { isEmpty } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -43,6 +44,7 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
     defaultValues: { name: activeWallet.name },
     mode: 'onChange'
   })
+  const posthog = usePostHog()
 
   const errors = formState.errors
   const isFormValid = isEmpty(errors)
@@ -54,6 +56,8 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
       WalletStorage.update(activeWallet.id, data)
       dispatch(newWalletNameStored(data.name))
       props.onClose()
+
+      posthog?.capture('Changed wallet name', { wallet_name_length: data.name.length })
     } catch (e) {
       dispatch(walletNameStorageFailed(getHumanReadableError(e, t('Could not save new wallet name.'))))
     }

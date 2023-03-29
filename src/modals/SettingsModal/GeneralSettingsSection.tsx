@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -58,6 +59,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme } = useAppSelector(
     (s) => s.settings
   )
+  const posthog = usePostHog()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 
@@ -66,15 +68,23 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       setIsPasswordModalOpen(true)
     } else {
       dispatch(passwordRequirementToggled())
+
+      posthog?.capture('Enabled password requirement')
     }
-  }, [dispatch, passwordRequirement])
+  }, [dispatch, passwordRequirement, posthog])
 
   const disablePasswordRequirement = useCallback(() => {
     dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
-  }, [dispatch])
 
-  const handleLanguageChange = (language: Language) => dispatch(languageChanged(language))
+    posthog?.capture('Disabled password requirement')
+  }, [dispatch, posthog])
+
+  const handleLanguageChange = (language: Language) => {
+    dispatch(languageChanged(language))
+
+    posthog?.capture('Changed language', { language })
+  }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
 
@@ -82,6 +92,14 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     const time = mins ? parseInt(mins) : null
 
     dispatch(walletLockTimeChanged(time))
+
+    posthog?.capture('Changed wallet lock time', { time })
+  }
+
+  const handleThemeSelect = (theme: ThemeSettings) => {
+    switchTheme(theme)
+
+    posthog?.capture('Changed theme', { theme })
   }
 
   const discreetModeText = t`Discreet mode`
@@ -113,7 +131,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Select
             id="theme"
             options={themeOptions}
-            onSelect={switchTheme}
+            onSelect={handleThemeSelect}
             controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}

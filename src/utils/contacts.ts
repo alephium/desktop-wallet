@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactStorage from '@/storage/addresses/contactsPersistentStorage'
+import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { store } from '@/storage/store'
 import { Contact } from '@/types/contacts'
 
@@ -29,7 +29,7 @@ export const filterContacts = (contacts: Contact[], text: string) =>
       )
 
 export const loadContacts = () => {
-  const contacts: Contact[] = ContactStorage.load()
+  const contacts: Contact[] = ContactsStorage.load()
 
   if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
 }

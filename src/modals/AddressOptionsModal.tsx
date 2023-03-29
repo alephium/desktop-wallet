@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -43,7 +44,7 @@ interface AddressOptionsModalProps {
 const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-
+  const posthog = usePostHog()
   const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
@@ -70,7 +71,11 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps)
     }
 
     saveAddressSettings(address, settings)
+
     onClose()
+
+    posthog?.capture('Changed address settings', { label_length: settings.label.length })
+    isDefaultAddressToggleEnabled && posthog?.capture('Changed default address')
   }
 
   let defaultAddressMessage = `${t('Default address for sending transactions.')} `

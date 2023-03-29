@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Lock } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -32,8 +33,13 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
-  const lockWallet = () => dispatch(walletLocked())
+  const lockWallet = () => {
+    dispatch(walletLocked())
+
+    posthog?.capture('Locked wallet', { origin: 'notifications' })
+  }
 
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dayjs from 'dayjs'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -40,6 +41,7 @@ interface CSVExportModalProps extends CenteredModalProps {
 const CSVExportModal = ({ addressHash, ...props }: CSVExportModalProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
 
@@ -50,6 +52,8 @@ const CSVExportModal = ({ addressHash, ...props }: CSVExportModalProps) => {
   const handleExportClick = () => {
     props.onClose()
     getCSVFile()
+
+    posthog?.capture('Exported CSV', { time_period: selectedTimePeriod })
   }
 
   const getCSVFile = async () => {

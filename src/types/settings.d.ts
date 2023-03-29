@@ -39,7 +39,7 @@ export interface Settings {
   network: NetworkSettings
 }
 
-export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN'
+export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU'
 
 export type ThemeType = 'light' | 'dark'
 

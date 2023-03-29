@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Moon, Sun } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useTranslation } from 'react-i18next'
 
 import Toggle from '@/components/Inputs/Toggle'
@@ -26,8 +27,15 @@ import { toggleTheme } from '@/storage/settings/settingsStorageUtils'
 const ThemeSwitcher = () => {
   const { t } = useTranslation()
   const { theme } = useAppSelector((state) => state.global)
+  const posthog = usePostHog()
 
   const isDark = theme === 'dark'
+
+  const handleThemeToggle = () => {
+    toggleTheme(isDark ? 'light' : 'dark')
+
+    posthog?.capture('Toggled theme', { theme })
+  }
 
   return (
     <Toggle
@@ -35,7 +43,7 @@ const ThemeSwitcher = () => {
       ToggleIcons={[Sun, Moon]}
       handleColors={['var(--color-orange)', 'var(--color-purple)']}
       toggled={isDark}
-      onToggle={() => toggleTheme(isDark ? 'light' : 'dark')}
+      onToggle={handleThemeToggle}
     />
   )
 }

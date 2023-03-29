@@ -26,6 +26,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { osThemeChangeDetected } from '@/storage/global/globalActions'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
@@ -101,8 +103,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       }
       dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
 
-      posthog?.capture(event === 'unlock' ? 'User unlocked a wallet' : 'User switched wallets', {
-        walletNameLength: wallet.name.length
+      posthog?.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
+        wallet_name_length: wallet.name.length,
+        number_of_addresses: (AddressMetadataStorage.load() as []).length,
+        number_of_contacts: (ContactsStorage.load() as []).length
       })
 
       if (!isPassphraseUsed) {

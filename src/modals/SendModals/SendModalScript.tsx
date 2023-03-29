@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { fromHumanReadableAmount } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
+import { PostHog } from 'posthog-js'
 import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
@@ -180,7 +181,7 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
   ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
 }
 
-const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxContext) => {
+const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxContext, posthog?: PostHog) => {
   if (!ctx.unsignedTransaction) throw Error('No unsignedTransaction available')
 
   const data = await signAndSendTransaction(fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
@@ -196,6 +197,8 @@ const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxCont
       status: 'pending'
     })
   )
+
+  posthog?.capture('Called smart contract')
 
   return data.signature
 }

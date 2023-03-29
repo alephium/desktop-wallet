@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Pencil, Trash } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -41,6 +42,7 @@ const WalletsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const activeWallet = useAppSelector((s) => s.activeWallet)
   const wallets = useAppSelector((s) => s.global.wallets)
+  const posthog = usePostHog()
 
   const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
@@ -54,9 +56,15 @@ const WalletsSettingsSection = () => {
     AddressMetadataStorage.delete(walletId)
     dispatch(walletId === activeWallet.id ? activeWalletDeleted() : walletDeleted(walletId))
     setWalletToRemove(undefined)
+
+    posthog?.capture('Wallet deleted')
   }
 
-  const lockWallet = () => dispatch(walletLocked())
+  const lockWallet = () => {
+    dispatch(walletLocked())
+
+    posthog?.capture('Locked wallet', { origin: 'settings' })
+  }
 
   return (
     <>
