@@ -33,7 +33,7 @@ interface MultiSelectOptionsProps<T> {
   options: T[]
   selectedOptions: T[]
   selectedOptionsSetter: (options: T[]) => void
-  getOptionKey: (option: T) => string
+  getOptionId: (option: T) => string
   getOptionText: (option: T) => string
   modalTitle: string
   renderOption?: (option: T) => ReactNode
@@ -81,7 +81,7 @@ export function MultiSelectOptionsModal<T>({
   options,
   selectedOptions,
   renderOption,
-  getOptionKey,
+  getOptionId,
   getOptionText,
   modalTitle,
   onClose,
@@ -94,7 +94,7 @@ export function MultiSelectOptionsModal<T>({
   const allOptionsAreSelected = selectedOptions.length === options.length
 
   const handleOptionClick = (optionClicked: T) => {
-    const index = selectedOptions.findIndex((option) => option === optionClicked)
+    const index = selectedOptions.findIndex((option) => getOptionId(option) === getOptionId(optionClicked))
 
     index !== -1
       ? selectedOptionsSetter(removeItemFromArray(selectedOptions, index))
@@ -118,11 +118,11 @@ export function MultiSelectOptionsModal<T>({
       <Options>
         {options.map((option, index) => (
           <OptionItem
-            key={getOptionKey(option)}
+            key={getOptionId(option)}
             tabIndex={0}
             role="listitem"
             onClick={() => handleOptionClick(option)}
-            selected={selectedOptions.some((o) => o === option)}
+            selected={selectedOptions.some((o) => getOptionId(o) === getOptionId(option))}
             onMouseEnter={() => setFocusedOptionIndex(index)}
             focused={index === focusedOptionIndex}
             aria-label={getOptionText(option)}
