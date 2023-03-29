@@ -40,22 +40,24 @@ import { appHeaderHeightPx } from '@/style/globalStyles'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
-  headerTitle?: string
+  title?: string
   className?: string
 }
 
 dayjs.extend(relativeTime)
 
-const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerTitle, className }) => {
+const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, className }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const [network, activeWallet, isLoadingData] = useAppSelector((s) => [s.network, s.activeWallet, s.addresses.loading])
+  const networkStatus = useAppSelector((s) => s.network.status)
+  const activeWalletName = useAppSelector((s) => s.activeWallet.name)
+  const isLoadingData = useAppSelector((s) => s.addresses.loading)
 
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
 
-  if (!activeWallet.name) return null
+  if (!activeWalletName) return null
 
-  const activeWalletNameInitials = getInitials(activeWallet.name)
+  const activeWalletNameInitials = getInitials(activeWalletName)
 
   const refreshAddressesData = () => dispatch(syncAddressesData())
 
@@ -79,16 +81,16 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, headerT
         <Scrollbar>
           <MainContent>{children}</MainContent>
 
-          <AppHeader title={headerTitle}>
-            {network.status === 'online' && (
-              <TooltipWrapper content={t`Refresh data`}>
+          <AppHeader title={title}>
+            {networkStatus === 'online' && (
+              <TooltipWrapper content={t('Refresh data')}>
                 <RefreshButton
                   role="secondary"
                   transparent
                   squared
                   onClick={refreshAddressesData}
                   disabled={isLoadingData}
-                  aria-label={t`Refresh`}
+                  aria-label={t('Refresh')}
                 >
                   {isLoadingData ? <Spinner /> : <RefreshCw />}
                 </RefreshButton>

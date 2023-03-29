@@ -17,38 +17,23 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
-import Button from '@/components/Button'
+import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import ModalPortal from '@/modals/ModalPortal'
-import ReceiveModal from '@/modals/ReceiveModal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
-import SettingsModal from '@/modals/SettingsModal'
+import { useAppSelector } from '@/hooks/redux'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { walletLocked } from '@/storage/wallets/walletActions'
 
 const OverviewPage = () => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-  const theme = useTheme()
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
-
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
-
-  const lockWallet = () => dispatch(walletLocked())
 
   return (
     <motion.div {...fadeIn}>
@@ -62,30 +47,7 @@ const OverviewPage = () => {
           <Shortcuts>
             <ShortcutsHeader title={t('Shortcuts')} />
             <ButtonsGrid>
-              <ShortcutButton
-                transparent
-                borderless
-                onClick={() => setIsReceiveModalOpen(true)}
-                Icon={ArrowDown}
-                iconColor={theme.global.valid}
-              >
-                <ButtonText>{t('Receive')}</ButtonText>
-              </ShortcutButton>
-              <ShortcutButton
-                transparent
-                borderless
-                onClick={() => setIsSendModalOpen(true)}
-                Icon={ArrowUp}
-                iconColor={theme.global.accent}
-              >
-                <ButtonText>{t('Send')}</ButtonText>
-              </ShortcutButton>
-              <ShortcutButton transparent borderless onClick={() => setIsSettingsModalOpen(true)} Icon={Settings}>
-                <ButtonText>{t('Settings')}</ButtonText>
-              </ShortcutButton>
-              <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock}>
-                <ButtonText>{t('Lock wallet')}</ButtonText>
-              </ShortcutButton>
+              <ShortcutButtons send receive lock walletSettings />
             </ButtonsGrid>
           </Shortcuts>
         </AmountsOverviewPanel>
@@ -96,11 +58,6 @@ const OverviewPage = () => {
         </Row>
         <TransactionList limit={5} />
       </UnlockedWalletPanel>
-      <ModalPortal>
-        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
-        {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
-        {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
-      </ModalPortal>
     </motion.div>
   )
 }
@@ -146,16 +103,4 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-`
-
-const ShortcutButton = styled(Button)`
-  border-radius: 0;
-  margin: 0;
-  width: auto;
-  background-color: ${({ theme }) => theme.bg.primary};
-  color: ${({ theme }) => theme.font.primary};
-`
-
-const ButtonText = styled.div`
-  font-weight: var(--fontWeight-semiBold);
 `

@@ -22,11 +22,10 @@ import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
-import Amount from '@/components/Amount'
 import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
-import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
+import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
@@ -111,7 +110,7 @@ function AddressSelect({
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
       >
-        <InputLabel inputHasValue={!!address} htmlFor={id}>
+        <InputLabel isElevated={!!address} htmlFor={id}>
           {label}
         </InputLabel>
         {!disabled && !simpleMode && (
@@ -137,14 +136,7 @@ function AddressSelect({
             searchPlaceholder={t('Search for name or a hash...')}
             optionRender={(option) => {
               const address = addresses.find((address) => address.hash === option.value)
-              if (!address) return
-
-              return (
-                <SelectOptionItemContent
-                  ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
-                  ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
-                />
-              )
+              if (address) return <SelectOptionAddress address={address} />
             }}
             emptyListPlaceholder={t(
               'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'
@@ -189,13 +181,4 @@ const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleM
         background-color: transparent;
       }
     `}
-`
-
-const AmountStyled = styled(Amount)`
-  flex: 1;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const AddressBadgeStyled = styled(AddressBadge)`
-  width: auto;
 `

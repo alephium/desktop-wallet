@@ -22,7 +22,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import InfoBox from '@/components/InfoBox'
-import Select, { SelectOption } from '@/components/Inputs/Select'
+import Select from '@/components/Inputs/Select'
 import WalletPassphrase from '@/components/Inputs/WalletPassphrase'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useGlobalContext } from '@/contexts/global'
@@ -39,23 +39,21 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeWallet, wallets] = useAppSelector((s) => [s.activeWallet, s.global.wallets])
+  const activeWallet = useAppSelector((s) => s.activeWallet)
+  const wallets = useAppSelector((s) => s.global.wallets)
   const { unlockWallet } = useGlobalContext()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
+  const [selectedWalletId, setSelectedWalletId] = useState(activeWallet.id)
 
   const walletSelectOptions = wallets.map((wallet) => ({ value: wallet.id, label: wallet.name }))
-  const [selectedWalletOption, setSelectedWalletOption] = useState(
-    walletSelectOptions.find((wallet) => wallet.value === activeWallet.id)
-  )
+  const selectedWalletOption = walletSelectOptions.find((wallet) => wallet.value === selectedWalletId)
 
-  const handleWalletSelect = (option: SelectOption<StoredWallet['id']> | undefined) => {
-    if (option) {
-      setSelectedWalletOption(option)
-      setIsPasswordModalOpen(true)
-    }
+  const handleWalletSelect = (walletId: StoredWallet['id']) => {
+    setSelectedWalletId(walletId)
+    setIsPasswordModalOpen(true)
   }
 
   const onUnlockClick = (password: string) => {
@@ -85,7 +83,7 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
           label={t`Current wallet`}
           controlledValue={selectedWalletOption}
           options={walletSelectOptions}
-          onValueChange={handleWalletSelect}
+          onSelect={handleWalletSelect}
           title={t`Select a wallet`}
           id="wallet"
           raised

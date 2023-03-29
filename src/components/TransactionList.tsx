@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
@@ -28,70 +29,109 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import {
-  syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAddressesTransactionsNextPage,
+  syncAddressTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { selectAddressByHash, selectAddressIds, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddresses, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import {
   selectAddressesConfirmedTransactions,
   selectAddressesPendingTransactions
 } from '@/storage/transactions/transactionsSelectors'
 import { AddressHash } from '@/types/addresses'
-import { AddressConfirmedTransaction } from '@/types/transactions'
+import { Asset } from '@/types/assets'
+import { AddressConfirmedTransaction, Direction } from '@/types/transactions'
+import { getTransactionInfo } from '@/utils/transactions'
 
 interface TransactionListProps {
-  addressHash?: AddressHash
+  addressHashes?: AddressHash[]
   className?: string
   title?: string
   limit?: number
   compact?: boolean
+  hideHeader?: boolean
+  hideFromColumn?: boolean
+  directions?: Direction[]
+  assetIds?: Asset['id'][]
+  headerExtraContent?: ReactNode
 }
 
-const TransactionList = ({ className, addressHash, title, limit, compact }: TransactionListProps) => {
+const TransactionList = ({
+  className,
+  addressHashes,
+  title,
+  limit,
+  compact,
+  hideHeader = false,
+  hideFromColumn = false,
+  directions,
+  assetIds,
+  headerExtraContent
+}: TransactionListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
-  const allAddresses = useAppSelector(selectAllAddresses)
-  const allAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const addressHashes = addressHash ? [addressHash] : allAddressHashes
-  const addresses = addressHash && address ? [address] : allAddresses
-  const [confirmedTxs, pendingTxs, allTransactionsLoaded, isLoading] = useAppSelector((s) => [
-    selectAddressesConfirmedTransactions(s, addressHashes),
-    selectAddressesPendingTransactions(s, addressHashes),
-    s.addresses.allTransactionsLoaded,
-    s.addresses.loading
-  ])
+
+  const addresses = useAppSelector(
+    addressHashes && addressHashes.length > 0 ? (s) => selectAddresses(s, addressHashes) : selectAllAddresses
+  )
+  const hashes = addresses.map((address) => address.hash)
+  const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
+  const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
+  const isLoading = useAppSelector((s) => s.addresses.loading)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
+  const [nextPageToLoad, setNextPageToLoad] = useState(1)
+  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
 
   const singleAddress = addresses.length === 1
+  const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
+  const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoading && !confirmedTxs.length && !pendingTxs.length
-  const displayedConfirmedTxs = limit ? confirmedTxs.slice(0, limit - pendingTxs.length) : confirmedTxs
-  const showAllTransactionsLoadedMsg = singleAddress ? address?.allTransactionPagesLoaded : allTransactionsLoaded
+  const showSkeletonLoading = isLoading && !filteredConfirmedTxs.length && !pendingTxs.length
 
-  const loadNextTransactionsPage = () =>
-    singleAddress
-      ? dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
-      : dispatch(syncAllAddressesTransactionsNextPage())
+  // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
+  // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
+  // simpler way? What if no matter what the filtering criteria are, we always:
+  // 1. fetch the next page of ALL addresses
+  // 2. check to see if we received any results
+  // 3. filter the results
+  // 4. if the filter results are 0 but the results are not 0, fetch again
+  const loadNextTransactionsPage = async () => {
+    if (singleAddress) {
+      dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
+    } else {
+      const { nextPage, transactions } = await dispatch(
+        syncAddressesTransactionsNextPage({ addressHashes: hashes, nextPage: nextPageToLoad })
+      ).unwrap()
+
+      setNextPageToLoad(nextPage)
+      setShowAllTransactionsLoadedMsg(transactions.length === 0)
+    }
+  }
+
+  useEffect(() => {
+    if (singleAddress) setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
+  }, [addresses, singleAddress])
 
   return (
     <>
       <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
-        <TableHeader title={title ?? t('Transactions')}>
-          {limit !== undefined && (
-            <ActionLink onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
-              {t('See more')}
-            </ActionLink>
-          )}
-        </TableHeader>
+        {!hideHeader && (
+          <TableHeader title={title ?? t('Transactions')}>
+            {headerExtraContent}
+            {limit !== undefined && (
+              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+                {t('See more')}
+              </ActionLinkStyled>
+            )}
+          </TableHeader>
+        )}
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
             <TransactionalInfo
               transaction={tx}
               addressHash={tx.address.hash}
-              showInternalInflows={singleAddress}
+              showInternalInflows={hideFromColumn}
               compact={compact}
             />
           </TableRow>
@@ -107,7 +147,7 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
             <TransactionalInfo
               transaction={tx}
               addressHash={tx.address.hash}
-              showInternalInflows={singleAddress}
+              showInternalInflows={hideFromColumn}
               compact={compact}
             />
           </TableRow>
@@ -143,3 +183,31 @@ const TransactionList = ({ className, addressHash, title, limit, compact }: Tran
 }
 
 export default TransactionList
+
+const applyFilters = ({
+  txs,
+  hideFromColumn,
+  directions,
+  assetIds
+}: Pick<TransactionListProps, 'directions' | 'assetIds' | 'hideFromColumn'> & {
+  txs: AddressConfirmedTransaction[]
+}) => {
+  const isDirectionsFilterEnabled = directions && directions.length > 0
+  const isAssetsFilterEnabled = assetIds && assetIds.length > 0
+
+  return isDirectionsFilterEnabled || isAssetsFilterEnabled
+    ? txs.filter((tx) => {
+        const { assets, infoType } = getTransactionInfo(tx, hideFromColumn)
+        const dir = infoType === 'pending' ? 'out' : infoType
+
+        const passedDirectionsFilter = !isDirectionsFilterEnabled || directions.includes(dir)
+        const passedAssetsFilter = !isAssetsFilterEnabled || assets.some((asset) => assetIds.includes(asset.id))
+
+        return passedDirectionsFilter && passedAssetsFilter
+      })
+    : txs
+}
+
+const ActionLinkStyled = styled(ActionLink)`
+  margin-left: 20px;
+`

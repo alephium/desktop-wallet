@@ -42,9 +42,9 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const navigate = useNavigate()
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
-  const defaultOption = walletOptions.length > 0 ? walletOptions[0] : undefined
 
-  const [selectedWalletOption, setSelectedWalletOption] = useState(defaultOption)
+  const [selectedWallet, setSelectedWallet] = useState(walletOptions.length > 0 ? walletOptions[0].value : undefined)
+  const selectedWalletOption = walletOptions.find((option) => option.value === selectedWallet)
   const [password, setPassword] = useState('')
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
@@ -79,7 +79,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
         <Select
           label={t('Wallet')}
           options={walletOptions}
-          onValueChange={setSelectedWalletOption}
+          onSelect={setSelectedWallet}
           title={t('Select a wallet')}
           id="wallet"
         />

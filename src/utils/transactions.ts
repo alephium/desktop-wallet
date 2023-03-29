@@ -16,14 +16,34 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { calcTxAmountsDeltaForAddress, DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/sdk'
-import { MempoolTransaction, Output, Transaction } from '@alephium/sdk/api/explorer'
+import {
+  calcTxAmountsDeltaForAddress,
+  DUST_AMOUNT,
+  getDirection,
+  isConsolidationTx,
+  MIN_UTXO_SET_AMOUNT,
+  TransactionDirection,
+  TransactionInfoType
+} from '@alephium/sdk'
+import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
+import dayjs from 'dayjs'
 
-import { Address, AddressHash } from '@/types/addresses'
+import { SelectOption } from '@/components/Inputs/Select'
+import i18n from '@/i18n'
+import { store } from '@/storage/store'
+import { Address } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
-import { AddressPendingTransaction, AddressTransaction, PendingTransaction } from '@/types/transactions'
+import { TranslationKey } from '@/types/i18next'
+import {
+  AddressPendingTransaction,
+  AddressTransaction,
+  Direction,
+  TransactionInfo,
+  TransactionTimePeriod
+} from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
+import { convertToPositive } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -34,33 +54,6 @@ export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransac
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
-// It can currently only take care of sending transactions.
-// See: https://github.com/alephium/explorer-backend/issues/360
-export const convertUnconfirmedTxToPendingTx = (
-  tx: MempoolTransaction,
-  fromAddress: AddressHash
-): PendingTransaction => {
-  if (!tx.outputs) throw 'Missing transaction details'
-
-  const toAddress = tx.outputs[0].address
-  const { alph: alphAmount, tokens } = calcTxAmountsDeltaForAddress(tx, toAddress)
-
-  if (!fromAddress) throw new Error('fromAddress is not defined')
-  if (!toAddress) throw new Error('toAddress is not defined')
-
-  return {
-    hash: tx.hash,
-    fromAddress,
-    toAddress,
-    // No other reasonable way to know when it was sent, so using the lastSeen is the best approximation
-    timestamp: tx.lastSeen,
-    type: 'transfer',
-    amount: alphAmount.toString(),
-    tokens: tokens.map((token) => ({ ...token, amount: token.amount.toString() })),
-    status: 'pending'
-  }
-}
-
 export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
   const amountInPhi = BigInt(data.alphAmount ?? 0)
   const amountIncludingFees = amountInPhi + fees
@@ -69,21 +62,6 @@ export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string
 
   return expectedAmount
 }
-
-export const extractNewTransactionHashes = (
-  incomingTransactions: Transaction[],
-  existingTransactions: Transaction['hash'][]
-): Transaction['hash'][] =>
-  incomingTransactions
-    .filter((newTx) => !existingTransactions.some((existingTx) => existingTx === newTx.hash))
-    .map((tx) => tx.hash)
-
-export const getTransactionsOfAddress = (transactions: Transaction[], address: Address) =>
-  transactions.filter(
-    (tx) =>
-      tx.inputs?.some((input) => input.address === address.hash) ||
-      tx.outputs?.some((output) => output.address === address.hash)
-  )
 
 export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
   const alphAmount = assetAmounts.find((asset) => asset.id === ALPH.id)?.amount ?? BigInt(0)
@@ -97,5 +75,118 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
   return {
     attoAlphAmount,
     tokens
+  }
+}
+
+const now = dayjs()
+const currentYear = now.year()
+const today = now.format('DD/MM/YYYY')
+
+export const timePeriodsOptions: SelectOption<TransactionTimePeriod>[] = [
+  {
+    value: '24h',
+    label: i18n.t('Last 24h')
+  },
+  {
+    value: '1w',
+    label: i18n.t('Last week')
+  },
+  {
+    value: '1m',
+    label: i18n.t('Last month')
+  },
+  {
+    value: '6m',
+    label: i18n.t('Last 6 months')
+  },
+  {
+    value: '12m',
+    label: `${i18n.t('Last 12 months')}
+    (${now.subtract(1, 'year').format('DD/MM/YYYY')}
+    - ${today})`
+  },
+  {
+    value: 'previousYear',
+    label: `${i18n.t('Previous year')}
+    (01/01/${currentYear - 1} - 31/12/${currentYear - 1})`
+  },
+  {
+    value: 'thisYear',
+    label: `${i18n.t('This year')} (01/01/${currentYear - 1} - ${today})`
+  }
+]
+
+export const directionOptions: {
+  value: Direction
+  label: TranslationKey
+}[] = [
+  {
+    label: 'Sent',
+    value: 'out'
+  },
+  {
+    label: 'Received',
+    value: 'in'
+  },
+  {
+    label: 'Moved',
+    value: 'move'
+  }
+]
+
+export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?: boolean): TransactionInfo => {
+  const state = store.getState()
+  const assetsInfo = state.assetsInfo.entities
+  const addresses = Object.values(state.addresses.entities) as Address[]
+
+  let amount: bigint | undefined = BigInt(0)
+  let direction: TransactionDirection
+  let infoType: TransactionInfoType
+  let outputs: Output[] = []
+  let lockTime: Date | undefined
+  let tokens: Required<AssetAmount>[] = []
+
+  if (isPendingTx(tx)) {
+    direction = 'out'
+    infoType = 'pending'
+    amount = tx.amount ? BigInt(tx.amount) : undefined
+    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : []
+    lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
+  } else {
+    outputs = tx.outputs ?? outputs
+    const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, tx.address.hash)
+
+    amount = convertToPositive(alphAmount)
+    tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
+
+    if (isConsolidationTx(tx)) {
+      direction = 'out'
+      infoType = 'move'
+    } else {
+      direction = getDirection(tx, tx.address.hash)
+      const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
+      infoType =
+        (isInternalTransfer && showInternalInflows && direction === 'out') ||
+        (isInternalTransfer && !showInternalInflows)
+          ? 'move'
+          : direction
+    }
+
+    lockTime = outputs.reduce(
+      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
+      new Date(0)
+    )
+    lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime
+  }
+
+  const tokenAssets = [...tokens.map((token) => ({ ...token, ...assetsInfo[token.id] }))]
+  const assets = amount !== undefined ? [{ ...ALPH, amount }, ...tokenAssets] : tokenAssets
+
+  return {
+    assets,
+    direction,
+    infoType,
+    outputs,
+    lockTime
   }
 }

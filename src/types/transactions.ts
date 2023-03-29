@@ -16,14 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { Token, Transaction } from '@alephium/sdk/api/explorer'
+import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
-
-export type TransactionDirection = 'out' | 'in'
-export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
+import { Address, AddressHash } from '@/types/addresses'
+import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
 export enum TxType {
   TRANSFER,
@@ -129,3 +127,24 @@ export type TxContext = {
 export type AddressConfirmedTransaction = Transaction & { address: Address }
 export type AddressPendingTransaction = PendingTransaction & { address: Address }
 export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction
+
+export type TransactionTimePeriod = '24h' | '1w' | '1m' | '6m' | '12m' | 'previousYear' | 'thisYear'
+
+export type Direction = Omit<TransactionInfoType, 'pending'>
+
+export type TransactionInfo = {
+  assets: TransactionInfoAsset[]
+  direction: TransactionDirection
+  infoType: TransactionInfoType
+  outputs: Output[]
+  lockTime?: Date
+}
+
+export type CsvExportTimerangeQueryParams = {
+  fromTs: number
+  toTs: number
+}
+
+export type CsvExportQueryParams = CsvExportTimerangeQueryParams & {
+  addressHash: AddressHash
+}

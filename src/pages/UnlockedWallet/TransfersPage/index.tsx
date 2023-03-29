@@ -16,19 +16,109 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// import { Transaction } from '@alephium/sdk/api/explorer'
-import { motion } from 'framer-motion'
+import { map } from 'lodash'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import { fadeIn } from '@/animations'
+import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import TransactionList from '@/components/TransactionList'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
+import ReceiveModal from '@/modals/ReceiveModal'
+import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import FiltersPanel from '@/pages/UnlockedWallet/TransfersPage/FiltersPanel'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
+import { walletSidebarWidthPx } from '@/style/globalStyles'
+import { Asset } from '@/types/assets'
+import { links } from '@/utils/links'
+import { directionOptions } from '@/utils/transactions'
 
-const TransfersPage = () => (
-  <motion.div {...fadeIn}>
-    <UnlockedWalletPanel top>
-      <TransactionList />
-    </UnlockedWalletPanel>
-  </motion.div>
-)
+interface TransfersPageProps {
+  className?: string
+}
 
-export default TransfersPage
+const TransfersPage = ({ className }: TransfersPageProps) => {
+  const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+  const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
+  const addresses = useAppSelector(selectAllAddresses)
+
+  const [selectedAddresses, setSelectedAddresses] = useState(addresses)
+  const [selectedDirections, setSelectedDirections] = useState(directionOptions)
+  const [selectedAssets, setSelectedAssets] = useState<Asset[]>()
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
+
+  const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
+
+  return (
+    <UnlockedWalletPage
+      title={t('Transfers')}
+      subtitle={t('Browse and download your transaction history. Execute new transfers easily.')}
+      isInfoMessageVisible={!infoMessageClosed}
+      closeInfoMessage={closeInfoMessage}
+      infoMessageLink={links.faq}
+      infoMessage={t('You have questions about transfers ? Click here!')}
+      className={className}
+    >
+      <FiltersPanel
+        selectedAddresses={selectedAddresses}
+        setSelectedAddresses={setSelectedAddresses}
+        selectedDirections={selectedDirections}
+        setSelectedDirections={setSelectedDirections}
+        selectedAssets={selectedAssets}
+        setSelectedAssets={setSelectedAssets}
+      />
+      <UnlockedWalletPanel top>
+        <TransactionList
+          addressHashes={map(selectedAddresses, 'hash')}
+          directions={map(selectedDirections, 'value')}
+          assetIds={map(selectedAssets, 'id')}
+          hideHeader
+        />
+      </UnlockedWalletPanel>
+      <BottomRow>
+        <CornerButtons>
+          <ButtonsGrid>
+            <ShortcutButtons receive send highlight />
+          </ButtonsGrid>
+        </CornerButtons>
+      </BottomRow>
+      <ModalPortal>
+        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
+        {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
+      </ModalPortal>
+    </UnlockedWalletPage>
+  )
+}
+
+export default styled(TransfersPage)`
+  margin-bottom: 50px;
+`
+
+const BottomRow = styled.div`
+  position: fixed;
+  bottom: 25px;
+  width: calc(100% - ${walletSidebarWidthPx}px);
+  display: flex;
+  justify-content: center;
+`
+
+const CornerButtons = styled.div`
+  border-radius: 47px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+  background-color: ${({ theme }) => theme.bg.background2};
+`
+
+const ButtonsGrid = styled.div`
+  background-color: ${({ theme }) => theme.border.secondary};
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+`

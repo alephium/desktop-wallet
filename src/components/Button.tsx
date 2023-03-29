@@ -38,7 +38,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, iconColor, style, ...props }: ButtonProps) => {
+const Button = ({ children, disabled, submit, Icon, className, iconColor, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 

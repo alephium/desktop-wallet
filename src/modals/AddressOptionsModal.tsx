@@ -29,28 +29,31 @@ import AddressSweepModal from '@/modals/AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { saveAddressSettings } from '@/storage/addresses/addressesStorageUtils'
-import { Address } from '@/types/addresses'
+import { AddressHash } from '@/types/addresses'
 import { getAvailableBalance, getName } from '@/utils/addresses'
 import { getRandomLabelColor } from '@/utils/colors'
 
 interface AddressOptionsModalProps {
-  address: Address
+  addressHash: AddressHash
   onClose: () => void
 }
 
-const AddressOptionsModal = ({ address, onClose }: AddressOptionsModalProps) => {
+const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
+
   const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
 
   const [addressLabel, setAddressLabel] = useState({
-    title: address.label ?? '',
-    color: address.color || getRandomLabelColor()
+    title: address?.label ?? '',
+    color: address?.color || getRandomLabelColor()
   })
-  const [isDefaultAddress, setIsDefaultAddress] = useState(address.isDefault ?? false)
+  const [isDefaultAddress, setIsDefaultAddress] = useState(address?.isDefault ?? false)
   const [isAddressSweepModalOpen, setIsAddressSweepModalOpen] = useState(false)
 
   if (!address || !defaultAddress) return null

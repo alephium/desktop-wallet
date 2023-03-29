@@ -134,4 +134,5 @@ const Header = styled.div<{ hasExtraHeaderContent?: boolean }>`
   background-color: ${({ theme }) => theme.bg.background1};
   display: flex;
   flex-direction: column;
+  z-index: 1;
 `

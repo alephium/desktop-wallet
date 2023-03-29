@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import AddressMetadataForm from '@/components/AddressMetadataForm'
 import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
-import Select, { SelectOption } from '@/components/Inputs/Select'
+import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
@@ -92,12 +92,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         : ''
   }
 
-  function onValueChange(group?: SelectOption<number>) {
+  function onSelect(group?: number) {
     if (group === undefined) return
 
-    const address = generateAddress({ group: group.value })
+    const address = generateAddress({ group })
     setNewAddressData(address)
-    setNewAddressGroup(group.value ?? addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS))
+    setNewAddressGroup(group)
   }
 
   return (
@@ -131,7 +131,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
             label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-            onValueChange={onValueChange}
+            onSelect={onSelect}
             title={t`Select group`}
             id="group"
           />

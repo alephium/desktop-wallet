@@ -27,8 +27,9 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import i18n from '@/i18n'
-import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
+import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
   Address,
   AddressBase,
@@ -39,7 +40,6 @@ import {
 } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
 import { Message, SnackbarMessage } from '@/types/snackbar'
-import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/utils/transactions'
 
 export const loadingStarted = createAction('addresses/loadingStarted')
 
@@ -93,32 +93,30 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
   }
 )
 
-export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
-  'addresses/syncAllAddressesTransactionsNextPage',
-  async (_, { getState, dispatch }) => {
+export const syncAddressesTransactionsNextPage = createAsyncThunk(
+  'addresses/syncAddressesTransactionsNextPage',
+  async (
+    { addressHashes, nextPage }: { addressHashes: AddressHash[]; nextPage: number },
+    { getState, dispatch }
+  ): Promise<{ nextPage: number; transactions: Transaction[]; addressHashes: AddressHash[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
-    const addresses = selectAllAddresses(state)
-    let nextPage = state.addresses.transactionsPageLoaded
+    const addresses = selectAddresses(state, addressHashes)
+
+    let nextPageToLoad = nextPage
     let newTransactionsFound = false
-    let allTransactionsLoaded = state.addresses.allTransactionsLoaded
     let transactions: Transaction[] = []
 
-    while (!allTransactionsLoaded && !newTransactionsFound) {
-      nextPage += 1
-
+    while (!newTransactionsFound) {
       // NOTE: Explorer backend limits this query to 80 addresses
       const results = await Promise.all(
-        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPage))
+        chunk(addresses, 80).map((addressesChunk) => fetchAddressesTransactionsNextPage(addressesChunk, nextPageToLoad))
       )
 
       transactions = results.flat()
 
-      if (transactions.length === 0) {
-        allTransactionsLoaded = true
-        break
-      }
+      if (transactions.length === 0) break
 
       newTransactionsFound = addresses.some((address) => {
         const transactionsOfAddress = getTransactionsOfAddress(transactions, address)
@@ -126,9 +124,11 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
 
         return newTxHashes.length > 0
       })
+
+      nextPageToLoad += 1
     }
 
-    return { page: nextPage, transactions }
+    return { nextPage: nextPageToLoad, transactions, addressHashes }
   }
 )
 

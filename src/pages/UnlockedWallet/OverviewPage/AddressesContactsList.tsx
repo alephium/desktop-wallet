@@ -46,7 +46,7 @@ interface AddressesContactsListProps {
 const AddressesContactsList = ({ className, limit }: AddressesContactsListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [isLoadingAddresses] = useAppSelector((s) => [s.addresses.loading])
+  const isLoadingAddresses = useAppSelector((s) => s.addresses.loading)
 
   return (
     <Table isLoading={isLoadingAddresses} className={className}>

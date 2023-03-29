@@ -37,10 +37,8 @@ interface CheckAddressesBoxProps {
 
 const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddressesBoxProps) => {
   const { t } = useTranslation()
-  const [contact, explorerUrl] = useAppSelector((s) => [
-    selectContactByAddress(s, toAddressHash),
-    s.network.settings.explorerUrl
-  ])
+  const contact = useAppSelector((s) => selectContactByAddress(s, toAddressHash))
+  const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   return (
     <Box className={className}>

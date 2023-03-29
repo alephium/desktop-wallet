@@ -16,10 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createAction } from '@reduxjs/toolkit'
+import { getHumanReadableError } from '@alephium/sdk'
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { Message } from '@/types/snackbar'
-import { PendingTransaction } from '@/types/transactions'
+import { fetchCsv } from '@/api/transactions'
+import i18n from '@/i18n'
+import { Message, SnackbarMessage } from '@/types/snackbar'
+import { CsvExportQueryParams, PendingTransaction } from '@/types/transactions'
 
 export const transactionBuildFailed = createAction<Message>('tx/transactionBuildFailed')
 
@@ -28,3 +31,23 @@ export const transactionSendFailed = createAction<Message>('tx/transactionSendFa
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
 
 export const transactionSent = createAction<PendingTransaction>('tx/transactionSent')
+
+export const csvFileGenerationStarted = createAction('tx/csvFileGenerationStarted')
+
+export const csvFileGenerationFinished = createAction('tx/csvFileGenerationFinished')
+
+export const fetchTransactionsCsv = createAsyncThunk<string, CsvExportQueryParams, { rejectValue: SnackbarMessage }>(
+  'tx/fetchTransactionsCsv',
+  async (queryParams: CsvExportQueryParams, { dispatch, rejectWithValue }) => {
+    dispatch(csvFileGenerationStarted())
+
+    try {
+      return await fetchCsv(queryParams)
+    } catch (e) {
+      return rejectWithValue({
+        text: getHumanReadableError(e, i18n.t('Encountered error while exporting your transactions.')),
+        type: 'alert'
+      })
+    }
+  }
+)

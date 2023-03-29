@@ -16,36 +16,33 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, MotionProps } from 'framer-motion'
-import { KeyboardEventHandler, MouseEventHandler, MutableRefObject, ReactNode } from 'react'
 import styled from 'styled-components'
 
-interface InputAreaProps extends MotionProps {
-  children: ReactNode | ReactNode[]
-  onKeyDown?: KeyboardEventHandler
-  onInput?: () => void
-  onMouseDown?: MouseEventHandler
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
+import { Address } from '@/types/addresses'
+
+interface SelectOptionAddressProps {
+  address: Address
   className?: string
-  innerRef?: MutableRefObject<HTMLDivElement>
 }
 
-const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...rest }: InputAreaProps) => (
-  <motion.div
-    role="button"
-    tabIndex={0}
-    onMouseDown={onMouseDown}
-    onInput={onInput}
-    onKeyDown={onKeyDown}
+const SelectOptionAddress = ({ address, className }: SelectOptionAddressProps) => (
+  <SelectOptionItemContent
     className={className}
-    {...rest}
-  >
-    {children}
-  </motion.div>
+    ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
+    ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
+  />
 )
 
-export default styled(InputArea)`
-  position: relative;
-  height: var(--inputHeight);
-  width: 100%;
-  cursor: pointer;
+export default SelectOptionAddress
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  width: auto;
+`
+
+const AmountStyled = styled(Amount)`
+  flex: 1;
+  font-weight: var(--fontWeight-semiBold);
 `

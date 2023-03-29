@@ -29,7 +29,8 @@ import { loadContacts } from '@/utils/contacts'
 
 const headerTitles: { [key: string]: string } = {
   '/wallet/overview': i18next.t('Overview'),
-  '/wallet/transfers': i18next.t('Transfers')
+  '/wallet/transfers': i18next.t('Transfers'),
+  '/wallet/addresses': i18next.t('Addresses & contacts')
 }
 
 const WalletRoutes = () => {
@@ -46,7 +47,7 @@ const WalletRoutes = () => {
   }, [isAuthenticated, navigate])
 
   return (
-    <UnlockedWalletLayout headerTitle={headerTitles[location.pathname]}>
+    <UnlockedWalletLayout title={headerTitles[location.pathname]}>
       <Routes location={location} key={location.pathname}>
         <Route path="overview" key="overview" element={<OverviewPage />} />
         <Route path="transfers" key="transfers" element={<TransfersPage />} />

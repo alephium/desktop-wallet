@@ -17,11 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Fragment } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
 import DotIcon from '@/components/DotIcon'
 import { useAppSelector } from '@/hooks/redux'
-import i18n from '@/i18n'
+import { TranslationKey } from '@/types/i18next'
 
 interface StepsProgressProps {
   currentStep: Step
@@ -32,16 +33,17 @@ export type Step = 'build-tx' | 'info-check' | 'password-check' | 'tx-sent'
 
 type StepStatus = 'completed' | 'active' | 'next'
 
-const stepTitles: Record<Step, string> = {
-  'build-tx': i18n.t('Info'),
-  'info-check': i18n.t('Check'),
-  'password-check': i18n.t('Confirm'),
-  'tx-sent': i18n.t('Sent')
+const stepTitles: Record<Step, TranslationKey> = {
+  'build-tx': 'Info',
+  'info-check': 'Check',
+  'password-check': 'Confirm',
+  'tx-sent': 'Sent'
 }
 
 const dotSize = 16
 
 const StepsProgress = ({ currentStep, className }: StepsProgressProps) => {
+  const { t } = useTranslation()
   const { steps, getStepColors } = useStepsUI(currentStep)
 
   return (
@@ -53,7 +55,7 @@ const StepsProgress = ({ currentStep, className }: StepsProgressProps) => {
           <Fragment key={step}>
             <StepIndicator>
               <DotIcon color={dot} strokeColor={text} size={dotSize} />
-              <StepTitle style={{ color: text }}>{stepTitles[step]}</StepTitle>
+              <StepTitle style={{ color: text }}>{t(stepTitles[step])}</StepTitle>
             </StepIndicator>
             {index < steps.length - 1 && <Line color={line} />}
           </Fragment>
