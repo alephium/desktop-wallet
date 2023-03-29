@@ -330,7 +330,7 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext, p
         )
       }
 
-      posthog?.capture('Sweeped address assets')
+      posthog?.capture('Swept address assets')
     } else if (unsignedTransaction) {
       const data = await signAndSendTransaction(fromAddress, unsignedTxId, unsignedTransaction.unsignedTx)
 

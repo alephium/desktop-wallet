@@ -108,7 +108,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
 
-      posthog?.capture('Sweeped address assets')
+      posthog?.capture('Swept address assets')
     } catch (e) {
       dispatch(
         transactionSendFailed(

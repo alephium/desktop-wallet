@@ -59,7 +59,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
       dispatch(contactStoredInPersistentStorage({ ...contactData, id }))
       onClose()
 
-      posthog?.capture(contactData.id ? 'Editted contact' : 'Saved new contact', {
+      posthog?.capture(contactData.id ? 'Edited contact' : 'Saved new contact', {
         contact_name_length: contactData.name.length
       })
     } catch (e) {

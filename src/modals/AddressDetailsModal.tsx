@@ -92,7 +92,13 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </AmountsOverviewPanel>
         <Shortcuts>
           <ButtonsGrid>
-            <ShortcutButtons receive send addressSettings addressHash={address.hash} />
+            <ShortcutButtons
+              receive
+              send
+              addressSettings
+              addressHash={address.hash}
+              analyticsOrigin="address_details"
+            />
           </ButtonsGrid>
         </Shortcuts>
         <AssetsList
