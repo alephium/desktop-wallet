@@ -52,7 +52,7 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
           />
           <Fee>
             {t`Fee`}
-            {fee ? <Amount value={fee} fadeDecimals /> : <Spinner size="12px" />}
+            {fee ? <Amount value={fee} /> : <Spinner size="12px" />}
           </Fee>
           <Button onClick={onConsolidateClick} submit disabled={!fee}>
             {t`Consolidate`}

@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import DotIcon from '@/components/DotIcon'
-import HashEllipsed from '@/components/HashEllipsed'
+import AddressBadge from '@/components/AddressBadge'
+import AddressColorIndicator from '@/components/AddressColorIndicator'
 import { TableRow } from '@/components/Table'
 import { Address } from '@/types/addresses'
 
@@ -40,19 +40,10 @@ const AddressRow: FC<AddressRowProps> = ({ address, disableAddressCopy, onClick,
     className={className}
   >
     <Row>
-      <AddressColor>
-        {address.isDefault ? <Star color={address.color}>★</Star> : <DotIcon size={11} color={address.color} />}
-      </AddressColor>
-      {address.label ? (
-        <Column>
-          <Label>{address.label}</Label>
-          <HashEllipsedStyled hash={address.hash} disableCopy={disableAddressCopy} />
-        </Column>
-      ) : (
-        <Label>
-          <HashEllipsed hash={address.hash} disableCopy={disableAddressCopy} />
-        </Label>
-      )}
+      <AddressColorIndicator addressHash={address.hash} />
+      <Label>
+        <AddressBadge addressHash={address.hash} hideColorIndication truncate />
+      </Label>
       {children}
     </Row>
   </TableRow>
@@ -64,34 +55,12 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   flex-grow: 1;
-`
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  gap: 15px;
 `
 
 const Label = styled.div`
   font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
-  width: 200px;
-`
-
-const HashEllipsedStyled = styled(HashEllipsed)`
-  color: ${({ theme }) => theme.font.tertiary};
-  font-size: 11px;
-  max-width: 100px;
-`
-
-const AddressColor = styled.div`
-  width: 18px;
-  display: flex;
-  justify-content: center;
-  margin-right: 15px;
-`
-
-const Star = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
-  font-size: 18px;
+  max-width: 200px;
+  min-width: 0;
 `

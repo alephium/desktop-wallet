@@ -20,14 +20,16 @@ import { fromHumanReadableAmount, isAddressValid } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
+import { LockIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
+import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
@@ -36,6 +38,8 @@ import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
+import CenteredModal from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
@@ -50,6 +54,7 @@ import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, PartialTxData, TransferTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAddressAssetsAvailableBalance } from '@/utils/addresses'
 import { requiredErrorMessage } from '@/utils/form-validation'
+import { formatDateForDisplay } from '@/utils/misc'
 import { getTransactionAssetAmounts } from '@/utils/transactions'
 
 interface TransferTxModalProps {
@@ -86,13 +91,55 @@ const TransferTxModal = ({ onClose, initialTxData }: TransferTxModalProps) => {
   )
 }
 
-const TransferCheckTxModalContent = ({ data, fees }: CheckTxProps<TransferTxData>) => (
-  <Content>
-    <CheckAmountsBox assetAmounts={data.assetAmounts} />
-    <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
-    <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
-  </Content>
-)
+const TransferCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<TransferTxData>) => {
+  const { t } = useTranslation()
+  const settings = useAppSelector((s) => s.settings)
+
+  const [isLockTimeConfirmModalOpen, setIsLockTimeConfirmModalOpen] = useState(false)
+
+  return (
+    <>
+      <Content>
+        <CheckAmountsBox assetAmounts={data.assetAmounts} />
+        <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
+        <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
+      </Content>
+      <FooterButton
+        onClick={data.lockTime ? () => setIsLockTimeConfirmModalOpen(true) : onSubmit}
+        variant={settings.passwordRequirement ? 'default' : 'valid'}
+      >
+        {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
+      </FooterButton>
+      <ModalPortal>
+        {isLockTimeConfirmModalOpen && data.lockTime && (
+          <CenteredModal title={t('Confirm lock time')} onClose={() => setIsLockTimeConfirmModalOpen(false)}>
+            <InfoBox importance="accent" Icon={LockIcon}>
+              <Trans
+                t={t}
+                i18nKey="lockTimeConfirmation"
+                values={{
+                  datetime: formatDateForDisplay(data.lockTime),
+                  inTimeFromNow: dayjs(data.lockTime).fromNow()
+                }}
+                components={{
+                  1: <strong />,
+                  3: <FromNow />
+                }}
+              >
+                {
+                  'You chose to lock the assets until <1>{{ datetime }}</1>. That is approximately <3>{{ inTimeFromNow }}</3> from now. Are you sure you want to lock the assets until then?'
+                }
+              </Trans>
+            </InfoBox>
+            <FooterButton onClick={onSubmit} variant="valid">
+              {t('Send locked assets')}
+            </FooterButton>
+          </CenteredModal>
+        )}
+      </ModalPortal>
+    </>
+  )
+}
 
 const defaultAssetAmounts = [{ id: ALPH.id }]
 
@@ -339,4 +386,8 @@ const Content = styled.div`
   & > ${Box}:not(:last-child) {
     margin-bottom: 35px;
   }
+`
+
+const FromNow = styled.strong`
+  color: ${({ theme }) => theme.global.accent};
 `

@@ -16,13 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import classNames from 'classnames'
 import styled, { css } from 'styled-components'
 
 type AlignType = 'start' | 'center' | 'end'
 
 export interface TableProps {
-  isLoading?: boolean
   minWidth?: string
   className?: string
 }
@@ -32,9 +30,9 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children, isLoading }) => (
+const Table: FC<TableProps> = ({ className, children }) => (
   <ScrollableWrapper className={className}>
-    <div role="table" tabIndex={0} className={classNames({ 'skeleton-loader': isLoading })}>
+    <div role="table" tabIndex={0}>
       {children}
     </div>
   </ScrollableWrapper>
@@ -47,13 +45,6 @@ export default styled(Table)`
     minWidth &&
     css`
       min-width: ${minWidth};
-    `}
-
-  ${({ isLoading }) =>
-    isLoading &&
-    css`
-      min-height: 132px;
-      width: 100%;
     `}
 `
 
@@ -99,11 +90,12 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  transition: background-color 0.2s ease-out;
 
   &:last-child {
     border-bottom: none;
-    border-bottom-left-radius: var(--radius);
-    border-bottom-right-radius: var(--radius);
+    border-bottom-left-radius: var(--radius-small);
+    border-bottom-right-radius: var(--radius-small);
   }
 
   ${({ onClick }) =>

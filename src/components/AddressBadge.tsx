@@ -20,50 +20,53 @@ import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
-import DotIcon from '@/components/DotIcon'
 import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectContactByAddress } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { getName } from '@/utils/addresses'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   addressHash: AddressHash
   truncate?: boolean
-  showHashWhenNoLabel?: boolean
   withBorders?: boolean
   hideStar?: boolean
+  hideColorIndication?: boolean
   disableA11y?: boolean
+  disableCopy?: boolean
 }
 
 const AddressBadge = ({
   addressHash,
-  showHashWhenNoLabel,
   withBorders,
   hideStar,
   className,
+  hideColorIndication,
   disableA11y = false,
+  disableCopy,
   ...props
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
-  if (!address) return <HashEllipsed hash={addressHash} />
-
-  return showHashWhenNoLabel && !address.label ? (
-    <Hash className={className}>
-      {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
-      <HashEllipsed hash={address.hash} disableA11y={disableA11y} />
-    </Hash>
+  return contact ? (
+    <div className={className}>
+      <Label {...props}>{contact.name}</Label>
+    </div>
+  ) : !address ? (
+    <HashEllipsed hash={addressHash} disableCopy={disableCopy} />
   ) : (
-    <ClipboardButton textToCopy={address.hash} tooltip={t`Copy address`} disableA11y={disableA11y}>
+    <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
       <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.isDefault && !hideStar && <Star color={address.color}>★</Star>}
-        {!!address.label && !address.isDefault && <DotIcon color={address.color} />}
-        <Label {...props}>{getName(address)}</Label>
+        {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
+        {address.label ? (
+          <Label {...props}>{address.label}</Label>
+        ) : (
+          <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
+        )}
       </RoundBorders>
     </ClipboardButton>
   )
@@ -92,19 +95,6 @@ const Label = styled.span<AddressBadgeProps>`
       overflow: hidden;
       text-overflow: ellipsis;
     `}
-`
-
-export const dotStyling = {
-  width: '1rem',
-  marginRight: '0.2rem'
-}
-
-const Hash = styled.div`
-  width: 100%;
-`
-
-const Star = styled.span<{ color: string }>`
-  color: ${({ color }) => color};
 `
 
 const RoundBorders = styled.div<{ withBorders?: boolean }>`

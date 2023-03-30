@@ -46,6 +46,8 @@ const ContactsTabContent = () => {
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
 
+  const newContactButtonText = `+ ${t('New contact')}`
+
   useEffect(() => {
     setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
   }, [contacts, searchInput])
@@ -70,14 +72,15 @@ const ContactsTabContent = () => {
     setIsContactFormModalOpen(false)
   }
 
+  const openContactFormModal = () => setIsContactFormModalOpen(true)
+
   return (
     <motion.div {...fadeIn}>
       <TabContent
         searchPlaceholder={t('Search for name or a hash...')}
         onSearch={setSearchInput}
-        buttonText={`+ ${t('New contact')}`}
-        onButtonClick={() => setIsContactFormModalOpen(true)}
-        newItemPlaceholderText={t('Create contacts to avoid mistakes when sending transactions!')}
+        buttonText={newContactButtonText}
+        onButtonClick={openContactFormModal}
       >
         {filteredContacts.map((contact) => (
           <Card key={contact.address}>
@@ -98,6 +101,16 @@ const ContactsTabContent = () => {
             </ButtonsRow>
           </Card>
         ))}
+        {contacts.length === 0 && (
+          <PlaceholderCard layout isPlaceholder>
+            <Text>{t('Create contacts to avoid mistakes when sending transactions!')}</Text>
+            <motion.div>
+              <Button role="secondary" short onClick={openContactFormModal}>
+                {newContactButtonText}
+              </Button>
+            </motion.div>
+          </PlaceholderCard>
+        )}
         <ModalPortal>
           {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
           {isSendModalOpen && (
@@ -154,4 +167,18 @@ const ButtonText = styled.div`
 const Separator = styled.div`
   width: 1px;
   background-color: ${({ theme }) => theme.border.secondary};
+`
+
+const PlaceholderCard = styled(Card)`
+  padding: 70px 30px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const Text = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+  text-align: center;
+  line-height: 1.3;
+  margin-bottom: 20px;
 `

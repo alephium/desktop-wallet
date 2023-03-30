@@ -40,9 +40,14 @@ const SideBar: FC<SideBarProps> = ({ className, children }) => {
     <div className={className}>
       {children}
       <TooltipWrapper content={t('Settings')} tooltipId="sidenav">
-        <Button transparent squared borderless onClick={() => setIsSettingsModalOpen(true)} aria-label={t('Settings')}>
-          <Settings />
-        </Button>
+        <Button
+          transparent
+          squared
+          borderless
+          onClick={() => setIsSettingsModalOpen(true)}
+          aria-label={t('Settings')}
+          Icon={Settings}
+        />
       </TooltipWrapper>
       <ModalPortal>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
@@ -60,5 +65,5 @@ export default styled(SideBar)`
   padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
 
   border-right: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.tertiary};
+  background-color: ${({ theme }) => theme.bg.background2};
 `

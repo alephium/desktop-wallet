@@ -101,6 +101,7 @@ export type PartialTxData<T, K extends keyof T> = {
 export type CheckTxProps<T> = {
   data: T
   fees: bigint
+  onSubmit: () => void
 }
 
 export type UnsignedTx = {

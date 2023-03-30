@@ -25,14 +25,21 @@ import { Address } from '@/types/addresses'
 
 interface SelectOptionAddressProps {
   address: Address
+  isSelected?: boolean
   className?: string
 }
 
-const SelectOptionAddress = ({ address, className }: SelectOptionAddressProps) => (
+const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAddressProps) => (
   <SelectOptionItemContent
     className={className}
-    ContentLeft={<AddressBadgeStyled addressHash={address.hash} showHashWhenNoLabel disableA11y />}
-    ContentRight={<AmountStyled value={BigInt(address.balance)} fadeDecimals />}
+    ContentLeft={<AddressBadgeStyled addressHash={address.hash} disableA11y />}
+    ContentRight={
+      <AmountStyled
+        value={BigInt(address.balance)}
+        color={isSelected ? 'var(--color-white)' : undefined}
+        overrideSuffixColor
+      />
+    }
   />
 )
 

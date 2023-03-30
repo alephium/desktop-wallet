@@ -54,8 +54,8 @@ export const GlobalStyle = createGlobalStyle`
     --spacing-7: 35px;
     --spacing-8: 40px;
 
-    --radius-small: 4px;
-    --radius: 7px;
+    --radius-tiny: 4px;
+    --radius-small: 7px;
     --radius-medium: 9px;
     --radius-big: 12px;
     --radius-huge: 17px;
@@ -109,6 +109,6 @@ export const deviceSizes = {
 export const deviceBreakPoints = {
   mobile: `(max-width: ${deviceSizes.mobile}px)`,
   tablet: `(max-width: ${deviceSizes.tablet}px)`,
-  desktop: `(min-width: ${deviceSizes.desktop}px)`,
+  desktop: `(max-width: ${deviceSizes.desktop}px)`,
   short: '(max-height: 600px)'
 }

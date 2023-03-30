@@ -16,14 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { SearchIcon } from 'lucide-react'
-import { ReactNode, useRef } from 'react'
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 
 import { fadeIn, fadeInOut } from '@/animations'
 import Button from '@/components/Button'
-import Card from '@/components/Card'
 import Input from '@/components/Inputs/Input'
 
 interface TabContentProps {
@@ -31,7 +30,6 @@ interface TabContentProps {
   onSearch: (str: string) => void
   buttonText: string
   onButtonClick: () => void
-  newItemPlaceholderText: string
   HeaderMiddleComponent?: ReactNode
   className?: string
 }
@@ -41,43 +39,23 @@ const TabContent: FC<TabContentProps> = ({
   onSearch,
   buttonText,
   onButtonClick,
-  newItemPlaceholderText,
   HeaderMiddleComponent,
   children,
   className
-}) => {
-  const buttonRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(buttonRef)
-
-  return (
-    <motion.div {...fadeIn} className={className}>
-      <Header>
-        <Searchbar placeholder={searchPlaceholder} Icon={SearchIcon} onChange={(e) => onSearch(e.target.value)} />
-        {HeaderMiddleComponent}
-        <AnimatePresence>
-          {!isInView && (
-            <ButtonContainer {...fadeInOut}>
-              <HeaderButton role="secondary" short onClick={onButtonClick}>
-                {buttonText}
-              </HeaderButton>
-            </ButtonContainer>
-          )}
-        </AnimatePresence>
-      </Header>
-      <Cards>
-        {children}
-        <PlaceholderCard layout isPlaceholder>
-          <Text>{newItemPlaceholderText}</Text>
-          <motion.div ref={buttonRef}>
-            <Button role="secondary" short onClick={onButtonClick}>
-              {buttonText}
-            </Button>
-          </motion.div>
-        </PlaceholderCard>
-      </Cards>
-    </motion.div>
-  )
-}
+}) => (
+  <motion.div {...fadeIn} className={className}>
+    <Header>
+      <Searchbar placeholder={searchPlaceholder} Icon={SearchIcon} onChange={(e) => onSearch(e.target.value)} />
+      {HeaderMiddleComponent}
+      <ButtonContainer {...fadeInOut}>
+        <HeaderButton variant="faded" short onClick={onButtonClick}>
+          {buttonText}
+        </HeaderButton>
+      </ButtonContainer>
+    </Header>
+    <Cards>{children}</Cards>
+  </motion.div>
+)
 
 export default TabContent
 
@@ -110,18 +88,4 @@ const HeaderButton = styled(Button)`
 
 const ButtonContainer = styled(motion.div)`
   margin-left: auto;
-`
-
-const PlaceholderCard = styled(Card)`
-  padding: 70px 30px 30px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
-const Text = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
-  text-align: center;
-  line-height: 1.3;
-  margin-bottom: 20px;
 `

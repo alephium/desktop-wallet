@@ -81,3 +81,10 @@ export const useWindowSize = () => {
 // Helper function to run React effect only once, without eslint screaming
 // eslint-disable-next-line react-hooks/exhaustive-deps
 export const useMountEffect = (fun: () => void) => useEffect(fun, [])
+
+export const useWindowResize = (onResize: () => void) => {
+  useEffect(() => {
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [onResize])
+}

@@ -36,6 +36,7 @@ import TimeSince from '@/components/TimeSince'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { deviceBreakPoints } from '@/style/globalStyles'
 import { AddressHash } from '@/types/addresses'
 import { AddressTransaction } from '@/types/transactions'
 import { getTransactionInfo, isPendingTx } from '@/utils/transactions'
@@ -70,7 +71,7 @@ const TransactionalInfo = ({
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
-      <AddressBadge truncate addressHash={tx.toAddress} showHashWhenNoLabel withBorders />
+      <AddressBadge truncate addressHash={tx.toAddress} />
     )
   ) : null
 
@@ -105,9 +106,7 @@ const TransactionalInfo = ({
       {!showInternalInflows && (
         <CellAddress alignRight>
           <HiddenLabel text={t('from')} />
-          {direction === 'out' && (
-            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel withBorders disableA11y />
-          )}
+          {direction === 'out' && <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />}
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
@@ -133,7 +132,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadgeStyled addressHash={addressHash} truncate showHashWhenNoLabel withBorders disableA11y />
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out') &&
             (pendingToAddressComponent || (
@@ -155,7 +154,7 @@ const TransactionalInfo = ({
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
             <div>
               {amountSign}
-              <Amount value={amount} fadeDecimals color={amountTextColor} decimals={decimals} suffix={symbol} />
+              <Amount value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
             </div>
           </AmountContainer>
         ))}
@@ -191,7 +190,7 @@ const AssetTime = styled.div`
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 340px;
+  max-width: 120px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
@@ -237,6 +236,10 @@ const CellAssetBadges = styled.div<Pick<TransactionalInfoProps, 'compact'>>`
   flex-shrink: 0;
   margin-right: 28px;
   width: ${({ compact }) => (compact ? '80px' : '180px')};
+
+  @media ${deviceBreakPoints.desktop} {
+    width: 80px;
+  }
 `
 
 const TransactionIcon = styled.span<{ color?: string }>`

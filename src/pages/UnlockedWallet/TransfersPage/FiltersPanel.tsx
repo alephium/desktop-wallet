@@ -106,7 +106,7 @@ const FiltersPanel = ({
             selectedOptions={selectedAddresses}
             selectedOptionsSetter={setSelectedAddresses}
             renderSelectedValue={renderAddressesSelectedValue}
-            getOptionKey={(address) => address.hash}
+            getOptionId={(address) => address.hash}
             getOptionText={(address) => address.label || address.hash}
             renderOption={(address: Address) => <SelectOptionAddress address={address} />}
           />
@@ -119,7 +119,7 @@ const FiltersPanel = ({
             selectedOptions={selectedAssets ?? []}
             selectedOptionsSetter={setSelectedAssets}
             renderSelectedValue={renderAssetsSelectedValue}
-            getOptionKey={(asset) => asset.id}
+            getOptionId={(asset) => asset.id}
             getOptionText={(asset) => asset.name ?? asset.symbol ?? asset.id}
             renderOption={(asset) => <SelectOptionAsset asset={asset} hideAmount />}
           />
@@ -132,7 +132,7 @@ const FiltersPanel = ({
             selectedOptions={selectedDirections}
             selectedOptionsSetter={setSelectedDirections}
             renderSelectedValue={renderDirectionsSelectedValue}
-            getOptionKey={(direction) => direction.value.toString()}
+            getOptionId={(direction) => direction.value.toString()}
             getOptionText={(direction) => t(direction.label)}
           />
         </Tile>

@@ -63,7 +63,11 @@ const UnlockedWalletPage: FC<UnlockedWalletPageProps> = ({
   </motion.div>
 )
 
-export default UnlockedWalletPage
+export default styled(UnlockedWalletPage)`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`
 
 const PageHeader = styled(UnlockedWalletPanel)`
   display: flex;

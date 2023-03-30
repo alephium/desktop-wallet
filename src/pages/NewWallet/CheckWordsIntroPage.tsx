@@ -77,7 +77,7 @@ const LockContainer = styled.div`
   width: 100%;
   margin-bottom: var(--spacing-5);
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   display: flex;
   flex-direction: column;
   justify-content: center;

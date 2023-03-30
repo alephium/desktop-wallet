@@ -73,8 +73,9 @@ const ScriptTxModal = ({ onClose }: ScriptTxModalModalProps) => {
   )
 }
 
-const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) => {
+const ScriptCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<ScriptTxData>) => {
   const { t } = useTranslation()
+  const settings = useAppSelector((s) => s.settings)
 
   return (
     <>
@@ -82,6 +83,9 @@ const ScriptCheckTxModalContent = ({ data, fees }: CheckTxProps<ScriptTxData>) =
       <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
       <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
       <CheckFeeLockTimeBox fee={fees} />
+      <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
+        {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
+      </FooterButton>
     </>
   )
 }

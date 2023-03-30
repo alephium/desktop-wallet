@@ -23,25 +23,25 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: '#fbfbfb',
-    tertiary: 'rgba(0, 0, 0, 0.05)',
-    hover: 'rgba(0, 0, 0, 0.012)',
+    secondary: '#F9F9F9',
+    tertiary: '#f4f4f4',
     contrast: '#212126',
-    accent: colord('#5981f3').alpha(0.15).toRgbString(),
     background1: '#F0F0F0',
-    background2: '#F0F0F0'
+    background2: '#f9f9f9',
+    accent: colord('#5981f3').alpha(0.15).toHex(),
+    hover: 'rgba(0, 0, 0, 0.012)'
   },
   font: {
-    primary: '#000',
-    secondary: '#4b4b4b',
+    primary: '#1d1d1d',
+    secondary: '#6a6a6a',
     tertiary: '#adadad',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
-    highlight: '#ffb800'
+    highlight: '#d9a800'
   },
   border: {
-    primary: 'rgba(31, 29, 26, 0.07)',
-    secondary: '#f1f1f1'
+    primary: '#e3e3e3',
+    secondary: '#e0e0e0'
   },
   shadow: {
     primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
@@ -61,13 +61,13 @@ export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
     primary: '#1B1B1F',
-    secondary: '#17171A',
-    tertiary: '#101012',
-    hover: 'rgba(61, 64, 74, 0.1)',
+    secondary: '#18181B',
+    tertiary: '#141417',
     contrast: 'white',
-    accent: colord('#598BED').alpha(0.15).toRgbString(),
     background1: '#121215',
-    background2: 'rgba(16, 16, 18, 1)'
+    background2: '#0E0E10',
+    hover: colord('#1B1B1F').lighten(0.02).toHex(),
+    accent: colord('#598BED').alpha(0.15).toHex()
   },
   font: {
     primary: '#e3e3e3',
@@ -75,7 +75,7 @@ export const darkTheme: DefaultTheme = {
     tertiary: 'rgba(255, 255, 255, 0.4)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
-    highlight: '#ffb800'
+    highlight: '#f0d590'
   },
   border: {
     primary: 'rgba(255, 255, 255, 0.08)',

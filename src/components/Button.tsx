@@ -25,7 +25,7 @@ import { sectionChildrenVariants } from '@/components/PageComponents/PageContain
 
 export interface ButtonProps extends HTMLMotionProps<'button'> {
   role?: 'primary' | 'secondary'
-  variant?: 'default' | 'contrast' | 'valid' | 'alert'
+  variant?: 'default' | 'contrast' | 'valid' | 'alert' | 'faded'
   transparent?: boolean
   disabled?: boolean
   squared?: boolean
@@ -89,13 +89,15 @@ export default styled(Button)`
             default: theme.global.accent,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert
+            alert: theme.global.alert,
+            faded: colord(theme.global.accent).alpha(0.07).toRgbString()
           }[variant],
           secondary: {
             default: theme.bg.primary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert
+            alert: theme.global.alert,
+            faded: colord(theme.bg.primary).alpha(0.07).toRgbString()
           }[variant]
         }[role]
 
@@ -108,13 +110,15 @@ export default styled(Button)`
             default: colord(theme.global.accent).darken(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
             valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString()
+            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
+            faded: colord(theme.global.accent).darken(0.08).toRgbString()
           }[variant],
           secondary: {
             default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
             valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString()
+            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
+            faded: colord(theme.bg.primary).lighten(0.08).toRgbString()
           }[variant]
         }[role]
 
@@ -127,13 +131,15 @@ export default styled(Button)`
             default: colord(theme.global.accent).lighten(0.03).toRgbString(),
             contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
             valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
-            alert: colord(theme.global.alert).lighten(0.03).toRgbString()
+            alert: colord(theme.global.alert).lighten(0.03).toRgbString(),
+            faded: colord(theme.global.accent).lighten(0.03).toRgbString()
           }[variant],
           secondary: {
             default: colord(theme.bg.primary).darken(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
             valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
-            alert: colord(theme.global.alert).lighten(0.03).toRgbString()
+            alert: colord(theme.global.alert).lighten(0.03).toRgbString(),
+            faded: colord(theme.bg.primary).darken(0.08).toRgbString()
           }[variant]
         }[role]
 
@@ -144,13 +150,15 @@ export default styled(Button)`
             default: 'white',
             contrast: theme.font.secondary,
             valid: theme.font.primary,
-            alert: theme.font.contrastPrimary
+            alert: theme.font.contrastPrimary,
+            faded: theme.global.accent
           }[variant],
           secondary: {
             default: theme.font.primary,
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.contrastPrimary
+            alert: theme.font.contrastPrimary,
+            faded: theme.font.primary
           }[variant]
         }[role]
 
@@ -162,13 +170,15 @@ export default styled(Button)`
             default: theme.global.accent,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert
+            alert: theme.global.alert,
+            faded: colord(theme.global.accent).alpha(0.25).toRgbString()
           }[variant],
           secondary: {
             default: theme.border.secondary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert
+            alert: theme.global.alert,
+            faded: theme.border.secondary
           }[variant]
         }[role]
       : theme.border.primary
@@ -180,7 +190,24 @@ export default styled(Button)`
           secondary: theme.shadow.primary
         }[role]
 
-    const hoverColor = transparent && theme.font.primary
+    const hoverColor = transparent
+      ? theme.font.primary
+      : {
+          primary: {
+            default: 'white',
+            contrast: theme.font.secondary,
+            valid: theme.font.primary,
+            alert: theme.font.contrastPrimary,
+            faded: 'white'
+          }[variant],
+          secondary: {
+            default: theme.font.primary,
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.contrastPrimary,
+            faded: theme.font.primary
+          }[variant]
+        }[role]
 
     return css`
       background-color: ${bgColor};
@@ -214,7 +241,7 @@ export default styled(Button)`
   align-items: center;
   justify-content: center;
   height: ${({ squared, short }) => (squared || short ? '40px' : 'var(--inputHeight)')};
-  width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
+  width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
   font-weight: var(--fontWeight-medium);

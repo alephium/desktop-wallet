@@ -123,7 +123,7 @@ const CenteredBox = styled(motion.div)`
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   background-color: ${({ theme }) => theme.bg.background1};
 `
 

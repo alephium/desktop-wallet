@@ -27,7 +27,7 @@ import {
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
 import i18n from '@/i18n'
-import { selectAddressByHash, selectAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
@@ -93,18 +93,15 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
   }
 )
 
-export const syncAddressesTransactionsNextPage = createAsyncThunk(
-  'addresses/syncAddressesTransactionsNextPage',
-  async (
-    { addressHashes, nextPage }: { addressHashes: AddressHash[]; nextPage: number },
-    { getState, dispatch }
-  ): Promise<{ nextPage: number; transactions: Transaction[]; addressHashes: AddressHash[] }> => {
+export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
+  'addresses/syncAllAddressesTransactionsNextPage',
+  async (_, { getState, dispatch }): Promise<{ pageLoaded: number; transactions: Transaction[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
-    const addresses = selectAddresses(state, addressHashes)
+    const addresses = selectAllAddresses(state)
 
-    let nextPageToLoad = nextPage
+    let nextPageToLoad = state.confirmedTransactions.pageLoaded + 1
     let newTransactionsFound = false
     let transactions: Transaction[] = []
 
@@ -128,7 +125,7 @@ export const syncAddressesTransactionsNextPage = createAsyncThunk(
       nextPageToLoad += 1
     }
 
-    return { nextPage: nextPageToLoad, transactions, addressHashes }
+    return { pageLoaded: nextPageToLoad - 1, transactions }
   }
 )
 

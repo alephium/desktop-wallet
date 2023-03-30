@@ -66,7 +66,7 @@ const SnackbarManagerContainer = styled.div`
   left: ${walletSidebarWidthPx}px;
   display: flex;
   justify-content: flex-end;
-  z-index: 1;
+  z-index: 2;
 
   @media ${deviceBreakPoints.mobile} {
     justify-content: center;
@@ -80,7 +80,7 @@ const SnackbarPopup = styled(motion.div)`
   padding: var(--spacing-4) var(--spacing-3);
   color: ${({ theme }) => theme.font.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-medium);
   box-shadow: var(--shadow-3);
 
   &.alert {

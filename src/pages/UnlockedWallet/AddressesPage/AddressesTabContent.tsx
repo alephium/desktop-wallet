@@ -16,20 +16,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useEffect, useState } from 'react'
+import { Wrench } from 'lucide-react'
+import { CSSProperties, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import Box from '@/components/Box'
+import Button from '@/components/Button'
 import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
-import AddressCard from '@/pages/UnlockedWallet/AddressesPage/AddressCard'
+import AddressGridRow from '@/pages/UnlockedWallet/AddressesPage/AddressGridRow'
+import AdvancedOperationsSideModal from '@/pages/UnlockedWallet/AddressesPage/AdvancedOperationsSideModal'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { appHeaderHeightPx } from '@/style/globalStyles'
 import { filterAddresses } from '@/utils/addresses'
 
-const AddressesTabContent = () => {
+interface AddressesTabContentProps {
+  tabsRowHeight: number
+}
+
+const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const { t } = useTranslation()
@@ -38,6 +47,7 @@ const AddressesTabContent = () => {
   const [visibleAddresses, setVisibleAddresses] = useState(addresses)
   const [searchInput, setSearchInput] = useState('')
   const [hideEmptyAddresses, setHideEmptyAddresses] = useState(false)
+  const [isAdvancedOperationsModalOpen, setIsAdvancedOperationsModalOpen] = useState(false)
 
   useEffect(() => {
     const filteredByText = filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo)
@@ -54,19 +64,33 @@ const AddressesTabContent = () => {
       onSearch={setSearchInput}
       buttonText={`+ ${t('New address')}`}
       onButtonClick={() => setIsGenerateNewAddressModalOpen(true)}
-      newItemPlaceholderText={t('Addresses allow you to organise your funds. You can create as many as you want!')}
       HeaderMiddleComponent={
-        <HideEmptyAddressesToggle>
-          <ToggleText>{t('Hide empty addresses')}</ToggleText>
-          <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
-        </HideEmptyAddressesToggle>
+        <HeaderMiddle>
+          <HideEmptyAddressesToggle>
+            <ToggleText>{t('Hide empty addresses')}</ToggleText>
+            <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
+          </HideEmptyAddressesToggle>
+          <Button role="secondary" squared Icon={Wrench} onClick={() => setIsAdvancedOperationsModalOpen(true)} />
+        </HeaderMiddle>
       }
     >
-      {visibleAddresses.map((address) => (
-        <AddressCard hash={address.hash} key={address.hash} />
-      ))}
+      <TableGrid>
+        <GridHeaderRow tabsRowHeight={tabsRowHeight}>
+          <HeaderCell>{t('Address')}</HeaderCell>
+          <HeaderCell>{t('Assets')}</HeaderCell>
+          <HeaderCell justifyContent="flex-end">{t('ALPH amount')}</HeaderCell>
+          <HeaderCell justifyContent="flex-end">{t('Total value')}</HeaderCell>
+        </GridHeaderRow>
+
+        {visibleAddresses.map((address) => (
+          <AddressGridRow addressHash={address.hash} key={address.hash} />
+        ))}
+      </TableGrid>
 
       <ModalPortal>
+        {isAdvancedOperationsModalOpen && (
+          <AdvancedOperationsSideModal onClose={() => setIsAdvancedOperationsModalOpen(false)} />
+        )}
         {isGenerateNewAddressModalOpen && (
           <NewAddressModal
             singleAddress
@@ -94,4 +118,49 @@ const HideEmptyAddressesToggle = styled.div`
 const ToggleText = styled.div`
   font-weight: var(--fontWeight-semiBold);
   color: ${({ theme }) => theme.font.secondary};
+`
+
+const HeaderMiddle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex: 1;
+`
+
+const TableGrid = styled(Box)`
+  contain: paint; // This is amazing. It replaces "overflow: hidden". Using "overflow" on this prevents us from having a sticky table header.
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: ${({ theme }) => theme.border.primary};
+`
+
+const GridRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+`
+
+const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
+  font-size: 14px;
+  font-weight: var(--fontWeight-semiBold);
+  min-height: var(--inputHeight);
+  width: 100%;
+
+  position: sticky;
+  top: ${({ tabsRowHeight }) => tabsRowHeight + appHeaderHeightPx - 1}px;
+  z-index: 1;
+`
+
+const Cell = styled.div`
+  padding: 15px 20px;
+`
+
+const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent'] }>`
+  display: flex;
+  justify-content: ${({ justifyContent }) => justifyContent ?? 'center'};
+  align-items: center;
+  height: 100%;
+  background-color: ${({ theme }) => theme.bg.tertiary};
 `

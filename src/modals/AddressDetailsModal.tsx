@@ -22,10 +22,11 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
+import AddressBadge from '@/components/AddressBadge'
+import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import DotIcon from '@/components/DotIcon'
 import HashEllipsed from '@/components/HashEllipsed'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
@@ -47,7 +48,6 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const { t } = useTranslation()
   const theme = useTheme()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
-  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
@@ -57,20 +57,14 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   return (
     <SideModal
       onClose={onClose}
-      label={t('Address details')}
+      title={t('Address details')}
       width={800}
       header={
         <Header>
           <LeftSide>
-            <AddressColor>
-              {address.isDefault && !isPassphraseUsed ? (
-                <Star color={address.color}>★</Star>
-              ) : (
-                <DotIcon size={11} color={address.color} />
-              )}
-            </AddressColor>
+            <AddressColorIndicator addressHash={address.hash} />
             <Column>
-              <Label>{address.label || <HashEllipsedStyled hash={address.hash} />}</Label>
+              <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
               <Subtitle>
                 {address.label && <Hash hash={address.hash} />}
                 <Group>
@@ -138,6 +132,7 @@ const Header = styled.div`
 const LeftSide = styled.div`
   display: flex;
   align-items: center;
+  gap: 15px;
 `
 
 const ExplorerButton = styled(Button)`
@@ -145,12 +140,9 @@ const ExplorerButton = styled(Button)`
   margin-right: 30px;
 `
 
-const Label = styled.div`
+const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
-`
-
-const HashEllipsedStyled = styled(HashEllipsed)`
   max-width: 300px;
 `
 
@@ -158,18 +150,6 @@ const Hash = styled(HashEllipsed)`
   color: ${({ theme }) => theme.font.secondary};
   font-size: 16px;
   max-width: 250px;
-`
-
-const AddressColor = styled.div`
-  width: 18px;
-  display: flex;
-  justify-content: center;
-  margin-right: 15px;
-`
-
-const Star = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
-  font-size: 18px;
 `
 
 const Column = styled.div`

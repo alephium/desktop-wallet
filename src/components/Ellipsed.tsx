@@ -16,17 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { HTMLAttributes, MutableRefObject, useEffect, useRef, useState } from 'react'
+import { HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-const createHandleResize =
-  (
-    el: MutableRefObject<HTMLDivElement | null>,
-    charWidth: MutableRefObject<number | undefined>,
-    text: string,
-    setText: (t: string) => void
-  ) =>
-  () => {
+import { useWindowResize } from '@/utils/hooks'
+
+interface EllipsedProps extends HTMLAttributes<HTMLDivElement> {
+  text: string
+  className?: string
+}
+
+const Ellipsed = ({ text, className }: EllipsedProps) => {
+  const el = useRef<HTMLDivElement | null>(null)
+  const charWidth = useRef<number>()
+  const [_text, setText] = useState(text)
+
+  const handleResize = useCallback(() => {
     if (el?.current === null) return
 
     if (charWidth.current === undefined) {
@@ -43,30 +48,13 @@ const createHandleResize =
             (visibleChars == text.length ? '' : '...') +
             text.slice(-Math.ceil(half) + 3)
     )
-  }
+  }, [text])
 
-interface EllipsedProps extends HTMLAttributes<HTMLDivElement> {
-  text: string
-  className?: string
-}
-
-const Ellipsed = ({ text, className }: EllipsedProps) => {
-  const el = useRef<HTMLDivElement | null>(null)
-  const charWidth = useRef<number>()
-  const [_text, setText] = useState(text)
-
-  const handleResize = createHandleResize(el, charWidth, text, setText)
+  useWindowResize(handleResize)
 
   useEffect(() => {
     handleResize()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text])
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [handleResize])
 
   return (
     <div ref={el} className={className}>
@@ -79,7 +67,6 @@ const Ellipsed = ({ text, className }: EllipsedProps) => {
 export default styled(Ellipsed)`
   font-family: 'Roboto Mono';
   overflow: hidden;
-  font-size: 13px;
 `
 
 const HiddenText = styled.div`

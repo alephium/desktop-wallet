@@ -26,7 +26,6 @@ import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import { buildSweepTransactions } from '@/api/transactions'
-import FooterButton from '@/components/Buttons/FooterButton'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -40,7 +39,7 @@ import {
   transactionsSendSucceeded
 } from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
-import { TxContext, UnsignedTx } from '@/types/transactions'
+import { CheckTxProps, TxContext, UnsignedTx } from '@/types/transactions'
 import { extractErrorMsg } from '@/utils/misc'
 
 type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
@@ -48,7 +47,7 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   initialTxData: PT
   onClose: () => void
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
-  CheckTxModalContent: (props: { data: T; fees: bigint }) => JSX.Element | null
+  CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
   handleSend: (data: T, context: TxContext) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
@@ -195,6 +194,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       dynamicContent
       header={<StepsProgress currentStep={step} />}
       onBack={onBackCallback}
+      focusMode
     >
       {step === 'build-tx' && (
         <ScrollableModalContent>
@@ -207,13 +207,11 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       )}
       {step === 'info-check' && !!transactionData && !!fees && (
         <ScrollableModalContent>
-          <CheckTxModalContent data={transactionData} fees={fees} />
-          <FooterButton
-            onClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
-            variant={settings.passwordRequirement ? 'default' : 'valid'}
-          >
-            {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
-          </FooterButton>
+          <CheckTxModalContent
+            data={transactionData}
+            fees={fees}
+            onSubmit={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+          />
         </ScrollableModalContent>
       )}
       {step === 'password-check' && settings.passwordRequirement && (

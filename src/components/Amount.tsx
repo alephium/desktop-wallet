@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
-import AlefSymbol from '@/components/AlefSymbol'
 import { useAppSelector } from '@/hooks/redux'
 
 interface AmountProps {
@@ -30,6 +29,7 @@ interface AmountProps {
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
+  overrideSuffixColor?: boolean
   tabIndex?: number
   suffix?: string
   isUnknownToken?: boolean
@@ -43,9 +43,10 @@ const Amount = ({
   className,
   fadeDecimals,
   fullPrecision = false,
-  color,
   nbOfDecimalsToShow,
   suffix,
+  color,
+  overrideSuffixColor,
   tabIndex,
   isUnknownToken
 }: AmountProps) => {
@@ -101,15 +102,23 @@ const Amount = ({
         '-'
       )}
 
-      {!isUnknownToken && (suffix && suffix !== 'ALPH' ? ` ${suffix}` : <AlefSymbol color={color} />)}
+      {!isUnknownToken && <Suffix color={overrideSuffixColor ? color : undefined}>{` ${suffix ?? 'ALPH'}`}</Suffix>}
     </span>
   )
 }
 
 export default styled(Amount)`
   color: ${({ color }) => color ?? 'inherit'};
+  display: inline-flex;
+  white-space: pre;
+  font-weight: var(--fontWeight-bold);
 `
 
 const Decimals = styled.span`
   opacity: 0.7;
+`
+
+const Suffix = styled.span<{ color?: string }>`
+  color: ${({ color, theme }) => color ?? theme.font.secondary};
+  font-weight: var(--fontWeight-medium);
 `

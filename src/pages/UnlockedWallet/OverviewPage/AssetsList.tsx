@@ -25,14 +25,14 @@ import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import HashEllipsed from '@/components/HashEllipsed'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import Table, { TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
-import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { selectAddressesAssets, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -47,8 +47,6 @@ interface AssetsListProps {
 
 const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: AssetsListProps) => {
   const { t } = useTranslation()
-  const isLoadingAddresses = useAppSelector((s) => s.addresses.loading)
-  const isLoadingAssetsInfo = useAppSelector((s) => selectIsLoadingAssetsInfo(s))
 
   const tabs = [
     { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
@@ -57,7 +55,7 @@ const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTi
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 
   return (
-    <Table isLoading={isLoadingAddresses || isLoadingAssetsInfo} className={className}>
+    <Table className={className}>
       <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
       {
         {
@@ -73,6 +71,7 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const displayedAssets = limit ? assets.slice(0, limit) : assets
 
@@ -89,27 +88,31 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
               </TokenSymbol>
             </NameColumn>
             <TableCellAmount>
-              <TokenAmount
-                fadeDecimals
-                value={asset.balance}
-                suffix={asset.symbol}
-                decimals={asset.decimals}
-                isUnknownToken={!asset.symbol}
-              />
-              {asset.lockedBalance > 0 && (
-                <AmountSubtitle>
-                  {`${t('Available')}: `}
-                  <Amount
-                    fadeDecimals
-                    value={asset.balance - asset.lockedBalance}
+              {stateUninitialized ? (
+                <SkeletonLoader height="20px" width="30%" />
+              ) : (
+                <>
+                  <TokenAmount
+                    value={asset.balance}
                     suffix={asset.symbol}
-                    color={theme.font.tertiary}
                     decimals={asset.decimals}
                     isUnknownToken={!asset.symbol}
                   />
-                </AmountSubtitle>
+                  {asset.lockedBalance > 0 && (
+                    <AmountSubtitle>
+                      {`${t('Available')}: `}
+                      <Amount
+                        value={asset.balance - asset.lockedBalance}
+                        suffix={asset.symbol}
+                        color={theme.font.tertiary}
+                        decimals={asset.decimals}
+                        isUnknownToken={!asset.symbol}
+                      />
+                    </AmountSubtitle>
+                  )}
+                  {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
+                </>
               )}
-              {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
             </TableCellAmount>
           </TokenRow>
         </TableRow>

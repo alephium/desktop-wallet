@@ -30,13 +30,13 @@ import {
 } from '@/storage/global/globalActions'
 import { languageChangeFinished, languageChangeStarted, themeToggled } from '@/storage/settings/settingsActions'
 import { themeSettingsChanged } from '@/storage/settings/settingsActions'
-import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
 import { activeWalletDeleted, newWalletNameStored, walletLocked, walletSaved } from '@/storage/wallets/walletActions'
 import { walletDeleted } from '@/storage/wallets/walletActions'
 import WalletStorage from '@/storage/wallets/walletPersistentStorage'
-import { GeneralSettings, ThemeType } from '@/types/settings'
+import { ThemeType } from '@/types/settings'
 import { StoredWallet } from '@/types/wallet'
+import { getThemeType } from '@/utils/settings'
 
 interface AppState {
   loading: boolean
@@ -48,15 +48,13 @@ interface AppState {
   devMode: boolean
 }
 
-const storedSettings = SettingsStorage.load('general') as GeneralSettings
-
 const initialState: AppState = {
   loading: false,
   visibleModals: [],
   addressesPageInfoMessageClosed: false,
   transfersPageInfoMessageClosed: false,
   wallets: WalletStorage.list(),
-  theme: storedSettings.theme === 'system' ? 'dark' : storedSettings.theme,
+  theme: getThemeType(),
   devMode: false
 }
 
@@ -127,7 +125,7 @@ const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean
   if (enableLoading !== false) state.loading = toggle
 }
 
-const resetState = () => ({ ...initialState, wallets: WalletStorage.list() })
+const resetState = () => ({ ...initialState, wallets: WalletStorage.list(), theme: getThemeType() })
 
 const refreshWalletList = (state: AppState) => {
   state.wallets = WalletStorage.list()

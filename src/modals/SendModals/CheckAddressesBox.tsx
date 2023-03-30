@@ -45,7 +45,7 @@ const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddre
       <AddressRow>
         <AddressLabel>{t('From')}</AddressLabel>
         <AddressLabelHash>
-          <AddressBadge addressHash={fromAddress.hash} truncate showHashWhenNoLabel />
+          <AddressBadge addressHash={fromAddress.hash} truncate />
           {fromAddress.label && <HashEllipsedStyled hash={fromAddress.hash} />}
         </AddressLabelHash>
       </AddressRow>

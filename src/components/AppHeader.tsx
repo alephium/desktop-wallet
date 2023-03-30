@@ -46,8 +46,9 @@ interface AppHeader {
 
 const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { t } = useTranslation()
-  const { scroll } = useScrollContext()
-  const scrollY = useMotionValue(0)
+  const scroll = useScrollContext()
+  const initialScroll = useMotionValue(0)
+  const scrollY = scroll?.scrollY || initialScroll
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)
@@ -60,7 +61,6 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
 
   const isAuthenticated = !!mnemonic
   const offlineText = t('The wallet is offline.')
-  scrollY.set(scroll?.scrollTop ?? 0)
 
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
@@ -72,7 +72,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     backgroundColor: useTransform(
       scrollY,
       [0, 100],
-      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.primary]
+      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.background1]
     )
   }
 
@@ -114,7 +114,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             <>
               <HeaderDivider />
               <TooltipWrapper content={t('Default address')}>
-                <AddressBadge addressHash={defaultAddress.hash} />
+                <AddressBadgeStyled addressHash={defaultAddress.hash} />
               </TooltipWrapper>
             </>
           )}
@@ -193,4 +193,8 @@ const HeaderButtons = styled.div`
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  max-width: 120px;
 `

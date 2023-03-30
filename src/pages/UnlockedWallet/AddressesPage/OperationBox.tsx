@@ -50,22 +50,22 @@ const OperationBox = ({
 
   return (
     <div className={className}>
+      <IconWrapper>{Icon}</IconWrapper>
       <div>
         <Title>{title}</Title>
-        <IconWrapper>{Icon}</IconWrapper>
+        <Description>{description}</Description>
       </div>
-      <Description>{description}</Description>
       <Footer>
         {placeholder ? (
           <ActionLink onClick={onButtonClick}>{buttonText}</ActionLink>
         ) : (
-          <Button short onClick={onButtonClick}>
+          <Button short wide onClick={onButtonClick}>
             {buttonText}
           </Button>
         )}
         {infoLink && (
           <ActionLink onClick={() => openInWebBrowser(infoLink)}>
-            <InfoIcon size={12} /> {t`More info`}
+            <InfoIcon size={12} /> {t('More info')}
           </ActionLink>
         )}
       </Footer>
@@ -78,13 +78,11 @@ export default styled(OperationBox)`
   background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-huge);
-  max-width: 228px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
   transition: box-shadow 0.2s ease-out;
   justify-content: space-between;
+  gap: 20px;
 
   &:hover {
     box-shadow: ${({ theme }) => theme.shadow.secondary};
@@ -114,14 +112,12 @@ const Title = styled.div`
   font-size: 13px;
   font-weight: var(--fontWeight-semiBold);
   margin-bottom: var(--spacing-2);
-  min-height: 2rem;
 `
 
 const IconWrapper = styled.div``
 
 const Description = styled.div`
   color: ${({ theme }) => theme.font.secondary};
-  margin: var(--spacing-4) 0;
 `
 
 const InfoIcon = styled(Info)`
@@ -132,4 +128,5 @@ const Footer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
 `

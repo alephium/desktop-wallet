@@ -73,20 +73,13 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
 
   return (
-    <SideModal onClose={onClose} label={t`Transaction details`}>
+    <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
       <Header contrast>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id} color={amountTextColor}>
               {amountSign}
-              <Amount
-                tabIndex={0}
-                value={amount}
-                fadeDecimals
-                color={amountTextColor}
-                decimals={decimals}
-                suffix={symbol}
-              />
+              <Amount tabIndex={0} value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
             </AmountContainer>
           ))}
         </AmountWrapper>
@@ -96,7 +89,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             {label}
           </Direction>
           <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
-          <AddressBadge addressHash={address.hash} truncate withBorders />
+          <AddressBadgeStyled addressHash={address.hash} truncate withBorders />
         </HeaderInfo>
         <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
       </Header>
@@ -105,7 +98,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction === 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} truncate withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -123,7 +116,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           {direction !== 'out' ? (
             <AddressList>
               <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} showHashWhenNoLabel withBorders />
+                <AddressBadge addressHash={address.hash} withBorders />
               </ActionLinkStyled>
             </AddressList>
           ) : (
@@ -151,7 +144,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
         )}
         <DetailsRow label={t`Fee`}>
-          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fadeDecimals />
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
@@ -161,7 +154,6 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                 <Amount
                   tabIndex={0}
                   value={amount}
-                  fadeDecimals
                   fullPrecision
                   color={amountTextColor}
                   decimals={decimals}
@@ -191,7 +183,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <span tabIndex={0}>{addApostrophes(transaction.gasAmount.toString())}</span>
           </DetailsRow>
           <DetailsRow label={t`Gas price`}>
-            <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fadeDecimals fullPrecision />
+            <Amount tabIndex={0} value={BigInt(transaction.gasPrice)} fullPrecision />
           </DetailsRow>
           <DetailsRow label={t`Inputs`}>
             <AddressList>
@@ -324,4 +316,8 @@ const Amounts = styled.div`
 const TokenHash = styled(HashEllipsed)`
   max-width: 80px;
   color: ${({ theme }) => theme.font.primary};
+`
+
+const AddressBadgeStyled = styled(AddressBadge)`
+  max-width: 200px;
 `

@@ -17,22 +17,29 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
+import SkeletonLoader from '@/components/SkeletonLoader'
+import Spinner from '@/components/Spinner'
 import Table, { TableCell, TableCellPlaceholder, TableHeader, TableRow } from '@/components/Table'
 import TransactionalInfo from '@/components/TransactionalInfo'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import TransactionDetailsModal from '@/modals/TransactionDetailsModal'
 import {
-  syncAddressesTransactionsNextPage,
-  syncAddressTransactionsNextPage
+  syncAddressTransactionsNextPage,
+  syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { selectAddresses, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddresses,
+  selectAllAddresses,
+  selectHaveAllPagesLoaded,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import {
   selectAddressesConfirmedTransactions,
   selectAddressesPendingTransactions
@@ -54,6 +61,8 @@ interface TransactionListProps {
   assetIds?: Asset['id'][]
   headerExtraContent?: ReactNode
 }
+
+const maxAttemptsToFindNewTxs = 10
 
 const TransactionList = ({
   className,
@@ -77,45 +86,62 @@ const TransactionList = ({
   const hashes = addresses.map((address) => address.hash)
   const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
-  const isLoading = useAppSelector((s) => s.addresses.loading)
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const finishedLoadingData = useAppSelector((s) => !s.addresses.loading)
+  const allAddressTxPagesLoaded = useAppSelector(selectHaveAllPagesLoaded)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()
-  const [nextPageToLoad, setNextPageToLoad] = useState(1)
-  const [showAllTransactionsLoadedMsg, setShowAllTransactionsLoadedMsg] = useState(false)
+  const [attemptToFindNewFilteredTxs, setAttemptToFindNewFilteredTxs] = useState(0)
 
   const singleAddress = addresses.length === 1
   const filteredConfirmedTxs = applyFilters({ txs: confirmedTxs, directions, assetIds, hideFromColumn })
   const displayedConfirmedTxs = limit ? filteredConfirmedTxs.slice(0, limit - pendingTxs.length) : filteredConfirmedTxs
   const totalNumberOfTransactions = addresses.map((address) => address.txNumber).reduce((a, b) => a + b, 0)
-  const showSkeletonLoading = isLoading && !filteredConfirmedTxs.length && !pendingTxs.length
+  const isFetching = attemptToFindNewFilteredTxs > 0 && attemptToFindNewFilteredTxs <= maxAttemptsToFindNewTxs
+  const allTxsLoaded = singleAddress ? addresses[0].allTransactionPagesLoaded : allAddressTxPagesLoaded
 
-  // TODO: How do we handle paging when addresses filtering changes? We need to keep track of the loaded page for every
-  // combination of selected addresses and in general all filtering criteria. That sounds very complex. Is there a
-  // simpler way? What if no matter what the filtering criteria are, we always:
-  // 1. fetch the next page of ALL addresses
-  // 2. check to see if we received any results
-  // 3. filter the results
-  // 4. if the filter results are 0 but the results are not 0, fetch again
-  const loadNextTransactionsPage = async () => {
-    if (singleAddress) {
-      dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
-    } else {
-      const { nextPage, transactions } = await dispatch(
-        syncAddressesTransactionsNextPage({ addressHashes: hashes, nextPage: nextPageToLoad })
-      ).unwrap()
+  const lastFilteredTxsLength = useRef(filteredConfirmedTxs.length)
+  const shouldStopFetchingTxs = lastFilteredTxsLength.current < filteredConfirmedTxs.length
+  const shouldContinueFetchingTxs = finishedLoadingData && lastFilteredTxsLength.current === filteredConfirmedTxs.length
 
-      setNextPageToLoad(nextPage)
-      setShowAllTransactionsLoadedMsg(transactions.length === 0)
-    }
+  const handleShowMoreClick = () => {
+    setAttemptToFindNewFilteredTxs(1)
+    loadNextTransactionsPage()
   }
 
+  const loadNextTransactionsPage = useCallback(
+    async () =>
+      singleAddress
+        ? dispatch(syncAddressTransactionsNextPage(addresses[0].hash))
+        : dispatch(syncAllAddressesTransactionsNextPage()),
+    [addresses, dispatch, singleAddress]
+  )
+
   useEffect(() => {
-    if (singleAddress) setShowAllTransactionsLoadedMsg(addresses[0].allTransactionPagesLoaded)
-  }, [addresses, singleAddress])
+    if (!allTxsLoaded && isFetching) {
+      if (shouldStopFetchingTxs) {
+        lastFilteredTxsLength.current = filteredConfirmedTxs.length
+        setAttemptToFindNewFilteredTxs(0)
+      } else if (shouldContinueFetchingTxs) {
+        setAttemptToFindNewFilteredTxs(attemptToFindNewFilteredTxs + 1)
+        loadNextTransactionsPage()
+      }
+    } else {
+      setAttemptToFindNewFilteredTxs(0)
+    }
+  }, [
+    allTxsLoaded,
+    attemptToFindNewFilteredTxs,
+    filteredConfirmedTxs.length,
+    isFetching,
+    loadNextTransactionsPage,
+    shouldContinueFetchingTxs,
+    shouldStopFetchingTxs
+  ])
 
   return (
     <>
-      <Table isLoading={showSkeletonLoading} className={className} minWidth="500px">
+      <Table className={className} minWidth="500px">
         {!hideHeader && (
           <TableHeader title={title ?? t('Transactions')}>
             {headerExtraContent}
@@ -125,6 +151,19 @@ const TransactionList = ({
               </ActionLinkStyled>
             )}
           </TableHeader>
+        )}
+        {stateUninitialized && (
+          <>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+            <TableRow>
+              <SkeletonLoader height="37.5px" />
+            </TableRow>
+          </>
         )}
         {pendingTxs.map((tx) => (
           <TableRow key={tx.hash} blinking role="row" tabIndex={0}>
@@ -155,17 +194,19 @@ const TransactionList = ({
         {limit === undefined && confirmedTxs.length !== totalNumberOfTransactions && (
           <TableRow role="row">
             <TableCell align="center" role="gridcell">
-              {showAllTransactionsLoadedMsg ? (
+              {allTxsLoaded ? (
                 <span>{t('All transactions loaded!')}</span>
+              ) : isFetching ? (
+                <Spinner size="15px" />
               ) : (
-                <ActionLink onClick={loadNextTransactionsPage}>{t`Show more`}</ActionLink>
+                <ActionLink onClick={handleShowMoreClick}>{t('Show more')}</ActionLink>
               )}
             </TableCell>
           </TableRow>
         )}
-        {!isLoading && !pendingTxs.length && !confirmedTxs.length && (
+        {!stateUninitialized && !pendingTxs.length && !displayedConfirmedTxs.length && (
           <TableRow role="row" tabIndex={0}>
-            <TableCellPlaceholder align="center">{t`No transactions to display`}</TableCellPlaceholder>
+            <TableCellPlaceholder align="center">{t('No transactions to display')}</TableCellPlaceholder>
           </TableRow>
         )}
       </Table>

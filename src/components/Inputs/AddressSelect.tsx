@@ -119,7 +119,7 @@ function AddressSelect({
           </MoreIcon>
         )}
         <ClickableInput type="button" className={className} disabled={disabled} id={id} simpleMode={simpleMode}>
-          <AddressBadge addressHash={address.hash} truncate showHashWhenNoLabel />
+          <AddressBadge addressHash={address.hash} truncate />
           {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} />}
         </ClickableInput>
       </AddressSelectContainer>
@@ -134,9 +134,9 @@ function AddressSelect({
             onClose={handleAddressSelectModalClose}
             onSearchInput={handleSearch}
             searchPlaceholder={t('Search for name or a hash...')}
-            optionRender={(option) => {
+            optionRender={(option, isSelected) => {
               const address = addresses.find((address) => address.hash === option.value)
-              if (address) return <SelectOptionAddress address={address} />
+              if (address) return <SelectOptionAddress address={address} isSelected={isSelected} />
             }}
             emptyListPlaceholder={t(
               'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'

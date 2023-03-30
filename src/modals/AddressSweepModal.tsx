@@ -160,7 +160,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         </InfoBox>
         <Fee>
           {t`Fee`}
-          <Amount value={fee} fadeDecimals />
+          <Amount value={fee} />
         </Fee>
       </Content>
       <HorizontalDivider narrow />
