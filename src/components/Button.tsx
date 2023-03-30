@@ -216,7 +216,6 @@ export default styled(Button)`
     return css`
       background-color: ${bgColor};
       color: ${fontColor};
-      box-shadow: ${boxShadow};
       border: 1px solid ${borderColor};
       position: relative;
 

@@ -73,7 +73,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     backgroundColor: useTransform(
       scrollY,
       [0, 100],
-      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.background1]
+      [colord(theme.bg.background1).alpha(0).toHex(), colord(theme.bg.background2).alpha(0.7).toHex()]
     )
   }
 
@@ -162,6 +162,8 @@ export default styled(AppHeader)`
   height: ${appHeaderHeightPx}px;
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
+
+  backdrop-filter: blur(20px);
 `
 
 const HeaderDivider = styled.div`

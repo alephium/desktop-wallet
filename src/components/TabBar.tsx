@@ -85,7 +85,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
   min-width: 50px;
   text-align: center;
   padding: 16px 36px;
-  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : theme.bg.background1)};
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : 'transparent')};
   border: 1px solid ${({ theme }) => theme.border.secondary};
   border-bottom: none;
   cursor: pointer;
@@ -100,16 +100,8 @@ export const Tab = styled.div<{ isActive: boolean }>`
           color: ${theme.font.tertiary};
         `}
 
-  &:first-child {
-    border-top-left-radius: var(--radius-big);
-  }
-
   &:not(:first-child) {
     border-left: none;
-  }
-
-  &:last-child {
-    border-top-right-radius: var(--radius-big);
   }
 
   &:hover {
