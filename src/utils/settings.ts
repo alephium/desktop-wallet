@@ -17,8 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName } from '@/types/network'
-import { Language, NetworkSettings } from '@/types/settings'
+import { GeneralSettings, Language, NetworkSettings } from '@/types/settings'
 
 export const isEqualNetwork = (a: NetworkSettings, b: NetworkSettings): boolean =>
   a.nodeHost === b.nodeHost && a.explorerUrl === b.explorerUrl && a.explorerApiHost === b.explorerApiHost
@@ -35,3 +36,9 @@ export const getAvailableLanguageOptions = () => [
   { label: 'Русский', value: 'ru-RU' as Language },
   { label: 'Tiếng Việt', value: 'vi-VN' as Language }
 ]
+
+export const getThemeType = () => {
+  const storedSettings = SettingsStorage.load('general') as GeneralSettings
+
+  return storedSettings.theme === 'system' ? 'dark' : storedSettings.theme
+}

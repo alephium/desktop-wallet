@@ -90,11 +90,12 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  transition: background-color 0.2s ease-out;
 
   &:last-child {
     border-bottom: none;
-    border-bottom-left-radius: var(--radius);
-    border-bottom-right-radius: var(--radius);
+    border-bottom-left-radius: var(--radius-small);
+    border-bottom-right-radius: var(--radius-small);
   }
 
   ${({ onClick }) =>

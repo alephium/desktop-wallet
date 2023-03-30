@@ -66,7 +66,8 @@ export default ReceiveModal
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 var(--spacing-3);
+  padding-top: var(--spacing-3);
+  padding-bottom: var(--spacing-8);
 `
 
 const QRCodeSection = styled.div`

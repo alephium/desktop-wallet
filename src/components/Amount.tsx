@@ -29,6 +29,7 @@ interface AmountProps {
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
+  overrideSuffixColor?: boolean
   tabIndex?: number
   suffix?: string
   isUnknownToken?: boolean
@@ -42,9 +43,10 @@ const Amount = ({
   className,
   fadeDecimals,
   fullPrecision = false,
-  color,
   nbOfDecimalsToShow,
   suffix,
+  color,
+  overrideSuffixColor,
   tabIndex,
   isUnknownToken
 }: AmountProps) => {
@@ -100,7 +102,7 @@ const Amount = ({
         '-'
       )}
 
-      {!isUnknownToken && <Suffix>{` ${suffix ?? 'ALPH'}`}</Suffix>}
+      {!isUnknownToken && <Suffix color={overrideSuffixColor ? color : undefined}>{` ${suffix ?? 'ALPH'}`}</Suffix>}
     </span>
   )
 }
@@ -116,7 +118,7 @@ const Decimals = styled.span`
   opacity: 0.7;
 `
 
-const Suffix = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
+const Suffix = styled.span<{ color?: string }>`
+  color: ${({ color, theme }) => color ?? theme.font.secondary};
   font-weight: var(--fontWeight-medium);
 `

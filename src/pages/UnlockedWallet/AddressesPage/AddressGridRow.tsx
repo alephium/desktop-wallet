@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
+import { colord } from 'colord'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
 import { useState } from 'react'
@@ -74,7 +75,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <AddressColorIndicator addressHash={address.hash} />
           <Column>
             <Label>
-              <AddressBadge addressHash={address.hash} hideColorIndication showHashWhenNoLabel truncate />
+              <AddressBadge addressHash={address.hash} hideColorIndication truncate />
             </Label>
             {stateUninitialized ? (
               <SkeletonLoader height="15.5px" />
@@ -143,6 +144,7 @@ const Cell = styled.div`
   align-items: center;
   display: flex;
   background-color: ${({ theme }) => theme.bg.primary};
+  transition: background-color 0.2s ease-out;
 `
 
 const GridRow = styled.div`
@@ -152,7 +154,7 @@ const GridRow = styled.div`
 
   &:hover ${Cell} {
     cursor: pointer;
-    background-color: ${({ theme }) => theme.bg.hover};
+    background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.7).toRgbString()};
   }
 `
 

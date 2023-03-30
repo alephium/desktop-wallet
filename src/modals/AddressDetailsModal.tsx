@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
+import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
@@ -63,7 +64,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           <LeftSide>
             <AddressColorIndicator addressHash={address.hash} />
             <Column>
-              <Label>{address.label || <HashEllipsedStyled hash={address.hash} />}</Label>
+              <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
               <Subtitle>
                 {address.label && <Hash hash={address.hash} />}
                 <Group>
@@ -139,12 +140,9 @@ const ExplorerButton = styled(Button)`
   margin-right: 30px;
 `
 
-const Label = styled.div`
+const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
-`
-
-const HashEllipsedStyled = styled(HashEllipsed)`
   max-width: 300px;
 `
 
