@@ -15,9 +15,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-
 import { AddressKeyPair, addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
 import { Info } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -44,8 +44,8 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
   const { t } = useTranslation()
   const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
   const defaultAddress = useAppSelector(selectDefaultAddress)
-
   const { generateAddress, generateAndSaveOneAddressPerGroup } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
   const [isDefaultAddress, setIsDefaultAddress] = useState(false)
@@ -74,8 +74,12 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
       }
 
       saveNewAddresses([{ ...newAddressData, ...settings }])
+
+      posthog?.capture('New address created', { label_length: settings.label.length })
     } else {
       generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
+
+      posthog?.capture('One address per group generated', { label_length: addressLabel.title.length })
     }
     onClose()
   }

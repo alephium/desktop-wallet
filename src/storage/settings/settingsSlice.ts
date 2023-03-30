@@ -28,6 +28,7 @@ import dayjs from 'dayjs'
 import i18next from '@/i18n'
 import { localStorageDataMigrated } from '@/storage/global/globalActions'
 import {
+  analyticsToggled,
   devToolsToggled,
   discreetModeToggled,
   languageChanged,
@@ -79,6 +80,9 @@ const settingsSlice = createSlice({
       })
       .addCase(walletLockTimeChanged, (state, action) => {
         state.walletLockTimeInMinutes = action.payload
+      })
+      .addCase(analyticsToggled, (state, action) => {
+        state.analytics = action.payload
       })
   }
 })

@@ -29,6 +29,7 @@ import { ThemeProvider } from 'styled-components'
 
 import App from '@/App'
 import Tooltips from '@/components/Tooltips'
+import AnalyticsProvider from '@/contexts/analytics'
 import { GlobalContextProvider } from '@/contexts/global'
 import { WalletConnectContextProvider } from '@/contexts/walletconnect'
 import * as serviceWorker from '@/serviceWorker'
@@ -47,15 +48,17 @@ ReactDOM.render(
       <Router>
         <ThemeProvider theme={lightTheme}>
           <Suspense fallback="loading">
-            <GlobalContextProvider>
-              <WalletConnectContextProvider>
-                <GlobalStyle />
-                <TooltipProvider>
-                  <App />
-                  <Tooltips />
-                </TooltipProvider>
-              </WalletConnectContextProvider>
-            </GlobalContextProvider>
+            <AnalyticsProvider>
+              <GlobalContextProvider>
+                <WalletConnectContextProvider>
+                  <GlobalStyle />
+                  <TooltipProvider>
+                    <App />
+                    <Tooltips />
+                  </TooltipProvider>
+                </WalletConnectContextProvider>
+              </GlobalContextProvider>
+            </AnalyticsProvider>
           </Suspense>
         </ThemeProvider>
       </Router>

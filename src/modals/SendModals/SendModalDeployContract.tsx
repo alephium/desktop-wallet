@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { fromHumanReadableAmount } from '@alephium/sdk'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
+import { PostHog } from 'posthog-js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -206,7 +207,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   )
 }
 
-const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext) => {
+const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext, posthog?: PostHog) => {
   if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
 
   const data = await signAndSendTransaction(fromAddress, context.unsignedTxId, context.unsignedTransaction.unsignedTx)
@@ -221,6 +222,8 @@ const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxCont
       status: 'pending'
     })
   )
+
+  posthog?.capture('Deployed smart contract')
 
   return data.signature
 }

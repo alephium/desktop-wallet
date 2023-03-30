@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AlertTriangle } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -58,6 +59,7 @@ const NetworkSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
+  const posthog = usePostHog()
 
   const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
@@ -100,6 +102,8 @@ const NetworkSettingsSection = () => {
         if (networkId !== undefined) {
           dispatch(networkPresetSwitched(networkName))
           setTempAdvancedSettings(newNetworkSettings)
+
+          posthog?.capture('Changed network', { network_name: networkName })
           return
         }
 
@@ -112,10 +116,12 @@ const NetworkSettingsSection = () => {
           const settings = { ...newNetworkSettings, networkId: networkId }
           dispatch(customNetworkSettingsSaved(settings))
           setTempAdvancedSettings(settings)
+
+          posthog?.capture('Saved custom network settings')
         }
       }
     },
-    [dispatch, selectedNetwork]
+    [dispatch, posthog, selectedNetwork]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
@@ -130,7 +136,9 @@ const NetworkSettingsSection = () => {
 
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
     dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
-  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, selectedNetwork, tempAdvancedSettings])
+
+    posthog?.capture('Saved custom network settings')
+  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, posthog, selectedNetwork, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {

@@ -16,20 +16,28 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { contactsLoadedFromPersistentStorage } from '@/storage/addresses/addressesActions'
-import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
-import { store } from '@/storage/store'
-import { Contact } from '@/types/contacts'
+import { nanoid } from 'nanoid'
 
-export const filterContacts = (contacts: Contact[], text: string) =>
-  text.length < 2
-    ? contacts
-    : contacts.filter(
-        (contact) => contact.name.toLowerCase().includes(text) || contact.address.toLowerCase().includes(text)
-      )
+export type AnalyticsId = string
 
-export const loadContacts = () => {
-  const contacts: Contact[] = ContactsStorage.load()
+class AnalyticsStorage {
+  private static localStorageKey = 'analytics'
 
-  if (contacts.length > 0) store.dispatch(contactsLoadedFromPersistentStorage(contacts))
+  private generateAnalyticsId(): AnalyticsId {
+    const analyticsId = nanoid()
+
+    window.localStorage.setItem(AnalyticsStorage.localStorageKey, analyticsId)
+
+    return analyticsId
+  }
+
+  load(): AnalyticsId {
+    const rawData = window.localStorage.getItem(AnalyticsStorage.localStorageKey)
+
+    return rawData || this.generateAnalyticsId()
+  }
 }
+
+const Storage = new AnalyticsStorage()
+
+export default Storage

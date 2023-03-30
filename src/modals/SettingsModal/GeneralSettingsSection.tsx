@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -29,7 +30,9 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
+import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import {
+  analyticsToggled,
   discreetModeToggled,
   languageChanged,
   passwordRequirementToggled,
@@ -37,6 +40,7 @@ import {
 } from '@/storage/settings/settingsActions'
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Language, ThemeSettings } from '@/types/settings'
+import { links } from '@/utils/links'
 import { getAvailableLanguageOptions } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
@@ -55,9 +59,10 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
-  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme } = useAppSelector(
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics } = useAppSelector(
     (s) => s.settings
   )
+  const posthog = usePostHog()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 
@@ -66,15 +71,23 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       setIsPasswordModalOpen(true)
     } else {
       dispatch(passwordRequirementToggled())
+
+      posthog?.capture('Enabled password requirement')
     }
-  }, [dispatch, passwordRequirement])
+  }, [dispatch, passwordRequirement, posthog])
 
   const disablePasswordRequirement = useCallback(() => {
     dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
-  }, [dispatch])
 
-  const handleLanguageChange = (language: Language) => dispatch(languageChanged(language))
+    posthog?.capture('Disabled password requirement')
+  }, [dispatch, posthog])
+
+  const handleLanguageChange = (language: Language) => {
+    dispatch(languageChanged(language))
+
+    posthog?.capture('Changed language', { language })
+  }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
 
@@ -82,6 +95,28 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     const time = mins ? parseInt(mins) : null
 
     dispatch(walletLockTimeChanged(time))
+
+    posthog?.capture('Changed wallet lock time', { time })
+  }
+
+  const handleThemeSelect = (theme: ThemeSettings) => {
+    switchTheme(theme)
+
+    posthog?.capture('Changed theme', { theme })
+  }
+
+  const handleAnalyticsToggle = (toggle: boolean) => {
+    dispatch(analyticsToggled(toggle))
+
+    if (toggle) {
+      const id = AnalyticsStorage.load()
+      posthog?.identify(id)
+      posthog?.opt_in_capturing()
+      posthog?.capture('Enabled analytics')
+    } else {
+      posthog?.capture('Disabled analytics')
+      posthog?.opt_out_capturing()
+    }
   }
 
   const discreetModeText = t`Discreet mode`
@@ -113,7 +148,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           <Select
             id="theme"
             options={themeOptions}
-            onSelect={switchTheme}
+            onSelect={handleThemeSelect}
             controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}
@@ -152,6 +187,13 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             heightSize="small"
           />
         }
+      />
+      <HorizontalDivider />
+      <KeyValueInput
+        label={t('Analytics')}
+        description={t('Help us improve your experience!')}
+        moreInfoLink={links.analytics}
+        InputComponent={<Toggle toggled={analytics} onToggle={handleAnalyticsToggle} />}
       />
       <ModalPortal>
         {isPasswordModelOpen && (

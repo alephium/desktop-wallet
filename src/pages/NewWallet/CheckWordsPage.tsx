@@ -20,6 +20,7 @@ import { colord } from 'colord'
 import { motion, PanInfo } from 'framer-motion'
 import { throttle } from 'lodash'
 import { AlertTriangle, ThumbsUp } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -51,6 +52,7 @@ const CheckWordsPage = () => {
   const dispatch = useAppDispatch()
   const { mnemonic, plainWallet, password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
+  const posthog = usePostHog()
 
   const splitMnemonic = mnemonic.split(' ')
 
@@ -184,6 +186,8 @@ const CheckWordsPage = () => {
   const createEncryptedWallet = () => {
     if (areWordsValid && plainWallet) {
       saveNewWallet({ wallet: plainWallet, walletName, password })
+
+      posthog?.capture('New wallet created', { wallet_name_length: walletName.length })
 
       return true
     }

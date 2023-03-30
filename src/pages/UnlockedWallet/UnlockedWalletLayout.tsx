@@ -20,6 +20,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { motion } from 'framer-motion'
 import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TooltipWrapper } from 'react-tooltip'
@@ -52,6 +53,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, 
   const networkStatus = useAppSelector((s) => s.network.status)
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
   const isLoadingData = useAppSelector((s) => s.addresses.loading)
+  const posthog = usePostHog()
 
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
 
@@ -59,7 +61,11 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, 
 
   const activeWalletNameInitials = getInitials(activeWalletName)
 
-  const refreshAddressesData = () => dispatch(syncAddressesData())
+  const refreshAddressesData = () => {
+    dispatch(syncAddressesData())
+
+    posthog?.capture('Refreshed data')
+  }
 
   return (
     <>

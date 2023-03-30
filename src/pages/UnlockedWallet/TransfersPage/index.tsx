@@ -87,7 +87,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
       <BottomRow animate={{ y: scroll?.scrollDirection === 'down' ? 100 : 0 }}>
         <CornerButtons>
           <ButtonsGrid>
-            <ShortcutButtons receive send highlight />
+            <ShortcutButtons receive send highlight analyticsOrigin="transfer_page" />
           </ButtonsGrid>
         </CornerButtons>
       </BottomRow>

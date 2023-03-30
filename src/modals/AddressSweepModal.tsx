@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -52,6 +53,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
+  const posthog = usePostHog()
 
   const fromAddress = sweepAddress || defaultAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
@@ -102,8 +104,11 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           })
         )
       }
+
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
+
+      posthog?.capture('Swept address assets')
     } catch (e) {
       dispatch(
         transactionSendFailed(

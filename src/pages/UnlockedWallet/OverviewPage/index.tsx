@@ -47,7 +47,7 @@ const OverviewPage = () => {
           <Shortcuts>
             <ShortcutsHeader title={t('Shortcuts')} />
             <ButtonsGrid>
-              <ShortcutButtons send receive lock walletSettings />
+              <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" />
             </ButtonsGrid>
           </Shortcuts>
         </AmountsOverviewPanel>

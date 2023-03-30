@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getWalletFromMnemonic } from '@alephium/sdk'
 import { merge } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { PartialDeep } from 'type-fest'
 
@@ -25,6 +26,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import useIdleForTooLong from '@/hooks/useIdleForTooLong'
 import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { osThemeChangeDetected } from '@/storage/global/globalActions'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
@@ -71,6 +74,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const dispatch = useAppDispatch()
   const settings = useAppSelector((s) => s.settings)
   const { restoreAddressesFromMetadata } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const { newVersion, requiresManualDownload } = useLatestGitHubRelease()
   const [newVersionDownloadTriggered, setNewVersionDownloadTriggered] = useState(false)
@@ -98,6 +102,12 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         initialAddress: getWalletInitialAddress(wallet)
       }
       dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
+
+      posthog?.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
+        wallet_name_length: wallet.name.length,
+        number_of_addresses: (AddressMetadataStorage.load() as []).length,
+        number_of_contacts: (ContactsStorage.load() as []).length
+      })
 
       if (!isPassphraseUsed) {
         migrateUserData()

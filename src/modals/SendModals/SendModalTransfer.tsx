@@ -21,7 +21,8 @@ import { ALPH } from '@alephium/token-list'
 import { SignTransferTxResult } from '@alephium/web3'
 import dayjs from 'dayjs'
 import { LockIcon } from 'lucide-react'
-import { Fragment, useState } from 'react'
+import { PostHog } from 'posthog-js'
+import { useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -299,7 +300,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
   }
 }
 
-const handleSend = async (transactionData: TransferTxData, context: TxContext) => {
+const handleSend = async (transactionData: TransferTxData, context: TxContext, posthog?: PostHog) => {
   const { fromAddress, toAddress, lockTime: lockDateTime, assetAmounts } = transactionData
   const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
@@ -328,6 +329,8 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
           })
         )
       }
+
+      posthog?.capture('Swept address assets')
     } else if (unsignedTransaction) {
       const data = await signAndSendTransaction(fromAddress, unsignedTxId, unsignedTransaction.unsignedTx)
 
@@ -344,6 +347,8 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext) =
           status: 'pending'
         })
       )
+
+      posthog?.capture('Sent transaction', { number_of_tokens: tokens.length, locked: !!lockTime })
 
       return data.txId
     }

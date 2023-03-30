@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Info } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
 import { Trans, useTranslation } from 'react-i18next'
@@ -47,6 +48,7 @@ const WalletWelcomePage = () => {
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const { width, height } = useWindowSize()
   const { generateAndSaveOneAddressPerGroup } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const [shouldGenerateOneAddressPerGroup, setShouldGenerateOneAddressPerGroup] = useState(false)
   const [confettiRunning, setConfettiRunning] = useState(true)
@@ -68,6 +70,8 @@ const WalletWelcomePage = () => {
         color: defaultAddress.color,
         label: `Address ${defaultAddress.group}`
       })
+
+      posthog?.capture('Generated one address per group on wallet creation')
     }
 
     navigate('/wallet/overview')

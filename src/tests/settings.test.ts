@@ -27,7 +27,8 @@ const mockSettings = {
     discreetMode: false,
     passwordRequirement: false,
     language: 'en-US' as Language,
-    devTools: false
+    devTools: false,
+    analytics: false
   },
   network: {
     networkId: 123,

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError } from '@alephium/sdk'
 import { AlertTriangle, FileCode, TerminalSquare } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -47,13 +48,18 @@ const DevToolsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const { devTools } = useAppSelector((state) => state.settings)
+  const posthog = usePostHog()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<Address>()
 
-  const toggleDevTools = () => dispatch(devToolsToggled())
+  const toggleDevTools = () => {
+    dispatch(devToolsToggled())
+
+    posthog?.capture('Enabled dev tools')
+  }
 
   const confirmAddressPrivateKeyCopyWithPassword = (address: Address) => {
     setIsPasswordModalOpen(true)
@@ -66,6 +72,8 @@ const DevToolsSettingsSection = () => {
     try {
       await navigator.clipboard.writeText(selectedAddress.privateKey)
       dispatch(copiedToClipboard(t('Private key copied!')))
+
+      posthog?.capture('Copied address private key')
     } catch (e) {
       dispatch(copyToClipboardFailed(getHumanReadableError(e, t('Could not copy private key.'))))
     } finally {

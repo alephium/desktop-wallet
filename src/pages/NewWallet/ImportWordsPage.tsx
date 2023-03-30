@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError, walletImport } from '@alephium/sdk'
 import Tagify, { BaseTagData, ChangeEventData, TagData } from '@yaireo/tagify'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -45,6 +46,7 @@ const ImportWordsPage = () => {
   const { password, walletName } = useWalletContext()
   const { onButtonBack, onButtonNext } = useStepsContext()
   const { discoverAndSaveUsedAddresses } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const [phrase, setPhrase] = useState<{ value: string }[]>([])
   const allowedWords = useRef(bip39Words.split(' '))
@@ -77,6 +79,8 @@ const ImportWordsPage = () => {
       const wallet = walletImport(formatedPhrase)
 
       saveNewWallet({ wallet, walletName, password })
+
+      posthog?.capture('New wallet imported', { wallet_name_length: walletName.length })
 
       discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, skipIndexes: [0], enableLoading: false })
       onButtonNext()

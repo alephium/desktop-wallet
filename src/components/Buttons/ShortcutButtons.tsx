@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ArrowDown, ArrowUp, Lock, Settings } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -33,6 +34,7 @@ import { walletLocked } from '@/storage/wallets/walletActions'
 import { AddressHash } from '@/types/addresses'
 
 interface ShortcutButtonsProps {
+  analyticsOrigin: string
   send?: boolean
   receive?: boolean
   lock?: boolean
@@ -43,6 +45,7 @@ interface ShortcutButtonsProps {
 }
 
 const ShortcutButtons = ({
+  analyticsOrigin,
   send,
   receive,
   lock,
@@ -54,6 +57,7 @@ const ShortcutButtons = ({
   const { t } = useTranslation()
   const theme = useTheme()
   const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash ?? ''))
 
@@ -62,7 +66,35 @@ const ShortcutButtons = ({
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
   const [isAddressOptionsModalOpen, setIsAddressOptionsModalOpen] = useState(false)
 
-  const lockWallet = () => dispatch(walletLocked())
+  const lockWallet = () => {
+    dispatch(walletLocked())
+
+    posthog?.capture('Locked wallet', { origin: analyticsOrigin })
+  }
+
+  const handleReceiveClick = () => {
+    setIsReceiveModalOpen(true)
+
+    posthog?.capture('Receive button clicked', { origin: analyticsOrigin })
+  }
+
+  const handleSendClick = () => {
+    setIsSendModalOpen(true)
+
+    posthog?.capture('Send button clicked', { origin: analyticsOrigin })
+  }
+
+  const handleWalletSettingsClick = () => {
+    setIsSettingsModalOpen(true)
+
+    posthog?.capture('Wallet settings button clicked', { origin: analyticsOrigin })
+  }
+
+  const handleAddressSettingsClick = () => {
+    setIsAddressOptionsModalOpen(true)
+
+    posthog?.capture('Address settings button clicked', { origin: analyticsOrigin })
+  }
 
   return (
     <>
@@ -70,7 +102,7 @@ const ShortcutButtons = ({
         <ShortcutButton
           transparent
           borderless
-          onClick={() => setIsReceiveModalOpen(true)}
+          onClick={handleReceiveClick}
           Icon={ArrowDown}
           iconColor={theme.global.valid}
           highlight={highlight}
@@ -82,7 +114,7 @@ const ShortcutButtons = ({
         <ShortcutButton
           transparent
           borderless
-          onClick={() => setIsSendModalOpen(true)}
+          onClick={handleSendClick}
           Icon={ArrowUp}
           iconColor={theme.global.accent}
           highlight={highlight}
@@ -94,7 +126,7 @@ const ShortcutButtons = ({
         <ShortcutButton
           transparent
           borderless
-          onClick={() => setIsSettingsModalOpen(true)}
+          onClick={handleWalletSettingsClick}
           Icon={Settings}
           highlight={highlight}
         >
@@ -107,7 +139,7 @@ const ShortcutButtons = ({
         </ShortcutButton>
       )}
       {addressSettings && addressHash && (
-        <ShortcutButton transparent borderless onClick={() => setIsAddressOptionsModalOpen(true)} Icon={Settings}>
+        <ShortcutButton transparent borderless onClick={handleAddressSettingsClick} Icon={Settings}>
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}
