@@ -20,6 +20,8 @@ import { PostHogConfig } from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
 import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
+import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
+import { GeneralSettings } from '@/types/settings'
 
 const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST } = import.meta.env
 
@@ -33,8 +35,13 @@ const options: Partial<PostHogConfig> = {
   disable_cookie: true,
   ip: false,
   loaded(posthog) {
-    const id = AnalyticsStorage.load()
-    posthog.identify(id)
+    const { analytics } = SettingsStorage.load('general') as GeneralSettings
+
+    if (analytics) {
+      const id = AnalyticsStorage.load()
+
+      posthog.identify(id)
+    }
   }
 }
 

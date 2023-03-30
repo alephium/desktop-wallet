@@ -30,6 +30,7 @@ import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
+import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import {
   analyticsToggled,
   discreetModeToggled,
@@ -107,7 +108,15 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const handleAnalyticsToggle = (toggle: boolean) => {
     dispatch(analyticsToggled(toggle))
 
-    posthog?.capture(toggle ? 'Enabled analytics' : 'Disabled analytics')
+    if (toggle) {
+      const id = AnalyticsStorage.load()
+      posthog?.identify(id)
+      posthog?.opt_in_capturing()
+      posthog?.capture('Enabled analytics')
+    } else {
+      posthog?.capture('Disabled analytics')
+      posthog?.opt_out_capturing()
+    }
   }
 
   const discreetModeText = t`Discreet mode`
