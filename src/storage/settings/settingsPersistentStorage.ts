@@ -49,7 +49,8 @@ export const defaultSettings: Settings = {
     discreetMode: false,
     passwordRequirement: false,
     language: undefined,
-    devTools: false
+    devTools: false,
+    analytics: true
   },
   network: clone(networkPresets.mainnet) as NetworkSettings
 }

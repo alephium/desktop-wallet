@@ -31,6 +31,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import {
+  analyticsToggled,
   discreetModeToggled,
   languageChanged,
   passwordRequirementToggled,
@@ -38,6 +39,7 @@ import {
 } from '@/storage/settings/settingsActions'
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Language, ThemeSettings } from '@/types/settings'
+import { links } from '@/utils/links'
 import { getAvailableLanguageOptions } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
@@ -56,7 +58,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
-  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme } = useAppSelector(
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics } = useAppSelector(
     (s) => s.settings
   )
   const posthog = usePostHog()
@@ -100,6 +102,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     switchTheme(theme)
 
     posthog?.capture('Changed theme', { theme })
+  }
+
+  const handleAnalyticsToggle = (toggle: boolean) => {
+    dispatch(analyticsToggled(toggle))
+
+    posthog?.capture(toggle ? 'Enabled analytics' : 'Disabled analytics')
   }
 
   const discreetModeText = t`Discreet mode`
@@ -170,6 +178,13 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             heightSize="small"
           />
         }
+      />
+      <HorizontalDivider />
+      <KeyValueInput
+        label={t('Analytics')}
+        description={t('Help us improve your experience!')}
+        moreInfoLink={links.analytics}
+        InputComponent={<Toggle toggled={analytics} onToggle={handleAnalyticsToggle} />}
       />
       <ModalPortal>
         {isPasswordModelOpen && (

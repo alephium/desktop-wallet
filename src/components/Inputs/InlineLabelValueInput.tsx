@@ -16,25 +16,48 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Info } from 'lucide-react'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+
+import ActionLink from '@/components/ActionLink'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface InlineLabelValueInputProps {
   label: string
   InputComponent: ReactNode
   description?: string
+  moreInfoLink?: string
   className?: string
 }
 
-const InlineLabelValueInput = ({ label, InputComponent, description, className }: InlineLabelValueInputProps) => (
-  <KeyValueInputContainer className={className}>
-    <KeyContainer>
-      <Label>{label}</Label>
-      {description && <DescriptionContainer>{description}</DescriptionContainer>}
-    </KeyContainer>
-    <InputContainer>{InputComponent}</InputContainer>
-  </KeyValueInputContainer>
-)
+const InlineLabelValueInput = ({
+  label,
+  InputComponent,
+  description,
+  moreInfoLink,
+  className
+}: InlineLabelValueInputProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <KeyValueInputContainer className={className}>
+      <KeyContainer>
+        <Label>{label}</Label>
+        {description && <DescriptionContainer>{description}</DescriptionContainer>}
+        {moreInfoLink && (
+          <ActionLinkStyled onClick={() => openInWebBrowser(moreInfoLink)}>
+            <Info size={12} /> {t('More info')}
+          </ActionLinkStyled>
+        )}
+      </KeyContainer>
+      <InputContainer>{InputComponent}</InputContainer>
+    </KeyValueInputContainer>
+  )
+}
+
+export default InlineLabelValueInput
 
 const KeyValueInputContainer = styled.div`
   display: flex;
@@ -66,4 +89,6 @@ const InputContainer = styled.div`
   flex: 1;
 `
 
-export default InlineLabelValueInput
+const ActionLinkStyled = styled(ActionLink)`
+  gap: 0.3em;
+`

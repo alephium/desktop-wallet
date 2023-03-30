@@ -25,6 +25,7 @@ export interface GeneralSettings {
   passwordRequirement: boolean
   language: Language | undefined
   devTools: boolean
+  analytics: boolean
 }
 
 export interface NetworkSettings {

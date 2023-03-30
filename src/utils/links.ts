@@ -24,5 +24,6 @@ export const links = {
   utxoConsolidation: 'https://docs.alephium.org/wallet/desktop-wallet/advanced-features#1-utxo-consolidation',
   miningWallet: 'https://docs.alephium.org/wallet/desktop-wallet/configure-mining-wallet',
   discord: 'https://discord.com/channels/747741246667227157/930164826418860032',
-  faq: 'https://docs.alephium.org/frequently-asked-questions'
+  faq: 'https://docs.alephium.org/frequently-asked-questions',
+  analytics: 'https://docs.alephium.org/frequently-asked-questions#what-analytics-does-the-desktop-wallet-collect'
 }

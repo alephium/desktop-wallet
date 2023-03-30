@@ -43,3 +43,5 @@ export const languageChanged = createAction<Settings['general']['language']>('se
 export const walletLockTimeChanged = createAction<Settings['general']['walletLockTimeInMinutes']>(
   'settings/walletLockTimeChanged'
 )
+
+export const analyticsToggled = createAction<Settings['general']['analytics']>('settings/analyticsToggled')
