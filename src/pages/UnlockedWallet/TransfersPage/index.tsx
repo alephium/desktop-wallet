@@ -109,9 +109,12 @@ const BottomRow = styled(motion.div)`
   width: calc(100% - ${walletSidebarWidthPx}px);
   display: flex;
   justify-content: center;
+  z-index: 1;
 `
 
 const CornerButtons = styled.div`
+  position: absolute;
+  bottom: 0;
   border-radius: 47px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
