@@ -112,10 +112,15 @@ const useStepsUI = (currentStep: Step) => {
 }
 
 export default styled(StepsProgress)`
-  padding: 38px 100px 0px;
+  padding: 20px 100px;
   width: 100%;
   display: flex;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: ${({ theme }) => theme.bg.background2};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  z-index: 1;
 `
 
 const StepIndicator = styled.div`
@@ -123,7 +128,7 @@ const StepIndicator = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
-  padding-bottom: 28px;
+  padding-bottom: 20px;
 `
 
 const StepTitle = styled.span`

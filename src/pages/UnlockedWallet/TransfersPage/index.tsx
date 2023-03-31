@@ -120,6 +120,9 @@ const CornerButtons = styled.div`
   border: 1px solid ${({ theme }) => theme.border.primary};
   box-shadow: ${({ theme }) => theme.shadow.secondary};
   background-color: ${({ theme }) => theme.bg.background2};
+  width: 25vw;
+  max-width: 320px;
+  min-width: 230px;
 `
 
 const ButtonsGrid = styled.div`

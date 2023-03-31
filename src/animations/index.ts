@@ -45,7 +45,7 @@ export const slowTransition = {
 }
 
 export const fastTransition = {
-  transition: { type: 'spring', damping: 50, stiffness: 500 }
+  transition: { type: 'spring', damping: 40, stiffness: 500 }
 }
 
 export const fadeInSlowly = {
@@ -64,7 +64,7 @@ export const fadeInOutFast = {
 }
 
 export const fadeInOutScaleFast = {
-  initial: { opacity: 0, scale: 0.7 },
+  initial: { opacity: 0, scale: 0.9 },
   animate: { opacity: 1, scale: 1 },
   exit: { opacity: 0, scale: 0.95 },
   ...fastTransition

@@ -90,7 +90,8 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
   const transparencyStyle = {
     backgroundColor: 'transparent',
     opacity: isShow ? 1 : 0,
-    transition: 'opacity 0.4s ease-in-out'
+    transition: 'opacity 0.2s ease-out',
+    zIndex: 1
   }
 
   const trackXProps = createScrollbarPiece({ height, paddingTop }, transparencyStyle, true)
