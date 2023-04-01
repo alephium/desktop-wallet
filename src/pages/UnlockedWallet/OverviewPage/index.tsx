@@ -39,8 +39,8 @@ const OverviewPage = () => {
     <motion.div {...fadeIn}>
       <UnlockedWalletPanel top>
         <WalletNameRow>
+          <Tagline>{t('Current wallet')}</Tagline>
           <WalletName>{activeWalletName}</WalletName>
-          <Subtitle>{t('Current wallet')}</Subtitle>
         </WalletNameRow>
 
         <AmountsOverviewPanel>
@@ -84,10 +84,9 @@ const WalletName = styled.div`
   font-weight: var(--fontWeight-semiBold);
 `
 
-const Subtitle = styled.div`
+const Tagline = styled.div`
   font-size: 14px;
   color: ${({ theme }) => theme.font.tertiary};
-  margin-top: 8px;
 `
 
 const Shortcuts = styled(Box)`

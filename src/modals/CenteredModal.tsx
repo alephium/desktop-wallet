@@ -62,7 +62,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
-        <Scrollbar translateContentSizeYToHolder>
+        <Scrollbar translateContentSizeYToHolder isDynamic>
           <ModalHeader transparent={transparentHeader}>
             <TitleRow>
               {onBack && (

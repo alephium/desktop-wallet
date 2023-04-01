@@ -107,8 +107,8 @@ export default styled(Button)`
 
     const hoverBgColor = transparent
       ? colord(theme.bg.primary).isDark()
-        ? colord(theme.bg.primary).lighten(0.08).toRgbString()
-        : colord(theme.global.accent).lighten(0.9).alpha(0.4).toRgbString()
+        ? colord(theme.bg.primary).lighten(0.05).toRgbString()
+        : colord(theme.bg.primary).darken(0.04).toRgbString()
       : {
           primary: {
             default: colord(theme.global.accent).darken(0.08).toRgbString(),

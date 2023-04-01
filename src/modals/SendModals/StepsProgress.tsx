@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -118,7 +119,8 @@ export default styled(StepsProgress)`
   justify-content: space-between;
   position: sticky;
   top: 0;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   z-index: 1;
 `
