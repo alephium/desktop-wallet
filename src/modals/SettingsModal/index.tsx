@@ -123,8 +123,9 @@ const CenteredBox = styled(motion.div)`
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-huge);
   background-color: ${({ theme }) => theme.bg.background1};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const Column = styled.div`
