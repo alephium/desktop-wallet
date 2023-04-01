@@ -127,7 +127,7 @@ function Select<T extends OptionValue>({
       return
     }
 
-    setHookCoordinates({ x: e.clientX, y: e.clientY })
+    setHookCoordinates(containerCenter)
     setShowPopup(true)
   }
 
