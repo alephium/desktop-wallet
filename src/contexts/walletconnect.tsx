@@ -217,6 +217,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestExplorerApi': {
             const p = request.params as ApiRequestArguments
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
             const result = await call(...p.params)
             await walletConnectClient.respond({
