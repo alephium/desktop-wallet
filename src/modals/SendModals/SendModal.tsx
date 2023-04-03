@@ -141,6 +141,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     onClose()
   }, [onClose, setDappTxData])
 
+  const onUserCancel = () => {
+    setDappTxData(undefined)
+    onClose()
+    onError('the user cancelled the operation', requestEvent)
+  }
+
   const handleSendExtended = async () => {
     if (!transactionData) return
 
@@ -203,7 +209,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           <BuildTxModalContent
             data={transactionData ?? initialTxData}
             onSubmit={buildTransactionExtended}
-            onCancel={onCloseExtended}
+            onCancel={onUserCancel}
           />
         </ScrollableModalContent>
       )}
