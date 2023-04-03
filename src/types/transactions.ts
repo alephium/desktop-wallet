@@ -74,6 +74,7 @@ export interface ScriptTxData {
   bytecode: string
 
   alphAmount?: string
+  tokens?: Token[]
   gasAmount?: number
   gasPrice?: string
 }

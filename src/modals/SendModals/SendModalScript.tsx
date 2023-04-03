@@ -151,6 +151,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
             fromAddress,
             bytecode: bytecode ?? '',
             alphAmount: alphAmount || undefined,
+            tokens: data.tokens,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })
@@ -173,6 +174,7 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
+    tokens: txData.tokens?.map((t) => ({ id: t.id, amount: t.amount.toString() })),
     gasAmount: txData.gasAmount,
     gasPrice: txData.gasPrice ? fromHumanReadableAmount(txData.gasPrice).toString() : undefined
   })
