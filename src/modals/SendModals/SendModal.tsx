@@ -166,7 +166,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
-      onError(extractErrorMsg(e))
+      onError(extractErrorMsg(e), requestEvent)
     } finally {
       setIsLoading(false)
     }

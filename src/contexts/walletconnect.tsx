@@ -51,7 +51,7 @@ export interface WalletConnectContextProps {
   requestEvent?: SignClientTypes.EventArguments['session_request']
   dappTxData?: DappTxData
   setDappTxData: (data?: DappTxData) => void
-  onError: (error: string) => void
+  onError: (error: string, event: SignClientTypes.EventArguments['session_request'] | undefined) => void
   deepLinkUri: string
 }
 
@@ -103,13 +103,13 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [initializeWalletConnectClient, walletConnectClient])
 
   const onError = useCallback(
-    (error: string): void => {
-      if (!walletConnectClient || !requestEvent) return
+    (error: string, event: SignClientTypes.EventArguments['session_request'] | undefined): void => {
+      if (!walletConnectClient || !event) return
 
       walletConnectClient.respond({
-        topic: requestEvent.topic,
+        topic: event.topic,
         response: {
-          id: requestEvent.id,
+          id: event.id,
           jsonrpc: '2.0',
           error: {
             code: -32000,
@@ -118,7 +118,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       })
     },
-    [walletConnectClient, requestEvent]
+    [walletConnectClient]
   )
 
   const onSessionRequest = useCallback(
@@ -215,7 +215,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestExplorerApi': {
             const p = request.params as ApiRequestArguments
-            const result = await client.explorer.request(p)
+            const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
+            const result = await call(...p.params)
             await walletConnectClient.respond({
               topic: event.topic,
               response: {
@@ -232,7 +233,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
-        onError(extractErrorMsg(e))
+        onError(extractErrorMsg(e), event)
       }
     },
     [addresses, onError, walletConnectClient]
