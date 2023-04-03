@@ -46,12 +46,14 @@ import {
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
+type RequestEvent = SignClientTypes.EventArguments['session_request']
+
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
-  requestEvent?: SignClientTypes.EventArguments['session_request']
+  requestEvent?: RequestEvent
   dappTxData?: DappTxData
   setDappTxData: (data?: DappTxData) => void
-  onError: (error: string, event: SignClientTypes.EventArguments['session_request'] | undefined) => void
+  onError: (error: string, event?: RequestEvent) => void
   deepLinkUri: string
 }
 
@@ -74,7 +76,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
   const [dappTxData, setDappTxData] = useState<DappTxData>()
-  const [requestEvent, setRequestEvent] = useState<SignClientTypes.EventArguments['session_request']>()
+  const [requestEvent, setRequestEvent] = useState<RequestEvent>()
   const [deepLinkUri, setDeepLinkUri] = useState('')
 
   const initializeWalletConnectClient = useCallback(async () => {
@@ -103,7 +105,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [initializeWalletConnectClient, walletConnectClient])
 
   const onError = useCallback(
-    (error: string, event: SignClientTypes.EventArguments['session_request'] | undefined): void => {
+    (error: string, event?: RequestEvent): void => {
       if (!walletConnectClient || !event) return
 
       walletConnectClient.respond({
@@ -122,7 +124,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionRequest = useCallback(
-    async (event: SignClientTypes.EventArguments['session_request']) => {
+    async (event: RequestEvent) => {
       if (!walletConnectClient) return
 
       const getAddressByHash = (signerAddress: string) => {
