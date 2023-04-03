@@ -140,8 +140,9 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
       }
 
       const requiredChain = parseChain(requiredNamespace.chains[0])
+      const chainParams = await client?.web3.infos.getInfosChainParams()
 
-      if (requiredChain.networkId !== (await client.web3.infos.getInfosChainParams())?.networkId) {
+      if (requiredChain.networkId !== chainParams?.networkId) {
         setErrorState('The current network is unmatched with the network requested by WalletConnect')
         return
       }
