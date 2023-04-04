@@ -32,7 +32,6 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
-import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
@@ -42,6 +41,7 @@ import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
 import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
+import { Step } from '@/modals/SendModals/StepsProgress'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
@@ -52,6 +52,9 @@ import { getOptionalTransactionAssetAmounts, isAmountWithinRange } from '@/utils
 
 interface ScriptTxModalModalProps {
   onClose: () => void
+  initialTxData: PartialTxData<ScriptTxData, 'fromAddress'>
+  initialStep?: Step
+  txData?: ScriptTxData
 }
 
 interface ScriptBuildTxModalContentProps {
@@ -60,9 +63,9 @@ interface ScriptBuildTxModalContentProps {
   onCancel: () => void
 }
 
-const ScriptTxModal = ({ onClose }: ScriptTxModalModalProps) => {
+const ScriptTxModal = ({ onClose, initialTxData, initialStep, txData }: ScriptTxModalModalProps) => {
   const { t } = useTranslation()
-  const initialTxData = useDappTxData() as ScriptBuildTxModalContentProps['data']
+  // const initialTxData = useDappTxData() as ScriptBuildTxModalContentProps['data']
 
   return (
     <SendModal
@@ -74,6 +77,8 @@ const ScriptTxModal = ({ onClose }: ScriptTxModalModalProps) => {
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}
+      initialStep={initialStep}
+      txData={txData}
     />
   )
 }

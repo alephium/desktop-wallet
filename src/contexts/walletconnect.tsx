@@ -275,7 +275,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         {isDeployContractSendModalOpen && (
           <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
         )}
-        {isCallScriptSendModalOpen && <SendModalScript onClose={() => setIsCallScriptSendModalOpen(false)} />}
+        {isCallScriptSendModalOpen && dappTxData && (
+          <SendModalScript
+            initialStep="info-check"
+            initialTxData={dappTxData}
+            txData={dappTxData as ScriptTxData}
+            onClose={() => setIsCallScriptSendModalOpen(false)}
+          />
+        )}
       </ModalPortal>
     </WalletConnectContext.Provider>
   )
