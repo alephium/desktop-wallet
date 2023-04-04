@@ -37,7 +37,9 @@ import { useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { Address } from '@/types/addresses'
+import { NetworkPreset } from '@/types/network'
 import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
@@ -141,7 +143,13 @@ const WalletConnectModal = ({ onClose, onConnect, uri: uriProp }: Props) => {
 
       const requiredChain = parseChain(requiredNamespace.chains[0])
 
-      if (requiredChain.networkId !== networkId) {
+      const isValidNetwork =
+        (requiredChain.networkId === 'devnet' && networkId === networkPresets.localhost.networkId) ||
+        (Object.keys(networkPresets) as Array<NetworkPreset>).some(
+          (network) => network === requiredChain.networkId && networkId === networkPresets[network].networkId
+        )
+
+      if (!isValidNetwork) {
         setErrorState('The current network is unmatched with the network requested by WalletConnect')
         return
       }
