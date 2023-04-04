@@ -121,7 +121,7 @@
   "Inputs": "Girdiler",
   "Outputs": "Çıktılar",
   "New version": "Yeni sürüm",
-  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "{{ newVersion }} sürümü mevcut. Cüzdan ile ilgili sorun yaşamamak için \"Update\" kısmına tıklayın.",
+  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "{{ newVersion }} sürümü mevcut. Cüzdan ile ilgili sorun yaşamamak için \"Güncelle\" kısmına tıklayın.",
   "Download": "İndir",
   "Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.": "Lütfen cüzdanınızın kurtarma sözcüklerini kaydettiğinizden ve güvenli bir yere saklandığından emin olun. Kurtarma sözcükleri olmadan cüzdanınızın kurtarılamayacağını ve kalıcı olarak kaybedileceğini unutmayın.",
   "Not your keys, not your coins.": "Anahtar şifreleriniz elinizde değilse, sizin paranız değildir!",
