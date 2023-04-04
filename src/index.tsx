@@ -31,7 +31,6 @@ import App from '@/App'
 import Tooltips from '@/components/Tooltips'
 import AnalyticsProvider from '@/contexts/analytics'
 import { GlobalContextProvider } from '@/contexts/global'
-import { WalletConnectContextProvider } from '@/contexts/walletconnect'
 import * as serviceWorker from '@/serviceWorker'
 import { store } from '@/storage/store'
 import { GlobalStyle } from '@/style/globalStyles'
@@ -50,13 +49,12 @@ ReactDOM.render(
           <Suspense fallback="loading">
             <AnalyticsProvider>
               <GlobalContextProvider>
-                <WalletConnectContextProvider>
-                  <GlobalStyle />
-                  <TooltipProvider>
-                    <App />
-                    <Tooltips />
-                  </TooltipProvider>
-                </WalletConnectContextProvider>
+                <GlobalStyle />
+                <TooltipProvider>
+                  <App />
+
+                  <Tooltips />
+                </TooltipProvider>
               </GlobalContextProvider>
             </AnalyticsProvider>
           </Suspense>
