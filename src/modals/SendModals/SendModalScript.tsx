@@ -19,32 +19,36 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
 import { PostHog } from 'posthog-js'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import client from '@/api/client'
 import { signAndSendTransaction } from '@/api/transactions'
+import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
-import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import AddressInputs from '@/modals/SendModals/AddressInputs'
+import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
 import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
+import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAvailableBalance } from '@/utils/addresses'
-import { expectedAmount, getOptionalTransactionAssetAmounts, isAmountWithinRange } from '@/utils/transactions'
+import { getOptionalTransactionAssetAmounts, isAmountWithinRange } from '@/utils/transactions'
 
 interface ScriptTxModalModalProps {
   onClose: () => void
@@ -62,7 +66,7 @@ const ScriptTxModal = ({ onClose }: ScriptTxModalModalProps) => {
 
   return (
     <SendModal
-      title={t`Call contract`}
+      title={t('Call contract')}
       initialTxData={initialTxData}
       onClose={onClose}
       BuildTxModalContent={ScriptBuildTxModalContent}
@@ -80,10 +84,12 @@ const ScriptCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<Script
 
   return (
     <>
-      <CheckAddressesBox fromAddress={data.fromAddress} />
-      <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
-      <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
-      <CheckFeeLockTimeBox fee={fees} />
+      <Content>
+        {data.assetAmounts && <CheckAmountsBox assetAmounts={data.assetAmounts} />}
+        <CheckAddressesBox fromAddress={data.fromAddress} />
+        <CheckFeeLockTimeBox fee={fees} />
+        <InfoBox label={t('Bytecode')} text={data.bytecode} wordBreak />
+      </Content>
       <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
         {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
       </FooterButton>
@@ -108,6 +114,8 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[] | undefined>(data.assetAmounts)
+
   const { fromAddress, bytecode, alphAmount } = txPrep
   const availableBalance = getAvailableBalance(fromAddress)
 
@@ -117,7 +125,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   }
 
   const allAssetAmountsAreWithinAvailableBalance =
-    data.assetAmounts && assetAmountsWithinAvailableBalance(fromAddress, data.assetAmounts)
+    assetAmounts && assetAmountsWithinAvailableBalance(fromAddress, assetAmounts)
 
   const isSubmitButtonActive =
     !gasPriceError &&
@@ -129,11 +137,22 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   return (
     <>
       <InputFieldsColumn>
-        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
-        <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
+        <AddressInputs
+          defaultFromAddress={fromAddress}
+          fromAddresses={addresses}
+          onFromAddressChange={setTxPrepProp('fromAddress')}
+        />
+        {assetAmounts && (
+          <AssetAmountsInput
+            address={fromAddress}
+            assetAmounts={assetAmounts}
+            onAssetAmountsChange={setAssetAmounts}
+            id="asset-amounts"
+          />
+        )}
         <Input
           id="code"
-          label={t`Bytecode`}
+          label={t('Bytecode')}
           value={bytecode}
           onChange={(e) => setTxPrepProp('bytecode')(e.target.value)}
         />
@@ -153,7 +172,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
           onSubmit({
             fromAddress,
             bytecode: bytecode ?? '',
-            assetAmounts: data.assetAmounts,
+            assetAmounts,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })
@@ -220,3 +239,12 @@ const getWalletConnectResult = (context: TxContext, signature: string): SignExec
 }
 
 export default ScriptTxModal
+
+// TODO: DRY
+const Content = styled.div`
+  padding-top: 36px;
+
+  & > ${Box}:not(:last-child) {
+    margin-bottom: 35px;
+  }
+`

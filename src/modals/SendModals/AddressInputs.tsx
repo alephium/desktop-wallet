@@ -41,11 +41,11 @@ import { filterContacts } from '@/utils/contacts'
 
 interface AddressInputsProps {
   defaultFromAddress: Address
-  toAddress: { value: string; error: string }
+  toAddress?: { value: string; error: string }
   fromAddresses: Address[]
   onFromAddressChange: (address: Address) => void
-  onToAddressChange: (address: string) => void
-  onContactSelect: (address: string) => void
+  onToAddressChange?: (address: string) => void
+  onContactSelect?: (address: string) => void
   className?: string
 }
 
@@ -78,12 +78,13 @@ const AddressInputs = ({
   }))
 
   useEffect(() => {
-    const existingContact = contacts.find((c) => c.address === toAddress.value)
+    const existingContact = contacts.find((c) => c.address === toAddress?.value)
 
     setContact(existingContact)
-  }, [contacts, toAddress.value])
+  }, [contacts, toAddress?.value])
 
-  const handleContactSelect = (contactAddress: SelectOption<AddressHash>) => onContactSelect(contactAddress.value)
+  const handleContactSelect = (contactAddress: SelectOption<AddressHash>) =>
+    onContactSelect && onContactSelect(contactAddress.value)
 
   const handleFocus = () => {
     inputRef.current?.focus()
@@ -111,33 +112,37 @@ const AddressInputs = ({
           hideEmptyAvailableBalance
           simpleMode
         />
-        <HorizontalDividerStyled>
-          <DividerArrowRow>
-            <DividerArrow size={15} />
-          </DividerArrowRow>
-        </HorizontalDividerStyled>
-        <AddressToInput
-          label={t('To')}
-          inputFieldRef={inputRef}
-          value={toAddress.value}
-          error={toAddress.error}
-          onFocus={handleFocus}
-          onBlur={() => setInputFieldMode('view')}
-          onChange={(e) => onToAddressChange(e.target.value)}
-          inputFieldStyle={{
-            color: isContactVisible ? 'transparent' : undefined,
-            transition: 'all 0.2s ease-out'
-          }}
-          Icon={ContactIcon}
-          onIconPress={() => setIsAddressSelectModalOpen(true)}
-        >
-          {isContactVisible && (
-            <ContactRow onClick={handleFocus}>
-              <Truncate>{contact.name}</Truncate>
-              <HashEllipsedStyled hash={contact.address} disableA11y />
-            </ContactRow>
-          )}
-        </AddressToInput>
+        {toAddress && onToAddressChange && (
+          <>
+            <HorizontalDividerStyled>
+              <DividerArrowRow>
+                <DividerArrow size={15} />
+              </DividerArrowRow>
+            </HorizontalDividerStyled>
+            <AddressToInput
+              label={t('To')}
+              inputFieldRef={inputRef}
+              value={toAddress.value}
+              error={toAddress.error}
+              onFocus={handleFocus}
+              onBlur={() => setInputFieldMode('view')}
+              onChange={(e) => onToAddressChange(e.target.value)}
+              inputFieldStyle={{
+                color: isContactVisible ? 'transparent' : undefined,
+                transition: 'all 0.2s ease-out'
+              }}
+              Icon={ContactIcon}
+              onIconPress={() => setIsAddressSelectModalOpen(true)}
+            >
+              {isContactVisible && (
+                <ContactRow onClick={handleFocus}>
+                  <Truncate>{contact.name}</Truncate>
+                  <HashEllipsedStyled hash={contact.address} disableA11y />
+                </ContactRow>
+              )}
+            </AddressToInput>
+          </>
+        )}
       </BoxStyled>
       <ModalPortal>
         {isAddressSelectModalOpen && (
