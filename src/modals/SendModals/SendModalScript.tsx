@@ -43,8 +43,8 @@ import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { CheckTxProps, PartialTxData, ScriptTxData, TxContext, TxPreparation } from '@/types/transactions'
-import { getAvailableBalance } from '@/utils/addresses'
-import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
+import { assetAmountsWithinAvailableBalance, getAvailableBalance } from '@/utils/addresses'
+import { expectedAmount, getOptionalTransactionAssetAmounts, isAmountWithinRange } from '@/utils/transactions'
 
 interface ScriptTxModalModalProps {
   onClose: () => void
@@ -96,8 +96,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   const addresses = useAppSelector(selectAllAddresses)
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
-    bytecode: data.bytecode ?? '',
-    alphAmount: data.alphAmount ?? ''
+    bytecode: data.bytecode ?? ''
   })
   const {
     gasAmount,
@@ -117,11 +116,15 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     return null
   }
 
+  const allAssetAmountsAreWithinAvailableBalance =
+    data.assetAmounts && assetAmountsWithinAvailableBalance(fromAddress, data.assetAmounts)
+
   const isSubmitButtonActive =
     !gasPriceError &&
     !gasAmountError &&
     !!bytecode &&
-    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
+    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance)) &&
+    allAssetAmountsAreWithinAvailableBalance
 
   return (
     <>
@@ -150,8 +153,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
           onSubmit({
             fromAddress,
             bytecode: bytecode ?? '',
-            alphAmount: alphAmount || undefined,
-            tokens: data.tokens,
+            assetAmounts: data.assetAmounts,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })
@@ -165,16 +167,13 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
 }
 
 const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
-  if (!txData.alphAmount) {
-    txData.alphAmount = undefined
-  }
-  const attoAlphAmount =
-    txData.alphAmount !== undefined ? fromHumanReadableAmount(txData.alphAmount).toString() : undefined
+  const { attoAlphAmount, tokens } = getOptionalTransactionAssetAmounts(txData.assetAmounts)
+
   const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
-    tokens: txData.tokens?.map((t) => ({ id: t.id, amount: t.amount.toString() })),
+    tokens,
     gasAmount: txData.gasAmount,
     gasPrice: txData.gasPrice ? fromHumanReadableAmount(txData.gasPrice).toString() : undefined
   })
@@ -183,9 +182,10 @@ const buildTransaction = async (txData: ScriptTxData, ctx: TxContext) => {
   ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
 }
 
-const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxContext, posthog?: PostHog) => {
+const handleSend = async ({ fromAddress, assetAmounts }: ScriptTxData, ctx: TxContext, posthog?: PostHog) => {
   if (!ctx.unsignedTransaction) throw Error('No unsignedTransaction available')
 
+  const { attoAlphAmount, tokens } = getOptionalTransactionAssetAmounts(assetAmounts)
   const data = await signAndSendTransaction(fromAddress, ctx.unsignedTxId, ctx.unsignedTransaction.unsignedTx)
 
   store.dispatch(
@@ -193,7 +193,8 @@ const handleSend = async ({ fromAddress, alphAmount }: ScriptTxData, ctx: TxCont
       hash: data.txId,
       fromAddress: fromAddress.hash,
       toAddress: '',
-      amount: alphAmount ? fromHumanReadableAmount(alphAmount).toString() : undefined,
+      amount: attoAlphAmount,
+      tokens,
       timestamp: new Date().getTime(),
       type: 'contract',
       status: 'pending'

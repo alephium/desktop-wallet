@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
-import { Token as Web3Token } from '@alephium/web3'
 
 import { Address, AddressHash } from '@/types/addresses'
 import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
@@ -74,8 +73,7 @@ export interface ScriptTxData {
   fromAddress: Address
   bytecode: string
 
-  alphAmount?: string
-  tokens?: Web3Token[]
+  assetAmounts?: AssetAmount[]
   gasAmount?: number
   gasPrice?: string
 }

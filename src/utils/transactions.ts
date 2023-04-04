@@ -78,6 +78,9 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
   }
 }
 
+export const getOptionalTransactionAssetAmounts = (assetAmounts?: AssetAmount[]) =>
+  assetAmounts ? getTransactionAssetAmounts(assetAmounts) : { attoAlphAmount: undefined, tokens: undefined }
+
 const now = dayjs()
 const currentYear = now.year()
 const today = now.format('DD/MM/YYYY')

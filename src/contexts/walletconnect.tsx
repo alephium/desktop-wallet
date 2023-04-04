@@ -154,15 +154,15 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         switch (request.method as RelayMethod) {
           case 'alph_signAndSubmitTransferTx': {
             const p = request.params as SignTransferTxParams
-            const alphAssetAmount = { id: ALPH.id, amount: BigInt(p.destinations[0].attoAlphAmount) }
-            const tokenAssetAmounts = p.destinations[0].tokens?.map((token) => ({
-              ...token,
-              amount: BigInt(token.amount)
-            }))
+            const dest = p.destinations[0]
+
             const txData: TransferTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
-              assetAmounts: tokenAssetAmounts ? [alphAssetAmount, ...tokenAssetAmounts] : [alphAssetAmount],
+              assetAmounts: [
+                { id: ALPH.id, amount: BigInt(dest.attoAlphAmount) },
+                ...(dest.tokens ? dest.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : [])
+              ],
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
@@ -174,6 +174,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const p = request.params as SignDeployContractTxParams
             const initialAlphAmount =
               p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.initialAttoAlphAmount)) : undefined
+
             const txData: DeployContractTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
@@ -188,13 +189,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
             const p = request.params as SignExecuteScriptTxParams
-            const alphAmount =
-              p.attoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.attoAlphAmount)) : undefined
+
             const txData: ScriptTxData = {
               fromAddress: getAddressByHash(p.signerAddress),
               bytecode: p.bytecode,
-              alphAmount: alphAmount,
-              tokens: p.tokens,
+              assetAmounts: [
+                ...(p.attoAlphAmount !== undefined ? [{ id: ALPH.id, amount: BigInt(p.attoAlphAmount) }] : []),
+                ...(p.tokens ? p.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : [])
+              ],
               gasAmount: p.gasAmount,
               gasPrice: p.gasPrice?.toString()
             }
