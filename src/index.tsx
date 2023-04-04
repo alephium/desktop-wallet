@@ -25,7 +25,6 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { TooltipProvider } from 'react-tooltip'
-import { ThemeProvider } from 'styled-components'
 
 import App from '@/App'
 import Tooltips from '@/components/Tooltips'
@@ -33,8 +32,6 @@ import AnalyticsProvider from '@/contexts/analytics'
 import { GlobalContextProvider } from '@/contexts/global'
 import * as serviceWorker from '@/serviceWorker'
 import { store } from '@/storage/store'
-import { GlobalStyle } from '@/style/globalStyles'
-import { lightTheme } from '@/style/themes'
 
 // The app still behaves as if React 17 is used. This is because
 // `react-custom-scrollbars` is not working with React 18 yet.
@@ -45,20 +42,16 @@ ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
       <Router>
-        <ThemeProvider theme={lightTheme}>
-          <Suspense fallback="loading">
-            <AnalyticsProvider>
-              <GlobalContextProvider>
-                <GlobalStyle />
-                <TooltipProvider>
-                  <App />
-
-                  <Tooltips />
-                </TooltipProvider>
-              </GlobalContextProvider>
-            </AnalyticsProvider>
-          </Suspense>
-        </ThemeProvider>
+        <Suspense fallback="loading">
+          <AnalyticsProvider>
+            <GlobalContextProvider>
+              <TooltipProvider>
+                <App />
+                <Tooltips />
+              </TooltipProvider>
+            </GlobalContextProvider>
+          </AnalyticsProvider>
+        </Suspense>
       </Router>
     </Provider>
   </StrictMode>,
