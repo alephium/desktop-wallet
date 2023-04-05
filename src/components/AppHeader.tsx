@@ -35,7 +35,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectIcon from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { discreetModeToggled } from '@/storage/settings/settingsActions'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
@@ -55,6 +55,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { mnemonic, isPassphraseUsed } = useAppSelector((s) => s.activeWallet)
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
+  const addresses = useAppSelector(selectAllAddresses)
   const { deepLinkUri } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
@@ -139,7 +140,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
         </HeaderButtons>
       </motion.header>
       <ModalPortal>
-        {isWalletConnectModalOpen && (
+        {isWalletConnectModalOpen && addresses.length > 0 && (
           <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
         )}
       </ModalPortal>
