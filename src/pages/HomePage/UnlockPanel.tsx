@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
@@ -40,7 +40,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const { t } = useTranslation()
   const wallets = useAppSelector((state) => state.global.wallets)
   const { unlockWallet } = useGlobalContext()
-  const { deepLinkUri } = useWalletConnectContext()
+  const { deepLinkUri, connectToWalletConnect, proposalEvent } = useWalletConnectContext()
   const navigate = useNavigate()
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
@@ -50,6 +50,10 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const [password, setPassword] = useState('')
   const [passphrase, setPassphrase] = useState('')
   const [isPassphraseConfirmed, setIsPassphraseConfirmed] = useState(false)
+
+  useEffect(() => {
+    if (deepLinkUri) connectToWalletConnect(deepLinkUri)
+  }, [connectToWalletConnect, deepLinkUri])
 
   if (walletOptions.length === 0) return null
 
@@ -69,16 +73,18 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
     if (passphrase) setPassphrase('')
   }
 
+  const dAppName = proposalEvent?.params.proposer.metadata.name
+
   return (
     <>
       <PanelTitle useLayoutId={false} isSticky={false} size="big">
-        {deepLinkUri ? t('Connect to the dApp') : t('Welcome back.')}
+        {dAppName ? t('Connect to dApp') : t('Welcome back.')}
       </PanelTitle>
       <ParagraphStyled centered secondary>
-        {deepLinkUri
+        {dAppName
           ? wallets.length === 1
-            ? t('Unlock your wallet to connect to the Alephium dApp')
-            : t('Unlock a wallet to connect to the Alephium dApp')
+            ? t('Unlock your wallet to connect to dApp: {{ dAppName }}', { dAppName })
+            : t('Unlock a wallet to connect to dApp: {{ dAppName }}', { dAppName })
           : t(wallets.length === 1 ? 'Unlock your wallet to continue.' : 'Unlock a wallet to continue.')}
       </ParagraphStyled>
       <SectionStyled inList>

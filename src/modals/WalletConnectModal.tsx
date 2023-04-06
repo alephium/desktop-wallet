@@ -16,15 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  ChainInfo,
-  formatChain,
-  isCompatibleChainGroup,
-  parseChain,
-  PROVIDER_NAMESPACE
-} from '@alephium/walletconnect-provider'
-import { SessionTypes, SignClientTypes } from '@walletconnect/types'
-import { useCallback, useEffect, useState } from 'react'
+import { formatChain, isCompatibleChainGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
+import { SessionTypes } from '@walletconnect/types'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -33,18 +27,16 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import walletConnectFull from '@/images/wallet-connect-full.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { Address } from '@/types/addresses'
 import { NetworkPreset } from '@/types/network'
 import { NetworkSettings } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
-import { extractErrorMsg } from '@/utils/misc'
-
-type WalletConnectSessionState = 'uninitialized' | 'proposal' | 'error'
 
 interface WalletConnectModalProps {
   onClose: () => void
@@ -55,106 +47,73 @@ const electron = _window.electron
 
 const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   const { t } = useTranslation()
-  const { walletConnectClient, deepLinkUri, onConnect } = useWalletConnectContext()
+  const dispatch = useAppDispatch()
+  const {
+    walletConnectClient,
+    deepLinkUri,
+    connectToWalletConnect,
+    wcSessionState,
+    setWcSessionState,
+    requiredChainInfo,
+    proposalEvent,
+    onSessionFinished
+  } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
   const currentNetwork = useAppSelector((s) => s.network)
 
   const [uri, setUri] = useState(deepLinkUri)
-  const [error, setError] = useState('')
-  const [wcSessionState, setWcSessionState] = useState<WalletConnectSessionState>('uninitialized')
-  const [proposal, setProposal] = useState<SignClientTypes.EventArguments['session_proposal']>()
-  const [requiredChainInfo, setRequiredChainInfo] = useState<ChainInfo>()
 
   const group = requiredChainInfo?.chainGroup
   const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
   const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
 
   useEffect(() => {
-    if (!walletConnectClient) return
+    if (deepLinkUri) connectToWalletConnect(deepLinkUri)
+  }, [connectToWalletConnect, deepLinkUri])
 
-    const onProposal = async (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      const { requiredNamespaces } = proposal.params
-      const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
-      const requiredChainInfo = parseChain(requiredChains[0])
-
-      setRequiredChainInfo(requiredChainInfo)
-      setProposal(proposal)
-      setWcSessionState('proposal')
-    }
-
-    walletConnectClient.on('session_proposal', onProposal)
-
-    return () => {
-      walletConnectClient.removeListener('session_proposal', onProposal)
-    }
-  }, [walletConnectClient])
-
-  const handleConnect = useCallback(
-    async (uri: string) => {
-      if (!walletConnectClient) return
-
-      try {
-        await walletConnectClient.pair({ uri })
-        onConnect()
-      } catch (e) {
-        setError(`${t('Could not pair with WalletConnect')}: ${extractErrorMsg(e)}`)
-      } finally {
-        setUri('')
-      }
-    },
-    [walletConnectClient, onConnect, t]
-  )
-
-  useEffect(() => {
-    if (deepLinkUri) handleConnect(deepLinkUri)
-  }, [deepLinkUri, handleConnect])
-
-  const setErrorState = (error: string): void => {
-    setWcSessionState('error')
-    setError(error)
-  }
-
-  const chainAccounts = (address: Address, chain: ChainInfo): string[] => {
-    if (!isCompatibleChainGroup(address.group, chain.chainGroup)) {
-      setErrorState(
-        t(
-          'The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})',
-          {
-            addressGroup: address.group,
-            walletConnectGroup: chain.chainGroup
-          }
-        )
-      )
-    }
-
-    return [`${formatChain(chain.networkId, chain.chainGroup)}:${address.publicKey}/default`]
-  }
+  const handleConnect = () => connectToWalletConnect(uri)
 
   const handleApprove = async () => {
     if (!walletConnectClient || !signerAddress) return
+    if (proposalEvent === undefined) return setWcSessionState('uninitialized')
 
-    if (proposal === undefined) return setWcSessionState('uninitialized')
-
-    const { id, requiredNamespaces, relays } = proposal.params
+    const { id, requiredNamespaces, relays } = proposalEvent.params
     const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
 
     if (requiredNamespace.chains.length !== 1)
-      return setErrorState(
-        t('Too many chains in the WalletConnect proposal, expected 1, got {{ num }}', {
-          num: requiredNamespace.chains.length
-        })
+      return dispatch(
+        walletConnectProposalApprovalFailed(
+          t('Too many chains in the WalletConnect proposal, expected 1, got {{ num }}', {
+            num: requiredNamespace.chains.length
+          })
+        )
       )
 
     const requiredChain = parseChain(requiredNamespace.chains[0])
 
     if (!isNetworkValid(requiredChain.networkId, currentNetwork.settings.networkId))
-      return setErrorState(
-        t(
-          'The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})',
-          {
-            currentNetwork: currentNetwork.name,
-            walletConnectNetwork: requiredChain.networkId
-          }
+      return dispatch(
+        walletConnectProposalApprovalFailed(
+          t(
+            'The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})',
+            {
+              currentNetwork: currentNetwork.name,
+              walletConnectNetwork: requiredChain.networkId
+            }
+          )
+        )
+      )
+
+    if (!isCompatibleChainGroup(signerAddress.group, requiredChain.chainGroup))
+      return dispatch(
+        walletConnectProposalApprovalFailed(
+          t(
+            'The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})',
+            {
+              addressGroup: signerAddress.group,
+              walletConnectGroup: requiredChain.chainGroup
+            }
+          )
         )
       )
 
@@ -162,84 +121,68 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
       alephium: {
         methods: requiredNamespace.methods,
         events: requiredNamespace.events,
-        accounts: chainAccounts(signerAddress, requiredChain)
+        accounts: [
+          `${formatChain(requiredChain.networkId, requiredChain.chainGroup)}:${signerAddress.publicKey}/default`
+        ]
       }
     }
 
-    if (!isCompatibleChainGroup(signerAddress.group, requiredChain.chainGroup))
-      return setErrorState(
-        t(
-          'The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})',
-          {
-            addressGroup: signerAddress.group,
-            walletConnectGroup: requiredChain.chainGroup
-          }
-        )
-      )
-
     const { acknowledged } = await walletConnectClient.approve({ id, relayProtocol: relays[0].protocol, namespaces })
     await acknowledged()
-    onClose()
+    closeModal()
     electron?.app.hide()
   }
 
   const handleReject = async () => {
     if (!walletConnectClient) return
-    if (proposal === undefined) return setWcSessionState('uninitialized')
+    if (proposalEvent === undefined) return setWcSessionState('uninitialized')
 
     await walletConnectClient.reject({
-      id: proposal.id,
+      id: proposalEvent.id,
       reason: {
         code: 123, // TODO: Fix this
         message: 'reject me' // TODO: Fix this
       }
     })
-    onClose()
+    closeModal()
     electron?.app.hide()
   }
 
-  const handleRetry = () => {
-    setWcSessionState('uninitialized')
-    setError('')
+  const closeModal = () => {
+    onSessionFinished()
+    onClose()
   }
 
-  return !walletConnectClient ? null : error ? (
+  return !walletConnectClient ? null : wcSessionState === 'uninitialized' && !deepLinkUri && addresses.length > 0 ? (
     <CenteredModal
       title={<ImageStyled src={walletConnectFull} />}
-      subtitle={t('WalletConnect error')}
-      onClose={onClose}
+      subtitle={t('Connect to a dApp')}
+      onClose={closeModal}
     >
-      {error}
-      <ModalFooterButtons>
-        <ModalFooterButton onClick={handleRetry}>{t('Try again')}</ModalFooterButton>
-      </ModalFooterButtons>
-    </CenteredModal>
-  ) : wcSessionState === 'uninitialized' && !deepLinkUri && addresses.length > 0 ? (
-    <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t('Connect to a dApp')} onClose={onClose}>
       <Input onChange={(t) => setUri(t.target.value)} value={uri} label={t('Paste what was copied from the dApp')} />
       <ModalFooterButtons>
-        <ModalFooterButton onClick={onClose}>{t('Cancel')}</ModalFooterButton>
-        <ModalFooterButton onClick={() => handleConnect(uri)} disabled={uri === ''}>
+        <ModalFooterButton onClick={closeModal}>{t('Cancel')}</ModalFooterButton>
+        <ModalFooterButton onClick={handleConnect} disabled={uri === ''}>
           {t('Connect')}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
-  ) : wcSessionState === 'proposal' && proposal && signerAddress ? (
+  ) : wcSessionState === 'proposal' && proposalEvent && signerAddress ? (
     <CenteredModal
       title={<ImageStyled src={walletConnectFull} />}
       subtitle={t('Approve the proposal to connect')}
-      onClose={onClose}
+      onClose={closeModal}
     >
       <Section>
         <InfoBox>
           <Info>{t('Please review the following before authorizing the dApp')}:</Info>
           <List>
             <Info>
-              {t('Name')}: {proposal.params.proposer.metadata.name}
+              {t('Name')}: {proposalEvent.params.proposer.metadata.name}
             </Info>
-            <Info>URL: {proposal.params.proposer.metadata.url}</Info>
+            <Info>URL: {proposalEvent.params.proposer.metadata.url}</Info>
             <Info>
-              {t('Description')}: {proposal.params.proposer.metadata.description}
+              {t('Description')}: {proposalEvent.params.proposer.metadata.description}
             </Info>
             <Info>
               {t('Network ID')}: {requiredChainInfo?.networkId}

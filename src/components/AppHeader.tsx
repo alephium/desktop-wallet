@@ -56,7 +56,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
   const addresses = useAppSelector(selectAllAddresses)
-  const { deepLinkUri } = useWalletConnectContext()
+  const { proposalEvent } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -66,8 +66,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
   useEffect(() => {
-    if (deepLinkUri && isAuthenticated) setIsWalletConnectModalOpen(true)
-  }, [isAuthenticated, deepLinkUri])
+    if (proposalEvent?.id && isAuthenticated) setIsWalletConnectModalOpen(true)
+  }, [isAuthenticated, proposalEvent?.id])
 
   const headerStyles = {
     backgroundColor: useTransform(

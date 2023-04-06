@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { toHumanReadableAmount } from '@alephium/sdk'
+import { getHumanReadableError, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
-import { RelayMethod } from '@alephium/walletconnect-provider'
+import { ChainInfo, parseChain, PROVIDER_NAMESPACE, RelayMethod } from '@alephium/walletconnect-provider'
 import {
   ApiRequestArguments,
   SignDeployContractTxParams,
@@ -28,13 +28,15 @@ import {
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
 import {
   DappTxData,
   DeployContractTxData,
@@ -47,15 +49,23 @@ import { AlephiumWindow } from '@/types/window'
 import { extractErrorMsg } from '@/utils/misc'
 
 type RequestEvent = SignClientTypes.EventArguments['session_request']
+type ProposalEvent = SignClientTypes.EventArguments['session_proposal']
+
+type WalletConnectSessionState = 'uninitialized' | 'proposal'
 
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
   requestEvent?: RequestEvent
+  proposalEvent?: ProposalEvent
   dappTxData?: DappTxData
   setDappTxData: (data?: DappTxData) => void
   onError: (error: string, event?: RequestEvent) => void
   deepLinkUri: string
-  onConnect: () => void
+  connectToWalletConnect: (uri: string) => void
+  requiredChainInfo?: ChainInfo
+  wcSessionState: WalletConnectSessionState
+  setWcSessionState: (s: WalletConnectSessionState) => void
+  onSessionFinished: () => void
 }
 
 const initialContext: WalletConnectContextProps = {
@@ -65,21 +75,31 @@ const initialContext: WalletConnectContextProps = {
   requestEvent: undefined,
   onError: () => null,
   deepLinkUri: '',
-  onConnect: () => null
+  connectToWalletConnect: () => null,
+  requiredChainInfo: undefined,
+  wcSessionState: 'uninitialized',
+  setWcSessionState: () => null,
+  onSessionFinished: () => null
 }
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
 
 export const WalletConnectContextProvider: FC = ({ children }) => {
+  const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
+  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
+  const dispatch = useAppDispatch()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
 
-  const [walletConnectClient, setWalletConnectClient] = useState<SignClient>()
-  const [dappTxData, setDappTxData] = useState<DappTxData>()
-  const [requestEvent, setRequestEvent] = useState<RequestEvent>()
-  const [deepLinkUri, setDeepLinkUri] = useState('')
+  const [walletConnectClient, setWalletConnectClient] = useState(initialContext.walletConnectClient)
+  const [dappTxData, setDappTxData] = useState(initialContext.dappTxData)
+  const [requestEvent, setRequestEvent] = useState(initialContext.requestEvent)
+  const [deepLinkUri, setDeepLinkUri] = useState(initialContext.deepLinkUri)
+  const [wcSessionState, setWcSessionState] = useState(initialContext.wcSessionState)
+  const [proposalEvent, setProposalEvent] = useState(initialContext.proposalEvent)
+  const [requiredChainInfo, setRequiredChainInfo] = useState(initialContext.requiredChainInfo)
 
   const initializeWalletConnectClient = useCallback(async () => {
     try {
@@ -101,9 +121,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    if (walletConnectClient) return
-
-    initializeWalletConnectClient()
+    if (!walletConnectClient) initializeWalletConnectClient()
   }, [initializeWalletConnectClient, walletConnectClient])
 
   const onError = useCallback(
@@ -124,6 +142,16 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     },
     [walletConnectClient]
   )
+
+  const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
+    const { requiredNamespaces } = proposalEvent.params
+    const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
+    const requiredChainInfo = parseChain(requiredChains[0])
+
+    setRequiredChainInfo(requiredChainInfo)
+    setProposalEvent(proposalEvent)
+    setWcSessionState('proposal')
+  }, [])
 
   const onSessionRequest = useCallback(
     async (event: RequestEvent) => {
@@ -246,35 +274,60 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [addresses, onError, walletConnectClient]
   )
 
-  const onConnect = () => {
-    setDeepLinkUri('')
+  const onSessionFinished = () => {
+    setProposalEvent(undefined)
   }
 
+  const connectToWalletConnect = useCallback(
+    async (uri: string) => {
+      if (!walletConnectClient) return
+
+      try {
+        await walletConnectClient.pair({ uri })
+        setDeepLinkUri('')
+      } catch (e) {
+        dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
+      }
+    },
+    [dispatch, t, walletConnectClient]
+  )
+
   useEffect(() => {
-    walletConnectClient?.on('session_request', onSessionRequest)
+    if (!walletConnectClient) return
+
+    walletConnectClient.on('session_request', onSessionRequest)
+    walletConnectClient.on('session_proposal', onSessionProposal)
 
     return () => {
-      walletConnectClient?.removeListener('session_request', onSessionRequest)
+      walletConnectClient.removeListener('session_request', onSessionRequest)
+      walletConnectClient.removeListener('session_proposal', onSessionProposal)
     }
-  }, [onSessionRequest, walletConnectClient])
+  }, [onSessionProposal, onSessionRequest, walletConnectClient])
 
   useEffect(() => {
     const _window = window as unknown as AlephiumWindow
     _window.electron?.walletConnect.onSetDeepLinkUri((deepLinkUri) => {
       setDeepLinkUri(deepLinkUri)
+
+      if (isAuthenticated) connectToWalletConnect(deepLinkUri)
     })
-  }, [])
+  }, [connectToWalletConnect, isAuthenticated])
 
   return (
     <WalletConnectContext.Provider
       value={{
         requestEvent,
+        proposalEvent,
         walletConnectClient,
         dappTxData,
         setDappTxData,
         onError,
         deepLinkUri,
-        onConnect
+        connectToWalletConnect,
+        requiredChainInfo,
+        wcSessionState,
+        setWcSessionState,
+        onSessionFinished
       }}
     >
       {children}

@@ -392,5 +392,8 @@
   "Help us improve your experience!": "Help us improve your experience!",
   "Bytecode": "Bytecode",
   "Too many chains in the WalletConnect proposal, expected 1, got {{ num }}": "Too many chains in the WalletConnect proposal, expected 1, got {{ num }}",
-  "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})": "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})"
+  "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})": "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})",
+  "Connect to dApp": "Connect to dApp",
+  "Unlock your wallet to connect to dApp: {{ dAppName }}": "Unlock your wallet to connect to dApp: {{ dAppName }}",
+  "Unlock a wallet to connect to dApp: {{ dAppName }}": "Unlock a wallet to connect to dApp: {{ dAppName }}"
 }
