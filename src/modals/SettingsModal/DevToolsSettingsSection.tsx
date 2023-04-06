@@ -38,7 +38,7 @@ import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
 import SendModalScript from '@/modals/SendModals/SendModalScript'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
 import { devToolsToggled } from '@/storage/settings/settingsActions'
 import { Address } from '@/types/addresses'
@@ -47,6 +47,7 @@ const DevToolsSettingsSection = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
+  const defaultAddress = useAppSelector(selectDefaultAddress)
   const { devTools } = useAppSelector((state) => state.settings)
   const posthog = usePostHog()
 
@@ -134,7 +135,12 @@ const DevToolsSettingsSection = () => {
         {isDeployContractSendModalOpen && (
           <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
         )}
-        {isCallScriptSendModalOpen && <SendModalScript onClose={() => setIsCallScriptSendModalOpen(false)} />}
+        {isCallScriptSendModalOpen && defaultAddress && (
+          <SendModalScript
+            initialTxData={{ fromAddress: defaultAddress }}
+            onClose={() => setIsCallScriptSendModalOpen(false)}
+          />
+        )}
         {isPasswordModalOpen && (
           <CenteredModal title={t('Enter password')} onClose={closePasswordModal}>
             <PasswordConfirmation

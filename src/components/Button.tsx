@@ -149,8 +149,8 @@ export default styled(Button)`
           primary: {
             default: 'white',
             contrast: theme.font.secondary,
-            valid: theme.font.primary,
-            alert: theme.font.contrastPrimary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.primary,
             faded: theme.global.accent
           }[variant],
           secondary: {

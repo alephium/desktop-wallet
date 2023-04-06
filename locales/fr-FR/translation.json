@@ -239,7 +239,7 @@
   "WalletConnect error": "Erreur WalletConnect",
   "Try again": "Essayez de nouveau",
   "Connect to a dApp": "Se connecter à une dApp",
-  "Paste what was copied from the dApp": "Collez ce qui a été copié depuis la dApp",
+  "Paste WalletConnect URI copied from the dApp": "Paste WalletConnect URI copied from the dApp",
   "Connect": "Se connecter",
   "Approve the proposal to connect": "Approuvez la proposition de connexion",
   "Please review the following before authorizing the dApp": "Passez en revue les paramètres suivants avant d’autoriser la dApp",

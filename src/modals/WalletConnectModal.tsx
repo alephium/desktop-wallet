@@ -21,16 +21,14 @@ import { SessionTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import walletConnectFull from '@/images/wallet-connect-full.svg'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import DAppMetadataBox from '@/modals/WalletConnectModal/DAppMetadataBoxProps'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
@@ -54,7 +52,6 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     deepLinkUri,
     connectToWalletConnect,
     wcSessionState,
-    setWcSessionState,
     requiredChainInfo,
     proposalEvent,
     sessionTopic,
@@ -137,25 +134,24 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
       namespaces
     })
     onProposalApprove(topic)
-
     await acknowledged()
-
     onClose()
-    // electron?.app.hide()
+    electron?.app.hide()
   }
 
   const handleReject = async () => {
     if (!walletConnectClient) return
-    if (proposalEvent === undefined) return setWcSessionState('uninitialized')
+    if (proposalEvent === undefined) return onSessionDelete()
 
     await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
+    onSessionDelete()
     onClose()
     electron?.app.hide()
   }
 
   const handleDisconnect = async () => {
     if (!walletConnectClient || !sessionTopic) return
-    console.log('letssee')
+
     await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
     onSessionDelete()
     onClose()
@@ -166,40 +162,25 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
 
   return !walletConnectClient ? null : showManualInitialization ? (
-    <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t('Connect to a dApp')} onClose={onClose}>
-      <Input onChange={(t) => setUri(t.target.value)} value={uri} label={t('Paste what was copied from the dApp')} />
+    <CenteredModal title="WalletConnect" subtitle={t('Connect to a dApp')} onClose={onClose}>
+      <Input
+        onChange={(t) => setUri(t.target.value)}
+        value={uri}
+        label={t('Paste WalletConnect URI copied from the dApp')}
+      />
       <ModalFooterButtons>
-        <ModalFooterButton onClick={onClose}>{t('Cancel')}</ModalFooterButton>
+        <ModalFooterButton role="secondary" onClick={onClose}>
+          {t('Cancel')}
+        </ModalFooterButton>
         <ModalFooterButton onClick={handleConnect} disabled={uri === ''}>
           {t('Connect')}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
   ) : showProposalForApproval ? (
-    <CenteredModal
-      title={<ImageStyled src={walletConnectFull} />}
-      subtitle={t('Approve the proposal to connect')}
-      onClose={onClose}
-    >
-      <Section>
-        <InfoBox>
-          <Info>{t('Please review the following before authorizing the dApp')}:</Info>
-          <List>
-            <Info>
-              {t('Name')}: {proposalEvent.params.proposer.metadata.name}
-            </Info>
-            <Info>URL: {proposalEvent.params.proposer.metadata.url}</Info>
-            <Info>
-              {t('Description')}: {proposalEvent.params.proposer.metadata.description}
-            </Info>
-            <Info>
-              {t('Network ID')}: {requiredChainInfo?.networkId}
-            </Info>
-            <Info>
-              {t('Address group')}: {requiredChainInfo?.chainGroup ?? t('all')}
-            </Info>
-          </List>
-        </InfoBox>
+    <CenteredModal title="WalletConnect" subtitle={t('Approve the proposal to connect')} onClose={onClose}>
+      <Section inList>
+        <DAppMetadataBox metadata={proposalEvent.params.proposer.metadata} />
       </Section>
       <Section>
         <AddressSelect
@@ -216,15 +197,23 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         <ModalFooterButton role="secondary" onClick={handleReject}>
           {t('Reject')}
         </ModalFooterButton>
-        <ModalFooterButton onClick={handleApprove}>{t('Approve')}</ModalFooterButton>
+        <ModalFooterButton variant="valid" onClick={handleApprove}>
+          {t('Approve')}
+        </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
   ) : showConnectedDApp ? (
-    <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t('Connect to a dApp')} onClose={onClose}>
-      Already connected to {connectedDAppMetadata?.name}! Wanna disconnect?
+    <CenteredModal title="WalletConnect" subtitle={t('Current dApp connection details')} onClose={onClose}>
+      <Section inList>
+        <DAppMetadataBox metadata={connectedDAppMetadata} />
+      </Section>
       <ModalFooterButtons>
-        <ModalFooterButton onClick={onClose}>{t('Cancel')}</ModalFooterButton>
-        <ModalFooterButton onClick={handleDisconnect}>{t('Disconnect')}</ModalFooterButton>
+        <ModalFooterButton role="secondary" onClick={onClose}>
+          {t('Cancel')}
+        </ModalFooterButton>
+        <ModalFooterButton variant="alert" onClick={handleDisconnect}>
+          {t('Disconnect')}
+        </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
   ) : null
@@ -237,17 +226,3 @@ const isNetworkValid = (networkId: string, currentNetworkId: NetworkSettings['ne
   (Object.keys(networkPresets) as Array<NetworkPreset>).some(
     (network) => network === networkId && currentNetworkId === networkPresets[network].networkId
   )
-
-const ImageStyled = styled.img`
-  width: 12rem;
-`
-
-const List = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-left: 1em;
-`
-
-const Info = styled.div`
-  margin-bottom: 1em;
-`

@@ -238,7 +238,7 @@
   "WalletConnect error": "WalletConnect error",
   "Try again": "Try again",
   "Connect to a dApp": "Connect to a dApp",
-  "Paste what was copied from the dApp": "Paste what was copied from the dApp",
+  "Paste WalletConnect URI copied from the dApp": "Paste WalletConnect URI copied from the dApp",
   "Connect": "Connect",
   "Approve the proposal to connect": "Approve the proposal to connect",
   "Please review the following before authorizing the dApp": "Please review the following before authorizing the dApp",
@@ -396,5 +396,6 @@
   "Connect to dApp": "Connect to dApp",
   "Unlock your wallet to connect to dApp: {{ dAppName }}": "Unlock your wallet to connect to dApp: {{ dAppName }}",
   "Unlock a wallet to connect to dApp: {{ dAppName }}": "Unlock a wallet to connect to dApp: {{ dAppName }}",
-  "Disconnect": "Disconnect"
+  "Disconnect": "Disconnect",
+  "Current dApp connection details": "Current dApp connection details"
 }

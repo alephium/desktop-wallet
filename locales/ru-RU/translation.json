@@ -250,7 +250,7 @@
   "WalletConnect error": "Ошибка WalletConnect",
   "Try again": "Попробуйте снова",
   "Connect to a dApp": "Подключение к dApp",
-  "Paste what was copied from the dApp": "Вставьте то, что было скопировано из dApp",
+  "Paste WalletConnect URI copied from the dApp": "Paste WalletConnect URI copied from the dApp",
   "Connect": "Подключить",
   "Approve the proposal to connect": "Утвердить предложение о подключении",
   "Please review the following before authorizing the dApp": "Перед авторизацией dApp, пожалуйста, ознакомьтесь со следующим",

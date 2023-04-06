@@ -64,7 +64,6 @@ export interface WalletConnectContextProps {
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
   wcSessionState: WalletConnectSessionState
-  setWcSessionState: (s: WalletConnectSessionState) => void
   sessionTopic?: string
   onSessionDelete: () => void
   onProposalApprove: (topic: string) => void
@@ -81,7 +80,6 @@ const initialContext: WalletConnectContextProps = {
   connectToWalletConnect: () => null,
   requiredChainInfo: undefined,
   wcSessionState: 'uninitialized',
-  setWcSessionState: () => null,
   sessionTopic: undefined,
   onSessionDelete: () => null,
   onProposalApprove: () => null,
@@ -346,7 +344,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         connectToWalletConnect,
         requiredChainInfo,
         wcSessionState,
-        setWcSessionState,
         onSessionDelete,
         sessionTopic,
         onProposalApprove,
