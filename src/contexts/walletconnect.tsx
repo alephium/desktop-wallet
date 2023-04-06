@@ -55,6 +55,7 @@ export interface WalletConnectContextProps {
   setDappTxData: (data?: DappTxData) => void
   onError: (error: string, event?: RequestEvent) => void
   deepLinkUri: string
+  onConnect: () => void
 }
 
 const initialContext: WalletConnectContextProps = {
@@ -63,7 +64,8 @@ const initialContext: WalletConnectContextProps = {
   setDappTxData: () => null,
   requestEvent: undefined,
   onError: () => null,
-  deepLinkUri: ''
+  deepLinkUri: '',
+  onConnect: () => null
 }
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
@@ -244,6 +246,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [addresses, onError, walletConnectClient]
   )
 
+  const onConnect = () => {
+    setDeepLinkUri('')
+  }
+
   useEffect(() => {
     walletConnectClient?.on('session_request', onSessionRequest)
 
@@ -267,7 +273,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         dappTxData,
         setDappTxData,
         onError,
-        deepLinkUri
+        deepLinkUri,
+        onConnect
       }}
     >
       {children}

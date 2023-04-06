@@ -233,8 +233,8 @@
   "Tokens to issue (optional)": "Tokens to issue (optional)",
   "Gas": "Gas",
   "Review": "Review",
-  "Invalid address group for the WallectConnect connection": "Invalid address group for the WallectConnect connection",
-  "Error in pairing": "Error in pairing",
+  "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})": "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})",
+  "Could not pair with WalletConnect": "Could not pair with WalletConnect",
   "WalletConnect error": "WalletConnect error",
   "Try again": "Try again",
   "Connect to a dApp": "Connect to a dApp",
@@ -243,7 +243,6 @@
   "Approve the proposal to connect": "Approve the proposal to connect",
   "Please review the following before authorizing the dApp": "Please review the following before authorizing the dApp",
   "Name": "Name",
-  "URL": "URL",
   "Description": "Description",
   "Network ID": "Network ID",
   "Address group": "Address group",
@@ -391,5 +390,7 @@
   "lockTimeConfirmation": "You chose to lock the assets until <1>{{ datetime }}</1>. That is approximately <3>{{ inTimeFromNow }}</3> from now. Are you sure you want to lock the assets until then?",
   "Analytics": "Analytics",
   "Help us improve your experience!": "Help us improve your experience!",
-  "Bytecode": "Bytecode"
+  "Bytecode": "Bytecode",
+  "Too many chains in the WalletConnect proposal, expected 1, got {{ num }}": "Too many chains in the WalletConnect proposal, expected 1, got {{ num }}",
+  "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})": "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})"
 }

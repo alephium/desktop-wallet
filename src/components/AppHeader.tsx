@@ -141,7 +141,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
       </motion.header>
       <ModalPortal>
         {isWalletConnectModalOpen && addresses.length > 0 && (
-          <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
+          <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />
         )}
       </ModalPortal>
     </>

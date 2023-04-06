@@ -29,6 +29,7 @@ import { Section } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
+import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
 
 interface UnlockPanelProps {
@@ -39,6 +40,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const { t } = useTranslation()
   const wallets = useAppSelector((state) => state.global.wallets)
   const { unlockWallet } = useGlobalContext()
+  const { deepLinkUri } = useWalletConnectContext()
   const navigate = useNavigate()
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
@@ -70,10 +72,14 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   return (
     <>
       <PanelTitle useLayoutId={false} isSticky={false} size="big">
-        {t('Welcome back.')}
+        {deepLinkUri ? t('Connect to the dApp') : t('Welcome back.')}
       </PanelTitle>
       <ParagraphStyled centered secondary>
-        {t(wallets.length === 1 ? 'Unlock your wallet to continue.' : 'Unlock a wallet to continue.')}
+        {deepLinkUri
+          ? wallets.length === 1
+            ? t('Unlock your wallet to connect to the Alephium dApp')
+            : t('Unlock a wallet to connect to the Alephium dApp')
+          : t(wallets.length === 1 ? 'Unlock your wallet to continue.' : 'Unlock a wallet to continue.')}
       </ParagraphStyled>
       <SectionStyled inList>
         <Select
