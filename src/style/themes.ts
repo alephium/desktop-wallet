@@ -37,7 +37,7 @@ export const lightTheme: DefaultTheme = {
     tertiary: '#adadad',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
-    highlight: '#d9a800'
+    highlight: '#d4a10d'
   },
   border: {
     primary: '#e3e3e3',

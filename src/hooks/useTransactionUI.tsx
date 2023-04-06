@@ -35,7 +35,7 @@ export const useTransactionUI = (infoType: TransactionInfoType) => {
     }[infoType],
     amountTextColor: {
       in: theme.global.valid,
-      out: theme.global.accent,
+      out: theme.font.highlight,
       move: theme.font.primary,
       pending: theme.font.primary
     }[infoType],
@@ -53,13 +53,13 @@ export const useTransactionUI = (infoType: TransactionInfoType) => {
     }[infoType],
     iconColor: {
       in: theme.global.valid,
-      out: theme.global.accent,
+      out: theme.font.highlight,
       move: theme.font.secondary,
       pending: theme.font.secondary
     }[infoType],
     iconBgColor: {
       in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.global.accent).alpha(0.11).toRgbString(),
+      out: colord(theme.font.highlight).alpha(0.11).toRgbString(),
       move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
       pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
     }[infoType]
