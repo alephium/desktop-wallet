@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { formatChain, isCompatibleChainGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes } from '@walletconnect/types'
+import { getSdkError } from '@walletconnect/utils'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -56,7 +57,10 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     setWcSessionState,
     requiredChainInfo,
     proposalEvent,
-    onSessionFinished
+    sessionTopic,
+    onProposalApprove,
+    onSessionDelete,
+    connectedDAppMetadata
   } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
   const currentNetwork = useAppSelector((s) => s.network)
@@ -75,7 +79,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
   const handleApprove = async () => {
     if (!walletConnectClient || !signerAddress) return
-    if (proposalEvent === undefined) return setWcSessionState('uninitialized')
+    if (proposalEvent === undefined) return onSessionDelete()
 
     const { id, requiredNamespaces, relays } = proposalEvent.params
     const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
@@ -127,51 +131,55 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
       }
     }
 
-    const { acknowledged } = await walletConnectClient.approve({ id, relayProtocol: relays[0].protocol, namespaces })
+    const { topic, acknowledged } = await walletConnectClient.approve({
+      id,
+      relayProtocol: relays[0].protocol,
+      namespaces
+    })
+    onProposalApprove(topic)
+
     await acknowledged()
-    closeModal()
-    electron?.app.hide()
+
+    onClose()
+    // electron?.app.hide()
   }
 
   const handleReject = async () => {
     if (!walletConnectClient) return
     if (proposalEvent === undefined) return setWcSessionState('uninitialized')
 
-    await walletConnectClient.reject({
-      id: proposalEvent.id,
-      reason: {
-        code: 123, // TODO: Fix this
-        message: 'reject me' // TODO: Fix this
-      }
-    })
-    closeModal()
+    await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
+    onClose()
     electron?.app.hide()
   }
 
-  const closeModal = () => {
-    onSessionFinished()
+  const handleDisconnect = async () => {
+    if (!walletConnectClient || !sessionTopic) return
+    console.log('letssee')
+    await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
+    onSessionDelete()
     onClose()
   }
 
-  return !walletConnectClient ? null : wcSessionState === 'uninitialized' && !deepLinkUri && addresses.length > 0 ? (
-    <CenteredModal
-      title={<ImageStyled src={walletConnectFull} />}
-      subtitle={t('Connect to a dApp')}
-      onClose={closeModal}
-    >
+  const showManualInitialization = wcSessionState === 'uninitialized' && !deepLinkUri && addresses.length > 0
+  const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent && signerAddress
+  const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
+
+  return !walletConnectClient ? null : showManualInitialization ? (
+    <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t('Connect to a dApp')} onClose={onClose}>
       <Input onChange={(t) => setUri(t.target.value)} value={uri} label={t('Paste what was copied from the dApp')} />
       <ModalFooterButtons>
-        <ModalFooterButton onClick={closeModal}>{t('Cancel')}</ModalFooterButton>
+        <ModalFooterButton onClick={onClose}>{t('Cancel')}</ModalFooterButton>
         <ModalFooterButton onClick={handleConnect} disabled={uri === ''}>
           {t('Connect')}
         </ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
-  ) : wcSessionState === 'proposal' && proposalEvent && signerAddress ? (
+  ) : showProposalForApproval ? (
     <CenteredModal
       title={<ImageStyled src={walletConnectFull} />}
       subtitle={t('Approve the proposal to connect')}
-      onClose={closeModal}
+      onClose={onClose}
     >
       <Section>
         <InfoBox>
@@ -209,6 +217,14 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
           {t('Reject')}
         </ModalFooterButton>
         <ModalFooterButton onClick={handleApprove}>{t('Approve')}</ModalFooterButton>
+      </ModalFooterButtons>
+    </CenteredModal>
+  ) : showConnectedDApp ? (
+    <CenteredModal title={<ImageStyled src={walletConnectFull} />} subtitle={t('Connect to a dApp')} onClose={onClose}>
+      Already connected to {connectedDAppMetadata?.name}! Wanna disconnect?
+      <ModalFooterButtons>
+        <ModalFooterButton onClick={onClose}>{t('Cancel')}</ModalFooterButton>
+        <ModalFooterButton onClick={handleDisconnect}>{t('Disconnect')}</ModalFooterButton>
       </ModalFooterButtons>
     </CenteredModal>
   ) : null

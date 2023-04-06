@@ -51,7 +51,7 @@ import { extractErrorMsg } from '@/utils/misc'
 type RequestEvent = SignClientTypes.EventArguments['session_request']
 type ProposalEvent = SignClientTypes.EventArguments['session_proposal']
 
-type WalletConnectSessionState = 'uninitialized' | 'proposal'
+type WalletConnectSessionState = 'uninitialized' | 'proposal' | 'initialized'
 
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
@@ -65,7 +65,10 @@ export interface WalletConnectContextProps {
   requiredChainInfo?: ChainInfo
   wcSessionState: WalletConnectSessionState
   setWcSessionState: (s: WalletConnectSessionState) => void
-  onSessionFinished: () => void
+  sessionTopic?: string
+  onSessionDelete: () => void
+  onProposalApprove: (topic: string) => void
+  connectedDAppMetadata?: ProposalEvent['params']['proposer']['metadata']
 }
 
 const initialContext: WalletConnectContextProps = {
@@ -79,7 +82,10 @@ const initialContext: WalletConnectContextProps = {
   requiredChainInfo: undefined,
   wcSessionState: 'uninitialized',
   setWcSessionState: () => null,
-  onSessionFinished: () => null
+  sessionTopic: undefined,
+  onSessionDelete: () => null,
+  onProposalApprove: () => null,
+  connectedDAppMetadata: undefined
 }
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
@@ -100,6 +106,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [wcSessionState, setWcSessionState] = useState(initialContext.wcSessionState)
   const [proposalEvent, setProposalEvent] = useState(initialContext.proposalEvent)
   const [requiredChainInfo, setRequiredChainInfo] = useState(initialContext.requiredChainInfo)
+  const [sessionTopic, setSessionTopic] = useState(initialContext.sessionTopic)
+  const [connectedDAppMetadata, setConnectedDappMetadata] = useState(initialContext.connectedDAppMetadata)
 
   const initializeWalletConnectClient = useCallback(async () => {
     try {
@@ -274,10 +282,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [addresses, onError, walletConnectClient]
   )
 
-  const onSessionFinished = () => {
-    setProposalEvent(undefined)
-  }
-
   const connectToWalletConnect = useCallback(
     async (uri: string) => {
       if (!walletConnectClient) return
@@ -292,17 +296,33 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [dispatch, t, walletConnectClient]
   )
 
+  const onSessionDelete = useCallback(() => {
+    setRequiredChainInfo(undefined)
+    setProposalEvent(undefined)
+    setWcSessionState('uninitialized')
+    setSessionTopic(undefined)
+  }, [])
+
+  const onProposalApprove = (topic: string) => {
+    setSessionTopic(topic)
+    setConnectedDappMetadata(proposalEvent?.params.proposer.metadata)
+    setProposalEvent(undefined)
+    setWcSessionState('initialized')
+  }
+
   useEffect(() => {
     if (!walletConnectClient) return
 
     walletConnectClient.on('session_request', onSessionRequest)
     walletConnectClient.on('session_proposal', onSessionProposal)
+    walletConnectClient.on('session_delete', onSessionDelete)
 
     return () => {
       walletConnectClient.removeListener('session_request', onSessionRequest)
       walletConnectClient.removeListener('session_proposal', onSessionProposal)
+      walletConnectClient.on('session_delete', onSessionDelete)
     }
-  }, [onSessionProposal, onSessionRequest, walletConnectClient])
+  }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
   useEffect(() => {
     const _window = window as unknown as AlephiumWindow
@@ -327,7 +347,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         requiredChainInfo,
         wcSessionState,
         setWcSessionState,
-        onSessionFinished
+        onSessionDelete,
+        sessionTopic,
+        onProposalApprove,
+        connectedDAppMetadata
       }}
     >
       {children}
