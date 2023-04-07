@@ -65,7 +65,6 @@ interface ScriptBuildTxModalContentProps {
 
 const ScriptTxModal = ({ onClose, initialTxData, initialStep, txData }: ScriptTxModalModalProps) => {
   const { t } = useTranslation()
-  // const initialTxData = useDappTxData() as ScriptBuildTxModalContentProps['data']
 
   return (
     <SendModal

@@ -27,6 +27,7 @@ import {
 } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { SignClientTypes } from '@walletconnect/types'
+import { partition } from 'lodash'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -37,6 +38,7 @@ import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract
 import SendModalScript from '@/modals/SendModals/SendModalScript'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
+import { AssetAmount } from '@/types/assets'
 import {
   DappTxData,
   DeployContractTxData,
@@ -224,17 +226,32 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             break
           }
           case 'alph_signAndSubmitExecuteScriptTx': {
-            const p = request.params as SignExecuteScriptTxParams
+            const { tokens, bytecode, gasAmount, gasPrice, signerAddress, attoAlphAmount } =
+              request.params as SignExecuteScriptTxParams
+            let assetAmounts: AssetAmount[] = []
+            let allAlphAssets: AssetAmount[] = attoAlphAmount ? [{ id: ALPH.id, amount: BigInt(attoAlphAmount) }] : []
+
+            if (tokens) {
+              const assets = tokens.map((token) => ({ id: token.id, amount: BigInt(token.amount) }))
+              const [alphAssets, tokenAssets] = partition(assets, (asset) => asset.id === ALPH.id)
+
+              assetAmounts = tokenAssets
+              allAlphAssets = [...allAlphAssets, ...alphAssets]
+            }
+
+            if (allAlphAssets.length > 0) {
+              assetAmounts.push({
+                id: ALPH.id,
+                amount: allAlphAssets.reduce((total, asset) => total + (asset.amount ?? BigInt(0)), BigInt(0))
+              })
+            }
 
             const txData: ScriptTxData = {
-              fromAddress: getAddressByHash(p.signerAddress),
-              bytecode: p.bytecode,
-              assetAmounts: [
-                ...(p.attoAlphAmount !== undefined ? [{ id: ALPH.id, amount: BigInt(p.attoAlphAmount) }] : []),
-                ...(p.tokens ? p.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : [])
-              ],
-              gasAmount: p.gasAmount,
-              gasPrice: p.gasPrice?.toString()
+              fromAddress: getAddressByHash(signerAddress),
+              bytecode,
+              assetAmounts,
+              gasAmount,
+              gasPrice: gasPrice?.toString()
             }
 
             setTxDataAndOpenModal({ txData, modalType: TxType.SCRIPT })
