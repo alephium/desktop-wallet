@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { fromHumanReadableAmount } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
 import { PostHog } from 'posthog-js'
 import { useState } from 'react'
@@ -27,15 +28,15 @@ import { signAndSendTransaction } from '@/api/transactions'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import AmountInput from '@/components/Inputs/AmountInput'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressSelectFrom from '@/modals/SendModals/AddressSelectFrom'
+import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
+import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
 import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
 import GasSettings from '@/modals/SendModals/GasSettings'
@@ -43,6 +44,7 @@ import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
+import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
@@ -132,7 +134,6 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
     fromAddress: data.fromAddress ?? '',
     bytecode: data.bytecode ?? '',
-    alphAmount: data.initialAlphAmount ?? '',
     issueTokenAmount: data.issueTokenAmount ?? ''
   })
   const {
@@ -145,7 +146,10 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
-  const { fromAddress, bytecode, alphAmount, issueTokenAmount } = txPrep
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([{ id: ALPH.id }])
+  const alphAsset = assetAmounts[0]
+
+  const { fromAddress, bytecode, issueTokenAmount } = txPrep
   const availableBalance = getAvailableBalance(fromAddress)
 
   if (fromAddress === undefined) {
@@ -157,19 +161,29 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     !gasPriceError &&
     !gasAmountError &&
     !!bytecode &&
-    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
+    (!alphAsset.amount || isAmountWithinRange(alphAsset.amount, availableBalance))
 
   return (
     <>
       <InputFieldsColumn>
-        <AddressSelectFrom defaultAddress={fromAddress} addresses={addresses} onChange={setTxPrepProp('fromAddress')} />
+        <AddressInputs
+          defaultFromAddress={fromAddress}
+          fromAddresses={addresses}
+          onFromAddressChange={setTxPrepProp('fromAddress')}
+        />
+        <AssetAmountsInput
+          address={fromAddress}
+          assetAmounts={assetAmounts}
+          onAssetAmountsChange={setAssetAmounts}
+          allowMultiple={false}
+          id="asset-amounts"
+        />
         <Input
           id="code"
-          label={t`Bytecode`}
+          label={t('Bytecode')}
           value={bytecode}
           onChange={(e) => setTxPrepProp('bytecode')(e.target.value)}
         />
-        <AmountInput value={alphAmount} onChange={setTxPrepProp('alphAmount')} availableAmount={availableBalance} />
         <Input
           id="issue-token-amount"
           label={t`Tokens to issue (optional)`}
@@ -194,7 +208,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             fromAddress,
             bytecode: bytecode ?? '',
             issueTokenAmount: issueTokenAmount || undefined,
-            initialAlphAmount: (alphAmount && fromHumanReadableAmount(alphAmount).toString()) || undefined,
+            initialAlphAmount: alphAsset.amount ? alphAsset.amount.toString() : undefined,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })
