@@ -63,7 +63,7 @@ export interface DeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAlphAmount?: string
+  initialAlphAmount?: AssetAmount
   issueTokenAmount?: string
   gasAmount?: number
   gasPrice?: string

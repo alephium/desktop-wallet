@@ -19,13 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount } from '@alephium/sdk'
 import { SignExecuteScriptTxResult } from '@alephium/web3'
 import { PostHog } from 'posthog-js'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
 import client from '@/api/client'
 import { signAndSendTransaction } from '@/api/transactions'
-import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
@@ -39,6 +37,7 @@ import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
 import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
 import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
+import CheckModalContent from '@/modals/SendModals/CheckModalContent'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { Step } from '@/modals/SendModals/StepsProgress'
@@ -88,12 +87,12 @@ const ScriptCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<Script
 
   return (
     <>
-      <Content>
+      <CheckModalContent>
         {data.assetAmounts && <CheckAmountsBox assetAmounts={data.assetAmounts} />}
         <CheckAddressesBox fromAddress={data.fromAddress} />
         <CheckFeeLockTimeBox fee={fees} />
         <InfoBox label={t('Bytecode')} text={data.bytecode} wordBreak />
-      </Content>
+      </CheckModalContent>
       <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
         {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
       </FooterButton>
@@ -119,9 +118,18 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
   const [assetAmounts, setAssetAmounts] = useState<AssetAmount[] | undefined>(data.assetAmounts)
+  const [isAmountValid, setIsAmountValid] = useState(false)
 
   const { fromAddress, bytecode, alphAmount } = txPrep
   const availableBalance = getAvailableBalance(fromAddress)
+
+  useEffect(() => {
+    try {
+      setIsAmountValid(!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
+    } catch (e) {
+      console.error(e)
+    }
+  }, [alphAmount, availableBalance])
 
   if (fromAddress === undefined) {
     onCancel()
@@ -132,11 +140,7 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
     assetAmounts && assetAmountsWithinAvailableBalance(fromAddress, assetAmounts)
 
   const isSubmitButtonActive =
-    !gasPriceError &&
-    !gasAmountError &&
-    !!bytecode &&
-    (!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance)) &&
-    allAssetAmountsAreWithinAvailableBalance
+    !gasPriceError && !gasAmountError && !!bytecode && isAmountValid && allAssetAmountsAreWithinAvailableBalance
 
   return (
     <>
@@ -161,7 +165,12 @@ const ScriptBuildTxModalContent = ({ data, onSubmit, onCancel }: ScriptBuildTxMo
           onChange={(e) => setTxPrepProp('bytecode')(e.target.value)}
         />
       </InputFieldsColumn>
-      <ToggleSection title={t('Show advanced options')} subtitle={t('Set gas settings')} onClick={clearGasSettings}>
+      <ToggleSection
+        title={t('Show advanced options')}
+        subtitle={t('Set gas settings')}
+        onClick={clearGasSettings}
+        isOpen={!!gasAmount || !!gasPrice}
+      >
         <GasSettings
           gasAmount={gasAmount}
           gasAmountError={gasAmountError}
@@ -243,12 +252,3 @@ const getWalletConnectResult = (context: TxContext, signature: string): SignExec
 }
 
 export default ScriptTxModal
-
-// TODO: DRY
-const Content = styled.div`
-  padding-top: 36px;
-
-  & > ${Box}:not(:last-child) {
-    margin-bottom: 35px;
-  }
-`

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { formatAmountForDisplay, fromHumanReadableAmount } from '@alephium/sdk'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
@@ -45,9 +46,19 @@ const GasSettings = ({
   const { t } = useTranslation()
   const theme = useTheme()
 
-  const expectedFeeInALPH = !!gasAmount && !!gasPrice && BigInt(gasAmount) * fromHumanReadableAmount(gasPrice)
+  const [expectedFee, setExpectedFee] = useState<bigint>()
 
   const minimalGasPriceInALPH = formatAmountForDisplay({ amount: MINIMAL_GAS_PRICE, fullPrecision: true })
+
+  useEffect(() => {
+    if (!gasAmount || !gasPrice) return
+
+    try {
+      setExpectedFee(BigInt(gasAmount) * fromHumanReadableAmount(gasPrice))
+    } catch (e) {
+      console.error(e)
+    }
+  }, [gasAmount, gasPrice])
 
   return (
     <>
@@ -74,7 +85,7 @@ const GasSettings = ({
         step={minimalGasPriceInALPH}
         error={gasPriceError}
       />
-      {expectedFeeInALPH && <AlphAmountInfoBox label={t`Expected fee`} amount={expectedFeeInALPH} short />}
+      {expectedFee && <AlphAmountInfoBox label={t`Expected fee`} amount={expectedFee} short />}
     </>
   )
 }

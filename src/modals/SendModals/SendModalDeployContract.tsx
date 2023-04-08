@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { fromHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
 import { PostHog } from 'posthog-js'
@@ -25,6 +24,7 @@ import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
 import { signAndSendTransaction } from '@/api/transactions'
+import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
@@ -35,11 +35,13 @@ import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
-import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
+import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
 import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
+import CheckModalContent from '@/modals/SendModals/CheckModalContent'
 import GasSettings from '@/modals/SendModals/GasSettings'
+import InfoRow from '@/modals/SendModals/InfoRow'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { store } from '@/storage/store'
@@ -47,7 +49,7 @@ import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { AssetAmount } from '@/types/assets'
 import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
-import { expectedAmount, isAmountWithinRange } from '@/utils/transactions'
+import { isAmountWithinRange } from '@/utils/transactions'
 
 interface DeployContractTxModalProps {
   onClose: () => void
@@ -66,11 +68,11 @@ const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
 
   const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
-      data.initialAlphAmount !== undefined ? fromHumanReadableAmount(data.initialAlphAmount).toString() : undefined
+      data.initialAlphAmount !== undefined ? data.initialAlphAmount.amount?.toString() : undefined
     const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
-      initialAttoAlphAmount: initialAttoAlphAmount,
+      initialAttoAlphAmount,
       issueTokenAmount: data.issueTokenAmount?.toString(),
       gasAmount: data.gasAmount,
       gasPrice: data.gasPrice?.toString()
@@ -116,17 +118,25 @@ const DeployContractCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProp
 
   return (
     <>
-      <CheckAddressesBox fromAddress={data.fromAddress} />
-      <InfoBox label={t`Bytecode`} text={data.bytecode} wordBreak />
-      <AlphAmountInfoBox label={t`Amount`} amount={expectedAmount(data, fees)} />
-      {data.issueTokenAmount && <InfoBox text={data.issueTokenAmount} label={t`Issue token amount`} wordBreak />}
-      <CheckFeeLockTimeBox fee={fees} />
+      <CheckModalContent>
+        {data.initialAlphAmount && <CheckAmountsBox assetAmounts={[data.initialAlphAmount]} />}
+        <CheckAddressesBox fromAddress={data.fromAddress} />
+        {data.issueTokenAmount && (
+          <Box>
+            <InfoRow label={t('Issue token amount')}>{data.issueTokenAmount}</InfoRow>
+          </Box>
+        )}
+        <CheckFeeLockTimeBox fee={fees} />
+        <InfoBox label={t('Bytecode')} text={data.bytecode} wordBreak />
+      </CheckModalContent>
       <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
         {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
       </FooterButton>
     </>
   )
 }
+
+const defaultAssetAmount = { id: ALPH.id }
 
 const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
   const { t } = useTranslation()
@@ -146,7 +156,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
-  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([{ id: ALPH.id }])
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([data.initialAlphAmount || defaultAssetAmount])
   const alphAsset = assetAmounts[0]
 
   const { fromAddress, bytecode, issueTokenAmount } = txPrep
@@ -192,7 +202,12 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
           onChange={(e) => setTxPrepProp('issueTokenAmount')(e.target.value)}
         />
       </InputFieldsColumn>
-      <ToggleSection title={t('Show advanced options')} subtitle={t('Set gas settings')} onClick={clearGasSettings}>
+      <ToggleSection
+        title={t('Show advanced options')}
+        subtitle={t('Set gas settings')}
+        onClick={clearGasSettings}
+        isOpen={!!gasAmount || !!gasPrice}
+      >
         <GasSettings
           gasAmount={gasAmount}
           gasAmountError={gasAmountError}
@@ -208,7 +223,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
             fromAddress,
             bytecode: bytecode ?? '',
             issueTokenAmount: issueTokenAmount || undefined,
-            initialAlphAmount: alphAsset.amount ? alphAsset.amount.toString() : undefined,
+            initialAlphAmount: alphAsset.amount && alphAsset.amount > 0 ? alphAsset : undefined,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice
           })

@@ -23,6 +23,7 @@ import styled from 'styled-components'
 import Amount from '@/components/Amount'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import InfoRow from '@/modals/SendModals/InfoRow'
 import { formatDateForDisplay } from '@/utils/misc'
 
 interface CheckFeeLockTimeBoxProps {
@@ -36,20 +37,18 @@ const CheckFeeLockTimeBox = ({ fee, lockTime, className }: CheckFeeLockTimeBoxPr
 
   return (
     <Box className={className}>
-      <Row>
-        <Label>{t('Expected fee')}</Label>
+      <InfoRow label={t('Expected fee')}>
         <Amount value={fee} fullPrecision />
-      </Row>
+      </InfoRow>
       {lockTime && (
         <>
           <HorizontalDivider />
-          <Row>
-            <Label>{t('Unlocks at')}</Label>
+          <InfoRow label={t('Unlocks at')}>
             <UnlocksAt>
               {formatDateForDisplay(lockTime)}
               <FromNow>({dayjs(lockTime).fromNow()})</FromNow>
             </UnlocksAt>
-          </Row>
+          </InfoRow>
         </>
       )}
     </Box>
@@ -57,17 +56,6 @@ const CheckFeeLockTimeBox = ({ fee, lockTime, className }: CheckFeeLockTimeBoxPr
 }
 
 export default CheckFeeLockTimeBox
-
-const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 15px;
-`
-
-const Label = styled.div`
-  font-weight: var(--fontWeight-semiBold);
-  color: ${({ theme }) => theme.font.secondary};
-`
 
 const UnlocksAt = styled.div`
   display: flex;

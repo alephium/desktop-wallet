@@ -42,7 +42,6 @@ import {
   TransactionInfo,
   TransactionTimePeriod
 } from '@/types/transactions'
-import { getAvailableBalance } from '@/utils/addresses'
 import { convertToPositive } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
@@ -53,15 +52,6 @@ export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransac
 
 export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
-
-export const expectedAmount = (data: { fromAddress: Address; alphAmount?: string }, fees: bigint): bigint => {
-  const amountInPhi = BigInt(data.alphAmount ?? 0)
-  const amountIncludingFees = amountInPhi + fees
-  const exceededBy = amountIncludingFees - getAvailableBalance(data.fromAddress)
-  const expectedAmount = exceededBy > 0 ? getAvailableBalance(data.fromAddress) - exceededBy : amountInPhi
-
-  return expectedAmount
-}
 
 export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
   const alphAmount = assetAmounts.find((asset) => asset.id === ALPH.id)?.amount ?? BigInt(0)

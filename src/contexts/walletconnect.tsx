@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError, toHumanReadableAmount } from '@alephium/sdk'
+import { getHumanReadableError } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { ChainInfo, parseChain, PROVIDER_NAMESPACE, RelayMethod } from '@alephium/walletconnect-provider'
 import {
@@ -209,17 +209,19 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             break
           }
           case 'alph_signAndSubmitDeployContractTx': {
-            const p = request.params as SignDeployContractTxParams
-            const initialAlphAmount =
-              p.initialAttoAlphAmount !== undefined ? toHumanReadableAmount(BigInt(p.initialAttoAlphAmount)) : undefined
+            const { initialAttoAlphAmount, bytecode, issueTokenAmount, gasAmount, gasPrice, signerAddress } =
+              request.params as SignDeployContractTxParams
+            const initialAlphAmount: AssetAmount | undefined = initialAttoAlphAmount
+              ? { id: ALPH.id, amount: BigInt(initialAttoAlphAmount) }
+              : undefined
 
             const txData: DeployContractTxData = {
-              fromAddress: getAddressByHash(p.signerAddress),
-              bytecode: p.bytecode,
-              initialAlphAmount: initialAlphAmount,
-              issueTokenAmount: p.issueTokenAmount?.toString(),
-              gasAmount: p.gasAmount,
-              gasPrice: p.gasPrice?.toString()
+              fromAddress: getAddressByHash(signerAddress),
+              bytecode,
+              initialAlphAmount,
+              issueTokenAmount: issueTokenAmount?.toString(),
+              gasAmount,
+              gasPrice: gasPrice?.toString()
             }
 
             setTxDataAndOpenModal({ txData, modalType: TxType.DEPLOY_CONTRACT })
@@ -262,11 +264,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const result = await client.web3.request(p)
             await walletConnectClient.respond({
               topic: event.topic,
-              response: {
-                id: event.id,
-                jsonrpc: '2.0',
-                result
-              }
+              response: { id: event.id, jsonrpc: '2.0', result }
             })
             break
           }
@@ -277,11 +275,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const result = await call(...p.params)
             await walletConnectClient.respond({
               topic: event.topic,
-              response: {
-                id: event.id,
-                jsonrpc: '2.0',
-                result
-              }
+              response: { id: event.id, jsonrpc: '2.0', result }
             })
             break
           }
@@ -335,7 +329,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     return () => {
       walletConnectClient.removeListener('session_request', onSessionRequest)
       walletConnectClient.removeListener('session_proposal', onSessionProposal)
-      walletConnectClient.on('session_delete', onSessionDelete)
+      walletConnectClient.removeListener('session_delete', onSessionDelete)
     }
   }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 

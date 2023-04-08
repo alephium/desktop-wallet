@@ -17,11 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useWalletConnectContext, WalletConnectContextProps } from '@/contexts/walletconnect'
+import InfoRow from '@/modals/SendModals/InfoRow'
 
 interface DAppMetadataBoxProps {
   metadata: WalletConnectContextProps['connectedDAppMetadata']
@@ -36,44 +36,17 @@ const DAppMetadataBox = ({ metadata, className }: DAppMetadataBoxProps) => {
 
   return (
     <Box className={className}>
-      <Row>
-        <Label>{t('Name')}</Label>
-        <span>{metadata.name}</span>
-      </Row>
+      <InfoRow label={t('Name')}>{metadata.name}</InfoRow>
       <HorizontalDivider />
-      <Row>
-        <Label>{t('Description')}</Label>
-        <span>{metadata.description}</span>
-      </Row>
+      <InfoRow label={t('Description')}>{metadata.description}</InfoRow>
       <HorizontalDivider />
-      <Row>
-        <Label>URL</Label>
-        <span>{metadata.url}</span>
-      </Row>
+      <InfoRow label="URL">{metadata.url}</InfoRow>
       <HorizontalDivider />
-      <Row>
-        <Label>{t('Network')}</Label>
-        <span>{requiredChainInfo?.networkId}</span>
-      </Row>
+      <InfoRow label={t('Network')}>{requiredChainInfo?.networkId}</InfoRow>
       <HorizontalDivider />
-      <Row>
-        <Label>{t('Address group')}</Label>
-        <span>{requiredChainInfo?.chainGroup?.toString() ?? t('all')}</span>
-      </Row>
+      <InfoRow label={t('Address group')}>{requiredChainInfo?.chainGroup?.toString() ?? t('all')}</InfoRow>
     </Box>
   )
 }
 
 export default DAppMetadataBox
-
-// TODO: DRY together with Send modal ("info-check" screen)
-const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 15px;
-`
-
-const Label = styled.div`
-  font-weight: var(--fontWeight-semiBold);
-  color: ${({ theme }) => theme.font.secondary};
-`
