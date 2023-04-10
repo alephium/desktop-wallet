@@ -16,17 +16,31 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import posthog from 'posthog-js'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import { useTheme } from 'styled-components'
 
-import Badge from '@/components/Badge'
-import DotIcon from '@/components/DotIcon'
-import { useAppSelector } from '@/hooks/redux'
+import Select from '@/components/Inputs/Select'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
+import { networkPresetSwitched } from '@/storage/settings/networkActions'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { NetworkName, NetworkNames } from '@/types/network'
+
+interface NetworkSelectOption {
+  label: string
+  value: NetworkName
+}
+
+type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom'>
 
 const NetworkBadge = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const theme = useTheme()
+  const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
 
   const networkStatusColor = {
     online: theme.global.valid,
@@ -35,16 +49,53 @@ const NetworkBadge = ({ className }: { className?: string }) => {
     uninitialized: theme.font.tertiary
   }[network.status]
 
+  const networkNames = Object.values(NetworkNames).filter((n) => n !== 'custom') as NonCustomNetworkName[]
+
+  const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
+    label: {
+      mainnet: i18next.t('Mainnet'),
+      testnet: i18next.t('Testnet'),
+      localhost: i18next.t('Localhost'),
+      custom: i18next.t('Custom')
+    }[networkName],
+    value: networkName
+  }))
+
+  const handleNetworkPresetChange = useCallback(
+    async (networkName: NetworkName) => {
+      if (networkName !== selectedNetwork) {
+        setSelectedNetwork(networkName)
+
+        if (networkName === 'custom') {
+          // TODO: open settings modal, or reuse previous custom settings if available.
+          return
+        }
+
+        const newNetworkSettings = networkPresets[networkName]
+
+        const networkId = newNetworkSettings.networkId
+
+        if (networkId !== undefined) {
+          dispatch(networkPresetSwitched(networkName))
+
+          posthog?.capture('Changed network', { network_name: networkName })
+          return
+        }
+      }
+    },
+    [dispatch, selectedNetwork]
+  )
+
   return (
-    <Badge className={className} border tooltip={t('Current network')}>
-      <NetworkName>{network.name}</NetworkName>
-      <DotIcon color={networkStatusColor} />
-    </Badge>
+    <Select
+      options={networkSelectOptions}
+      onSelect={handleNetworkPresetChange}
+      controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
+      title={t`Network`}
+      label={t`Current network`}
+      id="network"
+    />
   )
 }
 
 export default NetworkBadge
-
-const NetworkName = styled.span`
-  margin-right: 8px;
-`
