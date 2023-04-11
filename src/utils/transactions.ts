@@ -21,9 +21,7 @@ import {
   DUST_AMOUNT,
   getDirection,
   isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT,
-  TransactionDirection,
-  TransactionInfoType
+  MIN_UTXO_SET_AMOUNT
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
@@ -39,7 +37,9 @@ import {
   AddressPendingTransaction,
   AddressTransaction,
   Direction,
+  TransactionDirection,
   TransactionInfo,
+  TransactionInfoType,
   TransactionTimePeriod
 } from '@/types/transactions'
 
@@ -123,6 +123,10 @@ export const directionOptions: {
   {
     label: 'Moved',
     value: 'move'
+  },
+  {
+    label: 'Swapped',
+    value: 'swap'
   }
 ]
 
@@ -154,6 +158,9 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     if (isConsolidationTx(tx)) {
       direction = 'out'
       infoType = 'move'
+    } else if (isSwap(amount, tokens)) {
+      direction = 'swap'
+      infoType = 'swap'
     } else {
       direction = getDirection(tx, tx.address.hash)
       const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
@@ -181,4 +188,12 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     outputs,
     lockTime
   }
+}
+
+const isSwap = (alphAmout: bigint, tokensAmount: Required<AssetAmount>[]) => {
+  const allAmounts = [alphAmout, ...tokensAmount.map((tokenAmount) => tokenAmount.amount)]
+  const allAmountsArePositive = allAmounts.every((amount) => amount >= 0)
+  const allAmountsAreNegative = allAmounts.every((amount) => amount <= 0)
+
+  return !allAmountsArePositive && !allAmountsAreNegative
 }
