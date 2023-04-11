@@ -16,15 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import Toggle from '@/components/Inputs/Toggle'
 import { useAppSelector } from '@/hooks/redux'
 import { toggleTheme } from '@/storage/settings/settingsStorageUtils'
 
-const ThemeSwitcher = () => {
+interface ThemeSwitcherProps {
+  className?: string
+}
+
+const switcherSize = 30
+
+const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   const { t } = useTranslation()
   const { theme } = useAppSelector((state) => state.global)
   const posthog = usePostHog()
@@ -38,14 +45,45 @@ const ThemeSwitcher = () => {
   }
 
   return (
-    <Toggle
-      label={t('Activate dark mode')}
-      ToggleIcons={[Sun, Moon]}
-      handleColors={['var(--color-orange)', 'var(--color-purple)']}
-      toggled={isDark}
-      onToggle={handleThemeToggle}
-    />
+    <div className={className} onClick={handleThemeToggle}>
+      <ThemeRotatingContainer animate={{ rotate: isDark ? 0 : 180 }}>
+        <ThemeIconContainer style={{ backgroundColor: 'var(--color-purple)' }}>
+          <Moon size={20} />
+        </ThemeIconContainer>
+        <ThemeIconContainer style={{ backgroundColor: 'var(--color-orange)' }}>
+          <Sun size={20} />
+        </ThemeIconContainer>
+      </ThemeRotatingContainer>
+    </div>
   )
 }
 
-export default ThemeSwitcher
+export default styled(ThemeSwitcher)`
+  display: flex;
+  overflow: hidden;
+  height: ${switcherSize}px;
+  width: ${switcherSize}px;
+  border-radius: ${switcherSize}px;
+  flex-shrink: 0;
+`
+
+const ThemeRotatingContainer = styled(motion.div)`
+  transform-origin: 50% 100%;
+
+  &:hover {
+    cursor: pointer;
+  }
+`
+
+const ThemeIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: ${switcherSize}px;
+  width: ${switcherSize}px;
+  border-radius: ${switcherSize}px;
+
+  svg {
+    stroke: white;
+  }
+`
