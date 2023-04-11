@@ -59,7 +59,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
-  const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
+  const { label, Icon } = useTransactionUI(infoType)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
@@ -75,11 +75,10 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   return (
     <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
       <Header>
-        <AmountWrapper tabIndex={0} color={amountTextColor}>
+        <AmountWrapper tabIndex={0}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
-            <AmountContainer key={id} color={amountTextColor}>
-              {amountSign}
-              <Amount tabIndex={0} value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
+            <AmountContainer key={id}>
+              <Amount tabIndex={0} value={amount} decimals={decimals} suffix={symbol} highlight showPlusMinus />
             </AmountContainer>
           ))}
         </AmountWrapper>
@@ -149,16 +148,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <DetailsRow label={t`Total value`}>
           <Amounts>
             {knownAssets.map(({ id, amount, decimals, symbol }) => (
-              <AmountContainer key={id} color={amountTextColor}>
-                {amountSign}
+              <AmountContainer key={id}>
                 <Amount
                   tabIndex={0}
                   value={amount}
                   fullPrecision
-                  color={amountTextColor}
                   decimals={decimals}
                   suffix={symbol}
                   isUnknownToken={!symbol}
+                  highlight
+                  showPlusMinus
                 />
                 {!symbol && <TokenHash hash={id} />}
               </AmountContainer>
@@ -169,9 +168,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t('Unknown tokens')}>
             <Amounts>
               {unknownAssets.map(({ id, amount, decimals, symbol }) => (
-                <AmountContainer key={id} color={amountTextColor}>
-                  {amountSign}
-                  <Amount tabIndex={0} value={amount} color={amountTextColor} isUnknownToken={!symbol} />
+                <AmountContainer key={id}>
+                  <Amount tabIndex={0} value={amount} isUnknownToken={!symbol} highlight />
                   {!symbol && <TokenHash hash={id} />}
                 </AmountContainer>
               ))}
@@ -252,8 +250,7 @@ const Direction = styled.span`
   gap: 5px;
 `
 
-const AmountWrapper = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
+const AmountWrapper = styled.div`
   font-size: 26px;
   font-weight: var(--fontWeight-semiBold);
 `
@@ -300,11 +297,10 @@ const ActionLinkStyled = styled(ActionLink)`
   justify-content: right;
 `
 
-const AmountContainer = styled.div<{ color: string }>`
+const AmountContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  color: ${({ color }) => color};
 `
 
 const Amounts = styled.div`
