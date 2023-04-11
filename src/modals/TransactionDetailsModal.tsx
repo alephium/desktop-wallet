@@ -87,48 +87,75 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <Icon size={14} />
             {label}
           </Direction>
-          <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
+          <FromIn>
+            {
+              {
+                in: t('from'),
+                out: t('to'),
+                swap: t('between')
+              }[direction]
+            }
+          </FromIn>
           <AddressBadgeStyled addressHash={address.hash} truncate withBorders />
+          {direction === 'swap' && (
+            <>
+              <FromIn>{t('and')}</FromIn>
+              <SwapPartnerAddress>
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={false}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              </SwapPartnerAddress>
+            </>
+          )}
         </HeaderInfo>
-        <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
+        <ActionLink onClick={handleShowTxInExplorer}>↗ {t('Show in explorer')}</ActionLink>
       </Header>
       <Details role="table">
-        <DetailsRow label={t`From`}>
-          {direction === 'out' ? (
-            <AddressList>
-              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} truncate withBorders />
-              </ActionLinkStyled>
-            </AddressList>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={false}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
-        <DetailsRow label={t`To`}>
-          {direction !== 'out' ? (
-            <AddressList>
-              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} withBorders />
-              </ActionLinkStyled>
-            </AddressList>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={direction === 'out'}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
+        {direction !== 'swap' && (
+          <>
+            <DetailsRow label={t('From')}>
+              {direction === 'out' ? (
+                <AddressList>
+                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                    <AddressBadge addressHash={address.hash} truncate withBorders />
+                  </ActionLinkStyled>
+                </AddressList>
+              ) : (
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={false}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              )}
+            </DetailsRow>
+            <DetailsRow label={t('To')}>
+              {direction !== 'out' ? (
+                <AddressList>
+                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                    <AddressBadge addressHash={address.hash} withBorders />
+                  </ActionLinkStyled>
+                </AddressList>
+              ) : (
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={direction === 'out'}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              )}
+            </DetailsRow>
+          </>
+        )}
         <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
             <span tabIndex={0}>{t`Confirmed`}</span>
@@ -316,4 +343,8 @@ const TokenHash = styled(HashEllipsed)`
 
 const AddressBadgeStyled = styled(AddressBadge)`
   max-width: 200px;
+`
+
+const SwapPartnerAddress = styled.div`
+  max-width: 80px;
 `

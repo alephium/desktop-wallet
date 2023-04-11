@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { partition } from 'lodash'
-import { ArrowRight as ArrowRightIcon } from 'lucide-react'
+import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -103,8 +103,10 @@ const TransactionalInfo = ({
       </CellAssetBadges>
       {!showInternalInflows && (
         <CellAddress alignRight>
-          <HiddenLabel text={t('from')} />
-          {direction === 'out' && <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />}
+          <HiddenLabel text={direction === 'swap' ? t('between') : t('from')} />
+          {(direction === 'out' || direction === 'swap') && (
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
+          )}
           {direction === 'in' &&
             (pendingToAddressComponent || (
               <IOList
@@ -120,11 +122,23 @@ const TransactionalInfo = ({
         </CellAddress>
       )}
       <CellDirection>
-        <HiddenLabel text={t('to')} />
+        <HiddenLabel text={direction === 'swap' ? t('and') : t('to')} />
         {!showInternalInflows ? (
-          <ArrowRightIcon size={16} strokeWidth={3} />
+          direction === 'swap' ? (
+            <ArrowLeftRight size={16} strokeWidth={3} />
+          ) : (
+            <ArrowRightIcon size={16} strokeWidth={3} />
+          )
         ) : (
-          <DirectionText>{direction === 'out' ? t('to') : t('from')}</DirectionText>
+          <DirectionText>
+            {
+              {
+                in: t('from'),
+                out: t('to'),
+                swap: t('with')
+              }[direction]
+            }
+          </DirectionText>
         )}
       </CellDirection>
       <CellAddress>
@@ -132,7 +146,7 @@ const TransactionalInfo = ({
           {direction === 'in' && !showInternalInflows && (
             <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
           )}
-          {((direction === 'in' && showInternalInflows) || direction === 'out') &&
+          {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
             (pendingToAddressComponent || (
               <IOList
                 currentAddress={addressHash}
