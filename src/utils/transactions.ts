@@ -42,6 +42,7 @@ import {
   TransactionInfoType,
   TransactionTimePeriod
 } from '@/types/transactions'
+import { convertToNegative } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -145,8 +146,8 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
-    amount = tx.amount ? BigInt(tx.amount) : undefined
-    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : []
+    amount = tx.amount ? convertToNegative(BigInt(tx.amount)) : undefined
+    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: convertToNegative(BigInt(token.amount)) })) : []
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs

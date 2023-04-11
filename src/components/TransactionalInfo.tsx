@@ -67,7 +67,7 @@ const TransactionalInfo = ({
 
   if (!address) return null
 
-  const pendingToAddressComponent = isPending ? (
+  const pendingDestinationAddress = isPending ? (
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
@@ -107,18 +107,17 @@ const TransactionalInfo = ({
           {(direction === 'out' || direction === 'swap') && (
             <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
           )}
-          {direction === 'in' &&
-            (pendingToAddressComponent || (
-              <IOList
-                currentAddress={addressHash}
-                isOut={false}
-                outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
-                truncate
-                disableA11y
-              />
-            ))}
+          {direction === 'in' && (
+            <IOList
+              currentAddress={addressHash}
+              isOut={false}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+              disableA11y
+            />
+          )}
         </CellAddress>
       )}
       <CellDirection>
@@ -147,7 +146,7 @@ const TransactionalInfo = ({
             <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
-            (pendingToAddressComponent || (
+            (pendingDestinationAddress || (
               <IOList
                 currentAddress={addressHash}
                 isOut={direction === 'out'}
