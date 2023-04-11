@@ -20,6 +20,7 @@ import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sd
 import styled from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
+import { convertToPositive } from '@/utils/misc'
 
 interface AmountProps {
   value?: bigint | number
@@ -33,6 +34,8 @@ interface AmountProps {
   tabIndex?: number
   suffix?: string
   isUnknownToken?: boolean
+  highlight?: boolean
+  showPlusMinus?: boolean
   className?: string
 }
 
@@ -48,56 +51,57 @@ const Amount = ({
   color,
   overrideSuffixColor,
   tabIndex,
-  isUnknownToken
+  isUnknownToken,
+  showPlusMinus = false
 }: AmountProps) => {
   const { discreetMode } = useAppSelector((state) => state.settings)
 
-  let integralPart = ''
-  let fractionalPart = ''
   let quantitySymbol = ''
+  let amount = ''
+  let isNegative = false
 
-  if (!discreetMode) {
-    let amount =
-      value !== undefined
-        ? isFiat && typeof value === 'number'
-          ? formatFiatAmountForDisplay(value)
-          : isUnknownToken
-          ? value.toString()
-          : formatAmountForDisplay({
-              amount: value as bigint,
-              amountDecimals: decimals,
-              displayDecimals: nbOfDecimalsToShow,
-              fullPrecision
-            })
-        : ''
+  if (!discreetMode && value !== undefined) {
+    if (isFiat && typeof value === 'number') {
+      amount = formatFiatAmountForDisplay(value)
+    } else if (isUnknownToken) {
+      amount = value.toString()
+    } else {
+      isNegative = value < 0
+      amount = formatAmountForDisplay({
+        amount: convertToPositive(value as bigint),
+        amountDecimals: decimals,
+        displayDecimals: nbOfDecimalsToShow,
+        fullPrecision
+      })
+    }
 
-    if (amount) {
-      if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
-        quantitySymbol = amount.slice(-1)
-        amount = amount.slice(0, -1)
-      }
-      const amountParts = amount.split('.')
-      integralPart = amountParts[0]
-      fractionalPart = amountParts[1]
+    if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
+      quantitySymbol = amount.slice(-1)
+      amount = amount.slice(0, -1)
     }
   }
+
+  const [integralPart, fractionalPart] = amount.split('.')
 
   return (
     <span className={className} tabIndex={tabIndex ?? -1}>
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (
-        fadeDecimals ? (
-          <>
-            <span>{integralPart}</span>
-            {fractionalPart && <Decimals>.{fractionalPart}</Decimals>}
-            {quantitySymbol && <span>{quantitySymbol}</span>}
-          </>
-        ) : fractionalPart ? (
-          `${integralPart}.${fractionalPart}`
-        ) : (
-          integralPart
-        )
+        <>
+          {showPlusMinus && <span>{isNegative ? '-' : '+'}</span>}
+          {fadeDecimals ? (
+            <>
+              <span>{integralPart}</span>
+              {fractionalPart && <Decimals>.{fractionalPart}</Decimals>}
+              {quantitySymbol && <span>{quantitySymbol}</span>}
+            </>
+          ) : fractionalPart ? (
+            `${integralPart}.${fractionalPart}`
+          ) : (
+            integralPart
+          )}
+        </>
       ) : (
         '-'
       )}
@@ -108,7 +112,14 @@ const Amount = ({
 }
 
 export default styled(Amount)`
-  color: ${({ color }) => color ?? 'inherit'};
+  color: ${({ color, highlight, value, theme }) =>
+    color
+      ? color
+      : highlight && value !== undefined
+      ? value < 0
+        ? theme.global.accent
+        : theme.global.valid
+      : 'inherit'};
   display: inline-flex;
   white-space: pre;
   font-weight: var(--fontWeight-bold);

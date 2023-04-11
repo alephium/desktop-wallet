@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, isConsolidationTx } from '@alephium/sdk'
+import { formatAmountForDisplay } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { partition } from 'lodash'
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -61,7 +61,7 @@ const TransactionalInfo = ({
   const addressHash = addressHashProp ?? addressHashParam
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const { assets, direction, outputs, lockTime, infoType } = getTransactionInfo(tx, showInternalInflows)
-  const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+  const { label, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
   const isPending = isPendingTx(tx)
 
@@ -74,8 +74,6 @@ const TransactionalInfo = ({
       <AddressBadge truncate addressHash={tx.toAddress} />
     )
   ) : null
-
-  const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
   const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
 
@@ -148,14 +146,11 @@ const TransactionalInfo = ({
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <TableCellAmount aria-hidden="true" color={amountTextColor}>
+      <TableCellAmount aria-hidden="true">
         {knownAssets.map(({ id, amount, decimals, symbol }) => (
           <AmountContainer key={id}>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
-            <div>
-              {amountSign}
-              <Amount value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
-            </div>
+            <Amount value={amount} decimals={decimals} suffix={symbol} highlight showPlusMinus />
           </AmountContainer>
         ))}
       </TableCellAmount>

@@ -33,18 +33,6 @@ export const useTransactionUI = (infoType: TransactionInfoType) => {
       move: t`Moved`,
       pending: t`Pending`
     }[infoType],
-    amountTextColor: {
-      in: theme.global.valid,
-      out: theme.global.accent,
-      move: theme.font.primary,
-      pending: theme.font.primary
-    }[infoType],
-    amountSign: {
-      in: '+ ',
-      out: '- ',
-      move: '',
-      pending: ''
-    }[infoType],
     Icon: {
       in: ArrowDown,
       out: ArrowUp,

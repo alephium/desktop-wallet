@@ -42,7 +42,6 @@ import {
   TransactionInfo,
   TransactionTimePeriod
 } from '@/types/transactions'
-import { convertToPositive } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -149,8 +148,8 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     outputs = tx.outputs ?? outputs
     const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, tx.address.hash)
 
-    amount = convertToPositive(alphAmount)
-    tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
+    amount = alphAmount
+    tokens = tokenAmounts.map((token) => ({ ...token, amount: token.amount }))
 
     if (isConsolidationTx(tx)) {
       direction = 'out'
