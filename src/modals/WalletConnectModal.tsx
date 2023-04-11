@@ -152,6 +152,15 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onSessionDelete()
   }
 
+  const rejectConnectionAndCloseModal = () => {
+    if (walletConnectClient && proposalEvent) {
+      onSessionDelete()
+      walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
+    }
+
+    onClose()
+  }
+
   const showManualInitialization = wcSessionState === 'uninitialized' && addresses.length > 0
   const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent && signerAddress
   const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
@@ -173,7 +182,11 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
       </ModalFooterButtons>
     </CenteredModal>
   ) : showProposalForApproval ? (
-    <CenteredModal title="WalletConnect" subtitle={t('Approve the proposal to connect')} onClose={onClose}>
+    <CenteredModal
+      title="WalletConnect"
+      subtitle={t('Approve the proposal to connect')}
+      onClose={rejectConnectionAndCloseModal}
+    >
       <Section inList>
         <DAppMetadataBox metadata={proposalEvent.params.proposer.metadata} />
       </Section>
