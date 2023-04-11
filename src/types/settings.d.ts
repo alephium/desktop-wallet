@@ -82,6 +82,7 @@ declare module 'styled-components' {
       alert: string
       valid: string
       highlightGradient: string
+      highlight: string
     }
   }
 }

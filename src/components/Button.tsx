@@ -187,13 +187,6 @@ export default styled(Button)`
         }[role]
       : theme.border.primary
 
-    const boxShadow = transparent
-      ? undefined
-      : {
-          primary: undefined,
-          secondary: theme.shadow.primary
-        }[role]
-
     const hoverColor = transparent
       ? theme.font.primary
       : {
