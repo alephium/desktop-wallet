@@ -31,12 +31,13 @@ interface PopupProps {
   title?: string
   extraHeaderContent?: ReactNode
   hookCoordinates?: Coordinates
+  minWidth?: number
 }
 
 const minMarginToEdge = 20
 const headerHeight = 50
 
-const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }: PopupProps) => {
+const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, minWidth = 200 }: PopupProps) => {
   const { height: windowHeight, width: windowWidth } = useWindowSize() // Recompute position on window resize
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -73,6 +74,7 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }
       style={hookOffset && { x: hookOffset.x, y: hookOffset.y - 15 }}
       animate={hookOffset && { ...fadeInOutScaleFast.animate, ...hookOffset }}
       exit={fadeInOutScaleFast.exit}
+      minWidth={minWidth}
       {...fastTransition}
     >
       {title && (
@@ -109,13 +111,13 @@ const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
   left: ${({ hookCoordinates, contentWidth }) => hookCoordinates.x - contentWidth / 2}px;
 `
 
-const Content = styled(motion.div)`
+const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   opacity: 0; // for initial mount computation
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
 
-  min-width: 200px;
+  min-width: ${({ minWidth }) => minWidth}px;
   max-height: 510px;
   margin: auto;
 

@@ -25,6 +25,7 @@ import {
   MouseEvent,
   OptionHTMLAttributes,
   ReactNode,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -220,6 +221,7 @@ function Select<T extends OptionValue>({
             title={title}
             hookCoordinates={hookCoordinates}
             onClose={handlePopupClose}
+            parentSelectRef={selectedValueRef}
           />
         )}
       </ModalPortal>
@@ -239,6 +241,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   searchPlaceholder?: string
   showOnly?: T[]
   emptyListPlaceholder?: string
+  parentSelectRef?: RefObject<HTMLDivElement>
 }
 
 export function SelectOptionsModal<T extends OptionValue>({
@@ -252,10 +255,11 @@ export function SelectOptionsModal<T extends OptionValue>({
   onSearchInput,
   searchPlaceholder,
   showOnly,
-  emptyListPlaceholder
+  emptyListPlaceholder,
+  parentSelectRef
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
-  const selectRef = useRef<HTMLDivElement>(null)
+  const optionSelectRef = useRef<HTMLDivElement>(null)
   const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
   // We hide instead of simply not rendering filtered options to avoid changing the height/width of the modal when
@@ -291,7 +295,7 @@ export function SelectOptionsModal<T extends OptionValue>({
   const selectFirstOption = () => setFocusedOptionIndex(0)
 
   useEffect(() => {
-    const selectOptions = selectRef?.current
+    const selectOptions = optionSelectRef?.current
     const listener = (e: KeyboardEvent) => {
       if (['ArrowDown', 'Tab'].includes(e.code)) {
         setFocusedOptionIndex((i) => (i < visibleOptions.length - 1 ? i + 1 : i))
@@ -311,11 +315,15 @@ export function SelectOptionsModal<T extends OptionValue>({
     }
   }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
+  const parentSelectWidth = parentSelectRef?.current?.clientWidth
+  const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth : undefined
+
   return (
     <Popup
       title={title}
       onClose={onClose}
       hookCoordinates={hookCoordinates}
+      minWidth={minWidth}
       extraHeaderContent={
         onSearchInput &&
         !isEmpty && (
@@ -329,7 +337,7 @@ export function SelectOptionsModal<T extends OptionValue>({
         )
       }
     >
-      <OptionSelect title={title} aria-label={title} ref={selectRef}>
+      <OptionSelect title={title} aria-label={title} ref={optionSelectRef}>
         {isEmpty ? (
           <OptionItem selected={false} focused={false}>
             {emptyListPlaceholder}

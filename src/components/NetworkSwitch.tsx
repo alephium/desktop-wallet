@@ -43,7 +43,9 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   const network = useAppSelector((state) => state.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
 
-  const networkNames = Object.values(NetworkNames).filter((n) => n !== 'custom') as NonCustomNetworkName[]
+  const networkNames = Object.values(NetworkNames).filter(
+    (n) => !['custom', 'localhost'].includes(n)
+  ) as NonCustomNetworkName[]
 
   const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
     label: {
