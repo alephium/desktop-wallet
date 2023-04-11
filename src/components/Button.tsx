@@ -19,8 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
+import DotIcon from '@/components/DotIcon'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 export interface ButtonProps extends HTMLMotionProps<'button'> {
@@ -35,12 +36,14 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   Icon?: LucideIconType
   iconColor?: string
   borderless?: boolean
+  hasNotification?: boolean
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, iconColor, ...props }: ButtonProps) => {
+const Button = ({ children, disabled, submit, Icon, className, iconColor, hasNotification, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const theme = useTheme()
 
   useEffect(() => {
     if (!submit) return
@@ -76,6 +79,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, ...pro
         </ButtonIcon>
       )}
       {children}
+      {hasNotification && <NotificationDot color={theme.global.accent} size={11} />}
     </motion.button>
   )
 }
@@ -214,6 +218,7 @@ export default styled(Button)`
       color: ${fontColor};
       box-shadow: ${boxShadow};
       border: 1px solid ${borderColor};
+      position: relative;
 
       &:hover {
         color: ${hoverColor};
@@ -268,4 +273,10 @@ export default styled(Button)`
 
 const ButtonIcon = styled.div`
   display: flex;
+`
+
+const NotificationDot = styled(DotIcon)`
+  position: absolute;
+  top: -3px;
+  right: -3px;
 `

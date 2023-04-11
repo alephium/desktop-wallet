@@ -32,7 +32,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import walletConnectIcon from '@/images/wallet-connect-logo.svg'
+import { ReactComponent as WalletConnectLogo } from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
@@ -56,7 +56,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
   const addresses = useAppSelector(selectAllAddresses)
-  const { proposalEvent } = useWalletConnectContext()
+  const { proposalEvent, wcSessionState } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -131,8 +131,9 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                   role="secondary"
                   onClick={() => setIsWalletConnectModalOpen(true)}
                   aria-label="WalletConnect"
+                  hasNotification={wcSessionState === 'initialized'}
                 >
-                  <img src={walletConnectIcon} style={{ width: '100%' }} />
+                  <WalletConnectLogo />
                 </Button>
               </TooltipWrapper>
             </>
