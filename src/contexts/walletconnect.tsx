@@ -65,7 +65,6 @@ export interface WalletConnectContextProps {
   onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
   onSessionRequestSuccess: (event: RequestEvent, result: SignResult) => Promise<void>
   onSessionDelete: () => void
-  deepLinkUri: string
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
   wcSessionState: WalletConnectSessionState
@@ -80,7 +79,6 @@ const initialContext: WalletConnectContextProps = {
   requestEvent: undefined,
   onSessionRequestError: () => Promise.resolve(),
   onSessionRequestSuccess: () => Promise.resolve(),
-  deepLinkUri: '',
   connectToWalletConnect: () => null,
   requiredChainInfo: undefined,
   wcSessionState: 'uninitialized',
@@ -95,7 +93,6 @@ const WalletConnectContext = createContext<WalletConnectContextProps>(initialCon
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
-  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
   const dispatch = useAppDispatch()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
@@ -104,7 +101,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [walletConnectClient, setWalletConnectClient] = useState(initialContext.walletConnectClient)
   const [dappTxData, setDappTxData] = useState(initialContext.dappTxData)
   const [requestEvent, setRequestEvent] = useState(initialContext.requestEvent)
-  const [deepLinkUri, setDeepLinkUri] = useState(initialContext.deepLinkUri)
   const [wcSessionState, setWcSessionState] = useState(initialContext.wcSessionState)
   const [proposalEvent, setProposalEvent] = useState(initialContext.proposalEvent)
   const [requiredChainInfo, setRequiredChainInfo] = useState(initialContext.requiredChainInfo)
@@ -305,7 +301,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
       try {
         await walletConnectClient.pair({ uri })
-        setDeepLinkUri('')
       } catch (e) {
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
       }
@@ -343,12 +338,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   useEffect(() => {
     const _window = window as unknown as AlephiumWindow
-    _window.electron?.walletConnect.onSetDeepLinkUri((deepLinkUri) => {
-      setDeepLinkUri(deepLinkUri)
-
-      if (isAuthenticated) connectToWalletConnect(deepLinkUri)
+    _window.electron?.walletConnect.onConnect((uri) => {
+      connectToWalletConnect(uri)
     })
-  }, [connectToWalletConnect, isAuthenticated])
+  }, [connectToWalletConnect])
 
   return (
     <WalletConnectContext.Provider
@@ -359,7 +352,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         dappTxData,
         onSessionRequestError,
         onSessionRequestSuccess,
-        deepLinkUri,
         connectToWalletConnect,
         requiredChainInfo,
         wcSessionState,

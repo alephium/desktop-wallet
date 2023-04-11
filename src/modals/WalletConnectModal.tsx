@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatChain, isCompatibleChainGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import AddressSelect from '@/components/Inputs/AddressSelect'
@@ -49,7 +49,6 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   const dispatch = useAppDispatch()
   const {
     walletConnectClient,
-    deepLinkUri,
     connectToWalletConnect,
     wcSessionState,
     requiredChainInfo,
@@ -62,15 +61,11 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const currentNetwork = useAppSelector((s) => s.network)
 
-  const [uri, setUri] = useState(deepLinkUri)
+  const [uri, setUri] = useState('')
 
   const group = requiredChainInfo?.chainGroup
   const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
   const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
-
-  useEffect(() => {
-    if (deepLinkUri) connectToWalletConnect(deepLinkUri)
-  }, [connectToWalletConnect, deepLinkUri])
 
   const handleConnect = () => connectToWalletConnect(uri)
 
@@ -153,11 +148,11 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     if (!walletConnectClient || !sessionTopic) return
 
     await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
-    onSessionDelete()
     onClose()
+    onSessionDelete()
   }
 
-  const showManualInitialization = wcSessionState === 'uninitialized' && !deepLinkUri && addresses.length > 0
+  const showManualInitialization = wcSessionState === 'uninitialized' && addresses.length > 0
   const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent && signerAddress
   const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
 
