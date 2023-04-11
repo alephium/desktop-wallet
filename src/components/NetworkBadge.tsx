@@ -16,11 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { upperFirst } from 'lodash'
 import posthog from 'posthog-js'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
+import Badge from '@/components/Badge'
+import DotIcon from '@/components/DotIcon'
 import Select from '@/components/Inputs/Select'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
@@ -36,18 +39,9 @@ interface NetworkSelectOption {
 type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom'>
 
 const NetworkBadge = ({ className }: { className?: string }) => {
-  const { t } = useTranslation()
-  const theme = useTheme()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
-
-  const networkStatusColor = {
-    online: theme.global.valid,
-    offline: theme.global.alert,
-    connecting: theme.global.accent,
-    uninitialized: theme.font.tertiary
-  }[network.status]
 
   const networkNames = Object.values(NetworkNames).filter((n) => n !== 'custom') as NonCustomNetworkName[]
 
@@ -91,11 +85,35 @@ const NetworkBadge = ({ className }: { className?: string }) => {
       options={networkSelectOptions}
       onSelect={handleNetworkPresetChange}
       controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
-      title={t`Network`}
-      label={t`Current network`}
       id="network"
+      CustomComponent={SelectCustomComponent}
+      noMargin
     />
   )
 }
+
+const SelectCustomComponent = () => {
+  const { t } = useTranslation()
+  const theme = useTheme()
+  const network = useAppSelector((state) => state.network)
+
+  const networkStatusColor = {
+    online: theme.global.valid,
+    offline: theme.global.alert,
+    connecting: theme.global.accent,
+    uninitialized: theme.font.tertiary
+  }[network.status]
+
+  return (
+    <Badge tooltip={t('Current network')} border>
+      <NetworkNameLabel>{upperFirst(network.name)}</NetworkNameLabel>
+      <DotIcon color={networkStatusColor} />
+    </Badge>
+  )
+}
+
+const NetworkNameLabel = styled.span`
+  margin-right: 10px;
+`
 
 export default NetworkBadge

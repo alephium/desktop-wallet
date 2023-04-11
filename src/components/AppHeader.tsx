@@ -111,16 +111,6 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           <TooltipWrapper content={t('Discreet mode')}>
             <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
           </TooltipWrapper>
-          {defaultAddress && !isPassphraseUsed && (
-            <>
-              <HeaderDivider />
-              <TooltipWrapper content={t('Default address')}>
-                <AddressBadgeStyled addressHash={defaultAddress.hash} />
-              </TooltipWrapper>
-            </>
-          )}
-          <HeaderDivider />
-          <NetworkBadge />
           {isAuthenticated && (
             <>
               <HeaderDivider />
@@ -138,6 +128,16 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
               </TooltipWrapper>
             </>
           )}
+          {defaultAddress && !isPassphraseUsed && (
+            <>
+              <HeaderDivider />
+              <TooltipWrapper content={t('Default address')}>
+                <AddressBadgeStyled addressHash={defaultAddress.hash} />
+              </TooltipWrapper>
+            </>
+          )}
+          <HeaderDivider />
+          <NetworkBadge />
         </HeaderButtons>
       </motion.header>
       <ModalPortal>

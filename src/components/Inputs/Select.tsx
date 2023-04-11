@@ -20,6 +20,7 @@ import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
+  ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
   OptionHTMLAttributes,
@@ -73,6 +74,10 @@ interface SelectProps<T extends OptionValue> {
   className?: string
   simpleMode?: boolean
   heightSize?: InputHeight
+  CustomComponent?: ComponentType<{
+    controlledValue?: SelectOption<T>
+    label?: string
+  }>
 }
 
 function Select<T extends OptionValue>({
@@ -88,7 +93,8 @@ function Select<T extends OptionValue>({
   noMargin,
   simpleMode,
   className,
-  heightSize
+  heightSize,
+  CustomComponent
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
 
@@ -177,25 +183,33 @@ function Select<T extends OptionValue>({
         heightSize={heightSize}
         simpleMode={simpleMode}
       >
-        <InputLabel isElevated={!!value} htmlFor={id}>
-          {label}
-        </InputLabel>
-        {options.length > 1 && !simpleMode && (
-          <MoreIcon>
-            <MoreVertical />
-          </MoreIcon>
+        {CustomComponent ? (
+          <CustomComponentContainer ref={selectedValueRef}>
+            <CustomComponent label={label} controlledValue={value} />
+          </CustomComponentContainer>
+        ) : (
+          <>
+            <InputLabel isElevated={!!value} htmlFor={id}>
+              {label}
+            </InputLabel>
+            {options.length > 1 && !simpleMode && (
+              <MoreIcon>
+                <MoreVertical />
+              </MoreIcon>
+            )}
+            <SelectedValue
+              tabIndex={-1}
+              className={className}
+              ref={selectedValueRef}
+              id={id}
+              simpleMode={simpleMode}
+              label={label}
+              heightSize={heightSize}
+            >
+              <Truncate>{value?.label}</Truncate>
+            </SelectedValue>
+          </>
         )}
-        <SelectedValue
-          tabIndex={-1}
-          className={className}
-          ref={selectedValueRef}
-          id={id}
-          simpleMode={simpleMode}
-          label={label}
-          heightSize={heightSize}
-        >
-          <Truncate>{value?.label}</Truncate>
-        </SelectedValue>
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
@@ -433,4 +447,12 @@ const Searchbar = styled(Input)`
   svg {
     color: ${({ theme }) => theme.font.tertiary};
   }
+`
+
+const CustomComponentContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
