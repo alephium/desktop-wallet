@@ -55,9 +55,6 @@ export const stringToDoubleSHA256HexString = (data: string): string => {
   return hash.digest('hex')
 }
 
-export const extractErrorMsg = (e: unknown): string =>
-  typeof e === 'string' ? e : e instanceof Error ? e.message : 'Unknown internal error'
-
 export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')
 
 export const getInitials = (str: string) => {

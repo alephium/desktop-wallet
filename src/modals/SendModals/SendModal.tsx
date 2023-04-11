@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { getSdkError } from '@walletconnect/utils'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PostHog, usePostHog } from 'posthog-js/react'
@@ -41,7 +42,7 @@ import {
 } from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
 import { CheckTxProps, TxContext, UnsignedTx } from '@/types/transactions'
-import { extractErrorMsg } from '@/utils/misc'
+import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   title: string
@@ -70,7 +71,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
+  const { requestEvent, walletConnectClient, onSessionRequestError, onSessionRequestSuccess } =
+    useWalletConnectContext()
   const settings = useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
@@ -153,15 +155,10 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }, [buildTransactionExtended, initialStep, transactionData])
 
   const onCloseExtended = useCallback(() => {
-    setDappTxData(undefined)
     onClose()
-  }, [onClose, setDappTxData])
 
-  const onUserCancel = () => {
-    setDappTxData(undefined)
-    onClose()
-    onError('the user cancelled the operation', requestEvent)
-  }
+    if (requestEvent) onSessionRequestError(requestEvent, getSdkError('USER_REJECTED_EVENTS'))
+  }, [onClose, requestEvent, onSessionRequestError])
 
   const handleSendExtended = async () => {
     if (!transactionData) return
@@ -171,24 +168,21 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     try {
       const signature = await handleSend(transactionData, txContext, posthog)
 
-      if (signature && requestEvent && walletConnectClient) {
-        const wcResult = getWalletConnectResult(txContext, signature)
-
-        await walletConnectClient.respond({
-          topic: requestEvent.topic,
-          response: {
-            id: requestEvent.id,
-            jsonrpc: '2.0',
-            result: wcResult
-          }
-        })
+      if (walletConnectClient && requestEvent && signature) {
+        const result = getWalletConnectResult(txContext, signature)
+        await onSessionRequestSuccess(requestEvent, result)
       }
 
       dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
       setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
-      onError(extractErrorMsg(e), requestEvent)
+
+      if (requestEvent)
+        onSessionRequestError(requestEvent, {
+          message: getHumanReadableError(e, 'Error while sending the transaction'),
+          code: WALLETCONNECT_ERRORS.TRANSACTION_SEND_FAILED
+        })
     } finally {
       setIsLoading(false)
     }
@@ -225,7 +219,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           <BuildTxModalContent
             data={transactionData ?? initialTxData}
             onSubmit={buildTransactionExtended}
-            onCancel={onUserCancel}
+            onCancel={onCloseExtended}
           />
         </ScrollableModalContent>
       )}

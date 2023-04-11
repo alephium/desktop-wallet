@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
+import { SignResult } from '@alephium/sdk/api/alephium'
 import { ALPH } from '@alephium/token-list'
 import { ChainInfo, parseChain, PROVIDER_NAMESPACE, RelayMethod } from '@alephium/walletconnect-provider'
 import {
@@ -26,7 +27,8 @@ import {
   SignTransferTxParams
 } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
-import { SignClientTypes } from '@walletconnect/types'
+import { EngineTypes, SignClientTypes } from '@walletconnect/types'
+import { getSdkError } from '@walletconnect/utils'
 import { partition } from 'lodash'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -48,7 +50,7 @@ import {
   TxType
 } from '@/types/transactions'
 import { AlephiumWindow } from '@/types/window'
-import { extractErrorMsg } from '@/utils/misc'
+import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 type RequestEvent = SignClientTypes.EventArguments['session_request']
 type ProposalEvent = SignClientTypes.EventArguments['session_proposal']
@@ -60,14 +62,14 @@ export interface WalletConnectContextProps {
   requestEvent?: RequestEvent
   proposalEvent?: ProposalEvent
   dappTxData?: DappTxData
-  setDappTxData: (data?: DappTxData) => void
-  onError: (error: string, event?: RequestEvent) => void
+  onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
+  onSessionRequestSuccess: (event: RequestEvent, result: SignResult) => Promise<void>
+  onSessionDelete: () => void
   deepLinkUri: string
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
   wcSessionState: WalletConnectSessionState
   sessionTopic?: string
-  onSessionDelete: () => void
   onProposalApprove: (topic: string) => void
   connectedDAppMetadata?: ProposalEvent['params']['proposer']['metadata']
 }
@@ -75,9 +77,9 @@ export interface WalletConnectContextProps {
 const initialContext: WalletConnectContextProps = {
   walletConnectClient: undefined,
   dappTxData: undefined,
-  setDappTxData: () => null,
   requestEvent: undefined,
-  onError: () => null,
+  onSessionRequestError: () => Promise.resolve(),
+  onSessionRequestSuccess: () => Promise.resolve(),
   deepLinkUri: '',
   connectToWalletConnect: () => null,
   requiredChainInfo: undefined,
@@ -132,23 +134,24 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     if (!walletConnectClient) initializeWalletConnectClient()
   }, [initializeWalletConnectClient, walletConnectClient])
 
-  const onError = useCallback(
-    (error: string, event?: RequestEvent): void => {
-      if (!walletConnectClient || !event) return
+  const onSessionRequestResponse = useCallback(
+    async (event: RequestEvent, response: EngineTypes.RespondParams['response']) => {
+      if (!walletConnectClient) return
 
-      walletConnectClient.respond({
-        topic: event.topic,
-        response: {
-          id: event.id,
-          jsonrpc: '2.0',
-          error: {
-            code: -32000,
-            message: error
-          }
-        }
-      })
+      await walletConnectClient.respond({ topic: event.topic, response })
+      setRequestEvent(undefined)
+      setDappTxData(undefined)
     },
     [walletConnectClient]
+  )
+
+  const onSessionRequestSuccess = async (event: RequestEvent, result: SignResult) =>
+    await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', result })
+
+  const onSessionRequestError = useCallback(
+    async (event: RequestEvent, error: ReturnType<typeof getSdkError>) =>
+      await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', error }),
+    [onSessionRequestResponse]
   )
 
   const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
@@ -165,9 +168,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     async (event: RequestEvent) => {
       if (!walletConnectClient) return
 
-      const getAddressByHash = (signerAddress: string) => {
-        const address = addresses.find((a) => a.hash === signerAddress)
-        if (!address) throw new Error(`Unknown signer address: ${signerAddress}`)
+      setRequestEvent(event)
+
+      const getSignerAddressByHash = (hash: string) => {
+        const address = addresses.find((a) => a.hash === hash)
+        if (!address) throw new Error(`Unknown signer address: ${hash}`)
 
         return address
       }
@@ -182,8 +187,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       }
 
-      setRequestEvent(event)
-
       const {
         params: { request }
       } = event
@@ -195,7 +198,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             const dest = p.destinations[0]
 
             const txData: TransferTxData = {
-              fromAddress: getAddressByHash(p.signerAddress),
+              fromAddress: getSignerAddressByHash(p.signerAddress),
               toAddress: p.destinations[0].address,
               assetAmounts: [
                 { id: ALPH.id, amount: BigInt(dest.attoAlphAmount) },
@@ -216,7 +219,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
               : undefined
 
             const txData: DeployContractTxData = {
-              fromAddress: getAddressByHash(signerAddress),
+              fromAddress: getSignerAddressByHash(signerAddress),
               bytecode,
               initialAlphAmount,
               issueTokenAmount: issueTokenAmount?.toString(),
@@ -249,7 +252,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             }
 
             const txData: ScriptTxData = {
-              fromAddress: getAddressByHash(signerAddress),
+              fromAddress: getSignerAddressByHash(signerAddress),
               bytecode,
               assetAmounts,
               gasAmount,
@@ -270,6 +273,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestExplorerApi': {
             const p = request.params as ApiRequestArguments
+            // TODO: Remove following code when using explorer client from web3 library
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
             const result = await call(...p.params)
@@ -281,14 +285,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           default:
             // TODO: support all of the other SignerProvider methods
+            onSessionRequestError(event, getSdkError('WC_METHOD_UNSUPPORTED'))
             throw new Error(`Method not supported: ${request.method}`)
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
-        onError(extractErrorMsg(e), event)
+        onSessionRequestError(event, {
+          message: getHumanReadableError(e, 'Error while parsing WalletConnect session request'),
+          code: WALLETCONNECT_ERRORS.PARSING_SESSION_REQUEST_FAILED
+        })
       }
     },
-    [addresses, onError, walletConnectClient]
+    [addresses, onSessionRequestError, walletConnectClient]
   )
 
   const connectToWalletConnect = useCallback(
@@ -349,8 +357,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         proposalEvent,
         walletConnectClient,
         dappTxData,
-        setDappTxData,
-        onError,
+        onSessionRequestError,
+        onSessionRequestSuccess,
         deepLinkUri,
         connectToWalletConnect,
         requiredChainInfo,
