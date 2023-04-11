@@ -28,7 +28,6 @@ import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
 import CompactToggle from '@/components/Inputs/CompactToggle'
 import NetworkSwitch from '@/components/NetworkSwitch'
-import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -87,8 +86,6 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
       <motion.header id="app-header" style={headerStyles} className={className}>
         <Title style={titleStyles}>{title}</Title>
         <HeaderButtons>
-          <ThemeSwitcher />
-          <HeaderDivider />
           {networkStatus === 'offline' && (
             <>
               <TooltipWrapper content={offlineText}>

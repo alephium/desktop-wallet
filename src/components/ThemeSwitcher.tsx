@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
@@ -32,7 +31,6 @@ interface ThemeSwitcherProps {
 const switcherSize = 30
 
 const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
-  const { t } = useTranslation()
   const { theme } = useAppSelector((state) => state.global)
   const posthog = usePostHog()
 

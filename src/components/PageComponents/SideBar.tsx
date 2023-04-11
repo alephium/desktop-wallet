@@ -23,6 +23,7 @@ import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import ModalPortal from '@/modals/ModalPortal'
 import SettingsModal from '@/modals/SettingsModal'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
@@ -39,16 +40,19 @@ const SideBar: FC<SideBarProps> = ({ className, children }) => {
   return (
     <div className={className}>
       {children}
-      <TooltipWrapper content={t('Settings')} tooltipId="sidenav">
-        <Button
-          transparent
-          squared
-          borderless
-          onClick={() => setIsSettingsModalOpen(true)}
-          aria-label={t('Settings')}
-          Icon={Settings}
-        />
-      </TooltipWrapper>
+      <BottomButtons>
+        <ThemeSwitcher />
+        <TooltipWrapper content={t('Settings')} tooltipId="sidenav">
+          <Button
+            transparent
+            squared
+            borderless
+            onClick={() => setIsSettingsModalOpen(true)}
+            aria-label={t('Settings')}
+            Icon={Settings}
+          />
+        </TooltipWrapper>
+      </BottomButtons>
       <ModalPortal>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </ModalPortal>
@@ -60,10 +64,18 @@ export default styled(SideBar)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
 
   width: ${walletSidebarWidthPx}px;
   padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
 
   border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background2};
+`
+
+const BottomButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 `
