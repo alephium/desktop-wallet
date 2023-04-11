@@ -115,7 +115,7 @@ const Content = styled(motion.div)`
   overflow-x: hidden;
   overflow-y: auto;
 
-  min-width: 300px;
+  min-width: 200px;
   max-height: 510px;
   margin: auto;
 

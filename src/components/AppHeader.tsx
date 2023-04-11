@@ -27,7 +27,7 @@ import styled, { useTheme } from 'styled-components'
 import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
 import CompactToggle from '@/components/Inputs/CompactToggle'
-import NetworkBadge from '@/components/NetworkBadge'
+import NetworkSwitch from '@/components/NetworkSwitch'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
@@ -137,7 +137,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             </>
           )}
           <HeaderDivider />
-          <NetworkBadge />
+          <NetworkSwitch />
         </HeaderButtons>
       </motion.header>
       <ModalPortal>

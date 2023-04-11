@@ -36,9 +36,9 @@ interface NetworkSelectOption {
   value: NetworkName
 }
 
-type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom'>
+type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom' | 'localhost'>
 
-const NetworkBadge = ({ className }: { className?: string }) => {
+const NetworkSwitch = ({ className }: { className?: string }) => {
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
@@ -48,9 +48,7 @@ const NetworkBadge = ({ className }: { className?: string }) => {
   const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
     label: {
       mainnet: i18next.t('Mainnet'),
-      testnet: i18next.t('Testnet'),
-      localhost: i18next.t('Localhost'),
-      custom: i18next.t('Custom')
+      testnet: i18next.t('Testnet')
     }[networkName],
     value: networkName
   }))
@@ -116,4 +114,4 @@ const NetworkNameLabel = styled.span`
   margin-right: 10px;
 `
 
-export default NetworkBadge
+export default NetworkSwitch
