@@ -63,6 +63,7 @@ const TransactionalInfo = ({
   const { assets, direction, outputs, lockTime, infoType } = getTransactionInfo(tx, showInternalInflows)
   const { label, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
+  const isMoved = infoType === 'move'
   const isPending = isPendingTx(tx)
 
   if (!address) return null
@@ -163,7 +164,7 @@ const TransactionalInfo = ({
         {knownAssets.map(({ id, amount, decimals, symbol }) => (
           <AmountContainer key={id}>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
-            <Amount value={amount} decimals={decimals} suffix={symbol} highlight showPlusMinus />
+            <Amount value={amount} decimals={decimals} suffix={symbol} highlight={!isMoved} showPlusMinus={!isMoved} />
           </AmountContainer>
         ))}
       </TableCellAmount>

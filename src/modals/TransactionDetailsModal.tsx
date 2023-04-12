@@ -61,6 +61,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
   const { label, Icon } = useTransactionUI(infoType)
 
+  const isMoved = infoType === 'move'
+
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
   const handleShowTxInExplorer = () => openInWebBrowser(`${explorerUrl}/#/transactions/${transaction.hash}`)
@@ -78,7 +80,14 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <AmountWrapper tabIndex={0}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id}>
-              <Amount tabIndex={0} value={amount} decimals={decimals} suffix={symbol} highlight showPlusMinus />
+              <Amount
+                tabIndex={0}
+                value={amount}
+                decimals={decimals}
+                suffix={symbol}
+                highlight={!isMoved}
+                showPlusMinus={!isMoved}
+              />
             </AmountContainer>
           ))}
         </AmountWrapper>
@@ -183,8 +192,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
                   decimals={decimals}
                   suffix={symbol}
                   isUnknownToken={!symbol}
-                  highlight
-                  showPlusMinus
+                  highlight={!isMoved}
+                  showPlusMinus={!isMoved}
                 />
                 {!symbol && <TokenHash hash={id} />}
               </AmountContainer>
