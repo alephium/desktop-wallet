@@ -23,7 +23,6 @@ import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled, { css } from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
@@ -89,18 +88,18 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, 
 
           <AppHeader title={title}>
             {networkStatus === 'online' && (
-              <TooltipWrapper content={t('Refresh data')}>
-                <RefreshButton
-                  role="secondary"
-                  transparent
-                  squared
-                  onClick={refreshAddressesData}
-                  disabled={isLoadingData}
-                  aria-label={t('Refresh')}
-                >
-                  {isLoadingData ? <Spinner /> : <RefreshCw />}
-                </RefreshButton>
-              </TooltipWrapper>
+              <RefreshButton
+                role="secondary"
+                transparent
+                squared
+                onClick={refreshAddressesData}
+                disabled={isLoadingData}
+                aria-label={t('Refresh')}
+                data-tooltip-id="default"
+                data-tooltip-content={t('Refresh data')}
+              >
+                {isLoadingData ? <Spinner /> : <RefreshCw />}
+              </RefreshButton>
             )}
           </AppHeader>
         </Scrollbar>

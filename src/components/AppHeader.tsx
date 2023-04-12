@@ -21,7 +21,6 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled, { useTheme } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
@@ -91,14 +90,18 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           <HeaderDivider />
           {networkStatus === 'offline' && (
             <>
-              <TooltipWrapper content={offlineText}>
-                <OfflineIcon tabIndex={0} aria-label={offlineText}>
-                  <WifiOff
-                    size={20}
-                    color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
-                  />
-                </OfflineIcon>
-              </TooltipWrapper>
+              <OfflineIcon
+                tabIndex={0}
+                aria-label={offlineText}
+                data-tooltip-content={offlineText}
+                data-tooltip-id="default"
+              >
+                <WifiOff
+                  size={20}
+                  color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
+                />
+              </OfflineIcon>
+
               <HeaderDivider />
             </>
           )}
@@ -108,15 +111,22 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
               <HeaderDivider />
             </>
           )}
-          <TooltipWrapper content={t('Discreet mode')}>
-            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
-          </TooltipWrapper>
+          <CompactToggle
+            toggled={discreetMode}
+            onToggle={toggleDiscreetMode}
+            IconOn={EyeOff}
+            IconOff={Eye}
+            data-tooltip-id="default"
+            data-tooltip-content={t('Discreet mode')}
+          />
           {defaultAddress && !isPassphraseUsed && (
             <>
               <HeaderDivider />
-              <TooltipWrapper content={t('Default address')}>
-                <AddressBadgeStyled addressHash={defaultAddress.hash} />
-              </TooltipWrapper>
+              <AddressBadgeStyled
+                addressHash={defaultAddress.hash}
+                data-tooltip-id="default"
+                data-tooltip-content={t('Default address')}
+              />
             </>
           )}
           <HeaderDivider />
@@ -124,18 +134,18 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           {isAuthenticated && (
             <>
               <HeaderDivider />
-              <TooltipWrapper content={t('Connect wallet to dApp')}>
-                <Button
-                  transparent
-                  squared
-                  role="secondary"
-                  onClick={() => setIsWalletConnectModalOpen(true)}
-                  aria-label="WalletConnect"
-                  hasNotification={wcSessionState === 'initialized'}
-                >
-                  <WalletConnectLogo />
-                </Button>
-              </TooltipWrapper>
+              <Button
+                transparent
+                squared
+                role="secondary"
+                onClick={() => setIsWalletConnectModalOpen(true)}
+                aria-label="WalletConnect"
+                hasNotification={wcSessionState === 'initialized'}
+                data-tooltip-id="default"
+                data-tooltip-content={t('Connect wallet to dApp')}
+              >
+                <WalletConnectLogo />
+              </Button>
             </>
           )}
         </HeaderButtons>

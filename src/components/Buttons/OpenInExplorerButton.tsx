@@ -18,7 +18,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
@@ -40,16 +39,16 @@ const OpenInExplorerButton = ({ address, className }: OpenInExplorerButtonProps)
   }
 
   return (
-    <TooltipWrapper content={t`Open in explorer`}>
-      <ExternalLink
-        className={className}
-        size={15}
-        onClick={handleShowInExplorer}
-        onKeyPress={handleShowInExplorer}
-        role="link"
-        tabIndex={0}
-      />
-    </TooltipWrapper>
+    <ExternalLink
+      className={className}
+      size={15}
+      onClick={handleShowInExplorer}
+      onKeyPress={handleShowInExplorer}
+      role="link"
+      tabIndex={0}
+      data-tooltip-id="default"
+      data-tooltip-content={t('Open in explorer')}
+    />
   )
 }
 
