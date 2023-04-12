@@ -30,6 +30,7 @@ import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersisten
 import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { osThemeChangeDetected } from '@/storage/global/globalActions'
+import { restorePendingTransactions } from '@/storage/transactions/transactionsStorageUtils'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
 import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { AlephiumWindow } from '@/types/window'
@@ -112,6 +113,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       if (!isPassphraseUsed) {
         migrateUserData()
         restoreAddressesFromMetadata()
+        restorePendingTransactions()
       }
 
       afterUnlock()

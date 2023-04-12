@@ -20,22 +20,19 @@ import {
   EncryptedStorageProps,
   StatelessPersistentEncryptedStorage
 } from '@/storage/statelessEncryptedPersistentStorage'
-import { store } from '@/storage/store'
+import { PendingTransaction } from '@/types/transactions'
 
-export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStorage {
-  load() {
-    return this._load(getEncryptedStoragePropsFromActiveWallet())
+class PendingTransactionsStorage extends StatelessPersistentEncryptedStorage {
+  load(encryptedStorageProps: EncryptedStorageProps) {
+    return this._load(encryptedStorageProps) as PendingTransaction[]
   }
 
-  protected _store(data: string) {
-    this._storeStateless(data, getEncryptedStoragePropsFromActiveWallet())
+  store(transactions: PendingTransaction[], encryptedStorageProps: EncryptedStorageProps) {
+    this._storeStateless(JSON.stringify(transactions), encryptedStorageProps)
   }
 }
 
-export const getEncryptedStoragePropsFromActiveWallet = (): EncryptedStorageProps => {
-  const { id, mnemonic, isPassphraseUsed } = store.getState().activeWallet
+const version = '1'
+const Storage = new PendingTransactionsStorage('pending-transactions', version)
 
-  if (!id || !mnemonic) throw new Error('Active wallet not found.')
-
-  return { walletId: id, mnemonic, isPassphraseUsed }
-}
+export default Storage

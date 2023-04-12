@@ -51,3 +51,5 @@ export const fetchTransactionsCsv = createAsyncThunk<string, CsvExportQueryParam
     }
   }
 )
+
+export const storedPendingTransactionsLoaded = createAction<PendingTransaction[]>('tx/storedPendingTransactionsLoaded')
