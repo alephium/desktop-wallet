@@ -76,11 +76,11 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     const { id, requiredNamespaces, relays } = proposalEvent.params
     const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
 
-    if (requiredNamespace.chains.length !== 1)
+    if (requiredNamespace?.chains?.length !== 1)
       return dispatch(
         walletConnectProposalApprovalFailed(
           t('Too many chains in the WalletConnect proposal, expected 1, got {{ num }}', {
-            num: requiredNamespace.chains.length
+            num: requiredNamespace?.chains?.length
           })
         )
       )

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 import DotIcon from '@/components/DotIcon'
@@ -78,7 +78,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, hasNot
           <Icon size={18} color={iconColor} />
         </ButtonIcon>
       )}
-      {children}
+      {children as ReactNode}
       {hasNotification && <NotificationDot color={theme.global.accent} size={11} />}
     </motion.button>
   )
