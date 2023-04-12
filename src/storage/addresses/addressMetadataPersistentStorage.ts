@@ -59,13 +59,11 @@ class AddressMetadataStorage extends PersistentEncryptedStorage {
 
     console.log(`🟠 Storing address index ${index} metadata locally`)
 
-    super._store(JSON.stringify(addressesMetadata), encryptedStorageProps)
+    super._store(JSON.stringify(addressesMetadata))
   }
 
   storeAll(addressesMetadata: AddressMetadata[]) {
-    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
-
-    super._store(JSON.stringify(addressesMetadata), encryptedStorageProps)
+    super._store(JSON.stringify(addressesMetadata))
   }
 }
 

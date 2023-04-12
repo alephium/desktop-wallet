@@ -60,7 +60,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)
-    super._store(JSON.stringify(contacts), encryptedStorageProps)
+    super._store(JSON.stringify(contacts))
 
     return contactId
   }

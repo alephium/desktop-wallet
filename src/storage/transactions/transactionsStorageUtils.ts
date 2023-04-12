@@ -16,26 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {
-  EncryptedStorageProps,
-  StatelessPersistentEncryptedStorage
-} from '@/storage/statelessEncryptedPersistentStorage'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
 import { store } from '@/storage/store'
+import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
+import { storedPendingTransactionsLoaded } from '@/storage/transactions/transactionsActions'
 
-export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStorage {
-  load() {
-    return this._load(getEncryptedStoragePropsFromActiveWallet())
-  }
-
-  protected _store(data: string) {
-    this._storeStateless(data, getEncryptedStoragePropsFromActiveWallet())
-  }
-}
-
-export const getEncryptedStoragePropsFromActiveWallet = (): EncryptedStorageProps => {
-  const { id, mnemonic, isPassphraseUsed } = store.getState().activeWallet
-
-  if (!id || !mnemonic) throw new Error('Active wallet not found.')
-
-  return { walletId: id, mnemonic, isPassphraseUsed }
+export const restorePendingTransactions = () => {
+  const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+  const transactions = PendingTransactionsStorage.load(encryptedStorageProps)
+  store.dispatch(storedPendingTransactionsLoaded(transactions))
 }
