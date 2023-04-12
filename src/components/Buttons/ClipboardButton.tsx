@@ -21,7 +21,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Check, Copy } from 'lucide-react'
 import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import { useAppDispatch } from '@/hooks/redux'
@@ -75,7 +74,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
   }, [dispatch, hasBeenCopied])
 
   const clipboard = (
-    <TooltipWrapper content={!hasBeenCopied ? tooltip ?? t`Copy to clipboard` : t`Copied`} tooltipId="copy">
+    <div data-tooltip-content={!hasBeenCopied ? tooltip ?? t('Copy to clipboard') : t('Copied')} data-tooltip-id="copy">
       {!hasBeenCopied ? (
         <ClipboardWrapper>
           <Copy
@@ -84,7 +83,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
             onKeyPress={handleInput}
             onMouseDown={handleInput}
             role="button"
-            aria-label={disableA11y ? undefined : t`Copy to clipboard`}
+            aria-label={disableA11y ? undefined : t('Copy to clipboard')}
             tabIndex={disableA11y ? undefined : 0}
           />
         </ClipboardWrapper>
@@ -93,7 +92,7 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
           <Check className={`${className} check`} />
         </ClipboardWrapper>
       )}
-    </TooltipWrapper>
+    </div>
   )
 
   return children ? (

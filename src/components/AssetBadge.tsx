@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import AssetLogo from '@/components/AssetLogo'
@@ -38,11 +37,9 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
   }
 
   return (
-    <div className={className}>
-      <TooltipWrapper content={assetInfo.name ?? assetId}>
-        <AssetLogo asset={assetInfo} size={20} />
-        {!simple && assetInfo.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
-      </TooltipWrapper>
+    <div className={className} data-tooltip-id="default" data-tooltip-content={assetInfo.name ?? assetId}>
+      <AssetLogo asset={assetInfo} size={20} />
+      {!simple && assetInfo.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
   )
 }
