@@ -32,10 +32,10 @@ import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import walletConnectIcon from '@/images/wallet-connect-logo.svg'
+import { ReactComponent as WalletConnectLogo } from '@/images/wallet-connect-logo.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import WalletConnectModal from '@/modals/WalletConnectModal'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { discreetModeToggled } from '@/storage/settings/settingsActions'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
@@ -55,7 +55,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { mnemonic, isPassphraseUsed } = useAppSelector((s) => s.activeWallet)
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
-  const { deepLinkUri } = useWalletConnectContext()
+  const addresses = useAppSelector(selectAllAddresses)
+  const { proposalEvent, wcSessionState } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -65,8 +66,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
   useEffect(() => {
-    if (deepLinkUri && isAuthenticated) setIsWalletConnectModalOpen(true)
-  }, [isAuthenticated, deepLinkUri])
+    if (proposalEvent?.id && isAuthenticated) setIsWalletConnectModalOpen(true)
+  }, [isAuthenticated, proposalEvent?.id])
 
   const headerStyles = {
     backgroundColor: useTransform(
@@ -130,8 +131,9 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                   role="secondary"
                   onClick={() => setIsWalletConnectModalOpen(true)}
                   aria-label="WalletConnect"
+                  hasNotification={wcSessionState === 'initialized'}
                 >
-                  <img src={walletConnectIcon} style={{ width: '100%' }} />
+                  <WalletConnectLogo />
                 </Button>
               </TooltipWrapper>
             </>
@@ -139,8 +141,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
         </HeaderButtons>
       </motion.header>
       <ModalPortal>
-        {isWalletConnectModalOpen && (
-          <WalletConnectModal uri={deepLinkUri} onClose={() => setIsWalletConnectModalOpen(false)} />
+        {isWalletConnectModalOpen && addresses.length > 0 && (
+          <WalletConnectModal onClose={() => setIsWalletConnectModalOpen(false)} />
         )}
       </ModalPortal>
     </>

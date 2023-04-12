@@ -46,10 +46,17 @@ interface AssetAmountsInputProps {
   assetAmounts: AssetAmount[]
   onAssetAmountsChange: (assetAmounts: AssetAmount[]) => void
   id: string
+  allowMultiple?: boolean
   className?: string
 }
 
-const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, className }: AssetAmountsInputProps) => {
+const AssetAmountsInput = ({
+  address,
+  assetAmounts,
+  onAssetAmountsChange,
+  allowMultiple = true,
+  className
+}: AssetAmountsInputProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const assets = useAppSelector((state) => selectAddressesAssets(state, [address.hash]))
@@ -167,11 +174,11 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
 
           return (
             <BoxStyled key={id}>
-              <AssetSelect onMouseDown={() => !disabled && openAssetSelectModal(index)}>
+              <AssetSelect onMouseDown={() => !disabled && allowMultiple && openAssetSelectModal(index)}>
                 <InputLabel isElevated htmlFor={id}>
                   {t('Asset')}
                 </InputLabel>
-                <SelectInput type="button" className={className} disabled={disabled} id={id}>
+                <SelectInput type="button" className={className} disabled={disabled || !allowMultiple} id={id}>
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
                     {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
@@ -214,7 +221,7 @@ const AssetAmountsInput = ({ address, assetAmounts, onAssetAmountsChange, classN
           )
         })}
       </AssetAmounts>
-      {assetAmounts.length < assets.length && (
+      {allowMultiple && assetAmounts.length < assets.length && (
         <AddAssetSection>
           <Button role="secondary" Icon={Plus} short onClick={handleAddAssetClick}>
             {t('Add asset')}

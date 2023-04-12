@@ -16,52 +16,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-import Amount from '@/components/Amount'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import { useWalletConnectContext, WalletConnectContextProps } from '@/contexts/walletconnect'
 import InfoRow from '@/modals/SendModals/InfoRow'
-import { formatDateForDisplay } from '@/utils/misc'
 
-interface CheckFeeLockTimeBoxProps {
-  fee: bigint
-  lockTime?: Date
+interface DAppMetadataBoxProps {
+  metadata: WalletConnectContextProps['connectedDAppMetadata']
   className?: string
 }
 
-const CheckFeeLockTimeBox = ({ fee, lockTime, className }: CheckFeeLockTimeBoxProps) => {
+const DAppMetadataBox = ({ metadata, className }: DAppMetadataBoxProps) => {
   const { t } = useTranslation()
+  const { requiredChainInfo } = useWalletConnectContext()
+
+  if (!metadata) return null
 
   return (
     <Box className={className}>
-      <InfoRow label={t('Expected fee')}>
-        <Amount value={fee} fullPrecision />
-      </InfoRow>
-      {lockTime && (
-        <>
-          <HorizontalDivider />
-          <InfoRow label={t('Unlocks at')}>
-            <UnlocksAt>
-              {formatDateForDisplay(lockTime)}
-              <FromNow>({dayjs(lockTime).fromNow()})</FromNow>
-            </UnlocksAt>
-          </InfoRow>
-        </>
-      )}
+      <InfoRow label={t('Name')}>{metadata.name}</InfoRow>
+      <HorizontalDivider />
+      <InfoRow label={t('Description')}>{metadata.description}</InfoRow>
+      <HorizontalDivider />
+      <InfoRow label="URL">{metadata.url}</InfoRow>
+      <HorizontalDivider />
+      <InfoRow label={t('Network')}>{requiredChainInfo?.networkId}</InfoRow>
+      <HorizontalDivider />
+      <InfoRow label={t('Address group')}>{requiredChainInfo?.chainGroup?.toString() ?? t('all')}</InfoRow>
     </Box>
   )
 }
 
-export default CheckFeeLockTimeBox
-
-const UnlocksAt = styled.div`
-  display: flex;
-  gap: var(--spacing-1);
-`
-
-const FromNow = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
-`
+export default DAppMetadataBox

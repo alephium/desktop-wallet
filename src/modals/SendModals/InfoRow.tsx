@@ -16,13 +16,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BILLION } from '@alephium/sdk'
+import styled from 'styled-components'
 
-export const MINIMAL_GAS_AMOUNT = 20000
-export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
-export const GENESIS_TIMESTAMP = 1231006505000
-
-export enum WALLETCONNECT_ERRORS {
-  TRANSACTION_SEND_FAILED = -32000,
-  PARSING_SESSION_REQUEST_FAILED = -33000
+interface InfoRowProps {
+  label: string
+  className?: string
 }
+
+const InfoRow: FC<InfoRowProps> = ({ label, className, children }) => (
+  <div className={className}>
+    <Label>{label}</Label>
+    <div>{children}</div>
+  </div>
+)
+
+export default styled(InfoRow)`
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 15px;
+`
+
+const Label = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.secondary};
+`

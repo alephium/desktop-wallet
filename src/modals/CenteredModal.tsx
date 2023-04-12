@@ -176,20 +176,18 @@ const ModalContent = styled.div`
 
 export const ModalFooterButtons = styled.div`
   display: flex;
-  justify-content: flex-end;
-  gap: 18px;
-  padding: var(--spacing-3) var(--spacing-3) 0;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 50px;
 `
 
 export const ModalFooterButton = ({ ...props }) => (
-  <ModalFooterButtonStyled short {...props}>
-    {props.children}
-  </ModalFooterButtonStyled>
+  <ModalFooterButtonStyled {...props}>{props.children}</ModalFooterButtonStyled>
 )
 
 const ModalFooterButtonStyled = styled(Button)`
-  min-width: 111px;
-  height: 30px;
+  width: 100%;
+  max-width: none;
 `
 
 const ModalSubtitle = styled.div`

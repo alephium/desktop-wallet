@@ -58,7 +58,6 @@ const sectionVariants: Variants = {
 }
 
 export const sectionChildrenVariants: Variants = {
-  hidden: { y: 5, opacity: 0 },
   shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
   disabled: { y: 0, opacity: 0.5 }
 }

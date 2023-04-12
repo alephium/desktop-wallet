@@ -63,7 +63,7 @@ export interface DeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAlphAmount?: string
+  initialAlphAmount?: AssetAmount
   issueTokenAmount?: string
   gasAmount?: number
   gasPrice?: string
@@ -73,7 +73,7 @@ export interface ScriptTxData {
   fromAddress: Address
   bytecode: string
 
-  alphAmount?: string
+  assetAmounts?: AssetAmount[]
   gasAmount?: number
   gasPrice?: string
 }

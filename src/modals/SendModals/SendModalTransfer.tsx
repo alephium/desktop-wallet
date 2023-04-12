@@ -28,7 +28,6 @@ import styled from 'styled-components'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
-import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
@@ -46,6 +45,7 @@ import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
 import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
 import CheckFeeLocktimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
+import CheckModalContent from '@/modals/SendModals/CheckModalContent'
 import GasSettings from '@/modals/SendModals/GasSettings'
 import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
@@ -100,11 +100,11 @@ const TransferCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<Tran
 
   return (
     <>
-      <Content>
+      <CheckModalContent>
         <CheckAmountsBox assetAmounts={data.assetAmounts} />
         <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
         <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
-      </Content>
+      </CheckModalContent>
       <FooterButton
         onClick={data.lockTime ? () => setIsLockTimeConfirmModalOpen(true) : onSubmit}
         variant={settings.passwordRequirement ? 'default' : 'valid'}
@@ -383,14 +383,6 @@ export default TransferTxModal
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
-`
-
-const Content = styled.div`
-  padding-top: 36px;
-
-  & > ${Box}:not(:last-child) {
-    margin-bottom: 35px;
-  }
 `
 
 const FromNow = styled.strong`

@@ -28,6 +28,7 @@ import SnackbarManager from '@/components/SnackbarManager'
 import SplashScreen from '@/components/SplashScreen'
 import UpdateWalletBanner from '@/components/UpdateWalletBanner'
 import { useGlobalContext } from '@/contexts/global'
+import { WalletConnectContextProvider } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
@@ -159,12 +160,14 @@ const App = () => {
 
       {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
 
-      <AppContainer showDevIndication={showDevIndication}>
-        <CenteredSection>
-          <Router />
-        </CenteredSection>
-        <BannerSection>{newVersion && <UpdateWalletBanner />}</BannerSection>
-      </AppContainer>
+      <WalletConnectContextProvider>
+        <AppContainer showDevIndication={showDevIndication}>
+          <CenteredSection>
+            <Router />
+          </CenteredSection>
+          <BannerSection>{newVersion && <UpdateWalletBanner />}</BannerSection>
+        </AppContainer>
+      </WalletConnectContextProvider>
 
       <SnackbarManager />
       {loading && <AppSpinner />}

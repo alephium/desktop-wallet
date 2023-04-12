@@ -18,10 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { getSdkError } from '@walletconnect/utils'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PostHog, usePostHog } from 'posthog-js/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -41,7 +42,7 @@ import {
 } from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
 import { CheckTxProps, TxContext, UnsignedTx } from '@/types/transactions'
-import { extractErrorMsg } from '@/utils/misc'
+import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   title: string
@@ -52,6 +53,8 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   buildTransaction: (data: T, context: TxContext) => Promise<void>
   handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
+  txData?: T
+  initialStep?: Step
 }
 
 function SendModal<PT extends { fromAddress: Address }, T extends PT>({
@@ -62,15 +65,18 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   CheckTxModalContent,
   buildTransaction,
   handleSend,
-  getWalletConnectResult
+  getWalletConnectResult,
+  txData,
+  initialStep
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
+  const { requestEvent, walletConnectClient, onSessionRequestError, onSessionRequestSuccess } =
+    useWalletConnectContext()
   const settings = useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
-  const [transactionData, setTransactionData] = useState<T | undefined>()
+  const [transactionData, setTransactionData] = useState<T | undefined>(txData)
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<Step>('build-tx')
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
@@ -99,47 +105,60 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     buildConsolidationTransactions()
   }, [consolidationRequired, transactionData])
 
-  const txContext: TxContext = {
-    setIsSweeping,
-    sweepUnsignedTxs,
-    setSweepUnsignedTxs,
-    setFees,
-    unsignedTransaction,
-    setUnsignedTransaction,
-    unsignedTxId,
-    setUnsignedTxId,
-    isSweeping,
-    consolidationRequired
-  }
+  const txContext: TxContext = useMemo(
+    () => ({
+      setIsSweeping,
+      sweepUnsignedTxs,
+      setSweepUnsignedTxs,
+      setFees,
+      unsignedTransaction,
+      setUnsignedTransaction,
+      unsignedTxId,
+      setUnsignedTxId,
+      isSweeping,
+      consolidationRequired
+    }),
+    [consolidationRequired, isSweeping, sweepUnsignedTxs, unsignedTransaction, unsignedTxId]
+  )
 
-  const buildTransactionExtended = async (data: T) => {
-    setTransactionData(data)
-    setIsLoading(true)
+  const buildTransactionExtended = useCallback(
+    async (data: T) => {
+      setTransactionData(data)
+      setIsLoading(true)
 
-    try {
-      await buildTransaction(data, txContext)
+      try {
+        await buildTransaction(data, txContext)
 
-      if (!isConsolidateUTXOsModalVisible) {
-        setStep('info-check')
+        if (!isConsolidateUTXOsModalVisible) {
+          setStep('info-check')
+        }
+      } catch (e) {
+        // TODO: When API error codes are available, replace this substring check with a proper error code check
+        const { error } = e as APIError
+        if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
+          setIsConsolidateUTXOsModalVisible(true)
+          setConsolidationRequired(true)
+        } else {
+          dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
+        }
       }
-    } catch (e) {
-      // TODO: When API error codes are available, replace this substring check with a proper error code check
-      const { error } = e as APIError
-      if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
-        setIsConsolidateUTXOsModalVisible(true)
-        setConsolidationRequired(true)
-      } else {
-        dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
-      }
+
+      setIsLoading(false)
+    },
+    [buildTransaction, dispatch, isConsolidateUTXOsModalVisible, t, txContext]
+  )
+
+  useEffect(() => {
+    if (initialStep === 'info-check' && transactionData) {
+      buildTransactionExtended(transactionData)
     }
-
-    setIsLoading(false)
-  }
+  }, [buildTransactionExtended, initialStep, transactionData])
 
   const onCloseExtended = useCallback(() => {
-    setDappTxData(undefined)
     onClose()
-  }, [onClose, setDappTxData])
+
+    if (requestEvent) onSessionRequestError(requestEvent, getSdkError('USER_REJECTED_EVENTS'))
+  }, [onClose, requestEvent, onSessionRequestError])
 
   const handleSendExtended = async () => {
     if (!transactionData) return
@@ -149,24 +168,21 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     try {
       const signature = await handleSend(transactionData, txContext, posthog)
 
-      if (signature && requestEvent && walletConnectClient) {
-        const wcResult = getWalletConnectResult(txContext, signature)
-
-        await walletConnectClient.respond({
-          topic: requestEvent.topic,
-          response: {
-            id: requestEvent.id,
-            jsonrpc: '2.0',
-            result: wcResult
-          }
-        })
+      if (walletConnectClient && requestEvent && signature) {
+        const result = getWalletConnectResult(txContext, signature)
+        await onSessionRequestSuccess(requestEvent, result)
       }
 
       dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
       setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
-      onError(extractErrorMsg(e))
+
+      if (requestEvent)
+        onSessionRequestError(requestEvent, {
+          message: getHumanReadableError(e, 'Error while sending the transaction'),
+          code: WALLETCONNECT_ERRORS.TRANSACTION_SEND_FAILED
+        })
     } finally {
       setIsLoading(false)
     }

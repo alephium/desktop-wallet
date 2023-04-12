@@ -260,8 +260,8 @@ if (!gotTheLock) {
     if (mainWindow === null) createWindow()
   })
 
-  app.on('open-url', (event, url) => {
-    const wcUri = url.replace('alephium://wc?uri=', '')
-    mainWindow.webContents.send('wc:setDeepLinkUri', wcUri)
+  app.on('open-url', (_, url) => {
+    const uri = url.replace('alephium://wc?uri=', '')
+    mainWindow.webContents.send('wc:connect', uri)
   })
 }

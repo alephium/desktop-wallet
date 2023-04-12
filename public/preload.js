@@ -53,10 +53,10 @@ contextBridge.exposeInMainWorld('electron', {
     }
   },
   walletConnect: {
-    onSetDeepLinkUri: (callback) => {
+    onConnect: (callback) => {
       const callbackWithEventArg = (_, arg2) => callback(arg2)
-      ipcRenderer.on('wc:setDeepLinkUri', callbackWithEventArg)
-      return () => ipcRenderer.removeListener('wc:setDeepLinkUri', callbackWithEventArg)
+      ipcRenderer.on('wc:connect', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('wc:connect', callbackWithEventArg)
     }
   },
   app: {

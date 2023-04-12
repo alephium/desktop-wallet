@@ -22,6 +22,7 @@ import i18n from '@/i18n'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
+import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import { copiedToClipboard, copyToClipboardFailed, snackbarDisplayTimeExpired } from '@/storage/global/globalActions'
 import { devModeShortcutDetected } from '@/storage/global/globalActions'
 import {
@@ -144,6 +145,8 @@ const snackbarSlice = createSlice({
 
         if (message) displayMessageImmediately(state, message)
       })
+      .addCase(walletConnectPairingFailed, displayError)
+      .addCase(walletConnectProposalApprovalFailed, displayError)
   }
 })
 

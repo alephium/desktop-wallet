@@ -23,6 +23,7 @@ import styled, { useTheme } from 'styled-components'
 
 import AddressMetadataForm from '@/components/AddressMetadataForm'
 import Amount from '@/components/Amount'
+import Button from '@/components/Button'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
@@ -107,13 +108,14 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps)
           description={t('Sweep all the unlocked funds of this address to another address.')}
           InputComponent={
             <SweepButton>
-              <ModalFooterButton
-                alert
+              <Button
+                short
+                wide
                 onClick={() => isSweepButtonEnabled && setIsAddressSweepModalOpen(true)}
                 disabled={!isSweepButtonEnabled}
               >
                 {t('Sweep')}
-              </ModalFooterButton>
+              </Button>
               <AvailableAmount tabIndex={0}>
                 {t('Available')}: <Amount value={availableBalance} color={theme.font.secondary} />
               </AvailableAmount>
