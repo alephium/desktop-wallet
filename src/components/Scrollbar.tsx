@@ -20,6 +20,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { useMotionValue } from 'framer-motion'
+import { isNumber } from 'lodash'
 import { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
@@ -40,8 +41,8 @@ const createScrollbarPiece = (regular: CSSProperties, additional?: CSSProperties
     // The only way to know the scrollbar is being rendered is if bottom > 0...
     const overflowStyle = {
       overflow:
-        (restProps.key === 'ScrollbarsCustom-Wrapper' && style?.bottom && style.bottom > 0) ||
-        (style?.right && style.right > 0)
+        (restProps.key === 'ScrollbarsCustom-Wrapper' && style?.bottom && isNumber(style.bottom) && style.bottom > 0) ||
+        (style?.right && isNumber(style.right) && style.right > 0)
           ? 'hidden'
           : 'unset'
     }

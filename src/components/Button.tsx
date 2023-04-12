@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
@@ -76,7 +76,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
           <Icon size={18} color={iconColor} />
         </ButtonIcon>
       )}
-      {children}
+      {children as ReactNode}
     </motion.button>
   )
 }
