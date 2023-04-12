@@ -24,13 +24,13 @@ import { NetworkSettings, Settings } from '@/types/settings'
 export const networkPresets: Record<NetworkPreset, NetworkSettings> = {
   mainnet: {
     networkId: 0,
-    nodeHost: 'https://wallet-v17.mainnet.alephium.org',
+    nodeHost: 'https://wallet-v20.mainnet.alephium.org',
     explorerApiHost: 'https://backend-v113.mainnet.alephium.org',
     explorerUrl: 'https://explorer.alephium.org'
   },
   testnet: {
     networkId: 1,
-    nodeHost: 'https://wallet-v17.testnet.alephium.org',
+    nodeHost: 'https://wallet-v20.testnet.alephium.org',
     explorerApiHost: 'https://backend-v113.testnet.alephium.org',
     explorerUrl: 'https://explorer.testnet.alephium.org'
   },
