@@ -17,8 +17,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import dayjs from 'dayjs'
 
 import { Currency } from '@/types/settings'
+
+type HistoricalPriceQueryParams = {
+  currency: Currency
+  days: number
+}
+
+interface HistoricalPriceResult {
+  date: string // YYYY-MM-DD
+  price: number
+}
 
 export const priceApi = createApi({
   reducerPath: 'priceApi',
@@ -33,9 +44,10 @@ export const priceApi = createApi({
         return parseFloat(price)
       }
     }),
-    getHistoricalPrice: builder.query<{ time: number; price: number }[], Currency>({
-      query: (currency) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=91`,
-      transformResponse: (response: { prices: number[][] }) => response.prices.map((p) => ({ time: p[0], price: p[1] }))
+    getHistoricalPrice: builder.query<HistoricalPriceResult[], HistoricalPriceQueryParams>({
+      query: ({ currency, days }) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`,
+      transformResponse: (response: { prices: number[][] }) =>
+        response.prices.map((p) => ({ date: dayjs(p[0]).format('YYYY-MM-DD'), price: p[1] }))
     })
   })
 })

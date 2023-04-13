@@ -16,31 +16,100 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { toHumanReadableAmount } from '@alephium/sdk'
+import { IntervalType } from '@alephium/sdk/api/explorer'
 import { colord } from 'colord'
+import dayjs from 'dayjs'
+import { useEffect, useState } from 'react'
 import Chart from 'react-apexcharts'
 
+import client from '@/api/client'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
+import { AddressHash } from '@/types/addresses'
 import { Currency } from '@/types/settings'
-import { currencies } from '@/utils/currencies'
 
 interface HistoricalPriceChartProps {
+  addressHashes: AddressHash[]
   currency: Currency
 }
 
-const HistoricalPriceChart = ({ currency }: HistoricalPriceChartProps) => {
-  const { data: prices, isLoading: pricesLoading } = useGetHistoricalPriceQuery(currencies.USD.ticker)
+type DateString = string
+type AmountPerDate = Record<DateString, bigint>
+type AmountPerDatePerAddress = Record<AddressHash, AmountPerDate>
+type LatestAmountPerAddress = Record<AddressHash, bigint>
 
-  if (!prices) return null
+const HistoricalPriceChart = ({ addressHashes, currency }: HistoricalPriceChartProps) => {
+  const [amountPerDatePerAddress, setAmountPerDatePerAddress] = useState<AmountPerDatePerAddress>()
+  const { data: alphPriceHistory } = useGetHistoricalPriceQuery({
+    currency,
+    days: 91
+  })
 
-  return (
-    <Chart
-      options={chartOptions}
-      series={[{ data: prices.map((p) => p.price) }]}
-      type="area"
-      width="100%"
-      height="100%"
-    />
-  )
+  useEffect(() => {
+    if (addressHashes.length === 0) return
+
+    const amountPerDatePerAddressTemp: AmountPerDatePerAddress = {}
+    addressHashes.forEach((addressHash) => (amountPerDatePerAddressTemp[addressHash] = {}))
+
+    const fetchData = async () => {
+      const now = dayjs()
+      const thisMoment = now.valueOf()
+      const threeMonthsAgo = now.subtract(3, 'month').valueOf()
+
+      for (const addressHash of addressHashes) {
+        const { data } = await client.explorer.addresses.getAddressesAddressAmountHistory(
+          addressHash,
+          { fromTs: threeMonthsAgo, toTs: thisMoment, 'interval-type': IntervalType.Daily },
+          { format: 'text' }
+        )
+
+        data.split('\n').forEach((row, index) => {
+          if (index !== 0 && row) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [timestamp, _, amount] = row.split(',')
+            const date = dayjs(parseInt(timestamp)).format('YYYY-MM-DD')
+
+            amountPerDatePerAddressTemp[addressHash][date] = BigInt(amount)
+          }
+        })
+      }
+
+      setAmountPerDatePerAddress(amountPerDatePerAddressTemp)
+    }
+
+    fetchData()
+  }, [addressHashes])
+
+  if (!alphPriceHistory || !amountPerDatePerAddress) return null
+
+  const addressesLatestAmount: LatestAmountPerAddress = {}
+  addressHashes.forEach((addressHash) => (addressesLatestAmount[addressHash] = BigInt(0)))
+
+  const chartData = alphPriceHistory.map(({ date, price }) => {
+    let totalAmountPerDate = BigInt(0)
+
+    addressHashes.forEach((addressHash) => {
+      const amountOnDate = amountPerDatePerAddress[addressHash][date]
+
+      if (amountOnDate !== undefined) {
+        totalAmountPerDate += amountOnDate
+        addressesLatestAmount[addressHash] = amountOnDate
+      } else {
+        totalAmountPerDate += addressesLatestAmount[addressHash]
+      }
+    })
+
+    // TODO: Uncomment to test the display of date, sometimes it works, sometimes the chart doesn't show :/
+    // return {
+    //   x: date,
+    //   y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
+    // }
+    return price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
+  })
+
+  const filteredChartData = chartData.slice(chartData.findIndex((point) => point !== 0))
+
+  return <Chart options={chartOptions} series={[{ data: filteredChartData }]} type="area" width="100%" height="100%" />
 }
 
 const chartOptions: ApexCharts.ApexOptions = {

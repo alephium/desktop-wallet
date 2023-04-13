@@ -31,10 +31,14 @@ import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/Addresses
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { AddressHash } from '@/types/addresses'
+import { currencies } from '@/utils/currencies'
 
 const OverviewPage = () => {
   const { t } = useTranslation()
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
+  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
 
   return (
     <motion.div {...fadeIn}>
@@ -54,7 +58,7 @@ const OverviewPage = () => {
         </AmountsOverviewPanel>
 
         <ChartContainer>
-          <HistoricalPriceChart currency="USD" />
+          <HistoricalPriceChart addressHashes={addressHashes} currency={currencies.USD.ticker} />
         </ChartContainer>
 
         <AssetAndAddressesRow>
