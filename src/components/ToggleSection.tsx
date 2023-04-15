@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { fastTransition } from '@/animations'
@@ -36,18 +36,30 @@ export interface ToggleSectionProps {
 const ToggleSection = ({
   title,
   subtitle,
-  isOpen = false,
+  isOpen,
   onClick = () => null,
   shadow,
   children,
   className
 }: ToggleSectionProps) => {
-  const [isShown, setIsShown] = useState(isOpen)
+  const [isShown, setIsShown] = useState(isOpen || false)
   const theme = useTheme()
 
+  useEffect(() => {
+    if (isOpen !== undefined) {
+      setIsShown(isOpen)
+      onClick(isOpen)
+    }
+  }, [isOpen, onClick])
+
   const handleToggle = () => {
-    setIsShown(!isShown)
-    onClick(isShown)
+    console.log(isOpen)
+    if (isOpen === undefined) {
+      setIsShown(!isShown)
+      onClick(isShown)
+    } else {
+      onClick(!isOpen)
+    }
   }
 
   return (
@@ -76,8 +88,9 @@ const ToggleSection = ({
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => theme.bg.background1};
   border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.secondary};
   padding-bottom: 16px;
 `
 
@@ -85,7 +98,8 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 21px 0 21px;
+  padding: 15px;
+  padding-bottom: 0px;
 `
 
 const TitleColumn = styled.div`

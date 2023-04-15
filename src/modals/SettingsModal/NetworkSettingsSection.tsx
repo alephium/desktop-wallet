@@ -24,11 +24,11 @@ import styled from 'styled-components'
 
 import client from '@/api/client'
 import Button from '@/components/Button'
-import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
+import ToggleSection from '@/components/ToggleSection'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
@@ -95,6 +95,8 @@ const NetworkSettingsSection = () => {
           return
         }
 
+        setAdvancedSectionOpen(false)
+
         const newNetworkSettings = networkPresets[networkName]
 
         let networkId = newNetworkSettings.networkId
@@ -160,10 +162,11 @@ const NetworkSettingsSection = () => {
         label={t`Current network`}
         id="network"
       />
-      <ExpandableSection
-        sectionTitleClosed={t`Advanced settings`}
-        open={advancedSectionOpen}
-        onOpenChange={(isOpen) => setAdvancedSectionOpen(isOpen)}
+      <ToggleSection
+        title={t('Advanced settings')}
+        subtitle={t('Set custom network URLs')}
+        isOpen={advancedSectionOpen}
+        onClick={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >
         <UrlInputs>
           <Input
@@ -188,7 +191,7 @@ const NetworkSettingsSection = () => {
         <Section inList>
           <Button onClick={handleAdvancedSettingsSave}>{t`Save`}</Button>
         </Section>
-      </ExpandableSection>
+      </ToggleSection>
     </>
   )
 }
