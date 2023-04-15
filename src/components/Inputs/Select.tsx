@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
-import { MoreVertical, SearchIcon } from 'lucide-react'
+import { Check, MoreVertical, SearchIcon } from 'lucide-react'
 import {
   ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
@@ -361,6 +361,11 @@ export function SelectOptionsModal<T extends OptionValue>({
               aria-label={o.label}
             >
               {optionRender ? optionRender(o, isSelected) : o.label}
+              {isSelected && (
+                <CheckMark>
+                  <Check strokeWidth={3} />
+                </CheckMark>
+              )}
             </OptionItem>
           )
         })}
@@ -408,13 +413,15 @@ export const OptionSelect = styled.div`
 `
 
 export const OptionItem = styled.button<{ selected: boolean; focused: boolean; invisible?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: var(--spacing-4);
   cursor: pointer;
-  color: ${({ selected }) => (selected ? 'var(--color-white)' : 'inherit')};
+  color: ${({ theme, selected }) => (selected ? theme.font.primary : theme.font.secondary)};
   user-select: none;
   text-align: left;
-  background-color: ${({ theme, selected, focused }) =>
-    selected ? theme.global.accent : focused ? theme.bg.accent : theme.bg.primary};
+  background-color: ${({ theme, focused }) => (focused ? theme.bg.accent : theme.bg.primary)};
   visibility: ${({ invisible }) => invisible && 'hidden'};
 
   &:not(:last-child) {
@@ -447,6 +454,18 @@ const SelectedValue = styled.div<InputProps>`
         background-color: transparent;
       }
     `}
+`
+
+const CheckMark = styled.div`
+  height: 19px;
+  width: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.global.accent};
+  color: white;
+  border-radius: 40px;
+  padding: 3px;
 `
 
 const Searchbar = styled(Input)`
