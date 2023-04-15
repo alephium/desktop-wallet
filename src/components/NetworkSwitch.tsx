@@ -42,6 +42,7 @@ interface NetworkSelectOption {
 type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom' | 'localhost'>
 
 const NetworkSwitch = ({ className }: { className?: string }) => {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
@@ -95,7 +96,7 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
         CustomComponent={SelectCustomComponent}
         ListBottomComponent={
           <MoreOptionsItem onClick={() => setIsSettingsModalOpen(true)}>
-            Other options <ArrowRight size={16} />
+            {t('More options')} <ArrowRight size={16} />
           </MoreOptionsItem>
         }
       />

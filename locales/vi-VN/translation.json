@@ -354,5 +354,6 @@
   "Delete": "Xoá",
   "Timestamp": "Thời gian",
   "Lock time must be in the future.": "Thời gian khoá trong tương lai.",
-  "Shortcuts": "Shortcuts"
+  "Shortcuts": "Shortcuts",
+  "More options": "More options"
 }
