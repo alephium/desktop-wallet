@@ -96,19 +96,12 @@ export default styled(InfoBox)`
 `
 
 const IconContainer = styled.div`
-  flex: 1;
   display: flex;
-  max-width: 100px;
-
-  svg {
-    height: 35%;
-    width: 35%;
-    margin: auto;
-  }
+  align-items: center;
+  justify-content: center;
 `
 
 const TextContainer = styled.div<{ wordBreak?: boolean; ellipsis?: boolean }>`
-  padding: 0 var(--spacing-4);
   flex: 2;
   font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
@@ -131,7 +124,7 @@ const StyledBox = styled(motion.div)<{
   contrast?: boolean
   noBorders?: boolean
 }>`
-  padding: var(--spacing-3) 0;
+  padding: var(--spacing-3);
   height: ${({ short }) => (short ? 'var(--inputHeight)' : 'auto')};
   background-color: ${({ theme, contrast, importance }) =>
     contrast
@@ -143,6 +136,7 @@ const StyledBox = styled(motion.div)<{
   display: flex;
   border-radius: var(--radius-big);
   align-items: center;
+  gap: 15px;
 
   ${({ theme, importance, noBorders }) =>
     !noBorders &&
