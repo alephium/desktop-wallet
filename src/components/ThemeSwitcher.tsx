@@ -82,6 +82,6 @@ const ThemeIconContainer = styled.div`
   border-radius: ${switcherSize}px;
 
   svg {
-    stroke: white;
+    stroke: var(--color-white);
   }
 `

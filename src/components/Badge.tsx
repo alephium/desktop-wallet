@@ -45,10 +45,12 @@ export default styled(Badge)`
     const usedColor = color || theme.font.primary
 
     return css`
-      display: inline;
-      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px 0 15px;
+      height: 35px;
       color: ${usedColor};
-      border-radius: ${rounded ? '20px' : 'var(--radius-big)'};
+      border-radius: ${rounded ? '50px' : 'var(--radius-big)'};
       background-color: ${!transparent && colord(usedColor).alpha(0.08).toRgbString()};
       ${border &&
       css`

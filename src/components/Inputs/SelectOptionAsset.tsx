@@ -33,13 +33,13 @@ interface SelectOptionAssetProps {
 const SelectOptionAsset = ({ asset, hideAmount, className }: SelectOptionAssetProps) => (
   <SelectOptionItemContent
     className={className}
-    ContentLeft={
+    MainContent={
       <AssetName>
         <AssetLogo asset={asset} size={20} />
         {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
       </AssetName>
     }
-    ContentRight={
+    SecondaryContent={
       !hideAmount && (
         <AmountStyled
           value={asset.balance}

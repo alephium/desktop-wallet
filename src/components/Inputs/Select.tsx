@@ -463,9 +463,9 @@ const CheckMark = styled.div`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.global.accent};
-  color: white;
+  color: var(--color-white);
   border-radius: 40px;
-  padding: 3px;
+  padding: 4px;
 `
 
 const Searchbar = styled(Input)`

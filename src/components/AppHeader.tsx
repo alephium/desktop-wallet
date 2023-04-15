@@ -106,7 +106,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             </>
           )}
           <TooltipWrapper content={t('Discreet mode')}>
-            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
+            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} short />
           </TooltipWrapper>
           {isAuthenticated && (
             <>
@@ -119,6 +119,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                   onClick={() => setIsWalletConnectModalOpen(true)}
                   aria-label="WalletConnect"
                   hasNotification={wcSessionState === 'initialized'}
+                  short
                 >
                   <WalletConnectLogo />
                 </Button>
@@ -129,7 +130,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             <>
               <HeaderDivider />
               <TooltipWrapper content={t('Default address')}>
-                <AddressBadgeStyled addressHash={defaultAddress.hash} />
+                <AddressBadgeStyled addressHash={defaultAddress.hash} withBorders />
               </TooltipWrapper>
             </>
           )}
