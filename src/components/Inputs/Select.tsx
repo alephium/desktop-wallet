@@ -154,7 +154,7 @@ function Select<T extends OptionValue>({
 
   useEffect(() => {
     // Controlled component
-    if (controlledValue && (!isEqual(controlledValue, value) || skipEqualityCheck)) {
+    if ((controlledValue && !isEqual(controlledValue, value)) || skipEqualityCheck) {
       setValue(controlledValue)
     }
   }, [controlledValue, setInputValue, skipEqualityCheck, value])
@@ -374,7 +374,7 @@ export function SelectOptionsModal<T extends OptionValue>({
             </OptionItem>
           )
         })}
-        {ListBottomComponent}
+        {ListBottomComponent && <div onClick={onClose}>{ListBottomComponent}</div>}
         {invisibleOptions.map((o) => (
           <OptionItem key={o.value} selected={false} focused={false} invisible>
             {optionRender ? optionRender(o) : o.label}

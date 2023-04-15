@@ -166,9 +166,7 @@ const CloseButton = styled.button`
 `
 
 const ColumnHeader = styled.div`
-  padding: 20px 22px 14px 22px;
-  padding-top: 20px;
-  padding-bottom: 14px;
+  padding: 20px;
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   display: flex;
   align-items: center;
@@ -185,7 +183,7 @@ const ColumnTitle = styled.div`
 `
 
 const ColumnContent = styled.div`
-  padding: 30px;
+  padding: 20px;
 `
 
 const Version = styled.div`
@@ -198,7 +196,7 @@ const TabTitlesColumnContent = styled(ColumnContent)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 30px 16px 16px;
+  padding: 20px 15px;
   height: 100%;
 `
 

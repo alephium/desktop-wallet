@@ -149,7 +149,7 @@ const NetworkSettingsSection = () => {
 
   return (
     <>
-      <InfoBox
+      <StyledInfoBox
         Icon={AlertCircle}
         text={t`Make sure to always check what is the selected network before sending transactions.`}
         importance="accent"
@@ -199,6 +199,10 @@ const NetworkSettingsSection = () => {
 const UrlInputs = styled.div`
   display: flex;
   flex-direction: column;
+`
+
+const StyledInfoBox = styled(InfoBox)`
+  margin-top: 0;
 `
 
 export default NetworkSettingsSection

@@ -45,7 +45,6 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
-  const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const networkNames = Object.values(NetworkNames).filter(
@@ -62,9 +61,7 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
 
   const handleNetworkPresetChange = useCallback(
     async (networkName: NetworkName) => {
-      if (networkName !== selectedNetwork) {
-        setSelectedNetwork(networkName)
-
+      if (networkName !== network.name) {
         if (networkName === 'custom') {
           // TODO: open settings modal, or reuse previous custom settings if available.
           return
@@ -82,7 +79,7 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
         }
       }
     },
-    [dispatch, selectedNetwork]
+    [dispatch, network.name]
   )
 
   return (
@@ -90,10 +87,11 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
       <Select
         options={networkSelectOptions}
         onSelect={handleNetworkPresetChange}
-        controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
+        controlledValue={networkSelectOptions.find((n) => n.value === network.name)}
         id="network"
         noMargin
         CustomComponent={SelectCustomComponent}
+        skipEqualityCheck
         ListBottomComponent={
           <MoreOptionsItem onClick={() => setIsSettingsModalOpen(true)}>
             {t('More options')} <ArrowRight size={16} />
