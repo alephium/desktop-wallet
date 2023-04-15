@@ -34,25 +34,36 @@ import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSectio
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
 
-interface SettingsModalProps {
-  onClose: () => void
+export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
+
+interface SettingsTabItem extends TabItem {
+  value: settingsTabNames
 }
 
-const tabs: TabItem[] = [
+export const settingsModalTabs: SettingsTabItem[] = [
   { value: 'general', label: i18next.t('General') },
   { value: 'wallets', label: i18next.t('Wallets') },
   { value: 'network', label: i18next.t('Network') },
   { value: 'devtools', label: i18next.t('Developer tools') }
 ]
 
-const SettingsModal = ({ onClose }: SettingsModalProps) => {
+interface SettingsModalProps {
+  onClose: () => void
+  initialTabValue?: typeof settingsModalTabs[number]['value']
+}
+
+const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
 
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const [currentTab, setCurrentTab] = useState<TabItem>(
+    settingsModalTabs.find((t) => t.value === initialTabValue) || settingsModalTabs[0]
+  )
 
-  const enabledTabs = !isAuthenticated ? tabs.filter(({ value }) => value !== 'devtools') : tabs
+  const enabledTabs = !isAuthenticated
+    ? settingsModalTabs.filter(({ value }) => value !== 'devtools')
+    : settingsModalTabs
 
   return (
     <ModalContainer onClose={onClose}>

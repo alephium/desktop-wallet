@@ -79,6 +79,7 @@ interface SelectProps<T extends OptionValue> {
     controlledValue?: SelectOption<T>
     label?: string
   }>
+  ListBottomComponent?: ReactNode
 }
 
 function Select<T extends OptionValue>({
@@ -95,7 +96,8 @@ function Select<T extends OptionValue>({
   simpleMode,
   className,
   heightSize,
-  CustomComponent
+  CustomComponent,
+  ListBottomComponent
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
 
@@ -222,6 +224,7 @@ function Select<T extends OptionValue>({
             hookCoordinates={hookCoordinates}
             onClose={handlePopupClose}
             parentSelectRef={selectedValueRef}
+            ListBottomComponent={ListBottomComponent}
           />
         )}
       </ModalPortal>
@@ -242,6 +245,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   showOnly?: T[]
   emptyListPlaceholder?: string
   parentSelectRef?: RefObject<HTMLDivElement>
+  ListBottomComponent?: ReactNode
 }
 
 export function SelectOptionsModal<T extends OptionValue>({
@@ -256,7 +260,8 @@ export function SelectOptionsModal<T extends OptionValue>({
   searchPlaceholder,
   showOnly,
   emptyListPlaceholder,
-  parentSelectRef
+  parentSelectRef,
+  ListBottomComponent
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
   const optionSelectRef = useRef<HTMLDivElement>(null)
@@ -363,12 +368,13 @@ export function SelectOptionsModal<T extends OptionValue>({
               {optionRender ? optionRender(o, isSelected) : o.label}
               {isSelected && (
                 <CheckMark>
-                  <Check strokeWidth={3} />
+                  <Check strokeWidth={4} />
                 </CheckMark>
               )}
             </OptionItem>
           )
         })}
+        {ListBottomComponent}
         {invisibleOptions.map((o) => (
           <OptionItem key={o.value} selected={false} focused={false} invisible>
             {optionRender ? optionRender(o) : o.label}
@@ -421,8 +427,10 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
   color: ${({ theme, selected }) => (selected ? theme.font.primary : theme.font.secondary)};
   user-select: none;
   text-align: left;
-  background-color: ${({ theme, focused }) => (focused ? theme.bg.accent : theme.bg.primary)};
+  background-color: ${({ theme, focused }) =>
+    focused ? theme.bg.accent : colord(theme.bg.primary).alpha(0.4).toHex()};
   visibility: ${({ invisible }) => invisible && 'hidden'};
+  font-weight: var(--fontWeight-semiBold);
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -457,15 +465,15 @@ const SelectedValue = styled.div<InputProps>`
 `
 
 const CheckMark = styled.div`
-  height: 19px;
-  width: 19px;
+  height: 16px;
+  width: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.global.accent};
   color: var(--color-white);
   border-radius: 40px;
-  padding: 4px;
+  padding: 3px;
 `
 
 const Searchbar = styled(Input)`

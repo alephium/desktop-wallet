@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { upperFirst } from 'lodash'
+import { ArrowRight } from 'lucide-react'
 import posthog from 'posthog-js'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +28,8 @@ import DotIcon from '@/components/DotIcon'
 import Select from '@/components/Inputs/Select'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
+import ModalPortal from '@/modals/ModalPortal'
+import SettingsModal from '@/modals/SettingsModal'
 import { networkPresetSwitched } from '@/storage/settings/networkActions'
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName, NetworkNames } from '@/types/network'
@@ -42,6 +45,7 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>(network.name)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const networkNames = Object.values(NetworkNames).filter(
     (n) => !['custom', 'localhost'].includes(n)
@@ -81,14 +85,26 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   )
 
   return (
-    <Select
-      options={networkSelectOptions}
-      onSelect={handleNetworkPresetChange}
-      controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
-      id="network"
-      CustomComponent={SelectCustomComponent}
-      noMargin
-    />
+    <>
+      <Select
+        options={networkSelectOptions}
+        onSelect={handleNetworkPresetChange}
+        controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
+        id="network"
+        noMargin
+        CustomComponent={SelectCustomComponent}
+        ListBottomComponent={
+          <MoreOptionsItem onClick={() => setIsSettingsModalOpen(true)}>
+            Other options <ArrowRight size={16} />
+          </MoreOptionsItem>
+        }
+      />
+      <ModalPortal>
+        {isSettingsModalOpen && (
+          <SettingsModal onClose={() => setIsSettingsModalOpen(false)} initialTabValue="network" />
+        )}
+      </ModalPortal>
+    </>
   )
 }
 
@@ -114,6 +130,20 @@ const SelectCustomComponent = () => {
 
 const NetworkNameLabel = styled.span`
   margin-right: 10px;
+`
+
+const MoreOptionsItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 10px;
+  color: ${({ theme }) => theme.font.secondary};
+
+  &:hover {
+    cursor: pointer;
+    color: ${({ theme }) => theme.font.primary};
+  }
 `
 
 export default NetworkSwitch
