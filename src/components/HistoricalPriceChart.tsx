@@ -63,15 +63,16 @@ const HistoricalPriceChart = ({ addressHashes, currency }: HistoricalPriceChartP
           { format: 'text' }
         )
 
-        data.split('\n').forEach((row, index) => {
-          if (index !== 0 && row) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const [timestamp, _, amount] = row.split(',')
-            const date = dayjs(parseInt(timestamp)).format('YYYY-MM-DD')
+        try {
+          const { amountHistory } = JSON.parse(data)
 
+          for (const [timestamp, amount] of amountHistory) {
+            const date = dayjs(parseInt(timestamp)).format('YYYY-MM-DD')
             amountPerDatePerAddressTemp[addressHash][date] = BigInt(amount)
           }
-        })
+        } catch (e) {
+          console.error('Could not parse amount history data', e)
+        }
       }
 
       setAmountPerDatePerAddress(amountPerDatePerAddressTemp)
