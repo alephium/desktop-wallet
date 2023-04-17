@@ -17,8 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
+import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import Amount from '@/components/Amount'
 import SkeletonLoader from '@/components/SkeletonLoader'
@@ -29,6 +30,7 @@ import {
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { DataPoint } from '@/types/chart'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 
@@ -36,9 +38,11 @@ interface AmountsOverviewPanelProps {
   isLoading?: boolean
   className?: string
   addressHash?: string
+  worth?: DataPoint['y']
+  date?: DataPoint['x']
 }
 
-const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children }) => {
+const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children, worth, date }) => {
   const { t } = useTranslation()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
@@ -53,15 +57,16 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const balanceInFiat = calculateAmountWorth(totalBalance, price ?? 0)
+  const balanceInFiat = worth ?? calculateAmountWorth(totalBalance, price ?? 0)
   const isOnline = network.status === 'online'
+  const isShowingHistoricWorth = !!worth
 
   return (
     <div className={className}>
       <Balances>
         <BalancesRow>
           <BalancesColumn>
-            <Today>{t('Value today')}</Today>
+            <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
             {stateUninitialized || isPriceLoading ? (
               <SkeletonLoader height="46px" />
             ) : (
@@ -71,7 +76,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
           {!singleAddress && (
             <>
               <Divider />
-              <AvailableLockedBalancesColumn>
+              <AvailableLockedBalancesColumn fadeOut={isShowingHistoricWorth}>
                 <AvailableBalanceRow>
                   <BalanceLabel tabIndex={0} role="representation">
                     {t('Available')}
@@ -97,7 +102,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
           )}
         </BalancesRow>
       </Balances>
-      {children && <RightColumnContent>{children}</RightColumnContent>}
+      {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
     </div>
   )
 }
@@ -107,6 +112,13 @@ export default styled(AmountsOverviewPanel)`
   gap: 30px;
   margin-bottom: 45px;
   padding: 30px 0;
+
+  ${({ worth }) =>
+    !worth &&
+    css`
+      position: relative;
+      z-index: 1;
+    `}
 `
 
 const Balances = styled.div`
@@ -122,13 +134,18 @@ const BalancesRow = styled.div`
   padding: 0 22px;
 `
 
-const RightColumnContent = styled.div`
+const Opacity = styled.div<{ fadeOut?: boolean }>`
+  transition: opacity 0.2s ease-out;
+  opacity: ${({ fadeOut }) => (fadeOut ? 0.23 : 1)};
+`
+
+const RightColumnContent = styled(Opacity)`
   display: flex;
   flex-direction: column;
   flex: 1;
 `
 
-const BalancesColumn = styled.div`
+const BalancesColumn = styled(Opacity)`
   flex: 1;
 `
 

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -33,12 +34,15 @@ import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
+import { DataPoint } from '@/types/chart'
 import { currencies } from '@/utils/currencies'
 
 const OverviewPage = () => {
   const { t } = useTranslation()
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+
+  const [dataPoint, setDataPoint] = useState<DataPoint>()
 
   return (
     <motion.div {...fadeIn}>
@@ -48,7 +52,7 @@ const OverviewPage = () => {
           <WalletName>{activeWalletName}</WalletName>
         </WalletNameRow>
 
-        <AmountsOverviewPanel>
+        <AmountsOverviewPanel worth={dataPoint?.y} date={dataPoint?.x}>
           <Shortcuts>
             <ShortcutsHeader title={t('Shortcuts')} />
             <ButtonsGrid>
@@ -58,7 +62,11 @@ const OverviewPage = () => {
         </AmountsOverviewPanel>
 
         <ChartContainer>
-          <HistoricWorthChart addressHashes={addressHashes} currency={currencies.USD.ticker} />
+          <HistoricWorthChart
+            addressHashes={addressHashes}
+            currency={currencies.USD.ticker}
+            onDataPointHover={setDataPoint}
+          />
         </ChartContainer>
 
         <AssetAndAddressesRow>

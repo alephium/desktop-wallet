@@ -18,28 +18,37 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
+import { memo } from 'react'
 import Chart from 'react-apexcharts'
+import { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddresses } from '@/storage/addresses/addressesSelectors'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
+import { DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
 
 interface HistoricWorthChartProps {
   addressHashes: AddressHash[]
   currency: Currency
+  onDataPointHover: (dataPoint?: DataPoint) => void
 }
 
-type LatestAmountPerAddress = Record<AddressHash, bigint>
-
-const HistoricWorthChart = ({ addressHashes, currency }: HistoricWorthChartProps) => {
+// Note: It's necessary to wrap in memo, otherwise the chart rerenders everytime onDataPointHover is called because the
+// state of the parent component changes
+const HistoricWorthChart = memo(function HistoricWorthChart({
+  addressHashes,
+  currency,
+  onDataPointHover
+}: HistoricWorthChartProps) {
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
+  const theme = useTheme()
 
   if (!alphPriceHistory || addressHashes.length === 0) return null
 
-  const computeChartDataPoints = () => {
+  const computeChartDataPoints = (): DataPoint[] => {
     const addressesLatestAmount: LatestAmountPerAddress = {}
     addresses.forEach(({ hash }) => (addressesLatestAmount[hash] = BigInt(0)))
 
@@ -58,22 +67,36 @@ const HistoricWorthChart = ({ addressHashes, currency }: HistoricWorthChartProps
         }
       })
 
-      // TODO: Uncomment to test the display of date, sometimes it works, sometimes the chart doesn't show :/
-      // return {
-      //   x: date,
-      //   y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
-      // }
-      return price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
+      return {
+        x: date,
+        y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
+      }
     })
   }
 
   const chartData = computeChartDataPoints()
-  const filteredChartData = chartData.slice(chartData.findIndex((point) => point !== 0))
+  const filteredChartData = chartData.slice(chartData.findIndex((point) => point.y !== 0))
+
+  if (filteredChartData.length === 1 && filteredChartData[0].y === 0) return null
+
+  const lastItem = filteredChartData.at(-1)
+  const chartColor = lastItem !== undefined && filteredChartData[0].y < lastItem.y ? '#3ED282' : theme.global.alert
+
+  const chartOptions = getChartOptions(chartColor, {
+    mouseMove(e, chart, options) {
+      onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
+    },
+    mouseLeave() {
+      onDataPointHover(undefined)
+    }
+  })
 
   return <Chart options={chartOptions} series={[{ data: filteredChartData }]} type="area" width="100%" height="100%" />
-}
+})
 
-const chartOptions: ApexCharts.ApexOptions = {
+export default HistoricWorthChart
+
+const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexCharts.ApexOptions => ({
   chart: {
     id: 'alephium-chart',
     toolbar: {
@@ -84,9 +107,11 @@ const chartOptions: ApexCharts.ApexOptions = {
     },
     sparkline: {
       enabled: true
-    }
+    },
+    events
   },
   xaxis: {
+    type: 'datetime',
     axisTicks: {
       show: false
     },
@@ -112,8 +137,18 @@ const chartOptions: ApexCharts.ApexOptions = {
   },
   stroke: {
     curve: 'smooth',
-    colors: ['#3ED282'],
+    colors: [chartColor],
     width: 2
+  },
+  tooltip: {
+    custom: () => null,
+    fixed: {
+      enabled: true
+    }
+  },
+  markers: {
+    colors: [chartColor],
+    strokeColors: [chartColor]
   },
   fill: {
     type: 'gradient',
@@ -124,16 +159,14 @@ const chartOptions: ApexCharts.ApexOptions = {
         [
           {
             offset: 0,
-            color: colord('#3ED282').alpha(0.5).toHex()
+            color: colord(chartColor).alpha(0.5).toHex()
           },
           {
             offset: 100,
-            color: colord('#3ED282').alpha(0).toHex()
+            color: colord(chartColor).alpha(0).toHex()
           }
         ]
       ]
     }
   }
-}
-
-export default HistoricWorthChart
+})
