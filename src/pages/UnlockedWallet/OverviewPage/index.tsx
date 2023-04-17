@@ -34,7 +34,7 @@ import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { DataPoint } from '@/types/chart'
+import { ChartLength, DataPoint } from '@/types/chart'
 import { currencies } from '@/utils/currencies'
 
 const OverviewPage = () => {
@@ -43,6 +43,7 @@ const OverviewPage = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
 
   const [dataPoint, setDataPoint] = useState<DataPoint>()
+  const [chartLength, setChartLength] = useState<ChartLength>('1y')
 
   return (
     <motion.div {...fadeIn}>
@@ -52,7 +53,12 @@ const OverviewPage = () => {
           <WalletName>{activeWalletName}</WalletName>
         </WalletNameRow>
 
-        <AmountsOverviewPanel worth={dataPoint?.y} date={dataPoint?.x}>
+        <AmountsOverviewPanel
+          worth={dataPoint?.y}
+          date={dataPoint?.x}
+          onChartLengthChange={setChartLength}
+          chartLength={chartLength}
+        >
           <Shortcuts>
             <ShortcutsHeader title={t('Shortcuts')} />
             <ButtonsGrid>
@@ -66,6 +72,7 @@ const OverviewPage = () => {
             addressHashes={addressHashes}
             currency={currencies.USD.ticker}
             onDataPointHover={setDataPoint}
+            length={chartLength}
           />
         </ChartContainer>
 

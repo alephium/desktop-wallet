@@ -74,8 +74,7 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (addressHashes.length === 0) return
-    dispatch(syncAddressesHistoricBalances(addressHashes))
+    if (addressHashes.length > 0) dispatch(syncAddressesHistoricBalances(addressHashes))
   }, [addressHashes, dispatch])
 
   useEffect(() => {

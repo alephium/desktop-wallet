@@ -38,7 +38,7 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { DataPoint } from '@/types/chart'
+import { ChartLength, DataPoint } from '@/types/chart'
 import { currencies } from '@/utils/currencies'
 import { openInWebBrowser } from '@/utils/misc'
 
@@ -55,6 +55,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
   const [dataPoint, setDataPoint] = useState<DataPoint>()
+  const [chartLength, setChartLength] = useState<ChartLength>('1y')
 
   if (!address) return null
 
@@ -89,7 +90,13 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       }
     >
       <Content>
-        <AmountsOverviewPanel addressHash={addressHash} worth={dataPoint?.y} date={dataPoint?.x}>
+        <AmountsOverviewPanel
+          addressHash={addressHash}
+          worth={dataPoint?.y}
+          date={dataPoint?.x}
+          onChartLengthChange={setChartLength}
+          chartLength={chartLength}
+        >
           <QrCodeBox>
             <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
           </QrCodeBox>
@@ -100,6 +107,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
             addressHashes={[addressHash]}
             currency={currencies.USD.ticker}
             onDataPointHover={setDataPoint}
+            length={chartLength}
           />
         </ChartContainer>
 

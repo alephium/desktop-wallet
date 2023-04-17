@@ -24,3 +24,6 @@ export type DataPoint = {
   x: string
   y: number
 }
+
+export const chartLengths = ['1w', '1m', '1y'] as const
+export type ChartLength = (typeof chartLengths)[number]

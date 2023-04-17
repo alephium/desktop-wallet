@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
+import dayjs, { Dayjs } from 'dayjs'
 import { memo } from 'react'
 import Chart from 'react-apexcharts'
 import { useTheme } from 'styled-components'
@@ -26,13 +27,21 @@ import { useAppSelector } from '@/hooks/redux'
 import { selectAddresses } from '@/storage/addresses/addressesSelectors'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
-import { DataPoint, LatestAmountPerAddress } from '@/types/chart'
+import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
 
 interface HistoricWorthChartProps {
   addressHashes: AddressHash[]
   currency: Currency
   onDataPointHover: (dataPoint?: DataPoint) => void
+  length: ChartLength
+}
+
+const now = dayjs()
+const startingDates: Record<ChartLength, Dayjs> = {
+  '1w': now.subtract(1, 'week'),
+  '1m': now.subtract(1, 'month'),
+  '1y': now.subtract(1, 'year')
 }
 
 // Note: It's necessary to wrap in memo, otherwise the chart rerenders everytime onDataPointHover is called because the
@@ -40,11 +49,14 @@ interface HistoricWorthChartProps {
 const HistoricWorthChart = memo(function HistoricWorthChart({
   addressHashes,
   currency,
-  onDataPointHover
+  onDataPointHover,
+  length = '1y'
 }: HistoricWorthChartProps) {
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
+
+  const startingDate = startingDates[length].format('YYYY-MM-DD')
 
   if (!alphPriceHistory || addressHashes.length === 0) return null
 
@@ -75,7 +87,10 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   }
 
   const chartData = computeChartDataPoints()
-  const filteredChartData = chartData.slice(chartData.findIndex((point) => point.y !== 0))
+  let filteredChartData = chartData.slice(chartData.findIndex((point) => point.y !== 0))
+
+  const startingPoint = filteredChartData.findIndex((point) => point.x === startingDate)
+  filteredChartData = startingPoint > 0 ? filteredChartData.slice(startingPoint) : filteredChartData
 
   if (filteredChartData.length === 1 && filteredChartData[0].y === 0) return null
 

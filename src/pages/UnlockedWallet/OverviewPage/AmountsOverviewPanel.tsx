@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import Amount from '@/components/Amount'
+import Button from '@/components/Button'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import {
@@ -30,11 +31,13 @@ import {
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
-import { DataPoint } from '@/types/chart'
+import { ChartLength, chartLengths, DataPoint } from '@/types/chart'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 
 interface AmountsOverviewPanelProps {
+  onChartLengthChange: (length: ChartLength) => void
+  chartLength: ChartLength
   isLoading?: boolean
   className?: string
   addressHash?: string
@@ -42,7 +45,15 @@ interface AmountsOverviewPanelProps {
   date?: DataPoint['x']
 }
 
-const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children, worth, date }) => {
+const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
+  onChartLengthChange,
+  chartLength,
+  className,
+  addressHash,
+  children,
+  worth,
+  date
+}) => {
   const { t } = useTranslation()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
@@ -70,7 +81,22 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             {stateUninitialized || isPriceLoading ? (
               <SkeletonLoader height="46px" />
             ) : (
-              <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+              <>
+                <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+                <ChartLengthBadges>
+                  {chartLengths.map((length) => (
+                    <ButtonStyled
+                      key={length}
+                      transparent
+                      short
+                      isActive={length === chartLength}
+                      onClick={() => onChartLengthChange(length)}
+                    >
+                      {length}
+                    </ButtonStyled>
+                  ))}
+                </ChartLengthBadges>
+              </>
             )}
           </BalancesColumn>
           {!singleAddress && (
@@ -184,4 +210,20 @@ const Today = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 16px;
   margin-bottom: 8px;
+`
+
+const ChartLengthBadges = styled.div`
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+`
+
+const ButtonStyled = styled(Button)<{ isActive: boolean }>`
+  color: ${({ theme }) => theme.font.primary};
+  opacity: ${({ isActive }) => (isActive ? 1 : 0.4)};
+  border-color: ${({ theme }) => theme.font.primary};
+  padding: 3px;
+  height: auto;
+  min-width: 32px;
+  border-radius: var(--radius-small);
 `
