@@ -106,15 +106,15 @@ function Select<T extends OptionValue>({
   const [showPopup, setShowPopup] = useState(false)
   const [hookCoordinates, setHookCoordinates] = useState<Coordinates | undefined>(undefined)
 
-  let containerCenter: Coordinates
+  const getContainerCenter = (): Coordinates | undefined => {
+    if (selectedValueRef?.current) {
+      const containerElement = selectedValueRef.current
+      const containerElementRect = containerElement.getBoundingClientRect()
 
-  if (selectedValueRef?.current) {
-    const containerElement = selectedValueRef.current
-    const containerElementRect = containerElement.getBoundingClientRect()
-
-    containerCenter = {
-      x: containerElementRect.x + containerElement.clientWidth / 2,
-      y: containerElementRect.y + containerElement.clientHeight / 2
+      return {
+        x: containerElementRect.x + containerElement.clientWidth / 2,
+        y: containerElementRect.y + containerElement.clientHeight / 2
+      }
     }
   }
 
@@ -136,14 +136,14 @@ function Select<T extends OptionValue>({
       return
     }
 
-    setHookCoordinates(containerCenter)
+    setHookCoordinates(getContainerCenter())
     setShowPopup(true)
   }
 
   const handleKeyDown = (e: ReactKeyboardEvent) => {
     if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
     if (options.length <= 1) return
-    setHookCoordinates(containerCenter)
+    setHookCoordinates(getContainerCenter())
     setShowPopup(true)
   }
 
