@@ -43,6 +43,7 @@ import {
 } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
 import { Message, SnackbarMessage } from '@/types/snackbar'
+import { CHART_DATE_FORMAT } from '@/utils/constants'
 
 export const loadingStarted = createAction('addresses/loadingStarted')
 
@@ -161,7 +162,7 @@ export const syncAddressesHistoricBalances = createAsyncThunk(
 
         for (const [timestamp, balance] of amountHistory) {
           balances.push({
-            date: dayjs(timestamp).format('YYYY-MM-DD'),
+            date: dayjs(timestamp).format(CHART_DATE_FORMAT),
             balance: BigInt(balance).toString()
           })
         }

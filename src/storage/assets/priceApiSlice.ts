@@ -20,6 +20,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import dayjs from 'dayjs'
 
 import { Currency } from '@/types/settings'
+import { CHART_DATE_FORMAT } from '@/utils/constants'
 
 type HistoricalPriceQueryParams = {
   currency: Currency
@@ -27,7 +28,7 @@ type HistoricalPriceQueryParams = {
 }
 
 interface HistoricalPriceResult {
-  date: string // YYYY-MM-DD
+  date: string // CHART_DATE_FORMAT
   price: number
 }
 
@@ -47,7 +48,7 @@ export const priceApi = createApi({
     getHistoricalPrice: builder.query<HistoricalPriceResult[], HistoricalPriceQueryParams>({
       query: ({ currency, days }) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`,
       transformResponse: (response: { prices: number[][] }) =>
-        response.prices.map((p) => ({ date: dayjs(p[0]).format('YYYY-MM-DD'), price: p[1] }))
+        response.prices.map((p) => ({ date: dayjs(p[0]).format(CHART_DATE_FORMAT), price: p[1] }))
     })
   })
 })

@@ -47,7 +47,7 @@ export type AddressMetadata = AddressSettings & {
 export type AddressBase = AddressKeyPair & AddressSettings
 
 export type BalanceHistory = {
-  date: string // YYYY-MM-DD
+  date: string // CHART_DATE_FORMAT
   balance: string
 }
 
