@@ -32,7 +32,7 @@ import { WalletConnectContextProvider } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
-import { syncAddressesData } from '@/storage/addresses/addressesActions'
+import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
 import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/global/globalActions'
@@ -72,6 +72,11 @@ const App = () => {
 
     dispatch(localStorageDataMigrated())
   }, [dispatch])
+
+  useEffect(() => {
+    if (addressHashes.length === 0) return
+    dispatch(syncAddressesHistoricBalances(addressHashes))
+  }, [addressHashes, dispatch])
 
   useEffect(() => {
     const wallets = WalletStorage.list()

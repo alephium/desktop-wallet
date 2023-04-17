@@ -28,7 +28,7 @@ import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import HashEllipsed from '@/components/HashEllipsed'
-import HistoricalPriceChart from '@/components/HistoricalPriceChart'
+import HistoricWorthChart from '@/components/HistoricWorthChart'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -94,7 +94,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </AmountsOverviewPanel>
 
         <ChartContainer>
-          <HistoricalPriceChart addressHashes={[addressHash]} currency={currencies.USD.ticker} />
+          <HistoricWorthChart addressHashes={[addressHash]} currency={currencies.USD.ticker} />
         </ChartContainer>
 
         <Shortcuts>

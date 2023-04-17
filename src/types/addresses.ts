@@ -46,6 +46,11 @@ export type AddressMetadata = AddressSettings & {
 
 export type AddressBase = AddressKeyPair & AddressSettings
 
+export type BalanceHistory = {
+  date: string // YYYY-MM-DD
+  balance: string
+}
+
 export type Address = AddressBase &
   AddressInfo & {
     group: number
@@ -54,6 +59,7 @@ export type Address = AddressBase &
     allTransactionPagesLoaded: boolean
     tokens: TokenBalances[]
     lastUsed: TimeInMs
+    balanceHistory: EntityState<BalanceHistory>
   }
 
 export type AddressHash = string

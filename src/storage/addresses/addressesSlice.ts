@@ -30,10 +30,11 @@ import {
   loadingStarted,
   newAddressesSaved,
   syncAddressesData,
+  syncAddressesHistoricBalances,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { addressesAdapter } from '@/storage/addresses/addressesAdapters'
+import { addressesAdapter, balanceHistoryAdapter } from '@/storage/addresses/addressesAdapters'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
@@ -205,6 +206,15 @@ const addressesSlice = createSlice({
       .addCase(activeWalletDeleted, () => initialState)
       .addCase(networkPresetSwitched, clearAddressesNetworkData)
       .addCase(customNetworkSettingsSaved, clearAddressesNetworkData)
+      .addCase(syncAddressesHistoricBalances.fulfilled, (state, { payload: data }) => {
+        data.forEach(({ address, balances }) => {
+          const addressState = state.entities[address]
+
+          if (addressState) {
+            balanceHistoryAdapter.upsertMany(addressState.balanceHistory, balances)
+          }
+        })
+      })
   }
 })
 
@@ -227,7 +237,8 @@ const getDefaultAddressState = (address: AddressBase): Address => ({
   transactionsPageLoaded: 0,
   allTransactionPagesLoaded: false,
   tokens: [],
-  lastUsed: 0
+  lastUsed: 0,
+  balanceHistory: balanceHistoryAdapter.getInitialState()
 })
 
 const updateOldDefaultAddress = (state: AddressesState) => {

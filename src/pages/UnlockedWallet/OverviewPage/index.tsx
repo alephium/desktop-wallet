@@ -23,7 +23,7 @@ import styled from 'styled-components'
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import HistoricalPriceChart from '@/components/HistoricalPriceChart'
+import HistoricWorthChart from '@/components/HistoricWorthChart'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
@@ -58,7 +58,7 @@ const OverviewPage = () => {
         </AmountsOverviewPanel>
 
         <ChartContainer>
-          <HistoricalPriceChart addressHashes={addressHashes} currency={currencies.USD.ticker} />
+          <HistoricWorthChart addressHashes={addressHashes} currency={currencies.USD.ticker} />
         </ChartContainer>
 
         <AssetAndAddressesRow>
