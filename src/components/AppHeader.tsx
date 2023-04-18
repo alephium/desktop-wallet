@@ -118,7 +118,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                   role="secondary"
                   onClick={() => setIsWalletConnectModalOpen(true)}
                   aria-label="WalletConnect"
-                  hasNotification={wcSessionState === 'initialized'}
+                  isHighlighted={wcSessionState === 'initialized'}
                   short
                 >
                   <WalletConnectLogo />
