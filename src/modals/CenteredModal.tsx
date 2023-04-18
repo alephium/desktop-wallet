@@ -82,7 +82,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
             </TitleRow>
             {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
           </ModalHeader>
-          {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
+          {dynamicContent ? children : <ModalContent>{children}</ModalContent>}
 
           {isLoading && (
             <>
@@ -98,8 +98,6 @@ const CenteredModal: FC<CenteredModalProps> = ({
     </ModalContainer>
   )
 }
-
-export const ScrollableModalContent: FC = ({ children }) => <ModalContent>{children}</ModalContent>
 
 export default CenteredModal
 
@@ -172,7 +170,7 @@ const BackButton = styled(Button)`
   margin-left: var(--spacing-2);
 `
 
-const ModalContent = styled.div`
+export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);

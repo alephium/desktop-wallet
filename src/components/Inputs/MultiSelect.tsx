@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Check } from 'lucide-react'
 import { ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -109,6 +110,7 @@ export function MultiSelectOptionsModal<T>({
     <Popup
       title={modalTitle}
       onClose={onClose}
+      minWidth={500}
       extraHeaderContent={
         <AllButton role="secondary" short onClick={handleAllButtonsClick}>
           {allOptionsAreSelected ? t('Unselect all') : t('Select all')}
@@ -116,20 +118,28 @@ export function MultiSelectOptionsModal<T>({
       }
     >
       <Options>
-        {options.map((option, index) => (
-          <OptionItem
-            key={getOptionId(option)}
-            tabIndex={0}
-            role="listitem"
-            onClick={() => handleOptionClick(option)}
-            selected={selectedOptions.some((o) => getOptionId(o) === getOptionId(option))}
-            onMouseEnter={() => setFocusedOptionIndex(index)}
-            focused={index === focusedOptionIndex}
-            aria-label={getOptionText(option)}
-          >
-            {renderOption ? renderOption(option) : getOptionText(option)}
-          </OptionItem>
-        ))}
+        {options.map((option, index) => {
+          const isSelected = selectedOptions.some((o) => getOptionId(o) === getOptionId(option))
+          return (
+            <OptionItem
+              key={getOptionId(option)}
+              tabIndex={0}
+              role="listitem"
+              onClick={() => handleOptionClick(option)}
+              selected={isSelected}
+              onMouseEnter={() => setFocusedOptionIndex(index)}
+              focused={index === focusedOptionIndex}
+              aria-label={getOptionText(option)}
+            >
+              {renderOption ? renderOption(option) : getOptionText(option)}
+              {isSelected && (
+                <CheckMark>
+                  <Check strokeWidth={4} />
+                </CheckMark>
+              )}
+            </OptionItem>
+          )
+        })}
       </Options>
     </Popup>
   )
@@ -161,4 +171,16 @@ const Options = styled.div`
 const AllButton = styled(Button)`
   margin: 0;
   margin-left: auto;
+`
+
+const CheckMark = styled.div`
+  height: 16px;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.global.accent};
+  color: var(--color-white);
+  border-radius: 40px;
+  padding: 3px;
 `

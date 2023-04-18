@@ -22,6 +22,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { fadeInOutScaleFast, fastTransition } from '@/animations'
+import Scrollbar from '@/components/Scrollbar'
 import ModalContainer from '@/modals/ModalContainer'
 import { Coordinates } from '@/types/numbers'
 import { useWindowSize } from '@/utils/hooks'
@@ -79,12 +80,14 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
       {...fastTransition}
     >
       {title && (
-        <Header hasExtraHeaderContent={!!extraHeaderContent}>
+        <Header>
           <h2>{title}</h2>
           {extraHeaderContent}
         </Header>
       )}
-      {children}
+      <Scrollbar translateContentSizeYToHolder isDynamic noScrollX>
+        {children}
+      </Scrollbar>
     </Content>
   )
 
@@ -115,8 +118,9 @@ const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
 const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   opacity: 0; // for initial mount computation
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
   min-width: ${({ minWidth }) => minWidth}px;
   max-height: 510px;
@@ -129,13 +133,12 @@ const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   backdrop-filter: blur(20px);
 `
 
-const Header = styled.div<{ hasExtraHeaderContent?: boolean }>`
-  position: sticky;
-  top: 0;
-  padding: var(--spacing-1) var(--spacing-4)
-    ${({ hasExtraHeaderContent }) => hasExtraHeaderContent && 'var(--spacing-4)'};
+const Header = styled.div`
+  padding: var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: transparent;
+
   display: flex;
-  flex-direction: column;
+  align-items: center;
   z-index: 1;
 `
