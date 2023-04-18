@@ -62,37 +62,35 @@ const CenteredModal: FC<CenteredModalProps> = ({
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
-        <Scrollbar translateContentSizeYToHolder isDynamic>
-          <ModalHeader transparent={transparentHeader}>
-            <TitleRow>
-              {onBack && (
-                <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
-                  <ChevronLeft />
-                </BackButton>
-              )}
-              <PanelTitle size="small" useLayoutId={false}>
-                <span ref={elRef} tabIndex={0} role="heading">
-                  {title}
-                </span>
-                {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
-              </PanelTitle>
-              <CloseButton aria-label={t`Close`} squared role="secondary" transparent onClick={onClose} borderless>
-                <X />
-              </CloseButton>
-            </TitleRow>
-            {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
-          </ModalHeader>
-          {dynamicContent ? children : <ModalContent>{children}</ModalContent>}
+        <ModalHeader transparent={transparentHeader}>
+          <TitleRow>
+            {onBack && (
+              <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
+                <ChevronLeft />
+              </BackButton>
+            )}
+            <PanelTitle size="small" useLayoutId={false}>
+              <span ref={elRef} tabIndex={0} role="heading">
+                {title}
+              </span>
+              {subtitle && <ModalSubtitle>{subtitle}</ModalSubtitle>}
+            </PanelTitle>
+            <CloseButton aria-label={t`Close`} squared role="secondary" transparent onClick={onClose} borderless>
+              <X />
+            </CloseButton>
+          </TitleRow>
+          {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
+        </ModalHeader>
+        {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
 
-          {isLoading && (
-            <>
-              <ModalBackdrop light />
-              <ModalLoadingSpinner>
-                <Spinner />
-              </ModalLoadingSpinner>
-            </>
-          )}
-        </Scrollbar>
+        {isLoading && (
+          <>
+            <ModalBackdrop light />
+            <ModalLoadingSpinner>
+              <Spinner />
+            </ModalLoadingSpinner>
+          </>
+        )}
       </CenteredBox>
       <Tooltip />
     </ModalContainer>
@@ -100,6 +98,12 @@ const CenteredModal: FC<CenteredModalProps> = ({
 }
 
 export default CenteredModal
+
+export const ScrollableModalContent: FC = ({ children }) => (
+  <Scrollbar translateContentSizeYToHolder>
+    <ModalContent>{children}</ModalContent>
+  </Scrollbar>
+)
 
 export const HeaderContent = styled(Section)`
   flex: 0;
