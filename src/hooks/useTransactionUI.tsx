@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { TransactionInfoType } from '@alephium/sdk'
 import { colord } from 'colord'
-import { ArrowDown, ArrowLeftRight, ArrowUp, CircleEllipsis } from 'lucide-react'
+import { ArrowDown, ArrowLeftRight, ArrowUp, ArrowUpDown, CircleEllipsis } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
@@ -28,40 +28,32 @@ export const useTransactionUI = (infoType: TransactionInfoType) => {
 
   return {
     label: {
-      in: t`Received`,
-      out: t`Sent`,
-      move: t`Moved`,
-      pending: t`Pending`
-    }[infoType],
-    amountTextColor: {
-      in: theme.global.valid,
-      out: theme.font.highlight,
-      move: theme.font.primary,
-      pending: theme.font.primary
-    }[infoType],
-    amountSign: {
-      in: '+ ',
-      out: '- ',
-      move: '',
-      pending: ''
+      in: t('Received'),
+      out: t('Sent'),
+      move: t('Moved'),
+      pending: t('Pending'),
+      swap: t('Swapped')
     }[infoType],
     Icon: {
       in: ArrowDown,
       out: ArrowUp,
       move: ArrowLeftRight,
-      pending: CircleEllipsis
+      pending: CircleEllipsis,
+      swap: ArrowUpDown
     }[infoType],
     iconColor: {
       in: theme.global.valid,
       out: theme.font.highlight,
       move: theme.font.secondary,
-      pending: theme.font.secondary
+      pending: theme.font.secondary,
+      swap: theme.font.secondary
     }[infoType],
     iconBgColor: {
       in: colord(theme.global.valid).alpha(0.11).toRgbString(),
       out: colord(theme.font.highlight).alpha(0.11).toRgbString(),
       move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString()
+      pending: colord(theme.font.secondary).alpha(0.11).toRgbString(),
+      swap: colord(theme.font.secondary).alpha(0.11).toRgbString()
     }[infoType]
   }
 }

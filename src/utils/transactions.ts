@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import {
   TransactionInfo,
   TransactionTimePeriod
 } from '@/types/transactions'
-import { convertToPositive } from '@/utils/misc'
+import { convertToNegative } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -124,6 +124,10 @@ export const directionOptions: {
   {
     label: 'Moved',
     value: 'move'
+  },
+  {
+    label: 'Swapped',
+    value: 'swap'
   }
 ]
 
@@ -142,19 +146,22 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   if (isPendingTx(tx)) {
     direction = 'out'
     infoType = 'pending'
-    amount = tx.amount ? BigInt(tx.amount) : undefined
-    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: BigInt(token.amount) })) : []
+    amount = tx.amount ? convertToNegative(BigInt(tx.amount)) : undefined
+    tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: convertToNegative(BigInt(token.amount)) })) : []
     lockTime = tx.lockTime !== undefined ? new Date(tx.lockTime) : undefined
   } else {
     outputs = tx.outputs ?? outputs
     const { alph: alphAmount, tokens: tokenAmounts } = calcTxAmountsDeltaForAddress(tx, tx.address.hash)
 
-    amount = convertToPositive(alphAmount)
-    tokens = tokenAmounts.map((token) => ({ ...token, amount: convertToPositive(token.amount) }))
+    amount = alphAmount
+    tokens = tokenAmounts.map((token) => ({ ...token, amount: token.amount }))
 
     if (isConsolidationTx(tx)) {
       direction = 'out'
       infoType = 'move'
+    } else if (isSwap(amount, tokens)) {
+      direction = 'swap'
+      infoType = 'swap'
     } else {
       direction = getDirection(tx, tx.address.hash)
       const isInternalTransfer = hasOnlyOutputsWith(outputs, addresses)
@@ -182,4 +189,12 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     outputs,
     lockTime
   }
+}
+
+const isSwap = (alphAmout: bigint, tokensAmount: Required<AssetAmount>[]) => {
+  const allAmounts = [alphAmout, ...tokensAmount.map((tokenAmount) => tokenAmount.amount)]
+  const allAmountsArePositive = allAmounts.every((amount) => amount >= 0)
+  const allAmountsAreNegative = allAmounts.every((amount) => amount <= 0)
+
+  return !allAmountsArePositive && !allAmountsAreNegative
 }

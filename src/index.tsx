@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@ import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
-import { TooltipProvider } from 'react-tooltip'
 
 import App from '@/App'
 import Tooltips from '@/components/Tooltips'
@@ -45,10 +44,8 @@ ReactDOM.render(
         <Suspense fallback="loading">
           <AnalyticsProvider>
             <GlobalContextProvider>
-              <TooltipProvider>
-                <App />
-                <Tooltips />
-              </TooltipProvider>
+              <App />
+              <Tooltips />
             </GlobalContextProvider>
           </AnalyticsProvider>
         </Suspense>

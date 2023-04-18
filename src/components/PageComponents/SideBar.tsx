@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
@@ -42,16 +41,16 @@ const SideBar: FC<SideBarProps> = ({ className, children }) => {
       {children}
       <BottomButtons>
         <ThemeSwitcher />
-        <TooltipWrapper content={t('Settings')} tooltipId="sidenav">
-          <Button
-            transparent
-            squared
-            borderless
-            onClick={() => setIsSettingsModalOpen(true)}
-            aria-label={t('Settings')}
-            Icon={Settings}
-          />
-        </TooltipWrapper>
+        <Button
+          transparent
+          squared
+          borderless
+          onClick={() => setIsSettingsModalOpen(true)}
+          aria-label={t('Settings')}
+          Icon={Settings}
+          data-tooltip-id="sidenav"
+          data-tooltip-content={t('Settings')}
+        />
       </BottomButtons>
       <ModalPortal>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}

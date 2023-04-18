@@ -399,5 +399,10 @@
   "Disconnect": "Disconnect",
   "Current dApp connection details": "Current dApp connection details",
   "More options": "More options",
-  "Set custom network URLs": "Set custom network URLs"
+  "Set custom network URLs": "Set custom network URLs",
+  "Swapped": "Swapped",
+  "between": "between",
+  "and": "and",
+  "with": "with",
+  "Copy contact address": "Copy contact address"
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, isConsolidationTx } from '@alephium/sdk'
+import { formatAmountForDisplay } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { partition } from 'lodash'
-import { ArrowRight as ArrowRightIcon } from 'lucide-react'
+import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -61,21 +61,20 @@ const TransactionalInfo = ({
   const addressHash = addressHashProp ?? addressHashParam
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
   const { assets, direction, outputs, lockTime, infoType } = getTransactionInfo(tx, showInternalInflows)
-  const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+  const { label, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
+  const isMoved = infoType === 'move'
   const isPending = isPendingTx(tx)
 
   if (!address) return null
 
-  const pendingToAddressComponent = isPending ? (
+  const pendingDestinationAddress = isPending ? (
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
       <AddressBadge truncate addressHash={tx.toAddress} />
     )
   ) : null
-
-  const amountSign = showInternalInflows && infoType === 'move' && !isPending && !isConsolidationTx(tx) ? '- ' : sign
 
   const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
 
@@ -105,37 +104,50 @@ const TransactionalInfo = ({
       </CellAssetBadges>
       {!showInternalInflows && (
         <CellAddress alignRight>
-          <HiddenLabel text={t('from')} />
-          {direction === 'out' && <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />}
-          {direction === 'in' &&
-            (pendingToAddressComponent || (
-              <IOList
-                currentAddress={addressHash}
-                isOut={false}
-                outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
-                truncate
-                disableA11y
-              />
-            ))}
+          <HiddenLabel text={direction === 'swap' ? t('between') : t('from')} />
+          {(direction === 'out' || direction === 'swap') && (
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
+          )}
+          {direction === 'in' && (
+            <IOList
+              currentAddress={addressHash}
+              isOut={false}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+              disableA11y
+            />
+          )}
         </CellAddress>
       )}
       <CellDirection>
-        <HiddenLabel text={t('to')} />
+        <HiddenLabel text={direction === 'swap' ? t('and') : t('to')} />
         {!showInternalInflows ? (
-          <ArrowRightIcon size={16} strokeWidth={3} />
+          direction === 'swap' ? (
+            <ArrowLeftRight size={16} strokeWidth={3} />
+          ) : (
+            <ArrowRightIcon size={16} strokeWidth={3} />
+          )
         ) : (
-          <DirectionText>{direction === 'out' ? t('to') : t('from')}</DirectionText>
+          <DirectionText>
+            {
+              {
+                in: t('from'),
+                out: t('to'),
+                swap: t('with')
+              }[direction]
+            }
+          </DirectionText>
         )}
       </CellDirection>
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
+            <AddressBadge addressHash={addressHash} truncate disableA11y />
           )}
-          {((direction === 'in' && showInternalInflows) || direction === 'out') &&
-            (pendingToAddressComponent || (
+          {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
+            (pendingDestinationAddress || (
               <IOList
                 currentAddress={addressHash}
                 isOut={direction === 'out'}
@@ -148,14 +160,11 @@ const TransactionalInfo = ({
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <TableCellAmount aria-hidden="true" color={amountTextColor}>
+      <TableCellAmount aria-hidden="true">
         {knownAssets.map(({ id, amount, decimals, symbol }) => (
           <AmountContainer key={id}>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
-            <div>
-              {amountSign}
-              <Amount value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
-            </div>
+            <Amount value={amount} decimals={decimals} suffix={symbol} highlight={!isMoved} showPlusMinus={!isMoved} />
           </AmountContainer>
         ))}
       </TableCellAmount>

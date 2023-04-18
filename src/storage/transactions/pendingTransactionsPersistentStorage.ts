@@ -16,16 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { Address } from '@/types/addresses'
+import {
+  EncryptedStorageProps,
+  StatelessPersistentEncryptedStorage
+} from '@/storage/statelessEncryptedPersistentStorage'
+import { PendingTransaction } from '@/types/transactions'
 
-const useDappTxData = () => {
-  const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { dappTxData } = useWalletConnectContext()
+class PendingTransactionsStorage extends StatelessPersistentEncryptedStorage {
+  load(encryptedStorageProps: EncryptedStorageProps) {
+    return this._load(encryptedStorageProps) as PendingTransaction[]
+  }
 
-  return dappTxData ?? { fromAddress: defaultAddress as Address }
+  store(transactions: PendingTransaction[], encryptedStorageProps: EncryptedStorageProps) {
+    this._storeStateless(JSON.stringify(transactions), encryptedStorageProps)
+  }
 }
 
-export default useDappTxData
+const version = '1'
+const Storage = new PendingTransactionsStorage('pending-transactions', version)
+
+export default Storage

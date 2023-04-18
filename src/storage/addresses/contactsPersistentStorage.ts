@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
     }
 
     console.log(`🟠 Storing contact ${contact.name} locally`)
-    super._store(JSON.stringify(contacts), encryptedStorageProps)
+    super._store(JSON.stringify(contacts))
 
     return contactId
   }

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import dayjs from 'dayjs'
 import { Lock as LockIcon, Unlock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 interface LockProps {
@@ -38,9 +37,9 @@ const Lock = ({ unlockAt, className }: LockProps) => {
   )}`
 
   return (
-    <TooltipWrapper content={tooltipContent}>
-      <span className={className}>{lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}</span>
-    </TooltipWrapper>
+    <span className={className} data-tooltip-id="default" data-tooltip-content={tooltipContent}>
+      {lockTimeInPast ? <UnlockIconStyled /> : <LockIconStyled />}
+    </span>
   )
 }
 

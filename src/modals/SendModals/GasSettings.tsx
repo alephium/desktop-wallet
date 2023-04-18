@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,9 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatAmountForDisplay, fromHumanReadableAmount } from '@alephium/sdk'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from 'styled-components'
 
-import AlefSymbol from '@/components/AlefSymbol'
 import Input from '@/components/Inputs/Input'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
 import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@/utils/constants'
@@ -44,7 +42,6 @@ const GasSettings = ({
   onGasPriceChange
 }: GasSettingsProps) => {
   const { t } = useTranslation()
-  const theme = useTheme()
 
   const [expectedFee, setExpectedFee] = useState<bigint>()
 
@@ -75,7 +72,7 @@ const GasSettings = ({
         id="gas-price"
         label={
           <>
-            {t`Gas price`} (≥ {minimalGasPriceInALPH} <AlefSymbol color={theme.font.secondary} />)
+            {t`Gas price`} (≥ {minimalGasPriceInALPH} ALPH)
           </>
         }
         value={gasPrice ?? ''}

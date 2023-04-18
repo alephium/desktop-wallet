@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ import dayjs from 'dayjs'
 import { chunk } from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
@@ -93,9 +92,12 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
             <AssetLogos>
               {displayedAssets && displayedAssets.map(({ id }) => <AssetBadge key={id} assetId={id} simple />)}
               {hiddenAssets && hiddenAssets.length > 0 && (
-                <TooltipWrapper content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}>
+                <span
+                  data-tooltip-id="default"
+                  data-tooltip-content={hiddenAssets.map(({ symbol }) => symbol || t('Unknown token')).join(', ')}
+                >
                   +{hiddenAssets.length}
-                </TooltipWrapper>
+                </span>
               )}
             </AssetLogos>
           )}

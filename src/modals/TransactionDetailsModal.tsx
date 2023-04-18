@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -59,7 +59,9 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
-  const { amountTextColor, amountSign, label, Icon } = useTransactionUI(infoType)
+  const { label, Icon } = useTransactionUI(infoType)
+
+  const isMoved = infoType === 'move'
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
@@ -75,11 +77,17 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
   return (
     <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
       <Header>
-        <AmountWrapper tabIndex={0} color={amountTextColor}>
+        <AmountWrapper tabIndex={0}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
-            <AmountContainer key={id} color={amountTextColor}>
-              {amountSign}
-              <Amount tabIndex={0} value={amount} color={amountTextColor} decimals={decimals} suffix={symbol} />
+            <AmountContainer key={id}>
+              <Amount
+                tabIndex={0}
+                value={amount}
+                decimals={decimals}
+                suffix={symbol}
+                highlight={!isMoved}
+                showPlusMinus={!isMoved}
+              />
             </AmountContainer>
           ))}
         </AmountWrapper>
@@ -88,48 +96,75 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <Icon size={14} />
             {label}
           </Direction>
-          <FromIn>{direction === 'out' ? t`from` : t`in`}</FromIn>
+          <FromIn>
+            {
+              {
+                in: t('from'),
+                out: t('to'),
+                swap: t('between')
+              }[direction]
+            }
+          </FromIn>
           <AddressBadgeStyled addressHash={address.hash} truncate withBorders />
+          {direction === 'swap' && (
+            <>
+              <FromIn>{t('and')}</FromIn>
+              <SwapPartnerAddress>
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={false}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              </SwapPartnerAddress>
+            </>
+          )}
         </HeaderInfo>
-        <ActionLink onClick={handleShowTxInExplorer}>↗ {t`Show in explorer`}</ActionLink>
+        <ActionLink onClick={handleShowTxInExplorer}>↗ {t('Show in explorer')}</ActionLink>
       </Header>
       <Details role="table">
-        <DetailsRow label={t`From`}>
-          {direction === 'out' ? (
-            <AddressList>
-              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} truncate withBorders />
-              </ActionLinkStyled>
-            </AddressList>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={false}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
-        <DetailsRow label={t`To`}>
-          {direction !== 'out' ? (
-            <AddressList>
-              <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                <AddressBadge addressHash={address.hash} withBorders />
-              </ActionLinkStyled>
-            </AddressList>
-          ) : (
-            <IOList
-              currentAddress={address.hash}
-              isOut={direction === 'out'}
-              outputs={transaction.outputs}
-              inputs={transaction.inputs}
-              timestamp={transaction.timestamp}
-              linkToExplorer
-            />
-          )}
-        </DetailsRow>
+        {direction !== 'swap' && (
+          <>
+            <DetailsRow label={t('From')}>
+              {direction === 'out' ? (
+                <AddressList>
+                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                    <AddressBadge addressHash={address.hash} truncate />
+                  </ActionLinkStyled>
+                </AddressList>
+              ) : (
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={false}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              )}
+            </DetailsRow>
+            <DetailsRow label={t('To')}>
+              {direction !== 'out' ? (
+                <AddressList>
+                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
+                    <AddressBadge addressHash={address.hash} withBorders />
+                  </ActionLinkStyled>
+                </AddressList>
+              ) : (
+                <IOList
+                  currentAddress={address.hash}
+                  isOut={direction === 'out'}
+                  outputs={transaction.outputs}
+                  inputs={transaction.inputs}
+                  timestamp={transaction.timestamp}
+                  linkToExplorer
+                />
+              )}
+            </DetailsRow>
+          </>
+        )}
         <DetailsRow label={t`Status`}>
           <Badge color={theme.global.valid} border>
             <span tabIndex={0}>{t`Confirmed`}</span>
@@ -149,16 +184,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         <DetailsRow label={t`Total value`}>
           <Amounts>
             {knownAssets.map(({ id, amount, decimals, symbol }) => (
-              <AmountContainer key={id} color={amountTextColor}>
-                {amountSign}
+              <AmountContainer key={id}>
                 <Amount
                   tabIndex={0}
                   value={amount}
                   fullPrecision
-                  color={amountTextColor}
                   decimals={decimals}
                   suffix={symbol}
                   isUnknownToken={!symbol}
+                  highlight={!isMoved}
+                  showPlusMinus={!isMoved}
                 />
                 {!symbol && <TokenHash hash={id} />}
               </AmountContainer>
@@ -169,9 +204,8 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           <DetailsRow label={t('Unknown tokens')}>
             <Amounts>
               {unknownAssets.map(({ id, amount, decimals, symbol }) => (
-                <AmountContainer key={id} color={amountTextColor}>
-                  {amountSign}
-                  <Amount tabIndex={0} value={amount} color={amountTextColor} isUnknownToken={!symbol} />
+                <AmountContainer key={id}>
+                  <Amount tabIndex={0} value={amount} isUnknownToken={!symbol} highlight />
                   {!symbol && <TokenHash hash={id} />}
                 </AmountContainer>
               ))}
@@ -252,8 +286,7 @@ const Direction = styled.span`
   gap: 5px;
 `
 
-const AmountWrapper = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
+const AmountWrapper = styled.div`
   font-size: 26px;
   font-weight: var(--fontWeight-semiBold);
 `
@@ -300,11 +333,10 @@ const ActionLinkStyled = styled(ActionLink)`
   justify-content: right;
 `
 
-const AmountContainer = styled.div<{ color: string }>`
+const AmountContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  color: ${({ color }) => color};
 `
 
 const Amounts = styled.div`
@@ -320,4 +352,8 @@ const TokenHash = styled(HashEllipsed)`
 
 const AddressBadgeStyled = styled(AddressBadge)`
   max-width: 200px;
+`
+
+const SwapPartnerAddress = styled.div`
+  max-width: 80px;
 `

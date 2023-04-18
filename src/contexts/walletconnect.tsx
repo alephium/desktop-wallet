@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -153,7 +153,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
     const { requiredNamespaces } = proposalEvent.params
     const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
-    const requiredChainInfo = parseChain(requiredChains[0])
+    const requiredChainInfo = requiredChains ? parseChain(requiredChains[0]) : undefined
 
     setRequiredChainInfo(requiredChainInfo)
     setProposalEvent(proposalEvent)

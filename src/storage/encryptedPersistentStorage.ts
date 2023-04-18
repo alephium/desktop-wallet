@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,64 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { decrypt, encrypt } from '@alephium/sdk'
-
+import {
+  EncryptedStorageProps,
+  StatelessPersistentEncryptedStorage
+} from '@/storage/statelessEncryptedPersistentStorage'
 import { store } from '@/storage/store'
-import { StoredWallet } from '@/types/wallet'
 
-export interface EncryptedStorageProps {
-  mnemonic: string
-  walletId: string
-  isPassphraseUsed?: boolean
-}
-
-type LocalStorageEncryptedValue = {
-  version: string
-  encrypted: string
-}
-
-export class PersistentEncryptedStorage {
-  private localStorageKeyPrefix: string
-  private version: string
-
-  constructor(localStorageKeyPrefix: string, version: string) {
-    this.localStorageKeyPrefix = localStorageKeyPrefix
-    this.version = version
-  }
-
-  getKey(id: StoredWallet['id']) {
-    if (!id) throw new Error('Wallet ID not set.')
-
-    return `${this.localStorageKeyPrefix}-${id}`
-  }
-
+export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStorage {
   load() {
-    const { walletId, mnemonic, isPassphraseUsed } = getEncryptedStoragePropsFromActiveWallet()
-
-    if (isPassphraseUsed) return []
-
-    const json = localStorage.getItem(this.getKey(walletId))
-
-    if (json === null) return []
-
-    const { encrypted } = JSON.parse(json) as LocalStorageEncryptedValue
-
-    return JSON.parse(decrypt(mnemonic, encrypted))
+    return this._load(getEncryptedStoragePropsFromActiveWallet())
   }
 
-  protected _store(data: string, { mnemonic, walletId, isPassphraseUsed }: EncryptedStorageProps) {
-    if (isPassphraseUsed) return
-
-    const encryptedValue: LocalStorageEncryptedValue = {
-      version: this.version,
-      encrypted: encrypt(mnemonic, data)
-    }
-
-    localStorage.setItem(this.getKey(walletId), JSON.stringify(encryptedValue))
-  }
-
-  delete(walletId: EncryptedStorageProps['walletId']) {
-    localStorage.removeItem(this.getKey(walletId))
+  protected _store(data: string) {
+    this._storeStateless(data, getEncryptedStoragePropsFromActiveWallet())
   }
 }
 

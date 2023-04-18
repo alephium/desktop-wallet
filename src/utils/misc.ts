@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -81,6 +81,7 @@ export const onTabPress = (event: KeyboardEvent, callback: () => void) => {
 }
 
 export const convertToPositive = (num: bigint): bigint => (num < 0 ? num * BigInt(-1) : num)
+export const convertToNegative = (num: bigint): bigint => (num > 0 ? num * BigInt(-1) : num)
 
 export function removeItemFromArray<T>(array: T[], index: number) {
   const newArray = [...array]

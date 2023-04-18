@@ -16,16 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { Address } from '@/types/addresses'
+import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
+import { store } from '@/storage/store'
+import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
+import { storedPendingTransactionsLoaded } from '@/storage/transactions/transactionsActions'
 
-const useDappTxData = () => {
-  const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { dappTxData } = useWalletConnectContext()
-
-  return dappTxData ?? { fromAddress: defaultAddress as Address }
+export const restorePendingTransactions = () => {
+  const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+  const transactions = PendingTransactionsStorage.load(encryptedStorageProps)
+  store.dispatch(storedPendingTransactionsLoaded(transactions))
 }
-
-export default useDappTxData

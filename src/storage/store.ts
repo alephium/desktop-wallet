@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -28,7 +28,9 @@ import snackbarSlice from '@/storage/global/snackbarSlice'
 import networkSlice, { networkListenerMiddleware } from '@/storage/settings/networkSlice'
 import settingsSlice, { settingsListenerMiddleware } from '@/storage/settings/settingsSlice'
 import confirmedTransactionsSlice from '@/storage/transactions/confirmedTransactionsSlice'
-import pendingTransactionsSlice from '@/storage/transactions/pendingTransactionsSlice'
+import pendingTransactionsSlice, {
+  pendingTransactionsListenerMiddleware
+} from '@/storage/transactions/pendingTransactionsSlice'
 import activeWalletSlice from '@/storage/wallets/activeWalletSlice'
 
 export const store = configureStore({
@@ -50,6 +52,7 @@ export const store = configureStore({
       .concat(priceApi.middleware)
       .concat(settingsListenerMiddleware.middleware)
       .concat(networkListenerMiddleware.middleware)
+      .concat(pendingTransactionsListenerMiddleware.middleware)
 })
 
 setupListeners(store.dispatch)

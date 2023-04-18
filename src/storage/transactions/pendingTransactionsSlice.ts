@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,17 +18,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Transaction } from '@alephium/sdk/api/explorer'
 import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
+import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
+import { xorWith } from 'lodash'
 
 import {
   syncAddressesData,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { transactionSent } from '@/storage/transactions/transactionsActions'
+import { RootState } from '@/storage/store'
+import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
+import { storedPendingTransactionsLoaded, transactionSent } from '@/storage/transactions/transactionsActions'
 import { pendingTransactionsAdapter } from '@/storage/transactions/transactionsAdapters'
-import { convertUnconfirmedTxToPendingTx } from '@/storage/transactions/transactionsUtils'
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
-import { AddressDataSyncResult } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
 
 type PendingTransactionsState = EntityState<PendingTransaction>
@@ -42,9 +44,10 @@ const pendingTransactionsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(transactionSent, pendingTransactionsAdapter.addOne)
-      .addCase(syncAddressesData.fulfilled, updateTransactions)
+      .addCase(syncAddressesData.fulfilled, removeTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
+      .addCase(storedPendingTransactionsLoaded, pendingTransactionsAdapter.addMany)
       .addCase(walletLocked, () => initialState)
       .addCase(walletSwitched, () => initialState)
       .addCase(activeWalletDeleted, () => initialState)
@@ -53,25 +56,35 @@ const pendingTransactionsSlice = createSlice({
 
 export default pendingTransactionsSlice
 
+export const pendingTransactionsListenerMiddleware = createListenerMiddleware()
+
+pendingTransactionsListenerMiddleware.startListening({
+  matcher: isAnyOf(
+    transactionSent,
+    syncAddressesData.fulfilled,
+    syncAddressTransactionsNextPage.fulfilled,
+    syncAllAddressesTransactionsNextPage.fulfilled
+  ),
+  effect: (_, { getState }) => {
+    const state = getState() as RootState
+    const transactions = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
+    const { id: walletId, mnemonic, isPassphraseUsed } = state.activeWallet
+
+    if (!walletId || !mnemonic || isPassphraseUsed) return
+
+    const encryptionProps = { walletId, mnemonic, isPassphraseUsed }
+    const storedTransactions = PendingTransactionsStorage.load(encryptionProps)
+    const uniqueTransactions = xorWith(transactions, storedTransactions, (a, b) => a.hash === b.hash)
+
+    if (uniqueTransactions.length > 0) PendingTransactionsStorage.store(transactions, encryptionProps)
+  }
+})
+
 // Reducers helper functions
-
-const updateTransactions = (state: PendingTransactionsState, action: PayloadAction<AddressDataSyncResult[]>) => {
-  const addresses = action.payload
-  const confirmedTransactionsHashes = addresses.flatMap((address) => address.transactions).map((tx) => tx.hash)
-
-  // Converting unconfirmed txs to pending txs because the amount delta calculation doesn't work for unconfirmed txs.
-  // See: https://github.com/alephium/explorer-backend/issues/360
-  const pendingTransactions = addresses
-    .flatMap((address) => address.mempoolTransactions.map((tx) => ({ tx, address: address.hash })))
-    .map(({ tx, address }) => convertUnconfirmedTxToPendingTx(tx, address))
-
-  pendingTransactionsAdapter.removeMany(state, confirmedTransactionsHashes)
-  pendingTransactionsAdapter.upsertMany(state, pendingTransactions)
-}
 
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] } | undefined>
+  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

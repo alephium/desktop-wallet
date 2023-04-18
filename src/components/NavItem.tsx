@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useLocation, useNavigate } from 'react-router-dom'
-import { TooltipWrapper } from 'react-tooltip'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
@@ -44,18 +43,18 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
   }
 
   return (
-    <TooltipWrapper content={label} tooltipId="sidenav">
-      <ButtonStyled
-        aria-label={label}
-        onClick={handleClick}
-        Icon={Icon}
-        borderless={!isActive}
-        squared
-        role="secondary"
-        transparent={!isActive}
-        isActive={isActive}
-      />
-    </TooltipWrapper>
+    <ButtonStyled
+      aria-label={label}
+      onClick={handleClick}
+      Icon={Icon}
+      borderless={!isActive}
+      squared
+      role="secondary"
+      transparent={!isActive}
+      isActive={isActive}
+      data-tooltip-id="sidenav"
+      data-tooltip-content={label}
+    />
   )
 }
 
