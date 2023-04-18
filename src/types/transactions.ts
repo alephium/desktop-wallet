@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
 
@@ -148,7 +149,3 @@ export type CsvExportTimerangeQueryParams = {
 export type CsvExportQueryParams = CsvExportTimerangeQueryParams & {
   addressHash: AddressHash
 }
-
-// TODO: Transfer to SDK
-export type TransactionDirection = 'in' | 'out' | 'swap'
-export type TransactionInfoType = TransactionDirection | 'move' | 'pending'

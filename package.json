@@ -34,8 +34,8 @@
     "posthog-js": "^1.51.5"
   },
   "devDependencies": {
-    "@alephium/sdk": "0.6.1",
-    "@alephium/token-list": "0.0.5",
+    "@alephium/sdk": "0.6.3",
+    "@alephium/token-list": "^0.0.7",
     "@alephium/walletconnect-provider": "^0.10.0",
     "@alephium/web3": "^0.10.0",
     "@electron/notarize": "^1.2.3",
