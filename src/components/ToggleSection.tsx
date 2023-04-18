@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 import { fastTransition } from '@/animations'
@@ -36,30 +36,18 @@ export interface ToggleSectionProps {
 const ToggleSection = ({
   title,
   subtitle,
-  isOpen,
+  isOpen = false,
   onClick = () => null,
   shadow,
   children,
   className
 }: ToggleSectionProps) => {
-  const [isShown, setIsShown] = useState(isOpen || false)
+  const [isShown, setIsShown] = useState(isOpen)
   const theme = useTheme()
 
-  useEffect(() => {
-    if (isOpen !== undefined) {
-      setIsShown(isOpen)
-      onClick(isOpen)
-    }
-  }, [isOpen, onClick])
-
   const handleToggle = () => {
-    console.log(isOpen)
-    if (isOpen === undefined) {
-      setIsShown(!isShown)
-      onClick(isShown)
-    } else {
-      onClick(!isOpen)
-    }
+    setIsShown(!isShown)
+    onClick(isShown)
   }
 
   return (
