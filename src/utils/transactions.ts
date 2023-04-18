@@ -21,7 +21,9 @@ import {
   DUST_AMOUNT,
   getDirection,
   isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT
+  MIN_UTXO_SET_AMOUNT,
+  TransactionDirection,
+  TransactionInfoType
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
@@ -37,9 +39,7 @@ import {
   AddressPendingTransaction,
   AddressTransaction,
   Direction,
-  TransactionDirection,
   TransactionInfo,
-  TransactionInfoType,
   TransactionTimePeriod
 } from '@/types/transactions'
 import { convertToNegative } from '@/utils/misc'
