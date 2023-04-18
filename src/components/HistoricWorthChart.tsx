@@ -19,12 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs, { Dayjs } from 'dayjs'
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 import Chart from 'react-apexcharts'
 import { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddresses, selectHaveHistoricBalancesLoaded } from '@/storage/addresses/addressesSelectors'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
@@ -53,50 +53,58 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   length = '1y'
 }: HistoricWorthChartProps) {
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
+  const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
+  const [chartData, setChartData] = useState<DataPoint[]>([])
+
   const startingDate = startingDates[length].format('YYYY-MM-DD')
+  const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && alphPriceHistory
 
-  if (!alphPriceHistory || addressHashes.length === 0) return null
+  useEffect(() => {
+    if (!isDataAvailable) return
 
-  const computeChartDataPoints = (): DataPoint[] => {
-    const addressesLatestAmount: LatestAmountPerAddress = {}
-    addresses.forEach(({ hash }) => (addressesLatestAmount[hash] = BigInt(0)))
+    const computeChartDataPoints = (): DataPoint[] => {
+      const addressesLatestAmount: LatestAmountPerAddress = {}
+      addresses.forEach(({ hash }) => (addressesLatestAmount[hash] = BigInt(0)))
 
-    return alphPriceHistory.map(({ date, price }) => {
-      let totalAmountPerDate = BigInt(0)
+      return alphPriceHistory.map(({ date, price }) => {
+        let totalAmountPerDate = BigInt(0)
 
-      addresses.forEach(({ hash, balanceHistory }) => {
-        const amountOnDate = balanceHistory.entities[date]?.balance
+        addresses.forEach(({ hash, balanceHistory }) => {
+          const amountOnDate = balanceHistory.entities[date]?.balance
 
-        if (amountOnDate !== undefined) {
-          const amount = BigInt(amountOnDate)
-          totalAmountPerDate += amount
-          addressesLatestAmount[hash] = amount
-        } else {
-          totalAmountPerDate += addressesLatestAmount[hash]
+          if (amountOnDate !== undefined) {
+            const amount = BigInt(amountOnDate)
+            totalAmountPerDate += amount
+            addressesLatestAmount[hash] = amount
+          } else {
+            totalAmountPerDate += addressesLatestAmount[hash]
+          }
+        })
+
+        return {
+          x: date,
+          y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
         }
       })
+    }
 
-      return {
-        x: date,
-        y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
-      }
-    })
-  }
+    const trimInitialZeroDataPoints = (data: DataPoint[]) => data.slice(data.findIndex((point) => point.y !== 0))
 
-  const chartData = computeChartDataPoints()
-  let filteredChartData = chartData.slice(chartData.findIndex((point) => point.y !== 0))
+    let dataPoints = computeChartDataPoints()
+    dataPoints = trimInitialZeroDataPoints(dataPoints)
 
-  const startingPoint = filteredChartData.findIndex((point) => point.x === startingDate)
-  filteredChartData = startingPoint > 0 ? filteredChartData.slice(startingPoint) : filteredChartData
+    setChartData(dataPoints)
+  }, [addresses, alphPriceHistory, isDataAvailable])
 
-  if (filteredChartData.length === 1 && filteredChartData[0].y === 0) return null
+  if (!isDataAvailable || chartData.length <= 1) return null
 
+  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
+  const filteredChartData = startingPoint > 0 ? chartData.slice(startingPoint) : chartData
   const lastItem = filteredChartData.at(-1)
   const chartColor = lastItem !== undefined && filteredChartData[0].y < lastItem.y ? '#3ED282' : theme.global.alert
-
   const chartOptions = getChartOptions(chartColor, {
     mouseMove(e, chart, options) {
       onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])

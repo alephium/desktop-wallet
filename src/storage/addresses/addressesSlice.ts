@@ -212,6 +212,7 @@ const addressesSlice = createSlice({
 
           if (addressState) {
             balanceHistoryAdapter.upsertMany(addressState.balanceHistory, balances)
+            addressState.balanceHistoryInitialized = true
           }
         })
       })
@@ -238,7 +239,8 @@ const getDefaultAddressState = (address: AddressBase): Address => ({
   allTransactionPagesLoaded: false,
   tokens: [],
   lastUsed: 0,
-  balanceHistory: balanceHistoryAdapter.getInitialState()
+  balanceHistory: balanceHistoryAdapter.getInitialState(),
+  balanceHistoryInitialized: false
 })
 
 const updateOldDefaultAddress = (state: AddressesState) => {

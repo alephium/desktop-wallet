@@ -131,3 +131,7 @@ export const selectHaveAllPagesLoaded = createSelector(
   (addresses, allTransactionsLoaded) =>
     addresses.every((address) => address.allTransactionPagesLoaded) || allTransactionsLoaded
 )
+
+export const selectHaveHistoricBalancesLoaded = createSelector(selectAllAddresses, (addresses) =>
+  addresses.every((address) => address.balanceHistoryInitialized)
+)

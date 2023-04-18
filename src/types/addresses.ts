@@ -60,6 +60,7 @@ export type Address = AddressBase &
     tokens: TokenBalances[]
     lastUsed: TimeInMs
     balanceHistory: EntityState<BalanceHistory>
+    balanceHistoryInitialized: boolean
   }
 
 export type AddressHash = string
