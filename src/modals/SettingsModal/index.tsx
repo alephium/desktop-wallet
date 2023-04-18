@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ export const settingsModalTabs: SettingsTabItem[] = [
 
 interface SettingsModalProps {
   onClose: () => void
-  initialTabValue?: typeof settingsModalTabs[number]['value']
+  initialTabValue?: (typeof settingsModalTabs)[number]['value']
 }
 
 const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
