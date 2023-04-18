@@ -27,6 +27,7 @@ import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import {
   selectAddressByHash,
+  selectAddressesHaveHistoricBalances,
   selectAllAddresses,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
@@ -59,7 +60,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const addresses = address ? [address] : allAddresses
+  const addressHashes = addresses.map(({ hash }) => hash)
   const network = useAppSelector((s) => s.network)
+  const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
@@ -83,19 +86,21 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
             ) : (
               <>
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
-                <ChartLengthBadges>
-                  {chartLengths.map((length) => (
-                    <ButtonStyled
-                      key={length}
-                      transparent
-                      short
-                      isActive={length === chartLength}
-                      onClick={() => onChartLengthChange(length)}
-                    >
-                      {length}
-                    </ButtonStyled>
-                  ))}
-                </ChartLengthBadges>
+                {hasHistoricBalances && (
+                  <ChartLengthBadges>
+                    {chartLengths.map((length) => (
+                      <ButtonStyled
+                        key={length}
+                        transparent
+                        short
+                        isActive={length === chartLength}
+                        onClick={() => onChartLengthChange(length)}
+                      >
+                        {length}
+                      </ButtonStyled>
+                    ))}
+                  </ChartLengthBadges>
+                )}
               </>
             )}
           </BalancesColumn>
