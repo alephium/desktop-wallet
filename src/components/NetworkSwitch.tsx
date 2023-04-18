@@ -27,7 +27,6 @@ import Badge from '@/components/Badge'
 import DotIcon from '@/components/DotIcon'
 import Select from '@/components/Inputs/Select'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import i18next from '@/i18n'
 import ModalPortal from '@/modals/ModalPortal'
 import SettingsModal from '@/modals/SettingsModal'
 import { networkPresetSwitched } from '@/storage/settings/networkActions'
@@ -54,8 +53,8 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
 
   const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
     label: {
-      mainnet: i18next.t('Mainnet'),
-      testnet: i18next.t('Testnet')
+      mainnet: t('Mainnet'),
+      testnet: t('Testnet')
     }[networkName],
     value: networkName
   }))
