@@ -45,6 +45,7 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
+
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const networkNames = Object.values(NetworkNames).filter(
