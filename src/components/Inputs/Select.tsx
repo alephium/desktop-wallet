@@ -432,6 +432,11 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   }
+
+  &:focus {
+    background-color: ${({ theme, selected }) =>
+      !selected ? theme.bg.accent : colord(theme.global.accent).alpha(0.1).toRgbString()};
+  }
 `
 
 const SelectedValue = styled.div<InputProps>`
