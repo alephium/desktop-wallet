@@ -171,6 +171,7 @@ export default styled(AppHeader)`
   gap: var(--spacing-1);
 
   backdrop-filter: blur(20px);
+  z-index: 1;
 `
 
 const HeaderDivider = styled.div`
