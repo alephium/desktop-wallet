@@ -54,21 +54,35 @@ const AddressBadge = ({
 
   return contact ? (
     <div className={className}>
-      <Label {...props}>{contact.name}</Label>
+      <Label {...props}>
+        {disableCopy ? (
+          contact.name
+        ) : (
+          <ClipboardButton textToCopy={contact.address} tooltip={t('Copy contact address')} disableA11y={disableA11y}>
+            {contact.name}
+          </ClipboardButton>
+        )}
+      </Label>
     </div>
   ) : !address ? (
-    <HashEllipsed hash={addressHash} disableCopy={disableCopy} />
+    <HashEllipsed className={className} hash={addressHash} disableCopy={disableCopy} />
   ) : (
-    <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
-      <RoundBorders className={className} withBorders={withBorders}>
-        {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
-        {address.label ? (
-          <Label {...props}>{address.label}</Label>
-        ) : (
-          <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
-        )}
-      </RoundBorders>
-    </ClipboardButton>
+    <div className={className}>
+      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
+      {address.label ? (
+        <Label {...props}>
+          {disableCopy ? (
+            address.label
+          ) : (
+            <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
+              {address.label}
+            </ClipboardButton>
+          )}
+        </Label>
+      ) : (
+        <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
+      )}
+    </div>
   )
 }
 
@@ -77,7 +91,14 @@ export default styled(AddressBadge)`
   align-items: center;
   gap: 4px;
   max-width: 120px;
-  min-width: 80px;
+
+  ${({ withBorders }) =>
+    withBorders &&
+    css`
+      border: 1px solid ${({ theme }) => theme.border.primary};
+      border-radius: 25px;
+      padding: 5px 10px;
+    `}
 
   ${({ truncate }) =>
     truncate &&
@@ -97,15 +118,5 @@ const Label = styled.span<AddressBadgeProps>`
     css`
       overflow: hidden;
       text-overflow: ellipsis;
-    `}
-`
-
-const RoundBorders = styled.div<{ withBorders?: boolean }>`
-  ${({ withBorders }) =>
-    withBorders &&
-    css`
-      border: 1px solid ${({ theme }) => theme.border.primary};
-      border-radius: 25px;
-      padding: 5px 10px;
     `}
 `

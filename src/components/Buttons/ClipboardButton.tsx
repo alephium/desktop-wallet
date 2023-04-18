@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Copy } from 'lucide-react'
-import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -30,11 +30,16 @@ interface ClipboardButtonProps {
   textToCopy: string
   disableA11y?: boolean
   tooltip?: string
-  children?: ReactNode | ReactNode[]
   className?: string
 }
 
-const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
+const ClipboardButton: FC<ClipboardButtonProps> = ({
+  tooltip,
+  textToCopy,
+  children,
+  className,
+  disableA11y = false
+}) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
@@ -73,12 +78,16 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
     }
   }, [dispatch, hasBeenCopied])
 
-  const clipboard = (
-    <div data-tooltip-content={!hasBeenCopied ? tooltip ?? t('Copy to clipboard') : t('Copied')} data-tooltip-id="copy">
-      {!hasBeenCopied ? (
-        <ClipboardWrapper>
+  return (
+    <div className={className}>
+      <ClipboardContent>{children}</ClipboardContent>
+      <ClipboardIcon
+        data-tooltip-content={!hasBeenCopied ? tooltip ?? t('Copy to clipboard') : t('Copied')}
+        data-tooltip-id="copy"
+      >
+        {!hasBeenCopied ? (
           <Copy
-            className={`${className} clipboard`}
+            className="clipboard"
             onClick={handleInput}
             onKeyPress={handleInput}
             onMouseDown={handleInput}
@@ -86,38 +95,18 @@ const ClipboardButton = ({ tooltip, textToCopy, children, className, disableA11y
             aria-label={disableA11y ? undefined : t('Copy to clipboard')}
             tabIndex={disableA11y ? undefined : 0}
           />
-        </ClipboardWrapper>
-      ) : (
-        <ClipboardWrapper className={className}>
-          <Check className={`${className} check`} />
-        </ClipboardWrapper>
-      )}
+        ) : (
+          <Check className="check" />
+        )}
+      </ClipboardIcon>
     </div>
-  )
-
-  return children ? (
-    <div className={className}>
-      <CellChildren>{children}</CellChildren>
-      <CellClipboard>{clipboard}</CellClipboard>
-    </div>
-  ) : (
-    clipboard
   )
 }
 
-const CellClipboard = styled.div`
+const ClipboardIcon = styled.div`
   opacity: 0;
   z-index: 1;
-`
 
-const CellChildren = styled.div`
-  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
-  margin-right: -1em;
-  overflow: hidden;
-  width: 100%;
-`
-
-const ClipboardWrapper = styled.div`
   & > .clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};
@@ -142,16 +131,23 @@ const ClipboardWrapper = styled.div`
   }
 `
 
+const ClipboardContent = styled.div`
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
+  margin-right: -0.5em;
+  overflow: hidden;
+  width: 100%;
+`
+
 export default styled(ClipboardButton)`
   display: flex;
   align-items: center;
   overflow: hidden;
 
-  &:hover > ${CellClipboard} {
+  &:hover > ${ClipboardIcon} {
     opacity: 1;
   }
 
-  &:hover > ${CellChildren} {
-    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) calc(100% - 15px));
+  &:hover > ${ClipboardContent} {
+    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) calc(100% - 15px));
   }
 `

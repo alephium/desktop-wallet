@@ -138,11 +138,9 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           {defaultAddress && !isPassphraseUsed && (
             <>
               <HeaderDivider />
-              <AddressBadgeStyled
-                addressHash={defaultAddress.hash}
-                data-tooltip-id="default"
-                data-tooltip-content={t('Default address')}
-              />
+              <div data-tooltip-id="default" data-tooltip-content={t('Default address')}>
+                <AddressBadge withBorders addressHash={defaultAddress.hash} />
+              </div>
             </>
           )}
           <HeaderDivider />
@@ -206,8 +204,4 @@ const HeaderButtons = styled.div`
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
-`
-
-const AddressBadgeStyled = styled(AddressBadge)`
-  max-width: 120px;
 `

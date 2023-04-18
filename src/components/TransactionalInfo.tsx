@@ -144,7 +144,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
+            <AddressBadge addressHash={addressHash} truncate disableA11y />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
             (pendingDestinationAddress || (
