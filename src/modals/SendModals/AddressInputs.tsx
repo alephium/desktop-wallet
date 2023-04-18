@@ -157,7 +157,7 @@ const AddressInputs = ({
             optionRender={(contact) => (
               <SelectOptionItemContent
                 MainContent={<Name>{contact.label}</Name>}
-                SecondaryContent={<HashEllipsedStyled hash={contact.value} />}
+                SecondaryContent={<HashEllipsedStyled hash={contact.value} disableA11y />}
               />
             )}
           />

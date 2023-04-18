@@ -43,7 +43,6 @@ import Popup from '@/components/Popup'
 import Truncate from '@/components/Truncate'
 import ModalPortal from '@/modals/ModalPortal'
 import { Coordinates } from '@/types/numbers'
-import { onTabPress } from '@/utils/misc'
 
 type Writable<T> = T extends string
   ? string
@@ -266,7 +265,6 @@ export function SelectOptionsModal<T extends OptionValue>({
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
   const optionSelectRef = useRef<HTMLDivElement>(null)
-  const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
   // We hide instead of simply not rendering filtered options to avoid changing the height/width of the modal when
   // filtering. When the size of the modal depends on its contents, its size might change when filtering some options
@@ -279,14 +277,6 @@ export function SelectOptionsModal<T extends OptionValue>({
   // To display the message without changing the height, remove one of the invisible options
   if (emptySearchResults) invisibleOptions.pop()
 
-  useEffect(() => {
-    const selectedOptionIndex = options.findIndex((o) => o.value === selectedOption?.value)
-
-    if (options && options.length > 0) {
-      setFocusedOptionIndex(selectedOptionIndex > 0 ? selectedOptionIndex : 0)
-    }
-  }, [options, selectedOption?.value])
-
   const handleOptionSelect = useCallback(
     (value: T) => {
       const selectedValue = visibleOptions.find((o) => o.value === value)
@@ -297,29 +287,6 @@ export function SelectOptionsModal<T extends OptionValue>({
     },
     [onClose, visibleOptions, setValue]
   )
-
-  const selectFirstOption = () => setFocusedOptionIndex(0)
-
-  useEffect(() => {
-    const selectOptions = optionSelectRef?.current
-    const listener = (e: KeyboardEvent) => {
-      if (['ArrowDown', 'Tab'].includes(e.code)) {
-        setFocusedOptionIndex((i) => (i < visibleOptions.length - 1 ? i + 1 : i))
-      } else if (e.code === 'ArrowUp') {
-        setFocusedOptionIndex((i) => (i > 0 ? i - 1 : i))
-      } else if (['Space', ' ', 'Enter'].includes(e.code)) {
-        handleOptionSelect(visibleOptions[focusedOptionIndex].value)
-      } else {
-        return
-      }
-    }
-
-    selectOptions?.addEventListener('keydown', listener)
-
-    return () => {
-      selectOptions?.removeEventListener('keydown', listener)
-    }
-  }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
   const parentSelectWidth = parentSelectRef?.current?.clientWidth
   const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth + 10 : undefined
@@ -338,43 +305,37 @@ export function SelectOptionsModal<T extends OptionValue>({
             Icon={SearchIcon}
             onChange={(e) => onSearchInput(e.target.value)}
             heightSize="small"
-            onKeyDown={(e) => onTabPress(e, selectFirstOption)}
           />
         )
       }
     >
       <OptionSelect title={title} aria-label={title} ref={optionSelectRef}>
         {isEmpty ? (
-          <OptionItem selected={false} focused={false}>
-            {emptyListPlaceholder}
-          </OptionItem>
+          <OptionItem selected={false}>{emptyListPlaceholder}</OptionItem>
         ) : emptySearchResults ? (
-          <OptionItem selected={false} focused={false}>
-            {t('No options match the search criteria.')}
-          </OptionItem>
+          <OptionItem selected={false}>{t('No options match the search criteria.')}</OptionItem>
         ) : null}
-        {visibleOptions.map((o, i) => {
-          const isSelected = o.value === selectedOption?.value
+        {visibleOptions.map((option) => {
+          const isSelected = option.value === selectedOption?.value
           return (
             <OptionItem
-              key={o.value}
+              key={option.value}
               tabIndex={0}
               role="listitem"
-              onClick={() => handleOptionSelect(o.value as T)}
-              onMouseEnter={() => setFocusedOptionIndex(i)}
+              onClick={() => handleOptionSelect(option.value as T)}
               selected={isSelected}
-              focused={i === focusedOptionIndex}
-              aria-label={o.label}
+              focusable
+              aria-label={option.label}
             >
-              {optionRender ? optionRender(o, isSelected) : o.label}
+              {optionRender ? optionRender(option, isSelected) : option.label}
               {isSelected && <CheckMark />}
             </OptionItem>
           )
         })}
         {ListBottomComponent && <div onClick={onClose}>{ListBottomComponent}</div>}
-        {invisibleOptions.map((o) => (
-          <OptionItem key={o.value} selected={false} focused={false} invisible>
-            {optionRender ? optionRender(o) : o.label}
+        {invisibleOptions.map((option) => (
+          <OptionItem key={option.value} selected={false} invisible>
+            {optionRender ? optionRender(option) : option.label}
           </OptionItem>
         ))}
       </OptionSelect>
@@ -415,7 +376,7 @@ export const OptionSelect = styled.div`
   flex-direction: column;
 `
 
-export const OptionItem = styled.button<{ selected: boolean; focused: boolean; invisible?: boolean }>`
+export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean; invisible?: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -424,8 +385,7 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
   color: ${({ theme }) => theme.font.primary};
   user-select: none;
   text-align: left;
-  background-color: ${({ theme, focused }) =>
-    focused ? theme.bg.accent : colord(theme.bg.primary).alpha(0.4).toHex()};
+  background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.4).toHex()};
   visibility: ${({ invisible }) => invisible && 'hidden'};
   font-weight: ${({ theme, selected }) => selected && 'var(--fontWeight-semiBold)'};
 
@@ -433,10 +393,17 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   }
 
-  &:focus {
-    background-color: ${({ theme, selected }) =>
-      !selected ? theme.bg.accent : colord(theme.global.accent).alpha(0.1).toRgbString()};
-  }
+  ${({ focusable }) =>
+    focusable &&
+    css`
+      &:focus {
+        background-color: ${({ theme }) => theme.bg.accent};
+      }
+
+      &:hover {
+        background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
+      }
+    `}
 `
 
 const SelectedValue = styled.div<InputProps>`
