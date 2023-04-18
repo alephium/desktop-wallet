@@ -51,21 +51,21 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
       const contentElement = contentRef.current
       const contentRect = contentElement?.getBoundingClientRect()
 
-      const offsetX =
+      const baseOffsetX =
         contentRect?.left && contentRect.left < minMarginToEdge
           ? -contentRect.left + 2 * minMarginToEdge
           : contentRect?.right && windowWidth - contentRect.right < minMarginToEdge
           ? windowWidth - contentRect.right - 2 * minMarginToEdge
           : 0
 
-      const offsetY =
+      const baseOffsetY =
         contentRect?.top && contentRect.top < minMarginToEdge
           ? -contentRect.top + 2 * minMarginToEdge
           : contentRect?.bottom && windowHeight - contentRect.bottom < minMarginToEdge
           ? windowHeight - contentRect.bottom - 2 * minMarginToEdge
           : 0
 
-      setHookOffset({ x: offsetX, y: offsetY })
+      setHookOffset({ x: baseOffsetX, y: baseOffsetY - 5 })
     }
   }, [windowHeight, windowWidth])
 
@@ -129,14 +129,13 @@ const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => colord(theme.bg.background1).alpha(0.3).toHex()};
-  backdrop-filter: blur(20px);
+  background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.6).toHex()};
+  backdrop-filter: blur(30px) brightness(110%);
 `
 
 const Header = styled.div`
   padding: var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: transparent;
 
   display: flex;
   align-items: center;

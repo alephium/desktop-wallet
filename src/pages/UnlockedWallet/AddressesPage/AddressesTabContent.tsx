@@ -81,10 +81,11 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
           <HeaderCell justifyContent="flex-end">{t('ALPH amount')}</HeaderCell>
           <HeaderCell justifyContent="flex-end">{t('Total value')}</HeaderCell>
         </GridHeaderRow>
-
-        {visibleAddresses.map((address) => (
-          <AddressGridRow addressHash={address.hash} key={address.hash} />
-        ))}
+        <TableGridContent>
+          {visibleAddresses.map((address) => (
+            <AddressGridRow addressHash={address.hash} key={address.hash} />
+          ))}
+        </TableGridContent>
       </TableGrid>
 
       <ModalPortal>
@@ -135,7 +136,10 @@ const TableGrid = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 1px;
-  background-color: ${({ theme }) => theme.border.primary};
+`
+
+const Cell = styled.div`
+  padding: 15px 20px;
 `
 
 const GridRow = styled.div`
@@ -149,14 +153,10 @@ const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
   font-weight: var(--fontWeight-semiBold);
   min-height: var(--inputHeight);
   width: 100%;
-
+  background-color: ${({ theme }) => theme.border.primary};
   position: sticky;
   top: ${({ tabsRowHeight }) => tabsRowHeight + appHeaderHeightPx - 1}px;
   z-index: 1;
-`
-
-const Cell = styled.div`
-  padding: 15px 20px;
 `
 
 const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent'] }>`
@@ -165,4 +165,11 @@ const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent
   align-items: center;
   height: 100%;
   background-color: ${({ theme }) => theme.bg.tertiary};
+`
+
+const TableGridContent = styled.div`
+  background-color: ${({ theme }) => theme.border.secondary};
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 `

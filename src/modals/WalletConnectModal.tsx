@@ -219,7 +219,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         <ModalFooterButton role="secondary" onClick={onClose}>
           {t('Cancel')}
         </ModalFooterButton>
-        <ModalFooterButton role="secondary" onClick={handleDisconnect}>
+        <ModalFooterButton role="secondary" variant="alert" onClick={handleDisconnect}>
           {t('Disconnect')}
         </ModalFooterButton>
       </ModalFooterButtons>

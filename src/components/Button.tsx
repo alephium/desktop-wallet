@@ -97,7 +97,7 @@ export default styled(Button)`
             default: theme.bg.primary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert,
+            alert: colord(theme.global.alert).alpha(0.1).toRgbString(),
             faded: colord(theme.bg.primary).alpha(0.07).toRgbString()
           }[variant]
         }[role]
@@ -118,7 +118,7 @@ export default styled(Button)`
             default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
             valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
+            alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
             faded: colord(theme.bg.primary).lighten(0.08).toRgbString()
           }[variant]
         }[role]
@@ -139,7 +139,7 @@ export default styled(Button)`
             default: colord(theme.bg.primary).darken(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
             valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
-            alert: colord(theme.global.alert).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.3).toRgbString(),
             faded: colord(theme.bg.primary).darken(0.08).toRgbString()
           }[variant]
         }[role]
@@ -158,7 +158,7 @@ export default styled(Button)`
             default: theme.font.primary,
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.contrastPrimary,
+            alert: theme.global.alert,
             faded: theme.font.primary
           }[variant]
         }[role]
@@ -234,8 +234,8 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : 'var(--inputHeight)')};
-  width: ${({ squared, short, wide }) => (squared ? '35px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
+  height: ${({ squared, short }) => (short ? '40px' : squared ? '40px' : 'var(--inputHeight)')};
+  width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
   font-weight: var(--fontWeight-medium);

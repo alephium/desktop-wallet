@@ -321,7 +321,7 @@ export function SelectOptionsModal<T extends OptionValue>({
   }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
   const parentSelectWidth = parentSelectRef?.current?.clientWidth
-  const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth : undefined
+  const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth + 10 : undefined
 
   return (
     <Popup
@@ -424,21 +424,16 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
   align-items: center;
   padding: var(--spacing-4);
   cursor: pointer;
-  color: ${({ theme, selected }) => (selected ? theme.font.primary : theme.font.secondary)};
+  color: ${({ theme }) => theme.font.primary};
   user-select: none;
   text-align: left;
   background-color: ${({ theme, focused }) =>
     focused ? theme.bg.accent : colord(theme.bg.primary).alpha(0.4).toHex()};
   visibility: ${({ invisible }) => invisible && 'hidden'};
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: ${({ theme, selected }) => selected && 'var(--fontWeight-semiBold)'};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
-
-  &:focus {
-    background-color: ${({ theme, selected }) =>
-      !selected ? theme.bg.accent : colord(theme.global.accent).lighten(0.05).toRgbString()};
   }
 `
 
