@@ -75,7 +75,9 @@ const AddressBadge = ({
 export default styled(AddressBadge)`
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  max-width: 120px;
+  min-width: 80px;
 
   ${({ truncate }) =>
     truncate &&
@@ -88,6 +90,7 @@ export default styled(AddressBadge)`
 
 const Label = styled.span<AddressBadgeProps>`
   margin-right: 2px;
+  white-space: nowrap;
 
   ${({ truncate }) =>
     truncate &&

@@ -144,7 +144,7 @@ const AvailableBalanceRow = styled.div`
 const LockedBalanceRow = styled.div``
 
 const FiatTotalAmount = styled(Amount)`
-  font-size: 38px;
+  font-size: 30px;
   font-weight: var(--fontWeight-bold);
 `
 

@@ -108,7 +108,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
         >
           {t('Unlock')}
         </ButtonStyled>
-        <ButtonStyled onClick={onNewWalletLinkClick} role="secondary" borderless variant="contrast">
+        <ButtonStyled onClick={onNewWalletLinkClick} role="secondary" borderless>
           {t('Import or create a wallet')}
         </ButtonStyled>
       </ButtonsSection>

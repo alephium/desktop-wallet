@@ -353,5 +353,6 @@
   "Delete": "Löschen",
   "Timestamp": "Zeitpunkt",
   "Lock time must be in the future.": "Sperrzeit muss in der Zukunft liegen.",
-  "Shortcuts": "Shortcuts"
+  "Shortcuts": "Shortcuts",
+  "More options": "More options"
 }

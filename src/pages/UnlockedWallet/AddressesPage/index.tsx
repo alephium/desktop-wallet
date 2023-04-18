@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
@@ -102,5 +103,6 @@ const TabBarPanel = styled(TabPanel)`
   position: sticky;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
-  background-color: ${({ theme }) => theme.bg.background1};
+  background-color: ${({ theme }) => colord(theme.bg.background1).alpha(0.7).toHex()};
+  backdrop-filter: blur(20px);
 `

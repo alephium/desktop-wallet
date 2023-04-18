@@ -111,7 +111,7 @@ export default styled(Amount)`
   color: ${({ color }) => color ?? 'inherit'};
   display: inline-flex;
   white-space: pre;
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const Decimals = styled.span`

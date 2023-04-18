@@ -16,14 +16,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
+import { Check } from 'lucide-react'
 import styled from 'styled-components'
 
-const Box = styled(motion.div)`
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-big);
-  width: 100%;
-`
+interface CheckMarkProps {
+  className?: string
+}
 
-export default Box
+const CheckMark = ({ className }: CheckMarkProps) => (
+  <div className={className}>
+    <Check strokeWidth={4} />
+  </div>
+)
+
+export default styled(CheckMark)`
+  height: 16px;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.global.accent};
+  color: var(--color-white);
+  border-radius: 40px;
+  padding: 3px;
+`

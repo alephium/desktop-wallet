@@ -34,25 +34,36 @@ import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSectio
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
 
-interface SettingsModalProps {
-  onClose: () => void
+export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
+
+interface SettingsTabItem extends TabItem {
+  value: settingsTabNames
 }
 
-const tabs: TabItem[] = [
+export const settingsModalTabs: SettingsTabItem[] = [
   { value: 'general', label: i18next.t('General') },
   { value: 'wallets', label: i18next.t('Wallets') },
   { value: 'network', label: i18next.t('Network') },
   { value: 'devtools', label: i18next.t('Developer tools') }
 ]
 
-const SettingsModal = ({ onClose }: SettingsModalProps) => {
+interface SettingsModalProps {
+  onClose: () => void
+  initialTabValue?: typeof settingsModalTabs[number]['value']
+}
+
+const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
 
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const [currentTab, setCurrentTab] = useState<TabItem>(
+    settingsModalTabs.find((t) => t.value === initialTabValue) || settingsModalTabs[0]
+  )
 
-  const enabledTabs = !isAuthenticated ? tabs.filter(({ value }) => value !== 'devtools') : tabs
+  const enabledTabs = !isAuthenticated
+    ? settingsModalTabs.filter(({ value }) => value !== 'devtools')
+    : settingsModalTabs
 
   return (
     <ModalContainer onClose={onClose}>
@@ -123,8 +134,9 @@ const CenteredBox = styled(motion.div)`
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-huge);
   background-color: ${({ theme }) => theme.bg.background1};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const Column = styled.div`
@@ -154,9 +166,7 @@ const CloseButton = styled.button`
 `
 
 const ColumnHeader = styled.div`
-  padding: 20px 22px 14px 22px;
-  padding-top: 20px;
-  padding-bottom: 14px;
+  padding: 20px;
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   display: flex;
   align-items: center;
@@ -173,7 +183,7 @@ const ColumnTitle = styled.div`
 `
 
 const ColumnContent = styled.div`
-  padding: 30px;
+  padding: 20px;
 `
 
 const Version = styled.div`
@@ -186,7 +196,7 @@ const TabTitlesColumnContent = styled(ColumnContent)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 30px 16px 16px;
+  padding: 20px 15px;
   height: 100%;
 `
 

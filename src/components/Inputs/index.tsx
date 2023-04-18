@@ -47,7 +47,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { fontSize: '9px', alignItems: 'flex-start', paddingTop: '7px' },
+  up: { y: '-20%', scale: 0.85 },
   down: { y: 0, scale: 1 }
 }
 
@@ -78,7 +78,7 @@ export const inputDefaultStyle = (
   ${hasValue &&
   hasLabel &&
   css`
-    padding-top: 10px;
+    padding-top: 15px;
   `}
 
   transition: 0.2s ease-out;
@@ -131,7 +131,7 @@ export const InputLabel: FC<HTMLMotionProps<'label'> & { isElevated: boolean }> 
     {...props}
     variants={inputPlaceHolderVariants}
     animate={!isElevated ? 'down' : 'up'}
-    transition={{ duration: 0.15 }}
+    transition={{ type: 'spring', stiffness: 500, damping: 50 }}
   />
 )
 

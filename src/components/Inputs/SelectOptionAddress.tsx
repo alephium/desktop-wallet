@@ -32,8 +32,8 @@ interface SelectOptionAddressProps {
 const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAddressProps) => (
   <SelectOptionItemContent
     className={className}
-    ContentLeft={<AddressBadgeStyled addressHash={address.hash} disableA11y />}
-    ContentRight={
+    MainContent={<AddressBadgeStyled addressHash={address.hash} disableA11y withBorders />}
+    SecondaryContent={
       <AmountStyled
         value={BigInt(address.balance)}
         color={isSelected ? 'var(--color-white)' : undefined}

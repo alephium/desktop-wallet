@@ -20,10 +20,12 @@ import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
+  ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
   OptionHTMLAttributes,
   ReactNode,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -32,6 +34,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import CheckMark from '@/components/CheckMark'
 import { inputDefaultStyle, InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
@@ -73,6 +76,11 @@ interface SelectProps<T extends OptionValue> {
   className?: string
   simpleMode?: boolean
   heightSize?: InputHeight
+  CustomComponent?: ComponentType<{
+    controlledValue?: SelectOption<T>
+    label?: string
+  }>
+  ListBottomComponent?: ReactNode
 }
 
 function Select<T extends OptionValue>({
@@ -88,7 +96,9 @@ function Select<T extends OptionValue>({
   noMargin,
   simpleMode,
   className,
-  heightSize
+  heightSize,
+  CustomComponent,
+  ListBottomComponent
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
 
@@ -97,15 +107,15 @@ function Select<T extends OptionValue>({
   const [showPopup, setShowPopup] = useState(false)
   const [hookCoordinates, setHookCoordinates] = useState<Coordinates | undefined>(undefined)
 
-  let containerCenter: Coordinates
+  const getContainerCenter = (): Coordinates | undefined => {
+    if (selectedValueRef?.current) {
+      const containerElement = selectedValueRef.current
+      const containerElementRect = containerElement.getBoundingClientRect()
 
-  if (selectedValueRef?.current) {
-    const containerElement = selectedValueRef.current
-    const containerElementRect = containerElement.getBoundingClientRect()
-
-    containerCenter = {
-      x: containerElementRect.x + containerElement.clientWidth / 2,
-      y: containerElementRect.y + containerElement.clientHeight / 2
+      return {
+        x: containerElementRect.x + containerElement.clientWidth / 2,
+        y: containerElementRect.y + containerElement.clientHeight / 2
+      }
     }
   }
 
@@ -127,14 +137,14 @@ function Select<T extends OptionValue>({
       return
     }
 
-    setHookCoordinates({ x: e.clientX, y: e.clientY })
+    setHookCoordinates(getContainerCenter())
     setShowPopup(true)
   }
 
   const handleKeyDown = (e: ReactKeyboardEvent) => {
     if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
     if (options.length <= 1) return
-    setHookCoordinates(containerCenter)
+    setHookCoordinates(getContainerCenter())
     setShowPopup(true)
   }
 
@@ -145,7 +155,7 @@ function Select<T extends OptionValue>({
 
   useEffect(() => {
     // Controlled component
-    if (controlledValue && (!isEqual(controlledValue, value) || skipEqualityCheck)) {
+    if ((controlledValue && !isEqual(controlledValue, value)) || skipEqualityCheck) {
       setValue(controlledValue)
     }
   }, [controlledValue, setInputValue, skipEqualityCheck, value])
@@ -177,25 +187,33 @@ function Select<T extends OptionValue>({
         heightSize={heightSize}
         simpleMode={simpleMode}
       >
-        <InputLabel isElevated={!!value} htmlFor={id}>
-          {label}
-        </InputLabel>
-        {options.length > 1 && !simpleMode && (
-          <MoreIcon>
-            <MoreVertical />
-          </MoreIcon>
+        {CustomComponent ? (
+          <CustomComponentContainer ref={selectedValueRef}>
+            <CustomComponent label={label} controlledValue={value} />
+          </CustomComponentContainer>
+        ) : (
+          <>
+            <InputLabel isElevated={!!value} htmlFor={id}>
+              {label}
+            </InputLabel>
+            {options.length > 1 && !simpleMode && (
+              <MoreIcon>
+                <MoreVertical />
+              </MoreIcon>
+            )}
+            <SelectedValue
+              tabIndex={-1}
+              className={className}
+              ref={selectedValueRef}
+              id={id}
+              simpleMode={simpleMode}
+              label={label}
+              heightSize={heightSize}
+            >
+              <Truncate>{value?.label}</Truncate>
+            </SelectedValue>
+          </>
         )}
-        <SelectedValue
-          tabIndex={-1}
-          className={className}
-          ref={selectedValueRef}
-          id={id}
-          simpleMode={simpleMode}
-          label={label}
-          heightSize={heightSize}
-        >
-          <Truncate>{value?.label}</Truncate>
-        </SelectedValue>
       </SelectContainer>
       <ModalPortal>
         {showPopup && (
@@ -206,6 +224,8 @@ function Select<T extends OptionValue>({
             title={title}
             hookCoordinates={hookCoordinates}
             onClose={handlePopupClose}
+            parentSelectRef={selectedValueRef}
+            ListBottomComponent={ListBottomComponent}
           />
         )}
       </ModalPortal>
@@ -225,6 +245,8 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   searchPlaceholder?: string
   showOnly?: T[]
   emptyListPlaceholder?: string
+  parentSelectRef?: RefObject<HTMLDivElement>
+  ListBottomComponent?: ReactNode
 }
 
 export function SelectOptionsModal<T extends OptionValue>({
@@ -238,10 +260,12 @@ export function SelectOptionsModal<T extends OptionValue>({
   onSearchInput,
   searchPlaceholder,
   showOnly,
-  emptyListPlaceholder
+  emptyListPlaceholder,
+  parentSelectRef,
+  ListBottomComponent
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
-  const selectRef = useRef<HTMLDivElement>(null)
+  const optionSelectRef = useRef<HTMLDivElement>(null)
   const [focusedOptionIndex, setFocusedOptionIndex] = useState(0)
 
   // We hide instead of simply not rendering filtered options to avoid changing the height/width of the modal when
@@ -277,7 +301,7 @@ export function SelectOptionsModal<T extends OptionValue>({
   const selectFirstOption = () => setFocusedOptionIndex(0)
 
   useEffect(() => {
-    const selectOptions = selectRef?.current
+    const selectOptions = optionSelectRef?.current
     const listener = (e: KeyboardEvent) => {
       if (['ArrowDown', 'Tab'].includes(e.code)) {
         setFocusedOptionIndex((i) => (i < visibleOptions.length - 1 ? i + 1 : i))
@@ -297,11 +321,15 @@ export function SelectOptionsModal<T extends OptionValue>({
     }
   }, [focusedOptionIndex, handleOptionSelect, onClose, visibleOptions])
 
+  const parentSelectWidth = parentSelectRef?.current?.clientWidth
+  const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth + 10 : undefined
+
   return (
     <Popup
       title={title}
       onClose={onClose}
       hookCoordinates={hookCoordinates}
+      minWidth={minWidth}
       extraHeaderContent={
         onSearchInput &&
         !isEmpty && (
@@ -315,7 +343,7 @@ export function SelectOptionsModal<T extends OptionValue>({
         )
       }
     >
-      <OptionSelect title={title} aria-label={title} ref={selectRef}>
+      <OptionSelect title={title} aria-label={title} ref={optionSelectRef}>
         {isEmpty ? (
           <OptionItem selected={false} focused={false}>
             {emptyListPlaceholder}
@@ -339,9 +367,11 @@ export function SelectOptionsModal<T extends OptionValue>({
               aria-label={o.label}
             >
               {optionRender ? optionRender(o, isSelected) : o.label}
+              {isSelected && <CheckMark />}
             </OptionItem>
           )
         })}
+        {ListBottomComponent && <div onClick={onClose}>{ListBottomComponent}</div>}
         {invisibleOptions.map((o) => (
           <OptionItem key={o.value} selected={false} focused={false} invisible>
             {optionRender ? optionRender(o) : o.label}
@@ -386,14 +416,18 @@ export const OptionSelect = styled.div`
 `
 
 export const OptionItem = styled.button<{ selected: boolean; focused: boolean; invisible?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: var(--spacing-4);
   cursor: pointer;
-  color: ${({ selected }) => (selected ? 'var(--color-white)' : 'inherit')};
+  color: ${({ theme }) => theme.font.primary};
   user-select: none;
   text-align: left;
-  background-color: ${({ theme, selected, focused }) =>
-    selected ? theme.global.accent : focused ? theme.bg.accent : theme.bg.primary};
+  background-color: ${({ theme, focused }) =>
+    focused ? theme.bg.accent : colord(theme.bg.primary).alpha(0.4).toHex()};
   visibility: ${({ invisible }) => invisible && 'hidden'};
+  font-weight: ${({ theme, selected }) => selected && 'var(--fontWeight-semiBold)'};
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.primary};
@@ -401,7 +435,7 @@ export const OptionItem = styled.button<{ selected: boolean; focused: boolean; i
 
   &:focus {
     background-color: ${({ theme, selected }) =>
-      !selected ? theme.bg.accent : colord(theme.global.accent).lighten(0.05).toRgbString()};
+      !selected ? theme.bg.accent : colord(theme.global.accent).alpha(0.1).toRgbString()};
   }
 `
 
@@ -433,4 +467,12 @@ const Searchbar = styled(Input)`
   svg {
     color: ${({ theme }) => theme.font.tertiary};
   }
+`
+
+const CustomComponentContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

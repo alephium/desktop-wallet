@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
+import CheckMark from '@/components/CheckMark'
 import { inputDefaultStyle, InputLabel } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { OptionItem } from '@/components/Inputs/Select'
@@ -109,6 +110,7 @@ export function MultiSelectOptionsModal<T>({
     <Popup
       title={modalTitle}
       onClose={onClose}
+      minWidth={500}
       extraHeaderContent={
         <AllButton role="secondary" short onClick={handleAllButtonsClick}>
           {allOptionsAreSelected ? t('Unselect all') : t('Select all')}
@@ -116,20 +118,24 @@ export function MultiSelectOptionsModal<T>({
       }
     >
       <Options>
-        {options.map((option, index) => (
-          <OptionItem
-            key={getOptionId(option)}
-            tabIndex={0}
-            role="listitem"
-            onClick={() => handleOptionClick(option)}
-            selected={selectedOptions.some((o) => getOptionId(o) === getOptionId(option))}
-            onMouseEnter={() => setFocusedOptionIndex(index)}
-            focused={index === focusedOptionIndex}
-            aria-label={getOptionText(option)}
-          >
-            {renderOption ? renderOption(option) : getOptionText(option)}
-          </OptionItem>
-        ))}
+        {options.map((option, index) => {
+          const isSelected = selectedOptions.some((o) => getOptionId(o) === getOptionId(option))
+          return (
+            <OptionItem
+              key={getOptionId(option)}
+              tabIndex={0}
+              role="listitem"
+              onClick={() => handleOptionClick(option)}
+              selected={isSelected}
+              onMouseEnter={() => setFocusedOptionIndex(index)}
+              focused={index === focusedOptionIndex}
+              aria-label={getOptionText(option)}
+            >
+              {renderOption ? renderOption(option) : getOptionText(option)}
+              {isSelected && <CheckMark />}
+            </OptionItem>
+          )
+        })}
       </Options>
     </Popup>
   )

@@ -81,7 +81,7 @@ const SnackbarPopup = styled(motion.div)`
   color: ${({ theme }) => theme.font.primary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-3);
+  box-shadow: ${({ theme }) => theme.shadow.secondary};
 
   &.alert {
     background-color: ${({ theme }) => theme.global.alert};

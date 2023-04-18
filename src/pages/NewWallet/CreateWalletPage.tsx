@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AlertTriangle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -120,8 +120,8 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
             disabled={!password || passwordError.length > 0}
           />
           <InfoBox
-            Icon={AlertTriangle}
-            importance="alert"
+            Icon={AlertCircle}
+            importance="warning"
             text={t`Make sure to keep your password secured as it cannot be changed in the future.`}
           />
           <WarningNote>{t`Alephium doesn't have access to your wallet.\nYou are the only owner.`}</WarningNote>

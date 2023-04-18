@@ -15,6 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
+import { colord } from 'colord'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -147,7 +148,6 @@ const FiltersPanel = ({
 }
 
 export default styled(FiltersPanel)`
-  background-color: ${({ theme }) => theme.bg.tertiary};
   border-top: 1px solid;
   border-bottom: 1px solid;
   border-color: ${({ theme }) => theme.border.secondary};
@@ -157,6 +157,9 @@ export default styled(FiltersPanel)`
   justify-content: space-between;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
+  background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.7).toHex()};
+  backdrop-filter: blur(20px);
+  margin-bottom: 25px;
 `
 
 const FilterTiles = styled.div`

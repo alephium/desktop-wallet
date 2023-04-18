@@ -16,12 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css, DefaultTheme, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
-type InfoBoxImportance = 'accent' | 'alert'
+type InfoBoxImportance = 'accent' | 'alert' | 'warning'
 
 export interface InfoBoxProps {
   text?: string
@@ -66,12 +67,7 @@ const InfoBox: FC<InfoBoxProps> = ({
       >
         {Icon && (
           <IconContainer>
-            <Icon
-              color={
-                importance ? (importance === 'alert' ? theme.global.alert : theme.global.accent) : theme.font.primary
-              }
-              strokeWidth={1.5}
-            />
+            <Icon color={getImportanceColor(theme, importance)} strokeWidth={1.5} />
           </IconContainer>
         )}
         <TextContainer wordBreak={wordBreak} ellipsis={ellipsis}>
@@ -82,6 +78,15 @@ const InfoBox: FC<InfoBoxProps> = ({
   )
 }
 
+const getImportanceColor = (theme: DefaultTheme, importance?: InfoBoxImportance) =>
+  importance
+    ? {
+        alert: theme.global.alert,
+        warning: theme.global.highlight,
+        accent: theme.global.accent
+      }[importance]
+    : theme.global.accent
+
 export default styled(InfoBox)`
   width: 100%;
   margin: 0 auto var(--spacing-4) auto;
@@ -91,19 +96,12 @@ export default styled(InfoBox)`
 `
 
 const IconContainer = styled.div`
-  flex: 1;
   display: flex;
-  max-width: 100px;
-
-  svg {
-    height: 35%;
-    width: 35%;
-    margin: auto;
-  }
+  align-items: center;
+  justify-content: center;
 `
 
 const TextContainer = styled.div<{ wordBreak?: boolean; ellipsis?: boolean }>`
-  padding: 0 var(--spacing-4);
   flex: 2;
   font-weight: var(--fontWeight-medium);
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-all' : 'initial')};
@@ -126,19 +124,24 @@ const StyledBox = styled(motion.div)<{
   contrast?: boolean
   noBorders?: boolean
 }>`
-  padding: var(--spacing-3) 0;
+  padding: var(--spacing-3);
   height: ${({ short }) => (short ? 'var(--inputHeight)' : 'auto')};
-  background-color: ${({ theme, contrast }) => (contrast ? theme.bg.secondary : theme.bg.primary)};
+  background-color: ${({ theme, contrast, importance }) =>
+    contrast
+      ? theme.bg.secondary
+      : importance
+      ? colord(getImportanceColor(theme, importance)).alpha(0.05).toHex()
+      : theme.bg.primary};
 
   display: flex;
-  border-radius: var(--radius-small);
-  box-shadow: ${({ theme }) => theme.shadow.primary};
+  border-radius: var(--radius-big);
   align-items: center;
+  gap: 15px;
 
   ${({ theme, importance, noBorders }) =>
     !noBorders &&
     css`
-      border: 1px solid ${importance === 'alert' ? theme.global.alert : theme.border.primary};
+      border: 1px solid ${colord(getImportanceColor(theme, importance)).alpha(0.2).toHex()};
     `}
 `
 

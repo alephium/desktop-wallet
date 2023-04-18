@@ -27,8 +27,7 @@ import styled, { useTheme } from 'styled-components'
 import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
 import CompactToggle from '@/components/Inputs/CompactToggle'
-import NetworkBadge from '@/components/NetworkBadge'
-import ThemeSwitcher from '@/components/ThemeSwitcher'
+import NetworkSwitch from '@/components/NetworkSwitch'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -73,7 +72,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     backgroundColor: useTransform(
       scrollY,
       [0, 100],
-      [colord(theme.bg.primary).alpha(0).toRgbString(), theme.bg.background1]
+      [colord(theme.bg.background1).alpha(0).toHex(), colord(theme.bg.background2).alpha(0.7).toHex()]
     )
   }
 
@@ -87,8 +86,6 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
       <motion.header id="app-header" style={headerStyles} className={className}>
         <Title style={titleStyles}>{title}</Title>
         <HeaderButtons>
-          <ThemeSwitcher />
-          <HeaderDivider />
           {networkStatus === 'offline' && (
             <>
               <TooltipWrapper content={offlineText}>
@@ -109,18 +106,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             </>
           )}
           <TooltipWrapper content={t('Discreet mode')}>
-            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} />
+            <CompactToggle toggled={discreetMode} onToggle={toggleDiscreetMode} IconOn={EyeOff} IconOff={Eye} short />
           </TooltipWrapper>
-          {defaultAddress && !isPassphraseUsed && (
-            <>
-              <HeaderDivider />
-              <TooltipWrapper content={t('Default address')}>
-                <AddressBadgeStyled addressHash={defaultAddress.hash} />
-              </TooltipWrapper>
-            </>
-          )}
-          <HeaderDivider />
-          <NetworkBadge />
           {isAuthenticated && (
             <>
               <HeaderDivider />
@@ -131,13 +118,24 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                   role="secondary"
                   onClick={() => setIsWalletConnectModalOpen(true)}
                   aria-label="WalletConnect"
-                  hasNotification={wcSessionState === 'initialized'}
+                  isHighlighted={wcSessionState === 'initialized'}
+                  short
                 >
                   <WalletConnectLogo />
                 </Button>
               </TooltipWrapper>
             </>
           )}
+          {defaultAddress && !isPassphraseUsed && (
+            <>
+              <HeaderDivider />
+              <TooltipWrapper content={t('Default address')}>
+                <AddressBadgeStyled addressHash={defaultAddress.hash} withBorders />
+              </TooltipWrapper>
+            </>
+          )}
+          <HeaderDivider />
+          <NetworkSwitch />
         </HeaderButtons>
       </motion.header>
       <ModalPortal>
@@ -162,6 +160,8 @@ export default styled(AppHeader)`
   height: ${appHeaderHeightPx}px;
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
+
+  backdrop-filter: blur(20px);
 `
 
 const HeaderDivider = styled.div`

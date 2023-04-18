@@ -74,7 +74,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
 
   return (
     <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
-      <Header contrast>
+      <Header>
         <AmountWrapper tabIndex={0} color={amountTextColor}>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id} color={amountTextColor}>

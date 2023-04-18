@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
@@ -31,12 +32,13 @@ interface PopupProps {
   title?: string
   extraHeaderContent?: ReactNode
   hookCoordinates?: Coordinates
+  minWidth?: number
 }
 
 const minMarginToEdge = 20
 const headerHeight = 50
 
-const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }: PopupProps) => {
+const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, minWidth = 200 }: PopupProps) => {
   const { height: windowHeight, width: windowWidth } = useWindowSize() // Recompute position on window resize
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -48,21 +50,21 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }
       const contentElement = contentRef.current
       const contentRect = contentElement?.getBoundingClientRect()
 
-      const offsetX =
+      const baseOffsetX =
         contentRect?.left && contentRect.left < minMarginToEdge
           ? -contentRect.left + 2 * minMarginToEdge
           : contentRect?.right && windowWidth - contentRect.right < minMarginToEdge
           ? windowWidth - contentRect.right - 2 * minMarginToEdge
           : 0
 
-      const offsetY =
+      const baseOffsetY =
         contentRect?.top && contentRect.top < minMarginToEdge
           ? -contentRect.top + 2 * minMarginToEdge
           : contentRect?.bottom && windowHeight - contentRect.bottom < minMarginToEdge
           ? windowHeight - contentRect.bottom - 2 * minMarginToEdge
           : 0
 
-      setHookOffset({ x: offsetX, y: offsetY })
+      setHookOffset({ x: baseOffsetX, y: baseOffsetY - 5 })
     }
   }, [windowHeight, windowWidth])
 
@@ -73,14 +75,16 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent }
       style={hookOffset && { x: hookOffset.x, y: hookOffset.y - 15 }}
       animate={hookOffset && { ...fadeInOutScaleFast.animate, ...hookOffset }}
       exit={fadeInOutScaleFast.exit}
+      minWidth={minWidth}
       {...fastTransition}
     >
       {title && (
-        <Header hasExtraHeaderContent={!!extraHeaderContent}>
+        <Header>
           <h2>{title}</h2>
           {extraHeaderContent}
         </Header>
       )}
+
       {children}
     </Content>
   )
@@ -109,30 +113,30 @@ const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
   left: ${({ hookCoordinates, contentWidth }) => hookCoordinates.x - contentWidth / 2}px;
 `
 
-const Content = styled(motion.div)`
+const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   opacity: 0; // for initial mount computation
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
-  min-width: 300px;
+  min-width: ${({ minWidth }) => minWidth}px;
   max-height: 510px;
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => theme.bg.background1};
+  background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.6).toHex()};
+  backdrop-filter: blur(30px) brightness(110%);
 `
 
-const Header = styled.div<{ hasExtraHeaderContent?: boolean }>`
-  position: sticky;
-  top: 0;
-  padding: var(--spacing-1) var(--spacing-4)
-    ${({ hasExtraHeaderContent }) => hasExtraHeaderContent && 'var(--spacing-4)'};
+const Header = styled.div`
+  padding: var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.background1};
+
   display: flex;
-  flex-direction: column;
+  align-items: center;
   z-index: 1;
 `

@@ -353,5 +353,6 @@
   "Change wallet name": "Change wallet name",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
-  "Shortcuts": "Shortcuts"
+  "Shortcuts": "Shortcuts",
+  "More options": "Plus d'options"
 }

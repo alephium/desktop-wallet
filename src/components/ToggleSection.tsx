@@ -76,8 +76,9 @@ const ToggleSection = ({
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => theme.bg.background1};
   border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.secondary};
   padding-bottom: 16px;
 `
 
@@ -85,7 +86,8 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 21px 0 21px;
+  padding: 15px;
+  padding-bottom: 0px;
 `
 
 const TitleColumn = styled.div`

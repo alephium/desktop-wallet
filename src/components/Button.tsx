@@ -19,9 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
-import DotIcon from '@/components/DotIcon'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 export interface ButtonProps extends HTMLMotionProps<'button'> {
@@ -36,14 +35,13 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   Icon?: LucideIconType
   iconColor?: string
   borderless?: boolean
-  hasNotification?: boolean
+  isHighlighted?: boolean
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, iconColor, hasNotification, ...props }: ButtonProps) => {
+const Button = ({ children, disabled, submit, Icon, className, iconColor, isHighlighted, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const theme = useTheme()
 
   useEffect(() => {
     if (!submit) return
@@ -79,7 +77,6 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, hasNot
         </ButtonIcon>
       )}
       {children}
-      {hasNotification && <NotificationDot color={theme.global.accent} size={11} />}
     </motion.button>
   )
 }
@@ -100,15 +97,15 @@ export default styled(Button)`
             default: theme.bg.primary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
-            alert: theme.global.alert,
+            alert: colord(theme.global.alert).alpha(0.1).toRgbString(),
             faded: colord(theme.bg.primary).alpha(0.07).toRgbString()
           }[variant]
         }[role]
 
     const hoverBgColor = transparent
       ? colord(theme.bg.primary).isDark()
-        ? colord(theme.bg.primary).lighten(0.08).toRgbString()
-        : colord(theme.global.accent).lighten(0.9).alpha(0.4).toRgbString()
+        ? colord(theme.bg.primary).lighten(0.05).toRgbString()
+        : colord(theme.bg.primary).darken(0.04).toRgbString()
       : {
           primary: {
             default: colord(theme.global.accent).darken(0.08).toRgbString(),
@@ -121,7 +118,7 @@ export default styled(Button)`
             default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
             valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
+            alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
             faded: colord(theme.bg.primary).lighten(0.08).toRgbString()
           }[variant]
         }[role]
@@ -142,7 +139,7 @@ export default styled(Button)`
             default: colord(theme.bg.primary).darken(0.08).toRgbString(),
             contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
             valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
-            alert: colord(theme.global.alert).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.3).toRgbString(),
             faded: colord(theme.bg.primary).darken(0.08).toRgbString()
           }[variant]
         }[role]
@@ -161,7 +158,7 @@ export default styled(Button)`
             default: theme.font.primary,
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.contrastPrimary,
+            alert: theme.global.alert,
             faded: theme.font.primary
           }[variant]
         }[role]
@@ -187,13 +184,6 @@ export default styled(Button)`
         }[role]
       : theme.border.primary
 
-    const boxShadow = transparent
-      ? undefined
-      : {
-          primary: undefined,
-          secondary: theme.shadow.primary
-        }[role]
-
     const hoverColor = transparent
       ? theme.font.primary
       : {
@@ -216,7 +206,6 @@ export default styled(Button)`
     return css`
       background-color: ${bgColor};
       color: ${fontColor};
-      box-shadow: ${boxShadow};
       border: 1px solid ${borderColor};
       position: relative;
 
@@ -245,7 +234,7 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (squared || short ? '40px' : 'var(--inputHeight)')};
+  height: ${({ squared, short }) => (short ? '40px' : squared ? '40px' : 'var(--inputHeight)')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
@@ -269,14 +258,30 @@ export default styled(Button)`
   &:focus-visible {
     box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
   }
+
+  // Highlight animation
+
+  ${({ isHighlighted }) =>
+    isHighlighted &&
+    css`
+      animation-name: breathing;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      animation-timing-function: ease-in-out;
+      border: 1px solid ${({ theme }) => theme.bg.accent};
+    `}
+
+  @keyframes breathing {
+    from {
+      background-color: ${({ theme }) => theme.bg.accent};
+    }
+    to {
+      background-color: initial;
+    }
+  }
 `
 
 const ButtonIcon = styled.div`
   display: flex;
-`
-
-const NotificationDot = styled(DotIcon)`
-  position: absolute;
-  top: -3px;
-  right: -3px;
 `

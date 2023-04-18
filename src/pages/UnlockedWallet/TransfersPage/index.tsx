@@ -115,15 +115,18 @@ const BottomRow = styled(motion.div)`
 const CornerButtons = styled.div`
   position: absolute;
   bottom: 0;
-  border-radius: 47px;
+  border-radius: var(--radius-huge);
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  box-shadow: ${({ theme }) => theme.shadow.primary};
+  box-shadow: ${({ theme }) => theme.shadow.secondary};
   background-color: ${({ theme }) => theme.bg.background2};
+  width: 20vw;
+  max-width: 320px;
+  min-width: 230px;
 `
 
 const ButtonsGrid = styled.div`
-  background-color: ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.border.primary};
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;

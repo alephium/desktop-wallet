@@ -397,5 +397,7 @@
   "Unlock your wallet to connect to dApp: {{ dAppName }}": "Unlock your wallet to connect to dApp: {{ dAppName }}",
   "Unlock a wallet to connect to dApp: {{ dAppName }}": "Unlock a wallet to connect to dApp: {{ dAppName }}",
   "Disconnect": "Disconnect",
-  "Current dApp connection details": "Current dApp connection details"
+  "Current dApp connection details": "Current dApp connection details",
+  "More options": "More options",
+  "Set custom network URLs": "Set custom network URLs"
 }

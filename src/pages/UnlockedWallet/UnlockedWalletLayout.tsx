@@ -97,6 +97,7 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, 
                   onClick={refreshAddressesData}
                   disabled={isLoadingData}
                   aria-label={t('Refresh')}
+                  short
                 >
                   {isLoadingData ? <Spinner /> : <RefreshCw />}
                 </RefreshButton>

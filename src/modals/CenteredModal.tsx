@@ -37,6 +37,7 @@ export interface CenteredModalProps extends ModalContainerProps {
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode
+  transparentHeader?: boolean
   narrow?: boolean
   dynamicContent?: boolean
   onBack?: () => void
@@ -49,6 +50,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   focusMode,
   isLoading,
   header,
+  transparentHeader = false,
   narrow = false,
   dynamicContent = false,
   onBack,
@@ -60,7 +62,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
-        <ModalHeader contrast={!!header}>
+        <ModalHeader transparent={transparentHeader}>
           <TitleRow>
             {onBack && (
               <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
@@ -95,13 +97,13 @@ const CenteredModal: FC<CenteredModalProps> = ({
   )
 }
 
+export default CenteredModal
+
 export const ScrollableModalContent: FC = ({ children }) => (
   <Scrollbar translateContentSizeYToHolder>
     <ModalContent>{children}</ModalContent>
   </Scrollbar>
 )
-
-export default CenteredModal
 
 export const HeaderContent = styled(Section)`
   flex: 0;
@@ -121,12 +123,12 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   flex-direction: column;
 
   position: relative;
-  overflow: hidden;
 
   width: 100%;
   margin: auto;
   max-width: ${({ narrow }) => (narrow ? '380px' : '600px')};
   max-height: 90vh;
+  overflow: hidden;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border-radius: var(--radius-huge);
@@ -139,16 +141,19 @@ const CenteredBox = styled(motion.div)<{ narrow: boolean }>`
   }
 `
 
-export const ModalHeader = styled.header<{ contrast?: boolean }>`
-  ${({ contrast }) =>
-    contrast &&
+export const ModalHeader = styled.header<{ transparent?: boolean }>`
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  ${({ transparent }) =>
+    !transparent &&
     css`
       background-color: ${({ theme }) => theme.bg.background2};
       border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
     `}
 `
 
-const ModalHeaderContent = styled.div`
+const ModalHeaderContent = styled(motion.div)`
   display: flex;
   justify-content: center;
   margin-bottom: 30px;
@@ -169,7 +174,9 @@ const BackButton = styled(Button)`
   margin-left: var(--spacing-2);
 `
 
-const ModalContent = styled.div`
+export const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
   padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
   width: 100%;
 `

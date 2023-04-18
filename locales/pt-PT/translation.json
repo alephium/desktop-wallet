@@ -274,5 +274,6 @@
   "Localhost": "Localhost",
   "Delete": "Eliminar",
   "Timestamp": "Carimbo da hora",
-  "Lock time must be in the future.": "O tempo de bloqueio deve ser no futuro."
+  "Lock time must be in the future.": "O tempo de bloqueio deve ser no futuro.",
+  "More options": "More options"
 }

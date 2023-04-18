@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import Button from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 
-interface CompactToggleProps {
+interface CompactToggleProps extends ButtonProps {
   toggled: boolean
   onToggle: (value: boolean) => void
   IconOn: LucideIconType

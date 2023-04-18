@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Used as reference: https://github.com/xobotyi/react-scrollbars-custom/issues/46#issuecomment-897506147
 
+import { colord } from 'colord'
 import { useMotionValue } from 'framer-motion'
 import { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
@@ -90,7 +91,8 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
   const transparencyStyle = {
     backgroundColor: 'transparent',
     opacity: isShow ? 1 : 0,
-    transition: 'opacity 0.4s ease-in-out'
+    transition: 'opacity 0.2s ease-out',
+    zIndex: 1
   }
 
   const trackXProps = createScrollbarPiece({ height, paddingTop }, transparencyStyle, true)
@@ -106,7 +108,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
     )
   }
 
-  const thumbProps = createScrollbarPiece({ backgroundColor: theme.font.tertiary })
+  const thumbProps = createScrollbarPiece({ backgroundColor: colord(theme.font.primary).alpha(0.15).toHex() })
 
   const rendererProps = createScrollbarPiece(
     {},

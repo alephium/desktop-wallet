@@ -20,31 +20,37 @@ import { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface OptionItemContentProps {
-  ContentLeft: ReactNode
-  ContentRight?: ReactNode
+  MainContent: ReactNode
+  SecondaryContent?: ReactNode
   className?: string
 }
 
-const OptionItemContent = ({ ContentLeft, ContentRight, className }: OptionItemContentProps) => (
+const OptionItemContent = ({
+  MainContent: ContentLeft,
+  SecondaryContent: ContentRight,
+  className
+}: OptionItemContentProps) => (
   <div className={className}>
-    <OptionItemContentLeft>{ContentLeft}</OptionItemContentLeft>
-    <OptionItemContentRight>{ContentRight}</OptionItemContentRight>
+    <OptionMainContent>{ContentLeft}</OptionMainContent>
+    <OptionSecondaryContent>{ContentRight}</OptionSecondaryContent>
   </div>
 )
 
 export default styled(OptionItemContent)`
   display: flex;
-  justify-content: space-between;
-  gap: 100px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 `
 
-const OptionItemContentLeft = styled.div`
+const OptionMainContent = styled.div`
   font-weight: var(--fontWeight-semiBold);
   max-width: 200px;
 `
 
-const OptionItemContentRight = styled.div`
-  margin-left: auto;
-  color: ${({ theme }) => theme.font.secondary};
+const OptionSecondaryContent = styled.div`
   max-width: 200px;
+  * {
+    color: ${({ theme }) => theme.font.secondary} !important;
+  }
 `

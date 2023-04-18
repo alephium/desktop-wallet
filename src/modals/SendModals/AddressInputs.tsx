@@ -156,8 +156,8 @@ const AddressInputs = ({
             searchPlaceholder={t('Search for name or a hash...')}
             optionRender={(contact) => (
               <SelectOptionItemContent
-                ContentLeft={<Name>{contact.label}</Name>}
-                ContentRight={<HashEllipsedStyled hash={contact.value} />}
+                MainContent={<Name>{contact.label}</Name>}
+                SecondaryContent={<HashEllipsedStyled hash={contact.value} />}
               />
             )}
           />
