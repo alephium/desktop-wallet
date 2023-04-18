@@ -110,13 +110,15 @@ const HideEmptyAddressesToggle = styled.div`
   align-items: center;
   gap: 20px;
   min-width: 250px;
+  height: var(--inputHeight);
   background-color: ${({ theme }) => theme.bg.primary};
-  padding: 10px 18px 10px 22px;
-  border-radius: var(--radius-medium);
+  padding: 12px 18px 12px 22px;
+  border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 const ToggleText = styled.div`
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-medium);
   color: ${({ theme }) => theme.font.secondary};
 `
 
