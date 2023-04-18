@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
-import { Check, MoreVertical, SearchIcon } from 'lucide-react'
+import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
   ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
@@ -34,6 +34,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
+import CheckMark from '@/components/CheckMark'
 import { inputDefaultStyle, InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
@@ -366,11 +367,7 @@ export function SelectOptionsModal<T extends OptionValue>({
               aria-label={o.label}
             >
               {optionRender ? optionRender(o, isSelected) : o.label}
-              {isSelected && (
-                <CheckMark>
-                  <Check strokeWidth={4} />
-                </CheckMark>
-              )}
+              {isSelected && <CheckMark />}
             </OptionItem>
           )
         })}
@@ -457,18 +454,6 @@ const SelectedValue = styled.div<InputProps>`
         background-color: transparent;
       }
     `}
-`
-
-const CheckMark = styled.div`
-  height: 16px;
-  width: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.global.accent};
-  color: var(--color-white);
-  border-radius: 40px;
-  padding: 3px;
 `
 
 const Searchbar = styled(Input)`
