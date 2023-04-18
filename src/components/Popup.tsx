@@ -22,7 +22,6 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { fadeInOutScaleFast, fastTransition } from '@/animations'
-import Scrollbar from '@/components/Scrollbar'
 import ModalContainer from '@/modals/ModalContainer'
 import { Coordinates } from '@/types/numbers'
 import { useWindowSize } from '@/utils/hooks'
@@ -85,9 +84,8 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
           {extraHeaderContent}
         </Header>
       )}
-      <Scrollbar translateContentSizeYToHolder isDynamic noScrollX>
-        {children}
-      </Scrollbar>
+
+      {children}
     </Content>
   )
 
@@ -118,7 +116,8 @@ const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
 const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   opacity: 0; // for initial mount computation
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 

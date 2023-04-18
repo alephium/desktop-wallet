@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Check } from 'lucide-react'
 import { ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
+import CheckMark from '@/components/CheckMark'
 import { inputDefaultStyle, InputLabel } from '@/components/Inputs'
 import InputArea from '@/components/Inputs/InputArea'
 import { OptionItem } from '@/components/Inputs/Select'
@@ -132,11 +132,7 @@ export function MultiSelectOptionsModal<T>({
               aria-label={getOptionText(option)}
             >
               {renderOption ? renderOption(option) : getOptionText(option)}
-              {isSelected && (
-                <CheckMark>
-                  <Check strokeWidth={4} />
-                </CheckMark>
-              )}
+              {isSelected && <CheckMark />}
             </OptionItem>
           )
         })}
@@ -171,16 +167,4 @@ const Options = styled.div`
 const AllButton = styled(Button)`
   margin: 0;
   margin-left: auto;
-`
-
-const CheckMark = styled.div`
-  height: 16px;
-  width: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.global.accent};
-  color: var(--color-white);
-  border-radius: 40px;
-  padding: 3px;
 `

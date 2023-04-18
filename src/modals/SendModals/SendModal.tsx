@@ -31,7 +31,7 @@ import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import CenteredModal, { ModalContent } from '@/modals/CenteredModal'
+import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
@@ -215,25 +215,25 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     >
       <StepsProgress currentStep={step} />
       {step === 'build-tx' && (
-        <ModalContent>
+        <ScrollableModalContent>
           <BuildTxModalContent
             data={transactionData ?? initialTxData}
             onSubmit={buildTransactionExtended}
             onCancel={onCloseExtended}
           />
-        </ModalContent>
+        </ScrollableModalContent>
       )}
       {step === 'info-check' && !!transactionData && !!fees && (
-        <ModalContent>
+        <ScrollableModalContent>
           <CheckTxModalContent
             data={transactionData}
             fees={fees}
             onSubmit={settings.passwordRequirement ? confirmPassword : handleSendExtended}
           />
-        </ModalContent>
+        </ScrollableModalContent>
       )}
       {step === 'password-check' && settings.passwordRequirement && (
-        <ModalContent>
+        <ScrollableModalContent>
           <PasswordConfirmation
             text={t('Enter your password to send the transaction.')}
             buttonText={t('Send')}
@@ -244,24 +244,24 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
               {t('You can disable this confirmation step from the wallet settings.')}
             </PasswordConfirmationNote>
           </PasswordConfirmation>
-        </ModalContent>
+        </ScrollableModalContent>
       )}
       {step === 'tx-sent' && (
-        <ModalContent>
+        <ScrollableModalContent>
           <ConfirmationAnimation {...fadeIn}>
             <CheckIcon size={130} />
           </ConfirmationAnimation>
-        </ModalContent>
+        </ScrollableModalContent>
       )}
       <ModalPortal>
         {isConsolidateUTXOsModalVisible && (
-          <ModalContent>
+          <ScrollableModalContent>
             <ConsolidateUTXOsModal
               onClose={() => setIsConsolidateUTXOsModalVisible(false)}
               onConsolidateClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
               fee={fees}
             />
-          </ModalContent>
+          </ScrollableModalContent>
         )}
       </ModalPortal>
     </CenteredModal>

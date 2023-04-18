@@ -16,41 +16,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ReactNode } from 'react'
+import { Check } from 'lucide-react'
 import styled from 'styled-components'
 
-interface OptionItemContentProps {
-  MainContent: ReactNode
-  SecondaryContent?: ReactNode
+interface CheckMarkProps {
   className?: string
 }
 
-const OptionItemContent = ({
-  MainContent: ContentLeft,
-  SecondaryContent: ContentRight,
-  className
-}: OptionItemContentProps) => (
+const CheckMark = ({ className }: CheckMarkProps) => (
   <div className={className}>
-    <OptionMainContent>{ContentLeft}</OptionMainContent>
-    <OptionSecondaryContent>{ContentRight}</OptionSecondaryContent>
+    <Check strokeWidth={4} />
   </div>
 )
 
-export default styled(OptionItemContent)`
+export default styled(CheckMark)`
+  height: 16px;
+  width: 16px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-`
-
-const OptionMainContent = styled.div`
-  font-weight: var(--fontWeight-semiBold);
-  max-width: 200px;
-`
-
-const OptionSecondaryContent = styled.div`
-  max-width: 200px;
-  * {
-    color: ${({ theme }) => theme.font.secondary} !important;
-  }
+  justify-content: center;
+  background-color: ${({ theme }) => theme.global.accent};
+  color: var(--color-white);
+  border-radius: 40px;
+  padding: 3px;
 `
