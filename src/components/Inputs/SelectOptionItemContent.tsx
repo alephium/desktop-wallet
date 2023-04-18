@@ -31,8 +31,8 @@ const OptionItemContent = ({
   className
 }: OptionItemContentProps) => (
   <div className={className}>
-    <MainOptionContent>{ContentLeft}</MainOptionContent>
-    <SecondaryOptionContent>{ContentRight}</SecondaryOptionContent>
+    <OptionMainContent>{ContentLeft}</OptionMainContent>
+    <OptionSecondaryContent>{ContentRight}</OptionSecondaryContent>
   </div>
 )
 
@@ -43,12 +43,12 @@ export default styled(OptionItemContent)`
   gap: 10px;
 `
 
-const MainOptionContent = styled.div`
+const OptionMainContent = styled.div`
   font-weight: var(--fontWeight-semiBold);
   max-width: 200px;
 `
 
-const SecondaryOptionContent = styled.div`
+const OptionSecondaryContent = styled.div`
   max-width: 200px;
   * {
     color: ${({ theme }) => theme.font.secondary} !important;
