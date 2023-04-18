@@ -107,6 +107,8 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
   )
 }
 
+export default NetworkSwitch
+
 const SelectCustomComponent = () => {
   const { t } = useTranslation()
   const theme = useTheme()
@@ -144,5 +146,3 @@ const MoreOptionsItem = styled.div`
     color: ${({ theme }) => theme.font.primary};
   }
 `
-
-export default NetworkSwitch
