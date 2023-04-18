@@ -35,11 +35,13 @@ import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
+import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/assets'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface AssetAmountsInputProps {
   address: Address
@@ -60,6 +62,7 @@ const AssetAmountsInput = ({
   const { t } = useTranslation()
   const theme = useTheme()
   const assets = useAppSelector((state) => selectAddressesAssets(state, [address.hash]))
+  const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -136,7 +139,10 @@ const AssetAmountsInput = ({
 
   const handleAssetSelectModalClose = () => {
     setIsAssetSelectModalOpen(false)
+    moveFocusOnPreviousModal()
   }
+
+  const handleAssetSelectModalOpen = (index: number) => !disabled && allowMultiple && openAssetSelectModal(index)
 
   const selectAsset = (option: SelectOption<Asset['id']>) => {
     const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
@@ -174,7 +180,10 @@ const AssetAmountsInput = ({
 
           return (
             <BoxStyled key={id}>
-              <AssetSelect onMouseDown={() => !disabled && allowMultiple && openAssetSelectModal(index)}>
+              <AssetSelect
+                onMouseDown={() => handleAssetSelectModalOpen(index)}
+                onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
+              >
                 <InputLabel isElevated htmlFor={id}>
                   {t('Asset')}
                 </InputLabel>
@@ -192,6 +201,7 @@ const AssetAmountsInput = ({
                   onChange={(e) => handleAssetAmountChange(index, e.target.value)}
                   onClick={() => setSelectedAssetRowIndex(index)}
                   onMouseDown={() => setSelectedAssetRowIndex(index)}
+                  onKeyDown={(e) => onEnterOrSpace(e, () => setSelectedAssetRowIndex(index))}
                   type="number"
                   min={asset.id === ALPH.id ? minAmountInAlph : 0}
                   max={availableHumanReadableAmount}

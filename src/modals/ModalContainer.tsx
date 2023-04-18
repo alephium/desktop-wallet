@@ -35,11 +35,9 @@ export interface ModalContainerProps {
 
 const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
   const dispatch = useAppDispatch()
-  const visibleModals = useAppSelector((state) => state.global.visibleModals)
+  const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
   const modalRef = useFocusOnMount<HTMLDivElement>()
   const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
-
-  const previouslyOpenedModal = visibleModals.at(-2)
 
   // Prevent body scroll on mount
   useEffect(() => {
@@ -49,7 +47,7 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [dispatch, modalId])
+  }, [dispatch])
 
   // Handle escape key press
   const handleEscapeKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -61,9 +59,7 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
 
   const closeModal = () => {
     onClose()
-    dispatch(modalClosed())
-
-    if (previouslyOpenedModal) document.getElementById(previouslyOpenedModal)?.focus()
+    moveFocusOnPreviousModal()
   }
 
   return (
@@ -106,3 +102,18 @@ export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: b
       ? 'rgba(0, 0, 0, 0.15)'
       : 'rgba(0, 0, 0, 0.6)'};
 `
+
+export const useMoveFocusOnPreviousModal = () => {
+  const visibleModals = useAppSelector((state) => state.global.visibleModals)
+  const dispatch = useAppDispatch()
+
+  const previouslyOpenedModal = visibleModals.at(-2)
+
+  const moveFocusOnPreviousModal = () => {
+    dispatch(modalClosed())
+
+    if (previouslyOpenedModal) document.getElementById(previouslyOpenedModal)?.focus()
+  }
+
+  return moveFocusOnPreviousModal
+}

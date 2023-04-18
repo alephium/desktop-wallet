@@ -32,6 +32,7 @@ import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
+import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAllContacts } from '@/storage/addresses/addressesSelectors'
@@ -62,7 +63,7 @@ const AddressInputs = ({
 }: AddressInputsProps) => {
   const { t } = useTranslation()
   const updatedInitialAddress = fromAddresses.find((a) => a.hash === defaultFromAddress.hash) ?? defaultFromAddress
-
+  const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
   const contacts = useAppSelector(selectAllContacts)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -97,6 +98,7 @@ const AddressInputs = ({
   const handleContactSelectModalClose = () => {
     setIsAddressSelectModalOpen(false)
     setFilteredContacts(contacts)
+    moveFocusOnPreviousModal()
   }
 
   return (

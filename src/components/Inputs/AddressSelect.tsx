@@ -28,9 +28,11 @@ import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/c
 import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 import { useAppSelector } from '@/hooks/redux'
+import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import { Address, AddressHash } from '@/types/addresses'
 import { filterAddresses } from '@/utils/addresses'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface AddressSelectProps {
   id: string
@@ -59,6 +61,7 @@ function AddressSelect({
 }: AddressSelectProps) {
   const { t } = useTranslation()
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
+  const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [canBeAnimated, setCanBeAnimated] = useState(false)
   const [address, setAddress] = useState(defaultAddress)
@@ -82,7 +85,10 @@ function AddressSelect({
   const handleAddressSelectModalClose = () => {
     setIsAddressSelectModalOpen(false)
     setFilteredAddresses(addresses)
+    moveFocusOnPreviousModal()
   }
+
+  const openAddressSelectModal = () => !disabled && setIsAddressSelectModalOpen(true)
 
   useEffect(() => {
     if (!address && addresses.length === 1) {
@@ -105,7 +111,8 @@ function AddressSelect({
         animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
         onAnimationComplete={() => setCanBeAnimated(true)}
         custom={disabled}
-        onMouseDown={() => !disabled && setIsAddressSelectModalOpen(true)}
+        onMouseDown={openAddressSelectModal}
+        onKeyDown={(e) => onEnterOrSpace(e, openAddressSelectModal)}
         disabled={!!disabled}
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
