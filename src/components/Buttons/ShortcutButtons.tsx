@@ -164,7 +164,6 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
   margin: 0;
   width: auto;
   height: 60px;
-  background-color: ${({ theme, highlight }) => (highlight ? theme.bg.background2 : theme.bg.primary)};
   color: ${({ theme }) => theme.font.primary};
 `
 
