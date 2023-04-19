@@ -48,7 +48,7 @@ const DevToolsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { devTools } = useAppSelector((state) => state.settings)
+  const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)

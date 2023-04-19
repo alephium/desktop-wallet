@@ -54,7 +54,7 @@ const Amount = ({
   isUnknownToken,
   showPlusMinus = false
 }: AmountProps) => {
-  const { discreetMode } = useAppSelector((state) => state.settings)
+  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
 
   let quantitySymbol = ''
   let amount = ''

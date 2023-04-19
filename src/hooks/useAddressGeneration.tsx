@@ -65,7 +65,7 @@ const deriveAddressesFromIndexesWorker = new Worker(
 const useAddressGeneration = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
-  const { mnemonic } = useAppSelector((state) => state.activeWallet)
+  const mnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 

@@ -35,7 +35,15 @@ export interface SideModalProps extends ModalContainerProps {
   hideHeader?: boolean
 }
 
-const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }: SideModalProps) => {
+const SideModal = ({
+  onClose,
+  children,
+  title,
+  header,
+  width = 500,
+  hideHeader,
+  onAnimationComplete
+}: SideModalProps) => {
   const { t } = useTranslation()
   const elRef = useFocusOnMount<HTMLDivElement>()
 
@@ -48,6 +56,7 @@ const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }
         exit={{ x: '110%' }}
         {...fastTransition}
         width={width}
+        onAnimationComplete={onAnimationComplete}
       >
         {!hideHeader && (
           <ModalHeader>

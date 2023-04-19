@@ -44,9 +44,10 @@ interface AmountsOverviewPanelProps {
   addressHash?: string
   isLoading?: boolean
   className?: string
+  showChart?: boolean
 }
 
-const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children }) => {
+const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children, showChart }) => {
   const { t } = useTranslation()
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const allAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
@@ -133,14 +134,16 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         </Balances>
         {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
       </Panel>
-      <ChartContainer>
-        <HistoricWorthChart
-          addressHash={addressHash}
-          currency={currencies.USD.ticker}
-          onDataPointHover={setHoveredDataPoint}
-          length={chartLength}
-        />
-      </ChartContainer>
+      {showChart && (
+        <ChartContainer>
+          <HistoricWorthChart
+            addressHash={addressHash}
+            currency={currencies.USD.ticker}
+            onDataPointHover={setHoveredDataPoint}
+            length={chartLength}
+          />
+        </ChartContainer>
+      )}
     </UnlockedWalletPanelStyled>
   )
 }

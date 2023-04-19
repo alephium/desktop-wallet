@@ -31,7 +31,7 @@ interface ThemeSwitcherProps {
 const switcherSize = 30
 
 const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
-  const { theme } = useAppSelector((state) => state.global)
+  const theme = useAppSelector((state) => state.global.theme)
   const posthog = usePostHog()
 
   const isDark = theme === 'dark'

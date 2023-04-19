@@ -51,6 +51,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
+  const [showChart, setShowChart] = useState(false)
 
   if (!address) return null
 
@@ -59,6 +60,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       onClose={onClose}
       title={t('Address details')}
       width={800}
+      onAnimationComplete={() => setShowChart(true)}
       header={
         <Header>
           <LeftSide>
@@ -84,7 +86,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </Header>
       }
     >
-      <AmountsOverviewPanel addressHash={addressHash}>
+      <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
         <QrCodeBox>
           <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
         </QrCodeBox>

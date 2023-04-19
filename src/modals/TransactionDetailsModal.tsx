@@ -55,7 +55,7 @@ interface DetailsRowProps {
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
-  const { explorerUrl } = useAppSelector((state) => state.network.settings)
+  const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)

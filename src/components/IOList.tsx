@@ -56,7 +56,7 @@ const IOList = ({
 }: IOListProps) => {
   const { t } = useTranslation()
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const { explorerUrl } = useAppSelector((state) => state.network.settings)
+  const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 

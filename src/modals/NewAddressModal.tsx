@@ -42,7 +42,7 @@ interface NewAddressModalProps {
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
   const { t } = useTranslation()
-  const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const { generateAddress, generateAndSaveOneAddressPerGroup } = useAddressGeneration()
   const posthog = usePostHog()

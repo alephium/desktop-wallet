@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -35,15 +36,17 @@ const OverviewPage = () => {
   const { t } = useTranslation()
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
 
+  const [showChart, setShowChart] = useState(false)
+
   return (
-    <motion.div {...fadeIn}>
+    <motion.div {...fadeIn} onAnimationComplete={() => setShowChart(true)} onAnimationStart={() => setShowChart(false)}>
       <UnlockedWalletPanel top>
         <WalletNameRow>
           <Tagline>{t('Current wallet')}</Tagline>
           <WalletName>{activeWalletName}</WalletName>
         </WalletNameRow>
       </UnlockedWalletPanel>
-      <AmountsOverviewPanel>
+      <AmountsOverviewPanel showChart={showChart}>
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
           <ButtonsGrid>
