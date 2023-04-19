@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { Info } from 'lucide-react'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -93,6 +94,7 @@ export default styled(OperationBox)`
     css`
       justify-content: center;
       background-color: ${({ theme }) => theme.bg.accent};
+      border: 1px solid ${({ theme }) => colord(theme.bg.accent).alpha(0.3).toHex()};
 
       ${IconWrapper} {
         order: -1;

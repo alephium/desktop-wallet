@@ -79,13 +79,14 @@ const PageHeader = styled(UnlockedWalletPanel)`
 `
 
 const PageTitle = styled.h1`
-  font-size: 30px;
+  font-size: 32px;
   font-weight: var(--fontWeight-semiBold);
   margin-top: 0;
   margin-bottom: 20px;
 `
 
 const PageSubtitle = styled.div`
-  max-width: 394px;
+  max-width: 400px;
   color: ${({ theme }) => theme.font.tertiary};
+  font-size: 14px;
 `
