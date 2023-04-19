@@ -22,6 +22,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { fadeInOutScaleFast, fastTransition } from '@/animations'
+import Scrollbar from '@/components/Scrollbar'
 import ModalContainer from '@/modals/ModalContainer'
 import { Coordinates } from '@/types/numbers'
 import { useWindowSize } from '@/utils/hooks'
@@ -84,8 +85,7 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
           {extraHeaderContent}
         </Header>
       )}
-
-      {children}
+      <Scrollbar translateContentSizeYToHolder>{children}</Scrollbar>
     </Content>
   )
 
