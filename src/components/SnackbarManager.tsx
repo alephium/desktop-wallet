@@ -94,7 +94,7 @@ const SnackbarPopup = styled(motion.div)`
   }
 
   &.info {
-    ${({ theme }) => getSnackbarStyling(theme.bg.primary)}
+    ${({ theme }) => getSnackbarStyling(theme.font.primary)}
   }
 
   &.success {

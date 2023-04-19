@@ -24,7 +24,7 @@ const TableTabBar = (props: TabBarProps) => <TabBar {...props} TabComponent={Tab
 
 export default styled(TableTabBar)`
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const TableTab = styled(Tab)`

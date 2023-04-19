@@ -150,7 +150,7 @@ const FiltersPanel = ({
 export default styled(FiltersPanel)`
   border-top: 1px solid;
   border-bottom: 1px solid;
-  border-color: ${({ theme }) => theme.border.secondary};
+  border-color: ${({ theme }) => theme.border.primary};
   padding-bottom: 0;
   display: flex;
   position: sticky;
@@ -170,7 +170,7 @@ const FilterTiles = styled.div`
 
 const FilterTile = styled.div`
   padding: 10px;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const Tile = styled(FilterTile)`
