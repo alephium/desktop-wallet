@@ -40,7 +40,7 @@ interface NetworkSelectOption {
 
 type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom' | 'localhost'>
 
-const NetworkSwitch = ({ className }: { className?: string }) => {
+const NetworkSwitch = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)

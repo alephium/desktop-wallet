@@ -44,9 +44,9 @@ interface AppHeader {
 
 const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
   const { t } = useTranslation()
-  const scroll = useScrollContext()
+  const { scrollY: scrollYContext } = useScrollContext()
   const initialScroll = useMotionValue(0)
-  const scrollY = scroll?.scrollY || initialScroll
+  const scrollY = scrollYContext || initialScroll
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)

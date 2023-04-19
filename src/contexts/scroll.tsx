@@ -19,14 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { MotionValue } from 'framer-motion'
 import { createContext, useContext } from 'react'
 
-export type ScrollDirection = 'up' | 'down'
+export type ScrollDirection = 'up' | 'down' | undefined
 
-interface ScrollContextType {
-  scrollY: MotionValue<number>
-  scrollDirection?: ScrollDirection
+export interface ScrollContextType {
+  scrollY?: MotionValue<number>
+  scrollDirection?: MotionValue<ScrollDirection>
 }
 
-const ScrollContext = createContext<ScrollContextType | undefined>(undefined)
+const ScrollContext = createContext<ScrollContextType>({
+  scrollY: undefined,
+  scrollDirection: undefined
+})
 
 export const ScrollContextProvider = ScrollContext.Provider
 

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { map } from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -48,8 +48,9 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const dispatch = useAppDispatch()
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
-  const scroll = useScrollContext()
+  const { scrollDirection } = useScrollContext()
 
+  const [direction, setDirection] = useState(scrollDirection?.get())
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>()
@@ -57,6 +58,12 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
+
+  useEffect(() => {
+    scrollDirection?.on('change', setDirection)
+
+    return () => scrollDirection?.destroy()
+  }, [scrollDirection])
 
   return (
     <UnlockedWalletPage
@@ -84,7 +91,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
           hideHeader
         />
       </UnlockedWalletPanel>
-      <BottomRow animate={{ y: scroll?.scrollDirection === 'down' ? 100 : 0 }}>
+      <BottomRow animate={{ y: direction === 'down' ? 100 : 0 }}>
         <CornerButtons>
           <ButtonsGrid>
             <ShortcutButtons receive send highlight analyticsOrigin="transfer_page" />
