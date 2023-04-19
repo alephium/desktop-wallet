@@ -90,8 +90,6 @@ export function MultiSelectOptionsModal<T>({
 }: MultiSelectOptionsModalProps<T>) {
   const { t } = useTranslation()
 
-  const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>()
-
   const allOptionsAreSelected = selectedOptions.length === options.length
 
   const handleOptionClick = (optionClicked: T) => {
@@ -127,8 +125,7 @@ export function MultiSelectOptionsModal<T>({
               role="listitem"
               onClick={() => handleOptionClick(option)}
               selected={isSelected}
-              onMouseEnter={() => setFocusedOptionIndex(index)}
-              focused={index === focusedOptionIndex}
+              focusable
               aria-label={getOptionText(option)}
             >
               {renderOption ? renderOption(option) : getOptionText(option)}

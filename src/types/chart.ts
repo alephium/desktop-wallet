@@ -16,15 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { BILLION } from '@alephium/sdk'
+import { AddressHash } from '@/types/addresses'
 
-export const MINIMAL_GAS_AMOUNT = 20000
-export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
-export const GENESIS_TIMESTAMP = 1231006505000
+export type LatestAmountPerAddress = Record<AddressHash, bigint>
 
-export enum WALLETCONNECT_ERRORS {
-  TRANSACTION_SEND_FAILED = -32000,
-  PARSING_SESSION_REQUEST_FAILED = -33000
+export type DataPoint = {
+  x: string
+  y: number
 }
 
-export const CHART_DATE_FORMAT = 'YYYY-MM-DD'
+export const chartLengths = ['1w', '1m', '1y'] as const
+export type ChartLength = (typeof chartLengths)[number]

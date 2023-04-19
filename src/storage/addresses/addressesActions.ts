@@ -17,8 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { IntervalType, Transaction } from '@alephium/sdk/api/explorer'
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import dayjs from 'dayjs'
 import { chunk } from 'lodash'
 
 import {
@@ -26,6 +27,7 @@ import {
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
+import client from '@/api/client'
 import i18n from '@/i18n'
 import { selectAddressByHash, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
@@ -36,10 +38,12 @@ import {
   AddressDataSyncResult,
   AddressHash,
   AddressSettings,
+  BalanceHistory,
   LoadingEnabled
 } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
 import { Message, SnackbarMessage } from '@/types/snackbar'
+import { CHART_DATE_FORMAT } from '@/utils/constants'
 
 export const loadingStarted = createAction('addresses/loadingStarted')
 
@@ -126,6 +130,53 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
     }
 
     return { pageLoaded: nextPageToLoad - 1, transactions }
+  }
+)
+
+export const syncAddressesHistoricBalances = createAsyncThunk(
+  'addresses/syncAddressesHistoricBalances',
+  async (
+    addresses: AddressHash[]
+  ): Promise<
+    {
+      address: AddressHash
+      balances: BalanceHistory[]
+    }[]
+  > => {
+    const now = dayjs()
+    const thisMoment = now.valueOf()
+    const oneYearAgo = now.subtract(12, 'month').valueOf()
+
+    const addressesBalances = []
+
+    for (const addressHash of addresses) {
+      const balances = []
+      const { data } = await client.explorer.addresses.getAddressesAddressAmountHistory(
+        addressHash,
+        { fromTs: oneYearAgo, toTs: thisMoment, 'interval-type': IntervalType.Daily },
+        { format: 'text' }
+      )
+
+      try {
+        const { amountHistory } = JSON.parse(data)
+
+        for (const [timestamp, balance] of amountHistory) {
+          balances.push({
+            date: dayjs(timestamp).format(CHART_DATE_FORMAT),
+            balance: BigInt(balance).toString()
+          })
+        }
+      } catch (e) {
+        console.error('Could not parse amount history data', e)
+      }
+
+      addressesBalances.push({
+        address: addressHash,
+        balances
+      })
+    }
+
+    return addressesBalances
   }
 )
 
