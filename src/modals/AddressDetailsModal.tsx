@@ -55,7 +55,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
   const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
+  const [chartLength, setChartLength] = useState<ChartLength>('1m')
 
   if (!address) return null
 

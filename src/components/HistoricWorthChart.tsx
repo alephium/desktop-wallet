@@ -155,6 +155,9 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
     },
     labels: {
       show: false
+    },
+    crosshairs: {
+      show: false
     }
   },
   yaxis: {

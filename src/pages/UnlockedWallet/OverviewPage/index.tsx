@@ -43,7 +43,7 @@ const OverviewPage = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
 
   const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1w')
+  const [chartLength, setChartLength] = useState<ChartLength>('1m')
 
   return (
     <motion.div {...fadeIn}>
