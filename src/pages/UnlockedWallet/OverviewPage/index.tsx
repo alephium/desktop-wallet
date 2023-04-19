@@ -54,7 +54,7 @@ const OverviewPage = () => {
           </ButtonsGrid>
         </Shortcuts>
       </AmountsOverviewPanel>
-      <UnlockedWalletPanel>
+      <UnlockedWalletPanel bottom>
         <AssetAndAddressesRow>
           <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
