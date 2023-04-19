@@ -113,8 +113,8 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   if (!isDataAvailable || chartData.length <= 1) return null
 
   const filteredChartData = getFilteredChartData(chartData, startingDate)
-  const xAxisData = chartData.map(({ x }) => x)
-  const yAxisData = chartData.map(({ y }) => y)
+  const xAxisData = filteredChartData.map(({ x }) => x)
+  const yAxisData = filteredChartData.map(({ y }) => y)
   const lastItem = filteredChartData.at(-1)
   const chartColor =
     lastItem !== undefined && filteredChartData[0].y < lastItem.y ? theme.global.valid : theme.global.alert
