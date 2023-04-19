@@ -128,7 +128,7 @@ export function MultiSelectOptionsModal<T>({
               onClick={() => handleOptionClick(option)}
               selected={isSelected}
               onMouseEnter={() => setFocusedOptionIndex(index)}
-              focused={index === focusedOptionIndex}
+              focusable
               aria-label={getOptionText(option)}
             >
               {renderOption ? renderOption(option) : getOptionText(option)}
