@@ -20,7 +20,7 @@ import { calculateAmountWorth } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -33,8 +33,8 @@ import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import {
+  makeSelectAddressesAssets,
   selectAddressByHash,
-  selectAddressesAssets,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
@@ -51,8 +51,9 @@ const maxDisplayedAssets = 7 // Allow 2 rows by default
 
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const assets = useAppSelector((state) => selectAddressesAssets(state, address?.hash ? [address.hash] : undefined))
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
+  const assets = useAppSelector((s) => selectAddressesAssets(s, addressHash))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)

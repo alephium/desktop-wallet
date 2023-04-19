@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -25,7 +26,7 @@ import Box from '@/components/Box'
 import HashEllipsed from '@/components/HashEllipsed'
 import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
-import { selectContactByAddress } from '@/storage/addresses/addressesSelectors'
+import { makeSelectContactByAddress } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 
@@ -37,6 +38,7 @@ interface CheckAddressesBoxProps {
 
 const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddressesBoxProps) => {
   const { t } = useTranslation()
+  const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, toAddressHash))
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 

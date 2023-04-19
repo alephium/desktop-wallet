@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -38,7 +38,7 @@ import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
-import { selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/assets'
 import { onEnterOrSpace } from '@/utils/misc'
@@ -61,7 +61,8 @@ const AssetAmountsInput = ({
 }: AssetAmountsInputProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const assets = useAppSelector((state) => selectAddressesAssets(state, [address.hash]))
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
+  const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -29,30 +29,32 @@ import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import {
-  selectAddressByHash,
-  selectAddressesHaveHistoricBalances,
-  selectAllAddresses,
+  makeSelectAddresses,
+  makeSelectAddressesHaveHistoricBalances,
+  selectAddressIds,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { AddressHash } from '@/types/addresses'
 import { ChartLength, chartLengths, DataPoint } from '@/types/chart'
 import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 
 interface AmountsOverviewPanelProps {
+  addressHash?: string
   isLoading?: boolean
   className?: string
-  addressHash?: string
 }
 
 const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children }) => {
   const { t } = useTranslation()
-  const allAddresses = useAppSelector(selectAllAddresses)
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
-  const addresses = address ? [address] : allAddresses
-  const addressHashes = addresses.map(({ hash }) => hash)
+  const allAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+  const addressHashes = addressHash ?? allAddressHashes
+  const selectAddresses = useMemo(makeSelectAddresses, [])
+  const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const network = useAppSelector((s) => s.network)
+  const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
@@ -62,7 +64,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const [chartLength, setChartLength] = useState<ChartLength>('1y')
 
   const { x: date, y: worth } = hoveredDataPoint ?? { x: undefined, y: undefined }
-  const singleAddress = !!address
+  const singleAddress = !!addressHash
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))

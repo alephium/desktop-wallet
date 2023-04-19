@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import { colord } from 'colord'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -26,7 +26,7 @@ import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
@@ -54,6 +54,7 @@ const FiltersPanel = ({
 }: FiltersPanelProps) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector(selectAddressesAssets)
 
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)

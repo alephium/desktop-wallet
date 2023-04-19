@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -25,7 +25,7 @@ import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash, selectContactByAddress } from '@/storage/addresses/addressesSelectors'
+import { makeSelectContactByAddress, selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
@@ -50,6 +50,7 @@ const AddressBadge = ({
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
   return contact ? (

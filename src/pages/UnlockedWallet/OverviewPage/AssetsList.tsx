@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -32,7 +32,7 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressesAssets, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesAssets, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -70,6 +70,7 @@ const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTi
 const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 

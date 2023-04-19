@@ -21,17 +21,12 @@ import { TokenInfo } from '@alephium/token-list'
 import { ALPH } from '@alephium/token-list'
 import { Dictionary } from '@reduxjs/toolkit'
 
-import { Address, AddressHash, AddressSettings } from '@/types/addresses'
+import { Address, AddressSettings } from '@/types/addresses'
 import { AssetAmount } from '@/types/assets'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
 
-export const selectAddressTransactions = (
-  allAddresses: Address[],
-  transactions: (Transaction | PendingTransaction)[],
-  addressHashes: AddressHash[]
-) => {
-  const addresses = allAddresses.filter((address) => addressHashes.includes(address.hash))
+export const selectAddressTransactions = (addresses: Address[], transactions: (Transaction | PendingTransaction)[]) => {
   const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
   const processedTxHashes: Transaction['hash'][] = []
 
