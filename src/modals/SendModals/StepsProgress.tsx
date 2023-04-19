@@ -120,7 +120,7 @@ export default styled(StepsProgress)`
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   z-index: 1;
 `

@@ -102,5 +102,5 @@ const TabBarPanel = styled(TabPanel)`
   top: ${appHeaderHeightPx}px;
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.background1).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
 `

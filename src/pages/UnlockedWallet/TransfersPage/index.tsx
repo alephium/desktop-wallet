@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { map } from 'lodash'
 import { useEffect, useState } from 'react'
@@ -91,7 +92,10 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
           hideHeader
         />
       </UnlockedWalletPanel>
-      <BottomRow animate={{ y: direction === 'down' ? 100 : 0 }}>
+      <BottomRow
+        animate={{ y: direction === 'down' ? 100 : 0 }}
+        transition={{ easings: 'spring', stiffness: 500, damping: 40 }}
+      >
         <CornerButtons>
           <ButtonsGrid>
             <ShortcutButtons receive send highlight analyticsOrigin="transfer_page" />
@@ -125,15 +129,14 @@ const CornerButtons = styled.div`
   border-radius: var(--radius-huge);
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  box-shadow: ${({ theme }) => theme.shadow.secondary};
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.8).toHex()};
+  backdrop-filter: blur(30px);
   width: 20vw;
   max-width: 320px;
   min-width: 230px;
 `
 
 const ButtonsGrid = styled.div`
-  background-color: ${({ theme }) => theme.border.primary};
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;

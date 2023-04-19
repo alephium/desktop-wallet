@@ -218,7 +218,7 @@ const AvailableLockedBalancesColumn = styled(BalancesColumn)`
 
 const Divider = styled.div`
   width: 1px;
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.border.secondary};
   margin: 17px 55px;
 `
 

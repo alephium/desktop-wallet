@@ -115,7 +115,7 @@ const HideEmptyAddressesToggle = styled.div`
   background-color: ${({ theme }) => theme.bg.primary};
   padding: 12px 18px 12px 22px;
   border-radius: var(--radius-big);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const ToggleText = styled.div`
@@ -168,7 +168,7 @@ const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent
 `
 
 const TableGridContent = styled.div`
-  background-color: ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.border.primary};
   display: flex;
   flex-direction: column;
   gap: 1px;

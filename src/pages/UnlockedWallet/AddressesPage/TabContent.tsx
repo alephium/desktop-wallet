@@ -48,7 +48,7 @@ const TabContent: FC<TabContentProps> = ({
       <Searchbar placeholder={searchPlaceholder} Icon={SearchIcon} onChange={(e) => onSearch(e.target.value)} />
       {HeaderMiddleComponent}
       <ButtonContainer {...fadeInOut}>
-        <HeaderButton variant="faded" short onClick={onButtonClick}>
+        <HeaderButton short onClick={onButtonClick}>
           {buttonText}
         </HeaderButton>
       </ButtonContainer>

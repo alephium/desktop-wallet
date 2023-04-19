@@ -22,26 +22,26 @@ import { DefaultTheme } from 'styled-components'
 export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
-    primary: '#ffffff',
+    primary: '#fdfdfd',
     secondary: '#F9F9F9',
     tertiary: '#f4f4f4',
     contrast: '#212126',
-    background1: '#F0F0F0',
-    background2: '#f9f9f9',
+    background1: '#ffffff',
+    background2: '#f5f5f5',
     accent: colord('#598BED').alpha(0.25).toHex(),
     hover: 'rgba(0, 0, 0, 0.03)'
   },
   font: {
     primary: '#1d1d1d',
     secondary: '#6a6a6a',
-    tertiary: '#adadad',
+    tertiary: '#989898',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
     highlight: '#d4a10d'
   },
   border: {
-    primary: 'rgba(0, 0, 0, 0.1)',
-    secondary: 'rgba(0, 0, 0, 0.06)'
+    primary: '#e7e7e7',
+    secondary: '#f0f0f0'
   },
   shadow: {
     primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
@@ -68,7 +68,7 @@ export const darkTheme: DefaultTheme = {
     background1: '#121215',
     background2: '#0E0E10',
     hover: colord('#1B1B1F').lighten(0.02).toHex(),
-    accent: colord('#598BED').alpha(0.25).toHex()
+    accent: colord('#598BED').alpha(0.1).toHex()
   },
   font: {
     primary: '#e3e3e3',
@@ -79,8 +79,8 @@ export const darkTheme: DefaultTheme = {
     highlight: '#f0d590'
   },
   border: {
-    primary: 'rgba(255, 255, 255, 0.08)',
-    secondary: 'rgba(255, 255, 255, 0.04)'
+    primary: '#282828',
+    secondary: '#202020'
   },
   shadow: {
     primary: '0 4px 4px rgba(0, 0, 0, 0.25)',

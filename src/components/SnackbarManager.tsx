@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { fadeInBottom, fadeOut } from '@/animations'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -60,6 +61,12 @@ const SnackbarManager = () => {
 
 export default SnackbarManager
 
+const getSnackbarStyling = (color: string) => css`
+  background-color: ${colord(color).alpha(0.1).toHex()};
+  border: 1px solid ${colord(color).alpha(0.2).toHex()};
+  color: ${color};
+`
+
 const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
@@ -79,19 +86,18 @@ const SnackbarPopup = styled(motion.div)`
   min-width: 200px;
   padding: var(--spacing-4) var(--spacing-3);
   color: ${({ theme }) => theme.font.primary};
-  border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-medium);
-  box-shadow: ${({ theme }) => theme.shadow.secondary};
+  backdrop-filter: blur(30px);
 
   &.alert {
-    background-color: ${({ theme }) => theme.global.alert};
+    ${({ theme }) => getSnackbarStyling(theme.global.alert)}
   }
 
   &.info {
-    background-color: ${({ theme }) => theme.bg.primary};
+    ${({ theme }) => getSnackbarStyling(theme.font.primary)}
   }
 
   &.success {
-    background-color: ${({ theme }) => theme.global.valid};
+    ${({ theme }) => getSnackbarStyling(theme.global.valid)}
   }
 `

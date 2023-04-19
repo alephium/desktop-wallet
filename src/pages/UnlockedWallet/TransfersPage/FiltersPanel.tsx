@@ -151,14 +151,14 @@ const FiltersPanel = ({
 export default styled(FiltersPanel)`
   border-top: 1px solid;
   border-bottom: 1px solid;
-  border-color: ${({ theme }) => theme.border.secondary};
+  border-color: ${({ theme }) => theme.border.primary};
   display: flex;
   position: sticky;
   justify-content: space-between;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
   margin-bottom: 25px;
 `
 
@@ -170,7 +170,7 @@ const FilterTiles = styled.div`
 
 const FilterTile = styled.div`
   padding: 10px;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const Tile = styled(FilterTile)`

@@ -160,7 +160,12 @@ const getChartOptions = (
     },
     events,
     animations: {
-      enabled: false
+      enabled: true,
+      easing: 'easeout',
+      speed: 500,
+      dynamicAnimation: {
+        enabled: false
+      }
     }
   },
   xaxis: {
@@ -222,7 +227,7 @@ const getChartOptions = (
         [
           {
             offset: 0,
-            color: colord(chartColor).alpha(0.5).toHex()
+            color: colord(chartColor).alpha(0.3).toHex()
           },
           {
             offset: 100,
