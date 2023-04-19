@@ -132,7 +132,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                 data-tooltip-id="default"
                 data-tooltip-content={t('Connect wallet to dApp')}
               >
-                <WalletConnectLogo />
+                <WalletConnectLogoStyled />
               </Button>
             </>
           )}
@@ -206,4 +206,8 @@ const HeaderButtons = styled.div`
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
+`
+
+const WalletConnectLogoStyled = styled(WalletConnectLogo)`
+  height: auto;
 `
