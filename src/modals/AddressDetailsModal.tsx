@@ -56,6 +56,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
   const [dataPoint, setDataPoint] = useState<DataPoint>()
   const [chartLength, setChartLength] = useState<ChartLength>('1m')
+  const [chartFirstDataPoint, setChartFirstDataPoint] = useState<DataPoint>()
 
   if (!address) return null
 
@@ -95,6 +96,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           worth={dataPoint?.y}
           date={dataPoint?.x}
           onChartLengthChange={setChartLength}
+          chartFirstDataPoint={chartFirstDataPoint}
           chartLength={chartLength}
         >
           <QrCodeBox>
@@ -108,7 +110,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
             currency={currencies.USD.ticker}
             onDataPointHover={setDataPoint}
             length={chartLength}
-            onChartLengthChange={() => null}
+            onChartLengthChange={setChartFirstDataPoint}
           />
         </ChartContainer>
 
