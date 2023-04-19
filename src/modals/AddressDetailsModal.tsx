@@ -108,6 +108,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
             currency={currencies.USD.ticker}
             onDataPointHover={setDataPoint}
             length={chartLength}
+            onChartLengthChange={() => null}
           />
         </ChartContainer>
 

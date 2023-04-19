@@ -44,6 +44,7 @@ interface AmountsOverviewPanelProps {
   addressHash?: string
   worth?: DataPoint['y']
   date?: DataPoint['x']
+  chartFirstDataPoint?: DataPoint
 }
 
 const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
@@ -53,7 +54,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
   addressHash,
   children,
   worth,
-  date
+  date,
+  chartFirstDataPoint
 }) => {
   const { t } = useTranslation()
   const allAddresses = useAppSelector(selectAllAddresses)
@@ -71,7 +73,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const balanceInFiat = worth ?? calculateAmountWorth(totalBalance, price ?? 0)
+  const totalAmountWorth = calculateAmountWorth(totalBalance, price ?? 0)
+  const balanceInFiat = worth ?? totalAmountWorth
+
   const isOnline = network.status === 'online'
   const isShowingHistoricWorth = !!worth
 
@@ -80,12 +84,18 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
       <Balances>
         <BalancesRow>
           <BalancesColumn>
-            <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
+            <Today highlighted={!!date}>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
             {stateUninitialized || isPriceLoading ? (
               <SkeletonLoader height="46px" />
             ) : (
               <>
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+                <FiatDeltaPercentage>
+                  {chartFirstDataPoint?.y
+                    ? Math.round(((totalAmountWorth - chartFirstDataPoint.y) / chartFirstDataPoint.y) * 10000) / 100
+                    : '-'}
+                  %
+                </FiatDeltaPercentage>
                 {hasHistoricBalances && (
                   <ChartLengthBadges>
                     {chartLengths.map((length) => (
@@ -198,6 +208,11 @@ const FiatTotalAmount = styled(Amount)`
   font-weight: var(--fontWeight-bold);
 `
 
+const FiatDeltaPercentage = styled.div`
+  font-size: 18px;
+  margin-top: 5px;
+`
+
 const AlphAmount = styled(Amount)`
   color: ${({ theme }) => theme.font.primary};
   font-size: 21px;
@@ -211,8 +226,8 @@ const BalanceLabel = styled.label`
   margin-bottom: 3px;
 `
 
-const Today = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
+const Today = styled.div<{ highlighted: boolean }>`
+  color: ${({ theme, highlighted }) => (highlighted ? theme.font.secondary : theme.font.tertiary)};
   font-size: 16px;
   margin-bottom: 8px;
 `

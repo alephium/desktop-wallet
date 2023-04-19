@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs, { Dayjs } from 'dayjs'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import Chart from 'react-apexcharts'
 import styled, { useTheme } from 'styled-components'
 
@@ -33,8 +33,9 @@ import { Currency } from '@/types/settings'
 interface HistoricWorthChartProps {
   addressHashes: AddressHash[]
   currency: Currency
-  onDataPointHover: (dataPoint?: DataPoint) => void
   length: ChartLength
+  onDataPointHover: (dataPoint?: DataPoint) => void
+  onChartLengthChange: (firstDataPoint?: DataPoint) => void
 }
 
 const now = dayjs()
@@ -49,18 +50,28 @@ const startingDates: Record<ChartLength, Dayjs> = {
 const HistoricWorthChart = memo(function HistoricWorthChart({
   addressHashes,
   currency,
+  length = '1y',
   onDataPointHover,
-  length = '1y'
+  onChartLengthChange
 }: HistoricWorthChartProps) {
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
+  const previousLength = useRef(length)
+
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
   const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && alphPriceHistory
+
+  useEffect(() => {
+    if (previousLength.current !== length) {
+      onChartLengthChange(getFilteredChartData(chartData, startingDate)[0])
+      previousLength.current = length
+    }
+  }, [chartData, length, onChartLengthChange, startingDate])
 
   useEffect(() => {
     if (!isDataAvailable) return
@@ -101,8 +112,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 
   if (!isDataAvailable || chartData.length <= 1) return null
 
-  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
-  const filteredChartData = startingPoint > 0 ? chartData.slice(startingPoint) : chartData
+  const filteredChartData = getFilteredChartData(chartData, startingDate)
   const lastItem = filteredChartData.at(-1)
   const chartColor =
     lastItem !== undefined && filteredChartData[0].y < lastItem.y ? theme.global.valid : theme.global.alert
@@ -124,6 +134,11 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 })
 
 export default HistoricWorthChart
+
+const getFilteredChartData = (chartData: DataPoint[], startingDate: string) => {
+  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
+  return startingPoint > 0 ? chartData.slice(startingPoint) : chartData
+}
 
 const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexCharts.ApexOptions => ({
   chart: {

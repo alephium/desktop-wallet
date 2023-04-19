@@ -42,8 +42,9 @@ const OverviewPage = () => {
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
 
-  const [dataPoint, setDataPoint] = useState<DataPoint>()
   const [chartLength, setChartLength] = useState<ChartLength>('1m')
+  const [chartFirstDataPoint, setChartFirstDataPoint] = useState<DataPoint>()
+  const [activeDataPoint, setActiveDataPoint] = useState<DataPoint>()
 
   return (
     <motion.div {...fadeIn}>
@@ -54,10 +55,11 @@ const OverviewPage = () => {
         </WalletNameRow>
 
         <AmountsOverviewPanel
-          worth={dataPoint?.y}
-          date={dataPoint?.x}
+          worth={activeDataPoint?.y}
+          date={activeDataPoint?.x}
           onChartLengthChange={setChartLength}
           chartLength={chartLength}
+          chartFirstDataPoint={chartFirstDataPoint}
         >
           <Shortcuts>
             <ShortcutsHeader title={t('Shortcuts')} />
@@ -71,7 +73,8 @@ const OverviewPage = () => {
           <HistoricWorthChart
             addressHashes={addressHashes}
             currency={currencies.USD.ticker}
-            onDataPointHover={setDataPoint}
+            onDataPointHover={setActiveDataPoint}
+            onChartLengthChange={setChartFirstDataPoint}
             length={chartLength}
           />
         </ChartContainer>
