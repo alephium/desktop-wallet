@@ -207,6 +207,7 @@ const Content = styled.div`
 const Shortcuts = styled(Box)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.border.primary};
+  margin-top: 80px;
   margin-bottom: 30px;
 `
 
@@ -228,6 +229,6 @@ const ChartContainer = styled.div`
   position: absolute;
   right: 0;
   left: 0;
-  top: 170px;
+  top: 200px;
   height: 100px;
 `
