@@ -194,7 +194,11 @@ const BalancesColumn = styled(Opacity)`
   flex: 1;
 `
 
-const AvailableLockedBalancesColumn = styled(BalancesColumn)``
+const AvailableLockedBalancesColumn = styled(BalancesColumn)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
 
 const Divider = styled.div`
   width: 1px;
