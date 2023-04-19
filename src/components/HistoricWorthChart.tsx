@@ -105,7 +105,9 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const filteredChartData = startingPoint > 0 ? chartData.slice(startingPoint) : chartData
   const lastItem = filteredChartData.at(-1)
   const chartColor = lastItem !== undefined && filteredChartData[0].y < lastItem.y ? '#3ED282' : theme.global.alert
-  const chartOptions = getChartOptions(chartColor, {
+  const xAxisData = chartData.map(({ x }) => x)
+  const yAxisData = chartData.map(({ y }) => y)
+  const chartOptions = getChartOptions(chartColor, xAxisData, {
     mouseMove(e, chart, options) {
       onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
     },
@@ -114,12 +116,16 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     }
   })
 
-  return <Chart options={chartOptions} series={[{ data: filteredChartData }]} type="area" width="100%" height="100%" />
+  return <Chart options={chartOptions} series={[{ data: yAxisData }]} type="area" width="100%" height="100%" />
 })
 
 export default HistoricWorthChart
 
-const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexCharts.ApexOptions => ({
+const getChartOptions = (
+  chartColor: string,
+  xAxisData: string[],
+  events: ApexChart['events']
+): ApexCharts.ApexOptions => ({
   chart: {
     id: 'alephium-chart',
     toolbar: {
@@ -135,6 +141,7 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
   },
   xaxis: {
     type: 'datetime',
+    categories: xAxisData,
     axisTicks: {
       show: false
     },
@@ -172,6 +179,9 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
   markers: {
     colors: [chartColor],
     strokeColors: [chartColor]
+  },
+  dataLabels: {
+    enabled: false
   },
   fill: {
     type: 'gradient',

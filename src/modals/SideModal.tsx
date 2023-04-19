@@ -43,9 +43,9 @@ const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }
     <ModalContainer onClose={onClose}>
       <Sidebar
         role="dialog"
-        initial={{ x: '100%' }}
+        initial={{ x: '110%' }}
         animate={{ x: 0 }}
-        exit={{ x: '100%' }}
+        exit={{ x: '110%' }}
         {...fastTransition}
         width={width}
       >
