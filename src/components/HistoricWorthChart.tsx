@@ -19,9 +19,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs, { Dayjs } from 'dayjs'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import Chart from 'react-apexcharts'
-import { useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
 import { makeSelectAddresses, selectHaveHistoricBalancesLoaded } from '@/storage/addresses/addressesSelectors'
@@ -31,10 +31,11 @@ import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
 
 interface HistoricWorthChartProps {
-  currency: Currency
-  onDataPointHover: (dataPoint?: DataPoint) => void
-  length: ChartLength
   addressHash?: AddressHash
+  currency: Currency
+  length: ChartLength
+  onDataPointHover: (dataPoint?: DataPoint) => void
+  onChartLengthChange: (firstDataPoint?: DataPoint) => void
 }
 
 const now = dayjs()
@@ -49,8 +50,9 @@ const startingDates: Record<ChartLength, Dayjs> = {
 const HistoricWorthChart = memo(function HistoricWorthChart({
   addressHash,
   currency,
+  length = '1y',
   onDataPointHover,
-  length = '1y'
+  onChartLengthChange
 }: HistoricWorthChartProps) {
   const selectAddresses = useMemo(makeSelectAddresses, [])
   const addresses = useAppSelector((s) => selectAddresses(s, addressHash ?? (s.addresses.ids as AddressHash[])))
@@ -58,10 +60,19 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
+  const previousLength = useRef<ChartLength>()
+
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
   const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && !!alphPriceHistory
+
+  useEffect(() => {
+    if (chartData.length > 0 && (!previousLength.current || previousLength.current !== length)) {
+      onChartLengthChange(getFilteredChartData(chartData, startingDate)[0])
+      previousLength.current = length
+    }
+  }, [chartData, length, onChartLengthChange, startingDate])
 
   useEffect(() => {
     if (!isDataAvailable) return
@@ -101,12 +112,13 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 
   if (!isDataAvailable || chartData.length <= 1) return null
 
-  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
-  const filteredChartData = startingPoint > 0 ? chartData.slice(startingPoint) : chartData
-  const lastItem = filteredChartData.at(-1)
-  const chartColor = lastItem !== undefined && filteredChartData[0].y < lastItem.y ? '#3ED282' : theme.global.alert
+  const filteredChartData = getFilteredChartData(chartData, startingDate)
   const xAxisData = chartData.map(({ x }) => x)
   const yAxisData = chartData.map(({ y }) => y)
+  const lastItem = filteredChartData.at(-1)
+  const chartColor =
+    lastItem !== undefined && filteredChartData[0].y < lastItem.y ? theme.global.valid : theme.global.alert
+
   const chartOptions = getChartOptions(chartColor, xAxisData, {
     mouseMove(e, chart, options) {
       onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
@@ -116,10 +128,19 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     }
   })
 
-  return <Chart options={chartOptions} series={[{ data: yAxisData }]} type="area" width="100%" height="100%" />
+  return (
+    <ChartWrapper>
+      <Chart options={chartOptions} series={[{ data: yAxisData }]} type="area" width="100%" height="100%" />
+    </ChartWrapper>
+  )
 })
 
 export default HistoricWorthChart
+
+const getFilteredChartData = (chartData: DataPoint[], startingDate: string) => {
+  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
+  return startingPoint > 0 ? chartData.slice(startingPoint) : chartData
+}
 
 const getChartOptions = (
   chartColor: string,
@@ -137,7 +158,10 @@ const getChartOptions = (
     sparkline: {
       enabled: true
     },
-    events
+    events,
+    animations: {
+      enabled: false
+    }
   },
   xaxis: {
     type: 'datetime',
@@ -152,6 +176,9 @@ const getChartOptions = (
       enabled: false
     },
     labels: {
+      show: false
+    },
+    crosshairs: {
       show: false
     }
   },
@@ -178,7 +205,10 @@ const getChartOptions = (
   },
   markers: {
     colors: [chartColor],
-    strokeColors: [chartColor]
+    strokeColors: [chartColor],
+    hover: {
+      size: 4
+    }
   },
   dataLabels: {
     enabled: false
@@ -203,3 +233,14 @@ const getChartOptions = (
     }
   }
 })
+
+const ChartWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  transition: opacity 0.1s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
+`

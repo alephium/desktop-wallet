@@ -26,4 +26,6 @@ export type DataPoint = {
 }
 
 export const chartLengths = ['1w', '1m', '1y'] as const
-export type ChartLength = (typeof chartLengths)[number]
+
+type ChartLengthType = typeof chartLengths
+export type ChartLength = ChartLengthType[number]

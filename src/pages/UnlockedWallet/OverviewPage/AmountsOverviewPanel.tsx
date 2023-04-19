@@ -24,6 +24,7 @@ import styled, { css } from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
+import DeltaPercentage from '@/components/DeltaPercentage'
 import HistoricWorthChart from '@/components/HistoricWorthChart'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
@@ -62,14 +63,17 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   })
 
   const [hoveredDataPoint, setHoveredDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
+  const [chartLength, setChartLength] = useState<ChartLength>('1m')
+  const [chartFirstDataPoint, setChartFirstDataPoint] = useState<DataPoint>()
 
   const { x: date, y: worth } = hoveredDataPoint ?? { x: undefined, y: undefined }
   const singleAddress = !!addressHash
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const balanceInFiat = worth ?? calculateAmountWorth(totalBalance, price ?? 0)
+  const totalAmountWorth = calculateAmountWorth(totalBalance, price ?? 0)
+  const balanceInFiat = worth ?? totalAmountWorth
+
   const isOnline = network.status === 'online'
   const isShowingHistoricWorth = !!worth
 
@@ -79,12 +83,21 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         <Balances>
           <BalancesRow>
             <BalancesColumn>
-              <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
+              <Today highlighted={!!date}>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
               {stateUninitialized || isPriceLoading ? (
                 <SkeletonLoader height="46px" />
               ) : (
                 <>
                   <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+                  <Opacity fadeOut={isShowingHistoricWorth}>
+                    <FiatDeltaPercentage>
+                      {chartFirstDataPoint ? (
+                        <DeltaPercentage initialValue={chartFirstDataPoint.y} latestValue={totalAmountWorth} />
+                      ) : (
+                        '-%'
+                      )}
+                    </FiatDeltaPercentage>
+                  </Opacity>
                   {hasHistoricBalances && (
                     <ChartLengthBadges>
                       {chartLengths.map((length) => (
@@ -140,6 +153,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             addressHash={addressHash}
             currency={currencies.USD.ticker}
             onDataPointHover={setHoveredDataPoint}
+            onChartLengthChange={setChartFirstDataPoint}
             length={chartLength}
           />
         </ChartContainer>
@@ -196,7 +210,11 @@ const BalancesColumn = styled(Opacity)`
   flex: 1;
 `
 
-const AvailableLockedBalancesColumn = styled(BalancesColumn)``
+const AvailableLockedBalancesColumn = styled(BalancesColumn)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
 
 const Divider = styled.div`
   width: 1px;
@@ -214,6 +232,11 @@ const FiatTotalAmount = styled(Amount)`
   font-weight: var(--fontWeight-bold);
 `
 
+const FiatDeltaPercentage = styled.div`
+  font-size: 18px;
+  margin-top: 5px;
+`
+
 const AlphAmount = styled(Amount)`
   color: ${({ theme }) => theme.font.primary};
   font-size: 21px;
@@ -227,8 +250,8 @@ const BalanceLabel = styled.label`
   margin-bottom: 3px;
 `
 
-const Today = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
+const Today = styled.div<{ highlighted: boolean }>`
+  color: ${({ theme, highlighted }) => (highlighted ? theme.font.secondary : theme.font.tertiary)};
   font-size: 16px;
   margin-bottom: 8px;
 `
