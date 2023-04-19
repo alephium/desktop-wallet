@@ -217,7 +217,7 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
         [
           {
             offset: 0,
-            color: colord(chartColor).alpha(0.5).toHex()
+            color: colord(chartColor).alpha(0.3).toHex()
           },
           {
             offset: 100,

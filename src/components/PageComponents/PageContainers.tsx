@@ -100,9 +100,9 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
-  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
-  border-radius: var(--radius-small);
-  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.secondary};
+  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.background1};
+  border: 1px solid ${({ theme, transparentBg }) => (!transparentBg ? theme.border.primary : 'none')};
+  border-radius: var(--radius-huge);
 
   ${({ borderless, theme }) =>
     !borderless &&
