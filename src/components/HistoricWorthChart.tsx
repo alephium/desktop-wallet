@@ -21,7 +21,7 @@ import { colord } from 'colord'
 import dayjs, { Dayjs } from 'dayjs'
 import { memo, useEffect, useState } from 'react'
 import Chart from 'react-apexcharts'
-import { useTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
 import { selectAddresses, selectHaveHistoricBalancesLoaded } from '@/storage/addresses/addressesSelectors'
@@ -104,7 +104,9 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const startingPoint = chartData.findIndex((point) => point.x === startingDate)
   const filteredChartData = startingPoint > 0 ? chartData.slice(startingPoint) : chartData
   const lastItem = filteredChartData.at(-1)
-  const chartColor = lastItem !== undefined && filteredChartData[0].y < lastItem.y ? '#3ED282' : theme.global.alert
+  const chartColor =
+    lastItem !== undefined && filteredChartData[0].y < lastItem.y ? theme.global.valid : theme.global.alert
+
   const chartOptions = getChartOptions(chartColor, {
     mouseMove(e, chart, options) {
       onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
@@ -114,7 +116,11 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     }
   })
 
-  return <Chart options={chartOptions} series={[{ data: filteredChartData }]} type="area" width="100%" height="100%" />
+  return (
+    <ChartWrapper>
+      <Chart options={chartOptions} series={[{ data: filteredChartData }]} type="area" width="100%" height="100%" />
+    </ChartWrapper>
+  )
 })
 
 export default HistoricWorthChart
@@ -131,7 +137,10 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
     sparkline: {
       enabled: true
     },
-    events
+    events,
+    animations: {
+      enabled: false
+    }
   },
   xaxis: {
     type: 'datetime',
@@ -171,7 +180,10 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
   },
   markers: {
     colors: [chartColor],
-    strokeColors: [chartColor]
+    strokeColors: [chartColor],
+    hover: {
+      size: 4
+    }
   },
   fill: {
     type: 'gradient',
@@ -193,3 +205,14 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
     }
   }
 })
+
+const ChartWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  transition: opacity 0.1s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
+`

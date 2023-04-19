@@ -96,6 +96,11 @@ export const GlobalStyle = createGlobalStyle`
       }
     }
   }
+
+  // Charts custom styling (can't do that in JS apparently)
+  .apexcharts-marker {
+    transition: none !important;
+  }
 `
 
 // Breakpoints
