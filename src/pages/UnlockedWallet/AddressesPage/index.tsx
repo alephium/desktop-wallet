@@ -95,9 +95,7 @@ const TabContent = styled(Box)`
   flex: 1;
 `
 
-const TabPanel = styled(UnlockedWalletPanel)`
-  padding-bottom: 0;
-`
+const TabPanel = styled(UnlockedWalletPanel)``
 
 const TabBarPanel = styled(TabPanel)`
   position: sticky;

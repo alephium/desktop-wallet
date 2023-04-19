@@ -28,7 +28,6 @@ import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import HashEllipsed from '@/components/HashEllipsed'
-import HistoricWorthChart from '@/components/HistoricWorthChart'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -38,8 +37,6 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { ChartLength, DataPoint } from '@/types/chart'
-import { currencies } from '@/utils/currencies'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface AddressDetailsModalProps {
@@ -54,8 +51,6 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
-  const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
 
   if (!address) return null
 
@@ -89,28 +84,13 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </Header>
       }
     >
+      <AmountsOverviewPanel addressHash={addressHash}>
+        <QrCodeBox>
+          <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
+        </QrCodeBox>
+      </AmountsOverviewPanel>
+
       <Content>
-        <AmountsOverviewPanel
-          addressHash={addressHash}
-          worth={dataPoint?.y}
-          date={dataPoint?.x}
-          onChartLengthChange={setChartLength}
-          chartLength={chartLength}
-        >
-          <QrCodeBox>
-            <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
-          </QrCodeBox>
-        </AmountsOverviewPanel>
-
-        <ChartContainer>
-          <HistoricWorthChart
-            addressHashes={[addressHash]}
-            currency={currencies.USD.ticker}
-            onDataPointHover={setDataPoint}
-            length={chartLength}
-          />
-        </ChartContainer>
-
         <Shortcuts>
           <ButtonsGrid>
             <ShortcutButtons
@@ -219,12 +199,4 @@ const QrCodeBox = styled(Box)`
   margin-left: auto;
   margin-right: 16px;
   background-color: ${({ theme }) => theme.bg.primary};
-`
-
-const ChartContainer = styled.div`
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 170px;
-  height: 100px;
 `

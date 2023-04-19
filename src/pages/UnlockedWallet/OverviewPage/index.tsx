@@ -17,14 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import HistoricWorthChart from '@/components/HistoricWorthChart'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
@@ -32,18 +30,10 @@ import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/Addresses
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
-import { AddressHash } from '@/types/addresses'
-import { ChartLength, DataPoint } from '@/types/chart'
-import { currencies } from '@/utils/currencies'
 
 const OverviewPage = () => {
   const { t } = useTranslation()
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
-  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-
-  const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
 
   return (
     <motion.div {...fadeIn}>
@@ -52,30 +42,16 @@ const OverviewPage = () => {
           <Tagline>{t('Current wallet')}</Tagline>
           <WalletName>{activeWalletName}</WalletName>
         </WalletNameRow>
-
-        <AmountsOverviewPanel
-          worth={dataPoint?.y}
-          date={dataPoint?.x}
-          onChartLengthChange={setChartLength}
-          chartLength={chartLength}
-        >
-          <Shortcuts>
-            <ShortcutsHeader title={t('Shortcuts')} />
-            <ButtonsGrid>
-              <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" />
-            </ButtonsGrid>
-          </Shortcuts>
-        </AmountsOverviewPanel>
-
-        <ChartContainer>
-          <HistoricWorthChart
-            addressHashes={addressHashes}
-            currency={currencies.USD.ticker}
-            onDataPointHover={setDataPoint}
-            length={chartLength}
-          />
-        </ChartContainer>
-
+      </UnlockedWalletPanel>
+      <AmountsOverviewPanel>
+        <Shortcuts>
+          <ShortcutsHeader title={t('Shortcuts')} />
+          <ButtonsGrid>
+            <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" />
+          </ButtonsGrid>
+        </Shortcuts>
+      </AmountsOverviewPanel>
+      <UnlockedWalletPanel>
         <AssetAndAddressesRow>
           <AssetsListStyled />
           <AddressesContactsListStyled limit={5} />
@@ -129,12 +105,4 @@ const ButtonsGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 1px;
   background-color: ${({ theme }) => theme.border.primary};
-`
-
-const ChartContainer = styled.div`
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 330px;
-  height: 100px;
 `

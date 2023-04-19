@@ -151,7 +151,6 @@ export default styled(FiltersPanel)`
   border-top: 1px solid;
   border-bottom: 1px solid;
   border-color: ${({ theme }) => theme.border.secondary};
-  padding-bottom: 0;
   display: flex;
   position: sticky;
   justify-content: space-between;

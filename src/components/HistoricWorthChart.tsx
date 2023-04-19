@@ -24,17 +24,22 @@ import Chart from 'react-apexcharts'
 import { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddresses, selectHaveHistoricBalancesLoaded } from '@/storage/addresses/addressesSelectors'
+import {
+  selectAddresses,
+  selectAddressesHistoricBalances,
+  selectAddressIds,
+  selectHaveHistoricBalancesLoaded
+} from '@/storage/addresses/addressesSelectors'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
 
 interface HistoricWorthChartProps {
-  addressHashes: AddressHash[]
   currency: Currency
   onDataPointHover: (dataPoint?: DataPoint) => void
   length: ChartLength
+  addressHash?: AddressHash
 }
 
 const now = dayjs()
@@ -47,12 +52,15 @@ const startingDates: Record<ChartLength, Dayjs> = {
 // Note: It's necessary to wrap in memo, otherwise the chart rerenders everytime onDataPointHover is called because the
 // state of the parent component changes
 const HistoricWorthChart = memo(function HistoricWorthChart({
-  addressHashes,
+  addressHash,
   currency,
   onDataPointHover,
   length = '1y'
 }: HistoricWorthChartProps) {
-  const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
+  const allAddresses = useAppSelector(selectAddressIds) as AddressHash[]
+  const addressHashes = addressHash ? [addressHash] : allAddresses
+  const someAddresses = useAppSelector((s) => selectAddresses(s, addressHashes))
+  const addressesBalanceHistory = useAppSelector((s) => selectAddressesHistoricBalances(s, addressHashes))
   const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
@@ -60,19 +68,18 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
-  const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && alphPriceHistory
+  const isDataAvailable = addressesBalanceHistory.length !== 0 && haveHistoricBalancesLoaded && !!alphPriceHistory
 
   useEffect(() => {
     if (!isDataAvailable) return
 
     const computeChartDataPoints = (): DataPoint[] => {
       const addressesLatestAmount: LatestAmountPerAddress = {}
-      addresses.forEach(({ hash }) => (addressesLatestAmount[hash] = BigInt(0)))
 
       return alphPriceHistory.map(({ date, price }) => {
         let totalAmountPerDate = BigInt(0)
 
-        addresses.forEach(({ hash, balanceHistory }) => {
+        addressesBalanceHistory.forEach(({ hash, balanceHistory }) => {
           const amountOnDate = balanceHistory.entities[date]?.balance
 
           if (amountOnDate !== undefined) {
@@ -80,7 +87,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
             totalAmountPerDate += amount
             addressesLatestAmount[hash] = amount
           } else {
-            totalAmountPerDate += addressesLatestAmount[hash]
+            totalAmountPerDate += addressesLatestAmount[hash] ?? BigInt(0)
           }
         })
 
@@ -97,7 +104,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     dataPoints = trimInitialZeroDataPoints(dataPoints)
 
     setChartData(dataPoints)
-  }, [addresses, alphPriceHistory, isDataAvailable])
+  }, [addressesBalanceHistory, alphPriceHistory, isDataAvailable])
 
   if (!isDataAvailable || chartData.length <= 1) return null
 

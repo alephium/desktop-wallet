@@ -142,3 +142,10 @@ export const selectAddressesHaveHistoricBalances = createSelector(
     addresses.every((address) => address.balanceHistoryInitialized) &&
     addresses.some((address) => address.balanceHistory.ids.length > 0)
 )
+
+export const selectAddressesHistoricBalances = createSelector(selectAddresses, (addresses) =>
+  addresses.map(({ hash, balanceHistory }) => ({
+    hash,
+    balanceHistory
+  }))
+)

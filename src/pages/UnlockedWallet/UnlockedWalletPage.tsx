@@ -75,7 +75,6 @@ const PageHeader = styled(UnlockedWalletPanel)`
   gap: 40px;
   margin-top: 35px;
   margin-bottom: 50px;
-  padding-bottom: 0;
 `
 
 const PageTitle = styled.h1`

@@ -76,7 +76,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
         selectedAssets={selectedAssets}
         setSelectedAssets={setSelectedAssets}
       />
-      <UnlockedWalletPanel top>
+      <UnlockedWalletPanel top bottom>
         <TransactionList
           addressHashes={map(selectedAddresses, 'hash')}
           directions={map(selectedDirections, 'value')}

@@ -112,15 +112,20 @@ const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, 
   )
 }
 
-export const UnlockedWalletPanel = styled.div<{ top?: boolean }>`
+export const UnlockedWalletPanel = styled.div<{ top?: boolean; bottom?: boolean }>`
   padding-left: 60px;
   padding-right: 60px;
-  padding-bottom: 60px;
 
   ${({ top }) =>
     top &&
     css`
       padding-top: 22px;
+    `}
+
+  ${({ bottom }) =>
+    bottom &&
+    css`
+      padding-bottom: 60px;
     `}
 `
 

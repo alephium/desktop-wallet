@@ -18,13 +18,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
+import HistoricWorthChart from '@/components/HistoricWorthChart'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
+import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import {
   selectAddressByHash,
   selectAddressesHaveHistoricBalances,
@@ -37,24 +40,12 @@ import { getAvailableBalance } from '@/utils/addresses'
 import { currencies } from '@/utils/currencies'
 
 interface AmountsOverviewPanelProps {
-  onChartLengthChange: (length: ChartLength) => void
-  chartLength: ChartLength
   isLoading?: boolean
   className?: string
   addressHash?: string
-  worth?: DataPoint['y']
-  date?: DataPoint['x']
 }
 
-const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
-  onChartLengthChange,
-  chartLength,
-  className,
-  addressHash,
-  children,
-  worth,
-  date
-}) => {
+const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children }) => {
   const { t } = useTranslation()
   const allAddresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
@@ -67,6 +58,10 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
     pollingInterval: 60000
   })
 
+  const [hoveredDataPoint, setHoveredDataPoint] = useState<DataPoint>()
+  const [chartLength, setChartLength] = useState<ChartLength>('1y')
+
+  const { x: date, y: worth } = hoveredDataPoint ?? { x: undefined, y: undefined }
   const singleAddress = !!address
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
@@ -76,69 +71,85 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
   const isShowingHistoricWorth = !!worth
 
   return (
-    <div className={className}>
-      <Balances>
-        <BalancesRow>
-          <BalancesColumn>
-            <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
-            {stateUninitialized || isPriceLoading ? (
-              <SkeletonLoader height="46px" />
-            ) : (
+    <UnlockedWalletPanelStyled>
+      <Panel className={className} worth={worth}>
+        <Balances>
+          <BalancesRow>
+            <BalancesColumn>
+              <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
+              {stateUninitialized || isPriceLoading ? (
+                <SkeletonLoader height="46px" />
+              ) : (
+                <>
+                  <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+                  {hasHistoricBalances && (
+                    <ChartLengthBadges>
+                      {chartLengths.map((length) => (
+                        <ButtonStyled
+                          key={length}
+                          transparent
+                          short
+                          isActive={length === chartLength}
+                          onClick={() => setChartLength(length)}
+                        >
+                          {length}
+                        </ButtonStyled>
+                      ))}
+                    </ChartLengthBadges>
+                  )}
+                </>
+              )}
+            </BalancesColumn>
+            {!singleAddress && (
               <>
-                <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
-                {hasHistoricBalances && (
-                  <ChartLengthBadges>
-                    {chartLengths.map((length) => (
-                      <ButtonStyled
-                        key={length}
-                        transparent
-                        short
-                        isActive={length === chartLength}
-                        onClick={() => onChartLengthChange(length)}
-                      >
-                        {length}
-                      </ButtonStyled>
-                    ))}
-                  </ChartLengthBadges>
-                )}
+                <Divider />
+                <AvailableLockedBalancesColumn fadeOut={isShowingHistoricWorth}>
+                  <AvailableBalanceRow>
+                    <BalanceLabel tabIndex={0} role="representation">
+                      {t('Available')}
+                    </BalanceLabel>
+                    {stateUninitialized ? (
+                      <SkeletonLoader height="25.5px" />
+                    ) : (
+                      <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
+                    )}
+                  </AvailableBalanceRow>
+                  <LockedBalanceRow>
+                    <BalanceLabel tabIndex={0} role="representation">
+                      {t('Locked')}
+                    </BalanceLabel>
+                    {stateUninitialized ? (
+                      <SkeletonLoader height="25.5px" />
+                    ) : (
+                      <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
+                    )}
+                  </LockedBalanceRow>
+                </AvailableLockedBalancesColumn>
               </>
             )}
-          </BalancesColumn>
-          {!singleAddress && (
-            <>
-              <Divider />
-              <AvailableLockedBalancesColumn fadeOut={isShowingHistoricWorth}>
-                <AvailableBalanceRow>
-                  <BalanceLabel tabIndex={0} role="representation">
-                    {t('Available')}
-                  </BalanceLabel>
-                  {stateUninitialized ? (
-                    <SkeletonLoader height="25.5px" />
-                  ) : (
-                    <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
-                  )}
-                </AvailableBalanceRow>
-                <LockedBalanceRow>
-                  <BalanceLabel tabIndex={0} role="representation">
-                    {t('Locked')}
-                  </BalanceLabel>
-                  {stateUninitialized ? (
-                    <SkeletonLoader height="25.5px" />
-                  ) : (
-                    <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
-                  )}
-                </LockedBalanceRow>
-              </AvailableLockedBalancesColumn>
-            </>
-          )}
-        </BalancesRow>
-      </Balances>
-      {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
-    </div>
+          </BalancesRow>
+        </Balances>
+        {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
+      </Panel>
+      <ChartContainer>
+        <HistoricWorthChart
+          addressHash={addressHash}
+          currency={currencies.USD.ticker}
+          onDataPointHover={setHoveredDataPoint}
+          length={chartLength}
+        />
+      </ChartContainer>
+    </UnlockedWalletPanelStyled>
   )
 }
 
-export default styled(AmountsOverviewPanel)`
+export default AmountsOverviewPanel
+
+const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
+  position: relative;
+`
+
+const Panel = styled.div<{ worth?: number }>`
   display: flex;
   gap: 30px;
   margin-bottom: 45px;
@@ -231,4 +242,13 @@ const ButtonStyled = styled(Button)<{ isActive: boolean }>`
   height: auto;
   min-width: 32px;
   border-radius: var(--radius-small);
+`
+
+const ChartContainer = styled.div`
+  position: absolute;
+  right: 0;
+  left: 0;
+
+  bottom: -50px;
+  height: 100px;
 `
