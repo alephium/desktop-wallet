@@ -93,10 +93,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                 data-tooltip-content={offlineText}
                 data-tooltip-id="default"
               >
-                <WifiOff
-                  size={20}
-                  color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
-                />
+                <WifiOff size={20} color={theme.global.alert} />
               </OfflineIcon>
 
               <HeaderDivider />
@@ -170,7 +167,7 @@ export default styled(AppHeader)`
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
 
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
   z-index: 1;
 `
 
@@ -181,13 +178,14 @@ const HeaderDivider = styled.div`
 `
 
 const OfflineIcon = styled.div`
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 40px;
-  background-color: ${({ theme }) => theme.global.alert};
+  width: 35px;
+  height: 35px;
+  border-radius: 35px;
+  background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.2).toHex()};
 `
 
 const Title = styled(motion.div)`

@@ -158,7 +158,7 @@ export default styled(FiltersPanel)`
   top: ${appHeaderHeightPx}px;
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
   margin-bottom: 25px;
 `
 
