@@ -59,7 +59,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
-  const previousLength = useRef(length)
+  const previousLength = useRef<ChartLength>()
 
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
@@ -67,7 +67,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && alphPriceHistory
 
   useEffect(() => {
-    if (previousLength.current !== length) {
+    if (chartData.length > 0 && (!previousLength.current || previousLength.current !== length)) {
       onChartLengthChange(getFilteredChartData(chartData, startingDate)[0])
       previousLength.current = length
     }

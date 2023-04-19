@@ -23,6 +23,7 @@ import styled, { css } from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
+import DeltaPercentage from '@/components/DeltaPercentage'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
 import {
@@ -90,12 +91,15 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({
             ) : (
               <>
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
-                <FiatDeltaPercentage>
-                  {chartFirstDataPoint?.y
-                    ? Math.round(((totalAmountWorth - chartFirstDataPoint.y) / chartFirstDataPoint.y) * 10000) / 100
-                    : '-'}
-                  %
-                </FiatDeltaPercentage>
+                <Opacity fadeOut={isShowingHistoricWorth}>
+                  <FiatDeltaPercentage>
+                    {chartFirstDataPoint ? (
+                      <DeltaPercentage initialValue={chartFirstDataPoint.y} latestValue={totalAmountWorth} />
+                    ) : (
+                      '-%'
+                    )}
+                  </FiatDeltaPercentage>
+                </Opacity>
                 {hasHistoricBalances && (
                   <ChartLengthBadges>
                     {chartLengths.map((length) => (
