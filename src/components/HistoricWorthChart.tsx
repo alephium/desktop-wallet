@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { toHumanReadableAmount } from '@alephium/sdk'
 import { colord } from 'colord'
 import dayjs, { Dayjs } from 'dayjs'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import Chart from 'react-apexcharts'
 import styled, { useTheme } from 'styled-components'
 
@@ -31,11 +31,12 @@ import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
 
 interface HistoricWorthChartProps {
-  addressHash?: AddressHash
   currency: Currency
   length: ChartLength
   onDataPointHover: (dataPoint?: DataPoint) => void
-  onChartLengthChange: (firstDataPoint?: DataPoint) => void
+  onWorthInBeginningOfChartChange: (worthInBeginningOfChart?: DataPoint['worth']) => void
+  latestWorth: number
+  addressHash?: AddressHash
 }
 
 const now = dayjs()
@@ -49,10 +50,11 @@ const startingDates: Record<ChartLength, Dayjs> = {
 // state of the parent component changes
 const HistoricWorthChart = memo(function HistoricWorthChart({
   addressHash,
+  latestWorth,
   currency,
   length = '1y',
   onDataPointHover,
-  onChartLengthChange
+  onWorthInBeginningOfChartChange
 }: HistoricWorthChartProps) {
   const selectAddresses = useMemo(makeSelectAddresses, [])
   const addresses = useAppSelector((s) => selectAddresses(s, addressHash ?? (s.addresses.ids as AddressHash[])))
@@ -60,22 +62,22 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
-  const previousLength = useRef<ChartLength>()
-
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
   const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && !!alphPriceHistory
+  const filteredChartData = getFilteredChartData(chartData, startingDate)
+  const firstItem = filteredChartData.at(0)
 
   useEffect(() => {
-    if (chartData.length > 0 && (!previousLength.current || previousLength.current !== length)) {
-      onChartLengthChange(getFilteredChartData(chartData, startingDate)[0])
-      previousLength.current = length
+    onWorthInBeginningOfChartChange(firstItem?.worth)
+  }, [firstItem?.worth, onWorthInBeginningOfChartChange])
+
+  useEffect(() => {
+    if (!isDataAvailable) {
+      setChartData([])
+      return
     }
-  }, [chartData, length, onChartLengthChange, startingDate])
-
-  useEffect(() => {
-    if (!isDataAvailable) return
 
     const computeChartDataPoints = (): DataPoint[] => {
       const addressesLatestAmount: LatestAmountPerAddress = {}
@@ -96,13 +98,13 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
         })
 
         return {
-          x: date,
-          y: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
+          date,
+          worth: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
         }
       })
     }
 
-    const trimInitialZeroDataPoints = (data: DataPoint[]) => data.slice(data.findIndex((point) => point.y !== 0))
+    const trimInitialZeroDataPoints = (data: DataPoint[]) => data.slice(data.findIndex((point) => point.worth !== 0))
 
     let dataPoints = computeChartDataPoints()
     dataPoints = trimInitialZeroDataPoints(dataPoints)
@@ -112,14 +114,13 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 
   if (!isDataAvailable || chartData.length <= 1) return null
 
-  const filteredChartData = getFilteredChartData(chartData, startingDate)
-  const xAxisData = filteredChartData.map(({ x }) => x)
-  const yAxisData = filteredChartData.map(({ y }) => y)
-  const lastItem = filteredChartData.at(-1)
-  const chartColor =
-    lastItem !== undefined && filteredChartData[0].y < lastItem.y ? theme.global.valid : theme.global.alert
+  const xAxisDatesData = filteredChartData.map(({ date }) => date)
+  const yAxisWorthData = filteredChartData.map(({ worth }) => worth)
 
-  const chartOptions = getChartOptions(chartColor, xAxisData, {
+  const worthHasGoneUp = firstItem !== undefined && firstItem.worth < latestWorth
+  const chartColor = worthHasGoneUp ? theme.global.valid : theme.global.alert
+
+  const chartOptions = getChartOptions(chartColor, xAxisDatesData, {
     mouseMove(e, chart, options) {
       onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
     },
@@ -130,7 +131,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 
   return (
     <ChartWrapper>
-      <Chart options={chartOptions} series={[{ data: yAxisData }]} type="area" width="100%" height="100%" />
+      <Chart options={chartOptions} series={[{ data: yAxisWorthData }]} type="area" width="100%" height="100%" />
     </ChartWrapper>
   )
 })
@@ -138,7 +139,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 export default HistoricWorthChart
 
 const getFilteredChartData = (chartData: DataPoint[], startingDate: string) => {
-  const startingPoint = chartData.findIndex((point) => point.x === startingDate)
+  const startingPoint = chartData.findIndex((point) => point.date === startingDate)
   return startingPoint > 0 ? chartData.slice(startingPoint) : chartData
 }
 

@@ -64,9 +64,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   const [hoveredDataPoint, setHoveredDataPoint] = useState<DataPoint>()
   const [chartLength, setChartLength] = useState<ChartLength>('1m')
-  const [chartFirstDataPoint, setChartFirstDataPoint] = useState<DataPoint>()
+  const [worthInBeginningOfChart, setWorthInBeginningOfChart] = useState<DataPoint['worth']>()
 
-  const { x: date, y: worth } = hoveredDataPoint ?? { x: undefined, y: undefined }
+  const { date, worth } = hoveredDataPoint ?? { date: undefined, worth: undefined }
   const singleAddress = !!addressHash
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
@@ -91,8 +91,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                   <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
                   <Opacity fadeOut={isShowingHistoricWorth}>
                     <FiatDeltaPercentage>
-                      {chartFirstDataPoint ? (
-                        <DeltaPercentage initialValue={chartFirstDataPoint.y} latestValue={totalAmountWorth} />
+                      {worthInBeginningOfChart ? (
+                        <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
                       ) : (
                         '-%'
                       )}
@@ -153,7 +153,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             addressHash={addressHash}
             currency={currencies.USD.ticker}
             onDataPointHover={setHoveredDataPoint}
-            onChartLengthChange={setChartFirstDataPoint}
+            onWorthInBeginningOfChartChange={setWorthInBeginningOfChart}
+            latestWorth={totalAmountWorth}
             length={chartLength}
           />
         </ChartContainer>

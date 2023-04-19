@@ -75,10 +75,6 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (addressHashes.length > 0) dispatch(syncAddressesHistoricBalances(addressHashes))
-  }, [addressHashes, dispatch])
-
-  useEffect(() => {
     const wallets = WalletStorage.list()
 
     posthog?.people.set({
@@ -135,8 +131,9 @@ const App = () => {
   useEffect(() => {
     if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
       dispatch(syncAddressesData())
+      dispatch(syncAddressesHistoricBalances())
     }
-  }, [addressHashes.length, addressesStatus, dispatch, network.status])
+  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, network.status])
 
   const refreshAddressesData = useCallback(
     () => dispatch(syncAddressesData(addressesWithPendingTxs)),

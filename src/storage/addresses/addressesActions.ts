@@ -136,7 +136,8 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
 export const syncAddressesHistoricBalances = createAsyncThunk(
   'addresses/syncAddressesHistoricBalances',
   async (
-    addresses: AddressHash[]
+    _,
+    { getState }
   ): Promise<
     {
       address: AddressHash
@@ -148,8 +149,9 @@ export const syncAddressesHistoricBalances = createAsyncThunk(
     const oneYearAgo = now.subtract(12, 'month').valueOf()
 
     const addressesBalances = []
+    const state = getState() as RootState
 
-    for (const addressHash of addresses) {
+    for (const addressHash of state.addresses.ids as AddressHash[]) {
       const balances = []
       const { data } = await client.explorer.addresses.getAddressesAddressAmountHistory(
         addressHash,

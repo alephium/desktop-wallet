@@ -21,8 +21,8 @@ import { AddressHash } from '@/types/addresses'
 export type LatestAmountPerAddress = Record<AddressHash, bigint>
 
 export type DataPoint = {
-  x: string
-  y: number
+  date: string
+  worth: number
 }
 
 export const chartLengths = ['1w', '1m', '1y'] as const

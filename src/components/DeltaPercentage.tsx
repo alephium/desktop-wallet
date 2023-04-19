@@ -32,11 +32,11 @@ const DeltaPercentage = ({ initialValue, latestValue, className }: DeltaPercenta
   const isUp = percentage >= 0
   const color = isUp ? theme.global.valid : theme.global.alert
 
-  const DirectionArrow = percentage >= 0 ? <ArrowUpRight color={color} /> : <ArrowDownRight color={color} />
+  const DirectionArrow = percentage >= 0 ? ArrowUpRight : ArrowDownRight
 
   return (
     <div className={className} style={{ color }}>
-      {DirectionArrow}
+      <DirectionArrow color={color} />
       {percentage}%
     </div>
   )
