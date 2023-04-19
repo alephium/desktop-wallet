@@ -154,7 +154,12 @@ const getChartOptions = (chartColor: string, events: ApexChart['events']): ApexC
     },
     events,
     animations: {
-      enabled: false
+      enabled: true,
+      easing: 'easeout',
+      speed: 500,
+      dynamicAnimation: {
+        enabled: false
+      }
     }
   },
   xaxis: {
