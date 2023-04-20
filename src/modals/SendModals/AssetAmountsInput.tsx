@@ -34,6 +34,7 @@ import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
@@ -191,7 +192,13 @@ const AssetAmountsInput = ({
                 <SelectInput type="button" className={className} disabled={disabled || !allowMultiple} id={id}>
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
-                    {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
+                    <Truncate>
+                      {asset.name && asset.symbol ? (
+                        `${asset.name} (${asset.symbol})`
+                      ) : (
+                        <HashEllipsed hash={asset.id} />
+                      )}
+                    </Truncate>
                   </AssetName>
                 </SelectInput>
               </AssetSelect>

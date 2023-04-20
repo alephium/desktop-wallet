@@ -32,7 +32,7 @@ interface SelectOptionAddressProps {
 const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAddressProps) => (
   <SelectOptionItemContent
     className={className}
-    MainContent={<AddressBadgeStyled addressHash={address.hash} disableA11y withBorders />}
+    MainContent={<AddressBadgeStyled addressHash={address.hash} disableA11y withBorders truncate />}
     SecondaryContent={
       <AmountStyled
         value={BigInt(address.balance)}
