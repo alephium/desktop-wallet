@@ -331,6 +331,10 @@ const AddressList = styled.div`
 const ActionLinkStyled = styled(ActionLink)`
   width: 100%;
   justify-content: right;
+
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
 `
 
 const AmountContainer = styled.div`
