@@ -79,10 +79,12 @@ const Shortcuts = styled(Box)`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-huge);
   box-shadow: ${({ theme }) => theme.shadow.secondary};
+  background-color: transparent;
 `
 
 const ShortcutsHeader = styled(TableHeader)`
   height: 50px;
+  background-color: transparent;
 `
 
 const ButtonsGrid = styled.div`

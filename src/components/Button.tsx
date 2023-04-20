@@ -175,7 +175,7 @@ export default styled(Button)`
             faded: colord(theme.global.accent).alpha(0.25).toRgbString()
           }[variant],
           secondary: {
-            default: theme.border.secondary,
+            default: theme.border.primary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
             alert: theme.global.alert,

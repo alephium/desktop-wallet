@@ -45,8 +45,8 @@ export const lightTheme: DefaultTheme = {
   },
   shadow: {
     primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.04)',
-    tertiary: '0 0 50px rgba(0, 0, 0, 0.3)'
+    secondary: '0 8px 8px rgba(0, 0, 0, 0.04)',
+    tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
   },
   global: {
     accent: '#598BED',
@@ -83,7 +83,7 @@ export const darkTheme: DefaultTheme = {
     secondary: '#202020'
   },
   shadow: {
-    primary: '0 4px 4px rgba(0, 0, 0, 0.25)',
+    primary: '0 4px 4px rgba(0, 0, 0, 0.6)',
     secondary: '0 10px 10px rgba(0, 0, 0, 0.3)',
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
