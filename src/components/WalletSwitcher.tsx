@@ -91,7 +91,12 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
       )}
       <ModalPortal>
         {isPasswordModalOpen && (
-          <CenteredModal narrow title={t('Enter password')} onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal
+            narrow
+            title={t('Enter password')}
+            onClose={() => setIsPasswordModalOpen(false)}
+            skipFocusOnMount
+          >
             <PasswordConfirmation
               text={t('Enter password for "{{ switchToWalletName }}"', {
                 switchToWalletName: selectedWalletOption?.label

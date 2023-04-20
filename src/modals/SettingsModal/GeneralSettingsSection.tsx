@@ -197,10 +197,10 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       />
       <ModalPortal>
         {isPasswordModelOpen && (
-          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode>
+          <CenteredModal title={t('Password')} onClose={() => setIsPasswordModalOpen(false)} focusMode skipFocusOnMount>
             <PasswordConfirmation
-              text={t`Type your password to change this setting.`}
-              buttonText={t`Enter`}
+              text={t('Type your password to change this setting.')}
+              buttonText={t('Enter')}
               onCorrectPasswordEntered={disablePasswordRequirement}
             />
           </CenteredModal>

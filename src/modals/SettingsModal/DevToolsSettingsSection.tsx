@@ -145,7 +145,7 @@ const DevToolsSettingsSection = () => {
           />
         )}
         {isPasswordModalOpen && (
-          <CenteredModal title={t('Enter password')} onClose={closePasswordModal}>
+          <CenteredModal title={t('Enter password')} onClose={closePasswordModal} skipFocusOnMount>
             <PasswordConfirmation
               text={t('Enter your password to copy the private key.')}
               buttonText={t('Copy private key')}

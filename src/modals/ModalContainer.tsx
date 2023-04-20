@@ -31,12 +31,13 @@ export interface ModalContainerProps extends MotionProps {
   focusMode?: boolean
   hasPadding?: boolean
   className?: string
+  skipFocusOnMount?: boolean
 }
 
-const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
+const ModalContainer = ({ onClose, children, focusMode, className, skipFocusOnMount }: ModalContainerProps) => {
   const dispatch = useAppDispatch()
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
-  const modalRef = useFocusOnMount<HTMLDivElement>()
+  const modalRef = useFocusOnMount<HTMLDivElement>(skipFocusOnMount)
   const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
 
   // Prevent body scroll on mount

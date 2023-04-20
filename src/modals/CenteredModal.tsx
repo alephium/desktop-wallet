@@ -54,13 +54,15 @@ const CenteredModal: FC<CenteredModalProps> = ({
   narrow = false,
   dynamicContent = false,
   onBack,
-  children
+  children,
+  skipFocusOnMount,
+  ...rest
 }) => {
   const { t } = useTranslation()
-  const elRef = useFocusOnMount<HTMLSpanElement>()
+  const elRef = useFocusOnMount<HTMLSpanElement>(skipFocusOnMount)
 
   return (
-    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
+    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding skipFocusOnMount={skipFocusOnMount} {...rest}>
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader transparent={transparentHeader}>
           <TitleRow>
