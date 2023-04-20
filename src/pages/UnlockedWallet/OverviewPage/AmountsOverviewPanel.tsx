@@ -172,6 +172,8 @@ const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
 const Panel = styled.div<{ worth?: number }>`
   display: flex;
   gap: 30px;
+  align-items: center;
+
   margin-bottom: 45px;
   padding: 30px 0;
 
@@ -191,9 +193,7 @@ const Balances = styled.div`
 
 const BalancesRow = styled.div`
   display: flex;
-  align-items: stretch;
-  flex-grow: 1;
-  padding: 0 22px;
+  padding: 25px;
 `
 
 const Opacity = styled.div<{ fadeOut?: boolean }>`
@@ -209,6 +209,7 @@ const RightColumnContent = styled(Opacity)`
 
 const BalancesColumn = styled(Opacity)`
   flex: 1;
+  min-width: 200px;
 `
 
 const AvailableLockedBalancesColumn = styled(BalancesColumn)`
@@ -229,7 +230,7 @@ const AvailableBalanceRow = styled.div`
 const LockedBalanceRow = styled.div``
 
 const FiatTotalAmount = styled(Amount)`
-  font-size: 30px;
+  font-size: 32px;
   font-weight: var(--fontWeight-bold);
 `
 
@@ -246,7 +247,7 @@ const AlphAmount = styled(Amount)`
 
 const BalanceLabel = styled.label`
   color: ${({ theme }) => theme.font.tertiary};
-  font-size: 11px;
+  font-size: 12px;
   display: block;
   margin-bottom: 3px;
 `

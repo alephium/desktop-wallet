@@ -96,7 +96,9 @@ const Tagline = styled.div`
 const Shortcuts = styled(Box)`
   overflow: hidden;
   z-index: 1;
-  background-color: ${({ theme }) => theme.border.primary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-huge);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
 `
 
 const ShortcutsHeader = styled(TableHeader)`
@@ -107,5 +109,4 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-  background-color: ${({ theme }) => theme.bg.primary};
 `
