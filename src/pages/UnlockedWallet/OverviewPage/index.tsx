@@ -26,7 +26,6 @@ import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
-import { useAppSelector } from '@/hooks/redux'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
@@ -34,18 +33,11 @@ import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout
 
 const OverviewPage = () => {
   const { t } = useTranslation()
-  const activeWalletName = useAppSelector((s) => s.activeWallet.name)
 
   const [showChart, setShowChart] = useState(false)
 
   return (
     <motion.div {...fadeIn} onAnimationComplete={() => setShowChart(true)} onAnimationStart={() => setShowChart(false)}>
-      <UnlockedWalletPanel top>
-        <WalletNameRow>
-          <Tagline>{t('Current wallet')}</Tagline>
-          <WalletName>{activeWalletName}</WalletName>
-        </WalletNameRow>
-      </UnlockedWalletPanel>
       <AmountsOverviewPanel showChart={showChart}>
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
@@ -81,24 +73,12 @@ const AddressesContactsListStyled = styled(AddressesContactsList)`
   flex: 1;
 `
 
-const WalletNameRow = styled.div``
-
-const WalletName = styled.div`
-  font-size: 32px;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const Tagline = styled.div`
-  font-size: 14px;
-  color: ${({ theme }) => theme.font.tertiary};
-`
-
 const Shortcuts = styled(Box)`
   overflow: hidden;
   z-index: 1;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-huge);
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadow.secondary};
 `
 
 const ShortcutsHeader = styled(TableHeader)`

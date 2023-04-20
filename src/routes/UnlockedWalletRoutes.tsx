@@ -17,26 +17,27 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@/hooks/redux'
-import i18next from '@/i18n'
 import AddressesPage from '@/pages/UnlockedWallet/AddressesPage'
 import OverviewPage from '@/pages/UnlockedWallet/OverviewPage'
 import TransfersPage from '@/pages/UnlockedWallet/TransfersPage'
 import UnlockedWalletLayout from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { loadContacts } from '@/utils/contacts'
 
-const headerTitles: { [key: string]: string } = {
-  '/wallet/overview': i18next.t('Overview'),
-  '/wallet/transfers': i18next.t('Transfers'),
-  '/wallet/addresses': i18next.t('Addresses & contacts')
-}
-
 const WalletRoutes = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
   const isAuthenticated = useAppSelector((state) => !!state.activeWallet.mnemonic)
+
+  const headerTitles: { [key: string]: string } = {
+    '/wallet/overview': t('Overview'),
+    '/wallet/transfers': t('Transfers'),
+    '/wallet/addresses': t('Addresses & contacts')
+  }
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -21,7 +21,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { motion } from 'framer-motion'
 import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -42,11 +42,12 @@ import { getInitials } from '@/utils/misc'
 interface UnlockedWalletLayoutProps {
   title?: string
   className?: string
+  children?: ReactNode
 }
 
 dayjs.extend(relativeTime)
 
-const UnlockedWalletLayout: FC<UnlockedWalletLayoutProps> = ({ children, title, className }) => {
+const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayoutProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const networkStatus = useAppSelector((s) => s.network.status)
