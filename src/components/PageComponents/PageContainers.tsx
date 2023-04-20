@@ -107,7 +107,7 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   ${({ borderless, theme }) =>
     !borderless &&
     css`
-      border: 1px solid ${theme.border.secondary};
+      border: 1px solid ${theme.border.primary};
     `}
 
   @media ${deviceBreakPoints.mobile} {
@@ -160,4 +160,5 @@ export const CenteredSection = styled.div`
   justify-content: center;
   flex: 1;
   height: 100%;
+  background-color: ${({ theme }) => theme.bg.background2};
 `
