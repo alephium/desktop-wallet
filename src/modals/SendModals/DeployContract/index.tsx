@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
 import { signAndSendTransaction } from '@/api/transactions'
+import DeployContractAddressesTxModalContent from '@/modals/SendModals/DeployContract/AddressesTxModalContent'
 import DeployContractBuildTxModalContent from '@/modals/SendModals/DeployContract/BuildTxModalContent'
 import DeployContractCheckTxModalContent from '@/modals/SendModals/DeployContract/CheckTxModalContent'
 import SendModal from '@/modals/SendModals/SendModal'
@@ -78,12 +79,14 @@ const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContr
       title={t('Deploy contract')}
       initialTxData={initialTxData}
       onClose={onClose}
+      AddressesTxModalContent={DeployContractAddressesTxModalContent}
       BuildTxModalContent={DeployContractBuildTxModalContent}
       CheckTxModalContent={DeployContractCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}
       txData={txData}
+      isContract
     />
   )
 }

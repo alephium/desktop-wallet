@@ -25,6 +25,7 @@ import client from '@/api/client'
 import { signAndSendTransaction } from '@/api/transactions'
 import CallContractBuildTxModalContent from '@/modals/SendModals/CallContract/BuildTxModalContent'
 import CallContractCheckTxModalContent from '@/modals/SendModals/CallContract/CheckTxModalContent'
+import DeployContractAddressesTxModalContent from '@/modals/SendModals/DeployContract/AddressesTxModalContent'
 import SendModal from '@/modals/SendModals/SendModal'
 import { Step } from '@/modals/SendModals/StepsProgress'
 import { store } from '@/storage/store'
@@ -47,6 +48,7 @@ const SendModalCallContract = ({ onClose, initialTxData, initialStep, txData }: 
       title={t('Call contract')}
       initialTxData={initialTxData}
       onClose={onClose}
+      AddressesTxModalContent={DeployContractAddressesTxModalContent}
       BuildTxModalContent={CallContractBuildTxModalContent}
       CheckTxModalContent={CallContractCheckTxModalContent}
       buildTransaction={buildTransaction}
@@ -54,6 +56,7 @@ const SendModalCallContract = ({ onClose, initialTxData, initialStep, txData }: 
       getWalletConnectResult={getWalletConnectResult}
       initialStep={initialStep}
       txData={txData}
+      isContract
     />
   )
 }

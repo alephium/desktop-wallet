@@ -19,18 +19,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ALPH } from '@alephium/token-list'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import FooterButton from '@/components/Buttons/FooterButton'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
-import { useAppSelector } from '@/hooks/redux'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { AssetAmount } from '@/types/assets'
 import { DeployContractTxData, PartialTxData, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
@@ -46,12 +45,6 @@ const defaultAssetAmount = { id: ALPH.id }
 
 const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployContractBuildTxModalContentProps) => {
   const { t } = useTranslation()
-  const addresses = useAppSelector(selectAllAddresses)
-  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
-    fromAddress: data.fromAddress ?? '',
-    bytecode: data.bytecode ?? '',
-    issueTokenAmount: data.issueTokenAmount ?? ''
-  })
   const {
     gasAmount,
     gasAmountError,
@@ -62,6 +55,11 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
+  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
+    fromAddress: data.fromAddress ?? '',
+    bytecode: data.bytecode ?? '',
+    issueTokenAmount: data.issueTokenAmount ?? ''
+  })
   const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>([data.initialAlphAmount || defaultAssetAmount])
   const alphAsset = assetAmounts[0]
 
@@ -82,11 +80,6 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   return (
     <>
       <InputFieldsColumn>
-        <AddressInputs
-          defaultFromAddress={fromAddress}
-          fromAddresses={addresses}
-          onFromAddressChange={setTxPrepProp('fromAddress')}
-        />
         <AssetAmountsInput
           address={fromAddress}
           assetAmounts={assetAmounts}
@@ -106,8 +99,10 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
           value={issueTokenAmount}
           type="number"
           onChange={(e) => setTxPrepProp('issueTokenAmount')(e.target.value)}
+          noMargin
         />
       </InputFieldsColumn>
+      <HorizontalDividerStyled />
       <ToggleSection
         title={t('Show advanced options')}
         subtitle={t('Set gas settings')}
@@ -143,3 +138,7 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
 }
 
 export default DeployContractBuildTxModalContent
+
+const HorizontalDividerStyled = styled(HorizontalDivider)`
+  margin: 20px 0;
+`

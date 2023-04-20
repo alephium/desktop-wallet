@@ -27,33 +27,22 @@ import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
-import { useAppSelector } from '@/hooks/redux'
 import useGasSettings from '@/hooks/useGasSettings'
-import useStateObject from '@/hooks/useStateObject'
-import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { AssetAmount } from '@/types/assets'
-import { PartialTxData, TransferTxData, TxPreparation } from '@/types/transactions'
+import { PartialTxData, TransferTxData } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance } from '@/utils/addresses'
-import { isAddressValid, requiredErrorMessage } from '@/utils/form-validation'
 
 export interface TransferBuildTxModalContentProps {
   data: PartialTxData<TransferTxData, 'fromAddress'>
   onSubmit: (data: TransferTxData) => void
-  onCancel: () => void
 }
 
 const defaultAssetAmounts = [{ id: ALPH.id }]
 
-const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuildTxModalContentProps) => {
+const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalContentProps) => {
   const { t } = useTranslation()
-  const addresses = useAppSelector(selectAllAddresses)
-  const [lockTime, setLockTime] = useState(data.lockTime)
-  const [txPrep, , setTxPrepProp] = useStateObject<TxPreparation>({
-    fromAddress: data.fromAddress
-  })
   const {
     gasAmount,
     gasAmountError,
@@ -64,19 +53,12 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
     handleGasPriceChange
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
+  const [lockTime, setLockTime] = useState(data.lockTime)
   const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>(data.assetAmounts || defaultAssetAmounts)
-  const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
 
-  const { fromAddress } = txPrep
+  const { fromAddress, toAddress } = data
 
-  if (fromAddress === undefined) {
-    onCancel()
-    return null
-  }
-
-  const handleToAddressChange = (value: string) => {
-    setToAddress(value, !value ? requiredErrorMessage : isAddressValid(value) ? '' : t('This address is not valid'))
-  }
+  if (!fromAddress || !toAddress) return null
 
   const handleLocktimeChange = (lockTimeInput: string) =>
     setLockTime(lockTimeInput ? dayjs(lockTimeInput).toDate() : undefined)
@@ -93,8 +75,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   const isSubmitButtonActive =
     !gasPriceError &&
     !gasAmountError &&
-    toAddress.value &&
-    !toAddress.error &&
+    !!toAddress &&
     !lockTimeInPast &&
     atLeastOneAssetWithAmountIsSet &&
     allAssetAmountsAreWithinAvailableBalance
@@ -102,14 +83,6 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
   return (
     <>
       <InputFieldsColumn>
-        <AddressInputs
-          defaultFromAddress={fromAddress}
-          fromAddresses={addresses}
-          onFromAddressChange={setTxPrepProp('fromAddress')}
-          toAddress={toAddress}
-          onToAddressChange={handleToAddressChange}
-          onContactSelect={handleToAddressChange}
-        />
         <AssetAmountsInput
           address={fromAddress}
           assetAmounts={assetAmounts}
@@ -148,7 +121,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
         onClick={() =>
           onSubmit({
             fromAddress: fromAddress,
-            toAddress: toAddress.value,
+            toAddress: toAddress,
             assetAmounts,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice,
@@ -164,16 +137,6 @@ const TransferBuildTxModalContent = ({ data, onSubmit, onCancel }: TransferBuild
 }
 
 export default TransferBuildTxModalContent
-
-function useStateWithError<T>(initialValue: T) {
-  const [value, setValue] = useState({ value: initialValue, error: '' })
-
-  const setValueWithError = (newValue: T, newError: string) => {
-    setValue({ value: newValue, error: newError })
-  }
-
-  return [value, setValueWithError] as const
-}
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;

@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next'
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
 import SendModal from '@/modals/SendModals/SendModal'
+import TransferAddressesTxModalContent from '@/modals/SendModals/Transfer/AddressesTxModalContent'
 import TransferBuildTxModalContent from '@/modals/SendModals/Transfer/BuildTxModalContent'
 import TransferCheckTxModalContent from '@/modals/SendModals/Transfer/CheckTxModalContent'
 import { store } from '@/storage/store'
@@ -46,6 +47,7 @@ const SendModalTransfer = ({ onClose, initialTxData, txData }: TransferTxModalPr
       title={t('Send')}
       initialTxData={initialTxData}
       onClose={onClose}
+      AddressesTxModalContent={TransferAddressesTxModalContent}
       BuildTxModalContent={TransferBuildTxModalContent}
       CheckTxModalContent={TransferCheckTxModalContent}
       buildTransaction={buildTransaction}

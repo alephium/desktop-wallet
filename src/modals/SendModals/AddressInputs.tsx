@@ -116,12 +116,13 @@ const AddressInputs = ({
           simpleMode
         />
       </BoxStyled>
-      <DividerArrowRow>
-        <DividerArrow size={15} />
-      </DividerArrowRow>
-      <BoxStyled>
-        {toAddress && onToAddressChange && (
-          <>
+      {toAddress && onToAddressChange && (
+        <>
+          <DividerArrowRow>
+            <DividerArrow size={15} />
+          </DividerArrowRow>
+
+          <BoxStyled>
             <InputFixedLabel>{t('To')}</InputFixedLabel>
             <VerticalDivider />
             <AddressToInput
@@ -145,9 +146,10 @@ const AddressInputs = ({
                 </ContactRow>
               )}
             </AddressToInput>
-          </>
-        )}
-      </BoxStyled>
+          </BoxStyled>
+        </>
+      )}
+
       <ModalPortal>
         {isAddressSelectModalOpen && (
           <SelectOptionsModal
