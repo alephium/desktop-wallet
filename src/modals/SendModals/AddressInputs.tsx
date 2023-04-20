@@ -191,7 +191,7 @@ const ContactRow = styled(motion.div)`
   width: 85%;
   height: 100%;
   align-items: center;
-  top: 6px;
+  top: 0;
   left: ${inputStyling.paddingLeftRight};
   transition: opacity 0.2s ease-out;
 `
