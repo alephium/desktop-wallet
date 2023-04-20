@@ -29,7 +29,7 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
@@ -104,8 +104,9 @@ const AddressInputs = ({
   return (
     <InputsSection title={t('Addresses')} className={className}>
       <BoxStyled>
+        <InputFixedLabel>{t('From')}</InputFixedLabel>
+        <VerticalDivider />
         <AddressSelect
-          label={t('From')}
           title={t('Select the address to send funds from.')}
           options={fromAddresses}
           defaultAddress={updatedInitialAddress}
@@ -114,15 +115,16 @@ const AddressInputs = ({
           hideEmptyAvailableBalance
           simpleMode
         />
+      </BoxStyled>
+      <DividerArrowRow>
+        <DividerArrow size={15} />
+      </DividerArrowRow>
+      <BoxStyled>
         {toAddress && onToAddressChange && (
           <>
-            <HorizontalDividerStyled>
-              <DividerArrowRow>
-                <DividerArrow size={15} />
-              </DividerArrowRow>
-            </HorizontalDividerStyled>
+            <InputFixedLabel>{t('To')}</InputFixedLabel>
+            <VerticalDivider />
             <AddressToInput
-              label={t('To')}
               inputFieldRef={inputRef}
               value={toAddress.value}
               error={toAddress.error}
@@ -195,30 +197,10 @@ const ContactRow = styled(motion.div)`
 `
 
 const BoxStyled = styled(Box)`
-  padding: 10px;
-`
-
-const HorizontalDividerStyled = styled(HorizontalDivider)`
-  position: relative;
-  margin: 10px 0;
-`
-
-const DividerArrowRow = styled.div`
-  position: absolute;
-  top: -8px;
-  left: 0;
-  width: 100%;
   display: flex;
-  justify-content: center;
-`
-
-const DividerArrow = styled(ArrowDown)`
-  padding: 0 13px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  color: ${({ theme }) => theme.border.primary};
-  display: flex;
-  width: auto;
-  height: auto;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
 `
 
 const AddressToInput = styled(Input)`
@@ -228,4 +210,26 @@ const AddressToInput = styled(Input)`
   &:not(:hover) {
     background-color: transparent;
   }
+`
+
+const InputFixedLabel = styled.div`
+  min-width: 12%;
+  padding-left: 20px;
+  color: ${({ theme }) => theme.font.secondary};
+`
+
+const DividerArrowRow = styled.div`
+  height: 25px;
+  margin: 10px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`
+
+const DividerArrow = styled(ArrowDown)`
+  padding: 0 13px;
+  color: ${({ theme }) => theme.border.primary};
+  display: flex;
+  width: auto;
+  height: auto;
 `

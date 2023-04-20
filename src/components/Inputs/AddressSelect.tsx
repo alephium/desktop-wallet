@@ -117,9 +117,11 @@ function AddressSelect({
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
       >
-        <InputLabel isElevated={!!address} htmlFor={id}>
-          {label}
-        </InputLabel>
+        {label && (
+          <InputLabel isElevated={!!address} htmlFor={id}>
+            {label}
+          </InputLabel>
+        )}
         {!disabled && !simpleMode && (
           <MoreIcon>
             <MoreVertical />
@@ -172,7 +174,8 @@ const AddressSelectContainer = styled(SelectContainer)<Pick<AddressSelectProps, 
 `
 
 const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleMode'>>`
-  ${({ isValid, Icon, simpleMode }) => inputDefaultStyle(isValid || !!Icon, true, true, simpleMode ? 'normal' : 'big')};
+  ${({ isValid, Icon, simpleMode, value, label }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, simpleMode ? 'normal' : 'big')};
   display: flex;
   align-items: center;
   padding-right: 50px;

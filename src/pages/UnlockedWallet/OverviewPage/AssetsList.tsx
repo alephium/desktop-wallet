@@ -156,7 +156,7 @@ const TokenName = styled(Truncate)`
 
 const TokenSymbol = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
-  font-size: 11px;
+  font-size: 12px;
   width: 200px;
 `
 
@@ -167,7 +167,7 @@ const Column = styled.div`
 `
 
 const TokenAmount = styled(Amount)`
-  color: ${({ theme }) => theme.font.secondary};
+  color: ${({ theme }) => theme.font.primary};
 `
 
 const AmountSubtitle = styled.div`

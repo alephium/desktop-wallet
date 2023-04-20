@@ -144,6 +144,6 @@ const WalletPassphraseStyled = styled(WalletPassphrase)`
 `
 
 const ParagraphStyled = styled(Paragraph)`
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
   font-size: 16px;
 `

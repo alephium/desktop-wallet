@@ -78,9 +78,11 @@ const Input = ({
       heightSize={heightSize}
     >
       <InputRow>
-        <InputLabel isElevated={!!value || liftLabel} htmlFor={props.id}>
-          {label}
-        </InputLabel>
+        {label && (
+          <InputLabel isElevated={!!value || liftLabel} htmlFor={props.id}>
+            {label}
+          </InputLabel>
+        )}
         <InputBase
           {...props}
           style={inputFieldStyle}

@@ -27,6 +27,7 @@ import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
 import CompactToggle from '@/components/Inputs/CompactToggle'
 import NetworkSwitch from '@/components/NetworkSwitch'
+import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -97,13 +98,13 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                 <WifiOff size={20} color={theme.global.alert} />
               </OfflineIcon>
 
-              <HeaderDivider />
+              <VerticalDivider />
             </>
           )}
           {children && (
             <>
               {children}
-              <HeaderDivider />
+              <VerticalDivider />
             </>
           )}
           <CompactToggle
@@ -117,7 +118,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           />
           {isAuthenticated && (
             <>
-              <HeaderDivider />
+              <VerticalDivider />
               <Button
                 transparent
                 squared
@@ -135,13 +136,13 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           )}
           {defaultAddress && !isPassphraseUsed && (
             <>
-              <HeaderDivider />
+              <VerticalDivider />
               <div data-tooltip-id="default" data-tooltip-content={t('Default address')}>
                 <AddressBadge withBorders addressHash={defaultAddress.hash} />
               </div>
             </>
           )}
-          <HeaderDivider />
+          <VerticalDivider />
           <NetworkSwitch />
         </HeaderButtons>
       </motion.header>
@@ -170,12 +171,6 @@ export default styled(AppHeader)`
 
   backdrop-filter: blur(30px);
   z-index: 1;
-`
-
-const HeaderDivider = styled.div`
-  width: 1px;
-  height: var(--spacing-2);
-  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
 `
 
 const OfflineIcon = styled.div`
