@@ -138,7 +138,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
             <>
               <VerticalDivider />
               <div data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-                <AddressBadge withBorders addressHash={defaultAddress.hash} />
+                <AddressBadge withBorders addressHash={defaultAddress.hash} truncate />
               </div>
             </>
           )}

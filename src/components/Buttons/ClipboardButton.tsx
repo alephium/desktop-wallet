@@ -136,6 +136,8 @@ const ClipboardContent = styled.div`
   margin-right: -0.5em;
   overflow: hidden;
   width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 
 export default styled(ClipboardButton)`
