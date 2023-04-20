@@ -47,7 +47,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { y: '-20%', scale: 0.85 },
+  up: { y: '-25%', scale: 0.85 },
   down: { y: 0, scale: 1 }
 }
 

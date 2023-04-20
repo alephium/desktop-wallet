@@ -97,7 +97,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
         onClick={clearAdvancedSettings}
         isOpen={!!lockTime || !!gasAmount || !!gasPrice}
       >
-        <Input
+        <DatetimeInput
           id="locktime"
           label={t('Lock time')}
           value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
@@ -140,4 +140,10 @@ export default TransferBuildTxModalContent
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
+`
+
+const DatetimeInput = styled(Input)`
+  input {
+    padding-top: 15px;
+  }
 `
