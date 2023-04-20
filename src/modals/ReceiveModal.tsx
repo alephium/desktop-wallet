@@ -43,14 +43,16 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   return (
     <CenteredModal title={t('Receive')} onClose={onClose}>
       <Content>
-        <AddressSelect
-          label={t('Address')}
-          title={t('Select the address to receive funds to.')}
-          options={addresses}
-          defaultAddress={address ?? defaultAddress}
-          onAddressChange={setSelectedAddress}
-          id="address"
-        />
+        {!addressHash && (
+          <AddressSelect
+            label={t('Address')}
+            title={t('Select the address to receive funds to.')}
+            options={addresses}
+            defaultAddress={address ?? defaultAddress}
+            onAddressChange={setSelectedAddress}
+            id="address"
+          />
+        )}
         <QRCodeSection>
           {selectedAddress?.hash && (
             <QRCode size={300} value={selectedAddress.hash} bgColor={theme.bg.primary} fgColor={theme.font.primary} />
