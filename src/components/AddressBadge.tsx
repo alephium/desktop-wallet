@@ -36,6 +36,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   hideColorIndication?: boolean
   disableA11y?: boolean
   disableCopy?: boolean
+  showFull?: boolean
 }
 
 const AddressBadge = ({
@@ -91,7 +92,7 @@ export default styled(AddressBadge)`
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: 120px;
+  max-width: ${({ showFull }) => !showFull && 120}px;
 
   ${({ withBorders }) =>
     withBorders &&
