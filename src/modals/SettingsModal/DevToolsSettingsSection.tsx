@@ -36,8 +36,8 @@ import Table from '@/components/Table'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
-import SendModalScript from '@/modals/SendModals/SendModalScript'
+import SendModalCallContact from '@/modals/SendModals/CallContract'
+import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
 import { devToolsToggled } from '@/storage/settings/settingsActions'
@@ -132,11 +132,14 @@ const DevToolsSettingsSection = () => {
         </>
       )}
       <ModalPortal>
-        {isDeployContractSendModalOpen && (
-          <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
+        {isDeployContractSendModalOpen && defaultAddress && (
+          <SendModalDeployContract
+            initialTxData={{ fromAddress: defaultAddress }}
+            onClose={() => setIsDeployContractSendModalOpen(false)}
+          />
         )}
         {isCallScriptSendModalOpen && defaultAddress && (
-          <SendModalScript
+          <SendModalCallContact
             initialTxData={{ fromAddress: defaultAddress }}
             onClose={() => setIsCallScriptSendModalOpen(false)}
           />

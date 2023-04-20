@@ -30,15 +30,16 @@ import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import SendModalTransfer from '@/modals/SendModals/Transfer'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
-import { selectAllContacts } from '@/storage/addresses/addressesSelectors'
+import { selectAllContacts, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 
 const ContactsTabContent = () => {
   const { t } = useTranslation()
   const contacts = useAppSelector(selectAllContacts)
+  const defaultAddress = useAppSelector(selectDefaultAddress)
 
   const [filteredContacts, setFilteredContacts] = useState(contacts)
   const [searchInput, setSearchInput] = useState('')
@@ -113,8 +114,11 @@ const ContactsTabContent = () => {
         )}
         <ModalPortal>
           {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
-          {isSendModalOpen && (
-            <SendModalTransfer initialTxData={{ toAddress: selectedContact?.address }} onClose={closeSendModal} />
+          {isSendModalOpen && defaultAddress && (
+            <SendModalTransfer
+              initialTxData={{ fromAddress: defaultAddress, toAddress: selectedContact?.address }}
+              onClose={closeSendModal}
+            />
           )}
         </ModalPortal>
       </TabContent>

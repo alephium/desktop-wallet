@@ -27,9 +27,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import SendModalTransfer from '@/modals/SendModals/Transfer'
 import SettingsModal from '@/modals/SettingsModal'
-import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { walletLocked } from '@/storage/wallets/walletActions'
 import { AddressHash } from '@/types/addresses'
 
@@ -60,6 +60,8 @@ const ShortcutButtons = ({
   const posthog = usePostHog()
 
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash ?? ''))
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const fromAddress = address ?? defaultAddress
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -144,8 +146,8 @@ const ShortcutButtons = ({
         </ShortcutButton>
       )}
       <ModalPortal>
-        {isSendModalOpen && (
-          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
+        {isSendModalOpen && fromAddress && (
+          <SendModalTransfer initialTxData={{ fromAddress }} onClose={() => setIsSendModalOpen(false)} />
         )}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
         {isReceiveModalOpen && <ReceiveModal addressHash={addressHash} onClose={() => setIsReceiveModalOpen(false)} />}

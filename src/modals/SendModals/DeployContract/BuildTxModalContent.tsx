@@ -17,123 +17,29 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ALPH } from '@alephium/token-list'
-import { binToHex, contractIdFromAddress, SignDeployContractTxResult } from '@alephium/web3'
-import { PostHog } from 'posthog-js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import client from '@/api/client'
-import { signAndSendTransaction } from '@/api/transactions'
-import Box from '@/components/Box'
 import FooterButton from '@/components/Buttons/FooterButton'
-import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
-import useDappTxData from '@/hooks/useDappTxData'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
-import CheckAddressesBox from '@/modals/SendModals/CheckAddressesBox'
-import CheckAmountsBox from '@/modals/SendModals/CheckAmountsBox'
-import CheckFeeLockTimeBox from '@/modals/SendModals/CheckFeeLockTimeBox'
-import CheckModalContent from '@/modals/SendModals/CheckModalContent'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import InfoRow from '@/modals/SendModals/InfoRow'
-import SendModal from '@/modals/SendModals/SendModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
-import { store } from '@/storage/store'
-import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { AssetAmount } from '@/types/assets'
-import { CheckTxProps, DeployContractTxData, PartialTxData, TxContext, TxPreparation } from '@/types/transactions'
+import { DeployContractTxData, PartialTxData, TxPreparation } from '@/types/transactions'
 import { getAvailableBalance } from '@/utils/addresses'
 import { isAmountWithinRange } from '@/utils/transactions'
 
-interface DeployContractTxModalProps {
-  onClose: () => void
-}
-
-interface DeployContractBuildTxModalContentProps {
+export interface DeployContractBuildTxModalContentProps {
   data: PartialTxData<DeployContractTxData, 'fromAddress'>
   onSubmit: (data: DeployContractTxData) => void
   onCancel: () => void
-}
-
-const DeployContractTxModal = ({ onClose }: DeployContractTxModalProps) => {
-  const { t } = useTranslation()
-  const initialTxData = useDappTxData() as DeployContractBuildTxModalContentProps['data']
-  const [contractAddress, setContractAddress] = useState('')
-
-  const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
-    const initialAttoAlphAmount =
-      data.initialAlphAmount !== undefined ? data.initialAlphAmount.amount?.toString() : undefined
-    const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
-      fromPublicKey: data.fromAddress.publicKey,
-      bytecode: data.bytecode,
-      initialAttoAlphAmount,
-      issueTokenAmount: data.issueTokenAmount?.toString(),
-      gasAmount: data.gasAmount,
-      gasPrice: data.gasPrice?.toString()
-    })
-    setContractAddress(response.contractAddress)
-    context.setUnsignedTransaction(response)
-    context.setUnsignedTxId(response.txId)
-    context.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
-  }
-
-  const getWalletConnectResult = (context: TxContext, signature: string): SignDeployContractTxResult => {
-    if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
-
-    return {
-      groupIndex: context.unsignedTransaction.fromGroup,
-      unsignedTx: context.unsignedTransaction.unsignedTx,
-      txId: context.unsignedTxId,
-      signature,
-      contractAddress,
-      contractId: binToHex(contractIdFromAddress(contractAddress)),
-      gasAmount: context.unsignedTransaction.gasAmount,
-      gasPrice: BigInt(context.unsignedTransaction.gasPrice)
-    }
-  }
-
-  return (
-    <SendModal
-      title={t`Deploy contract`}
-      initialTxData={initialTxData}
-      onClose={onClose}
-      BuildTxModalContent={DeployContractBuildTxModalContent}
-      CheckTxModalContent={DeployContractCheckTxModalContent}
-      buildTransaction={buildTransaction}
-      handleSend={handleSend}
-      getWalletConnectResult={getWalletConnectResult}
-    />
-  )
-}
-
-const DeployContractCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<DeployContractTxData>) => {
-  const { t } = useTranslation()
-  const settings = useAppSelector((s) => s.settings)
-
-  return (
-    <>
-      <CheckModalContent>
-        {data.initialAlphAmount && <CheckAmountsBox assetAmounts={[data.initialAlphAmount]} />}
-        <CheckAddressesBox fromAddress={data.fromAddress} />
-        {data.issueTokenAmount && (
-          <Box>
-            <InfoRow label={t('Issue token amount')}>{data.issueTokenAmount}</InfoRow>
-          </Box>
-        )}
-        <CheckFeeLockTimeBox fee={fees} />
-        <InfoBox label={t('Bytecode')} text={data.bytecode} wordBreak />
-      </CheckModalContent>
-      <FooterButton onClick={onSubmit} variant={settings.passwordRequirement ? 'default' : 'valid'}>
-        {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
-      </FooterButton>
-    </>
-  )
 }
 
 const defaultAssetAmount = { id: ALPH.id }
@@ -236,25 +142,4 @@ const DeployContractBuildTxModalContent = ({ data, onSubmit, onCancel }: DeployC
   )
 }
 
-const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext, posthog?: PostHog) => {
-  if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
-
-  const data = await signAndSendTransaction(fromAddress, context.unsignedTxId, context.unsignedTransaction.unsignedTx)
-
-  store.dispatch(
-    transactionSent({
-      hash: data.txId,
-      fromAddress: fromAddress.hash,
-      toAddress: '',
-      timestamp: new Date().getTime(),
-      type: 'contract',
-      status: 'pending'
-    })
-  )
-
-  posthog?.capture('Deployed smart contract')
-
-  return data.signature
-}
-
-export default DeployContractTxModal
+export default DeployContractBuildTxModalContent
