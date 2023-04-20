@@ -20,7 +20,7 @@ import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
@@ -186,19 +186,13 @@ const BackgroundGradient = styled.div`
 `
 
 const Panel = styled.div<{ worth?: number }>`
+  position: relative;
   display: flex;
   gap: 30px;
   align-items: center;
 
   margin-bottom: 45px;
   padding: 30px 0;
-
-  ${({ worth }) =>
-    !worth &&
-    css`
-      position: relative;
-      z-index: 1;
-    `}
 `
 
 const Balances = styled.div`
