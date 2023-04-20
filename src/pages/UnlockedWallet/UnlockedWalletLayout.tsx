@@ -18,12 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
 import AppHeader from '@/components/AppHeader'
@@ -37,6 +37,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
 import { appHeaderHeightPx } from '@/style/globalStyles'
+import { useTimeout } from '@/utils/hooks'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
@@ -47,15 +48,22 @@ interface UnlockedWalletLayoutProps {
 
 dayjs.extend(relativeTime)
 
+const walletNameAppearAfterSeconds = 1
+const walletNameHideAfterSeconds = 4
+
 const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayoutProps) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const dispatch = useAppDispatch()
   const networkStatus = useAppSelector((s) => s.network.status)
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
   const isLoadingData = useAppSelector((s) => s.addresses.loading)
   const posthog = usePostHog()
 
+  const [fullWalletNameVisible, setFullWalletNameVisible] = useState(true)
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
+
+  useTimeout(() => setFullWalletNameVisible(false), (walletNameHideAfterSeconds - walletNameAppearAfterSeconds) * 1000)
 
   if (!activeWalletName) return null
 
@@ -71,9 +79,29 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
     <>
       <motion.div {...fadeInSlowly} className={className}>
         <SideBar>
+          <AnimatePresence>
+            {fullWalletNameVisible && (
+              <OnEnterWalletName
+                initial={{ x: 100, opacity: 0, scaleX: 1 }}
+                animate={{ x: 130, opacity: 1, scaleX: 1 }}
+                exit={{ x: -50, opacity: 0, scaleX: 0.5 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 700,
+                  damping: 50,
+                  delay: walletNameAppearAfterSeconds
+                }}
+              >
+                👋 {t('Current wallet')}: {activeWalletName}
+              </OnEnterWalletName>
+            )}
+          </AnimatePresence>
           <CurrentWalletInitials
             onClick={() => setIsNotificationsModalOpen(true)}
             style={{ zIndex: isNotificationsModalOpen ? 2 : undefined }}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: walletNameHideAfterSeconds, type: 'spring', stiffness: 500, damping: 70 }}
           >
             {activeWalletNameInitials}
           </CurrentWalletInitials>
@@ -152,16 +180,29 @@ const SideNavigation = styled.nav`
 
 const RefreshButton = styled(Button)``
 
-const CurrentWalletInitials = styled.div`
-  width: 40px;
-  height: 40px;
+const CurrentWalletInitials = styled(motion.div)`
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   border: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: var(--fontWeight-semiBold);
-  font-size: 12px;
   background-color: ${({ theme }) => theme.bg.secondary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
   cursor: pointer;
+`
+
+const OnEnterWalletName = styled(CurrentWalletInitials)`
+  position: absolute;
+  left: 20px;
+  width: auto;
+  border-radius: var(--radius-big);
+  white-space: nowrap;
+  padding: 20px;
+  font-size: 15px;
+  pointer-events: none;
+  box-shadow: ${({ theme }) => theme.shadow.secondary};
+  border-color: ${({ theme }) => theme.global.accent};
 `

@@ -60,10 +60,12 @@ const SideBar: FC<SideBarProps> = ({ className, children }) => {
 }
 
 export default styled(SideBar)`
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  z-index: 1;
 
   width: ${walletSidebarWidthPx}px;
   padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
