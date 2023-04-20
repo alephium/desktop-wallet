@@ -84,37 +84,42 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
           <BalancesRow>
             <BalancesColumn>
               <Today highlighted={!!date}>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
-              {stateUninitialized || isPriceLoading ? (
-                <SkeletonLoader height="46px" />
+              {isPriceLoading || stateUninitialized ? (
+                <SkeletonLoader height="50px" />
               ) : (
-                <>
-                  <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
-                  <Opacity fadeOut={isShowingHistoricWorth}>
-                    <FiatDeltaPercentage>
-                      {worthInBeginningOfChart ? (
-                        <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
-                      ) : (
-                        '-%'
-                      )}
-                    </FiatDeltaPercentage>
-                  </Opacity>
-                  {hasHistoricBalances && (
-                    <ChartLengthBadges>
-                      {chartLengths.map((length) => (
-                        <ButtonStyled
-                          key={length}
-                          transparent
-                          short
-                          isActive={length === chartLength}
-                          onClick={() => setChartLength(length)}
-                        >
-                          {length}
-                        </ButtonStyled>
-                      ))}
-                    </ChartLengthBadges>
-                  )}
-                </>
+                <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
               )}
+              <Opacity fadeOut={isShowingHistoricWorth}>
+                <FiatDeltaPercentage>
+                  {isPriceLoading || stateUninitialized ? (
+                    <SkeletonLoader height="28px" width="100px" />
+                  ) : worthInBeginningOfChart ? (
+                    <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
+                  ) : (
+                    '-%'
+                  )}
+                </FiatDeltaPercentage>
+              </Opacity>
+
+              <ChartLengthBadges>
+                {chartLengths.map((length) =>
+                  isPriceLoading || stateUninitialized ? (
+                    <SkeletonLoader key={length} height="25px" width="30px" />
+                  ) : (
+                    hasHistoricBalances && (
+                      <ButtonStyled
+                        key={length}
+                        transparent
+                        short
+                        isActive={length === chartLength}
+                        onClick={() => setChartLength(length)}
+                      >
+                        {length}
+                      </ButtonStyled>
+                    )
+                  )
+                )}
+              </ChartLengthBadges>
             </BalancesColumn>
             {!singleAddress && (
               <>
@@ -125,7 +130,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                       {t('Available')}
                     </BalanceLabel>
                     {stateUninitialized ? (
-                      <SkeletonLoader height="25.5px" />
+                      <SkeletonLoader height="28px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
                     )}
@@ -135,7 +140,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                       {t('Locked')}
                     </BalanceLabel>
                     {stateUninitialized ? (
-                      <SkeletonLoader height="25.5px" />
+                      <SkeletonLoader height="28px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
                     )}
