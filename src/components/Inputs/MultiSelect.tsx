@@ -56,15 +56,17 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
   const openOptionsModal = () => setIsOptionsModalOpen(true)
 
   return (
-    <InputArea
-      className={className}
-      onMouseDown={openOptionsModal}
-      onKeyDown={(e) => onEnterOrSpace(e, openOptionsModal)}
-    >
-      <InputLabel isElevated={selectedOptions.length > 0}>{label}</InputLabel>
-      <SelectedValue>
-        <Truncate>{renderSelectedValue()}</Truncate>
-      </SelectedValue>
+    <>
+      <InputArea
+        className={className}
+        onMouseDown={openOptionsModal}
+        onKeyDown={(e) => onEnterOrSpace(e, openOptionsModal)}
+      >
+        <InputLabel isElevated={selectedOptions.length > 0}>{label}</InputLabel>
+        <SelectedValue>
+          <Truncate>{renderSelectedValue()}</Truncate>
+        </SelectedValue>
+      </InputArea>
       <ModalPortal>
         {isOptionsModalOpen && (
           <MultiSelectOptionsModal
@@ -74,7 +76,7 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
           />
         )}
       </ModalPortal>
-    </InputArea>
+    </>
   )
 }
 

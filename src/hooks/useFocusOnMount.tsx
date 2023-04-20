@@ -20,8 +20,10 @@ import { useEffect, useRef } from 'react'
 
 export default function <T extends HTMLElement>() {
   const ref = useRef<T>(null)
+
   useEffect(() => {
-    ref.current?.focus()
+    setTimeout(() => ref.current?.focus(), 0)
   }, [ref])
+
   return ref
 }

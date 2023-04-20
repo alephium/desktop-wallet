@@ -30,17 +30,9 @@ interface InputAreaProps extends MotionProps {
 }
 
 const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...rest }: InputAreaProps) => (
-  <motion.div
-    role="button"
-    tabIndex={0}
-    onMouseDown={onMouseDown}
-    onInput={onInput}
-    onKeyDown={onKeyDown}
-    className={className}
-    {...rest}
-  >
+  <motion.button onMouseDown={onMouseDown} onInput={onInput} onKeyDown={onKeyDown} className={className} {...rest}>
     {children}
-  </motion.div>
+  </motion.button>
 )
 
 export default styled(InputArea)`
