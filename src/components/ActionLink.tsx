@@ -38,10 +38,12 @@ const ActionLink: FC<ActionLinkProps> = ({ className, Icon, children, onClick })
 
 export default styled(ActionLink)`
   color: ${({ theme }) => theme.global.accent};
+  background-color: ${({ theme }) => theme.bg.accent};
+  border-radius: var(--radius-medium);
+  padding: 8px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 0;
   font-size: inherit;
   font-weight: inherit;
 
@@ -55,6 +57,6 @@ export default styled(ActionLink)`
 `
 
 const IconContainer = styled.div`
-  margin-left: 10px;
+  margin-left: 5px;
   display: flex;
 `

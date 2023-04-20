@@ -182,6 +182,7 @@ const BackgroundGradient = styled.div`
   right: 0;
   left: 0;
   background: linear-gradient(${({ theme }) => theme.bg.primary}, transparent);
+  pointer-events: none;
 `
 
 const Panel = styled.div<{ worth?: number }>`
