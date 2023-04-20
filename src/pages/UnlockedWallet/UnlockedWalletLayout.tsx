@@ -201,7 +201,7 @@ const CurrentWalletInitials = styled(motion.div)`
   align-items: center;
   justify-content: center;
   font-weight: var(--fontWeight-semiBold);
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.primary};
   box-shadow: ${({ theme }) => theme.shadow.primary};
   cursor: pointer;
 `

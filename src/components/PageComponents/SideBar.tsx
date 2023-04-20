@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
 import { Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -28,16 +29,22 @@ import SettingsModal from '@/modals/SettingsModal'
 import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 interface SideBarProps {
+  animateEntry?: boolean
   className?: string
 }
 
-const SideBar: FC<SideBarProps> = ({ className, children }) => {
+const SideBar: FC<SideBarProps> = ({ animateEntry, className, children }) => {
   const { t } = useTranslation()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   return (
-    <div className={className}>
+    <motion.div
+      className={className}
+      initial={{ x: animateEntry ? '-100%' : 0 }}
+      animate={{ x: 0 }}
+      transition={{ delay: 1.1, type: 'spring', damping: 20 }}
+    >
       {children}
       <BottomButtons>
         <ThemeSwitcher />
@@ -55,7 +62,7 @@ const SideBar: FC<SideBarProps> = ({ className, children }) => {
       <ModalPortal>
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
       </ModalPortal>
-    </div>
+    </motion.div>
   )
 }
 

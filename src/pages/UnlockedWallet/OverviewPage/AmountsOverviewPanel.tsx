@@ -20,7 +20,7 @@ import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
@@ -79,6 +79,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   return (
     <UnlockedWalletPanelStyled>
+      <BackgroundGradient />
       <Panel className={className} worth={worth}>
         <Balances>
           <BalancesRow>
@@ -174,20 +175,24 @@ const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
   position: relative;
 `
 
+const BackgroundGradient = styled.div`
+  position: absolute;
+  top: -100px;
+  bottom: -150px;
+  right: 0;
+  left: 0;
+  background: linear-gradient(${({ theme }) => theme.bg.primary}, transparent);
+  pointer-events: none;
+`
+
 const Panel = styled.div<{ worth?: number }>`
+  position: relative;
   display: flex;
   gap: 30px;
   align-items: center;
 
   margin-bottom: 45px;
   padding: 30px 0;
-
-  ${({ worth }) =>
-    !worth &&
-    css`
-      position: relative;
-      z-index: 1;
-    `}
 `
 
 const Balances = styled.div`

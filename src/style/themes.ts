@@ -22,13 +22,13 @@ import { DefaultTheme } from 'styled-components'
 export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
-    primary: '#fdfdfd',
-    secondary: '#F9F9F9',
+    primary: '#ffffff',
+    secondary: '#F7F7F7',
     tertiary: '#f4f4f4',
     contrast: '#212126',
-    background1: '#ffffff',
+    background1: '#fbfbfb',
     background2: '#f5f5f5',
-    accent: colord('#598BED').alpha(0.25).toHex(),
+    accent: colord('#598BED').alpha(0.08).toHex(),
     hover: 'rgba(0, 0, 0, 0.03)'
   },
   font: {
@@ -45,7 +45,7 @@ export const lightTheme: DefaultTheme = {
   },
   shadow: {
     primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
-    secondary: '0 8px 8px rgba(0, 0, 0, 0.04)',
+    secondary: '0 8px 8px rgba(0, 0, 0, 0.03)',
     tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
   },
   global: {
@@ -84,7 +84,7 @@ export const darkTheme: DefaultTheme = {
   },
   shadow: {
     primary: '0 4px 4px rgba(0, 0, 0, 0.6)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.3)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.2)',
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {

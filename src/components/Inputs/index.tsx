@@ -109,6 +109,7 @@ export const inputDefaultStyle = (
   /* Firefox */
   &[type='number'] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
 `
 
