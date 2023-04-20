@@ -21,9 +21,9 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
 import AppHeader from '@/components/AppHeader'
@@ -37,7 +37,6 @@ import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
 import { appHeaderHeightPx } from '@/style/globalStyles'
-import { useTimeout } from '@/utils/hooks'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
@@ -53,7 +52,6 @@ const walletNameHideAfterSeconds = 4
 
 const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayoutProps) => {
   const { t } = useTranslation()
-  const theme = useTheme()
   const dispatch = useAppDispatch()
   const networkStatus = useAppSelector((s) => s.network.status)
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
@@ -63,7 +61,20 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
   const [fullWalletNameVisible, setFullWalletNameVisible] = useState(true)
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
 
-  useTimeout(() => setFullWalletNameVisible(false), (walletNameHideAfterSeconds - walletNameAppearAfterSeconds) * 1000)
+  const previousWalletName = useRef<string>()
+
+  useEffect(() => {
+    if (activeWalletName !== previousWalletName.current) {
+      setFullWalletNameVisible(true)
+      previousWalletName.current = activeWalletName
+    }
+
+    const timeoutHandle = setTimeout(() => {
+      if (fullWalletNameVisible) setFullWalletNameVisible(false)
+    }, (walletNameHideAfterSeconds - walletNameAppearAfterSeconds) * 1000)
+
+    return () => clearTimeout(timeoutHandle)
+  }, [activeWalletName, fullWalletNameVisible])
 
   if (!activeWalletName) return null
 
@@ -102,6 +113,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: walletNameHideAfterSeconds, type: 'spring', stiffness: 500, damping: 70 }}
+            key={`initials-${activeWalletName}`}
           >
             {activeWalletNameInitials}
           </CurrentWalletInitials>
