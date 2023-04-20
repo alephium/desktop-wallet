@@ -97,7 +97,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
         onClick={clearAdvancedSettings}
         isOpen={!!lockTime || !!gasAmount || !!gasPrice}
       >
-        <DatetimeInput
+        <Input
           id="locktime"
           label={t('Lock time')}
           value={lockTime ? dayjs(lockTime).format('YYYY-MM-DDTHH:mm') : ''}
@@ -107,6 +107,9 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
           min={dayjs().format('YYYY-MM-DDTHH:mm')}
           error={lockTimeInPast && t('Lock time must be in the future.')}
           liftLabel
+          inputFieldStyle={{
+            paddingTop: '15px'
+          }}
         />
         <GasSettings
           gasAmount={gasAmount}
@@ -140,10 +143,4 @@ export default TransferBuildTxModalContent
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
   margin: 20px 0;
-`
-
-const DatetimeInput = styled(Input)`
-  input {
-    padding-top: 15px;
-  }
 `
