@@ -80,7 +80,6 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
         <InfoBox text={activeWallet.name} label={t`Wallet`} />
       ) : (
         <Select
-          label={t`Current wallet`}
           controlledValue={selectedWalletOption}
           options={walletSelectOptions}
           onSelect={handleWalletSelect}
