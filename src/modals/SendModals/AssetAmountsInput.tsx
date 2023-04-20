@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { Plus } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -65,6 +65,7 @@ const AssetAmountsInput = ({
   const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
+  const selectedValueRef = useRef<HTMLDivElement>(null)
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -189,7 +190,13 @@ const AssetAmountsInput = ({
                 <InputLabel isElevated htmlFor={id}>
                   {t('Asset')}
                 </InputLabel>
-                <SelectInput type="button" className={className} disabled={disabled || !allowMultiple} id={id}>
+                <SelectInput
+                  type="button"
+                  className={className}
+                  disabled={disabled || !allowMultiple}
+                  id={id}
+                  ref={selectedValueRef}
+                >
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
                     <Truncate>
@@ -254,6 +261,7 @@ const AssetAmountsInput = ({
             selectedOption={availableAssetOptions.find((option) => option.value === selectedAsset.id)}
             setValue={selectAsset}
             onClose={handleAssetSelectModalClose}
+            parentSelectRef={selectedValueRef}
             optionRender={(option) => {
               const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
               if (asset) return <SelectOptionAsset asset={asset} />

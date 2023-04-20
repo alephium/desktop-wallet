@@ -75,7 +75,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <AddressColorIndicator addressHash={address.hash} />
           <Column>
             <Label>
-              <AddressBadge addressHash={address.hash} hideColorIndication truncate />
+              <AddressBadge addressHash={address.hash} hideColorIndication truncate showFull />
             </Label>
             {stateUninitialized ? (
               <SkeletonLoader height="15.5px" />

@@ -32,6 +32,7 @@ interface SelectOptionAddressProps {
 const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAddressProps) => (
   <SelectOptionItemContent
     className={className}
+    displaysCheckMarkWhenSelected
     MainContent={<AddressBadgeStyled addressHash={address.hash} disableA11y withBorders truncate />}
     SecondaryContent={
       <AmountStyled
@@ -46,7 +47,7 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
 export default SelectOptionAddress
 
 const AddressBadgeStyled = styled(AddressBadge)`
-  width: auto;
+  max-width: 200px;
 `
 
 const AmountStyled = styled(Amount)`

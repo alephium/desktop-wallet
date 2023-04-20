@@ -22,6 +22,7 @@ import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import HashEllipsed from '@/components/HashEllipsed'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
+import Truncate from '@/components/Truncate'
 import { Asset } from '@/types/assets'
 
 interface SelectOptionAssetProps {
@@ -36,7 +37,9 @@ const SelectOptionAsset = ({ asset, hideAmount, className }: SelectOptionAssetPr
     MainContent={
       <AssetName>
         <AssetLogo asset={asset} size={20} />
-        {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
+        <Truncate>
+          {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
+        </Truncate>
       </AssetName>
     }
     SecondaryContent={
@@ -64,4 +67,7 @@ const AssetName = styled.div`
 const AmountStyled = styled(Amount)`
   flex: 1;
   font-weight: var(--fontWeight-semiBold);
+  text-align: right;
+  margin-left: auto;
+  display: block;
 `

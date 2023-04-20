@@ -160,6 +160,7 @@ const AddressInputs = ({
             onClose={handleContactSelectModalClose}
             onSearchInput={handleContactsSearch}
             searchPlaceholder={t('Search for name or a hash...')}
+            parentSelectRef={inputRef}
             optionRender={(contact) => (
               <SelectOptionItemContent
                 MainContent={<Name>{contact.label}</Name>}
