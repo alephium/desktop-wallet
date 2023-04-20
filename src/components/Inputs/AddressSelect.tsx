@@ -127,7 +127,15 @@ function AddressSelect({
             <MoreVertical />
           </MoreIcon>
         )}
-        <ClickableInput type="button" className={className} disabled={disabled} id={id} simpleMode={simpleMode}>
+        <ClickableInput
+          type="button"
+          className={className}
+          disabled={disabled}
+          id={id}
+          simpleMode={simpleMode}
+          value={address.hash}
+          label={label}
+        >
           <AddressBadge addressHash={address.hash} showFull />
           {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} />}
         </ClickableInput>
