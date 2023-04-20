@@ -23,7 +23,7 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: '#F9F9F9',
+    secondary: '#F7F7F7',
     tertiary: '#f4f4f4',
     contrast: '#212126',
     background1: '#fbfbfb',

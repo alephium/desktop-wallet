@@ -39,7 +39,7 @@ const HomePage = () => {
 
   return (
     <HomeContainer {...fadeInSlowly}>
-      <SideBar>
+      <SideBar animateEntry>
         <Logo>
           <AlephiumLogotypeStyled />
         </Logo>
