@@ -120,8 +120,8 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
       <FooterButton
         onClick={() =>
           onSubmit({
-            fromAddress: fromAddress,
-            toAddress: toAddress,
+            fromAddress,
+            toAddress,
             assetAmounts,
             gasAmount: gasAmount ? parseInt(gasAmount) : undefined,
             gasPrice,

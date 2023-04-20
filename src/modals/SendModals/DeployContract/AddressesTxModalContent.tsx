@@ -57,7 +57,7 @@ const DeployContractAddressesTxModalContent = ({
           onFromAddressChange={setFromAddress}
         />
       </InputFieldsColumn>
-      <FooterButton onClick={() => onSubmit({ fromAddress: fromAddress })}>{t('Continue')}</FooterButton>
+      <FooterButton onClick={() => onSubmit({ fromAddress })}>{t('Continue')}</FooterButton>
     </ModalContent>
   )
 }

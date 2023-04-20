@@ -67,7 +67,7 @@ const TransferAddressesTxModalContent = ({ data, onSubmit, onCancel }: TransferA
       <FooterButton
         onClick={() =>
           onSubmit({
-            fromAddress: fromAddress,
+            fromAddress,
             toAddress: toAddress.value
           })
         }
