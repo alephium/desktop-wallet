@@ -48,7 +48,7 @@ interface UnlockedWalletLayoutProps {
 dayjs.extend(relativeTime)
 
 const walletNameAppearAfterSeconds = 1
-const walletNameHideAfterSeconds = 4
+const walletNameHideAfterSeconds = 6
 
 const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayoutProps) => {
   const { t } = useTranslation()
