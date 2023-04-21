@@ -40,6 +40,7 @@ const Table: FC<TableProps> = ({ className, children }) => (
 
 export default styled(Table)`
   background-color: ${({ theme }) => theme.bg.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 
   ${({ minWidth }) =>
     minWidth &&

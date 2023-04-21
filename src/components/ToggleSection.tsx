@@ -78,7 +78,7 @@ export default styled(ToggleSection)`
   flex-direction: column;
   background-color: ${({ theme }) => theme.bg.background1};
   border-radius: var(--radius-big);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
   padding-bottom: 16px;
 `
 

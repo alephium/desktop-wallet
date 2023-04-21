@@ -209,6 +209,11 @@ export default styled(Button)`
       border: 1px solid ${borderColor};
       position: relative;
 
+      ${!transparent &&
+      css`
+        box-shadow: ${({ theme }) => theme.shadow.primary};
+      `}
+
       &:hover {
         color: ${hoverColor};
         background-color: ${hoverBgColor};

@@ -88,7 +88,7 @@ const Shortcuts = styled(Box)`
   overflow: hidden;
   z-index: 1;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-huge);
+  border-radius: var(--radius-big);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 

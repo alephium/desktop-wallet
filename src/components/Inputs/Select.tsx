@@ -414,6 +414,8 @@ const SelectedValue = styled.div<InputProps>`
 
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+
   cursor: pointer;
 
   display: flex;

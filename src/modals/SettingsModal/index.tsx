@@ -146,7 +146,7 @@ const Column = styled.div`
 
 const TabTitlesColumn = styled(Column)`
   flex: 1;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background2};
 `
 const TabContentsColumn = styled(Column)`
@@ -167,7 +167,7 @@ const CloseButton = styled.button`
 
 const ColumnHeader = styled.div`
   padding: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -210,7 +210,6 @@ const TabTitlesColumnHeader = styled(ColumnHeader)`
 const TabTitleButton = styled(Button)`
   height: 46px;
   justify-content: flex-start;
-  box-shadow: none;
 
   &:first-child {
     margin-top: 0;
