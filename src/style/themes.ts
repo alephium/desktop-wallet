@@ -23,12 +23,12 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: '#FBFBFB',
+    secondary: '#fdfdfd',
     tertiary: '#f4f4f4',
     contrast: '#212126',
     background1: '#fbfbfb',
-    background2: '#f5f5f5',
-    accent: colord('#598BED').alpha(0.08).toHex(),
+    background2: '#f8f8f8',
+    accent: colord('#598bed').alpha(0.08).toHex(),
     hover: 'rgba(0, 0, 0, 0.03)'
   },
   font: {
@@ -40,8 +40,8 @@ export const lightTheme: DefaultTheme = {
     highlight: '#d4a10d'
   },
   border: {
-    primary: '#EEEEEE',
-    secondary: '#F5F5F5'
+    primary: '#eeeeee',
+    secondary: '#f5f5f5'
   },
   shadow: {
     primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
@@ -49,10 +49,10 @@ export const lightTheme: DefaultTheme = {
     tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
   },
   global: {
-    accent: '#598BED',
-    complementary: '#FF5D51',
+    accent: '#598bed',
+    complementary: '#ff5d51',
     alert: '#ed4a34',
-    valid: '#3ED282',
+    valid: '#3ed282',
     highlight: '#d4a10d',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
@@ -61,18 +61,18 @@ export const lightTheme: DefaultTheme = {
 export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
-    primary: '#1B1B1F',
-    secondary: '#18181B',
+    primary: '#1b1b1f',
+    secondary: '#18181b',
     tertiary: '#141417',
     contrast: 'white',
     background1: '#121215',
-    background2: '#0E0E10',
-    hover: colord('#1B1B1F').lighten(0.02).toHex(),
-    accent: colord('#598BED').alpha(0.1).toHex()
+    background2: '#0e0e10',
+    hover: colord('#1b1b1f').lighten(0.02).toHex(),
+    accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {
     primary: '#e3e3e3',
-    secondary: '#C0C0C0',
+    secondary: '#c0c0c0',
     tertiary: 'rgba(255, 255, 255, 0.4)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
@@ -88,10 +88,10 @@ export const darkTheme: DefaultTheme = {
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {
-    accent: '#598BED',
-    complementary: '#FF5D51',
+    accent: '#598bed',
+    complementary: '#ff5d51',
     alert: '#ed4a34',
-    valid: '#3ED282',
+    valid: '#3ed282',
     highlight: '#f0d590',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }

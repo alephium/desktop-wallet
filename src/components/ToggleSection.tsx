@@ -57,7 +57,7 @@ const ToggleSection = ({
           <Title>{title}</Title>
           {subtitle && <Subtitle>{subtitle}</Subtitle>}
         </TitleColumn>
-        <Toggle onToggle={handleToggle} label={title} toggled={isShown} hasDarkerBgOnLightTheme />
+        <Toggle onToggle={handleToggle} label={title} toggled={isShown} />
       </Header>
       <Content
         animate={{
