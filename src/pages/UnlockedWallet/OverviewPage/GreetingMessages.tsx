@@ -85,7 +85,7 @@ export default styled(GreetingMessages)`
   align-items: center;
   height: 40px;
   margin-left: 72px;
-  margin-top: 3px;
+  margin-top: 2px;
   font-size: 16px;
   color: ${({ theme }) => theme.font.secondary};
   background-color: ${({ theme }) => theme.bg.background2};
