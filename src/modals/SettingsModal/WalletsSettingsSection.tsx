@@ -201,7 +201,7 @@ const ActionButtons = styled.div`
 `
 
 const CurrentWalletSection = styled(Section)`
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-4);
 `
 
 const CurrentWalletBox = styled.div`

@@ -116,9 +116,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   )
 }
 
-export default styled(TransfersPage)`
-  margin-bottom: 50px;
-`
+export default TransfersPage
 
 const BottomRow = styled(motion.div)`
   position: fixed;

@@ -176,5 +176,5 @@ const ButtonsRow = styled.div`
 `
 
 const PrivateKeySection = styled(Section)`
-  margin-top: var(--spacing-6);
+  margin-top: var(--spacing-3);
 `
