@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
-import Box from '@/components/Box'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
@@ -85,7 +84,7 @@ const AddressesPage = () => {
 
 export default AddressesPage
 
-const TabContent = styled(Box)`
+const TabContent = styled.div`
   padding-top: 30px;
   padding-bottom: 45px;
   border-radius: 0;
@@ -93,6 +92,8 @@ const TabContent = styled(Box)`
   border-right: none;
   border-bottom: none;
   flex: 1;
+  background-color: ${({ theme }) => theme.bg.background1};
+  border-top: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const TabPanel = styled(UnlockedWalletPanel)``

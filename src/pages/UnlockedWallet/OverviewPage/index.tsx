@@ -89,7 +89,6 @@ const Shortcuts = styled(Box)`
   z-index: 1;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-huge);
-  box-shadow: ${({ theme }) => theme.shadow.secondary};
   background-color: transparent;
 `
 

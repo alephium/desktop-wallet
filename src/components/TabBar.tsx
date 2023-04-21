@@ -85,7 +85,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
   min-width: 50px;
   text-align: center;
   padding: 16px 36px;
-  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : 'transparent')};
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.background1 : 'transparent')};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: none;
   cursor: pointer;
