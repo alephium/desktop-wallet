@@ -49,8 +49,8 @@ const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTi
   const { t } = useTranslation()
 
   const tabs = [
-    { value: 'tokens', label: tokensTabTitle ?? t('Tokens') },
-    { value: 'nfts', label: nftsTabTitle ?? t('NFTs') }
+    { value: 'tokens', label: tokensTabTitle ?? '💰 ' + t('Tokens') },
+    { value: 'nfts', label: nftsTabTitle ?? '🖼️ ' + t('NFTs') }
   ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
 

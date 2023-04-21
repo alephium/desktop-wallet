@@ -78,7 +78,7 @@ const PageHeader = styled(UnlockedWalletPanel)`
 `
 
 const PageTitle = styled.h1`
-  font-size: 32px;
+  font-size: 34px;
   font-weight: var(--fontWeight-semiBold);
   margin-top: 0;
   margin-bottom: 20px;

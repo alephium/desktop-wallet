@@ -101,6 +101,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
         `
       : css`
           color: ${theme.font.tertiary};
+          filter: saturate(10%);
         `}
 
   &:not(:first-child) {

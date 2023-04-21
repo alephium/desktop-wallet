@@ -133,8 +133,9 @@ const CornerButtons = styled.div`
   border-radius: var(--radius-huge);
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.8).toHex()};
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.4).toHex()};
   backdrop-filter: blur(30px);
+  box-shadow: ${({ theme }) => theme.shadow.secondary};
   width: 20vw;
   max-width: 320px;
   min-width: 230px;

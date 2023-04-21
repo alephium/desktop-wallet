@@ -26,9 +26,9 @@ export const lightTheme: DefaultTheme = {
     secondary: '#fdfdfd',
     tertiary: '#f4f4f4',
     contrast: '#212126',
-    background1: '#fbfbfb',
-    background2: '#f8f8f8',
-    accent: colord('#598bed').alpha(0.08).toHex(),
+    background1: '#f9f9f9',
+    background2: '#f5f5f5',
+    accent: colord('#598bed').alpha(0.05).toHex(),
     hover: 'rgba(0, 0, 0, 0.015)'
   },
   font: {

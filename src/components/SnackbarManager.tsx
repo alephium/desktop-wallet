@@ -62,7 +62,7 @@ const SnackbarManager = () => {
 export default SnackbarManager
 
 const getSnackbarStyling = (color: string) => css`
-  background-color: ${colord(color).alpha(0.1).toHex()};
+  background-color: ${colord(color).alpha(0.05).toHex()};
   border: 1px solid ${colord(color).alpha(0.2).toHex()};
   color: ${color};
 `

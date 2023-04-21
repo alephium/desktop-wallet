@@ -30,6 +30,7 @@ import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/Addresses
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import { appHeaderHeightPx } from '@/style/globalStyles'
 
 interface OverviewPageProps {
   className?: string
@@ -67,7 +68,10 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
 }
 
 export default styled(OverviewPage)`
+  // Custom bg color, cover header
   background-color: ${({ theme }) => theme.bg.background1};
+  margin-top: -${appHeaderHeightPx}px;
+  padding-top: ${appHeaderHeightPx}px;
 `
 
 const AssetAndAddressesRow = styled.div`
@@ -89,7 +93,7 @@ const Shortcuts = styled(Box)`
   z-index: 1;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const ShortcutsHeader = styled(TableHeader)`

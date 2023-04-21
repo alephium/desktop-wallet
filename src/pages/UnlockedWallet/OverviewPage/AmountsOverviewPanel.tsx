@@ -79,7 +79,6 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   return (
     <UnlockedWalletPanelStyled>
-      <BackgroundGradient />
       <Panel className={className} worth={worth}>
         <Balances>
           <BalancesRow>
@@ -175,16 +174,6 @@ const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
   position: relative;
 `
 
-const BackgroundGradient = styled.div`
-  position: absolute;
-  top: -100px;
-  bottom: -150px;
-  right: 0;
-  left: 0;
-  background: linear-gradient(${({ theme }) => theme.bg.primary}, transparent);
-  pointer-events: none;
-`
-
 const Panel = styled.div<{ worth?: number }>`
   position: relative;
   display: flex;
@@ -240,7 +229,7 @@ const AvailableBalanceRow = styled.div`
 const LockedBalanceRow = styled.div``
 
 const FiatTotalAmount = styled(Amount)`
-  font-size: 32px;
+  font-size: 34px;
   font-weight: var(--fontWeight-bold);
 `
 
