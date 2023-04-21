@@ -159,7 +159,6 @@ export default styled(FiltersPanel)`
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.9).toHex()};
   backdrop-filter: blur(30px);
-  margin-bottom: 25px;
 `
 
 const FilterTiles = styled.div`

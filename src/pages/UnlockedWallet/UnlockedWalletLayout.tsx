@@ -23,7 +23,7 @@ import { Album, ArrowLeftRight, Layers, RefreshCw } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled, { css, DefaultTheme } from 'styled-components'
 
 import { fadeInSlowly } from '@/animations'
 import AppHeader from '@/components/AppHeader'
@@ -153,20 +153,30 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
   )
 }
 
-export const UnlockedWalletPanel = styled.div<{ top?: boolean; bottom?: boolean }>`
+export const UnlockedWalletPanel = styled.div<{
+  top?: boolean
+  bottom?: boolean
+  doubleTop?: boolean
+  backgroundColor?: keyof Pick<DefaultTheme['bg'], 'background1' | 'background2'>
+}>`
   padding-left: 60px;
   padding-right: 60px;
 
-  ${({ top }) =>
-    top &&
+  ${({ top, doubleTop }) =>
     css`
-      padding-top: 22px;
+      padding-top: ${top ? 25 : doubleTop ? 50 : 0}px;
     `}
 
   ${({ bottom }) =>
     bottom &&
     css`
       padding-bottom: 60px;
+    `}
+
+  ${({ backgroundColor }) =>
+    backgroundColor &&
+    css`
+      background-color: ${({ theme }) => theme.bg[backgroundColor]};
     `}
 `
 
@@ -181,7 +191,7 @@ const MainContent = styled.main`
   flex-direction: column;
   padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.bg.background1};
+  background-color: ${({ theme }) => theme.bg.background2};
 `
 
 const SideNavigation = styled.nav`

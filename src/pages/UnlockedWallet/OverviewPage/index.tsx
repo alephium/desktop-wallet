@@ -31,13 +31,22 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 
-const OverviewPage = () => {
+interface OverviewPageProps {
+  className?: string
+}
+
+const OverviewPage = ({ className }: OverviewPageProps) => {
   const { t } = useTranslation()
 
   const [showChart, setShowChart] = useState(false)
 
   return (
-    <motion.div {...fadeIn} onAnimationComplete={() => setShowChart(true)} onAnimationStart={() => setShowChart(false)}>
+    <motion.div
+      className={className}
+      {...fadeIn}
+      onAnimationComplete={() => setShowChart(true)}
+      onAnimationStart={() => setShowChart(false)}
+    >
       <AmountsOverviewPanel showChart={showChart}>
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
@@ -57,7 +66,9 @@ const OverviewPage = () => {
   )
 }
 
-export default OverviewPage
+export default styled(OverviewPage)`
+  background-color: ${({ theme }) => theme.bg.background1};
+`
 
 const AssetAndAddressesRow = styled.div`
   display: flex;

@@ -289,6 +289,6 @@ const ChartContainer = styled.div`
   right: 0;
   left: 0;
 
-  bottom: -50px;
+  bottom: -70px;
   height: 100px;
 `
