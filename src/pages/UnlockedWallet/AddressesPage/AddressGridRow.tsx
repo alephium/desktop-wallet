@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
-import { colord } from 'colord'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
 import { useMemo, useState } from 'react'
@@ -157,7 +156,7 @@ const GridRow = styled.div`
 
   &:hover ${Cell} {
     cursor: pointer;
-    background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.7).toRgbString()};
+    background-color: ${({ theme }) => theme.bg.hover};
   }
 `
 

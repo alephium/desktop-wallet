@@ -114,7 +114,7 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
-  border: 1px solid ${({ theme }) => theme.border.primary};
+  border: 1px solid ${({ theme }) => (theme.name === 'dark' ? theme.border.primary : 'transparent')};
 
   svg {
     cursor: pointer;

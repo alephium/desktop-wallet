@@ -135,7 +135,6 @@ const TableGrid = styled(Box)`
   contain: paint; // This is amazing. It replaces "overflow: hidden". Using "overflow" on this prevents us from having a sticky table header.
   display: flex;
   flex-direction: column;
-  gap: 1px;
 `
 
 const Cell = styled.div`
@@ -153,9 +152,10 @@ const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
   font-weight: var(--fontWeight-semiBold);
   min-height: var(--inputHeight);
   width: 100%;
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.border.secondary};
   position: sticky;
   top: ${({ tabsRowHeight }) => tabsRowHeight + appHeaderHeightPx - 1}px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   z-index: 1;
 `
 
@@ -164,11 +164,11 @@ const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent
   justify-content: ${({ justifyContent }) => justifyContent ?? 'center'};
   align-items: center;
   height: 100%;
-  background-color: ${({ theme }) => theme.bg.tertiary};
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const TableGridContent = styled.div`
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.border.secondary};
   display: flex;
   flex-direction: column;
   gap: 1px;

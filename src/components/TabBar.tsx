@@ -79,6 +79,7 @@ const TabBar = ({
 export default styled(TabBar)`
   display: flex;
   justify-content: flex-start;
+  max-height: 60px;
 `
 
 export const Tab = styled.div<{ isActive: boolean }>`
@@ -89,7 +90,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
 
   ${({ isActive, theme }) =>
