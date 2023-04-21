@@ -49,9 +49,7 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
       onAnimationComplete={() => setShowChart(true)}
       onAnimationStart={() => setShowChart(false)}
     >
-      <Greetings>
-        <GreetingMessages />
-      </Greetings>
+      <GreetingMessages />
       <AmountsOverviewPanel showChart={showChart}>
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
@@ -109,15 +107,4 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-`
-
-const Greetings = styled.span`
-  display: inline-block;
-  margin-left: 72px;
-  margin-top: 3px;
-  font-size: 16px;
-  color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.background2};
-  padding: 10px 15px;
-  border-radius: var(--radius-small);
 `
