@@ -45,7 +45,12 @@ const TabContent: FC<TabContentProps> = ({
 }) => (
   <motion.div {...fadeIn} className={className}>
     <Header>
-      <Searchbar placeholder={searchPlaceholder} Icon={SearchIcon} onChange={(e) => onSearch(e.target.value)} />
+      <Searchbar
+        placeholder={searchPlaceholder}
+        Icon={SearchIcon}
+        onChange={(e) => onSearch(e.target.value)}
+        contrast
+      />
       {HeaderMiddleComponent}
       <ButtonContainer {...fadeInOut}>
         <HeaderButton short onClick={onButtonClick}>

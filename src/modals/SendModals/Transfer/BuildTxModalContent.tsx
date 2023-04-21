@@ -90,7 +90,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
           id="asset-amounts"
         />
       </InputFieldsColumn>
-      <HorizontalDividerStyled />
+      <HorizontalDividerStyled secondary />
       <ToggleSection
         title={t('Show advanced options')}
         subtitle={t('Set gas and lock time')}

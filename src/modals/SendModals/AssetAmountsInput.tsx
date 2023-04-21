@@ -30,7 +30,7 @@ import Box from '@/components/Box'
 import Button from '@/components/Button'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
-import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
+import { inputDefaultStyle, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
@@ -187,9 +187,6 @@ const AssetAmountsInput = ({
                 onMouseDown={() => handleAssetSelectModalOpen(index)}
                 onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
               >
-                <InputLabel isElevated htmlFor={id}>
-                  {t('Asset')}
-                </InputLabel>
                 <SelectInput
                   type="button"
                   className={className}
@@ -284,7 +281,7 @@ const AssetSelect = styled(SelectContainer)`
 `
 
 const SelectInput = styled.div<InputProps>`
-  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true)};
+  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, false, true)};
   display: flex;
   align-items: center;
   gap: var(--spacing-2);

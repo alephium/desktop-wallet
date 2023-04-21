@@ -45,6 +45,7 @@ const Input = ({
   value,
   noMargin,
   hint,
+  contrast,
   Icon,
   onIconPress,
   children,
@@ -95,6 +96,7 @@ const Input = ({
           Icon={Icon}
           ref={inputFieldRef}
           heightSize={heightSize}
+          contrast={contrast}
         />
         {!!Icon && !onIconPress && !isValid && (
           <InputIconContainer>
@@ -130,8 +132,8 @@ export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin' | '
 `
 
 export const InputBase = styled.input<InputProps>`
-  ${({ isValid, value, label, Icon, heightSize }) =>
-    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize)};
+  ${({ isValid, value, label, Icon, heightSize, contrast }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize, contrast)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 

@@ -29,6 +29,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
+  contrast?: boolean
   hint?: string
   Icon?: LucideIconType
   onIconPress?: () => void
@@ -60,13 +61,14 @@ export const inputDefaultStyle = (
   hasIcon?: boolean,
   hasValue?: boolean,
   hasLabel?: boolean,
-  heightSize?: InputHeight
+  heightSize?: InputHeight,
+  isContrasted?: boolean
 ) => css`
   background-image: none;
   height: ${heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => (isContrasted ? theme.bg.background2 : theme.bg.primary)};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
   padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingLeftRight}` : `0 ${inputStyling.paddingLeftRight}`};

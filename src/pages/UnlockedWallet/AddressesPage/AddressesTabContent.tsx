@@ -112,7 +112,7 @@ const HideEmptyAddressesToggle = styled.div`
   gap: 20px;
   min-width: 250px;
   height: var(--inputHeight);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => theme.bg.secondary};
   padding: 12px 18px 12px 22px;
   border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};
