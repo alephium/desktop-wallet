@@ -354,5 +354,10 @@
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
   "Shortcuts": "Shortcuts",
-  "More options": "Plus d'options"
+  "More options": "Plus d'options",
+  "🌅 Good morning.": "🌅 Good morning.",
+  "🌞 Good afternoon.": "🌞 Good afternoon.",
+  "🌇 Good evening.": "🌇 Good evening.",
+  "🌝 Good night.": "🌇 Good night.",
+  "ALPH last price: : {{ lastPrice }}": "ALPH last price: : {{ lastPrice }}"
 }

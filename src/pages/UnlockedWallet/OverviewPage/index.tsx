@@ -29,6 +29,7 @@ import TransactionList from '@/components/TransactionList'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
+import GreetingMessages from '@/pages/UnlockedWallet/OverviewPage/GreetingMessages'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 
@@ -48,7 +49,9 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
       onAnimationComplete={() => setShowChart(true)}
       onAnimationStart={() => setShowChart(false)}
     >
-      <Greeting>🌇 Good evening.</Greeting>
+      <Greetings>
+        <GreetingMessages />
+      </Greetings>
       <AmountsOverviewPanel showChart={showChart}>
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
@@ -108,7 +111,7 @@ const ButtonsGrid = styled.div`
   gap: 1px;
 `
 
-const Greeting = styled.span`
+const Greetings = styled.span`
   display: inline-block;
   margin-left: 72px;
   margin-top: 3px;
