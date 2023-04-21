@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import TabBar, { Tab, TabBarProps } from '@/components/TabBar'
 
@@ -24,16 +24,25 @@ const TableTabBar = (props: TabBarProps) => <TabBar {...props} TabComponent={Tab
 
 export default styled(TableTabBar)`
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const TableTab = styled(Tab)`
   min-width: 60px;
   padding: 22px 20px;
   background-color: ${({ isActive, theme }) => (isActive ? theme.bg.primary : theme.bg.secondary)};
-  border-top: none;
-  border-left: none;
-  border-bottom: none;
+  border: none;
+
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+
+  ${({ isActive, theme }) =>
+    isActive &&
+    css`
+      border-bottom: none;
+    `}
+
+  &:not(:last-child) {
+    border-right: 1px solid ${({ theme }) => theme.border.primary};
+  }
 
   &:first-child,
   &:last-child {

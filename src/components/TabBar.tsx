@@ -78,11 +78,11 @@ const TabBar = ({
 
 export default styled(TabBar)`
   display: flex;
-  justify-content: flex-start;
   max-height: 60px;
 `
 
 export const Tab = styled.div<{ isActive: boolean }>`
+  flex: 1;
   min-width: 50px;
   text-align: center;
   padding: 16px 36px;
@@ -92,12 +92,12 @@ export const Tab = styled.div<{ isActive: boolean }>`
   cursor: pointer;
   font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
+  margin-bottom: -1px;
 
   ${({ isActive, theme }) =>
     isActive
       ? css`
           color: ${theme.font.primary};
-          margin-bottom: -1px;
         `
       : css`
           color: ${theme.font.tertiary};

@@ -88,7 +88,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     >
       <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
         <QrCodeBox>
-          <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
+          <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.primary} />
         </QrCodeBox>
       </AmountsOverviewPanel>
 
@@ -185,9 +185,9 @@ const Content = styled.div`
 
 const Shortcuts = styled(Box)`
   overflow: hidden;
-  background-color: ${({ theme }) => theme.border.primary};
-  margin-top: 80px;
-  margin-bottom: 30px;
+  background-color: ${({ theme }) => theme.bg.primary};
+  margin-top: 40px;
+  margin-bottom: 40px;
 `
 
 const ButtonsGrid = styled.div`
