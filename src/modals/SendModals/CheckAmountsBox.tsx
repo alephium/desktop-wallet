@@ -54,6 +54,7 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
                 suffix={assetInfo?.symbol}
                 decimals={assetInfo?.decimals}
                 isUnknownToken={!assetInfo?.symbol}
+                fullPrecision
               />
             </AssetAmountRow>
           </Fragment>
