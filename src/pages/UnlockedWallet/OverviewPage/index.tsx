@@ -89,7 +89,7 @@ const Shortcuts = styled(Box)`
   z-index: 1;
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-huge);
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const ShortcutsHeader = styled(TableHeader)`
