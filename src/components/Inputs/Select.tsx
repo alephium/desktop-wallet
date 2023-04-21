@@ -70,6 +70,7 @@ interface SelectProps<T extends OptionValue> {
   id: string
   onSelect: (value: T) => void
   raised?: boolean
+  contrast?: boolean
   skipEqualityCheck?: boolean
   noMargin?: boolean
   className?: string
@@ -91,6 +92,7 @@ function Select<T extends OptionValue>({
   id,
   onSelect,
   raised,
+  contrast,
   skipEqualityCheck = false,
   noMargin,
   simpleMode,
@@ -208,6 +210,7 @@ function Select<T extends OptionValue>({
               simpleMode={simpleMode}
               label={label}
               heightSize={heightSize}
+              contrast={contrast}
             >
               <Truncate>{value?.label}</Truncate>
             </SelectedValue>
@@ -407,7 +410,7 @@ export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean
 `
 
 const SelectedValue = styled.div<InputProps>`
-  ${({ heightSize, label }) => inputDefaultStyle(true, true, !!label, heightSize)};
+  ${({ heightSize, label, contrast }) => inputDefaultStyle(true, true, !!label, heightSize, contrast)};
 
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
