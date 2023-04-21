@@ -48,7 +48,7 @@ export default styled(Badge)`
       height: 35px;
       color: ${usedColor};
       border-radius: ${rounded ? '50px' : 'var(--radius-big)'};
-      background-color: ${!transparent && colord(usedColor).alpha(0.05).toRgbString()};
+      background-color: ${!transparent && colord(usedColor).alpha(0.02).toRgbString()};
       ${border &&
       css`
         border: 1px solid ${theme.border.primary};

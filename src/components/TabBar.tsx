@@ -63,7 +63,7 @@ const TabBar = ({
             aria-selected={isActive}
             isActive={isActive}
           >
-            {item.label}
+            <TabLabel isActive={isActive}>{item.label}</TabLabel>
           </TabComponent>
         )
       })}
@@ -101,7 +101,6 @@ export const Tab = styled.div<{ isActive: boolean }>`
         `
       : css`
           color: ${theme.font.tertiary};
-          filter: saturate(10%);
         `}
 
   &:not(:first-child) {
@@ -111,6 +110,14 @@ export const Tab = styled.div<{ isActive: boolean }>`
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const TabLabel = styled.span<{ isActive: boolean }>`
+  ${({ isActive }) =>
+    !isActive &&
+    css`
+      filter: saturate(10%);
+    `}
 `
 
 const ActionLinkStyled = styled(ActionLink)`

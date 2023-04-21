@@ -83,7 +83,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         <Balances>
           <BalancesRow>
             <BalancesColumn>
-              <Today highlighted={!!date}>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
+              <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
               {isPriceLoading || stateUninitialized ? (
                 <SkeletonLoader height="50px" />
               ) : (
@@ -181,7 +181,7 @@ const Panel = styled.div<{ worth?: number }>`
   align-items: center;
 
   margin-bottom: 45px;
-  padding: 45px 0 30px 0;
+  padding: 20px 0 30px 0;
 `
 
 const Balances = styled.div`
@@ -251,8 +251,8 @@ const BalanceLabel = styled.label`
   margin-bottom: 3px;
 `
 
-const Today = styled.div<{ highlighted: boolean }>`
-  color: ${({ theme, highlighted }) => (highlighted ? theme.font.secondary : theme.font.tertiary)};
+const Today = styled.div`
+  color: ${({ theme }) => theme.font.secondary};
   font-size: 16px;
   margin-bottom: 8px;
 `
