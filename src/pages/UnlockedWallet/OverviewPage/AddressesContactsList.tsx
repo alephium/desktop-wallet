@@ -51,7 +51,7 @@ const AddressesContactsList = ({ className, limit }: AddressesContactsListProps)
   return (
     <Table className={className}>
       <TableHeader title={t('Your addresses')}>
-        <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight}>
+        <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight} withBackground>
           {t('See more')}
         </ActionLink>
       </TableHeader>

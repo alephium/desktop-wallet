@@ -63,8 +63,10 @@ export default styled(InfoMessage)`
   padding: var(--spacing-3) var(--spacing-7) var(--spacing-3) var(--spacing-4);
   max-width: 306px;
 
-  border: 1px solid ${({ theme }) => colord(theme.bg.accent).alpha(0.3).toHex()};
+  border: 1px solid ${({ theme }) => colord(theme.bg.accent).alpha(0.15).toHex()};
+  background-color: ${({ theme }) => colord(theme.bg.accent).alpha(0.05).toHex()};
   color: ${({ theme }) => theme.global.accent};
+
   line-height: 20px;
 
   border-radius: var(--radius-big);

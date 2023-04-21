@@ -192,7 +192,7 @@ const Panel = styled.div<{ worth?: number }>`
   align-items: center;
 
   margin-bottom: 45px;
-  padding: 30px 0;
+  padding: 40px 0 30px 0;
 `
 
 const Balances = styled.div`

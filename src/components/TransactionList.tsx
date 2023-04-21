@@ -145,7 +145,7 @@ const TransactionList = ({
           <TableHeader title={title ?? t('Transactions')}>
             {headerExtraContent}
             {limit !== undefined && (
-              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight} withBackground>
                 {t('See more')}
               </ActionLinkStyled>
             )}
