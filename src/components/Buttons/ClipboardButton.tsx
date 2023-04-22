@@ -121,7 +121,7 @@ const ClipboardIcon = styled.div`
   }
 
   & > .check {
-    color: ${({ theme }) => theme.font.primary};
+    color: ${({ theme }) => theme.global.valid};
   }
 
   & > .clipboard,
@@ -132,7 +132,6 @@ const ClipboardIcon = styled.div`
 `
 
 const ClipboardContent = styled.div`
-  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
   margin-right: -0.5em;
   overflow: hidden;
   width: 100%;
@@ -145,11 +144,15 @@ export default styled(ClipboardButton)`
   align-items: center;
   overflow: hidden;
 
+  ${ClipboardIcon} {
+    transform: translateY(1px);
+  }
+
   &:hover > ${ClipboardIcon} {
     opacity: 1;
   }
 
   &:hover > ${ClipboardContent} {
-    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) calc(100% - 15px));
+    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 10px, rgba(0, 0, 0, 1) 30px);
   }
 `
