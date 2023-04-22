@@ -67,7 +67,7 @@ const AddressBadge = ({
       </Label>
     </div>
   ) : !address ? (
-    <HashEllipsed className={className} hash={addressHash} disableCopy={disableCopy} />
+    <NotKnownAddress className={className} hash={addressHash} disableCopy={disableCopy} />
   ) : (
     <div className={className}>
       {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
@@ -121,4 +121,11 @@ const Label = styled.span<AddressBadgeProps>`
       overflow: hidden;
       text-overflow: ellipsis;
     `}
+`
+
+const NotKnownAddress = styled(HashEllipsed)`
+  // Don't show border on not "known" addresses
+  border: none;
+  border-radius: 0;
+  padding: 0;
 `
