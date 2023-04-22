@@ -20,7 +20,6 @@ import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
-  ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
   OptionHTMLAttributes,
@@ -76,10 +75,7 @@ interface SelectProps<T extends OptionValue> {
   className?: string
   simpleMode?: boolean
   heightSize?: InputHeight
-  CustomComponent?: ComponentType<{
-    controlledValue?: SelectOption<T>
-    label?: string
-  }>
+  renderCustomComponent?: (value?: SelectOption<T>) => ReactNode
   ListBottomComponent?: ReactNode
 }
 
@@ -98,7 +94,7 @@ function Select<T extends OptionValue>({
   simpleMode,
   className,
   heightSize,
-  CustomComponent,
+  renderCustomComponent,
   ListBottomComponent
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
@@ -188,10 +184,8 @@ function Select<T extends OptionValue>({
         heightSize={heightSize}
         simpleMode={simpleMode}
       >
-        {CustomComponent ? (
-          <CustomComponentContainer ref={selectedValueRef}>
-            <CustomComponent label={label} controlledValue={value} />
-          </CustomComponentContainer>
+        {renderCustomComponent ? (
+          <CustomComponentContainer ref={selectedValueRef}>{renderCustomComponent(value)}</CustomComponentContainer>
         ) : (
           <>
             <InputLabel isElevated={!!value} htmlFor={id}>

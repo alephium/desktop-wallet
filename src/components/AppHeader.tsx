@@ -23,8 +23,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
+import DefaultAddressSwitch from '@/components/DefaultAddressSwitch'
 import CompactToggle from '@/components/Inputs/CompactToggle'
 import NetworkSwitch from '@/components/NetworkSwitch'
 import VerticalDivider from '@/components/PageComponents/VerticalDivider'
@@ -134,14 +134,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
               </Button>
             </>
           )}
-          {defaultAddress && !isPassphraseUsed && (
-            <>
-              <VerticalDivider />
-              <div data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-                <AddressBadge withBorders addressHash={defaultAddress.hash} truncate />
-              </div>
-            </>
-          )}
+          <VerticalDivider />
+          {defaultAddress && !isPassphraseUsed && <DefaultAddressSwitch />}
           <VerticalDivider />
           <NetworkSwitch />
         </HeaderButtons>
