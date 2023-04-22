@@ -22,22 +22,17 @@ import { useTranslation } from 'react-i18next'
 import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
 import Select, { SelectOption } from '@/components/Inputs/Select'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useAppSelector } from '@/hooks/redux'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { changeDefaultAddress } from '@/storage/addresses/addressesStorageUtils'
 import { AddressHash } from '@/types/addresses'
-import { NetworkNames } from '@/types/network'
 
 interface AddressOption {
   label: string
   value: AddressHash
 }
 
-type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom' | 'localhost'>
-
 const DefaultAddressSwitch = () => {
-  const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
 
@@ -46,7 +41,13 @@ const DefaultAddressSwitch = () => {
     value: address.hash
   }))
 
-  const handleDefaultAddressChange = useCallback(() => null, [])
+  const handleDefaultAddressChange = useCallback(
+    (addressHash: string) => {
+      const newDefaultAddress = addresses.find((a) => a.hash === addressHash)
+      newDefaultAddress && changeDefaultAddress(newDefaultAddress)
+    },
+    [addresses]
+  )
 
   return (
     <Select
@@ -65,8 +66,6 @@ export default DefaultAddressSwitch
 
 const SelectCustomComponent = (value?: SelectOption<AddressHash>) => {
   const { t } = useTranslation()
-
-  const handleClick = () => null
 
   return (
     <Button role="secondary" short transparent data-tooltip-id="default" data-tooltip-content={t('Default address')}>

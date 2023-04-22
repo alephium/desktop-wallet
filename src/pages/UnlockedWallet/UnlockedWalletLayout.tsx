@@ -129,10 +129,10 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
             <AnimatePresence mode="wait">
               <WalletInitialsContainer
                 key={`initials-${showAlephiumLogo}`}
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 150 }}
+                exit={{ opacity: 0, y: 15 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 70 }}
               >
                 {showAlephiumLogo ? <AlephiumLogo /> : activeWalletNameInitials}
               </WalletInitialsContainer>
