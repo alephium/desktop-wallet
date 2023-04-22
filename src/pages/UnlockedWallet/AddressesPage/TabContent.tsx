@@ -67,8 +67,10 @@ export default TabContent
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 44px;
-  gap: 28px;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  gap: 25px;
 `
 
 const Searchbar = styled(Input)`
@@ -89,6 +91,7 @@ const Cards = styled.div`
 const HeaderButton = styled(Button)`
   margin: 0;
   margin-left: auto;
+  height: 40px;
 `
 
 const ButtonContainer = styled(motion.div)`
