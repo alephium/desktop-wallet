@@ -16,11 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { formatFiatAmountForDisplay } from '@alephium/sdk'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monochrome.svg'
 import TimeOfDayMessage from '@/pages/UnlockedWallet/OverviewPage/TimeOfDayMessage'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { currencies } from '@/utils/currencies'
@@ -35,7 +37,7 @@ const variants = {
   exit: { opacity: 0 }
 }
 
-const swapDelayInSeconds = 12
+const swapDelayInSeconds = 10
 
 const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const { t } = useTranslation()
@@ -44,24 +46,45 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   })
 
   const [currentComponentIndex, setCurrentComponentIndex] = useState(0)
+  const [lastClickTime, setLastChangeTime] = useState(Date.now())
+
+  const priceComponent = (
+    <span key="price">
+      {price ? t('📈 ALPH price: {{ price }}$', { price: formatFiatAmountForDisplay(price) }) : ''}
+    </span>
+  )
 
   const componentList = [
     <TimeOfDayMessage key="timeOfDay" />,
-    <span key="price">{t('📈 ALPH price: {{ price }}$', { price })}</span>
+    priceComponent,
+    <RandomEmoji key="randomEmoji" />,
+    priceComponent,
+    <AlephiumLogo key="alephiumLogo" />,
+    priceComponent
   ]
 
+  const showNextMessage = useCallback(() => {
+    setCurrentComponentIndex((prevIndex) => {
+      if (prevIndex === 0 && (isPriceLoading || price == null)) {
+        return prevIndex
+      }
+      return (prevIndex + 1) % componentList.length
+    })
+    setLastChangeTime(Date.now())
+  }, [componentList.length, isPriceLoading, price])
+
+  const handleClick = useCallback(() => {
+    showNextMessage()
+  }, [showNextMessage])
+
   useEffect(() => {
+    const remainingTime = Math.max(swapDelayInSeconds * 1000 - (Date.now() - lastClickTime), 0)
     const intervalId = setInterval(() => {
-      setCurrentComponentIndex((prevIndex) => {
-        if (prevIndex === 0 && (isPriceLoading || price == null)) {
-          return prevIndex
-        }
-        return (prevIndex + 1) % componentList.length
-      })
-    }, swapDelayInSeconds * 1000)
+      showNextMessage()
+    }, remainingTime)
 
     return () => clearInterval(intervalId)
-  }, [componentList.length, isPriceLoading, price])
+  }, [lastClickTime, showNextMessage])
 
   return (
     <AnimatePresence mode="wait">
@@ -73,6 +96,7 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
         animate="center"
         exit="exit"
         transition={{ duration: 1 }}
+        onClick={handleClick}
       >
         {componentList[currentComponentIndex]}
       </motion.div>
@@ -80,18 +104,39 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   )
 }
 
+const RandomEmoji = () => (
+  <span style={{ fontSize: 23 }}>{emojiList[Math.floor(Math.random() * emojiList.length)]}</span>
+)
+
+const emojiList = ['👋', '🚀', '🍀', '✨', '🌸']
+
 export default styled(GreetingMessages)`
   display: inline-flex;
   align-items: center;
-  height: 40px;
-  margin-left: 72px;
-  margin-top: 2px;
+  height: 44px;
+  margin-left: 70px;
   font-size: 16px;
+  font-weight: var(--fontWeight-normal);
   color: ${({ theme }) => theme.font.secondary};
-  background-color: ${({ theme }) => theme.bg.background2};
-  padding: 0 15px;
-  border-radius: var(--radius-small);
+  background-color: ${({ theme }) => theme.bg.primary};
   border: 1px solid ${({ theme }) => theme.border.secondary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+  padding: 0 15px;
+  border-radius: 50px;
+
+  &:hover {
+    cursor: pointer;
+    color: ${({ theme }) => theme.font.primary};
+  }
 
   transition: all ease-out 0.2s;
+`
+
+const AlephiumLogo = styled(AlephiumLogoSVG)`
+  height: 25px;
+  width: 25px;
+
+  * {
+    fill: ${({ theme }) => theme.font.secondary} !important;
+  }
 `

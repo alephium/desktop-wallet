@@ -213,7 +213,11 @@ const CurrentWalletInitials = styled(motion.div)`
   font-weight: var(--fontWeight-semiBold);
   background-color: ${({ theme }) => theme.bg.primary};
   box-shadow: ${({ theme }) => theme.shadow.primary};
-  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.bg.hover};
+  }
 `
 
 const OnEnterWalletName = styled(CurrentWalletInitials)`
