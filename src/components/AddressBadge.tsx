@@ -70,7 +70,7 @@ const AddressBadge = ({
     <NotKnownAddress className={className} hash={addressHash} disableCopy={disableCopy} />
   ) : (
     <div className={className}>
-      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
+      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
       {address.label ? (
         <Label {...props}>
           {disableCopy ? (

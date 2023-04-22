@@ -25,7 +25,7 @@ import ActionLink from '@/components/ActionLink'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface InlineLabelValueInputProps {
-  label: string
+  label: ReactNode
   InputComponent: ReactNode
   description?: string
   moreInfoLink?: string
