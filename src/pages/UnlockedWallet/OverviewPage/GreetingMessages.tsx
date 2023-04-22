@@ -22,7 +22,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monochrome.svg'
+import { fadeInOut } from '@/animations'
+import { useAppSelector } from '@/hooks/redux'
 import TimeOfDayMessage from '@/pages/UnlockedWallet/OverviewPage/TimeOfDayMessage'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { currencies } from '@/utils/currencies'
@@ -31,16 +32,11 @@ interface GreetingMessagesProps {
   className?: string
 }
 
-const variants = {
-  enter: { opacity: 0 },
-  center: { opacity: 1 },
-  exit: { opacity: 0 }
-}
-
-const swapDelayInSeconds = 10
+const swapDelayInSeconds = 8
 
 const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const { t } = useTranslation()
+  const activeWallet = useAppSelector((s) => s.activeWallet)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
     pollingInterval: 60000
   })
@@ -57,9 +53,9 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const componentList = [
     <TimeOfDayMessage key="timeOfDay" />,
     priceComponent,
-    <RandomEmoji key="randomEmoji" />,
-    priceComponent,
-    <AlephiumLogo key="alephiumLogo" />,
+    <span key="currentWallet">
+      👛 {t('Wallet')}: {activeWallet.name}
+    </span>,
     priceComponent
   ]
 
@@ -88,27 +84,12 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div
-        className={className}
-        key={currentComponentIndex}
-        variants={variants}
-        initial="enter"
-        animate="center"
-        exit="exit"
-        transition={{ duration: 1 }}
-        onClick={handleClick}
-      >
+      <motion.div className={className} key={currentComponentIndex} onClick={handleClick} {...fadeInOut}>
         {componentList[currentComponentIndex]}
       </motion.div>
     </AnimatePresence>
   )
 }
-
-const RandomEmoji = () => (
-  <span style={{ fontSize: 23 }}>{emojiList[Math.floor(Math.random() * emojiList.length)]}</span>
-)
-
-const emojiList = ['👋', '🚀', '🍀', '✨', '🌸']
 
 export default styled(GreetingMessages)`
   display: inline-flex;
@@ -130,13 +111,4 @@ export default styled(GreetingMessages)`
   }
 
   transition: all ease-out 0.2s;
-`
-
-const AlephiumLogo = styled(AlephiumLogoSVG)`
-  height: 25px;
-  width: 25px;
-
-  * {
-    fill: ${({ theme }) => theme.font.secondary} !important;
-  }
 `

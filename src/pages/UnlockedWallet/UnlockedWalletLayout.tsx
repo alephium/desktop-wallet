@@ -33,10 +33,12 @@ import SideBar from '@/components/PageComponents/SideBar'
 import Scrollbar from '@/components/Scrollbar'
 import Spinner from '@/components/Spinner'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monochrome.svg'
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
 import { appHeaderHeightPx } from '@/style/globalStyles'
+import { useInterval } from '@/utils/hooks'
 import { getInitials } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
@@ -60,8 +62,17 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
 
   const [fullWalletNameVisible, setFullWalletNameVisible] = useState(true)
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
+  const [showAlephiumLogo, setShowAlephiumLogo] = useState(false)
 
   const previousWalletName = useRef<string>()
+
+  useInterval(() => {
+    setShowAlephiumLogo(true)
+
+    setTimeout(() => {
+      setShowAlephiumLogo(false)
+    }, 8000)
+  }, 20000)
 
   useEffect(() => {
     if (activeWalletName !== previousWalletName.current) {
@@ -103,7 +114,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
                   delay: walletNameAppearAfterSeconds
                 }}
               >
-                👋 {t('Current wallet')}: {activeWalletName}
+                👋 {t('Wallet')}: {activeWalletName}
               </OnEnterWalletName>
             )}
           </AnimatePresence>
@@ -115,7 +126,17 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
             transition={{ delay: walletNameHideAfterSeconds, type: 'spring', stiffness: 500, damping: 70 }}
             key={`initials-${activeWalletName}`}
           >
-            {activeWalletNameInitials}
+            <AnimatePresence mode="wait">
+              <WalletInitialsContainer
+                key={`initials-${showAlephiumLogo}`}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 150 }}
+              >
+                {showAlephiumLogo ? <AlephiumLogo /> : activeWalletNameInitials}
+              </WalletInitialsContainer>
+            </AnimatePresence>
           </CurrentWalletInitials>
           <SideNavigation>
             <NavItem Icon={Layers} label={t('Overview')} to="/wallet/overview" />
@@ -213,6 +234,7 @@ const CurrentWalletInitials = styled(motion.div)`
   font-weight: var(--fontWeight-semiBold);
   background-color: ${({ theme }) => theme.bg.primary};
   box-shadow: ${({ theme }) => theme.shadow.primary};
+  overflow: hidden;
 
   &:hover {
     cursor: pointer;
@@ -231,4 +253,19 @@ const OnEnterWalletName = styled(CurrentWalletInitials)`
   pointer-events: none;
   box-shadow: ${({ theme }) => theme.shadow.secondary};
   border-color: ${({ theme }) => theme.global.accent};
+`
+
+const WalletInitialsContainer = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const AlephiumLogo = styled(AlephiumLogoSVG)`
+  height: 25px;
+  width: 25px;
+
+  * {
+    fill: ${({ theme }) => theme.font.primary} !important;
+  }
 `
