@@ -154,6 +154,10 @@ const GridRow = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
 
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
   &:hover ${Cell} {
     cursor: pointer;
     background-color: ${({ theme }) => theme.bg.hover};

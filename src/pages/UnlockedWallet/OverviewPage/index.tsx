@@ -99,7 +99,7 @@ const Shortcuts = styled(Box)`
 `
 
 const ShortcutsHeader = styled(TableHeader)`
-  height: 50px;
+  height: 45px;
   background-color: transparent;
 `
 

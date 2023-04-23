@@ -30,12 +30,11 @@ import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTab
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { addressesPageInfoMessageClosed } from '@/storage/global/globalActions'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 
 const tabs = [
-  { value: 'addresses', label: i18next.t('Addresses') },
-  { value: 'contacts', label: i18next.t('Contacts') }
+  { value: 'addresses', label: `📭 ${i18next.t('Addresses')}` },
+  { value: 'contacts', label: `🫂 ${i18next.t('Contacts')}` }
 ]
 
 const AddressesPage = () => {
@@ -99,8 +98,6 @@ const TabContent = styled.div`
 const TabPanel = styled(UnlockedWalletPanel)``
 
 const TabBarPanel = styled(TabPanel)`
-  position: sticky;
-  top: ${appHeaderHeightPx}px;
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
   backdrop-filter: blur(30px);
