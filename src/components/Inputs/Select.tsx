@@ -185,6 +185,7 @@ function Select<T extends OptionValue>({
         style={{ zIndex: raised && showPopup ? 2 : undefined }}
         heightSize={heightSize}
         simpleMode={simpleMode}
+        tabIndex={renderCustomComponent ? -1 : 0}
       >
         {renderCustomComponent ? (
           <CustomComponentContainer ref={selectedValueRef}>{renderCustomComponent(value)}</CustomComponentContainer>
