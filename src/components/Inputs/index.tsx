@@ -142,6 +142,7 @@ const StyledInputLabel = styled(motion.label)`
   position: absolute;
 
   left: ${inputStyling.paddingLeftRight};
+  top: 0;
   height: 100%;
   display: flex;
   align-items: center;

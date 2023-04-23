@@ -140,22 +140,25 @@ export function MultiSelectOptionsModal<T>({
   )
 }
 
-export default MultiSelect
-
-const SelectedValue = styled.div`
+export default styled(MultiSelect)`
   ${inputDefaultStyle(true, true, true)};
-
-  display: flex;
-  align-items: center;
-  min-width: 0;
-
-  border: 0;
-
-  transition: 0.2s ease-out;
+  border: 1px solid transparent;
 
   &:not(:hover) {
     background-color: transparent;
   }
+
+  &:hover {
+    border: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  transition: 0.2s ease-out;
+`
+
+const SelectedValue = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
 `
 
 const Options = styled.div`
