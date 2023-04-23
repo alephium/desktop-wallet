@@ -88,6 +88,7 @@ const NetworkSwitch = () => {
         options={networkSelectOptions}
         onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === network.name)}
+        title={t('Current network')}
         id="network"
         noMargin
         renderCustomComponent={SelectCustomComponent}
