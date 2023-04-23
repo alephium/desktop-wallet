@@ -91,10 +91,11 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
               )}
               <Opacity fadeOut={isShowingHistoricWorth}>
                 <FiatDeltaPercentage>
-                  {(isPriceLoading || stateUninitialized || worthInBeginningOfChart === undefined) &&
-                  hasHistoricBalances ? (
-                    <SkeletonLoader height="25px" width="100px" />
-                  ) : worthInBeginningOfChart ? (
+                  {isPriceLoading ||
+                  stateUninitialized ||
+                  (hasHistoricBalances && worthInBeginningOfChart === undefined) ? (
+                    <SkeletonLoader height="24px" width="100px" />
+                  ) : hasHistoricBalances && worthInBeginningOfChart ? (
                     <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
                   ) : null}
                 </FiatDeltaPercentage>
@@ -129,7 +130,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                       {t('Available')}
                     </BalanceLabel>
                     {stateUninitialized ? (
-                      <SkeletonLoader height="28px" />
+                      <SkeletonLoader height="30px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
                     )}
@@ -139,7 +140,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                       {t('Locked')}
                     </BalanceLabel>
                     {stateUninitialized ? (
-                      <SkeletonLoader height="28px" />
+                      <SkeletonLoader height="30px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
                     )}
@@ -208,6 +209,9 @@ const RightColumnContent = styled(Opacity)`
 
 const BalancesColumn = styled(Opacity)`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 200px;
 `
 
