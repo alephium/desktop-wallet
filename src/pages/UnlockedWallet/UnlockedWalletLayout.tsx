@@ -252,7 +252,7 @@ const OnEnterWalletName = styled(CurrentWalletInitials)`
   font-size: 15px;
   pointer-events: none;
   box-shadow: ${({ theme }) => theme.shadow.secondary};
-  border-color: ${({ theme }) => theme.global.accent};
+  border: 2px solid ${({ theme }) => theme.global.accent};
 `
 
 const WalletInitialsContainer = styled(motion.div)`

@@ -107,6 +107,7 @@ const ShortcutButtons = ({
           onClick={handleReceiveClick}
           Icon={ArrowDown}
           iconColor={theme.global.valid}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Receive')}</ButtonText>
@@ -118,7 +119,8 @@ const ShortcutButtons = ({
           borderless
           onClick={handleSendClick}
           Icon={ArrowUp}
-          iconColor={theme.global.accent}
+          iconColor={theme.global.highlight}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Send')}</ButtonText>
@@ -130,18 +132,19 @@ const ShortcutButtons = ({
           borderless
           onClick={handleWalletSettingsClick}
           Icon={Settings}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}
       {lock && (
-        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock} highlight={highlight}>
+        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock} highlight={highlight} iconBackground>
           <ButtonText>{t('Lock wallet')}</ButtonText>
         </ShortcutButton>
       )}
       {addressSettings && addressHash && (
-        <ShortcutButton transparent borderless onClick={handleAddressSettingsClick} Icon={Settings}>
+        <ShortcutButton transparent borderless onClick={handleAddressSettingsClick} Icon={Settings} iconBackground>
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}

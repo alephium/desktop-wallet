@@ -198,7 +198,7 @@ const Balances = styled.div`
 
 const BalancesRow = styled.div`
   display: flex;
-  padding: 25px;
+  padding: 25px 6%;
 `
 
 const Opacity = styled.div<{ fadeOut?: boolean }>`
@@ -288,6 +288,6 @@ const ChartContainer = styled.div`
   left: 0;
   padding: 10px 0;
 
-  bottom: -60px;
+  bottom: -70px;
   height: 100px;
 `

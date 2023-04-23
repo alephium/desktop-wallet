@@ -54,6 +54,7 @@ const AlephiumLogoContainer = styled(motion.div)`
   width: 150px;
   height: 150px;
   border-radius: var(--radius-full);
+  border: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.secondary)};
 `

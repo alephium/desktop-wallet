@@ -34,6 +34,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   wide?: boolean
   Icon?: LucideIconType
   iconColor?: string
+  iconBackground?: boolean
   borderless?: boolean
   isHighlighted?: boolean
   className?: string
@@ -82,7 +83,16 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
 }
 
 export default styled(Button)`
-  ${({ theme, role = 'primary', variant = 'default', transparent, borderless, children }) => {
+  ${({
+    theme,
+    role = 'primary',
+    variant = 'default',
+    transparent,
+    borderless,
+    iconBackground,
+    iconColor,
+    children
+  }) => {
     const bgColor = transparent
       ? 'transparent'
       : {
@@ -228,6 +238,23 @@ export default styled(Button)`
         css`
           margin-right: var(--spacing-2);
         `}
+
+        ${({ theme }) => {
+          const color = iconColor || theme.font.primary
+          return (
+            iconBackground &&
+            css`
+              background-color: ${colord(color).alpha(0.05).toHex()};
+              border: 1px solid ${colord(color).alpha(0.05).toHex()};
+              padding: 4px;
+              border-radius: var(--radius-full);
+
+              svg {
+                scale: 0.8;
+              }
+            `
+          )
+        }}
 
         svg {
           color: ${fontColor};
