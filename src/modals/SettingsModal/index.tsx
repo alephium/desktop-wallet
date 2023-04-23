@@ -184,6 +184,15 @@ const ColumnTitle = styled.div`
 
 const ColumnContent = styled.div`
   padding: 20px;
+
+  // Special styling for settings modal
+  // TODO: Create standalone components if used elesewhere?
+
+  h2 {
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
 `
 
 const Version = styled.div`
