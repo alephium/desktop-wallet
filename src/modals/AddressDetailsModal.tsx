@@ -59,7 +59,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     <SideModal
       onClose={onClose}
       title={t('Address details')}
-      width={800}
+      width={700}
       onAnimationComplete={() => setShowChart(true)}
       header={
         <Header>
