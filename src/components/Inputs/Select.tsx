@@ -65,6 +65,7 @@ interface SelectProps<T extends OptionValue> {
   disabled?: boolean
   controlledValue?: SelectOption<T>
   options: SelectOption<T>[]
+  optionRender?: (option: SelectOption<T>, isSelected?: boolean) => ReactNode
   title?: string
   id: string
   onSelect: (value: T) => void
@@ -81,6 +82,7 @@ interface SelectProps<T extends OptionValue> {
 
 function Select<T extends OptionValue>({
   options,
+  optionRender,
   title,
   label,
   disabled,
@@ -215,6 +217,7 @@ function Select<T extends OptionValue>({
         {showPopup && (
           <SelectOptionsModal
             options={options}
+            optionRender={optionRender}
             selectedOption={value}
             setValue={setInputValue}
             title={title}

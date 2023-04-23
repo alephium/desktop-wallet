@@ -33,6 +33,7 @@ interface AddressOption {
 }
 
 const DefaultAddressSwitch = () => {
+  const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
 
@@ -54,6 +55,8 @@ const DefaultAddressSwitch = () => {
       options={addressOptions}
       onSelect={handleDefaultAddressChange}
       controlledValue={addressOptions.find((n) => n.value === defaultAddress?.hash)}
+      title={t('Default address')}
+      optionRender={({ value }) => <AddressBadge addressHash={value} disableCopy />}
       id="defaultAddress"
       noMargin
       renderCustomComponent={SelectCustomComponent}

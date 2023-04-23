@@ -52,7 +52,7 @@ export const lightTheme: DefaultTheme = {
     accent: '#598bed',
     complementary: '#ff5d51',
     alert: '#ed4a34',
-    valid: '#3ed282',
+    valid: '#18BB63',
     highlight: '#d4a10d',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
