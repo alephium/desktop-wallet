@@ -38,6 +38,8 @@ const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...re
 
 export default styled(InputArea)`
   position: relative;
+  display: flex;
+  align-items: center;
   height: var(--inputHeight);
   width: 100%;
   cursor: pointer;

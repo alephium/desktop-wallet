@@ -349,6 +349,8 @@ export default Select
 const InputContainer = styled(InputArea)`
   margin: 16px 0;
   padding: 0;
+
+  outline: none;
 `
 
 export const MoreIcon = styled.div`
@@ -360,11 +362,41 @@ export const MoreIcon = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
+const SelectedValue = styled.div<InputProps>`
+  ${({ heightSize, label, contrast }) => inputDefaultStyle(true, true, !!label, heightSize, contrast)};
+
+  padding-right: 35px;
+  font-weight: var(--fontWeight-semiBold);
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  ${({ simpleMode }) =>
+    simpleMode &&
+    css`
+      border: 0;
+
+      &:not(:hover) {
+        background-color: transparent;
+      }
+    `}
+`
+
 export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize' | 'simpleMode'>>`
   cursor: pointer;
   margin: ${({ noMargin, simpleMode }) => (noMargin || simpleMode ? 0 : '16px 0')};
   height: ${({ heightSize }) =>
     heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
+
+  &:focus {
+    ${SelectedValue} {
+      box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
+    }
+  }
 `
 
 export const OptionSelect = styled.div`
@@ -403,30 +435,6 @@ export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean
 
       &:hover {
         background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
-      }
-    `}
-`
-
-const SelectedValue = styled.div<InputProps>`
-  ${({ heightSize, label, contrast }) => inputDefaultStyle(true, true, !!label, heightSize, contrast)};
-
-  padding-right: 35px;
-  font-weight: var(--fontWeight-semiBold);
-  box-shadow: ${({ theme }) => theme.shadow.primary};
-
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  min-width: 0;
-
-  ${({ simpleMode }) =>
-    simpleMode &&
-    css`
-      border: 0;
-
-      &:not(:hover) {
-        background-color: transparent;
       }
     `}
 `

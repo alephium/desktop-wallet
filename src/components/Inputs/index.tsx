@@ -87,7 +87,7 @@ export const inputDefaultStyle = (
 
   &:focus {
     background-color: ${({ theme }) => theme.bg.primary};
-    border: 1px solid ${({ theme }) => theme.global.accent};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
   }
 
   &.error {

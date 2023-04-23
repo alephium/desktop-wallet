@@ -22,7 +22,7 @@ import styled, { css, DefaultTheme, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
-type InfoBoxImportance = 'primary' | 'accent' | 'alert' | 'warning'
+type InfoBoxImportance = 'default' | 'accent' | 'alert' | 'warning'
 
 export interface InfoBoxProps {
   text?: string
@@ -43,7 +43,7 @@ const InfoBox: FC<InfoBoxProps> = ({
   Icon,
   text,
   label,
-  importance = 'primary',
+  importance = 'default',
   className,
   ellipsis,
   wordBreak,
@@ -81,7 +81,7 @@ const InfoBox: FC<InfoBoxProps> = ({
 const getImportanceColor = (theme: DefaultTheme, importance?: InfoBoxImportance) =>
   importance
     ? {
-        primary: theme.font.primary,
+        default: theme.font.secondary,
         alert: theme.global.alert,
         warning: theme.global.highlight,
         accent: theme.global.accent

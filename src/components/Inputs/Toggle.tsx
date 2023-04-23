@@ -116,6 +116,11 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   box-sizing: content-box;
   border: 1px solid ${({ theme }) => (theme.name === 'dark' ? theme.border.primary : 'transparent')};
 
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
+  }
+
   svg {
     cursor: pointer;
   }

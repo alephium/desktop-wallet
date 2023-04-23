@@ -261,7 +261,7 @@ export default styled(Button)`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
   }
 
   // Highlight animation
