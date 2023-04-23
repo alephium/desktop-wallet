@@ -79,7 +79,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   return (
     <UnlockedWalletPanelStyled>
-      <Panel className={className} worth={worth}>
+      <Panel className={className} worth={worth} hasHistoricBalances={hasHistoricBalances}>
         <Balances>
           <BalancesRow>
             <BalancesColumn>
@@ -91,13 +91,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
               )}
               <Opacity fadeOut={isShowingHistoricWorth}>
                 <FiatDeltaPercentage>
-                  {isPriceLoading || stateUninitialized ? (
-                    <SkeletonLoader height="28px" width="100px" />
+                  {(isPriceLoading || stateUninitialized || worthInBeginningOfChart === undefined) &&
+                  hasHistoricBalances ? (
+                    <SkeletonLoader height="25px" width="100px" />
                   ) : worthInBeginningOfChart ? (
                     <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
-                  ) : (
-                    '-%'
-                  )}
+                  ) : null}
                 </FiatDeltaPercentage>
               </Opacity>
 
@@ -152,7 +151,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         </Balances>
         {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
       </Panel>
-      {showChart && (
+      {showChart && hasHistoricBalances && (
         <ChartContainer>
           <HistoricWorthChart
             addressHash={addressHash}
@@ -174,13 +173,14 @@ const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
   position: relative;
 `
 
-const Panel = styled.div<{ worth?: number }>`
+const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
   position: relative;
   display: flex;
   gap: 30px;
   align-items: center;
 
-  margin-bottom: 45px;
+  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 80 : 0)}px;
+
   padding: 20px 0 30px 0;
 `
 
@@ -277,6 +277,7 @@ const ChartContainer = styled.div`
   position: absolute;
   right: 0;
   left: 0;
+  padding: 10px 0;
 
   bottom: -60px;
   height: 100px;

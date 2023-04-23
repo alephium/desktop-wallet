@@ -186,7 +186,6 @@ const Content = styled.div`
 const Shortcuts = styled(Box)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.bg.primary};
-  margin-top: 40px;
   margin-bottom: 40px;
 `
 
