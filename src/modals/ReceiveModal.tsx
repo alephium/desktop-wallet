@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
+import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
@@ -43,7 +44,7 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   return (
     <CenteredModal title={t('Receive')} onClose={onClose}>
       <Content>
-        {!addressHash && (
+        {!addressHash ? (
           <AddressSelect
             label={t('Address')}
             title={t('Select the address to receive funds to.')}
@@ -52,6 +53,8 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
             onAddressChange={setSelectedAddress}
             id="address"
           />
+        ) : (
+          <InfoBox text={addressHash} importance="primary" />
         )}
         <QRCodeSection>
           {selectedAddress?.hash && (
