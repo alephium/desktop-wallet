@@ -85,7 +85,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             <BalancesColumn>
               <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
               {isPriceLoading || stateUninitialized ? (
-                <SkeletonLoader height="50px" />
+                <SkeletonLoader height="32px" style={{ marginBottom: 7, marginTop: 7 }} />
               ) : (
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
               )}
@@ -94,7 +94,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                   {isPriceLoading ||
                   stateUninitialized ||
                   (hasHistoricBalances && worthInBeginningOfChart === undefined) ? (
-                    <SkeletonLoader height="24px" width="100px" />
+                    <SkeletonLoader height="18px" width="70px" style={{ marginBottom: 6 }} />
                   ) : hasHistoricBalances && worthInBeginningOfChart ? (
                     <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
                   ) : null}
@@ -104,7 +104,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
               <ChartLengthBadges>
                 {chartLengths.map((length) =>
                   isPriceLoading || stateUninitialized ? (
-                    <SkeletonLoader key={length} height="25px" width="30px" />
+                    <SkeletonLoader
+                      key={length}
+                      height="25px"
+                      width="30px"
+                      style={{ marginTop: 6, marginBottom: 12 }}
+                    />
                   ) : (
                     hasHistoricBalances && (
                       <ButtonStyled
