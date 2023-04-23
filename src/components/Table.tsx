@@ -160,6 +160,7 @@ const TableHeaderRow = styled(TableRow)`
   height: 60px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  padding-right: var(--spacing-2);
 `
 
 const TableTitle = styled.div`

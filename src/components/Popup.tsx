@@ -134,7 +134,7 @@ const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
 
 const Header = styled.div`
   height: ${headerHeight}px;
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
 
   display: flex;
