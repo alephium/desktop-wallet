@@ -94,7 +94,8 @@ const ModalHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 15px 25px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.background2};
 `
 
 const HeaderColumn = styled.div`

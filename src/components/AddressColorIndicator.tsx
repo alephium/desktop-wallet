@@ -26,11 +26,17 @@ import { AddressHash } from '@/types/addresses'
 
 interface AddressColorIndicatorProps {
   addressHash: AddressHash
-  className?: string
   hideMainAddressBadge?: boolean
+  size?: number
+  className?: string
 }
 
-const AddressColorIndicator = ({ addressHash, hideMainAddressBadge, className }: AddressColorIndicatorProps) => {
+const AddressColorIndicator = ({
+  addressHash,
+  hideMainAddressBadge,
+  size = 12,
+  className
+}: AddressColorIndicatorProps) => {
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
 
@@ -39,33 +45,26 @@ const AddressColorIndicator = ({ addressHash, hideMainAddressBadge, className }:
   return (
     <div className={className}>
       {address.isDefault && !isPassphraseUsed && !hideMainAddressBadge ? (
-        <MainAddressBadge color={address.color}>
+        <MainAddressBadge color={address.color} size={size}>
           <MainAddressBadgeBackground />
         </MainAddressBadge>
       ) : (
-        <DotIcon size={12} color={address.color} />
+        <DotIcon size={size} color={address.color} />
       )}
     </div>
   )
 }
 
 export default styled(AddressColorIndicator)`
-  width: 20px;
   display: flex;
   justify-content: center;
   flex-shrink: 0;
 `
 
-const MainAddressBadge = styled.div<{ color: string }>`
+const MainAddressBadge = styled.div<{ color: string; size: number }>`
   position: relative;
-  width: 14px;
-  height: 14px;
-  font-size: 11px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  width: ${({ size }) => size + 2}px;
+  height: ${({ size }) => size + 2}px;
 
   svg * {
     fill: ${({ color }) => color} !important;

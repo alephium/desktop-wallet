@@ -24,10 +24,10 @@ import styled, { useTheme } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
+import Badge from '@/components/Badge'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import HashEllipsed from '@/components/HashEllipsed'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -64,16 +64,13 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       header={
         <Header>
           <LeftSide>
-            <AddressColorIndicator addressHash={address.hash} />
-            <Column>
+            <AddressColorIndicator addressHash={address.hash} size={30} />
+            <Title>
               <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
-              <Subtitle>
-                {address.label && <Hash hash={address.hash} />}
-                <Group>
-                  {t('Group')} {address.group}
-                </Group>
-              </Subtitle>
-            </Column>
+              <Badge short color={theme.font.tertiary} border>
+                {t('Group')} {address.group}
+              </Badge>
+            </Title>
           </LeftSide>
           <ExplorerButton
             role="secondary"
@@ -141,7 +138,7 @@ const Header = styled.div`
 const LeftSide = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 25px;
 `
 
 const ExplorerButton = styled(Button)`
@@ -155,27 +152,11 @@ const AddressBadgeStyled = styled(AddressBadge)`
   max-width: 300px;
 `
 
-const Hash = styled(HashEllipsed)`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 16px;
-  max-width: 250px;
-`
-
-const Column = styled.div`
+const Title = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-`
-
-const Group = styled.div`
-  color: ${({ theme }) => theme.font.tertiary};
-  font-size: 16px;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const Subtitle = styled.div`
-  display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 15px;
+  max-width: 300px;
 `
 
 const Content = styled.div`
