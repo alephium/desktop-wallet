@@ -100,5 +100,5 @@ const TabPanel = styled(UnlockedWalletPanel)``
 const TabBarPanel = styled(TabPanel)`
   z-index: 1;
   background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
-  backdrop-filter: blur(30px);
+  backdrop-filter: blur(10px);
 `

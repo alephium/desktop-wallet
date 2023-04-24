@@ -130,11 +130,11 @@ const BottomRow = styled(motion.div)`
 const CornerButtons = styled.div`
   position: absolute;
   bottom: 0;
-  border-radius: var(--radius-huge);
+  border-radius: 100px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.4).toHex()};
-  backdrop-filter: blur(30px);
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
+  backdrop-filter: blur(10px);
   box-shadow: ${({ theme }) => theme.shadow.secondary};
   width: 20vw;
   max-width: 320px;

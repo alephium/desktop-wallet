@@ -163,7 +163,7 @@ export default styled(AppHeader)`
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
 
-  backdrop-filter: blur(30px);
+  backdrop-filter: blur(10px);
   z-index: 1;
 `
 
