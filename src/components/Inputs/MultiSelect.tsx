@@ -57,7 +57,7 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
 
   return (
     <>
-      <InputArea
+      <MultiSelectInputArea
         className={className}
         onMouseDown={openOptionsModal}
         onKeyDown={(e) => onEnterOrSpace(e, openOptionsModal)}
@@ -66,7 +66,7 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
         <SelectedValue>
           <Truncate>{renderSelectedValue()}</Truncate>
         </SelectedValue>
-      </InputArea>
+      </MultiSelectInputArea>
       <ModalPortal>
         {isOptionsModalOpen && (
           <MultiSelectOptionsModal
@@ -140,7 +140,9 @@ export function MultiSelectOptionsModal<T>({
   )
 }
 
-export default styled(MultiSelect)`
+export default MultiSelect
+
+const MultiSelectInputArea = styled(InputArea)`
   ${inputDefaultStyle(true, true, true)};
   border: 1px solid transparent;
 
