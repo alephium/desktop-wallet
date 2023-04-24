@@ -123,6 +123,7 @@ export default styled(Amount)`
   display: inline-flex;
   white-space: pre;
   font-weight: var(--fontWeight-semiBold);
+  font-feature-settings: 'tnum' on;
 `
 
 const Decimals = styled.span`
