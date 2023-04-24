@@ -21,7 +21,7 @@ import styled, { css } from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
-import { deviceBreakPoints } from '@/style/globalStyles'
+import { appHeaderHeightPx, deviceBreakPoints } from '@/style/globalStyles'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
@@ -92,7 +92,7 @@ export const BoxContainer = ({ children, ...props }: HTMLMotionProps<'div'>) => 
 
 const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   width: 100%;
-  margin: 60px auto;
+  margin: ${appHeaderHeightPx}px auto;
   max-width: 600px;
   min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
   padding: var(--spacing-5);

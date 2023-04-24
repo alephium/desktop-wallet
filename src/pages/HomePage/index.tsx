@@ -46,25 +46,27 @@ const HomePage = () => {
         </Logo>
       </SideBar>
       <Scrollbar>
-        <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
-          {showNewWalletActions ? (
-            <>
-              <PanelTitle useLayoutId={false} size="big">
-                {t('New wallet')}
-              </PanelTitle>
-              <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
-            </>
-          ) : hasAtLeastOneWallet ? (
-            <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
-          ) : (
-            <>
-              <PanelTitle useLayoutId={false} size="big">
-                {t('Welcome.')}
-              </PanelTitle>
-              <NewWalletActions />
-            </>
-          )}
-        </FloatingPanel>
+        <MainContent>
+          <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
+            {showNewWalletActions ? (
+              <>
+                <PanelTitle useLayoutId={false} size="big">
+                  {t('New wallet')}
+                </PanelTitle>
+                <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
+              </>
+            ) : hasAtLeastOneWallet ? (
+              <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
+            ) : (
+              <>
+                <PanelTitle useLayoutId={false} size="big">
+                  {t('Welcome.')}
+                </PanelTitle>
+                <NewWalletActions />
+              </>
+            )}
+          </FloatingPanel>
+        </MainContent>
         <AppHeader />
       </Scrollbar>
     </HomeContainer>
@@ -87,4 +89,11 @@ const Logo = styled.div`
 const AlephiumLogotypeStyled = styled(AlephiumLogotype)`
   fill: ${({ theme }) => theme.font.primary};
   color: ${({ theme }) => theme.font.primary};
+`
+
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
 `
