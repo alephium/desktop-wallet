@@ -187,7 +187,7 @@ export const ModalFooterButtons = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: 50px;
+  margin-top: 30px;
 `
 
 export const ModalFooterButton = ({ ...props }) => (
