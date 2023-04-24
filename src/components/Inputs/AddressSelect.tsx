@@ -113,7 +113,7 @@ function AddressSelect({
         custom={disabled}
         onMouseDown={openAddressSelectModal}
         onKeyDown={(e) => onEnterOrSpace(e, openAddressSelectModal)}
-        disabled={!!disabled}
+        disabled={disabled}
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
       >
@@ -136,8 +136,8 @@ function AddressSelect({
           value={address.hash}
           label={label}
         >
-          <AddressBadge addressHash={address.hash} showFull />
-          {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} />}
+          <AddressBadge addressHash={address.hash} showFull disableCopy />
+          {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} disableCopy />}
         </ClickableInput>
       </AddressSelectContainer>
       <ModalPortal>
@@ -172,12 +172,14 @@ const AddressSelectContainer = styled(SelectContainer)<Pick<AddressSelectProps, 
     disabled &&
     css`
       cursor: not-allowed;
+      box-shadow: none;
     `}
 
   ${({ simpleMode }) =>
     simpleMode &&
     css`
       margin: 0;
+      box-shadow: none;
     `}
 `
 
@@ -194,9 +196,10 @@ const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleM
     simpleMode &&
     css`
       border: 0;
+      background-color: transparent;
 
-      &:not(:hover) {
-        background-color: transparent;
+      &:hover {
+        background-color: ${({ theme }) => theme.bg.hover};
       }
     `}
 `

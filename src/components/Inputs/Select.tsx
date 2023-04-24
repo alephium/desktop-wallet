@@ -182,7 +182,7 @@ function Select<T extends OptionValue>({
         noMargin={noMargin}
         onMouseDown={handleClick}
         onKeyDown={handleKeyDown}
-        style={{ zIndex: raised && showPopup ? 2 : undefined }}
+        style={{ zIndex: raised && showPopup ? 2 : undefined, boxShadow: disabled ? 'none' : undefined }}
         heightSize={heightSize}
         simpleMode={simpleMode}
         tabIndex={renderCustomComponent ? -1 : 0}
@@ -351,6 +351,7 @@ const InputContainer = styled(InputArea)`
   padding: 0;
 
   outline: none;
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 `
 
 export const MoreIcon = styled.div`
@@ -367,7 +368,6 @@ const SelectedValue = styled.div<InputProps>`
 
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
-  box-shadow: ${({ theme }) => theme.shadow.primary};
 
   cursor: pointer;
 
@@ -394,7 +394,8 @@ export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin
 
   &:focus {
     ${SelectedValue} {
-      box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+      border-color: ${({ theme }) => theme.global.accent};
     }
   }
 `
@@ -434,7 +435,7 @@ export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean
       }
 
       &:hover {
-        background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
+        background-color: ${({ theme }) => theme.bg.hover};
       }
     `}
 `

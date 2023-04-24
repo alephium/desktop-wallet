@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
@@ -128,14 +127,14 @@ const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.6).toHex()};
-  backdrop-filter: blur(30px) brightness(110%);
+  background-color: ${({ theme }) => theme.bg.primary};
 `
 
 const Header = styled.div<{ hasExtraContent: boolean }>`
   height: ${({ hasExtraContent }) => (hasExtraContent ? 'auto' : `${headerHeight}px`)};
   padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
 
   display: flex;
   align-items: center;

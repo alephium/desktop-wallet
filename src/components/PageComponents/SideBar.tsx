@@ -51,7 +51,7 @@ const SideBar: FC<SideBarProps> = ({ animateEntry, className, children }) => {
         <Button
           transparent
           squared
-          borderless
+          role="secondary"
           onClick={() => setIsSettingsModalOpen(true)}
           aria-label={t('Settings')}
           Icon={Settings}
@@ -85,5 +85,5 @@ const BottomButtons = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 `

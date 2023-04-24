@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -116,15 +115,15 @@ const useStepsUI = (currentStep: Step) => {
 }
 
 export default styled(StepsProgress)`
-  padding: 20px 100px;
+  padding: 15px 100px 30px 100px;
   width: 100%;
   display: flex;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
-  backdrop-filter: blur(30px);
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.bg.background2};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  margin-top: -1px;
   z-index: 1;
 `
 

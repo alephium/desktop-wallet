@@ -151,7 +151,7 @@ export const ModalHeader = styled.header<{ transparent?: boolean }>`
     !transparent &&
     css`
       background-color: ${({ theme }) => theme.bg.background2};
-      border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+      border-bottom: 1px solid ${({ theme }) => theme.border.primary};
     `}
 `
 

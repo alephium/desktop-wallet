@@ -83,11 +83,12 @@ export const inputDefaultStyle = (
     padding-top: 15px;
   `}
 
-  transition: 0.2s ease-out;
+  transition: 0.15s ease-out;
 
   &:focus {
     background-color: ${({ theme }) => theme.bg.primary};
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
   }
 
   &.error {
@@ -99,6 +100,10 @@ export const inputDefaultStyle = (
     background-color: ${({ theme }) => theme.bg.secondary};
     border: 1px solid ${({ theme }) => theme.border.primary};
     cursor: not-allowed;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.hover};
   }
 
   // Remove number arrows

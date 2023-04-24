@@ -118,7 +118,8 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.global.accent};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
   }
 
   svg {

@@ -208,7 +208,7 @@ const BoxStyled = styled(Box)`
 
 const AddressToInput = styled(Input)`
   margin: 0;
-  border: 0;
+  border: 1px solid transparent;
 
   &:not(:hover) {
     background-color: transparent;
