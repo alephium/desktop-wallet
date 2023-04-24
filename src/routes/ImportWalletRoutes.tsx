@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import AppHeader from '@/components/AppHeader'
 import FloatingLogo from '@/components/FloatingLogo'
+import Scrollbar from '@/components/Scrollbar'
 import { StepsContextProvider } from '@/contexts/steps'
 import { WalletContextProvider } from '@/contexts/wallet'
 import CreateWalletPage from '@/pages/NewWallet/CreateWalletPage'
@@ -33,9 +34,11 @@ const ImportWalletRoutes = () => {
 
   return (
     <WalletContextProvider>
-      <FloatingLogo />
-      <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
-      <AppHeader />
+      <Scrollbar>
+        <FloatingLogo />
+        <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
+        <AppHeader />
+      </Scrollbar>
     </WalletContextProvider>
   )
 }

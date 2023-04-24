@@ -92,7 +92,7 @@ export const BoxContainer = ({ children, ...props }: HTMLMotionProps<'div'>) => 
 
 const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   width: 100%;
-  margin: 0 auto;
+  margin: 60px auto;
   max-width: 600px;
   min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
   padding: var(--spacing-5);

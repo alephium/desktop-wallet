@@ -26,6 +26,7 @@ import AppHeader from '@/components/AppHeader'
 import { FloatingPanel } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import SideBar from '@/components/PageComponents/SideBar'
+import Scrollbar from '@/components/Scrollbar'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as AlephiumLogotype } from '@/images/logotype.svg'
 import NewWalletActions from '@/pages/HomePage/NewWalletActions'
@@ -44,26 +45,28 @@ const HomePage = () => {
           <AlephiumLogotypeStyled />
         </Logo>
       </SideBar>
-      <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
-        {showNewWalletActions ? (
-          <>
-            <PanelTitle useLayoutId={false} size="big">
-              {t('New wallet')}
-            </PanelTitle>
-            <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
-          </>
-        ) : hasAtLeastOneWallet ? (
-          <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
-        ) : (
-          <>
-            <PanelTitle useLayoutId={false} size="big">
-              {t('Welcome.')}
-            </PanelTitle>
-            <NewWalletActions />
-          </>
-        )}
-      </FloatingPanel>
-      <AppHeader />
+      <Scrollbar>
+        <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
+          {showNewWalletActions ? (
+            <>
+              <PanelTitle useLayoutId={false} size="big">
+                {t('New wallet')}
+              </PanelTitle>
+              <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
+            </>
+          ) : hasAtLeastOneWallet ? (
+            <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
+          ) : (
+            <>
+              <PanelTitle useLayoutId={false} size="big">
+                {t('Welcome.')}
+              </PanelTitle>
+              <NewWalletActions />
+            </>
+          )}
+        </FloatingPanel>
+        <AppHeader />
+      </Scrollbar>
     </HomeContainer>
   )
 }
