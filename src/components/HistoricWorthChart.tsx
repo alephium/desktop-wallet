@@ -112,12 +112,12 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     setChartData(dataPoints)
   }, [addresses, alphPriceHistory, isDataAvailable])
 
-  if (!isDataAvailable || chartData.length <= 2) return null
+  if (!isDataAvailable || chartData.length <= 2 || !firstItem) return null
 
   const xAxisDatesData = filteredChartData.map(({ date }) => date)
   const yAxisWorthData = filteredChartData.map(({ worth }) => worth)
 
-  const worthHasGoneUp = firstItem !== undefined && firstItem.worth < latestWorth
+  const worthHasGoneUp = firstItem.worth < latestWorth
   const chartColor = worthHasGoneUp ? theme.global.valid : theme.global.alert
 
   const chartOptions = getChartOptions(chartColor, xAxisDatesData, {
