@@ -84,4 +84,5 @@ const Label = styled.div`
 const StyledMainAddressBadge = styled(MainAddressBadge)`
   width: 11px;
   margin-right: var(--spacing-1);
+  fill: ${({ theme }) => theme.font.primary};
 `
