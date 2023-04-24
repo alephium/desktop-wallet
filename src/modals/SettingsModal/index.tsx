@@ -17,10 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
+import { map } from 'lodash'
 import { Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
@@ -28,11 +29,15 @@ import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
 import { useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
+import discordLogo from '@/images/brand-icon-discord.svg'
+import githubLogo from '@/images/brand-icon-github.svg'
+import twitterLogo from '@/images/brand-icon-twitter.svg'
 import ModalContainer from '@/modals/ModalContainer'
 import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSection'
 import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
+import { openInWebBrowser } from '@/utils/misc'
 
 export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
 
@@ -46,6 +51,12 @@ export const settingsModalTabs: SettingsTabItem[] = [
   { value: 'network', label: i18next.t('Network') },
   { value: 'devtools', label: i18next.t('Developer tools') }
 ]
+
+const socialMediaList = {
+  twitter: { url: 'https://twitter.com/alephium', src: twitterLogo },
+  discord: { url: 'https://discord.gg/XsGpZ5VDTM', src: discordLogo },
+  github: { url: 'https://github.com/alephium', src: githubLogo }
+}
 
 interface SettingsModalProps {
   onClose: () => void
@@ -90,9 +101,14 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
                 </TabTitleButton>
               ))}
             </TabTitles>
-            <Version>
-              {t('Version')}: {import.meta.env.VITE_VERSION}
-            </Version>
+            <SidebarFooter>
+              <SocialMedias>
+                {map(socialMediaList, (m) => (
+                  <SocialMedia src={m.src} onClick={() => openInWebBrowser(m.url)} />
+                ))}
+              </SocialMedias>
+              <Version>v{import.meta.env.VITE_VERSION}</Version>
+            </SidebarFooter>
           </TabTitlesColumnContent>
         </TabTitlesColumn>
         <TabContentsColumn>
@@ -195,17 +211,44 @@ const ColumnContent = styled.div`
   }
 `
 
+const SidebarFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-8);
+`
+
 const Version = styled.div`
   font-size: 11px;
   color: ${({ theme }) => theme.font.tertiary};
-  margin-top: var(--spacing-8);
+`
+
+const SocialMedias = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
+const SocialMedia = styled.div<{ src: string }>`
+  ${({ src }) =>
+    css`
+      mask: url(${src}) no-repeat center;
+    `}
+
+  height: 20px;
+  width: 20px;
+  background-color: ${({ theme }) => theme.font.tertiary};
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.font.primary};
+  }
 `
 
 const TabTitlesColumnContent = styled(ColumnContent)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px 15px;
+  padding: 20px 15px 10px;
   height: 100%;
 `
 
