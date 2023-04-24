@@ -29,7 +29,7 @@ export const lightTheme: DefaultTheme = {
     background1: '#f9f9f9',
     background2: '#f5f5f5',
     accent: colord('#598bed').alpha(0.05).toHex(),
-    hover: 'rgba(0, 0, 0, 0.015)'
+    hover: colord('#ffffff').darken(0.02).toHex()
   },
   font: {
     primary: '#1d1d1d',

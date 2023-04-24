@@ -196,7 +196,7 @@ function Select<T extends OptionValue>({
             </InputLabel>
             {options.length > 1 && !simpleMode && (
               <MoreIcon>
-                <MoreVertical />
+                <MoreVertical size={16} />
               </MoreIcon>
             )}
             <SelectedValue

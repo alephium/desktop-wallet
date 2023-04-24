@@ -124,7 +124,7 @@ function AddressSelect({
         )}
         {!disabled && !simpleMode && (
           <MoreIcon>
-            <MoreVertical />
+            <MoreVertical size={16} />
           </MoreIcon>
         )}
         <ClickableInput

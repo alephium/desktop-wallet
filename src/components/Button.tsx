@@ -74,7 +74,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={18} color={iconColor} />
+          <Icon size={16} color={iconColor} />
         </ButtonIcon>
       )}
       {children as ReactNode}
@@ -253,7 +253,7 @@ export default styled(Button)`
               border-radius: var(--radius-full);
 
               svg {
-                scale: 0.8;
+                scale: 0.85;
               }
             `
           )

@@ -108,7 +108,7 @@ const snackbarSlice = createSlice({
         displayMessageImmediately(state, { text: action.payload || i18n.t('Copied to clipboard!') })
       )
       .addCase(copyToClipboardFailed, (state, action) =>
-        displayMessageImmediately(state, { text: action.payload || i18n.t('Copy to clipboard failed') })
+        displayMessageImmediately(state, { text: action.payload || i18n.t('Copy to clipboard failed'), type: 'alert' })
       )
       .addCase(passwordValidationFailed, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
