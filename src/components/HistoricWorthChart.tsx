@@ -112,7 +112,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     setChartData(dataPoints)
   }, [addresses, alphPriceHistory, isDataAvailable])
 
-  if (!isDataAvailable || chartData.length <= 1) return null
+  if (!isDataAvailable || chartData.length <= 2) return null
 
   const xAxisDatesData = filteredChartData.map(({ date }) => date)
   const yAxisWorthData = filteredChartData.map(({ worth }) => worth)
