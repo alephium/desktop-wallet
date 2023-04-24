@@ -213,6 +213,7 @@ const MainContent = styled.main`
   padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.bg.background2};
+  position: relative;
 `
 
 const SideNavigation = styled.nav`

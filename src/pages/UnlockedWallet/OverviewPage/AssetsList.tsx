@@ -24,10 +24,11 @@ import styled, { useTheme } from 'styled-components'
 import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
+import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
-import Table, { TableRow } from '@/components/Table'
+import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
@@ -43,9 +44,19 @@ interface AssetsListProps {
   nftsTabTitle?: string
   showTokens?: boolean
   showNfts?: boolean
+  isExpanded?: boolean
+  onExpand?: () => void
+  maxHeightInPx?: number
 }
 
-const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTitle }: AssetsListProps) => {
+const AssetsList = ({
+  className,
+  limit,
+  addressHashes,
+  tokensTabTitle,
+  nftsTabTitle,
+  maxHeightInPx
+}: AssetsListProps) => {
   const { t } = useTranslation()
 
   const tabs = [
@@ -53,21 +64,40 @@ const AssetsList = ({ className, limit, addressHashes, tokensTabTitle, nftsTabTi
     { value: 'nfts', label: nftsTabTitle ?? '🖼️ ' + t('NFTs') }
   ]
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleButtonClick = () => setIsExpanded(!isExpanded)
 
   return (
-    <Table className={className}>
-      <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-      {
+    <FocusableContent className={className} isFocused={isExpanded} onClose={() => setIsExpanded(false)}>
+      <ExpandableTable isExpanded={isExpanded} maxHeightInPx={maxHeightInPx}>
+        <TableTabBar items={tabs} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
         {
-          tokens: <TokensList limit={limit} addressHashes={addressHashes} />,
-          nfts: <NFTsList limit={limit} addressHashes={addressHashes} />
-        }[currentTab.value]
-      }
-    </Table>
+          {
+            tokens: (
+              <TokensList
+                limit={limit}
+                addressHashes={addressHashes}
+                isExpanded={isExpanded || !maxHeightInPx}
+                onExpand={handleButtonClick}
+              />
+            ),
+            nfts: (
+              <NFTsList
+                limit={limit}
+                addressHashes={addressHashes}
+                isExpanded={isExpanded || !maxHeightInPx}
+                onExpand={handleButtonClick}
+              />
+            )
+          }[currentTab.value]
+        }
+      </ExpandableTable>
+    </FocusableContent>
   )
 }
 
-const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
+const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
@@ -77,57 +107,63 @@ const TokensList = ({ className, limit, addressHashes }: AssetsListProps) => {
   const displayedAssets = limit ? assets.slice(0, limit) : assets
 
   return (
-    <motion.div {...fadeIn} className={className}>
-      {displayedAssets.map((asset) => (
-        <TableRow key={asset.id} role="row" tabIndex={0}>
-          <TokenRow>
-            <AssetLogoStyled asset={asset} size={30} />
-            <NameColumn>
-              <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
-              <TokenSymbol>
-                {asset.symbol ?? <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} />}
-              </TokenSymbol>
-            </NameColumn>
-            <TableCellAmount>
-              {stateUninitialized ? (
-                <SkeletonLoader height="20px" width="30%" />
-              ) : (
-                <>
-                  <TokenAmount
-                    value={asset.balance}
-                    suffix={asset.symbol}
-                    decimals={asset.decimals}
-                    isUnknownToken={!asset.symbol}
-                  />
-                  {asset.lockedBalance > 0 && (
-                    <AmountSubtitle>
-                      {`${t('Available')}: `}
-                      <Amount
-                        value={asset.balance - asset.lockedBalance}
-                        suffix={asset.symbol}
-                        color={theme.font.tertiary}
-                        decimals={asset.decimals}
-                        isUnknownToken={!asset.symbol}
-                      />
-                    </AmountSubtitle>
+    <>
+      <motion.div {...fadeIn} className={className}>
+        {displayedAssets.map((asset) => (
+          <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
+            <TokenRow>
+              <AssetLogoStyled asset={asset} size={30} />
+              <NameColumn>
+                <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
+                <TokenSymbol>
+                  {asset.symbol ?? (
+                    <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
                   )}
-                  {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
-                </>
-              )}
-            </TableCellAmount>
-          </TokenRow>
-        </TableRow>
-      ))}
-    </motion.div>
+                </TokenSymbol>
+              </NameColumn>
+              <TableCellAmount>
+                {stateUninitialized ? (
+                  <SkeletonLoader height="20px" width="30%" />
+                ) : (
+                  <>
+                    <TokenAmount
+                      value={asset.balance}
+                      suffix={asset.symbol}
+                      decimals={asset.decimals}
+                      isUnknownToken={!asset.symbol}
+                    />
+                    {asset.lockedBalance > 0 && (
+                      <AmountSubtitle>
+                        {`${t('Available')}: `}
+                        <Amount
+                          value={asset.balance - asset.lockedBalance}
+                          suffix={asset.symbol}
+                          color={theme.font.tertiary}
+                          decimals={asset.decimals}
+                          isUnknownToken={!asset.symbol}
+                        />
+                      </AmountSubtitle>
+                    )}
+                    {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
+                  </>
+                )}
+              </TableCellAmount>
+            </TokenRow>
+          </TableRow>
+        ))}
+      </motion.div>
+
+      {!isExpanded && displayedAssets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
+    </>
   )
 }
 
-const NFTsList = ({ className }: AssetsListProps) => {
+const NFTsList = ({ className, isExpanded }: AssetsListProps) => {
   const { t } = useTranslation()
 
   return (
     <motion.div {...fadeIn} className={className}>
-      <TableRow role="row" tabIndex={0}>
+      <TableRow role="row" tabIndex={isExpanded ? 0 : -1}>
         {t('Coming soon!')}
       </TableRow>
     </motion.div>

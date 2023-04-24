@@ -409,5 +409,6 @@
   "🌞 Good afternoon.": "🌞 Good afternoon.",
   "🌇 Good evening.": "🌇 Good evening.",
   "🌝 Good night.": "🌇 Good night.",
-  "📈 ALPH price: {{ price }}$": "📈 ALPH price: {{ price }}$"
+  "📈 ALPH price: {{ price }}$": "📈 ALPH price: {{ price }}$",
+  "Expand": "Expand"
 }

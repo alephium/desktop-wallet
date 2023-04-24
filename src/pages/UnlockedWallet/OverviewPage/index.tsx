@@ -37,6 +37,8 @@ interface OverviewPageProps {
   className?: string
 }
 
+const maxPanelHeightInPx = 336
+
 const OverviewPage = ({ className }: OverviewPageProps) => {
   const { t } = useTranslation()
 
@@ -60,8 +62,8 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
       </AmountsOverviewPanel>
       <UnlockedWalletPanel bottom>
         <AssetAndAddressesRow>
-          <AssetsListStyled />
-          <AddressesContactsListStyled limit={5} />
+          <AssetsListStyled maxHeightInPx={maxPanelHeightInPx} />
+          <AddressesContactsListStyled maxHeightInPx={maxPanelHeightInPx} />
         </AssetAndAddressesRow>
         <TransactionList title={t('Latest transactions')} limit={5} />
       </UnlockedWalletPanel>

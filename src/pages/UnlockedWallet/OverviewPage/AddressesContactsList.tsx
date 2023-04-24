@@ -28,8 +28,9 @@ import { fadeIn } from '@/animations'
 import ActionLink from '@/components/ActionLink'
 import AddressRow from '@/components/AddressRow'
 import Amount from '@/components/Amount'
+import FocusableContent from '@/components/FocusableContent'
 import SkeletonLoader from '@/components/SkeletonLoader'
-import Table, { TableHeader } from '@/components/Table'
+import { ExpandableTable, ExpandRow, TableHeader } from '@/components/Table'
 import TableCellAmount from '@/components/TableCellAmount'
 import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
@@ -42,25 +43,40 @@ import { currencies } from '@/utils/currencies'
 interface AddressesContactsListProps {
   className?: string
   limit?: number
+  maxHeightInPx?: number
 }
 
-const AddressesContactsList = ({ className, limit }: AddressesContactsListProps) => {
+interface AddressListProps extends AddressesContactsListProps {
+  isExpanded?: boolean
+  onExpand?: () => void
+  onAddressClick: () => void
+}
+
+const AddressesContactsList = ({ className, limit, maxHeightInPx }: AddressesContactsListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleButtonClick = () => setIsExpanded(!isExpanded)
+
+  const collapse = () => setIsExpanded(false)
+
   return (
-    <Table className={className}>
-      <TableHeader title={t('Your addresses')}>
-        <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight} withBackground>
-          {t('See more')}
-        </ActionLink>
-      </TableHeader>
-      <AddressesList limit={limit} />
-    </Table>
+    <FocusableContent className={className} isFocused={isExpanded} onClose={collapse}>
+      <ExpandableTable isExpanded={isExpanded} maxHeightInPx={maxHeightInPx}>
+        <TableHeader title={t('Your addresses')}>
+          <ActionLink onClick={() => navigate('/wallet/addresses')} Icon={ChevronRight} withBackground>
+            {t('See more')}
+          </ActionLink>
+        </TableHeader>
+        <AddressesList limit={limit} isExpanded={isExpanded} onExpand={handleButtonClick} onAddressClick={collapse} />
+      </ExpandableTable>
+    </FocusableContent>
   )
 }
 
-const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
+const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const { data: price } = useGetPriceQuery(currencies.USD.ticker)
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
@@ -69,30 +85,40 @@ const AddressesList = ({ className, limit }: AddressesContactsListProps) => {
 
   const displayedAddresses = limit ? addresses.slice(0, limit) : addresses
 
+  const handleRowClick = (address: Address) => {
+    onAddressClick()
+    setSelectedAddress(address)
+  }
+
   return (
-    <motion.div {...fadeIn} className={className}>
-      {displayedAddresses.map((address) => (
-        <AddressRow address={address} onClick={setSelectedAddress} key={address.hash}>
-          <TableCellAmount>
-            {stateUninitialized ? (
-              <SkeletonLoader height="15.5px" width="50%" />
-            ) : (
-              <AmountStyled
-                value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
-                isFiat
-                suffix={currencies['USD'].symbol}
-                tabIndex={0}
-              />
-            )}
-          </TableCellAmount>
-        </AddressRow>
-      ))}
+    <>
+      <motion.div {...fadeIn} className={className}>
+        {displayedAddresses.map((address) => (
+          <AddressRow address={address} onClick={handleRowClick} key={address.hash}>
+            <TableCellAmount>
+              {stateUninitialized ? (
+                <SkeletonLoader height="15.5px" width="50%" />
+              ) : (
+                <AmountStyled
+                  value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
+                  isFiat
+                  suffix={currencies['USD'].symbol}
+                  tabIndex={0}
+                />
+              )}
+            </TableCellAmount>
+          </AddressRow>
+        ))}
+      </motion.div>
+
+      {!isExpanded && displayedAddresses.length > 5 && onExpand && <ExpandRow onClick={onExpand} />}
+
       <ModalPortal>
         {selectedAddress && (
           <AddressDetailsModal addressHash={selectedAddress.hash} onClose={() => setSelectedAddress(undefined)} />
         )}
       </ModalPortal>
-    </motion.div>
+    </>
   )
 }
 
