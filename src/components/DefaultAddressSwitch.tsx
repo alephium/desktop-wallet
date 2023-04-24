@@ -56,7 +56,7 @@ const DefaultAddressSwitch = () => {
       onSelect={handleDefaultAddressChange}
       controlledValue={addressOptions.find((n) => n.value === defaultAddress?.hash)}
       title={t('Default address')}
-      optionRender={({ value }) => <AddressBadge addressHash={value} disableCopy />}
+      optionRender={({ value }) => <AddressBadge addressHash={value} disableCopy truncate />}
       id="defaultAddress"
       noMargin
       renderCustomComponent={SelectCustomComponent}
@@ -72,7 +72,7 @@ const SelectCustomComponent = (value?: SelectOption<AddressHash>) => {
 
   return (
     <Button role="secondary" short transparent data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-      <AddressBadge addressHash={value?.value} disableCopy />
+      <AddressBadge addressHash={value?.value} disableCopy truncate />
     </Button>
   )
 }
