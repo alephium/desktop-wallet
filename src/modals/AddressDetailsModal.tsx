@@ -104,8 +104,8 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </Shortcuts>
         <AssetsList
           addressHashes={[address.hash]}
-          tokensTabTitle={t('Address tokens')}
-          nftsTabTitle={t('Address NFTs')}
+          tokensTabTitle={`💰 ${t('Address tokens')}`}
+          nftsTabTitle={`🖼️ ${t('Address NFTs')}`}
         />
         <TransactionList
           title={t('Address transactions')}

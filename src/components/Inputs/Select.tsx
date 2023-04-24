@@ -306,6 +306,7 @@ export function SelectOptionsModal<T extends OptionValue>({
             Icon={SearchIcon}
             onChange={(e) => onSearchInput(e.target.value)}
             heightSize="small"
+            noMargin
           />
         )
       }
@@ -441,8 +442,6 @@ export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean
 `
 
 const Searchbar = styled(Input)`
-  margin: 0;
-
   svg {
     color: ${({ theme }) => theme.font.tertiary};
   }

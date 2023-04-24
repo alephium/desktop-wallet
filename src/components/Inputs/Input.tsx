@@ -100,7 +100,7 @@ const Input = ({
         />
         {!!Icon && !onIconPress && !isValid && (
           <InputIconContainer>
-            <Icon />
+            <Icon size={16} />
           </InputIconContainer>
         )}
         {!!Icon && !!onIconPress && (

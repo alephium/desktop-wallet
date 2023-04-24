@@ -111,7 +111,7 @@ const HideEmptyAddressesToggle = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-  height: 45px;
+  height: 50px;
   padding: 12px 16px;
   border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};

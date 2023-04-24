@@ -50,6 +50,7 @@ const TabContent: FC<TabContentProps> = ({
         Icon={SearchIcon}
         onChange={(e) => onSearch(e.target.value)}
         contrast
+        heightSize="small"
       />
       {HeaderMiddleComponent}
       <ButtonContainer {...fadeInOut}>
