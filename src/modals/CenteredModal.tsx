@@ -41,6 +41,7 @@ export interface CenteredModalProps extends ModalContainerProps {
   narrow?: boolean
   dynamicContent?: boolean
   onBack?: () => void
+  noPadding?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -56,6 +57,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   onBack,
   children,
   skipFocusOnMount,
+  noPadding,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -83,7 +85,15 @@ const CenteredModal: FC<CenteredModalProps> = ({
           </TitleRow>
           {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
         </ModalHeader>
-        {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
+        {dynamicContent ? (
+          noPadding ? (
+            children
+          ) : (
+            <ModalContent>{children}</ModalContent>
+          )
+        ) : (
+          <ScrollableModalContent>{children}</ScrollableModalContent>
+        )}
 
         {isLoading && (
           <>
@@ -179,7 +189,7 @@ const BackButton = styled(Button)`
 export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  padding: var(--spacing-4);
   width: 100%;
 `
 

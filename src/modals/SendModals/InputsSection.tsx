@@ -36,4 +36,8 @@ const Title = styled.div`
   font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
   margin: 24px 12px 15px;
+
+  &:first-child {
+    margin-top: 16px;
+  }
 `

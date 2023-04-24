@@ -410,5 +410,6 @@
   "🌇 Good evening.": "🌇 Good evening.",
   "🌝 Good night.": "🌇 Good night.",
   "📈 ALPH price: {{ price }}$": "📈 ALPH price: {{ price }}$",
-  "Expand": "Expand"
+  "Expand": "Expand",
+  "Select address group": "Select address group"
 }

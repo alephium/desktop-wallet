@@ -227,6 +227,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       dynamicContent
       onBack={onBackCallback}
       focusMode
+      noPadding
     >
       <StepsProgress currentStep={step} isContract={isContract} />
       {step === 'addresses' && (

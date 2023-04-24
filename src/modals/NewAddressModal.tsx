@@ -22,10 +22,10 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import AddressMetadataForm from '@/components/AddressMetadataForm'
-import ExpandableSection from '@/components/ExpandableSection'
 import InfoBox from '@/components/InfoBox'
 import Select from '@/components/Inputs/Select'
 import { Section } from '@/components/PageComponents/PageContainers'
+import ToggleSection from '@/components/ToggleSection'
 import { useAppSelector } from '@/hooks/redux'
 import useAddressGeneration from '@/hooks/useAddressGeneration'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
@@ -130,7 +130,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         </InfoBox>
       )}
       {singleAddress && (
-        <ExpandableSection sectionTitleClosed={t`Advanced options`}>
+        <ToggleSection title={t('Advanced options')} subtitle={t('Select address group')}>
           <Select
             label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
@@ -139,7 +139,7 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
             title={t`Select group`}
             id="group"
           />
-        </ExpandableSection>
+        </ToggleSection>
       )}
       <ModalFooterButtons>
         <ModalFooterButton role="secondary" onClick={onClose}>
