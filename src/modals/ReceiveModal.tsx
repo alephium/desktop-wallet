@@ -16,15 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CopyIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import Box from '@/components/Box'
-import Button from '@/components/Button'
 import AddressSelect from '@/components/Inputs/AddressSelect'
+import QRCode from '@/components/QRCode'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import { selectAddressByHash, selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
@@ -76,19 +74,9 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
         />
         <QRCodeSection>
           {selectedAddress?.hash && (
-            <QRCodeContainer>
-              <QRCode
-                size={QRCodeSize}
-                value={selectedAddress.hash}
-                bgColor={theme.bg.primary}
-                fgColor={theme.font.primary}
-              />
-            </QRCodeContainer>
+            <QRCode value={selectedAddress.hash} size={QRCodeSize} copyButtonLabel={t('Copy address')} />
           )}
         </QRCodeSection>
-        <Button role="secondary" Icon={CopyIcon} onClick={handleCopyAddressToClipboard}>
-          {t('Copy address')}
-        </Button>
       </Content>
     </CenteredModal>
   )

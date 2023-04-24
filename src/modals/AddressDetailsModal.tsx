@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FileDown } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
@@ -28,6 +27,7 @@ import Badge from '@/components/Badge'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
+import QRCode from '@/components/QRCode'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -84,9 +84,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       }
     >
       <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
-        <QrCodeBox>
-          <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.primary} />
-        </QrCodeBox>
+        <QRCode value={addressHash} size={130} />
       </AmountsOverviewPanel>
 
       <Content>
