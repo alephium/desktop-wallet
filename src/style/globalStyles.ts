@@ -101,6 +101,10 @@ export const GlobalStyle = createGlobalStyle`
   .apexcharts-marker {
     transition: none !important;
   }
+
+  .apexcharts-tooltip {
+    display: none !important;
+  }
 `
 
 // Breakpoints
