@@ -42,6 +42,7 @@ interface ShortcutButtonsProps {
   addressSettings?: boolean
   addressHash?: AddressHash
   highlight?: boolean
+  solidBackground?: boolean
 }
 
 const ShortcutButtons = ({
@@ -52,7 +53,8 @@ const ShortcutButtons = ({
   walletSettings,
   addressSettings,
   addressHash,
-  highlight
+  highlight,
+  solidBackground
 }: ShortcutButtonsProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
@@ -102,7 +104,8 @@ const ShortcutButtons = ({
     <>
       {receive && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleReceiveClick}
           Icon={ArrowDown}
@@ -115,7 +118,8 @@ const ShortcutButtons = ({
       )}
       {send && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleSendClick}
           Icon={ArrowUp}
@@ -128,7 +132,8 @@ const ShortcutButtons = ({
       )}
       {walletSettings && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleWalletSettingsClick}
           Icon={Settings}
@@ -139,12 +144,27 @@ const ShortcutButtons = ({
         </ShortcutButton>
       )}
       {lock && (
-        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock} highlight={highlight} iconBackground>
+        <ShortcutButton
+          transparent={!solidBackground}
+          role="secondary"
+          borderless
+          onClick={lockWallet}
+          Icon={Lock}
+          highlight={highlight}
+          iconBackground
+        >
           <ButtonText>{t('Lock wallet')}</ButtonText>
         </ShortcutButton>
       )}
       {addressSettings && addressHash && (
-        <ShortcutButton transparent borderless onClick={handleAddressSettingsClick} Icon={Settings} iconBackground>
+        <ShortcutButton
+          transparent={!solidBackground}
+          role="secondary"
+          borderless
+          onClick={handleAddressSettingsClick}
+          Icon={Settings}
+          iconBackground
+        >
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}
@@ -170,6 +190,7 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
   width: auto;
   height: 60px;
   color: ${({ theme }) => theme.font.primary};
+  box-shadow: none;
 `
 
 const ButtonText = styled.div`

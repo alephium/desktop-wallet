@@ -98,6 +98,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
               addressSettings
               addressHash={address.hash}
               analyticsOrigin="address_details"
+              solidBackground
             />
           </ButtonsGrid>
         </Shortcuts>
@@ -174,6 +175,7 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
+  background-color: ${({ theme }) => theme.border.secondary};
 `
 
 const QrCodeBox = styled(Box)`

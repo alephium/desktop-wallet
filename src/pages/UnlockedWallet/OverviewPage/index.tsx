@@ -54,7 +54,7 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
         <Shortcuts>
           <ShortcutsHeader title={t('Shortcuts')} />
           <ButtonsGrid>
-            <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" />
+            <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" solidBackground />
           </ButtonsGrid>
         </Shortcuts>
       </AmountsOverviewPanel>
@@ -107,4 +107,5 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
+  background-color: ${({ theme }) => theme.border.secondary};
 `

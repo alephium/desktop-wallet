@@ -118,18 +118,21 @@ export default styled(Button)`
         : colord(theme.bg.primary).darken(0.03).toRgbString()
       : {
           primary: {
-            default: colord(theme.global.accent).darken(0.08).toRgbString(),
-            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
-            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
-            faded: colord(theme.global.accent).darken(0.08).toRgbString()
+            default: colord(theme.global.accent).darken(0.04).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
+            alert: colord(theme.global.alert).darken(0.04).toRgbString(),
+            faded: colord(theme.global.accent).darken(0.04).toRgbString()
           }[variant],
           secondary: {
-            default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
-            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
-            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
+            default:
+              theme.name === 'dark'
+                ? colord(theme.bg.primary).lighten(0.02).toRgbString()
+                : colord(theme.bg.primary).darken(0.015).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
             alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
-            faded: colord(theme.bg.primary).lighten(0.08).toRgbString()
+            faded: colord(theme.bg.primary).lighten(0.04).toRgbString()
           }[variant]
         }[role]
 
@@ -240,11 +243,11 @@ export default styled(Button)`
         `}
 
         ${({ theme }) => {
-          const color = iconColor || theme.font.primary
+          const color = iconColor || theme.font.tertiary
           return (
             iconBackground &&
             css`
-              background-color: ${colord(color).alpha(0.05).toHex()};
+              background-color: ${colord(color).alpha(0.08).toHex()};
               border: 1px solid ${colord(color).alpha(0.05).toHex()};
               padding: 4px;
               border-radius: var(--radius-full);
@@ -279,7 +282,7 @@ export default styled(Button)`
   text-align: center;
   cursor: pointer;
 
-  transition: 0.2s ease-out;
+  transition: 0.15s ease-out;
 
   &:disabled {
     opacity: 0.5;
