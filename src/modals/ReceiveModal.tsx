@@ -16,17 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
-import Box from '@/components/Box'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import QRCode from '@/components/QRCode'
-import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import { selectAddressByHash, selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
 
 interface ReceiveModalProps {
   onClose: () => void
@@ -37,28 +35,11 @@ const QRCodeSize = 250
 
 const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   const { t } = useTranslation()
-  const theme = useTheme()
-  const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
 
   const [selectedAddress, setSelectedAddress] = useState(defaultAddress)
-
-  const handleCopyAddressToClipboard = useCallback(() => {
-    if (!selectedAddress?.hash) {
-      dispatch(copyToClipboardFailed())
-    } else {
-      navigator.clipboard
-        .writeText(selectedAddress?.hash)
-        .catch((e) => {
-          throw e
-        })
-        .then(() => {
-          dispatch(copiedToClipboard())
-        })
-    }
-  }, [dispatch, selectedAddress?.hash])
 
   return (
     <CenteredModal title={t('Receive')} onClose={onClose}>
@@ -95,12 +76,4 @@ const Content = styled.div`
 const QRCodeSection = styled.div`
   display: flex;
   justify-content: center;
-`
-
-const QRCodeContainer = styled(Box)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: ${QRCodeSize + 25}px;
-  height: ${QRCodeSize + 25}px;
 `
