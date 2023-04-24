@@ -198,7 +198,6 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
           defaultAddress={signerAddress}
           onAddressChange={setSignerAddress}
           id="from-address"
-          hideEmptyAvailableBalance
         />
       </Section>
       <ModalFooterButtons>

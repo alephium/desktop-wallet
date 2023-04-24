@@ -26,13 +26,10 @@ import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
-import { useAppSelector } from '@/hooks/redux'
 import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
-import AddressInputs from '@/modals/SendModals/AddressInputs'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { AssetAmount } from '@/types/assets'
 import { CallContractTxData, PartialTxData, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAvailableBalance } from '@/utils/addresses'
@@ -46,7 +43,6 @@ interface CallContractBuildTxModalContentProps {
 
 const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContractBuildTxModalContentProps) => {
   const { t } = useTranslation()
-  const addresses = useAppSelector(selectAllAddresses)
   const {
     gasAmount,
     gasAmountError,
@@ -89,11 +85,6 @@ const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContr
   return (
     <>
       <InputFieldsColumn>
-        <AddressInputs
-          defaultFromAddress={fromAddress}
-          fromAddresses={addresses}
-          onFromAddressChange={setTxPrepProp('fromAddress')}
-        />
         {assetAmounts && (
           <AssetAmountsInput
             address={fromAddress}

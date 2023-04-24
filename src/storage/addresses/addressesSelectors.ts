@@ -24,6 +24,7 @@ import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
 import { AddressHash } from '@/types/addresses'
 import { Asset, TokenDisplayBalances } from '@/types/assets'
+import { filterAddressesWithoutAssets } from '@/utils/addresses'
 
 export const {
   selectById: selectAddressByHash,
@@ -137,3 +138,5 @@ export const makeSelectAddressesHaveHistoricBalances = () =>
       addresses.every((address) => address.balanceHistoryInitialized) &&
       addresses.some((address) => address.balanceHistory.ids.length > 0)
   )
+
+export const selectAddressesWithSomeBalance = createSelector(selectAllAddresses, filterAddressesWithoutAssets)

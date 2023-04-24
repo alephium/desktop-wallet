@@ -31,7 +31,7 @@ import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import { Address, AddressHash } from '@/types/addresses'
-import { filterAddresses } from '@/utils/addresses'
+import { addressHasAssets, filterAddresses, filterAddressesWithoutAssets } from '@/utils/addresses'
 import { onEnterOrSpace } from '@/utils/misc'
 
 interface AddressSelectProps {
@@ -42,7 +42,7 @@ interface AddressSelectProps {
   defaultAddress?: Address
   label?: string
   disabled?: boolean
-  hideEmptyAvailableBalance?: boolean
+  hideAddressesWithoutAssets?: boolean
   simpleMode?: boolean
   className?: string
 }
@@ -56,7 +56,7 @@ function AddressSelect({
   className,
   id,
   onAddressChange,
-  hideEmptyAvailableBalance,
+  hideAddressesWithoutAssets,
   simpleMode = false
 }: AddressSelectProps) {
   const { t } = useTranslation()
@@ -64,10 +64,13 @@ function AddressSelect({
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [canBeAnimated, setCanBeAnimated] = useState(false)
-  const [address, setAddress] = useState(defaultAddress)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
-  const addresses = hideEmptyAvailableBalance ? options.filter((address) => address.balance !== '0') : options
+  const addresses = hideAddressesWithoutAssets ? filterAddressesWithoutAssets(options) : options
   const [filteredAddresses, setFilteredAddresses] = useState(addresses)
+  const defaultAddressHasAssets = defaultAddress && addressHasAssets(defaultAddress)
+  const initialAddress =
+    hideAddressesWithoutAssets && !defaultAddressHasAssets && addresses.length > 0 ? addresses[0] : defaultAddress
+  const [address, setAddress] = useState(initialAddress)
 
   const addressSelectOptions: SelectOption<AddressHash>[] = addresses.map((address) => ({
     value: address.hash,

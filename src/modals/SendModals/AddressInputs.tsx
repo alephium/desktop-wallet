@@ -47,6 +47,7 @@ interface AddressInputsProps {
   onFromAddressChange: (address: Address) => void
   onToAddressChange?: (address: string) => void
   onContactSelect?: (address: string) => void
+  hideFromAddressesWithoutAssets?: boolean
   className?: string
 }
 
@@ -59,6 +60,7 @@ const AddressInputs = ({
   onFromAddressChange,
   onToAddressChange,
   onContactSelect,
+  hideFromAddressesWithoutAssets,
   className
 }: AddressInputsProps) => {
   const { t } = useTranslation()
@@ -112,7 +114,7 @@ const AddressInputs = ({
           defaultAddress={updatedInitialAddress}
           onAddressChange={onFromAddressChange}
           id="from-address"
-          hideEmptyAvailableBalance
+          hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
           simpleMode
         />
       </BoxStyled>

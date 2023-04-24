@@ -24,22 +24,22 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import { useAppSelector } from '@/hooks/redux'
 import { ModalContent } from '@/modals/CenteredModal'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
-import { selectAddressesWithSomeBalance } from '@/storage/addresses/addressesSelectors'
-import { DeployContractTxData, PartialTxData } from '@/types/transactions'
+import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { CallContractTxData, PartialTxData } from '@/types/transactions'
 
-interface DeployContractAddressesTxModalContentProps {
-  data: PartialTxData<DeployContractTxData, 'fromAddress'>
-  onSubmit: (data: PartialTxData<DeployContractTxData, 'fromAddress'>) => void
+interface CallContractAddressesTxModalContentProps {
+  data: PartialTxData<CallContractTxData, 'fromAddress'>
+  onSubmit: (data: PartialTxData<CallContractTxData, 'fromAddress'>) => void
   onCancel: () => void
 }
 
-const DeployContractAddressesTxModalContent = ({
+const CallContractAddressesTxModalContent = ({
   data,
   onSubmit,
   onCancel
-}: DeployContractAddressesTxModalContentProps) => {
+}: CallContractAddressesTxModalContentProps) => {
   const { t } = useTranslation()
-  const addresses = useAppSelector(selectAddressesWithSomeBalance)
+  const addresses = useAppSelector(selectAllAddresses)
 
   const [fromAddress, setFromAddress] = useState(data.fromAddress)
 
@@ -55,7 +55,6 @@ const DeployContractAddressesTxModalContent = ({
           defaultFromAddress={fromAddress}
           fromAddresses={addresses}
           onFromAddressChange={setFromAddress}
-          hideFromAddressesWithoutAssets
         />
       </InputFieldsColumn>
       <FooterButton onClick={() => onSubmit({ fromAddress })}>{t('Continue')}</FooterButton>
@@ -63,4 +62,4 @@ const DeployContractAddressesTxModalContent = ({
   )
 }
 
-export default DeployContractAddressesTxModalContent
+export default CallContractAddressesTxModalContent

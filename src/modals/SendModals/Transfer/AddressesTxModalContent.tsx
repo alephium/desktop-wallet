@@ -24,7 +24,7 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import { useAppSelector } from '@/hooks/redux'
 import { ModalContent } from '@/modals/CenteredModal'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAddressesWithSomeBalance } from '@/storage/addresses/addressesSelectors'
 import { PartialTxData, TransferTxData } from '@/types/transactions'
 import { isAddressValid, requiredErrorMessage } from '@/utils/form-validation'
 
@@ -36,7 +36,7 @@ interface TransferAddressesTxModalContentProps {
 
 const TransferAddressesTxModalContent = ({ data, onSubmit, onCancel }: TransferAddressesTxModalContentProps) => {
   const { t } = useTranslation()
-  const addresses = useAppSelector(selectAllAddresses)
+  const addresses = useAppSelector(selectAddressesWithSomeBalance)
 
   const [fromAddress, setFromAddress] = useState(data.fromAddress)
   const [toAddress, setToAddress] = useStateWithError(data?.toAddress ?? '')
@@ -59,6 +59,7 @@ const TransferAddressesTxModalContent = ({ data, onSubmit, onCancel }: TransferA
           defaultFromAddress={fromAddress}
           fromAddresses={addresses}
           onFromAddressChange={setFromAddress}
+          hideFromAddressesWithoutAssets
           toAddress={toAddress}
           onToAddressChange={handleToAddressChange}
           onContactSelect={handleToAddressChange}

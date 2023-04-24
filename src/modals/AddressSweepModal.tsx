@@ -140,7 +140,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           onAddressChange={(newAddress) => onAddressChange('from', newAddress)}
           disabled={sweepAddress !== undefined}
           id="from-address"
-          hideEmptyAvailableBalance
+          hideAddressesWithoutAssets
         />
         <AddressSelect
           label={t`To address`}
