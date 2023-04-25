@@ -352,7 +352,6 @@ const InputContainer = styled(InputArea)`
   padding: 0;
 
   outline: none;
-  box-shadow: ${({ theme }) => theme.shadow.primary};
 `
 
 export const MoreIcon = styled.div`
@@ -375,6 +374,7 @@ const SelectedValue = styled.div<InputProps>`
   display: flex;
   align-items: center;
   min-width: 0;
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 
   ${({ simpleMode }) =>
     simpleMode &&
