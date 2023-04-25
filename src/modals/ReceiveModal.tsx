@@ -52,6 +52,7 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
           onAddressChange={setSelectedAddress}
           disabled={!!addressHash}
           id="address"
+          noMargin
         />
         <QRCodeSection>
           {selectedAddress?.hash && (
@@ -69,8 +70,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: var(--spacing-3);
-  gap: 15px;
+  gap: var(--spacing-6);
 `
 
 const QRCodeSection = styled.div`

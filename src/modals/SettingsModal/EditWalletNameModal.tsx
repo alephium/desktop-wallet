@@ -64,7 +64,7 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
   }
 
   return (
-    <CenteredModal title={t('Change wallet name')} {...props}>
+    <CenteredModal title={t('Change wallet name')} narrow {...props}>
       <InputFieldsColumn>
         <Controller
           name="name"
@@ -76,6 +76,7 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
               onBlur={onBlur}
               error={errors.name?.type === 'required' ? requiredErrorMessage : errors.name?.message}
               isValid={!!value && !errors.name}
+              heightSize="big"
             />
           )}
           rules={{
