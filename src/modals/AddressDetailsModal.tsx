@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FileDown } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
@@ -28,6 +27,8 @@ import Badge from '@/components/Badge'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
+import HashEllipsed from '@/components/HashEllipsed'
+import QRCode from '@/components/QRCode'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -67,10 +68,11 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
             <AddressColorIndicator addressHash={address.hash} size={30} />
             <Title>
               <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
-              <Badge short color={theme.font.tertiary} border>
-                {t('Group')} {address.group}
-              </Badge>
+              {address.label && <TitleAddressHash hash={address.hash} />}
             </Title>
+            <Badge short color={theme.font.tertiary} border>
+              {t('Group')} {address.group}
+            </Badge>
           </LeftSide>
           <ExplorerButton
             role="secondary"
@@ -84,9 +86,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       }
     >
       <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
-        <QrCodeBox>
-          <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.primary} />
-        </QrCodeBox>
+        <QRCode value={addressHash} size={130} />
       </AmountsOverviewPanel>
 
       <Content>
@@ -150,14 +150,20 @@ const ExplorerButton = styled(Button)`
 const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
-  max-width: 300px;
+  max-width: 150px;
 `
 
 const Title = styled.div`
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  gap: 5px;
   max-width: 300px;
+`
+
+const TitleAddressHash = styled(HashEllipsed)`
+  max-width: 100px;
+  color: ${({ theme }) => theme.font.tertiary};
+  font-size: 14px;
 `
 
 const Content = styled.div`
@@ -176,12 +182,4 @@ const ButtonsGrid = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
   background-color: ${({ theme }) => theme.border.secondary};
-`
-
-const QrCodeBox = styled(Box)`
-  padding: 12px;
-  width: auto;
-  margin-left: auto;
-  margin-right: 16px;
-  background-color: ${({ theme }) => theme.bg.primary};
 `

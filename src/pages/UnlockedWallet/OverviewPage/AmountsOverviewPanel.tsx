@@ -185,9 +185,9 @@ const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
   gap: 30px;
   align-items: center;
 
-  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 80 : 0)}px;
+  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 70 : 0)}px;
 
-  padding: 20px 0 30px 0;
+  padding: 20px 0 20px 0;
 `
 
 const Balances = styled.div`
