@@ -72,7 +72,6 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
 }
 
 export default styled(OverviewPage)`
-  // Custom bg color, cover header
   background-color: ${({ theme }) => theme.bg.background1};
   margin-top: -${appHeaderHeightPx}px;
   padding-top: ${appHeaderHeightPx}px;

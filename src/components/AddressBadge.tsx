@@ -124,7 +124,6 @@ const Label = styled.span<AddressBadgeProps>`
 `
 
 const NotKnownAddress = styled(HashEllipsed)`
-  // Don't show border on not "known" addresses
   border: none;
   border-radius: 0;
   padding: 0;
