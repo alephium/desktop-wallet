@@ -85,14 +85,14 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
         selectedAssets={selectedAssets}
         setSelectedAssets={setSelectedAssets}
       />
-      <UnlockedWalletPanel doubleTop bottom backgroundColor="background1">
+      <StyledUnlockedWalletPanel doubleTop bottom backgroundColor="background1">
         <TransactionList
           addressHashes={map(selectedAddresses, 'hash')}
           directions={map(selectedDirections, 'value')}
           assetIds={map(selectedAssets, 'id')}
           hideHeader
         />
-      </UnlockedWalletPanel>
+      </StyledUnlockedWalletPanel>
       <BottomRow
         animate={{ y: direction === 'down' ? 100 : 0 }}
         transition={{ easings: 'spring', stiffness: 500, damping: 40 }}
@@ -145,4 +145,8 @@ const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
+`
+
+const StyledUnlockedWalletPanel = styled(UnlockedWalletPanel)`
+  flex: 1;
 `

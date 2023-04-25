@@ -40,10 +40,11 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 interface AppHeader {
   title?: string
+  invisible?: boolean
   className?: string
 }
 
-const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
+const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => {
   const { t } = useTranslation()
   const { scrollY: scrollYContext } = useScrollContext()
   const initialScroll = useMotionValue(0)
@@ -81,6 +82,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     opacity: useTransform(scrollY, [0, 100, 100], [0, 0, 1]),
     transition: 'opacity 0.2s ease-out'
   }
+
+  if (invisible) return <motion.header id="app-header" className={className} />
 
   return (
     <>
@@ -163,7 +166,7 @@ export default styled(AppHeader)`
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
 
-  backdrop-filter: blur(10px);
+  backdrop-filter: ${({ invisible }) => (!invisible ? 'blur(10px)' : 'none')};
   z-index: 1;
 `
 

@@ -76,7 +76,8 @@ const TextAreaTagsContainer = styled(motion.div)`
 const StyledTags = styled(Tags)`
   ${inputDefaultStyle(true)}
   height: auto;
+  min-height: 100px;
   padding: var(--spacing-1);
   line-height: 20px;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-big);
 `

@@ -44,6 +44,7 @@ interface AddressSelectProps {
   disabled?: boolean
   hideAddressesWithoutAssets?: boolean
   simpleMode?: boolean
+  noMargin?: boolean
   className?: string
 }
 
@@ -57,6 +58,7 @@ function AddressSelect({
   id,
   onAddressChange,
   hideAddressesWithoutAssets,
+  noMargin,
   simpleMode = false
 }: AddressSelectProps) {
   const { t } = useTranslation()
@@ -119,6 +121,7 @@ function AddressSelect({
         disabled={disabled}
         heightSize={simpleMode ? 'normal' : 'big'}
         simpleMode={simpleMode}
+        noMargin={noMargin}
       >
         {label && (
           <InputLabel isElevated={!!address} htmlFor={id}>

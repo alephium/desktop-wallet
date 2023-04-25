@@ -73,7 +73,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
 
   return (
     <>
-      <PanelTitle useLayoutId={false} isSticky={false} size="big">
+      <PanelTitle useLayoutId={false} size="big">
         {dAppName ? t('Connect to dApp') : t('Welcome back.')}
       </PanelTitle>
       <ParagraphStyled centered secondary>
