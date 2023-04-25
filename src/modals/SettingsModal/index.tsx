@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { map } from 'lodash'
 import { Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -37,6 +36,7 @@ import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSect
 import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
+import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
 export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
@@ -52,11 +52,16 @@ export const settingsModalTabs: SettingsTabItem[] = [
   { value: 'devtools', label: i18next.t('Developer tools') }
 ]
 
-const socialMediaList = {
-  twitter: { url: 'https://twitter.com/alephium', src: twitterLogo },
-  discord: { url: 'https://discord.gg/XsGpZ5VDTM', src: discordLogo },
-  github: { url: 'https://github.com/alephium', src: githubLogo }
+interface SocialMediaLogo {
+  media: keyof Pick<typeof links, 'twitter' | 'discord' | 'github'>
+  img: string
 }
+
+const socialMediaLogos: SocialMediaLogo[] = [
+  { media: 'twitter', img: twitterLogo },
+  { media: 'discord', img: discordLogo },
+  { media: 'github', img: githubLogo }
+]
 
 interface SettingsModalProps {
   onClose: () => void
@@ -103,8 +108,8 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
             </TabTitles>
             <SidebarFooter>
               <SocialMedias>
-                {map(socialMediaList, (m) => (
-                  <SocialMedia src={m.src} onClick={() => openInWebBrowser(m.url)} />
+                {socialMediaLogos.map(({ media, img }) => (
+                  <SocialMedia key={media} src={img} onClick={() => openInWebBrowser(links[media])} />
                 ))}
               </SocialMedias>
               <Version>v{import.meta.env.VITE_VERSION}</Version>
