@@ -88,6 +88,8 @@ const SnackbarPopup = styled(motion.div)`
   color: ${({ theme }) => theme.font.primary};
   border-radius: var(--radius-medium);
   backdrop-filter: blur(10px);
+  max-width: 800px;
+  word-wrap: break-word;
 
   &.alert {
     ${({ theme }) => getSnackbarStyling(theme.global.alert)}

@@ -135,6 +135,7 @@ function AddressSelect({
         )}
         <ClickableInput
           type="button"
+          tabIndex={0}
           className={className}
           disabled={disabled}
           id={id}
