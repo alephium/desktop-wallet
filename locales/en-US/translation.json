@@ -405,11 +405,11 @@
   "and": "and",
   "with": "with",
   "Copy contact address": "Copy contact address",
-  "🌅 Good morning.": "🌅 Good morning.",
-  "🌞 Good afternoon.": "🌞 Good afternoon.",
-  "🌇 Good evening.": "🌇 Good evening.",
-  "🌝 Good night.": "🌇 Good night.",
-  "📈 ALPH price: {{ price }}$": "📈 ALPH price: {{ price }}$",
+  "Good morning.": "Good morning.",
+  "Good afternoon.": "Good afternoon.",
+  "Good evening.": "Good evening.",
+  "Good night.": "Good night.",
+  "ALPH price: {{ price }}$": "ALPH price: {{ price }}$",
   "Expand": "Expand",
   "Select address group": "Select address group"
 }

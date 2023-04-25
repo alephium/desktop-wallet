@@ -28,14 +28,14 @@ const TimeOfDayMessage = () => {
     <span>
       {
         hour >= 0 && hour < 5
-          ? t('🌝 Good night.')
+          ? '🌝 ' + t('Good night.')
           : hour >= 5 && hour < 12
-          ? t('🌅 Good morning.')
+          ? '🌅 ' + t('Good morning.')
           : hour >= 12 && hour < 18
-          ? t('🌞 Good afternoon.')
+          ? '🌞 ' + t('Good afternoon.')
           : hour >= 18 && hour < 21
-          ? t('🌇 Good evening.')
-          : t('🌝 Good night.') // handle hour 21 to 23 and overflow to 0 to cover all hours
+          ? '🌇 ' + t('Good evening.')
+          : '🌝 ' + t('Good night.') // handle hour 21 to 23 and overflow to 0 to cover all hours
       }
     </span>
   )
