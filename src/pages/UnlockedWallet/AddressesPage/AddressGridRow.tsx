@@ -40,6 +40,7 @@ import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface AddressGridRowProps {
   addressHash: AddressHash
@@ -67,14 +68,23 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
 
   const fiatBalance = calculateAmountWorth(BigInt(address.balance), price ?? 0)
 
+  const openAddressDetailsModal = () => setIsAddressDetailsModalOpen(true)
+
   return (
     <>
-      <GridRow key={address.hash} onClick={() => setIsAddressDetailsModalOpen(true)} className={className}>
+      <GridRow
+        key={address.hash}
+        onClick={openAddressDetailsModal}
+        onKeyDown={(e) => onEnterOrSpace(e, openAddressDetailsModal)}
+        className={className}
+        role="row"
+        tabIndex={0}
+      >
         <AddressNameCell>
           <AddressColorIndicator addressHash={address.hash} />
           <Column>
             <Label>
-              <AddressBadge addressHash={address.hash} hideColorIndication truncate showFull />
+              <AddressBadge addressHash={address.hash} hideColorIndication truncate showFull disableA11y />
             </Label>
             {stateUninitialized ? (
               <SkeletonLoader height="15.5px" />
