@@ -42,9 +42,9 @@ const CreateWalletRoutes = () => {
     <WalletContextProvider>
       <Scrollbar>
         <Container>
-          <AppHeader invisible />
           <FloatingLogo />
           <StepsContextProvider stepElements={createWalletSteps} baseUrl={'create'} />
+          <AppHeader invisible />
         </Container>
       </Scrollbar>
     </WalletContextProvider>

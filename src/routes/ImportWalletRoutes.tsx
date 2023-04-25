@@ -38,9 +38,9 @@ const ImportWalletRoutes = () => {
     <WalletContextProvider>
       <Scrollbar translateContentSizesToHolder>
         <Container>
-          <AppHeader invisible />
           <FloatingLogo />
           <StepsContextProvider stepElements={importWalletSteps} baseUrl="import" />
+          <AppHeader invisible />
         </Container>
       </Scrollbar>
     </WalletContextProvider>
