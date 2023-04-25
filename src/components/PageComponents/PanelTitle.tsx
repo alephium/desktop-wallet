@@ -64,7 +64,6 @@ export const TitleContainer = styled(motion.div)<{ isSticky: boolean }>`
   display: flex;
   align-items: center;
   top: 0;
-  z-index: 1;
 
   ${({ isSticky }) =>
     isSticky &&

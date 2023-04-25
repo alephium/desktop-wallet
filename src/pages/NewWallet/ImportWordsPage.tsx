@@ -94,7 +94,7 @@ const ImportWordsPage = () => {
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary" isSticky>{t`Secret recovery phrase`}</PanelTitle>
+      <PanelTitle color="primary">{t('Secret recovery phrase')}</PanelTitle>
       <PanelContentContainer>
         <Section>
           <TextAreaTags
@@ -106,16 +106,16 @@ const ImportWordsPage = () => {
         </Section>
         <Paragraph secondary centered>
           {!isNextButtonActive
-            ? t`Make sure to store the words in a secure location! They are your wallet's secret recovery phrase.`
-            : t`All good? Let's continue!`}
+            ? t("Make sure to store the words in a secure location! They are your wallet's secret recovery phrase.")
+            : t("All good? Let's continue!")}
         </Paragraph>
       </PanelContentContainer>
       <FooterActionsContainer>
         <Button role="secondary" onClick={onButtonBack}>
-          {t`Cancel`}
+          {t('Cancel')}
         </Button>
         <Button onClick={handleWalletImport} disabled={!isNextButtonActive}>
-          {t`Continue`}
+          {t('Continue')}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>

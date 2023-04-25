@@ -92,21 +92,19 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary" isSticky>
-        {isRestoring ? t`Import wallet` : t`New wallet`}
-      </PanelTitle>
+      <PanelTitle color="primary">{isRestoring ? t('Import wallet') : t('New wallet')}</PanelTitle>
       <PanelContentContainer>
         <Section inList>
           <Input
             value={walletName}
-            label={isRestoring ? t`New wallet name` : t`Wallet name`}
+            label={isRestoring ? t('New wallet name') : t('Wallet name')}
             onChange={(e) => onUpdateWalletName(e.target.value)}
             error={walletNameError}
             isValid={walletName.length > 0 && walletNameError.length === 0}
           />
           <Input
             value={password}
-            label={isRestoring ? t`New password` : t`Password`}
+            label={isRestoring ? t('New password') : t('Password')}
             type="password"
             onChange={(e) => onUpdatePassword(e.target.value)}
             error={passwordError}
@@ -114,27 +112,27 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
           />
           <Input
             value={passwordCheck}
-            label={t`Retype password`}
+            label={t('Retype password')}
             type="password"
             onChange={(e) => setPasswordCheck(e.target.value)}
-            error={passwordCheck && password !== passwordCheck ? t`Passwords are different` : ''}
+            error={passwordCheck && password !== passwordCheck ? t('Passwords are different') : ''}
             isValid={password.length > 0 && password === passwordCheck}
             disabled={!password || passwordError.length > 0}
           />
           <InfoBox
             Icon={AlertCircle}
             importance="warning"
-            text={t`Make sure to keep your password secured as it cannot be changed in the future.`}
+            text={t('Make sure to keep your password secured as it cannot be changed in the future.')}
           />
-          <WarningNote>{t`Alephium doesn't have access to your wallet.\nYou are the only owner.`}</WarningNote>
+          <WarningNote>{t("Alephium doesn't have access to your wallet.\nYou are the only owner.")}</WarningNote>
         </Section>
       </PanelContentContainer>
       <FooterActionsContainer apparitionDelay={0.3}>
         <Button role="secondary" onClick={onButtonBack}>
-          {t`Back`}
+          {t('Back')}
         </Button>
         <Button disabled={!isNextButtonActive} onClick={handleNextButtonClick}>
-          {t`Continue`}
+          {t('Continue')}
         </Button>
       </FooterActionsContainer>
     </FloatingPanel>
