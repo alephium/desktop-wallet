@@ -75,7 +75,6 @@ export default styled(OverviewPage)`
   background-color: ${({ theme }) => theme.bg.background1};
   margin-top: -${appHeaderHeightPx}px;
   padding-top: ${appHeaderHeightPx}px;
-  height: 100vh;
 `
 
 const AssetAndAddressesRow = styled.div`

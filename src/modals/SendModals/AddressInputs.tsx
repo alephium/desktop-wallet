@@ -30,12 +30,13 @@ import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import VerticalDivider from '@/components/PageComponents/VerticalDivider'
+import SkeletonLoader from '@/components/SkeletonLoader'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
-import { selectAllContacts } from '@/storage/addresses/addressesSelectors'
+import { selectAllContacts, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
 import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
@@ -67,6 +68,7 @@ const AddressInputs = ({
   const updatedInitialAddress = fromAddresses.find((a) => a.hash === defaultFromAddress.hash) ?? defaultFromAddress
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
   const contacts = useAppSelector(selectAllContacts)
+  const isAddressesStateUninitialized = useAppSelector(selectIsStateUninitialized)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
@@ -108,16 +110,21 @@ const AddressInputs = ({
       <BoxStyled>
         <InputFixedLabel>{t('From')}</InputFixedLabel>
         <VerticalDivider />
-        <AddressSelect
-          title={t('Select the address to send funds from.')}
-          options={fromAddresses}
-          defaultAddress={updatedInitialAddress}
-          onAddressChange={onFromAddressChange}
-          id="from-address"
-          hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
-          simpleMode
-        />
+        {isAddressesStateUninitialized ? (
+          <SkeletonLoader height="55px" />
+        ) : (
+          <AddressSelect
+            title={t('Select the address to send funds from.')}
+            options={fromAddresses}
+            defaultAddress={updatedInitialAddress}
+            onAddressChange={onFromAddressChange}
+            id="from-address"
+            hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
+            simpleMode
+          />
+        )}
       </BoxStyled>
+
       {toAddress && onToAddressChange && (
         <>
           <DividerArrowRow>

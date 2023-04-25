@@ -24,7 +24,7 @@ import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import { useAppSelector } from '@/hooks/redux'
 import { ModalContent } from '@/modals/CenteredModal'
 import AddressInputs from '@/modals/SendModals/AddressInputs'
-import { selectAddressesWithSomeBalance } from '@/storage/addresses/addressesSelectors'
+import { selectAddressesWithSomeBalance, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { DeployContractTxData, PartialTxData } from '@/types/transactions'
 
 interface DeployContractAddressesTxModalContentProps {
@@ -40,6 +40,7 @@ const DeployContractAddressesTxModalContent = ({
 }: DeployContractAddressesTxModalContentProps) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAddressesWithSomeBalance)
+  const isAddressesStateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [fromAddress, setFromAddress] = useState(data.fromAddress)
 
@@ -58,7 +59,9 @@ const DeployContractAddressesTxModalContent = ({
           hideFromAddressesWithoutAssets
         />
       </InputFieldsColumn>
-      <FooterButton onClick={() => onSubmit({ fromAddress })}>{t('Continue')}</FooterButton>
+      <FooterButton onClick={() => onSubmit({ fromAddress })} disabled={isAddressesStateUninitialized}>
+        {t('Continue')}
+      </FooterButton>
     </ModalContent>
   )
 }

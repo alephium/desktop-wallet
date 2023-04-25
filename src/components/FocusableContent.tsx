@@ -18,13 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { ChevronsDownUp } from 'lucide-react'
-import { KeyboardEvent, useEffect } from 'react'
+import { KeyboardEvent, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import { fadeInOutFast } from '@/animations'
 import Button from '@/components/Button'
-import useFocusOnMount from '@/hooks/useFocusOnMount'
 import { ModalBackdrop } from '@/modals/ModalContainer'
 
 interface FocusableContentProps {
@@ -35,7 +34,7 @@ interface FocusableContentProps {
 
 const FocusableContent: FC<FocusableContentProps> = ({ className, children, isFocused, onClose }) => {
   const { t } = useTranslation()
-  const modalRef = useFocusOnMount<HTMLDivElement>()
+  const modalRef = useRef<HTMLDivElement>(null)
 
   const handleEscapeKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
