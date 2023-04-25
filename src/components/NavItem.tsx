@@ -59,7 +59,9 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
 }
 
 const ButtonStyled = styled(Button)<{ isActive: boolean }>`
-  opacity: ${({ isActive }) => (isActive ? 1 : 0.6)} !important;
+  &:not(:hover) {
+    opacity: ${({ isActive }) => (isActive ? 1 : 0.6)} !important;
+  }
 `
 
 export default NavItem
