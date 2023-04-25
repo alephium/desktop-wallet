@@ -266,7 +266,7 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '55px')};
+  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '52px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);

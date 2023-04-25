@@ -217,6 +217,7 @@ export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInP
     isExpanded &&
     css`
       max-height: none;
+      box-shadow: ${({ theme }) => theme.shadow.tertiary};
     `}
 
   &:hover {
