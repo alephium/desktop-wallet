@@ -172,7 +172,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
       ) : (
         (stateUninitialized || !hasHistoricBalances) && (
           <NoChartDivider>
-            <HorizontalDivider />
+            <HorizontalDivider secondary />
           </NoChartDivider>
         )
       )}
@@ -193,7 +193,7 @@ const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
   gap: 30px;
   align-items: center;
 
-  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 70 : 0)}px;
+  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 80 : 0)}px;
 
   padding: 30px 60px;
 `
@@ -297,12 +297,12 @@ const ChartContainer = styled.div`
   padding: 10px 0;
   margin-bottom: var(--spacing-4);
 
-  bottom: -70px;
+  bottom: -80px;
   height: 100px;
 `
 
 const NoChartDivider = styled.div`
-  height: 40px;
+  height: 50px;
   display: flex;
   align-items: center;
   margin-bottom: var(--spacing-4);
