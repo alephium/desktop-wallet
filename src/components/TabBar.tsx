@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -103,6 +104,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
         `
       : css`
           color: ${theme.font.tertiary};
+          background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
         `}
 
   &:not(:first-child) {
