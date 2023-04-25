@@ -29,7 +29,7 @@ export const lightTheme: DefaultTheme = {
     background1: '#f9f9f9',
     background2: '#f5f5f5',
     accent: colord('#598bed').alpha(0.05).toHex(),
-    hover: colord('#ffffff').darken(0.02).toHex()
+    hover: colord('#ffffff').darken(0.012).toHex()
   },
   font: {
     primary: '#1d1d1d',
@@ -67,7 +67,7 @@ export const darkTheme: DefaultTheme = {
     contrast: 'white',
     background1: '#121214',
     background2: '#0e0e10',
-    hover: colord('#1b1b1f').lighten(0.02).toHex(),
+    hover: colord('#18181b').darken(0.01).toHex(),
     accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {

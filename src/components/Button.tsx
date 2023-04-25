@@ -125,10 +125,7 @@ export default styled(Button)`
             faded: colord(theme.global.accent).darken(0.04).toRgbString()
           }[variant],
           secondary: {
-            default:
-              theme.name === 'dark'
-                ? colord(theme.bg.primary).lighten(0.02).toRgbString()
-                : colord(theme.bg.primary).darken(0.015).toRgbString(),
+            default: theme.bg.hover,
             contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
             valid: colord(theme.global.valid).darken(0.04).toRgbString(),
             alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
