@@ -248,10 +248,13 @@ const getChartOptions = (
 const ChartWrapper = styled.div`
   width: 100%;
   height: 100%;
-  opacity: 0.5;
-  transition: opacity 0.1s ease-out;
+  opacity: 0.3;
+  transition: opacity 0.2s ease-out;
+
+  filter: saturate(0);
 
   &:hover {
     opacity: 1;
+    filter: saturate(1);
   }
 `
