@@ -18,10 +18,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'react-qr-code'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import AddressSelect from '@/components/Inputs/AddressSelect'
+import QRCode from '@/components/QRCode'
 import { useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import { selectAddressByHash, selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
@@ -31,9 +31,10 @@ interface ReceiveModalProps {
   addressHash?: string
 }
 
+const QRCodeSize = 250
+
 const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   const { t } = useTranslation()
-  const theme = useTheme()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
@@ -49,11 +50,13 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
           options={addresses}
           defaultAddress={address ?? defaultAddress}
           onAddressChange={setSelectedAddress}
+          disabled={!!addressHash}
           id="address"
+          noMargin
         />
         <QRCodeSection>
           {selectedAddress?.hash && (
-            <QRCode size={300} value={selectedAddress.hash} bgColor={theme.bg.primary} fgColor={theme.font.primary} />
+            <QRCode value={selectedAddress.hash} size={QRCodeSize} copyButtonLabel={t('Copy address')} />
           )}
         </QRCodeSection>
       </Content>
@@ -66,12 +69,11 @@ export default ReceiveModal
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: var(--spacing-3);
-  padding-bottom: var(--spacing-8);
+  align-items: center;
+  gap: var(--spacing-6);
 `
 
 const QRCodeSection = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 30px;
 `

@@ -16,9 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { map } from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -28,11 +29,11 @@ import { useScrollContext } from '@/contexts/scroll'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import SendModalTransfer from '@/modals/SendModals/Transfer'
 import FiltersPanel from '@/pages/UnlockedWallet/TransfersPage/FiltersPanel'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
 import { Asset } from '@/types/assets'
@@ -48,8 +49,10 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const dispatch = useAppDispatch()
   const infoMessageClosed = useAppSelector((s) => s.global.transfersPageInfoMessageClosed)
   const addresses = useAppSelector(selectAllAddresses)
-  const scroll = useScrollContext()
+  const { scrollDirection } = useScrollContext()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
 
+  const [direction, setDirection] = useState(scrollDirection?.get())
   const [selectedAddresses, setSelectedAddresses] = useState(addresses)
   const [selectedDirections, setSelectedDirections] = useState(directionOptions)
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>()
@@ -57,6 +60,12 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false)
 
   const closeInfoMessage = () => dispatch(transfersPageInfoMessageClosed())
+
+  useEffect(() => {
+    scrollDirection?.on('change', setDirection)
+
+    return () => scrollDirection?.destroy()
+  }, [scrollDirection])
 
   return (
     <UnlockedWalletPage
@@ -76,15 +85,18 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
         selectedAssets={selectedAssets}
         setSelectedAssets={setSelectedAssets}
       />
-      <UnlockedWalletPanel top>
+      <StyledUnlockedWalletPanel doubleTop bottom backgroundColor="background1">
         <TransactionList
           addressHashes={map(selectedAddresses, 'hash')}
           directions={map(selectedDirections, 'value')}
           assetIds={map(selectedAssets, 'id')}
           hideHeader
         />
-      </UnlockedWalletPanel>
-      <BottomRow animate={{ y: scroll?.scrollDirection === 'down' ? 100 : 0 }}>
+      </StyledUnlockedWalletPanel>
+      <BottomRow
+        animate={{ y: direction === 'down' ? 100 : 0 }}
+        transition={{ easings: 'spring', stiffness: 500, damping: 40 }}
+      >
         <CornerButtons>
           <ButtonsGrid>
             <ShortcutButtons receive send highlight analyticsOrigin="transfer_page" />
@@ -92,16 +104,19 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
         </CornerButtons>
       </BottomRow>
       <ModalPortal>
-        {isSendModalOpen && <SendModalTransfer onClose={() => setIsSendModalOpen(false)} />}
+        {isSendModalOpen && defaultAddress && (
+          <SendModalTransfer
+            initialTxData={{ fromAddress: defaultAddress }}
+            onClose={() => setIsSendModalOpen(false)}
+          />
+        )}
         {isReceiveModalOpen && <ReceiveModal onClose={() => setIsReceiveModalOpen(false)} />}
       </ModalPortal>
     </UnlockedWalletPage>
   )
 }
 
-export default styled(TransfersPage)`
-  margin-bottom: 50px;
-`
+export default TransfersPage
 
 const BottomRow = styled(motion.div)`
   position: fixed;
@@ -115,19 +130,23 @@ const BottomRow = styled(motion.div)`
 const CornerButtons = styled.div`
   position: absolute;
   bottom: 0;
-  border-radius: var(--radius-huge);
+  border-radius: 100px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
+  backdrop-filter: blur(10px);
   box-shadow: ${({ theme }) => theme.shadow.secondary};
-  background-color: ${({ theme }) => theme.bg.background2};
   width: 20vw;
   max-width: 320px;
   min-width: 230px;
 `
 
 const ButtonsGrid = styled.div`
-  background-color: ${({ theme }) => theme.border.primary};
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
+`
+
+const StyledUnlockedWalletPanel = styled(UnlockedWalletPanel)`
+  flex: 1;
 `

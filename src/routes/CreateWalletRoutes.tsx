@@ -16,8 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import styled from 'styled-components'
+
 import AppHeader from '@/components/AppHeader'
 import FloatingLogo from '@/components/FloatingLogo'
+import Scrollbar from '@/components/Scrollbar'
 import { StepsContextProvider } from '@/contexts/steps'
 import { WalletContextProvider } from '@/contexts/wallet'
 import CheckWordsIntroPage from '@/pages/NewWallet/CheckWordsIntroPage'
@@ -37,11 +40,21 @@ const CreateWalletRoutes = () => {
 
   return (
     <WalletContextProvider>
-      <FloatingLogo />
-      <StepsContextProvider stepElements={createWalletSteps} baseUrl={'create'} />
-      <AppHeader />
+      <Scrollbar>
+        <Container>
+          <FloatingLogo />
+          <StepsContextProvider stepElements={createWalletSteps} baseUrl={'create'} />
+          <AppHeader invisible />
+        </Container>
+      </Scrollbar>
     </WalletContextProvider>
   )
 }
 
 export default CreateWalletRoutes
+
+const Container = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+`

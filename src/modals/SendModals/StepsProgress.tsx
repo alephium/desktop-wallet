@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -27,15 +26,17 @@ import { TranslationKey } from '@/types/i18next'
 
 interface StepsProgressProps {
   currentStep: Step
+  isContract?: boolean
   className?: string
 }
 
-export type Step = 'build-tx' | 'info-check' | 'password-check' | 'tx-sent'
+export type Step = 'addresses' | 'build-tx' | 'info-check' | 'password-check' | 'tx-sent'
 
 type StepStatus = 'completed' | 'active' | 'next'
 
 const stepTitles: Record<Step, TranslationKey> = {
-  'build-tx': 'Info',
+  addresses: 'Addresses',
+  'build-tx': 'Assets',
   'info-check': 'Check',
   'password-check': 'Confirm',
   'tx-sent': 'Sent'
@@ -43,7 +44,7 @@ const stepTitles: Record<Step, TranslationKey> = {
 
 const dotSize = 16
 
-const StepsProgress = ({ currentStep, className }: StepsProgressProps) => {
+const StepsProgress = ({ currentStep, isContract, className }: StepsProgressProps) => {
   const { t } = useTranslation()
   const { steps, getStepColors } = useStepsUI(currentStep)
 
@@ -51,12 +52,13 @@ const StepsProgress = ({ currentStep, className }: StepsProgressProps) => {
     <div className={className}>
       {steps.map((step, index) => {
         const { text, dot, line } = getStepColors(step)
+        const stepTitle = isContract && step === 'build-tx' ? 'Bytecode' : stepTitles[step]
 
         return (
           <Fragment key={step}>
             <StepIndicator>
               <DotIcon color={dot} strokeColor={text} size={dotSize} />
-              <StepTitle style={{ color: text }}>{t(stepTitles[step])}</StepTitle>
+              <StepTitle style={{ color: text }}>{t(stepTitle)}</StepTitle>
             </StepIndicator>
             {index < steps.length - 1 && <Line color={line} />}
           </Fragment>
@@ -71,8 +73,8 @@ const useStepsUI = (currentStep: Step) => {
   const settings = useAppSelector((s) => s.settings)
 
   const steps: Step[] = !settings.passwordRequirement
-    ? ['build-tx', 'info-check', 'tx-sent']
-    : ['build-tx', 'info-check', 'password-check', 'tx-sent']
+    ? ['addresses', 'build-tx', 'info-check', 'tx-sent']
+    : ['addresses', 'build-tx', 'info-check', 'password-check', 'tx-sent']
 
   const getStepStatus = (step: Step): StepStatus =>
     steps.indexOf(step) < steps.indexOf(currentStep)
@@ -113,15 +115,15 @@ const useStepsUI = (currentStep: Step) => {
 }
 
 export default styled(StepsProgress)`
-  padding: 20px 100px;
+  padding: 15px 100px 30px 100px;
   width: 100%;
   display: flex;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.bg.background2};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  margin-top: -1px;
   z-index: 1;
 `
 

@@ -54,7 +54,7 @@ const Amount = ({
   isUnknownToken,
   showPlusMinus = false
 }: AmountProps) => {
-  const { discreetMode } = useAppSelector((state) => state.settings)
+  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
 
   let quantitySymbol = ''
   let amount = ''
@@ -123,6 +123,7 @@ export default styled(Amount)`
   display: inline-flex;
   white-space: pre;
   font-weight: var(--fontWeight-semiBold);
+  font-feature-settings: 'tnum' on;
 `
 
 const Decimals = styled.span`

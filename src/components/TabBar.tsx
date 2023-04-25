@@ -63,7 +63,7 @@ const TabBar = ({
             aria-selected={isActive}
             isActive={isActive}
           >
-            {item.label}
+            <TabLabel isActive={isActive}>{item.label}</TabLabel>
           </TabComponent>
         )
       })}
@@ -78,25 +78,26 @@ const TabBar = ({
 
 export default styled(TabBar)`
   display: flex;
-  justify-content: flex-start;
+  max-height: 60px;
 `
 
 export const Tab = styled.div<{ isActive: boolean }>`
+  flex: 1;
   min-width: 50px;
   text-align: center;
   padding: 16px 36px;
-  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.secondary : 'transparent')};
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.background1 : 'transparent')};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
+  margin-bottom: -1px;
 
   ${({ isActive, theme }) =>
     isActive
       ? css`
           color: ${theme.font.primary};
-          margin-bottom: -1px;
         `
       : css`
           color: ${theme.font.tertiary};
@@ -109,6 +110,14 @@ export const Tab = styled.div<{ isActive: boolean }>`
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const TabLabel = styled.span<{ isActive: boolean }>`
+  ${({ isActive }) =>
+    !isActive &&
+    css`
+      filter: saturate(10%);
+    `}
 `
 
 const ActionLinkStyled = styled(ActionLink)`

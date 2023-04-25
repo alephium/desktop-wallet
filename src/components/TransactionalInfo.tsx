@@ -106,7 +106,7 @@ const TransactionalInfo = ({
         <CellAddress alignRight>
           <HiddenLabel text={direction === 'swap' ? t('between') : t('from')} />
           {(direction === 'out' || direction === 'swap') && (
-            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y />
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
           )}
           {direction === 'in' && (
             <IOList
@@ -144,7 +144,7 @@ const TransactionalInfo = ({
       <CellAddress>
         <DirectionalAddress>
           {direction === 'in' && !showInternalInflows && (
-            <AddressBadge addressHash={addressHash} truncate disableA11y />
+            <AddressBadge addressHash={addressHash} truncate disableA11y withBorders />
           )}
           {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
             (pendingDestinationAddress || (
@@ -190,10 +190,10 @@ const CellTime = styled.div`
   align-items: center;
   margin-right: 28px;
   text-align: left;
+  width: 25%;
 `
 
 const AssetTime = styled.div`
-  width: 11em;
   color: ${({ theme }) => theme.font.secondary};
 `
 
@@ -243,7 +243,6 @@ const LockStyled = styled(Lock)`
 const CellAssetBadges = styled.div<Pick<TransactionalInfoProps, 'compact'>>`
   flex-grow: 1;
   flex-shrink: 0;
-  margin-right: 28px;
   width: ${({ compact }) => (compact ? '80px' : '180px')};
 
   @media ${deviceBreakPoints.desktop} {

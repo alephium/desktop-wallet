@@ -94,7 +94,7 @@ const ImportWordsPage = () => {
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">{t`Secret recovery phrase`}</PanelTitle>
+      <PanelTitle color="primary" isSticky>{t`Secret recovery phrase`}</PanelTitle>
       <PanelContentContainer>
         <Section>
           <TextAreaTags

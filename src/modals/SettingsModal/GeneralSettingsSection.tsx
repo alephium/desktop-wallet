@@ -21,11 +21,11 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Box from '@/components/Box'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
 import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import Toggle from '@/components/Inputs/Toggle'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
@@ -197,10 +197,10 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       />
       <ModalPortal>
         {isPasswordModelOpen && (
-          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode>
+          <CenteredModal title={t('Password')} onClose={() => setIsPasswordModalOpen(false)} focusMode skipFocusOnMount>
             <PasswordConfirmation
-              text={t`Type your password to change this setting.`}
-              buttonText={t`Enter`}
+              text={t('Type your password to change this setting.')}
+              buttonText={t('Enter')}
               onCorrectPasswordEntered={disablePasswordRequirement}
             />
           </CenteredModal>

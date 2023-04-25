@@ -16,16 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import ActionLink from '@/components/ActionLink'
 import AddressBadge from '@/components/AddressBadge'
 import Box from '@/components/Box'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { selectContactByAddress } from '@/storage/addresses/addressesSelectors'
+import { makeSelectContactByAddress } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
 import { openInWebBrowser } from '@/utils/misc'
 
@@ -37,6 +39,7 @@ interface CheckAddressesBoxProps {
 
 const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddressesBoxProps) => {
   const { t } = useTranslation()
+  const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, toAddressHash))
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
@@ -45,7 +48,7 @@ const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddre
       <AddressRow>
         <AddressLabel>{t('From')}</AddressLabel>
         <AddressLabelHash>
-          <AddressBadge addressHash={fromAddress.hash} truncate />
+          <AddressBadge addressHash={fromAddress.hash} truncate showFull />
           {fromAddress.label && <HashEllipsedStyled hash={fromAddress.hash} />}
         </AddressLabelHash>
       </AddressRow>
@@ -57,8 +60,7 @@ const CheckAddressesBox = ({ fromAddress, toAddressHash, className }: CheckAddre
             <AddressLabelHash>
               {contact ? (
                 <AddressLabelHash>
-                  {contact.name}
-
+                  <ContactName>{contact.name}</ContactName>
                   <HashEllipsedStyled hash={contact.address} />
                 </AddressLabelHash>
               ) : (
@@ -81,6 +83,7 @@ const AddressRow = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 18px 15px;
+  gap: 20px;
 `
 
 const AddressLabel = styled.div`
@@ -91,6 +94,10 @@ const AddressLabel = styled.div`
 const AddressLabelHash = styled.div`
   display: flex;
   gap: 10px;
+`
+
+const ContactName = styled(Truncate)`
+  max-width: 200px;
 `
 
 const HashEllipsedStyled = styled(HashEllipsed)`

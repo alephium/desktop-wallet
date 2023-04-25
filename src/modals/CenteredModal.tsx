@@ -41,6 +41,7 @@ export interface CenteredModalProps extends ModalContainerProps {
   narrow?: boolean
   dynamicContent?: boolean
   onBack?: () => void
+  noPadding?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -54,13 +55,16 @@ const CenteredModal: FC<CenteredModalProps> = ({
   narrow = false,
   dynamicContent = false,
   onBack,
-  children
+  children,
+  skipFocusOnMount,
+  noPadding,
+  ...rest
 }) => {
   const { t } = useTranslation()
-  const elRef = useFocusOnMount<HTMLSpanElement>()
+  const elRef = useFocusOnMount<HTMLSpanElement>(skipFocusOnMount)
 
   return (
-    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding>
+    <ModalContainer onClose={onClose} focusMode={focusMode} hasPadding skipFocusOnMount={skipFocusOnMount} {...rest}>
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader transparent={transparentHeader}>
           <TitleRow>
@@ -81,7 +85,15 @@ const CenteredModal: FC<CenteredModalProps> = ({
           </TitleRow>
           {header && <ModalHeaderContent>{header}</ModalHeaderContent>}
         </ModalHeader>
-        {dynamicContent ? children : <ScrollableModalContent>{children}</ScrollableModalContent>}
+        {dynamicContent ? (
+          noPadding ? (
+            children
+          ) : (
+            <ModalContent>{children}</ModalContent>
+          )
+        ) : (
+          <ScrollableModalContent>{children}</ScrollableModalContent>
+        )}
 
         {isLoading && (
           <>
@@ -149,7 +161,7 @@ export const ModalHeader = styled.header<{ transparent?: boolean }>`
     !transparent &&
     css`
       background-color: ${({ theme }) => theme.bg.background2};
-      border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+      border-bottom: 1px solid ${({ theme }) => theme.border.primary};
     `}
 `
 
@@ -177,7 +189,7 @@ const BackButton = styled(Button)`
 export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  padding: var(--spacing-4);
   width: 100%;
 `
 
@@ -185,7 +197,7 @@ export const ModalFooterButtons = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: 50px;
+  margin-top: var(--spacing-4);
 `
 
 export const ModalFooterButton = ({ ...props }) => (

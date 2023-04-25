@@ -55,7 +55,7 @@ interface DetailsRowProps {
 
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
-  const { explorerUrl } = useAppSelector((state) => state.network.settings)
+  const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
@@ -122,7 +122,9 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             </>
           )}
         </HeaderInfo>
-        <ActionLink onClick={handleShowTxInExplorer}>↗ {t('Show in explorer')}</ActionLink>
+        <ActionLink onClick={handleShowTxInExplorer} withBackground>
+          {t('Show in explorer')} ↗
+        </ActionLink>
       </Header>
       <Details role="table">
         {direction !== 'swap' && (
@@ -131,7 +133,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
               {direction === 'out' ? (
                 <AddressList>
                   <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                    <AddressBadge addressHash={address.hash} truncate />
+                    <AddressBadge addressHash={address.hash} truncate withBorders />
                   </ActionLinkStyled>
                 </AddressList>
               ) : (
@@ -331,6 +333,10 @@ const AddressList = styled.div`
 const ActionLinkStyled = styled(ActionLink)`
   width: 100%;
   justify-content: right;
+
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
 `
 
 const AmountContainer = styled.div`

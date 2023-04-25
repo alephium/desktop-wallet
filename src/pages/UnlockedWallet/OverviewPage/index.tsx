@@ -24,61 +24,46 @@ import styled from 'styled-components'
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
-import HistoricWorthChart from '@/components/HistoricWorthChart'
 import { TableHeader } from '@/components/Table'
 import TransactionList from '@/components/TransactionList'
-import { useAppSelector } from '@/hooks/redux'
 import AddressesContactsList from '@/pages/UnlockedWallet/OverviewPage/AddressesContactsList'
 import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOverviewPanel'
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
+import GreetingMessages from '@/pages/UnlockedWallet/OverviewPage/GreetingMessages'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
-import { AddressHash } from '@/types/addresses'
-import { ChartLength, DataPoint } from '@/types/chart'
-import { currencies } from '@/utils/currencies'
+import { appHeaderHeightPx } from '@/style/globalStyles'
 
-const OverviewPage = () => {
+interface OverviewPageProps {
+  className?: string
+}
+
+const maxPanelHeightInPx = 336
+
+const OverviewPage = ({ className }: OverviewPageProps) => {
   const { t } = useTranslation()
-  const activeWalletName = useAppSelector((s) => s.activeWallet.name)
-  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
 
-  const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
+  const [showChart, setShowChart] = useState(false)
 
   return (
-    <motion.div {...fadeIn}>
-      <UnlockedWalletPanel top>
-        <WalletNameRow>
-          <Tagline>{t('Current wallet')}</Tagline>
-          <WalletName>{activeWalletName}</WalletName>
-        </WalletNameRow>
-
-        <AmountsOverviewPanel
-          worth={dataPoint?.y}
-          date={dataPoint?.x}
-          onChartLengthChange={setChartLength}
-          chartLength={chartLength}
-        >
-          <Shortcuts>
-            <ShortcutsHeader title={t('Shortcuts')} />
-            <ButtonsGrid>
-              <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" />
-            </ButtonsGrid>
-          </Shortcuts>
-        </AmountsOverviewPanel>
-
-        <ChartContainer>
-          <HistoricWorthChart
-            addressHashes={addressHashes}
-            currency={currencies.USD.ticker}
-            onDataPointHover={setDataPoint}
-            length={chartLength}
-          />
-        </ChartContainer>
-
+    <motion.div
+      className={className}
+      {...fadeIn}
+      onAnimationComplete={() => setShowChart(true)}
+      onAnimationStart={() => setShowChart(false)}
+    >
+      <GreetingMessages />
+      <AmountsOverviewPanel showChart={showChart}>
+        <Shortcuts>
+          <ShortcutsHeader title={t('Shortcuts')} />
+          <ButtonsGrid>
+            <ShortcutButtons send receive lock walletSettings analyticsOrigin="overview_page" solidBackground />
+          </ButtonsGrid>
+        </Shortcuts>
+      </AmountsOverviewPanel>
+      <UnlockedWalletPanel bottom>
         <AssetAndAddressesRow>
-          <AssetsListStyled />
-          <AddressesContactsListStyled limit={5} />
+          <AssetsListStyled maxHeightInPx={maxPanelHeightInPx} />
+          <AddressesContactsListStyled maxHeightInPx={maxPanelHeightInPx} />
         </AssetAndAddressesRow>
         <TransactionList title={t('Latest transactions')} limit={5} />
       </UnlockedWalletPanel>
@@ -86,7 +71,12 @@ const OverviewPage = () => {
   )
 }
 
-export default OverviewPage
+export default styled(OverviewPage)`
+  background-color: ${({ theme }) => theme.bg.background1};
+  margin-top: -${appHeaderHeightPx}px;
+  padding-top: ${appHeaderHeightPx}px;
+  height: 100vh;
+`
 
 const AssetAndAddressesRow = styled.div`
   display: flex;
@@ -102,39 +92,22 @@ const AddressesContactsListStyled = styled(AddressesContactsList)`
   flex: 1;
 `
 
-const WalletNameRow = styled.div``
-
-const WalletName = styled.div`
-  font-size: 32px;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const Tagline = styled.div`
-  font-size: 14px;
-  color: ${({ theme }) => theme.font.tertiary};
-`
-
 const Shortcuts = styled(Box)`
   overflow: hidden;
-  background-color: transparent;
   z-index: 1;
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-big);
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const ShortcutsHeader = styled(TableHeader)`
-  height: 50px;
+  height: 45px;
+  background-color: transparent;
 `
 
 const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-  background-color: ${({ theme }) => theme.border.primary};
-`
-
-const ChartContainer = styled.div`
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 330px;
-  height: 100px;
+  background-color: ${({ theme }) => theme.border.secondary};
 `

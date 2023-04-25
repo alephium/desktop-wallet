@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Info, X } from 'lucide-react'
 import { MouseEvent } from 'react'
@@ -62,8 +63,10 @@ export default styled(InfoMessage)`
   padding: var(--spacing-3) var(--spacing-7) var(--spacing-3) var(--spacing-4);
   max-width: 306px;
 
-  background-color: ${({ theme }) => theme.bg.accent};
+  border: 1px solid ${({ theme }) => colord(theme.bg.accent).alpha(0.15).toHex()};
+  background-color: ${({ theme }) => colord(theme.bg.accent).alpha(0.05).toHex()};
   color: ${({ theme }) => theme.global.accent};
+
   line-height: 20px;
 
   border-radius: var(--radius-big);
@@ -72,6 +75,10 @@ export default styled(InfoMessage)`
     link &&
     css`
       cursor: pointer;
+
+      &:hover {
+        background-color: ${({ theme }) => theme.bg.accent};
+      }
     `}
 `
 

@@ -56,7 +56,7 @@ const IOList = ({
 }: IOListProps) => {
   const { t } = useTranslation()
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const { explorerUrl } = useAppSelector((state) => state.network.settings)
+  const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
@@ -86,13 +86,15 @@ const IOList = ({
 
     return truncate ? (
       <TruncateWrap>
-        <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} />
+        <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} withBorders />
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
         {addressesToShow.map((addressHash) => {
-          const addressComponent = <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} />
+          const addressComponent = (
+            <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} withBorders />
+          )
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}

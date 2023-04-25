@@ -45,18 +45,18 @@ const WalletQRCodeExportModal = ({ onClose }: { onClose: () => void }) => {
   }
 
   return (
-    <CenteredModal title={t`Export wallet`} onClose={onClose} focusMode narrow={!qrCodeTextToEncode}>
+    <CenteredModal title={t('Export wallet')} onClose={onClose} focusMode narrow={!qrCodeTextToEncode} skipFocusOnMount>
       {!qrCodeTextToEncode ? (
         <div>
           <PasswordConfirmation
-            text={t`Type your password to export your wallet.`}
-            buttonText={t`Show QR code`}
+            text={t('Type your password to export your wallet.')}
+            buttonText={t('Show QR code')}
             onCorrectPasswordEntered={handleCorrectPasswordEntered}
           />
         </div>
       ) : (
         <Section>
-          <InfoBox text={t`Scan this QR code with your mobile wallet.`} Icon={ScanLine} importance="accent" />
+          <InfoBox text={t('Scan this QR code with your mobile wallet.')} Icon={ScanLine} importance="accent" />
           <QRCode size={550} value={qrCodeTextToEncode} bgColor={theme.bg.primary} fgColor={theme.font.primary} />
         </Section>
       )}

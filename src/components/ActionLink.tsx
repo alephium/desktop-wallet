@@ -17,11 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 interface ActionLinkProps {
   onClick: () => void
   Icon?: LucideIconType
+  withBackground?: boolean
   className?: string
 }
 
@@ -41,9 +42,9 @@ export default styled(ActionLink)`
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 0;
   font-size: inherit;
   font-weight: inherit;
+  padding: 0;
 
   &:hover {
     color: ${({ theme }) => colord(theme.global.accent).darken(0.1).toRgbString()};
@@ -52,9 +53,17 @@ export default styled(ActionLink)`
   &:focus-visible {
     text-decoration: underline;
   }
+
+  ${({ withBackground }) =>
+    withBackground &&
+    css`
+      background-color: ${({ theme }) => theme.bg.accent};
+      padding: 8px;
+      border-radius: var(--radius-medium);
+    `}
 `
 
 const IconContainer = styled.div`
-  margin-left: 10px;
+  margin-left: 5px;
   display: flex;
 `

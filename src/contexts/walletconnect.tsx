@@ -36,15 +36,15 @@ import { useTranslation } from 'react-i18next'
 import client from '@/api/client'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
-import SendModalScript from '@/modals/SendModals/SendModalScript'
+import SendModalCallContract from '@/modals/SendModals/CallContract'
+import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
 import { AssetAmount } from '@/types/assets'
 import {
+  CallContractTxData,
   DappTxData,
   DeployContractTxData,
-  ScriptTxData,
   TransferTxData,
   TxDataToModalType,
   TxType
@@ -247,7 +247,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
               })
             }
 
-            const txData: ScriptTxData = {
+            const txData: CallContractTxData = {
               fromAddress: getSignerAddressByHash(signerAddress),
               bytecode,
               assetAmounts,
@@ -363,14 +363,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     >
       {children}
       <ModalPortal>
-        {isDeployContractSendModalOpen && (
-          <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
+        {isDeployContractSendModalOpen && dappTxData && (
+          <SendModalDeployContract
+            initialTxData={dappTxData}
+            txData={dappTxData as DeployContractTxData}
+            onClose={() => setIsDeployContractSendModalOpen(false)}
+          />
         )}
         {isCallScriptSendModalOpen && dappTxData && (
-          <SendModalScript
+          <SendModalCallContract
             initialStep="info-check"
             initialTxData={dappTxData}
-            txData={dappTxData as ScriptTxData}
+            txData={dappTxData as CallContractTxData}
             onClose={() => setIsCallScriptSendModalOpen(false)}
           />
         )}

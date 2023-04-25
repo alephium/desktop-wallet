@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import Button from '@/components/Button'
+import CheckMark from '@/components/CheckMark'
 import InfoBox from '@/components/InfoBox'
 import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -152,7 +153,7 @@ const WalletItem = ({ wallet, isCurrent, onWalletDelete }: WalletItemProps) => {
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {wallet.name}
-        {isCurrent && <CurrentWalletLabel> {t('(current)')}</CurrentWalletLabel>}
+        {isCurrent && <CheckMark />}
       </WalletName>
       {isShowingDeleteButton && (
         <Button
@@ -187,10 +188,9 @@ const WalletItemContainer = styled.div`
 
 const WalletName = styled.div`
   flex: 1;
-`
-
-const CurrentWalletLabel = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `
 
 const ActionButtons = styled.div`
@@ -201,7 +201,7 @@ const ActionButtons = styled.div`
 `
 
 const CurrentWalletSection = styled(Section)`
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-4);
 `
 
 const CurrentWalletBox = styled.div`

@@ -16,16 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { CSSProperties } from 'react'
 import styled from 'styled-components'
 
 interface SkeletonLoaderProps {
   height?: string
   width?: string
+  style?: CSSProperties
   className?: string
 }
 
-const SkeletonLoader = ({ className }: SkeletonLoaderProps) => (
-  <div className={className}>
+const SkeletonLoader = ({ className, style }: SkeletonLoaderProps) => (
+  <div className={className} style={style}>
     <AnimatedBackground />
   </div>
 )

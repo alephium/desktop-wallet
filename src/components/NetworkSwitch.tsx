@@ -23,7 +23,7 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import Badge from '@/components/Badge'
+import Button from '@/components/Button'
 import DotIcon from '@/components/DotIcon'
 import Select from '@/components/Inputs/Select'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -40,7 +40,7 @@ interface NetworkSelectOption {
 
 type NonCustomNetworkName = Exclude<keyof typeof NetworkNames, 'custom' | 'localhost'>
 
-const NetworkSwitch = ({ className }: { className?: string }) => {
+const NetworkSwitch = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
@@ -88,9 +88,10 @@ const NetworkSwitch = ({ className }: { className?: string }) => {
         options={networkSelectOptions}
         onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === network.name)}
+        title={t('Current network')}
         id="network"
         noMargin
-        CustomComponent={SelectCustomComponent}
+        renderCustomComponent={SelectCustomComponent}
         skipEqualityCheck
         ListBottomComponent={
           <MoreOptionsItem onClick={() => setIsSettingsModalOpen(true)}>
@@ -122,10 +123,10 @@ const SelectCustomComponent = () => {
   }[network.status]
 
   return (
-    <Badge tooltip={t('Current network')} border>
+    <Button role="secondary" transparent short data-tooltip-id="default" data-tooltip-content={t('Current network')}>
       <NetworkNameLabel>{upperFirst(network.name)}</NetworkNameLabel>
       <DotIcon color={networkStatusColor} />
-    </Badge>
+    </Button>
   )
 }
 

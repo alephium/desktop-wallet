@@ -18,10 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { useEffect, useRef } from 'react'
 
-export default function <T extends HTMLElement>() {
+export default function <T extends HTMLElement>(skipFocusOnMount?: boolean) {
   const ref = useRef<T>(null)
+
   useEffect(() => {
-    ref.current?.focus()
-  }, [ref])
+    if (skipFocusOnMount) return
+    setTimeout(() => ref.current?.focus(), 0)
+  }, [ref, skipFocusOnMount])
+
   return ref
 }

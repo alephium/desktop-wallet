@@ -16,7 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
+import { ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
+
+import Button from '@/components/Button'
 
 type AlignType = 'start' | 'center' | 'end'
 
@@ -30,16 +35,24 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children }) => (
-  <ScrollableWrapper className={className}>
+const Table: FC<TableProps> = ({ className, children, minWidth }) => (
+  <TableWrapper className={className} minWidth={minWidth}>
     <div role="table" tabIndex={0}>
       {children}
     </div>
-  </ScrollableWrapper>
+  </TableWrapper>
 )
 
-export default styled(Table)`
+export default Table
+
+const TableWrapper = styled(motion.div)<Pick<TableProps, 'minWidth'>>`
+  width: 100%;
+  overflow: auto;
+  border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.primary};
+
   background-color: ${({ theme }) => theme.bg.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 
   ${({ minWidth }) =>
     minWidth &&
@@ -89,7 +102,7 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
 `
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   transition: background-color 0.2s ease-out;
 
   &:last-child {
@@ -139,13 +152,6 @@ export const TableCellPlaceholder = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const ScrollableWrapper = styled.div`
-  width: 100%;
-  overflow: auto;
-  border-radius: var(--radius-big);
-  border: 1px solid ${({ theme }) => theme.border.primary};
-`
-
 export const TableHeader: FC<{ title: string; className?: string }> = ({ title, children, className }) => (
   <TableHeaderRow className={className}>
     <TableTitle>{title}</TableTitle>
@@ -158,9 +164,45 @@ const TableHeaderRow = styled(TableRow)`
   justify-content: space-between;
   height: 60px;
   background-color: ${({ theme }) => theme.bg.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  padding-right: var(--spacing-2);
 `
 
 const TableTitle = styled.div`
   font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
+`
+
+export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInPx?: number }>`
+  max-height: ${({ maxHeightInPx }) => maxHeightInPx && maxHeightInPx}px;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+
+  ${({ isExpanded }) =>
+    isExpanded &&
+    css`
+      max-height: none;
+    `}
+`
+
+export const ExpandRow = ({ onClick }: { onClick: () => void }) => {
+  const { t } = useTranslation()
+
+  return (
+    <ExpandRowStyled>
+      <Button role="secondary" variant="contrast" onClick={onClick} Icon={ChevronsUpDown} short>
+        {t('Expand')}
+      </Button>
+    </ExpandRowStyled>
+  )
+}
+
+const ExpandRowStyled = styled.div`
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(11, 11, 11, 0.25) 0%, rgba(0, 0, 0, 0) 92.06%);
 `

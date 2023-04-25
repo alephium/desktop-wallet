@@ -18,10 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSelector } from '@reduxjs/toolkit'
 
-import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddresses } from '@/storage/addresses/addressesSelectors'
 import { RootState } from '@/storage/store'
 import { confirmedTransactionsAdapter, pendingTransactionsAdapter } from '@/storage/transactions/transactionsAdapters'
-import { AddressHash } from '@/types/addresses'
 import { AddressConfirmedTransaction, AddressPendingTransaction } from '@/types/transactions'
 import { selectAddressTransactions } from '@/utils/addresses'
 
@@ -29,33 +28,29 @@ export const { selectAll: selectAllConfirmedTransactions } = confirmedTransactio
   (state) => state.confirmedTransactions
 )
 
-export const selectAddressesConfirmedTransactions = createSelector(
-  [selectAllAddresses, selectAllConfirmedTransactions, (_, addressHashes: AddressHash[]) => addressHashes],
-  (allAddresses, confirmedTransactions, addressHashes): AddressConfirmedTransaction[] =>
-    selectAddressTransactions(allAddresses, confirmedTransactions, addressHashes) as AddressConfirmedTransaction[]
-)
+export const makeSelectAddressesConfirmedTransactions = () =>
+  createSelector(
+    [selectAllConfirmedTransactions, makeSelectAddresses()],
+    (confirmedTransactions, addresses): AddressConfirmedTransaction[] =>
+      selectAddressTransactions(addresses, confirmedTransactions) as AddressConfirmedTransaction[]
+  )
 
 export const { selectAll: selectAllPendingTransactions } = pendingTransactionsAdapter.getSelectors<RootState>(
   (state) => state.pendingTransactions
 )
 
-export const selectAddressesPendingTransactions = createSelector(
-  [selectAllAddresses, selectAllPendingTransactions, (_, addressHashes: AddressHash[]) => addressHashes],
-  (allAddresses, pendingTransactions, addressHashes): AddressPendingTransaction[] =>
-    selectAddressTransactions(allAddresses, pendingTransactions, addressHashes) as AddressPendingTransaction[]
-)
+export const makeSelectAddressesPendingTransactions = () =>
+  createSelector(
+    [selectAllPendingTransactions, makeSelectAddresses()],
+    (pendingTransactions, addresses): AddressPendingTransaction[] =>
+      selectAddressTransactions(addresses, pendingTransactions) as AddressPendingTransaction[]
+  )
 
-export const selectAddressesHashesWithPendingTransactions = createSelector(
-  [selectAllAddresses, selectAllPendingTransactions, (_, addressHashes?: AddressHash[]) => addressHashes],
-  (allAddresses, allPendingTransactions, addressHashes) => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
-
-    return addresses
+export const makeSelectAddressesHashesWithPendingTransactions = () =>
+  createSelector([selectAllPendingTransactions, makeSelectAddresses()], (allPendingTransactions, addresses) =>
+    addresses
       .filter(({ hash }) =>
         allPendingTransactions.some(({ fromAddress, toAddress }) => fromAddress === hash || toAddress === hash)
       )
       .map(({ hash }) => hash)
-  }
-)
+  )

@@ -36,8 +36,8 @@ import Table from '@/components/Table'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
-import SendModalDeployContract from '@/modals/SendModals/SendModalDeployContract'
-import SendModalScript from '@/modals/SendModals/SendModalScript'
+import SendModalCallContact from '@/modals/SendModals/CallContract'
+import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
 import { devToolsToggled } from '@/storage/settings/settingsActions'
@@ -48,7 +48,7 @@ const DevToolsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { devTools } = useAppSelector((state) => state.settings)
+  const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
@@ -132,17 +132,20 @@ const DevToolsSettingsSection = () => {
         </>
       )}
       <ModalPortal>
-        {isDeployContractSendModalOpen && (
-          <SendModalDeployContract onClose={() => setIsDeployContractSendModalOpen(false)} />
+        {isDeployContractSendModalOpen && defaultAddress && (
+          <SendModalDeployContract
+            initialTxData={{ fromAddress: defaultAddress }}
+            onClose={() => setIsDeployContractSendModalOpen(false)}
+          />
         )}
         {isCallScriptSendModalOpen && defaultAddress && (
-          <SendModalScript
+          <SendModalCallContact
             initialTxData={{ fromAddress: defaultAddress }}
             onClose={() => setIsCallScriptSendModalOpen(false)}
           />
         )}
         {isPasswordModalOpen && (
-          <CenteredModal title={t('Enter password')} onClose={closePasswordModal}>
+          <CenteredModal title={t('Enter password')} onClose={closePasswordModal} skipFocusOnMount>
             <PasswordConfirmation
               text={t('Enter your password to copy the private key.')}
               buttonText={t('Copy private key')}
@@ -173,5 +176,5 @@ const ButtonsRow = styled.div`
 `
 
 const PrivateKeySection = styled(Section)`
-  margin-top: var(--spacing-6);
+  margin-top: var(--spacing-3);
 `

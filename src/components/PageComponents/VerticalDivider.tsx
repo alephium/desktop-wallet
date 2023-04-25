@@ -16,16 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { useAppSelector } from '@/hooks/redux'
-import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { Address } from '@/types/addresses'
+import styled from 'styled-components'
 
-const useDappTxData = () => {
-  const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { dappTxData } = useWalletConnectContext()
-
-  return dappTxData ?? { fromAddress: defaultAddress as Address }
-}
-
-export default useDappTxData
+export default styled.div`
+  width: 1px;
+  min-height: var(--spacing-4);
+  height: 100%;
+  background-color: ${({ theme }) => theme.border.primary};
+`

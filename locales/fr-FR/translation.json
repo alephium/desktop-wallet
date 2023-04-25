@@ -65,7 +65,7 @@
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Gardez ces mots précieusement ! Ils sont la clé pour accéder et récupérer votre portefeuille.",
   "No recovery phrase was stored along with this wallet": "Aucune phrase de récupération n'a été enregistrée avec ce portefeuille",
   "Expected fee": "Frais estimés",
-  "Select the address to send funds from.": "Sélectionnez l'adresse vers laquelle envoyer les fonds.",
+  "Select the address to send funds from.": "Sélectionnez l'adresse depuis laquelle envoyer les fonds.",
   "Recipient's address": "Adresse du destinataire",
   "Advanced settings": "Paramètres avancés",
   "Gas amount": "Quantité de gaz",
@@ -287,7 +287,7 @@
   "This is the default address": "This is the default address",
   "Set as the default address": "Set as the default address",
   "Lock wallet": "Lock wallet",
-  "Hide empty addresses": "Hide empty addresses",
+  "Hide empty": "Hide empty",
   "Search for label, a hash or an asset...": "Search for label, a hash or an asset...",
   "Search for name or a hash...": "Search for name or a hash...",
   "New contact": "New contact",
@@ -354,5 +354,10 @@
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Wallet name updated to: {{ newWalletName }}": "Wallet name updated to: {{ newWalletName }}",
   "Shortcuts": "Shortcuts",
-  "More options": "Plus d'options"
+  "More options": "Plus d'options",
+  "Good morning.": "Good morning.",
+  "Good afternoon.": "Good afternoon.",
+  "Good evening.": "Good evening.",
+  "Good night.": "Good night.",
+  "ALPH price: {{ price }}$": "ALPH price: {{ price }}$"
 }

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 import { colord } from 'colord'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -26,7 +26,7 @@ import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { selectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
@@ -54,6 +54,7 @@ const FiltersPanel = ({
 }: FiltersPanelProps) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector(selectAddressesAssets)
 
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
@@ -109,7 +110,7 @@ const FiltersPanel = ({
             renderSelectedValue={renderAddressesSelectedValue}
             getOptionId={(address) => address.hash}
             getOptionText={(address) => address.label || address.hash}
-            renderOption={(address: Address) => <SelectOptionAddress address={address} />}
+            renderOption={(address) => <SelectOptionAddress address={address} />}
           />
         </Tile>
         <Tile>
@@ -150,16 +151,14 @@ const FiltersPanel = ({
 export default styled(FiltersPanel)`
   border-top: 1px solid;
   border-bottom: 1px solid;
-  border-color: ${({ theme }) => theme.border.secondary};
-  padding-bottom: 0;
+  border-color: ${({ theme }) => theme.border.primary};
   display: flex;
   position: sticky;
   justify-content: space-between;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
-  background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
-  margin-bottom: 25px;
+  background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.9).toHex()};
+  backdrop-filter: blur(10px);
 `
 
 const FilterTiles = styled.div`
@@ -170,7 +169,7 @@ const FilterTiles = styled.div`
 
 const FilterTile = styled.div`
   padding: 10px;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const Tile = styled(FilterTile)`

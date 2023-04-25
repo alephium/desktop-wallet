@@ -26,7 +26,7 @@ import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
 
-import { ScrollContextProvider, ScrollDirection } from '@/contexts/scroll'
+import { ScrollContextProvider, ScrollContextType, ScrollDirection } from '@/contexts/scroll'
 
 const scrollDirectionDeltaThreshold = 10
 
@@ -65,13 +65,14 @@ interface ScrollbarCustomProps extends ScrollbarProps {
 const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProps) => {
   const theme = useTheme()
   const scrollY = useMotionValue(0)
+  const scrollDirection = useMotionValue(undefined as ScrollDirection)
 
   const [isScrolling, setIsScrolling] = useState(false)
   const [isMouseOver, setIsMouseOver] = useState(false)
-  const [scrollDirection, setScrollDirection] = useState<ScrollDirection>()
 
   const scrollerElemRef = useRef<HTMLDivElement | null>(null)
   const prevScrollY = useRef(0)
+  const contextValueRef = useRef<ScrollContextType>({ scrollY, scrollDirection })
 
   const isShow = isScrolling || isMouseOver
 
@@ -152,17 +153,17 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
   )
 
   const handleScrollUpdate = (s: ScrollState) => {
-    scrollY.set(s.scrollTop)
+    contextValueRef.current.scrollY?.set(s.scrollTop)
 
     const delta = prevScrollY.current - s.scrollTop
     const direction = delta > 0 ? 'up' : 'down'
 
     if (s.scrollTop === 0) {
-      setScrollDirection(undefined)
+      contextValueRef.current.scrollDirection?.set(undefined)
     } else if (direction === 'up' && delta > scrollDirectionDeltaThreshold) {
-      setScrollDirection('up')
+      contextValueRef.current.scrollDirection?.set('up')
     } else if (direction === 'down' && delta < -scrollDirectionDeltaThreshold) {
-      setScrollDirection('down')
+      contextValueRef.current.scrollDirection?.set('down')
     }
 
     prevScrollY.current = s.scrollTop
@@ -192,7 +193,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
       noScrollX={noScrollX}
       translateContentSizeYToHolder={props.translateContentSizeYToHolder}
     >
-      <ScrollContextProvider value={{ scrollY, scrollDirection }}>{props.children}</ScrollContextProvider>
+      <ScrollContextProvider value={contextValueRef.current}>{props.children}</ScrollContextProvider>
     </Scrollbar>
   )
 }

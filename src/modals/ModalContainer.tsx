@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
+import { motion, MotionProps } from 'framer-motion'
 import { KeyboardEvent, ReactNode, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
@@ -25,18 +25,19 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import useFocusOnMount from '@/hooks/useFocusOnMount'
 import { modalClosed, modalOpened } from '@/storage/global/globalActions'
 
-export interface ModalContainerProps {
+export interface ModalContainerProps extends MotionProps {
   onClose: () => void
   children?: ReactNode | ReactNode[]
   focusMode?: boolean
   hasPadding?: boolean
   className?: string
+  skipFocusOnMount?: boolean
 }
 
-const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
+const ModalContainer = ({ onClose, children, focusMode, className, skipFocusOnMount }: ModalContainerProps) => {
   const dispatch = useAppDispatch()
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
-  const modalRef = useFocusOnMount<HTMLDivElement>()
+  const modalRef = useFocusOnMount<HTMLDivElement>(skipFocusOnMount)
   const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
 
   // Prevent body scroll on mount
@@ -63,10 +64,10 @@ const ModalContainer = ({ onClose, children, focusMode, className }: ModalContai
   }
 
   return (
-    <div className={className} onKeyDown={handleEscapeKeyPress} tabIndex={0} id={modalId.current} ref={modalRef}>
+    <motion.div className={className} onKeyDown={handleEscapeKeyPress} tabIndex={0} id={modalId.current} ref={modalRef}>
       <ModalBackdrop {...fadeInOutFast} onClick={closeModal} focusMode={focusMode} />
       {children}
-    </div>
+    </motion.div>
   )
 }
 

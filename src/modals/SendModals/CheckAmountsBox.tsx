@@ -23,7 +23,7 @@ import styled from 'styled-components'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import { AssetAmount } from '@/types/assets'
 import { getTransactionAssetAmounts } from '@/utils/transactions'
@@ -54,6 +54,7 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
                 suffix={assetInfo?.symbol}
                 decimals={assetInfo?.decimals}
                 isUnknownToken={!assetInfo?.symbol}
+                fullPrecision
               />
             </AssetAmountRow>
           </Fragment>

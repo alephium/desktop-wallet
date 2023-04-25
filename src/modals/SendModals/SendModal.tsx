@@ -48,6 +48,11 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   title: string
   initialTxData: PT
   onClose: () => void
+  AddressesTxModalContent: (props: {
+    data: PT
+    onSubmit: (data: PT) => void
+    onCancel: () => void
+  }) => JSX.Element | null
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
   CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
@@ -55,19 +60,22 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
   txData?: T
   initialStep?: Step
+  isContract?: boolean
 }
 
 function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   title,
   initialTxData,
   onClose,
+  AddressesTxModalContent,
   BuildTxModalContent,
   CheckTxModalContent,
   buildTransaction,
   handleSend,
   getWalletConnectResult,
   txData,
-  initialStep
+  initialStep,
+  isContract
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -76,9 +84,10 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const settings = useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
+  const [addressesData, setAddressesData] = useState<PT>(txData ?? initialTxData)
   const [transactionData, setTransactionData] = useState<T | undefined>(txData)
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState<Step>('build-tx')
+  const [step, setStep] = useState<Step>('addresses')
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
@@ -188,6 +197,11 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     }
   }
 
+  const moveToSecondStep = (data: PT) => {
+    setAddressesData(data)
+    setStep('build-tx')
+  }
+
   useEffect(() => {
     if (step === 'tx-sent') setTimeout(onCloseExtended, 2000)
   }, [onCloseExtended, step])
@@ -198,7 +212,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }
 
   const onBackCallback = {
-    'build-tx': undefined,
+    addresses: undefined,
+    'build-tx': () => setStep('addresses'),
     'info-check': () => setStep('build-tx'),
     'password-check': () => setStep('info-check'),
     'tx-sent': undefined
@@ -212,12 +227,19 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       dynamicContent
       onBack={onBackCallback}
       focusMode
+      noPadding
     >
-      <StepsProgress currentStep={step} />
+      <StepsProgress currentStep={step} isContract={isContract} />
+      {step === 'addresses' && (
+        <AddressesTxModalContent data={addressesData} onSubmit={moveToSecondStep} onCancel={onCloseExtended} />
+      )}
       {step === 'build-tx' && (
         <ScrollableModalContent>
           <BuildTxModalContent
-            data={transactionData ?? initialTxData}
+            data={{
+              ...addressesData,
+              ...(transactionData ?? {})
+            }}
             onSubmit={buildTransactionExtended}
             onCancel={onCloseExtended}
           />

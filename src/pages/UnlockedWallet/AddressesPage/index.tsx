@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
-import Box from '@/components/Box'
 import TabBar, { TabItem } from '@/components/TabBar'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
@@ -31,12 +30,11 @@ import ContactsTabContent from '@/pages/UnlockedWallet/AddressesPage/ContactsTab
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { addressesPageInfoMessageClosed } from '@/storage/global/globalActions'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 import { links } from '@/utils/links'
 
 const tabs = [
-  { value: 'addresses', label: i18next.t('Addresses') },
-  { value: 'contacts', label: i18next.t('Contacts') }
+  { value: 'addresses', label: `📭 ${i18next.t('Addresses')}` },
+  { value: 'contacts', label: `🫂 ${i18next.t('Contacts')}` }
 ]
 
 const AddressesPage = () => {
@@ -85,7 +83,7 @@ const AddressesPage = () => {
 
 export default AddressesPage
 
-const TabContent = styled(Box)`
+const TabContent = styled.div`
   padding-top: 30px;
   padding-bottom: 45px;
   border-radius: 0;
@@ -93,16 +91,14 @@ const TabContent = styled(Box)`
   border-right: none;
   border-bottom: none;
   flex: 1;
+  background-color: ${({ theme }) => theme.bg.background1};
+  border-top: 1px solid ${({ theme }) => theme.border.primary};
 `
 
-const TabPanel = styled(UnlockedWalletPanel)`
-  padding-bottom: 0;
-`
+const TabPanel = styled(UnlockedWalletPanel)``
 
 const TabBarPanel = styled(TabPanel)`
-  position: sticky;
-  top: ${appHeaderHeightPx}px;
   z-index: 1;
-  background-color: ${({ theme }) => colord(theme.bg.background1).alpha(0.7).toHex()};
-  backdrop-filter: blur(20px);
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.7).toHex()};
+  backdrop-filter: blur(10px);
 `

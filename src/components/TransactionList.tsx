@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ChevronRight } from 'lucide-react'
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
@@ -35,14 +35,13 @@ import {
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import {
-  selectAddresses,
-  selectAllAddresses,
+  makeSelectAddresses,
   selectHaveAllPagesLoaded,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import {
-  selectAddressesConfirmedTransactions,
-  selectAddressesPendingTransactions
+  makeSelectAddressesConfirmedTransactions,
+  makeSelectAddressesPendingTransactions
 } from '@/storage/transactions/transactionsSelectors'
 import { AddressHash } from '@/types/addresses'
 import { Asset } from '@/types/assets'
@@ -80,12 +79,12 @@ const TransactionList = ({
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const addresses = useAppSelector(
-    addressHashes && addressHashes.length > 0 ? (s) => selectAddresses(s, addressHashes) : selectAllAddresses
-  )
-  const hashes = addresses.map((address) => address.hash)
-  const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, hashes))
-  const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, hashes))
+  const selectAddresses = useMemo(makeSelectAddresses, [])
+  const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
+  const selectAddressesConfirmedTransactions = useMemo(makeSelectAddressesConfirmedTransactions, [])
+  const selectAddressesPendingTransactions = useMemo(makeSelectAddressesPendingTransactions, [])
+  const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, addressHashes))
+  const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const finishedLoadingData = useAppSelector((s) => !s.addresses.loading)
   const allAddressTxPagesLoaded = useAppSelector(selectHaveAllPagesLoaded)
@@ -146,7 +145,7 @@ const TransactionList = ({
           <TableHeader title={title ?? t('Transactions')}>
             {headerExtraContent}
             {limit !== undefined && (
-              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight}>
+              <ActionLinkStyled onClick={() => navigate('/wallet/transfers')} Icon={ChevronRight} withBackground>
                 {t('See more')}
               </ActionLinkStyled>
             )}

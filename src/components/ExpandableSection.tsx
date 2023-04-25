@@ -108,7 +108,7 @@ export default ExpandableSection
 const ExpandableSectionContainer = styled.div<{ shrinkWhenOpen: boolean; isOpen?: boolean }>`
   display: flex;
   flex-direction: column;
-  margin: var(--spacing-5) 0;
+  margin: var(--spacing-3) 0;
   transition: margin 0.2s ease-in-out;
 
   ${({ shrinkWhenOpen, isOpen }) =>

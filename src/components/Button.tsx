@@ -34,6 +34,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   wide?: boolean
   Icon?: LucideIconType
   iconColor?: string
+  iconBackground?: boolean
   borderless?: boolean
   isHighlighted?: boolean
   className?: string
@@ -73,7 +74,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={18} color={iconColor} />
+          <Icon size={16} color={iconColor} />
         </ButtonIcon>
       )}
       {children as ReactNode}
@@ -82,7 +83,16 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
 }
 
 export default styled(Button)`
-  ${({ theme, role = 'primary', variant = 'default', transparent, borderless, children }) => {
+  ${({
+    theme,
+    role = 'primary',
+    variant = 'default',
+    transparent,
+    borderless,
+    iconBackground,
+    iconColor,
+    children
+  }) => {
     const bgColor = transparent
       ? 'transparent'
       : {
@@ -104,22 +114,25 @@ export default styled(Button)`
 
     const hoverBgColor = transparent
       ? colord(theme.bg.primary).isDark()
-        ? colord(theme.bg.primary).lighten(0.05).toRgbString()
-        : colord(theme.bg.primary).darken(0.04).toRgbString()
+        ? colord(theme.bg.primary).lighten(0.02).toRgbString()
+        : colord(theme.bg.primary).darken(0.03).toRgbString()
       : {
           primary: {
-            default: colord(theme.global.accent).darken(0.08).toRgbString(),
-            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
-            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
-            alert: colord(theme.global.alert).darken(0.08).toRgbString(),
-            faded: colord(theme.global.accent).darken(0.08).toRgbString()
+            default: colord(theme.global.accent).darken(0.04).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
+            alert: colord(theme.global.alert).darken(0.04).toRgbString(),
+            faded: colord(theme.global.accent).darken(0.04).toRgbString()
           }[variant],
           secondary: {
-            default: colord(theme.bg.primary).lighten(0.08).toRgbString(),
-            contrast: colord(theme.bg.background2).lighten(0.08).toRgbString(),
-            valid: colord(theme.global.valid).darken(0.08).toRgbString(),
+            default:
+              theme.name === 'dark'
+                ? colord(theme.bg.primary).lighten(0.02).toRgbString()
+                : colord(theme.bg.primary).darken(0.015).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
             alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
-            faded: colord(theme.bg.primary).lighten(0.08).toRgbString()
+            faded: colord(theme.bg.primary).lighten(0.04).toRgbString()
           }[variant]
         }[role]
 
@@ -175,7 +188,7 @@ export default styled(Button)`
             faded: colord(theme.global.accent).alpha(0.25).toRgbString()
           }[variant],
           secondary: {
-            default: theme.border.secondary,
+            default: theme.border.primary,
             contrast: theme.bg.background2,
             valid: theme.global.valid,
             alert: theme.global.alert,
@@ -209,6 +222,11 @@ export default styled(Button)`
       border: 1px solid ${borderColor};
       position: relative;
 
+      ${!transparent &&
+      css`
+        box-shadow: ${({ theme }) => theme.shadow.primary};
+      `}
+
       &:hover {
         color: ${hoverColor};
         background-color: ${hoverBgColor};
@@ -224,6 +242,23 @@ export default styled(Button)`
           margin-right: var(--spacing-2);
         `}
 
+        ${({ theme }) => {
+          const color = iconColor || theme.font.tertiary
+          return (
+            iconBackground &&
+            css`
+              background-color: ${colord(color).alpha(0.08).toHex()};
+              border: 1px solid ${colord(color).alpha(0.05).toHex()};
+              padding: 4px;
+              border-radius: var(--radius-full);
+
+              svg {
+                scale: 0.85;
+              }
+            `
+          )
+        }}
+
         svg {
           color: ${fontColor};
         }
@@ -234,7 +269,7 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (short ? '40px' : squared ? '40px' : 'var(--inputHeight)')};
+  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '55px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
@@ -247,7 +282,7 @@ export default styled(Button)`
   text-align: center;
   cursor: pointer;
 
-  transition: 0.2s ease-out;
+  transition: 0.15s ease-out;
 
   &:disabled {
     opacity: 0.5;
@@ -256,7 +291,8 @@ export default styled(Button)`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
   }
 
   // Highlight animation

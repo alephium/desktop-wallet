@@ -92,5 +92,5 @@ const Children = styled.div`
 `
 
 const ButtonStyled = styled(Button)`
-  margin-top: 50px;
+  margin-top: var(--spacing-4);
 `

@@ -24,6 +24,7 @@ import styled from 'styled-components'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import Toggle from '@/components/Inputs/Toggle'
+import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import NewAddressModal from '@/modals/NewAddressModal'
@@ -31,7 +32,6 @@ import AddressGridRow from '@/pages/UnlockedWallet/AddressesPage/AddressGridRow'
 import AdvancedOperationsSideModal from '@/pages/UnlockedWallet/AddressesPage/AdvancedOperationsSideModal'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 import { filterAddresses } from '@/utils/addresses'
 
 interface AddressesTabContentProps {
@@ -67,8 +67,9 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
       HeaderMiddleComponent={
         <HeaderMiddle>
           <HideEmptyAddressesToggle>
-            <ToggleText>{t('Hide empty addresses')}</ToggleText>
-            <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty addresses')} toggled={hideEmptyAddresses} />
+            <ToggleText>{t('Hide empty')}</ToggleText>
+            <VerticalDivider />
+            <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty')} toggled={hideEmptyAddresses} />
           </HideEmptyAddressesToggle>
           <Button role="secondary" squared Icon={Wrench} onClick={() => setIsAdvancedOperationsModalOpen(true)} />
         </HeaderMiddle>
@@ -110,12 +111,10 @@ const HideEmptyAddressesToggle = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-  min-width: 250px;
-  height: var(--inputHeight);
-  background-color: ${({ theme }) => theme.bg.primary};
-  padding: 12px 18px 12px 22px;
+  height: 50px;
+  padding: 12px 16px;
   border-radius: var(--radius-big);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const ToggleText = styled.div`
@@ -135,7 +134,6 @@ const TableGrid = styled(Box)`
   contain: paint; // This is amazing. It replaces "overflow: hidden". Using "overflow" on this prevents us from having a sticky table header.
   display: flex;
   flex-direction: column;
-  gap: 1px;
 `
 
 const Cell = styled.div`
@@ -153,9 +151,10 @@ const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
   font-weight: var(--fontWeight-semiBold);
   min-height: var(--inputHeight);
   width: 100%;
-  background-color: ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.border.secondary};
   position: sticky;
-  top: ${({ tabsRowHeight }) => tabsRowHeight + appHeaderHeightPx - 1}px;
+  top: ${({ tabsRowHeight }) => tabsRowHeight + 10}px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   z-index: 1;
 `
 
@@ -164,12 +163,11 @@ const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent
   justify-content: ${({ justifyContent }) => justifyContent ?? 'center'};
   align-items: center;
   height: 100%;
-  background-color: ${({ theme }) => theme.bg.tertiary};
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const TableGridContent = styled.div`
   background-color: ${({ theme }) => theme.border.secondary};
   display: flex;
   flex-direction: column;
-  gap: 1px;
 `

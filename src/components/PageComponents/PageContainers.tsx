@@ -21,7 +21,7 @@ import styled, { css } from 'styled-components'
 
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
-import { deviceBreakPoints } from '@/style/globalStyles'
+import { appHeaderHeightPx, deviceBreakPoints } from '@/style/globalStyles'
 
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
@@ -45,11 +45,11 @@ const sectionVariants: Variants = {
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
     transition: {
-      duration: 0,
+      duration: 0.1,
       when: 'beforeChildren',
       delay: apparitionDelay,
-      staggerChildren: 0.05,
-      delayChildren: 0.05
+      staggerChildren: 0.1,
+      delayChildren: 0.1
     }
   }),
   out: {
@@ -92,7 +92,7 @@ export const BoxContainer = ({ children, ...props }: HTMLMotionProps<'div'>) => 
 
 const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   width: 100%;
-  margin: 0 auto;
+  margin: ${appHeaderHeightPx}px auto;
   max-width: 600px;
   min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
   padding: var(--spacing-5);
@@ -100,15 +100,9 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
-  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
-  border-radius: var(--radius-small);
-  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.secondary};
+  border-radius: var(--radius-huge);
 
-  ${({ borderless, theme }) =>
-    !borderless &&
-    css`
-      border: 1px solid ${theme.border.secondary};
-    `}
+  ${({ borderless, theme }) => !borderless && css``}
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
@@ -160,4 +154,5 @@ export const CenteredSection = styled.div`
   justify-content: center;
   flex: 1;
   height: 100%;
+  background-color: ${({ theme }) => theme.bg.background1};
 `

@@ -20,7 +20,7 @@ import { motion } from 'framer-motion'
 import { Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { useTheme } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { fadeInOutScaleFast } from '@/animations'
 import Button from '@/components/Button'
@@ -28,11 +28,16 @@ import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
 import { useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
+import discordLogo from '@/images/brand-icon-discord.svg'
+import githubLogo from '@/images/brand-icon-github.svg'
+import twitterLogo from '@/images/brand-icon-twitter.svg'
 import ModalContainer from '@/modals/ModalContainer'
 import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSection'
 import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
 import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
 import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
 
@@ -45,6 +50,17 @@ export const settingsModalTabs: SettingsTabItem[] = [
   { value: 'wallets', label: i18next.t('Wallets') },
   { value: 'network', label: i18next.t('Network') },
   { value: 'devtools', label: i18next.t('Developer tools') }
+]
+
+interface SocialMediaLogo {
+  media: keyof Pick<typeof links, 'twitter' | 'discord' | 'github'>
+  img: string
+}
+
+const socialMediaLogos: SocialMediaLogo[] = [
+  { media: 'twitter', img: twitterLogo },
+  { media: 'discord', img: discordLogo },
+  { media: 'github', img: githubLogo }
 ]
 
 interface SettingsModalProps {
@@ -90,9 +106,14 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
                 </TabTitleButton>
               ))}
             </TabTitles>
-            <Version>
-              {t('Version')}: {import.meta.env.VITE_VERSION}
-            </Version>
+            <SidebarFooter>
+              <SocialMedias>
+                {socialMediaLogos.map(({ media, img }) => (
+                  <SocialMedia key={media} src={img} onClick={() => openInWebBrowser(links[media])} />
+                ))}
+              </SocialMedias>
+              <Version>v{import.meta.env.VITE_VERSION}</Version>
+            </SidebarFooter>
           </TabTitlesColumnContent>
         </TabTitlesColumn>
         <TabContentsColumn>
@@ -146,7 +167,7 @@ const Column = styled.div`
 
 const TabTitlesColumn = styled(Column)`
   flex: 1;
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
   background-color: ${({ theme }) => theme.bg.background2};
 `
 const TabContentsColumn = styled(Column)`
@@ -167,7 +188,7 @@ const CloseButton = styled.button`
 
 const ColumnHeader = styled.div`
   padding: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -184,19 +205,55 @@ const ColumnTitle = styled.div`
 
 const ColumnContent = styled.div`
   padding: 20px;
+
+  // Special styling for settings modal
+  // TODO: Create standalone components if used elesewhere?
+
+  h2 {
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+`
+
+const SidebarFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-8);
 `
 
 const Version = styled.div`
   font-size: 11px;
   color: ${({ theme }) => theme.font.tertiary};
-  margin-top: var(--spacing-8);
+`
+
+const SocialMedias = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
+const SocialMedia = styled.div<{ src: string }>`
+  ${({ src }) =>
+    css`
+      mask: url(${src}) no-repeat center;
+    `}
+
+  height: 20px;
+  width: 20px;
+  background-color: ${({ theme }) => theme.font.tertiary};
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.font.primary};
+  }
 `
 
 const TabTitlesColumnContent = styled(ColumnContent)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px 15px;
+  padding: 20px 15px 10px;
   height: 100%;
 `
 
@@ -210,7 +267,6 @@ const TabTitlesColumnHeader = styled(ColumnHeader)`
 const TabTitleButton = styled(Button)`
   height: 46px;
   justify-content: flex-start;
-  box-shadow: none;
 
   &:first-child {
     margin-top: 0;

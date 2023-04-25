@@ -27,9 +27,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import AddressOptionsModal from '@/modals/AddressOptionsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import ReceiveModal from '@/modals/ReceiveModal'
-import SendModalTransfer from '@/modals/SendModals/SendModalTransfer'
+import SendModalTransfer from '@/modals/SendModals/Transfer'
 import SettingsModal from '@/modals/SettingsModal'
-import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { selectAddressByHash, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { walletLocked } from '@/storage/wallets/walletActions'
 import { AddressHash } from '@/types/addresses'
 
@@ -42,6 +42,7 @@ interface ShortcutButtonsProps {
   addressSettings?: boolean
   addressHash?: AddressHash
   highlight?: boolean
+  solidBackground?: boolean
 }
 
 const ShortcutButtons = ({
@@ -52,7 +53,8 @@ const ShortcutButtons = ({
   walletSettings,
   addressSettings,
   addressHash,
-  highlight
+  highlight,
+  solidBackground
 }: ShortcutButtonsProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
@@ -60,6 +62,8 @@ const ShortcutButtons = ({
   const posthog = usePostHog()
 
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash ?? ''))
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const fromAddress = address ?? defaultAddress
 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
@@ -100,11 +104,13 @@ const ShortcutButtons = ({
     <>
       {receive && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleReceiveClick}
           Icon={ArrowDown}
           iconColor={theme.global.valid}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Receive')}</ButtonText>
@@ -112,11 +118,13 @@ const ShortcutButtons = ({
       )}
       {send && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleSendClick}
           Icon={ArrowUp}
-          iconColor={theme.global.accent}
+          iconColor={theme.global.highlight}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Send')}</ButtonText>
@@ -124,28 +132,45 @@ const ShortcutButtons = ({
       )}
       {walletSettings && (
         <ShortcutButton
-          transparent
+          transparent={!solidBackground}
+          role="secondary"
           borderless
           onClick={handleWalletSettingsClick}
           Icon={Settings}
+          iconBackground
           highlight={highlight}
         >
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}
       {lock && (
-        <ShortcutButton transparent borderless onClick={lockWallet} Icon={Lock} highlight={highlight}>
+        <ShortcutButton
+          transparent={!solidBackground}
+          role="secondary"
+          borderless
+          onClick={lockWallet}
+          Icon={Lock}
+          highlight={highlight}
+          iconBackground
+        >
           <ButtonText>{t('Lock wallet')}</ButtonText>
         </ShortcutButton>
       )}
       {addressSettings && addressHash && (
-        <ShortcutButton transparent borderless onClick={handleAddressSettingsClick} Icon={Settings}>
+        <ShortcutButton
+          transparent={!solidBackground}
+          role="secondary"
+          borderless
+          onClick={handleAddressSettingsClick}
+          Icon={Settings}
+          iconBackground
+        >
           <ButtonText>{t('Settings')}</ButtonText>
         </ShortcutButton>
       )}
       <ModalPortal>
-        {isSendModalOpen && (
-          <SendModalTransfer initialTxData={{ fromAddress: address }} onClose={() => setIsSendModalOpen(false)} />
+        {isSendModalOpen && fromAddress && (
+          <SendModalTransfer initialTxData={{ fromAddress }} onClose={() => setIsSendModalOpen(false)} />
         )}
         {isSettingsModalOpen && <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />}
         {isReceiveModalOpen && <ReceiveModal addressHash={addressHash} onClose={() => setIsReceiveModalOpen(false)} />}
@@ -164,8 +189,8 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
   margin: 0;
   width: auto;
   height: 60px;
-  background-color: ${({ theme, highlight }) => (highlight ? theme.bg.background2 : theme.bg.primary)};
   color: ${({ theme }) => theme.font.primary};
+  box-shadow: none;
 `
 
 const ButtonText = styled.div`

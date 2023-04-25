@@ -44,6 +44,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
   return (
     <ModalContainer onClose={onClose} focusMode={focusMode}>
       <NotificationsBox role="dialog" {...fadeInOutScaleFast}>
+        <h2>{t('Current wallet')}</h2>
         <WalletSwitcher onUnlock={onClose} />
         <Button onClick={lockWallet} wide transparent Icon={Lock}>
           {t('Lock wallet')}
@@ -55,6 +56,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
 
 const NotificationsBox = styled(motion.div)`
   display: flex;
+  gap: 25px;
   flex-direction: column;
 
   position: absolute;
@@ -68,8 +70,12 @@ const NotificationsBox = styled(motion.div)`
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-huge);
   background-color: ${({ theme }) => theme.bg.background1};
+
+  > * {
+    margin: 0; // TODO: refactor components to have no predifined margins. Use flex's gap everywhere.
+  }
 `
 
 export default NotificationsModal

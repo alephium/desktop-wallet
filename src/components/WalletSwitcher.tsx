@@ -80,7 +80,6 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
         <InfoBox text={activeWallet.name} label={t`Wallet`} />
       ) : (
         <Select
-          label={t`Current wallet`}
           controlledValue={selectedWalletOption}
           options={walletSelectOptions}
           onSelect={handleWalletSelect}
@@ -92,7 +91,12 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
       )}
       <ModalPortal>
         {isPasswordModalOpen && (
-          <CenteredModal narrow title={t('Enter password')} onClose={() => setIsPasswordModalOpen(false)}>
+          <CenteredModal
+            narrow
+            title={t('Enter password')}
+            onClose={() => setIsPasswordModalOpen(false)}
+            skipFocusOnMount
+          >
             <PasswordConfirmation
               text={t('Enter password for "{{ switchToWalletName }}"', {
                 switchToWalletName: selectedWalletOption?.label

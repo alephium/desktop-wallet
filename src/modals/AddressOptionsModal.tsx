@@ -24,8 +24,8 @@ import styled, { useTheme } from 'styled-components'
 import AddressMetadataForm from '@/components/AddressMetadataForm'
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
 import { useAppSelector } from '@/hooks/redux'
 import AddressSweepModal from '@/modals/AddressSweepModal'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
@@ -46,7 +46,7 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps)
   const { t } = useTranslation()
   const theme = useTheme()
   const posthog = usePostHog()
-  const { isPassphraseUsed } = useAppSelector((state) => state.activeWallet)
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.isPassphraseUsed)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const addresses = useAppSelector(selectAllAddresses)
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))

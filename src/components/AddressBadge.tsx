@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
@@ -25,7 +25,7 @@ import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAddressByHash, selectContactByAddress } from '@/storage/addresses/addressesSelectors'
+import { makeSelectContactByAddress, selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
@@ -36,6 +36,7 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   hideColorIndication?: boolean
   disableA11y?: boolean
   disableCopy?: boolean
+  showFull?: boolean
 }
 
 const AddressBadge = ({
@@ -50,6 +51,7 @@ const AddressBadge = ({
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
   return contact ? (
@@ -65,10 +67,10 @@ const AddressBadge = ({
       </Label>
     </div>
   ) : !address ? (
-    <HashEllipsed className={className} hash={addressHash} disableCopy={disableCopy} />
+    <NotKnownAddress className={className} hash={addressHash} disableCopy={disableCopy} />
   ) : (
     <div className={className}>
-      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideStar={hideStar} />}
+      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
       {address.label ? (
         <Label {...props}>
           {disableCopy ? (
@@ -90,7 +92,7 @@ export default styled(AddressBadge)`
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: 120px;
+  max-width: ${({ showFull }) => !showFull && 120}px;
 
   ${({ withBorders }) =>
     withBorders &&
@@ -119,4 +121,10 @@ const Label = styled.span<AddressBadgeProps>`
       overflow: hidden;
       text-overflow: ellipsis;
     `}
+`
+
+const NotKnownAddress = styled(HashEllipsed)`
+  border: none;
+  border-radius: 0;
+  padding: 0;
 `

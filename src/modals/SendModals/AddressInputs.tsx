@@ -29,7 +29,7 @@ import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
@@ -47,6 +47,7 @@ interface AddressInputsProps {
   onFromAddressChange: (address: Address) => void
   onToAddressChange?: (address: string) => void
   onContactSelect?: (address: string) => void
+  hideFromAddressesWithoutAssets?: boolean
   className?: string
 }
 
@@ -59,6 +60,7 @@ const AddressInputs = ({
   onFromAddressChange,
   onToAddressChange,
   onContactSelect,
+  hideFromAddressesWithoutAssets,
   className
 }: AddressInputsProps) => {
   const { t } = useTranslation()
@@ -104,25 +106,28 @@ const AddressInputs = ({
   return (
     <InputsSection title={t('Addresses')} className={className}>
       <BoxStyled>
+        <InputFixedLabel>{t('From')}</InputFixedLabel>
+        <VerticalDivider />
         <AddressSelect
-          label={t('From')}
           title={t('Select the address to send funds from.')}
           options={fromAddresses}
           defaultAddress={updatedInitialAddress}
           onAddressChange={onFromAddressChange}
           id="from-address"
-          hideEmptyAvailableBalance
+          hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
           simpleMode
         />
-        {toAddress && onToAddressChange && (
-          <>
-            <HorizontalDividerStyled>
-              <DividerArrowRow>
-                <DividerArrow size={15} />
-              </DividerArrowRow>
-            </HorizontalDividerStyled>
+      </BoxStyled>
+      {toAddress && onToAddressChange && (
+        <>
+          <DividerArrowRow>
+            <DividerArrow size={15} />
+          </DividerArrowRow>
+
+          <BoxStyled>
+            <InputFixedLabel>{t('To')}</InputFixedLabel>
+            <VerticalDivider />
             <AddressToInput
-              label={t('To')}
               inputFieldRef={inputRef}
               value={toAddress.value}
               error={toAddress.error}
@@ -143,9 +148,10 @@ const AddressInputs = ({
                 </ContactRow>
               )}
             </AddressToInput>
-          </>
-        )}
-      </BoxStyled>
+          </BoxStyled>
+        </>
+      )}
+
       <ModalPortal>
         {isAddressSelectModalOpen && (
           <SelectOptionsModal
@@ -156,6 +162,7 @@ const AddressInputs = ({
             onClose={handleContactSelectModalClose}
             onSearchInput={handleContactsSearch}
             searchPlaceholder={t('Search for name or a hash...')}
+            parentSelectRef={inputRef}
             optionRender={(contact) => (
               <SelectOptionItemContent
                 MainContent={<Name>{contact.label}</Name>}
@@ -189,24 +196,36 @@ const ContactRow = styled(motion.div)`
   width: 85%;
   height: 100%;
   align-items: center;
-  top: 6px;
+  top: 0;
   left: ${inputStyling.paddingLeftRight};
   transition: opacity 0.2s ease-out;
 `
 
 const BoxStyled = styled(Box)`
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  gap: 10px;
 `
 
-const HorizontalDividerStyled = styled(HorizontalDivider)`
-  position: relative;
-  margin: 10px 0;
+const AddressToInput = styled(Input)`
+  margin: 0;
+  border: 1px solid transparent;
+
+  &:not(:hover) {
+    background-color: transparent;
+  }
+`
+
+const InputFixedLabel = styled.div`
+  min-width: 12%;
+  padding-left: 20px;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const DividerArrowRow = styled.div`
-  position: absolute;
-  top: -8px;
-  left: 0;
+  height: 25px;
+  margin: 10px 0;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -214,18 +233,8 @@ const DividerArrowRow = styled.div`
 
 const DividerArrow = styled(ArrowDown)`
   padding: 0 13px;
-  background-color: ${({ theme }) => theme.bg.secondary};
   color: ${({ theme }) => theme.border.primary};
   display: flex;
   width: auto;
   height: auto;
-`
-
-const AddressToInput = styled(Input)`
-  margin: 0;
-  border: 0;
-
-  &:not(:hover) {
-    background-color: transparent;
-  }
 `

@@ -19,16 +19,16 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { FileDown } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'react-qr-code'
 import styled, { useTheme } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
 import AddressColorIndicator from '@/components/AddressColorIndicator'
+import Badge from '@/components/Badge'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import HashEllipsed from '@/components/HashEllipsed'
-import HistoricWorthChart from '@/components/HistoricWorthChart'
+import QRCode from '@/components/QRCode'
 import TransactionList from '@/components/TransactionList'
 import { useAppSelector } from '@/hooks/redux'
 import CSVExportModal from '@/modals/CSVExportModal'
@@ -38,8 +38,6 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { ChartLength, DataPoint } from '@/types/chart'
-import { currencies } from '@/utils/currencies'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface AddressDetailsModalProps {
@@ -54,8 +52,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
   const explorerUrl = useAppSelector((s) => s.network.settings.explorerUrl)
 
   const [isCSVExportModalOpen, setIsCSVExportModalOpen] = useState(false)
-  const [dataPoint, setDataPoint] = useState<DataPoint>()
-  const [chartLength, setChartLength] = useState<ChartLength>('1y')
+  const [showChart, setShowChart] = useState(false)
 
   if (!address) return null
 
@@ -63,20 +60,19 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
     <SideModal
       onClose={onClose}
       title={t('Address details')}
-      width={800}
+      width={700}
+      onAnimationComplete={() => setShowChart(true)}
       header={
         <Header>
           <LeftSide>
-            <AddressColorIndicator addressHash={address.hash} />
-            <Column>
+            <AddressColorIndicator addressHash={address.hash} size={30} />
+            <Title>
               <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
-              <Subtitle>
-                {address.label && <Hash hash={address.hash} />}
-                <Group>
-                  {t('Group')} {address.group}
-                </Group>
-              </Subtitle>
-            </Column>
+              {address.label && <TitleAddressHash hash={address.hash} />}
+            </Title>
+            <Badge short color={theme.font.tertiary} border>
+              {t('Group')} {address.group}
+            </Badge>
           </LeftSide>
           <ExplorerButton
             role="secondary"
@@ -89,28 +85,11 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </Header>
       }
     >
+      <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
+        <QRCode value={addressHash} size={130} />
+      </AmountsOverviewPanel>
+
       <Content>
-        <AmountsOverviewPanel
-          addressHash={addressHash}
-          worth={dataPoint?.y}
-          date={dataPoint?.x}
-          onChartLengthChange={setChartLength}
-          chartLength={chartLength}
-        >
-          <QrCodeBox>
-            <QRCode size={132} value={addressHash} bgColor={'transparent'} fgColor={theme.font.secondary} />
-          </QrCodeBox>
-        </AmountsOverviewPanel>
-
-        <ChartContainer>
-          <HistoricWorthChart
-            addressHashes={[addressHash]}
-            currency={currencies.USD.ticker}
-            onDataPointHover={setDataPoint}
-            length={chartLength}
-          />
-        </ChartContainer>
-
         <Shortcuts>
           <ButtonsGrid>
             <ShortcutButtons
@@ -119,13 +98,14 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
               addressSettings
               addressHash={address.hash}
               analyticsOrigin="address_details"
+              solidBackground
             />
           </ButtonsGrid>
         </Shortcuts>
         <AssetsList
           addressHashes={[address.hash]}
-          tokensTabTitle={t('Address tokens')}
-          nftsTabTitle={t('Address NFTs')}
+          tokensTabTitle={`💰 ${t('Address tokens')}`}
+          nftsTabTitle={`🖼️ ${t('Address NFTs')}`}
         />
         <TransactionList
           title={t('Address transactions')}
@@ -159,7 +139,7 @@ const Header = styled.div`
 const LeftSide = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 25px;
 `
 
 const ExplorerButton = styled(Button)`
@@ -170,30 +150,20 @@ const ExplorerButton = styled(Button)`
 const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
-  max-width: 300px;
+  max-width: 150px;
 `
 
-const Hash = styled(HashEllipsed)`
-  color: ${({ theme }) => theme.font.secondary};
-  font-size: 16px;
-  max-width: 250px;
-`
-
-const Column = styled.div`
+const Title = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  max-width: 300px;
 `
 
-const Group = styled.div`
+const TitleAddressHash = styled(HashEllipsed)`
+  max-width: 100px;
   color: ${({ theme }) => theme.font.tertiary};
-  font-size: 16px;
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const Subtitle = styled.div`
-  display: flex;
-  gap: 20px;
+  font-size: 14px;
 `
 
 const Content = styled.div`
@@ -203,28 +173,13 @@ const Content = styled.div`
 
 const Shortcuts = styled(Box)`
   overflow: hidden;
-  background-color: ${({ theme }) => theme.border.primary};
-  margin-bottom: 30px;
+  background-color: ${({ theme }) => theme.bg.primary};
+  margin-bottom: 40px;
 `
 
 const ButtonsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
-`
-
-const QrCodeBox = styled(Box)`
-  padding: 12px;
-  width: auto;
-  margin-left: auto;
-  margin-right: 16px;
-  background-color: ${({ theme }) => theme.bg.primary};
-`
-
-const ChartContainer = styled.div`
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 170px;
-  height: 100px;
+  background-color: ${({ theme }) => theme.border.secondary};
 `

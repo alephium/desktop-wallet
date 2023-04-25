@@ -23,10 +23,11 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import AddressBadge from '@/components/AddressBadge'
 import Button from '@/components/Button'
+import DefaultAddressSwitch from '@/components/DefaultAddressSwitch'
 import CompactToggle from '@/components/Inputs/CompactToggle'
 import NetworkSwitch from '@/components/NetworkSwitch'
+import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import { useScrollContext } from '@/contexts/scroll'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
@@ -39,18 +40,20 @@ import { appHeaderHeightPx, walletSidebarWidthPx } from '@/style/globalStyles'
 
 interface AppHeader {
   title?: string
+  invisible?: boolean
   className?: string
 }
 
-const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
+const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => {
   const { t } = useTranslation()
-  const scroll = useScrollContext()
+  const { scrollY: scrollYContext } = useScrollContext()
   const initialScroll = useMotionValue(0)
-  const scrollY = scroll?.scrollY || initialScroll
+  const scrollY = scrollYContext || initialScroll
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)
-  const { mnemonic, isPassphraseUsed } = useAppSelector((s) => s.activeWallet)
+  const mnemonic = useAppSelector((s) => s.activeWallet.mnemonic)
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
   const addresses = useAppSelector(selectAllAddresses)
@@ -80,6 +83,8 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
     transition: 'opacity 0.2s ease-out'
   }
 
+  if (invisible) return <motion.header id="app-header" className={className} />
+
   return (
     <>
       <motion.header id="app-header" style={headerStyles} className={className}>
@@ -93,19 +98,16 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                 data-tooltip-content={offlineText}
                 data-tooltip-id="default"
               >
-                <WifiOff
-                  size={20}
-                  color={theme.name === 'dark' ? theme.font.secondary : theme.font.contrastSecondary}
-                />
+                <WifiOff size={20} color={theme.global.alert} />
               </OfflineIcon>
 
-              <HeaderDivider />
+              <VerticalDivider />
             </>
           )}
           {children && (
             <>
               {children}
-              <HeaderDivider />
+              <VerticalDivider />
             </>
           )}
           <CompactToggle
@@ -119,7 +121,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
           />
           {isAuthenticated && (
             <>
-              <HeaderDivider />
+              <VerticalDivider />
               <Button
                 transparent
                 squared
@@ -131,19 +133,13 @@ const AppHeader: FC<AppHeader> = ({ children, title, className }) => {
                 data-tooltip-id="default"
                 data-tooltip-content={t('Connect wallet to dApp')}
               >
-                <WalletConnectLogo />
+                <WalletConnectLogoStyled />
               </Button>
             </>
           )}
-          {defaultAddress && !isPassphraseUsed && (
-            <>
-              <HeaderDivider />
-              <div data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-                <AddressBadge withBorders addressHash={defaultAddress.hash} />
-              </div>
-            </>
-          )}
-          <HeaderDivider />
+          <VerticalDivider />
+          {defaultAddress && !isPassphraseUsed && <DefaultAddressSwitch />}
+          <VerticalDivider />
           <NetworkSwitch />
         </HeaderButtons>
       </motion.header>
@@ -170,24 +166,19 @@ export default styled(AppHeader)`
   padding: 0 var(--spacing-4) 0 60px;
   gap: var(--spacing-1);
 
-  backdrop-filter: blur(20px);
+  backdrop-filter: ${({ invisible }) => (!invisible ? 'blur(10px)' : 'none')};
   z-index: 1;
 `
 
-const HeaderDivider = styled.div`
-  width: 1px;
-  height: var(--spacing-2);
-  background-color: ${({ theme }) => (theme.name === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)')};
-`
-
 const OfflineIcon = styled.div`
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 40px;
-  background-color: ${({ theme }) => theme.global.alert};
+  width: 35px;
+  height: 35px;
+  border-radius: 35px;
+  background-color: ${({ theme }) => colord(theme.global.alert).alpha(0.2).toHex()};
 `
 
 const Title = styled(motion.div)`
@@ -205,4 +196,8 @@ const HeaderButtons = styled.div`
   > *:not(:last-child) {
     margin-right: var(--spacing-1);
   }
+`
+
+const WalletConnectLogoStyled = styled(WalletConnectLogo)`
+  height: auto;
 `

@@ -56,15 +56,17 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
   const openOptionsModal = () => setIsOptionsModalOpen(true)
 
   return (
-    <InputArea
-      className={className}
-      onMouseDown={openOptionsModal}
-      onKeyDown={(e) => onEnterOrSpace(e, openOptionsModal)}
-    >
-      <InputLabel isElevated={selectedOptions.length > 0}>{label}</InputLabel>
-      <SelectedValue>
-        <Truncate>{renderSelectedValue()}</Truncate>
-      </SelectedValue>
+    <>
+      <MultiSelectInputArea
+        className={className}
+        onMouseDown={openOptionsModal}
+        onKeyDown={(e) => onEnterOrSpace(e, openOptionsModal)}
+      >
+        <InputLabel isElevated={selectedOptions.length > 0}>{label}</InputLabel>
+        <SelectedValue>
+          <Truncate>{renderSelectedValue()}</Truncate>
+        </SelectedValue>
+      </MultiSelectInputArea>
       <ModalPortal>
         {isOptionsModalOpen && (
           <MultiSelectOptionsModal
@@ -74,7 +76,7 @@ function MultiSelect<T>({ selectedOptions, label, renderSelectedValue, className
           />
         )}
       </ModalPortal>
-    </InputArea>
+    </>
   )
 }
 
@@ -140,20 +142,25 @@ export function MultiSelectOptionsModal<T>({
 
 export default MultiSelect
 
-const SelectedValue = styled.div`
+const MultiSelectInputArea = styled(InputArea)`
   ${inputDefaultStyle(true, true, true)};
-
-  display: flex;
-  align-items: center;
-  min-width: 0;
-
-  border: 0;
-
-  transition: 0.2s ease-out;
+  border: 1px solid transparent;
 
   &:not(:hover) {
     background-color: transparent;
   }
+
+  &:hover {
+    border: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
+  transition: 0.2s ease-out;
+`
+
+const SelectedValue = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
 `
 
 const Options = styled.div`

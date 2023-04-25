@@ -45,10 +45,16 @@ const TabContent: FC<TabContentProps> = ({
 }) => (
   <motion.div {...fadeIn} className={className}>
     <Header>
-      <Searchbar placeholder={searchPlaceholder} Icon={SearchIcon} onChange={(e) => onSearch(e.target.value)} />
+      <Searchbar
+        placeholder={searchPlaceholder}
+        Icon={SearchIcon}
+        onChange={(e) => onSearch(e.target.value)}
+        contrast
+        heightSize="small"
+      />
       {HeaderMiddleComponent}
       <ButtonContainer {...fadeInOut}>
-        <HeaderButton variant="faded" short onClick={onButtonClick}>
+        <HeaderButton short onClick={onButtonClick}>
           {buttonText}
         </HeaderButton>
       </ButtonContainer>
@@ -62,8 +68,10 @@ export default TabContent
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 44px;
-  gap: 28px;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  gap: 25px;
 `
 
 const Searchbar = styled(Input)`
@@ -79,11 +87,13 @@ const Cards = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
+  padding-top: var(--spacing-4);
 `
 
 const HeaderButton = styled(Button)`
   margin: 0;
   margin-left: auto;
+  height: 40px;
 `
 
 const ButtonContainer = styled(motion.div)`

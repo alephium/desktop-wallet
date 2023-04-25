@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AnimatePresence } from 'framer-motion'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
 
 import client from '@/api/client'
@@ -38,7 +38,7 @@ import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
 import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/global/globalActions'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
-import { selectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import { makeSelectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
 import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
@@ -52,7 +52,8 @@ const App = () => {
   const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
   const dispatch = useAppDispatch()
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
-  const addressesWithPendingTxs = useAppSelector((s) => selectAddressesHashesWithPendingTransactions(s, addressHashes))
+  const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
+  const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
   const network = useAppSelector((s) => s.network)
   const addressesStatus = useAppSelector((s) => s.addresses.status)
   const theme = useAppSelector((s) => s.global.theme)
@@ -72,10 +73,6 @@ const App = () => {
 
     dispatch(localStorageDataMigrated())
   }, [dispatch])
-
-  useEffect(() => {
-    if (addressHashes.length > 0) dispatch(syncAddressesHistoricBalances(addressHashes))
-  }, [addressHashes, dispatch])
 
   useEffect(() => {
     const wallets = WalletStorage.list()
@@ -134,8 +131,9 @@ const App = () => {
   useEffect(() => {
     if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
       dispatch(syncAddressesData())
+      dispatch(syncAddressesHistoricBalances())
     }
-  }, [addressHashes.length, addressesStatus, dispatch, network.status])
+  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, network.status])
 
   const refreshAddressesData = useCallback(
     () => dispatch(syncAddressesData(addressesWithPendingTxs)),

@@ -43,7 +43,7 @@ export type PendingTransaction = {
   status: 'pending'
 }
 
-export type DappTxData = TransferTxData | DeployContractTxData | ScriptTxData
+export type DappTxData = TransferTxData | DeployContractTxData | CallContractTxData
 
 export type TxDataToModalType =
   | {
@@ -56,7 +56,7 @@ export type TxDataToModalType =
     }
   | {
       modalType: TxType.SCRIPT
-      txData: ScriptTxData
+      txData: CallContractTxData
     }
 
 export interface DeployContractTxData {
@@ -69,7 +69,7 @@ export interface DeployContractTxData {
   gasPrice?: string
 }
 
-export interface ScriptTxData {
+export interface CallContractTxData {
   fromAddress: Address
   bytecode: string
 

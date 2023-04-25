@@ -31,5 +31,5 @@ export default FooterButton
 const ModalFooter = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 50px;
+  margin-top: var(--spacing-6);
 `

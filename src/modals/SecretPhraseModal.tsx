@@ -35,19 +35,25 @@ const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   if (!activeWalletMnemonic) return null
 
   return (
-    <CenteredModal title={t`Secret recovery phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
+    <CenteredModal
+      title={t('Secret recovery phrase')}
+      onClose={onClose}
+      focusMode
+      narrow={!isDisplayingPhrase}
+      skipFocusOnMount
+    >
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text={t`Type your password to show the phrase.`}
-            buttonText={t`Show`}
+            text={t('Type your password to show the phrase.')}
+            buttonText={t('Show')}
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />
         </div>
       ) : (
         <Section>
           <InfoBox
-            text={t`Carefully note down the words! They are your wallet's secret recovery phrase.`}
+            text={t("Carefully note down the words! They are your wallet's secret recovery phrase.")}
             Icon={Edit3}
             importance="alert"
           />

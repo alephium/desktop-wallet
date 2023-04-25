@@ -23,36 +23,36 @@ export const lightTheme: DefaultTheme = {
   name: 'light',
   bg: {
     primary: '#ffffff',
-    secondary: '#F9F9F9',
+    secondary: '#fdfdfd',
     tertiary: '#f4f4f4',
     contrast: '#212126',
-    background1: '#F0F0F0',
-    background2: '#f9f9f9',
-    accent: colord('#598BED').alpha(0.25).toHex(),
-    hover: 'rgba(0, 0, 0, 0.03)'
+    background1: '#f9f9f9',
+    background2: '#f5f5f5',
+    accent: colord('#598bed').alpha(0.05).toHex(),
+    hover: colord('#ffffff').darken(0.02).toHex()
   },
   font: {
     primary: '#1d1d1d',
     secondary: '#6a6a6a',
-    tertiary: '#adadad',
+    tertiary: '#989898',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
     highlight: '#d4a10d'
   },
   border: {
-    primary: 'rgba(0, 0, 0, 0.1)',
-    secondary: 'rgba(0, 0, 0, 0.06)'
+    primary: '#ebebeb',
+    secondary: '#f5f5f5'
   },
   shadow: {
-    primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.04)',
-    tertiary: '0 0 50px rgba(0, 0, 0, 0.3)'
+    primary: '0 2px 3px rgba(0, 0, 0, 0.02)',
+    secondary: '0 8px 8px rgba(0, 0, 0, 0.03)',
+    tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
   },
   global: {
-    accent: '#598BED',
-    complementary: '#FF5D51',
+    accent: '#598bed',
+    complementary: '#ff5d51',
     alert: '#ed4a34',
-    valid: '#0ea670',
+    valid: '#18BB63',
     highlight: '#d4a10d',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
@@ -61,37 +61,37 @@ export const lightTheme: DefaultTheme = {
 export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
-    primary: '#1B1B1F',
-    secondary: '#18181B',
+    primary: '#18181b',
+    secondary: '#161619',
     tertiary: '#141417',
     contrast: 'white',
-    background1: '#121215',
-    background2: '#0E0E10',
-    hover: colord('#1B1B1F').lighten(0.02).toHex(),
-    accent: colord('#598BED').alpha(0.25).toHex()
+    background1: '#121214',
+    background2: '#0e0e10',
+    hover: colord('#1b1b1f').lighten(0.02).toHex(),
+    accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {
     primary: '#e3e3e3',
-    secondary: '#C0C0C0',
+    secondary: '#c0c0c0',
     tertiary: 'rgba(255, 255, 255, 0.4)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
     highlight: '#f0d590'
   },
   border: {
-    primary: 'rgba(255, 255, 255, 0.08)',
-    secondary: 'rgba(255, 255, 255, 0.04)'
+    primary: '#202022',
+    secondary: '#1d1d20'
   },
   shadow: {
-    primary: '0 4px 4px rgba(0, 0, 0, 0.25)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.3)',
+    primary: '0 2px 3px rgba(0, 0, 0, 0.2)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.2)',
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {
-    accent: '#598BED',
-    complementary: '#FF5D51',
+    accent: '#598bed',
+    complementary: '#ff5d51',
     alert: '#ed4a34',
-    valid: '#45d5ab',
+    valid: '#3ed282',
     highlight: '#f0d590',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }

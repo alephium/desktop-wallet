@@ -29,29 +29,19 @@ interface ToggleProps {
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
   label?: string
-  hasDarkerBgOnLightTheme?: boolean
   className?: string
 }
 
-const Toggle = ({
-  toggled,
-  onToggle,
-  className,
-  disabled,
-  ToggleIcons,
-  handleColors,
-  label,
-  hasDarkerBgOnLightTheme
-}: ToggleProps) => {
+const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors, label }: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
 
   const toggleBackgroundVariants = {
     off: {
-      backgroundColor: theme.name === 'light' && hasDarkerBgOnLightTheme ? 'rgba(0, 0, 0, 0.15)' : theme.bg.tertiary
+      backgroundColor: theme.name === 'light' ? 'rgba(0, 0, 0, 0.15)' : theme.bg.background2
     },
-    on: { backgroundColor: handleColors ? theme.bg.tertiary : theme.global.accent }
+    on: { backgroundColor: handleColors ? theme.bg.background2 : theme.global.accent }
   }
 
   const handleContainerVariants = {
@@ -124,7 +114,13 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
-  border: 1px solid ${({ theme }) => theme.border.primary};
+  border: 1px solid ${({ theme }) => (theme.name === 'dark' ? theme.border.primary : 'transparent')};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
+  }
 
   svg {
     cursor: pointer;
@@ -150,7 +146,6 @@ const ToggleHandle = styled(motion.div)`
   width: 100%;
   background-color: var(--color-white);
   border-radius: var(--toggleWidth);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
 `
 
 const ToggleContent = styled.div`

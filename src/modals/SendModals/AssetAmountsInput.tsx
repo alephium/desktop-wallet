@@ -18,8 +18,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
-import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Plus, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -28,17 +28,18 @@ import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
-import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
+import { inputDefaultStyle, InputProps } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import { SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
-import { selectAddressesAssets } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
 import { Asset, AssetAmount } from '@/types/assets'
 import { onEnterOrSpace } from '@/utils/misc'
@@ -61,8 +62,10 @@ const AssetAmountsInput = ({
 }: AssetAmountsInputProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const assets = useAppSelector((state) => selectAddressesAssets(state, [address.hash]))
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
+  const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
+  const selectedValueRef = useRef<HTMLDivElement>(null)
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -137,6 +140,19 @@ const AssetAmountsInput = ({
     }
   }
 
+  const handleRemoveAssetClick = (index: number) => {
+    if (assetAmounts.length > 1) {
+      if (selectedAssetRowIndex > index) {
+        setSelectedAssetRowIndex(selectedAssetRowIndex - 1)
+      }
+
+      const newAssetAmounts = [...assetAmounts]
+      newAssetAmounts.splice(index, 1)
+
+      onAssetAmountsChange(newAssetAmounts)
+    }
+  }
+
   const handleAssetSelectModalClose = () => {
     setIsAssetSelectModalOpen(false)
     moveFocusOnPreviousModal()
@@ -184,13 +200,22 @@ const AssetAmountsInput = ({
                 onMouseDown={() => handleAssetSelectModalOpen(index)}
                 onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
               >
-                <InputLabel isElevated htmlFor={id}>
-                  {t('Asset')}
-                </InputLabel>
-                <SelectInput type="button" className={className} disabled={disabled || !allowMultiple} id={id}>
+                <SelectInput
+                  type="button"
+                  className={className}
+                  disabled={disabled || !allowMultiple}
+                  id={id}
+                  ref={selectedValueRef}
+                >
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
-                    {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
+                    <Truncate>
+                      {asset.name && asset.symbol ? (
+                        `${asset.name} (${asset.symbol})`
+                      ) : (
+                        <HashEllipsed hash={asset.id} />
+                      )}
+                    </Truncate>
                   </AssetName>
                 </SelectInput>
               </AssetSelect>
@@ -227,6 +252,9 @@ const AssetAmountsInput = ({
                   </ActionLink>
                 </AvailableAmountColumn>
               </AssetAmountRow>
+              {assetAmounts.length > 1 && (
+                <RemoveAssetButton Icon={X} role="secondary" onClick={() => handleRemoveAssetClick(index)} />
+              )}
             </BoxStyled>
           )
         })}
@@ -246,6 +274,7 @@ const AssetAmountsInput = ({
             selectedOption={availableAssetOptions.find((option) => option.value === selectedAsset.id)}
             setValue={selectAsset}
             onClose={handleAssetSelectModalClose}
+            parentSelectRef={selectedValueRef}
             optionRender={(option) => {
               const asset = remainingAvailableAssets.find((asset) => asset.id === option.value)
               if (asset) return <SelectOptionAsset asset={asset} />
@@ -259,8 +288,27 @@ const AssetAmountsInput = ({
 
 export default AssetAmountsInput
 
+const RemoveAssetButton = styled(Button)`
+  position: absolute;
+  top: -20px;
+  right: -10px;
+  opacity: 0;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  min-width: 30px;
+  border-radius: var(--radius-full);
+`
+
 const BoxStyled = styled(Box)`
   padding: 10px;
+  position: relative;
+
+  &:hover {
+    ${RemoveAssetButton} {
+      opacity: 1;
+    }
+  }
 `
 
 const AssetSelect = styled(SelectContainer)`
@@ -268,7 +316,7 @@ const AssetSelect = styled(SelectContainer)`
 `
 
 const SelectInput = styled.div<InputProps>`
-  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, true, true)};
+  ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, false, true)};
   display: flex;
   align-items: center;
   gap: var(--spacing-2);

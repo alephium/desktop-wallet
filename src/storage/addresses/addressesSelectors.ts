@@ -24,6 +24,7 @@ import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
 import { AddressHash } from '@/types/addresses'
 import { Asset, TokenDisplayBalances } from '@/types/assets'
+import { filterAddressesWithoutAssets } from '@/utils/addresses'
 
 export const {
   selectById: selectAddressByHash,
@@ -31,10 +32,16 @@ export const {
   selectIds: selectAddressIds
 } = addressesAdapter.getSelectors<RootState>((state) => state.addresses)
 
-export const selectAddresses = createSelector(
-  [selectAllAddresses, (_, addressHashes: AddressHash[]) => addressHashes],
-  (allAddresses, addressHashes) => allAddresses.filter((address) => addressHashes.includes(address.hash))
-)
+export const makeSelectAddresses = () =>
+  createSelector(
+    [selectAllAddresses, (_, addressHashes?: AddressHash[] | AddressHash) => addressHashes],
+    (allAddresses, addressHashes) =>
+      addressHashes
+        ? allAddresses.filter((address) =>
+            Array.isArray(addressHashes) ? addressHashes.includes(address.hash) : addressHashes === address.hash
+          )
+        : allAddresses
+  )
 
 export const selectDefaultAddress = createSelector(selectAllAddresses, (addresses) =>
   addresses.find((address) => address.isDefault)
@@ -44,12 +51,8 @@ export const selectTotalBalance = createSelector([selectAllAddresses], (addresse
   addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
 )
 
-export const selectAddressesAlphAsset = createSelector(
-  [selectAllAddresses, (_, addressHashes?: AddressHash[]) => addressHashes],
-  (allAddresses, addressHashes): Asset => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
+export const makeSelectAddressesAlphAsset = () =>
+  createSelector(makeSelectAddresses(), (addresses): Asset => {
     const alphBalances = addresses.reduce(
       (acc, { balance, lockedBalance }) => ({
         balance: acc.balance + BigInt(balance),
@@ -62,64 +65,56 @@ export const selectAddressesAlphAsset = createSelector(
       ...ALPH,
       ...alphBalances
     }
-  }
-)
+  })
 
-export const selectAddressesAssets = createSelector(
-  [
-    selectAllAddresses,
-    selectAllAssetsInfo,
-    selectAddressesAlphAsset,
-    (_, addressHashes?: AddressHash[]) => addressHashes
-  ],
-  (allAddresses, assetsInfo, alphAsset, addressHashes): Asset[] => {
-    const addresses = addressHashes
-      ? allAddresses.filter((address) => addressHashes.includes(address.hash))
-      : allAddresses
-    const tokenBalances = addresses.reduce((acc, { tokens }) => {
-      tokens.forEach((token) => {
-        const existingToken = acc.find((t) => t.id === token.id)
+export const makeSelectAddressesAssets = () =>
+  createSelector(
+    [selectAllAssetsInfo, makeSelectAddressesAlphAsset(), makeSelectAddresses()],
+    (assetsInfo, alphAsset, addresses): Asset[] => {
+      const tokenBalances = addresses.reduce((acc, { tokens }) => {
+        tokens.forEach((token) => {
+          const existingToken = acc.find((t) => t.id === token.id)
 
-        if (!existingToken) {
-          acc.push({
-            id: token.id,
-            balance: BigInt(token.balance),
-            lockedBalance: BigInt(token.lockedBalance)
-          })
-        } else {
-          existingToken.balance = existingToken.balance + BigInt(token.balance)
-          existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
+          if (!existingToken) {
+            acc.push({
+              id: token.id,
+              balance: BigInt(token.balance),
+              lockedBalance: BigInt(token.lockedBalance)
+            })
+          } else {
+            existingToken.balance = existingToken.balance + BigInt(token.balance)
+            existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
+          }
+        })
+
+        return acc
+      }, [] as TokenDisplayBalances[])
+
+      const tokenAssets = tokenBalances.map((token) => {
+        const assetInfo = assetsInfo.find((t) => t.id === token.id)
+
+        return {
+          id: token.id,
+          balance: BigInt(token.balance.toString()),
+          lockedBalance: BigInt(token.lockedBalance.toString()),
+          name: assetInfo?.name,
+          symbol: assetInfo?.symbol,
+          description: assetInfo?.description,
+          logoURI: assetInfo?.logoURI,
+          decimals: assetInfo?.decimals ?? 0
         }
       })
 
-      return acc
-    }, [] as TokenDisplayBalances[])
-
-    const tokenAssets = tokenBalances.map((token) => {
-      const assetInfo = assetsInfo.find((t) => t.id === token.id)
-
-      return {
-        id: token.id,
-        balance: BigInt(token.balance.toString()),
-        lockedBalance: BigInt(token.lockedBalance.toString()),
-        name: assetInfo?.name,
-        symbol: assetInfo?.symbol,
-        description: assetInfo?.description,
-        logoURI: assetInfo?.logoURI,
-        decimals: assetInfo?.decimals ?? 0
-      }
-    })
-
-    return [alphAsset, ...tokenAssets]
-  }
-)
+      return [alphAsset, ...tokenAssets]
+    }
+  )
 
 export const { selectAll: selectAllContacts } = contactsAdapter.getSelectors<RootState>((state) => state.contacts)
 
-export const selectContactByAddress = createSelector(
-  [selectAllContacts, (_, addressHash) => addressHash],
-  (contacts, addressHash) => contacts.find((contact) => contact.address === addressHash)
-)
+export const makeSelectContactByAddress = () =>
+  createSelector([selectAllContacts, (_, addressHash) => addressHash], (contacts, addressHash) =>
+    contacts.find((contact) => contact.address === addressHash)
+  )
 
 export const selectIsStateUninitialized = createSelector(
   (state: RootState) => state.addresses.status,
@@ -136,9 +131,12 @@ export const selectHaveHistoricBalancesLoaded = createSelector(selectAllAddresse
   addresses.every((address) => address.balanceHistoryInitialized)
 )
 
-export const selectAddressesHaveHistoricBalances = createSelector(
-  selectAddresses,
-  (addresses) =>
-    addresses.every((address) => address.balanceHistoryInitialized) &&
-    addresses.some((address) => address.balanceHistory.ids.length > 0)
-)
+export const makeSelectAddressesHaveHistoricBalances = () =>
+  createSelector(
+    makeSelectAddresses(),
+    (addresses) =>
+      addresses.every((address) => address.balanceHistoryInitialized) &&
+      addresses.some((address) => address.balanceHistory.ids.length > 0)
+  )
+
+export const selectAddressesWithSomeBalance = createSelector(selectAllAddresses, filterAddressesWithoutAssets)

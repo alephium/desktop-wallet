@@ -22,7 +22,7 @@ import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monoch
 import { deviceBreakPoints } from '@/style/globalStyles'
 
 export default styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
-  position: absolute;
+  position: fixed;
   left: var(--spacing-5);
   width: 35px;
   height: auto;

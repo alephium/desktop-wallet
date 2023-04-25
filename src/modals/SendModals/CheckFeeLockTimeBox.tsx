@@ -22,7 +22,7 @@ import styled from 'styled-components'
 
 import Amount from '@/components/Amount'
 import Box from '@/components/Box'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import InfoRow from '@/modals/SendModals/InfoRow'
 import { formatDateForDisplay } from '@/utils/misc'
 

@@ -29,6 +29,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   isValid?: boolean
   disabled?: boolean
   noMargin?: boolean
+  contrast?: boolean
   hint?: string
   Icon?: LucideIconType
   onIconPress?: () => void
@@ -47,7 +48,7 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
 }
 
 export const inputPlaceHolderVariants: Variants = {
-  up: { y: '-20%', scale: 0.85 },
+  up: { y: '-25%', scale: 0.85 },
   down: { y: 0, scale: 1 }
 }
 
@@ -60,13 +61,14 @@ export const inputDefaultStyle = (
   hasIcon?: boolean,
   hasValue?: boolean,
   hasLabel?: boolean,
-  heightSize?: InputHeight
+  heightSize?: InputHeight,
+  isContrasted?: boolean
 ) => css`
   background-image: none;
   height: ${heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   border-radius: var(--radius-big);
-  background-color: ${({ theme }) => theme.bg.primary};
+  background-color: ${({ theme }) => (isContrasted && theme.name === 'dark' ? theme.bg.background2 : theme.bg.primary)};
   border: 1px solid ${({ theme }) => theme.border.primary};
   color: ${({ theme }) => theme.font.primary};
   padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingLeftRight}` : `0 ${inputStyling.paddingLeftRight}`};
@@ -81,10 +83,11 @@ export const inputDefaultStyle = (
     padding-top: 15px;
   `}
 
-  transition: 0.2s ease-out;
+  transition: 0.15s ease-out;
 
   &:focus {
     background-color: ${({ theme }) => theme.bg.primary};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
     border: 1px solid ${({ theme }) => theme.global.accent};
   }
 
@@ -99,6 +102,10 @@ export const inputDefaultStyle = (
     cursor: not-allowed;
   }
 
+  &:hover {
+    background-color: ${({ theme }) => theme.bg.hover};
+  }
+
   // Remove number arrows
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
@@ -109,6 +116,7 @@ export const inputDefaultStyle = (
   /* Firefox */
   &[type='number'] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
 `
 
@@ -139,6 +147,7 @@ const StyledInputLabel = styled(motion.label)`
   position: absolute;
 
   left: ${inputStyling.paddingLeftRight};
+  top: 0;
   height: 100%;
   display: flex;
   align-items: center;

@@ -73,7 +73,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
 
   return (
     <>
-      <PanelTitle useLayoutId={false} isSticky={false} size="big">
+      <PanelTitle useLayoutId={false} size="big">
         {dAppName ? t('Connect to dApp') : t('Welcome back.')}
       </PanelTitle>
       <ParagraphStyled centered secondary>
@@ -108,7 +108,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
         >
           {t('Unlock')}
         </ButtonStyled>
-        <ButtonStyled onClick={onNewWalletLinkClick} role="secondary" borderless>
+        <ButtonStyled onClick={onNewWalletLinkClick} role="secondary">
           {t('Import or create a wallet')}
         </ButtonStyled>
       </ButtonsSection>
@@ -144,6 +144,6 @@ const WalletPassphraseStyled = styled(WalletPassphrase)`
 `
 
 const ParagraphStyled = styled(Paragraph)`
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
   font-size: 16px;
 `

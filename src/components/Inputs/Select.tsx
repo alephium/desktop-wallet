@@ -20,7 +20,6 @@ import { colord } from 'colord'
 import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
-  ComponentType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent,
   OptionHTMLAttributes,
@@ -66,24 +65,24 @@ interface SelectProps<T extends OptionValue> {
   disabled?: boolean
   controlledValue?: SelectOption<T>
   options: SelectOption<T>[]
+  optionRender?: (option: SelectOption<T>, isSelected?: boolean) => ReactNode
   title?: string
   id: string
   onSelect: (value: T) => void
   raised?: boolean
+  contrast?: boolean
   skipEqualityCheck?: boolean
   noMargin?: boolean
   className?: string
   simpleMode?: boolean
   heightSize?: InputHeight
-  CustomComponent?: ComponentType<{
-    controlledValue?: SelectOption<T>
-    label?: string
-  }>
+  renderCustomComponent?: (value?: SelectOption<T>) => ReactNode
   ListBottomComponent?: ReactNode
 }
 
 function Select<T extends OptionValue>({
   options,
+  optionRender,
   title,
   label,
   disabled,
@@ -91,12 +90,13 @@ function Select<T extends OptionValue>({
   id,
   onSelect,
   raised,
+  contrast,
   skipEqualityCheck = false,
   noMargin,
   simpleMode,
   className,
   heightSize,
-  CustomComponent,
+  renderCustomComponent,
   ListBottomComponent
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
@@ -182,14 +182,13 @@ function Select<T extends OptionValue>({
         noMargin={noMargin}
         onMouseDown={handleClick}
         onKeyDown={handleKeyDown}
-        style={{ zIndex: raised && showPopup ? 2 : undefined }}
+        style={{ zIndex: raised && showPopup ? 2 : undefined, boxShadow: disabled ? 'none' : undefined }}
         heightSize={heightSize}
         simpleMode={simpleMode}
+        tabIndex={renderCustomComponent ? -1 : 0}
       >
-        {CustomComponent ? (
-          <CustomComponentContainer ref={selectedValueRef}>
-            <CustomComponent label={label} controlledValue={value} />
-          </CustomComponentContainer>
+        {renderCustomComponent ? (
+          <CustomComponentContainer ref={selectedValueRef}>{renderCustomComponent(value)}</CustomComponentContainer>
         ) : (
           <>
             <InputLabel isElevated={!!value} htmlFor={id}>
@@ -197,7 +196,7 @@ function Select<T extends OptionValue>({
             </InputLabel>
             {options.length > 1 && !simpleMode && (
               <MoreIcon>
-                <MoreVertical />
+                <MoreVertical size={16} />
               </MoreIcon>
             )}
             <SelectedValue
@@ -208,6 +207,7 @@ function Select<T extends OptionValue>({
               simpleMode={simpleMode}
               label={label}
               heightSize={heightSize}
+              contrast={contrast}
             >
               <Truncate>{value?.label}</Truncate>
             </SelectedValue>
@@ -218,6 +218,7 @@ function Select<T extends OptionValue>({
         {showPopup && (
           <SelectOptionsModal
             options={options}
+            optionRender={optionRender}
             selectedOption={value}
             setValue={setInputValue}
             title={title}
@@ -305,6 +306,7 @@ export function SelectOptionsModal<T extends OptionValue>({
             Icon={SearchIcon}
             onChange={(e) => onSearchInput(e.target.value)}
             heightSize="small"
+            noMargin
           />
         )
       }
@@ -348,6 +350,8 @@ export default Select
 const InputContainer = styled(InputArea)`
   margin: 16px 0;
   padding: 0;
+
+  outline: none;
 `
 
 export const MoreIcon = styled.div`
@@ -359,11 +363,42 @@ export const MoreIcon = styled.div`
   color: ${({ theme }) => theme.font.secondary};
 `
 
+const SelectedValue = styled.div<InputProps>`
+  ${({ heightSize, label, contrast }) => inputDefaultStyle(true, true, !!label, heightSize, contrast)};
+
+  padding-right: 35px;
+  font-weight: var(--fontWeight-semiBold);
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  box-shadow: ${({ theme }) => theme.shadow.primary};
+
+  ${({ simpleMode }) =>
+    simpleMode &&
+    css`
+      border: 0;
+
+      &:not(:hover) {
+        background-color: transparent;
+      }
+    `}
+`
+
 export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize' | 'simpleMode'>>`
   cursor: pointer;
   margin: ${({ noMargin, simpleMode }) => (noMargin || simpleMode ? 0 : '16px 0')};
   height: ${({ heightSize }) =>
     heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
+
+  &:focus {
+    ${SelectedValue} {
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+      border-color: ${({ theme }) => theme.global.accent};
+    }
+  }
 `
 
 export const OptionSelect = styled.div`
@@ -401,36 +436,12 @@ export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean
       }
 
       &:hover {
-        background-color: ${({ theme }) => colord(theme.global.accent).alpha(0.1).toRgbString()};
-      }
-    `}
-`
-
-const SelectedValue = styled.div<InputProps>`
-  ${({ heightSize, label }) => inputDefaultStyle(true, true, !!label, heightSize)};
-
-  padding-right: 35px;
-  font-weight: var(--fontWeight-semiBold);
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  min-width: 0;
-
-  ${({ simpleMode }) =>
-    simpleMode &&
-    css`
-      border: 0;
-
-      &:not(:hover) {
-        background-color: transparent;
+        background-color: ${({ theme }) => theme.bg.hover};
       }
     `}
 `
 
 const Searchbar = styled(Input)`
-  margin: 0;
-
   svg {
     color: ${({ theme }) => theme.font.tertiary};
   }

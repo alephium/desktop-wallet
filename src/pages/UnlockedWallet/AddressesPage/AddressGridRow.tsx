@@ -17,10 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calculateAmountWorth } from '@alephium/sdk'
-import { colord } from 'colord'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -33,8 +32,8 @@ import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import {
+  makeSelectAddressesAssets,
   selectAddressByHash,
-  selectAddressesAssets,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
@@ -51,8 +50,9 @@ const maxDisplayedAssets = 7 // Allow 2 rows by default
 
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
-  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
-  const assets = useAppSelector((state) => selectAddressesAssets(state, address?.hash ? [address.hash] : undefined))
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
+  const assets = useAppSelector((s) => selectAddressesAssets(s, addressHash))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
@@ -74,7 +74,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           <AddressColorIndicator addressHash={address.hash} />
           <Column>
             <Label>
-              <AddressBadge addressHash={address.hash} hideColorIndication truncate />
+              <AddressBadge addressHash={address.hash} hideColorIndication truncate showFull />
             </Label>
             {stateUninitialized ? (
               <SkeletonLoader height="15.5px" />
@@ -154,9 +154,13 @@ const GridRow = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
 
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  }
+
   &:hover ${Cell} {
     cursor: pointer;
-    background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.7).toRgbString()};
+    background-color: ${({ theme }) => theme.bg.hover};
   }
 `
 

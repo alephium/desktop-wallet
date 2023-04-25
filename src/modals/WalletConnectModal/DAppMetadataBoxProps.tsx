@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 
 import Box from '@/components/Box'
-import HorizontalDivider from '@/components/PageComponents/HorizontalDivider'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { useWalletConnectContext, WalletConnectContextProps } from '@/contexts/walletconnect'
 import InfoRow from '@/modals/SendModals/InfoRow'
 

@@ -20,16 +20,23 @@ import styled from 'styled-components'
 
 import DotIcon from '@/components/DotIcon'
 import { useAppSelector } from '@/hooks/redux'
+import { ReactComponent as IndicatorLogo } from '@/images/main_address_badge.svg'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AddressColorIndicatorProps {
   addressHash: AddressHash
+  hideMainAddressBadge?: boolean
+  size?: number
   className?: string
-  hideStar?: boolean
 }
 
-const AddressColorIndicator = ({ addressHash, hideStar, className }: AddressColorIndicatorProps) => {
+const AddressColorIndicator = ({
+  addressHash,
+  hideMainAddressBadge,
+  size = 12,
+  className
+}: AddressColorIndicatorProps) => {
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
 
@@ -37,23 +44,29 @@ const AddressColorIndicator = ({ addressHash, hideStar, className }: AddressColo
 
   return (
     <div className={className}>
-      {address.isDefault && !isPassphraseUsed && !hideStar ? (
-        <Star color={address.color}>★</Star>
+      {address.isDefault && !isPassphraseUsed && !hideMainAddressBadge ? (
+        <DefaultAddressIndicator color={address.color} size={size}>
+          <IndicatorLogo />
+        </DefaultAddressIndicator>
       ) : (
-        <DotIcon size={11} color={address.color} />
+        <DotIcon size={size} color={address.color} />
       )}
     </div>
   )
 }
 
 export default styled(AddressColorIndicator)`
-  width: 18px;
   display: flex;
   justify-content: center;
   flex-shrink: 0;
 `
 
-const Star = styled.div<{ color: string }>`
-  color: ${({ color }) => color};
-  font-size: 18px;
+const DefaultAddressIndicator = styled.div<{ color: string; size: number }>`
+  position: relative;
+  width: ${({ size }) => size + 2}px;
+  height: ${({ size }) => size + 2}px;
+
+  svg * {
+    fill: ${({ color }) => color} !important;
+  }
 `

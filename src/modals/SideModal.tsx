@@ -35,7 +35,15 @@ export interface SideModalProps extends ModalContainerProps {
   hideHeader?: boolean
 }
 
-const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }: SideModalProps) => {
+const SideModal = ({
+  onClose,
+  children,
+  title,
+  header,
+  width = 500,
+  hideHeader,
+  onAnimationComplete
+}: SideModalProps) => {
   const { t } = useTranslation()
   const elRef = useFocusOnMount<HTMLDivElement>()
 
@@ -43,11 +51,12 @@ const SideModal = ({ onClose, children, title, header, width = 500, hideHeader }
     <ModalContainer onClose={onClose}>
       <Sidebar
         role="dialog"
-        initial={{ x: '100%' }}
+        initial={{ x: '110%' }}
         animate={{ x: 0 }}
-        exit={{ x: '100%' }}
+        exit={{ x: '110%' }}
         {...fastTransition}
         width={width}
+        onAnimationComplete={onAnimationComplete}
       >
         {!hideHeader && (
           <ModalHeader>
@@ -77,14 +86,16 @@ const Sidebar = styled(motion.div)<{ width: number }>`
   position: relative;
   overflow: auto;
   margin: 25px 20px 25px auto;
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-huge);
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const ModalHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 15px 25px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.background2};
 `
 
 const HeaderColumn = styled.div`

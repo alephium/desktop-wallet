@@ -26,6 +26,7 @@ import AppHeader from '@/components/AppHeader'
 import { FloatingPanel } from '@/components/PageComponents/PageContainers'
 import PanelTitle from '@/components/PageComponents/PanelTitle'
 import SideBar from '@/components/PageComponents/SideBar'
+import Scrollbar from '@/components/Scrollbar'
 import { useAppSelector } from '@/hooks/redux'
 import { ReactComponent as AlephiumLogotype } from '@/images/logotype.svg'
 import NewWalletActions from '@/pages/HomePage/NewWalletActions'
@@ -39,31 +40,35 @@ const HomePage = () => {
 
   return (
     <HomeContainer {...fadeInSlowly}>
-      <SideBar>
+      <SideBar animateEntry>
         <Logo>
           <AlephiumLogotypeStyled />
         </Logo>
       </SideBar>
-      <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
-        {showNewWalletActions ? (
-          <>
-            <PanelTitle useLayoutId={false} size="big">
-              {t('New wallet')}
-            </PanelTitle>
-            <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
-          </>
-        ) : hasAtLeastOneWallet ? (
-          <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
-        ) : (
-          <>
-            <PanelTitle useLayoutId={false} size="big">
-              {t('Welcome.')}
-            </PanelTitle>
-            <NewWalletActions />
-          </>
-        )}
-      </FloatingPanel>
-      <AppHeader />
+      <Scrollbar>
+        <MainContent>
+          <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
+            {showNewWalletActions ? (
+              <>
+                <PanelTitle useLayoutId={false} size="big">
+                  {t('New wallet')}
+                </PanelTitle>
+                <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
+              </>
+            ) : hasAtLeastOneWallet ? (
+              <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
+            ) : (
+              <>
+                <PanelTitle useLayoutId={false} size="big">
+                  {t('Welcome.')}
+                </PanelTitle>
+                <NewWalletActions />
+              </>
+            )}
+          </FloatingPanel>
+        </MainContent>
+        <AppHeader />
+      </Scrollbar>
     </HomeContainer>
   )
 }
@@ -84,4 +89,11 @@ const Logo = styled.div`
 const AlephiumLogotypeStyled = styled(AlephiumLogotype)`
   fill: ${({ theme }) => theme.font.primary};
   color: ${({ theme }) => theme.font.primary};
+`
+
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
 `
