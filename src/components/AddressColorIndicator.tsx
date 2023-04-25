@@ -20,7 +20,7 @@ import styled from 'styled-components'
 
 import DotIcon from '@/components/DotIcon'
 import { useAppSelector } from '@/hooks/redux'
-import { ReactComponent as MainAddressBadgeBackground } from '@/images/main_address_badge.svg'
+import { ReactComponent as IndicatorLogo } from '@/images/main_address_badge.svg'
 import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
@@ -45,9 +45,9 @@ const AddressColorIndicator = ({
   return (
     <div className={className}>
       {address.isDefault && !isPassphraseUsed && !hideMainAddressBadge ? (
-        <MainAddressBadge color={address.color} size={size}>
-          <MainAddressBadgeBackground />
-        </MainAddressBadge>
+        <DefaultAddressIndicator color={address.color} size={size}>
+          <IndicatorLogo />
+        </DefaultAddressIndicator>
       ) : (
         <DotIcon size={size} color={address.color} />
       )}
@@ -61,7 +61,7 @@ export default styled(AddressColorIndicator)`
   flex-shrink: 0;
 `
 
-const MainAddressBadge = styled.div<{ color: string; size: number }>`
+const DefaultAddressIndicator = styled.div<{ color: string; size: number }>`
   position: relative;
   width: ${({ size }) => size + 2}px;
   height: ${({ size }) => size + 2}px;
