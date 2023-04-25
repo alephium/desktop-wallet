@@ -92,7 +92,9 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
 
   return (
     <FloatingPanel>
-      <PanelTitle color="primary">{isRestoring ? t`Import wallet` : t`New wallet`}</PanelTitle>
+      <PanelTitle color="primary" isSticky>
+        {isRestoring ? t`Import wallet` : t`New wallet`}
+      </PanelTitle>
       <PanelContentContainer>
         <Section inList>
           <Input

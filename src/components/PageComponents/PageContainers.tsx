@@ -45,11 +45,11 @@ const sectionVariants: Variants = {
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
     transition: {
-      duration: 0,
+      duration: 0.1,
       when: 'beforeChildren',
       delay: apparitionDelay,
-      staggerChildren: 0.05,
-      delayChildren: 0.05
+      staggerChildren: 0.1,
+      delayChildren: 0.1
     }
   }),
   out: {
@@ -100,15 +100,9 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
-  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.background1};
-  border: 1px solid ${({ theme, transparentBg }) => (!transparentBg ? theme.border.primary : 'none')};
   border-radius: var(--radius-huge);
 
-  ${({ borderless, theme }) =>
-    !borderless &&
-    css`
-      border: 1px solid ${theme.border.primary};
-    `}
+  ${({ borderless, theme }) => !borderless && css``}
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
@@ -160,5 +154,5 @@ export const CenteredSection = styled.div`
   justify-content: center;
   flex: 1;
   height: 100%;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => theme.bg.background1};
 `

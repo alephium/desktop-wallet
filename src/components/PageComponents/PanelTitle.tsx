@@ -34,7 +34,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
   onBackButtonClick,
   size,
   useLayoutId = true,
-  isSticky = true
+  isSticky = false
 }) => {
   const { scrollY } = useScroll()
 
@@ -63,13 +63,16 @@ export default PanelTitle
 export const TitleContainer = styled(motion.div)<{ isSticky: boolean }>`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-3);
   top: 0;
+  z-index: 1;
 
   ${({ isSticky }) =>
     isSticky &&
     css`
       position: sticky;
+      padding: var(--spacing-8) 0 var(--spacing-4) 0;
+      background-color: ${({ theme }) => theme.bg.background1};
+      border-bottom: 1px solid ${({ theme }) => theme.border.primary};
     `}
 `
 

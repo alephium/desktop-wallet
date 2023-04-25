@@ -39,7 +39,7 @@ const CheckWordsIntroPage = () => {
 
   return (
     <FloatingPanel enforceMinHeight>
-      <PanelTitle color="primary" onBackButtonClick={onButtonBack}>
+      <PanelTitle color="primary" onBackButtonClick={onButtonBack} isSticky>
         {t`Security Check`}
       </PanelTitle>
       <PanelContentContainer>
@@ -76,7 +76,6 @@ export default CheckWordsIntroPage
 const LockContainer = styled.div`
   width: 100%;
   margin-bottom: var(--spacing-5);
-  background-color: ${({ theme }) => theme.bg.secondary};
   border-radius: var(--radius-small);
   display: flex;
   flex-direction: column;
