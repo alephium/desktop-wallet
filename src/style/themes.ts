@@ -27,7 +27,7 @@ export const lightTheme: DefaultTheme = {
     tertiary: '#f4f4f4',
     contrast: '#212126',
     background1: '#f9f9f9',
-    background2: '#f5f5f5',
+    background2: '#f2f2f2',
     accent: colord('#598bed').alpha(0.05).toHex(),
     hover: colord('#ffffff').darken(0.015).toHex()
   },
