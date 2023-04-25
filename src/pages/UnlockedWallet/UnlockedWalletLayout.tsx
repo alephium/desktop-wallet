@@ -211,8 +211,9 @@ const MainContent = styled.main`
   display: flex;
   flex-direction: column;
   padding-top: ${appHeaderHeightPx}px;
+  height: 100%;
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => theme.bg.background1};
   position: relative;
 `
 

@@ -31,7 +31,6 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import GreetingMessages from '@/pages/UnlockedWallet/OverviewPage/GreetingMessages'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 
 interface OverviewPageProps {
   className?: string
@@ -71,11 +70,7 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
   )
 }
 
-export default styled(OverviewPage)`
-  background-color: ${({ theme }) => theme.bg.background1};
-  margin-top: -${appHeaderHeightPx}px;
-  padding-top: ${appHeaderHeightPx}px;
-`
+export default OverviewPage
 
 const AssetAndAddressesRow = styled.div`
   display: flex;
