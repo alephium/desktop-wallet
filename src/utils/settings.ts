@@ -34,6 +34,7 @@ export const getAvailableLanguageOptions = () => [
   { label: 'Français', value: 'fr-FR' as Language },
   { label: 'Português', value: 'pt-PT' as Language },
   { label: 'Русский', value: 'ru-RU' as Language },
+  { label: 'Türkçe', value: 'tr-TR' as Language },
   { label: 'Tiếng Việt', value: 'vi-VN' as Language }
 ]
 
