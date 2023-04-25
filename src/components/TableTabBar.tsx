@@ -28,7 +28,6 @@ export default styled(TableTabBar)`
 
 const TableTab = styled(Tab)`
   min-width: 60px;
-  padding: 22px 20px;
   background-color: ${({ isActive, theme }) => (isActive ? theme.bg.primary : theme.bg.secondary)};
   border: none;
 
@@ -37,7 +36,7 @@ const TableTab = styled(Tab)`
   ${({ isActive, theme }) =>
     isActive &&
     css`
-      border-bottom: none;
+      border-bottom: 1px solid transparent;
     `}
 
   &:not(:last-child) {

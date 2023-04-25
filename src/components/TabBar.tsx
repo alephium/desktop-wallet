@@ -78,14 +78,16 @@ const TabBar = ({
 
 export default styled(TabBar)`
   display: flex;
-  max-height: 60px;
+  height: 55px;
 `
 
 export const Tab = styled.div<{ isActive: boolean }>`
   flex: 1;
+  display: flex;
   min-width: 50px;
   text-align: center;
-  padding: 16px 36px;
+  justify-content: center;
+  align-items: center;
   background-color: ${({ isActive, theme }) => (isActive ? theme.bg.background1 : 'transparent')};
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: none;

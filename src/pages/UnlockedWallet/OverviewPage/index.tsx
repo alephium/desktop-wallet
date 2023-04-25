@@ -101,6 +101,7 @@ const Shortcuts = styled(Box)`
 
 const ShortcutsHeader = styled(TableHeader)`
   height: 45px;
+  min-height: auto;
   background-color: transparent;
 `
 

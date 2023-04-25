@@ -162,7 +162,7 @@ export const TableHeader: FC<{ title: string; className?: string }> = ({ title, 
 const TableHeaderRow = styled(TableRow)`
   display: flex;
   justify-content: space-between;
-  height: 60px;
+  height: 55px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   padding-right: var(--spacing-2);
