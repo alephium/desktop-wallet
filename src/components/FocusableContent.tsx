@@ -49,7 +49,7 @@ const FocusableContent: FC<FocusableContentProps> = ({ className, children, isFo
 
   return (
     <div className={className} ref={modalRef} onKeyDown={handleEscapeKeyPress} tabIndex={0}>
-      <AnimatePresence>{isFocused && <ModalBackdrop {...fadeInOutFast} focusMode onClick={onClose} />}</AnimatePresence>
+      <AnimatePresence>{isFocused && <ModalBackdrop {...fadeInOutFast} onClick={onClose} />}</AnimatePresence>
       <Content>
         {children}
 

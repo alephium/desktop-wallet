@@ -85,9 +85,9 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
         </Header>
       }
     >
-      <AmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
+      <StyledAmountsOverviewPanel addressHash={addressHash} showChart={showChart}>
         <QRCode value={addressHash} size={130} />
-      </AmountsOverviewPanel>
+      </StyledAmountsOverviewPanel>
 
       <Content>
         <Shortcuts>
@@ -147,6 +147,10 @@ const ExplorerButton = styled(Button)`
   margin-right: 30px;
 `
 
+const StyledAmountsOverviewPanel = styled(AmountsOverviewPanel)`
+  padding: 0;
+`
+
 const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
   font-weight: var(--fontWeight-semiBold);
@@ -167,7 +171,7 @@ const TitleAddressHash = styled(HashEllipsed)`
 `
 
 const Content = styled.div`
-  padding: 22px 28px;
+  padding: 0 var(--spacing-4) var(--spacing-4);
   position: relative;
 `
 

@@ -125,10 +125,7 @@ export default styled(Button)`
             faded: colord(theme.global.accent).darken(0.04).toRgbString()
           }[variant],
           secondary: {
-            default:
-              theme.name === 'dark'
-                ? colord(theme.bg.primary).lighten(0.02).toRgbString()
-                : colord(theme.bg.primary).darken(0.015).toRgbString(),
+            default: theme.bg.hover,
             contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
             valid: colord(theme.global.valid).darken(0.04).toRgbString(),
             alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
@@ -269,7 +266,7 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '55px')};
+  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '52px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);

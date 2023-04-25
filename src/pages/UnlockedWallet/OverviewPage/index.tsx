@@ -80,7 +80,7 @@ export default styled(OverviewPage)`
 const AssetAndAddressesRow = styled.div`
   display: flex;
   gap: 30px;
-  margin-top: 100px;
+  margin-top: var(--spacing-6);
 `
 
 const AssetsListStyled = styled(AssetsList)`
@@ -101,6 +101,7 @@ const Shortcuts = styled(Box)`
 
 const ShortcutsHeader = styled(TableHeader)`
   height: 45px;
+  min-height: auto;
   background-color: transparent;
 `
 

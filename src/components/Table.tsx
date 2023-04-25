@@ -162,7 +162,7 @@ export const TableHeader: FC<{ title: string; className?: string }> = ({ title, 
 const TableHeaderRow = styled(TableRow)`
   display: flex;
   justify-content: space-between;
-  height: 60px;
+  height: 55px;
   background-color: ${({ theme }) => theme.bg.secondary};
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   padding-right: var(--spacing-2);
@@ -173,25 +173,12 @@ const TableTitle = styled.div`
   font-weight: var(--fontWeight-semiBold);
 `
 
-export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInPx?: number }>`
-  max-height: ${({ maxHeightInPx }) => maxHeightInPx && maxHeightInPx}px;
-  overflow: hidden;
-  position: relative;
-  height: 100%;
-
-  ${({ isExpanded }) =>
-    isExpanded &&
-    css`
-      max-height: none;
-    `}
-`
-
 export const ExpandRow = ({ onClick }: { onClick: () => void }) => {
   const { t } = useTranslation()
 
   return (
     <ExpandRowStyled>
-      <Button role="secondary" variant="contrast" onClick={onClick} Icon={ChevronsUpDown} short>
+      <Button role="secondary" onClick={onClick} Icon={ChevronsUpDown} short>
         {t('Expand')}
       </Button>
     </ExpandRowStyled>
@@ -204,5 +191,38 @@ const ExpandRowStyled = styled.div`
   display: flex;
   justify-content: center;
   bottom: 0;
-  background: linear-gradient(0deg, rgba(11, 11, 11, 0.25) 0%, rgba(0, 0, 0, 0) 92.06%);
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+
+  ${({ theme }) => {
+    const gradientMaxOpacity = theme.name === 'light' ? 0.05 : 0.25
+
+    return css`
+      background: linear-gradient(0deg, rgba(0, 0, 0, ${gradientMaxOpacity}) 0%, rgba(0, 0, 0, 0) 100%);
+    `
+  }}
+`
+
+export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInPx?: number }>`
+  max-height: ${({ maxHeightInPx }) => maxHeightInPx && maxHeightInPx}px;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+
+  ${({ isExpanded }) =>
+    isExpanded &&
+    css`
+      max-height: none;
+      box-shadow: ${({ theme }) => theme.shadow.tertiary};
+    `}
+
+  &:hover {
+    ${ExpandRowStyled} {
+      opacity: 1;
+    }
+  }
 `

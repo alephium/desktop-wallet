@@ -24,7 +24,11 @@ import Chart from 'react-apexcharts'
 import styled, { useTheme } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
-import { makeSelectAddresses, selectHaveHistoricBalancesLoaded } from '@/storage/addresses/addressesSelectors'
+import {
+  makeSelectAddresses,
+  selectHaveHistoricBalancesLoaded,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
@@ -59,6 +63,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const selectAddresses = useMemo(makeSelectAddresses, [])
   const addresses = useAppSelector((s) => selectAddresses(s, addressHash ?? (s.addresses.ids as AddressHash[])))
   const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
   const theme = useTheme()
 
@@ -118,7 +123,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const yAxisWorthData = filteredChartData.map(({ worth }) => worth)
 
   const worthHasGoneUp = firstItem.worth < latestWorth
-  const chartColor = worthHasGoneUp ? theme.global.valid : theme.global.alert
+  const chartColor = stateUninitialized ? theme.font.tertiary : worthHasGoneUp ? theme.global.valid : theme.global.alert
 
   const chartOptions = getChartOptions(chartColor, xAxisDatesData, {
     mouseMove(e, chart, options) {
@@ -243,10 +248,13 @@ const getChartOptions = (
 const ChartWrapper = styled.div`
   width: 100%;
   height: 100%;
-  opacity: 0.5;
-  transition: opacity 0.1s ease-out;
+  opacity: 0.3;
+  transition: opacity 0.2s ease-out;
+
+  filter: saturate(0);
 
   &:hover {
     opacity: 1;
+    filter: saturate(1);
   }
 `

@@ -25,6 +25,7 @@ import styled from 'styled-components'
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
 import DeltaPercentage from '@/components/DeltaPercentage'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HistoricWorthChart from '@/components/HistoricWorthChart'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
@@ -78,8 +79,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const isShowingHistoricWorth = !!worth
 
   return (
-    <UnlockedWalletPanelStyled>
-      <Panel className={className} worth={worth} hasHistoricBalances={hasHistoricBalances}>
+    <UnlockedWalletPanelStyled className={className}>
+      <Panel worth={worth} hasHistoricBalances={hasHistoricBalances}>
         <Balances>
           <BalancesRow>
             <BalancesColumn>
@@ -157,7 +158,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         </Balances>
         {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
       </Panel>
-      {showChart && hasHistoricBalances && (
+      {showChart && hasHistoricBalances ? (
         <ChartContainer>
           <HistoricWorthChart
             addressHash={addressHash}
@@ -168,6 +169,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             length={chartLength}
           />
         </ChartContainer>
+      ) : (
+        (stateUninitialized || !hasHistoricBalances) && (
+          <NoChartDivider>
+            <HorizontalDivider secondary />
+          </NoChartDivider>
+        )
       )}
     </UnlockedWalletPanelStyled>
   )
@@ -177,6 +184,7 @@ export default AmountsOverviewPanel
 
 const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
   position: relative;
+  padding: 0;
 `
 
 const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
@@ -185,9 +193,9 @@ const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
   gap: 30px;
   align-items: center;
 
-  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 70 : 0)}px;
+  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 80 : 0)}px;
 
-  padding: 20px 0 20px 0;
+  padding: 30px 60px;
 `
 
 const Balances = styled.div`
@@ -287,7 +295,15 @@ const ChartContainer = styled.div`
   right: 0;
   left: 0;
   padding: 10px 0;
+  margin-bottom: var(--spacing-4);
 
-  bottom: -70px;
+  bottom: -80px;
   height: 100px;
+`
+
+const NoChartDivider = styled.div`
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
 `
