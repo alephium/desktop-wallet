@@ -23,6 +23,7 @@ import styled from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
 import { toggleTheme } from '@/storage/settings/settingsStorageUtils'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ThemeSwitcherProps {
   className?: string
@@ -43,7 +44,13 @@ const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   }
 
   return (
-    <div className={className} onClick={handleThemeToggle}>
+    <div
+      className={className}
+      onClick={handleThemeToggle}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => onEnterOrSpace(e, handleThemeToggle)}
+    >
       <ThemeRotatingContainer animate={{ rotate: isDark ? 0 : 180 }}>
         <ThemeIconContainer style={{ backgroundColor: 'var(--color-purple)' }}>
           <Moon size={20} />
