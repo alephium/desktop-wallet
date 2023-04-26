@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getHumanReadableError } from '@alephium/sdk'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { ArrowUp, Pencil } from 'lucide-react'
@@ -36,7 +37,7 @@ import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/Transfer'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
-import { contactDeletedFromPeristentStorage } from '@/storage/addresses/addressesActions'
+import { contactDeletedFromPeristentStorage, contactDeletionFailed } from '@/storage/addresses/addressesActions'
 import { selectAllContacts, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
@@ -86,9 +87,13 @@ const ContactsTabContent = () => {
   const openContactFormModal = () => setIsContactFormModalOpen(true)
 
   const handleDeleteContact = (contact: Contact) => {
-    ContactsStorage.deleteContact(contact)
-    dispatch(contactDeletedFromPeristentStorage(contact.id))
-    posthog?.capture('Deleted contact')
+    try {
+      ContactsStorage.deleteContact(contact)
+      dispatch(contactDeletedFromPeristentStorage(contact.id))
+      posthog?.capture('Deleted contact')
+    } catch (e) {
+      dispatch(contactDeletionFailed(getHumanReadableError(e, t('Could not delete contact.'))))
+    }
   }
 
   return (

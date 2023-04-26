@@ -413,5 +413,6 @@
   "with": "with",
   "{{ amount }} words entered": "{{ amount }} words entered",
   "{{ number }} selected": "{{ number }} selected",
-  "Contact deleted": "Contact deleted"
+  "Contact deleted": "Contact deleted",
+  "Could not delete contact.": "Could not delete contact."
 }
