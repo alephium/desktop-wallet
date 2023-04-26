@@ -145,8 +145,7 @@
       "buildResources": "assets"
     },
     "afterPack": ".afterPack.js",
-    "afterAllArtifactBuild": ".afterAllArtifactBuild.js",
-    "afterSign": "electron-builder-notarize"
+    "afterAllArtifactBuild": ".afterAllArtifactBuild.js"
   },
   "engines": {
     "node": ">=16",
