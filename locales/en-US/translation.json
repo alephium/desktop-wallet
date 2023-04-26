@@ -107,7 +107,7 @@
   "Download failed, try again later.": "Download failed, try again later.",
   "Downloaded {{ percent }}%": "Downloaded {{ percent }}%",
   "Duration in minutes after which an idle wallet will lock automatically.": "Duration in minutes after which an idle wallet will lock automatically.",
-  "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.": "Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.",
+  "Easily organize your addresses and your contacts for a more serene transfer experience.": "Easily organize your addresses and your contacts for a more serene transfer experience.",
   "Edit": "Edit",
   "Edit contact": "Edit contact",
   "Enable developer tools": "Enable developer tools",
