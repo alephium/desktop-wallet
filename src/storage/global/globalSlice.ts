@@ -51,8 +51,8 @@ interface AppState {
 const initialState: AppState = {
   loading: false,
   visibleModals: [],
-  addressesPageInfoMessageClosed: false,
-  transfersPageInfoMessageClosed: false,
+  addressesPageInfoMessageClosed: true, // See: https://github.com/alephium/desktop-wallet/issues/644
+  transfersPageInfoMessageClosed: true, // See: https://github.com/alephium/desktop-wallet/issues/644
   wallets: WalletStorage.list(),
   theme: getThemeType(),
   devMode: false
