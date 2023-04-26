@@ -54,9 +54,7 @@ const AddressesPage = () => {
   return (
     <UnlockedWalletPage
       title={t('Addresses & contacts')}
-      subtitle={t(
-        'Easily organize your addresses and your contacts for a more serene transfer experience. Sync with the mobile wallet to be more organized on the go.'
-      )}
+      subtitle={t('Easily organize your addresses and your contacts for a more serene transfer experience.')}
       isInfoMessageVisible={!isInfoMessageClosed}
       closeInfoMessage={closeInfoMessage}
       infoMessageLink={links.faq}

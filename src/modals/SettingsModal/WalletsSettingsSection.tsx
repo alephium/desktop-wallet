@@ -107,7 +107,7 @@ const WalletsSettingsSection = () => {
             <Button role="secondary" onClick={lockWallet}>
               {t('Lock current wallet')}
             </Button>
-            <Button transparent variant="alert" onClick={() => setIsQRCodeModalVisible(true)}>
+            <Button role="secondary" onClick={() => setIsQRCodeModalVisible(true)}>
               {t('Export current wallet')}
             </Button>
             <Button transparent variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
