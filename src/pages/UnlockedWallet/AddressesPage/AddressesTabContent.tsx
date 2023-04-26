@@ -76,7 +76,7 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
       }
     >
       <TableGrid>
-        <GridHeaderRow tabsRowHeight={tabsRowHeight}>
+        <GridHeaderRow tabsRowHeight={tabsRowHeight} role="row" tabIndex={0}>
           <HeaderCell>{t('Address')}</HeaderCell>
           <HeaderCell>{t('Assets')}</HeaderCell>
           <HeaderCell justifyContent="flex-end">{t('ALPH amount')}</HeaderCell>

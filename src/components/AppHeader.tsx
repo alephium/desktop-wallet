@@ -104,12 +104,14 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
               <VerticalDivider />
             </>
           )}
+
           {children && (
             <>
               {children}
               <VerticalDivider />
             </>
           )}
+
           <CompactToggle
             toggled={discreetMode}
             onToggle={toggleDiscreetMode}
@@ -119,9 +121,10 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
             data-tooltip-content={t('Discreet mode')}
             short
           />
+          <VerticalDivider />
+
           {isAuthenticated && (
             <>
-              <VerticalDivider />
               <Button
                 transparent
                 squared
@@ -135,11 +138,17 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
               >
                 <WalletConnectLogoStyled />
               </Button>
+              <VerticalDivider />
             </>
           )}
-          <VerticalDivider />
-          {defaultAddress && !isPassphraseUsed && <DefaultAddressSwitch />}
-          <VerticalDivider />
+
+          {defaultAddress && !isPassphraseUsed && (
+            <>
+              <DefaultAddressSwitch />
+              <VerticalDivider />
+            </>
+          )}
+
           <NetworkSwitch />
         </HeaderButtons>
       </motion.header>

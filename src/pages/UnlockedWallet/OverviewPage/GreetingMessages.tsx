@@ -94,6 +94,7 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
 export default styled(GreetingMessages)`
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   height: 44px;
   margin-left: 70px;
   font-size: 16px;

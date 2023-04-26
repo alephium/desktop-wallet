@@ -164,7 +164,7 @@ const NFTsList = ({ className, isExpanded }: AssetsListProps) => {
   return (
     <motion.div {...fadeIn} className={className}>
       <TableRow role="row" tabIndex={isExpanded ? 0 : -1}>
-        {t('Coming soon!')}
+        <PlaceholderText>{t('Coming soon!')}</PlaceholderText>
       </TableRow>
     </motion.div>
   )
@@ -213,4 +213,11 @@ const AmountSubtitle = styled.div`
 
 const NameColumn = styled(Column)`
   margin-right: 50px;
+`
+
+const PlaceholderText = styled.div`
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

@@ -37,9 +37,8 @@ import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monoch
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 import { useInterval } from '@/utils/hooks'
-import { getInitials } from '@/utils/misc'
+import { getInitials, onEnterOrSpace } from '@/utils/misc'
 
 interface UnlockedWalletLayoutProps {
   title?: string
@@ -59,12 +58,13 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
   const isLoadingData = useAppSelector((s) => s.addresses.loading)
   const posthog = usePostHog()
+  const previousWalletName = useRef<string>()
 
   const [fullWalletNameVisible, setFullWalletNameVisible] = useState(true)
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
   const [showAlephiumLogo, setShowAlephiumLogo] = useState(false)
 
-  const previousWalletName = useRef<string>()
+  const openNotificationsModal = () => setIsNotificationsModalOpen(true)
 
   useInterval(() => {
     setShowAlephiumLogo(true)
@@ -119,12 +119,15 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
             )}
           </AnimatePresence>
           <CurrentWalletInitials
-            onClick={() => setIsNotificationsModalOpen(true)}
+            onClick={openNotificationsModal}
+            onKeyDown={(e) => onEnterOrSpace(e, openNotificationsModal)}
             style={{ zIndex: isNotificationsModalOpen ? 2 : undefined }}
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: walletNameHideAfterSeconds, type: 'spring', stiffness: 500, damping: 70 }}
             key={`initials-${activeWalletName}`}
+            role="button"
+            tabIndex={0}
           >
             <AnimatePresence mode="wait">
               <WalletInitialsContainer
@@ -210,7 +213,6 @@ export default styled(UnlockedWalletLayout)`
 const MainContent = styled.main`
   display: flex;
   flex-direction: column;
-  padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.bg.background2};
   position: relative;
