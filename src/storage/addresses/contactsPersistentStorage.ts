@@ -64,6 +64,23 @@ class ContactsStorage extends PersistentEncryptedStorage {
 
     return contactId
   }
+
+  deleteContact(contact: Contact) {
+    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+
+    if (encryptedStorageProps.isPassphraseUsed)
+      throw new Error('Cannot use contact feature in passphrase-enabled wallets')
+
+    const contacts: Contact[] = this.load()
+    const storedContactIndex = contacts.findIndex((c) => c.id === contact.id)
+
+    if (storedContactIndex < 0) throw new Error(i18n.t('Could not find a contact with this ID'))
+
+    contacts.splice(storedContactIndex, 1)
+
+    console.log(`🟠 Deleting contact ${contact.name}`)
+    super._store(JSON.stringify(contacts))
+  }
 }
 
 const version = '1'

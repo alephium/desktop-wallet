@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
-import { Plus, X } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -28,6 +28,7 @@ import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
+import DeleteButton from '@/components/Buttons/DeleteButton'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputProps } from '@/components/Inputs'
@@ -252,9 +253,7 @@ const AssetAmountsInput = ({
                   </ActionLink>
                 </AvailableAmountColumn>
               </AssetAmountRow>
-              {assetAmounts.length > 1 && (
-                <RemoveAssetButton Icon={X} role="secondary" onClick={() => handleRemoveAssetClick(index)} />
-              )}
+              {assetAmounts.length > 1 && <DeleteButton onClick={() => handleRemoveAssetClick(index)} />}
             </BoxStyled>
           )
         })}
@@ -288,24 +287,12 @@ const AssetAmountsInput = ({
 
 export default AssetAmountsInput
 
-const RemoveAssetButton = styled(Button)`
-  position: absolute;
-  top: -20px;
-  right: -10px;
-  opacity: 0;
-  height: 30px;
-  width: 30px;
-  padding: 0;
-  min-width: 30px;
-  border-radius: var(--radius-full);
-`
-
 const BoxStyled = styled(Box)`
   padding: 10px;
   position: relative;
 
   &:hover {
-    ${RemoveAssetButton} {
+    ${DeleteButton} {
       opacity: 1;
     }
   }
