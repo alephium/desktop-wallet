@@ -40,7 +40,7 @@ export const lightTheme: DefaultTheme = {
     highlight: '#d4a10d'
   },
   border: {
-    primary: '#e1e1e1',
+    primary: '#e7e7e7',
     secondary: '#f0f0f0'
   },
   shadow: {
