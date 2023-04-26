@@ -73,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windows-binary
-          path: dist\Alephium Setup ${{ needs.version.outputs.version }}.exe
+          path: dist\Alephium-${{ needs.version.outputs.version }}.exe
 
   release:
     runs-on: ubuntu-latest
@@ -100,7 +100,7 @@ jobs:
           mv "Alephium-${{ needs.build-artifacts.outputs.version }}-universal.dmg" "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg"
           mv "alephium-wallet_${{ needs.build-artifacts.outputs.version }}_amd64.deb" "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb"
           mv "Alephium-${{ needs.build-artifacts.outputs.version }}.AppImage" "alephium-wallet-linux-${{ needs.build-artifacts.outputs.version }}.AppImage"
-          mv "Alephium Setup ${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
+          mv "Alephium-${{ needs.build-artifacts.outputs.version }}.exe" "alephium-wallet-windows-${{ needs.build-artifacts.outputs.version }}.exe"
 
           sha256sum "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg" > "alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum"
           sha256sum "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb" > "alephium-wallet-linux-amd64-${{ needs.build-artifacts.outputs.version }}.deb.checksum"
