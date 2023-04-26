@@ -227,11 +227,6 @@ export default styled(Button)`
       &:hover {
         color: ${hoverColor};
         background-color: ${hoverBgColor};
-
-        ${borderless &&
-        css`
-          border-color: ${theme.border.primary};
-        `}
       }
 
       &:active {

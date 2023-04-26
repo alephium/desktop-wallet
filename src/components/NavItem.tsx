@@ -62,6 +62,10 @@ const ButtonStyled = styled(Button)<{ isActive: boolean }>`
   &:not(:hover) {
     opacity: ${({ isActive }) => (isActive ? 1 : 0.6)} !important;
   }
+
+  &:hover {
+    border-color: ${({ theme }) => theme.border.primary};
+  }
 `
 
 export default NavItem
