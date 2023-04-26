@@ -110,6 +110,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           files: |
             alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg
             alephium-wallet-macos-universal-${{ needs.build-artifacts.outputs.version }}.dmg.checksum
