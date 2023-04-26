@@ -42,9 +42,9 @@ const UnlockedWalletPage: FC<UnlockedWalletPageProps> = ({
   isInfoMessageVisible,
   closeInfoMessage,
   children,
-  className
+  ...props
 }) => (
-  <motion.div {...fadeIn} className={className}>
+  <motion.div {...fadeIn} {...props}>
     {(title || subtitle) && (
       <PageHeader>
         <div>
@@ -67,9 +67,6 @@ const UnlockedWalletPage: FC<UnlockedWalletPageProps> = ({
 )
 
 export default styled(UnlockedWalletPage)`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
   padding-top: ${appHeaderHeightPx}px;
 `
 
