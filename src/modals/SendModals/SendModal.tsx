@@ -96,6 +96,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
 
+  const isRequestToApproveContractCall = initialStep === 'info-check'
+
   useEffect(() => {
     if (!consolidationRequired || !transactionData) return
 
@@ -158,10 +160,10 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   )
 
   useEffect(() => {
-    if (initialStep === 'info-check' && transactionData) {
+    if (isRequestToApproveContractCall && transactionData) {
       buildTransactionExtended(transactionData)
     }
-  }, [buildTransactionExtended, initialStep, transactionData])
+  }, [buildTransactionExtended, isRequestToApproveContractCall, transactionData])
 
   const onCloseExtended = useCallback(() => {
     onClose()
@@ -228,6 +230,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       onBack={onBackCallback}
       focusMode
       noPadding
+      disableBack={isRequestToApproveContractCall}
     >
       <StepsProgress currentStep={step} isContract={isContract} />
       {step === 'addresses' && (

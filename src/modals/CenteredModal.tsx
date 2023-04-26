@@ -42,6 +42,7 @@ export interface CenteredModalProps extends ModalContainerProps {
   dynamicContent?: boolean
   onBack?: () => void
   noPadding?: boolean
+  disableBack?: boolean
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -58,6 +59,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   children,
   skipFocusOnMount,
   noPadding,
+  disableBack,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -68,7 +70,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
       <CenteredBox role="dialog" {...fadeInOutScaleFast} narrow={narrow}>
         <ModalHeader transparent={transparentHeader}>
           <TitleRow>
-            {onBack && (
+            {onBack && !disableBack && (
               <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
                 <ChevronLeft />
               </BackButton>
