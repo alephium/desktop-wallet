@@ -35,7 +35,7 @@ interface OverviewPageProps {
   className?: string
 }
 
-const maxPanelHeightInPx = 336
+const maxPanelHeightInPx = 350
 
 const OverviewPage = ({ className }: OverviewPageProps) => {
   const { t } = useTranslation()
@@ -95,9 +95,8 @@ const Shortcuts = styled(Box)`
 `
 
 const ShortcutsHeader = styled(TableHeader)`
-  height: 45px;
+  max-height: 45px !important;
   min-height: auto;
-  background-color: transparent;
 `
 
 const ButtonsGrid = styled.div`
