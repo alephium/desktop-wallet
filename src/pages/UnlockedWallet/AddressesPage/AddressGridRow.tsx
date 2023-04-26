@@ -142,9 +142,10 @@ const Column = styled.div`
 `
 
 const Label = styled.div`
-  font-size: 17px;
-  font-weight: var(--fontWeight-semiBold);
+  font-size: 16px;
+  font-weight: var(--fontWeight-bold);
   display: flex;
+  max-width: 150px;
 `
 
 const LastActivity = styled.div`
@@ -182,7 +183,12 @@ const AmountCell = styled(Cell)`
 `
 
 const FiatAmountCell = styled(AmountCell)`
-  color: ${({ theme }) => theme.bg.contrast};
+  color: ${({ theme }) => theme.font.primary};
+  font-size: 15px;
+
+  * {
+    font-weight: var(--fontWeight-bold) !important;
+  }
 `
 
 const AddressNameCell = styled(Cell)`
@@ -191,7 +197,7 @@ const AddressNameCell = styled(Cell)`
 `
 
 const AssetLogos = styled.div`
-  padding: 8px 16px;
+  padding: 0px 16px;
   display: flex;
   gap: 15px;
   flex-wrap: wrap;

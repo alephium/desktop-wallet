@@ -64,7 +64,7 @@ export const GlobalStyle = createGlobalStyle`
     --fontWeight-normal: 400;
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
-    --fontWeight-bold: 800;
+    --fontWeight-bold: 700;
 
     --inputHeight: 55px;
     --tableCellHeight: 47px;
