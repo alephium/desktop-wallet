@@ -238,6 +238,8 @@ if (!gotTheLock) {
 
     ipcMain.handle('app:hide', () => app.hide())
 
+    ipcMain.handle('app:show', () => mainWindow.show())
+
     ipcMain.handle('app:getSystemLanguage', () => {
       const preferedLanguages = app.getPreferredSystemLanguages()
 
