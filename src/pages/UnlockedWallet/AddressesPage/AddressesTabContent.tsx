@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wrench } from 'lucide-react'
-import { CSSProperties, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -76,12 +76,6 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
       }
     >
       <TableGrid>
-        <GridHeaderRow tabsRowHeight={tabsRowHeight} role="row" tabIndex={0}>
-          <HeaderCell>{t('Address')}</HeaderCell>
-          <HeaderCell>{t('Assets')}</HeaderCell>
-          <HeaderCell justifyContent="flex-end">{t('ALPH amount')}</HeaderCell>
-          <HeaderCell justifyContent="flex-end">{t('Total value')}</HeaderCell>
-        </GridHeaderRow>
         <TableGridContent>
           {visibleAddresses.map((address) => (
             <AddressGridRow addressHash={address.hash} key={address.hash} />
@@ -115,6 +109,7 @@ const HideEmptyAddressesToggle = styled.div`
   padding: 12px 16px;
   border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
 `
 
 const ToggleText = styled.div`
@@ -134,36 +129,6 @@ const TableGrid = styled(Box)`
   contain: paint; // This is amazing. It replaces "overflow: hidden". Using "overflow" on this prevents us from having a sticky table header.
   display: flex;
   flex-direction: column;
-`
-
-const Cell = styled.div`
-  padding: 15px 20px;
-`
-
-const GridRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-`
-
-const GridHeaderRow = styled(GridRow)<AddressesTabContentProps>`
-  font-size: 14px;
-  font-weight: var(--fontWeight-semiBold);
-  min-height: var(--inputHeight);
-  width: 100%;
-  background-color: ${({ theme }) => theme.border.secondary};
-  position: sticky;
-  top: ${({ tabsRowHeight }) => tabsRowHeight + 10}px;
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  z-index: 1;
-`
-
-const HeaderCell = styled(Cell)<{ justifyContent?: CSSProperties['justifyContent'] }>`
-  display: flex;
-  justify-content: ${({ justifyContent }) => justifyContent ?? 'center'};
-  align-items: center;
-  height: 100%;
-  background-color: ${({ theme }) => theme.bg.secondary};
 `
 
 const TableGridContent = styled.div`

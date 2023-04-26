@@ -81,7 +81,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
         tabIndex={0}
       >
         <AddressNameCell>
-          <AddressColorIndicator addressHash={address.hash} />
+          <AddressColorIndicator addressHash={address.hash} size={16} />
           <Column>
             <Label>
               <AddressBadge addressHash={address.hash} hideColorIndication truncate showFull disableA11y />
@@ -142,17 +142,18 @@ const Column = styled.div`
 `
 
 const Label = styled.div`
-  font-size: 16px;
+  font-size: 17px;
   font-weight: var(--fontWeight-semiBold);
   display: flex;
 `
 
 const LastActivity = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
+  font-size: 11px;
 `
 
 const Cell = styled.div`
-  padding: 15px 20px;
+  padding: 20px 20px;
   align-items: center;
   display: flex;
   background-color: ${({ theme }) => theme.bg.primary};
@@ -162,10 +163,9 @@ const Cell = styled.div`
 const GridRow = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
 
   &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   }
 
   &:hover ${Cell} {
@@ -176,7 +176,6 @@ const GridRow = styled.div`
 
 const AmountCell = styled(Cell)`
   text-align: right;
-  font-weight: var(--fontWeight-semiBold);
   font-size: 15px;
   color: ${({ theme }) => theme.font.secondary};
   justify-content: flex-end;
