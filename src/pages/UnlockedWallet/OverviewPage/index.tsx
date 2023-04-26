@@ -16,12 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import ShortcutButtons from '@/components/Buttons/ShortcutButtons'
 import { TableHeader } from '@/components/Table'
@@ -31,6 +29,7 @@ import AmountsOverviewPanel from '@/pages/UnlockedWallet/OverviewPage/AmountsOve
 import AssetsList from '@/pages/UnlockedWallet/OverviewPage/AssetsList'
 import GreetingMessages from '@/pages/UnlockedWallet/OverviewPage/GreetingMessages'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
+import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 
 interface OverviewPageProps {
   className?: string
@@ -44,9 +43,8 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
   const [showChart, setShowChart] = useState(false)
 
   return (
-    <motion.div
+    <UnlockedWalletPage
       className={className}
-      {...fadeIn}
       onAnimationComplete={() => setShowChart(true)}
       onAnimationStart={() => setShowChart(false)}
     >
@@ -66,11 +64,13 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
         </AssetAndAddressesRow>
         <TransactionList title={t('Latest transactions')} limit={5} />
       </UnlockedWalletPanel>
-    </motion.div>
+    </UnlockedWalletPage>
   )
 }
 
-export default OverviewPage
+export default styled(OverviewPage)`
+  background-color: ${({ theme }) => theme.bg.background1};
+`
 
 const AssetAndAddressesRow = styled.div`
   display: flex;

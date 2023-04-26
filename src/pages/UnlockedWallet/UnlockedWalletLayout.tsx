@@ -37,7 +37,6 @@ import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monoch
 import ModalPortal from '@/modals/ModalPortal'
 import NotificationsModal from '@/modals/NotificationsModal'
 import { syncAddressesData } from '@/storage/addresses/addressesActions'
-import { appHeaderHeightPx } from '@/style/globalStyles'
 import { useInterval } from '@/utils/hooks'
 import { getInitials, onEnterOrSpace } from '@/utils/misc'
 
@@ -214,7 +213,6 @@ export default styled(UnlockedWalletLayout)`
 const MainContent = styled.main`
   display: flex;
   flex-direction: column;
-  padding-top: ${appHeaderHeightPx}px;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.bg.background2};
   position: relative;
