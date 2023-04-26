@@ -62,10 +62,10 @@ export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
     primary: '#18181b',
-    secondary: '#141416',
-    tertiary: '#121214',
+    secondary: '#161619',
+    tertiary: '#141416',
     contrast: 'white',
-    background1: '#111113',
+    background1: '#121214',
     background2: '#0e0e10',
     hover: colord('#18181b').darken(0.01).toHex(),
     accent: colord('#598bed').alpha(0.1).toHex()
@@ -79,8 +79,8 @@ export const darkTheme: DefaultTheme = {
     highlight: '#f0d590'
   },
   border: {
-    primary: '#252528',
-    secondary: '#212123'
+    primary: '#232325',
+    secondary: '#202022'
   },
   shadow: {
     primary: '0 2px 3px rgba(0, 0, 0, 0.2)',
