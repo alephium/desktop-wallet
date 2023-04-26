@@ -150,13 +150,35 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
         } else {
-          dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
+          const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
+
+          dispatch(transactionBuildFailed(errorMessage))
+
+          if (isRequestToApproveContractCall) {
+            if (requestEvent)
+              onSessionRequestError(requestEvent, {
+                message: errorMessage,
+                code: WALLETCONNECT_ERRORS.TRANSACTION_BUILD_FAILED
+              })
+
+            onClose()
+          }
         }
       }
 
       setIsLoading(false)
     },
-    [buildTransaction, dispatch, isConsolidateUTXOsModalVisible, t, txContext]
+    [
+      buildTransaction,
+      dispatch,
+      isConsolidateUTXOsModalVisible,
+      isRequestToApproveContractCall,
+      onClose,
+      onSessionRequestError,
+      requestEvent,
+      t,
+      txContext
+    ]
   )
 
   useEffect(() => {
