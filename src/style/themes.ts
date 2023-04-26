@@ -62,7 +62,7 @@ export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
     primary: '#18181b',
-    secondary: '#141417',
+    secondary: '#141416',
     tertiary: '#121214',
     contrast: 'white',
     background1: '#111113',

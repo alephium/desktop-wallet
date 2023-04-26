@@ -157,7 +157,7 @@ export default styled(FiltersPanel)`
   justify-content: space-between;
   top: ${appHeaderHeightPx}px;
   z-index: 1;
-  background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.8).toHex()};
+  background-color: ${({ theme }) => colord(theme.bg.secondary).alpha(0.9).toHex()};
   backdrop-filter: blur(10px);
 `
 
