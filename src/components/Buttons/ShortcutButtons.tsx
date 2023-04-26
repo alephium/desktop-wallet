@@ -191,6 +191,7 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
   height: 60px;
   color: ${({ theme }) => theme.font.primary};
   box-shadow: none;
+  max-width: initial;
 `
 
 const ButtonText = styled.div`
