@@ -140,7 +140,7 @@ const WalletPassphraseStyled = styled(WalletPassphrase)`
   position: fixed;
   bottom: 5px;
   right: 20px;
-  border: 1px solid ${({ theme }) => theme.border.secondary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
 const ParagraphStyled = styled(Paragraph)`
