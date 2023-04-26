@@ -62,9 +62,9 @@ const SnackbarManager = () => {
 export default SnackbarManager
 
 const getSnackbarStyling = (color: string) => css`
-  background-color: ${colord(color).alpha(0.05).toHex()};
-  border: 1px solid ${colord(color).alpha(0.2).toHex()};
-  color: ${color};
+  background-color: ${colord(color).alpha(0.9).toHex()};
+  border: 1px solid ${colord(color).lighten(0.1).toHex()};
+  color: rgba(255, 255, 255, 0.8);
 `
 
 const SnackbarManagerContainer = styled.div`
@@ -96,7 +96,8 @@ const SnackbarPopup = styled(motion.div)`
   }
 
   &.info {
-    ${({ theme }) => getSnackbarStyling(theme.font.primary)}
+    ${({ theme }) =>
+      theme.name === 'light' ? getSnackbarStyling(theme.bg.contrast) : getSnackbarStyling(theme.bg.background2)}
   }
 
   &.success {

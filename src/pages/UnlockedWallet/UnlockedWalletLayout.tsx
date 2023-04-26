@@ -110,7 +110,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
                 transition={{
                   type: 'spring',
                   stiffness: 700,
-                  damping: 50,
+                  damping: 70,
                   delay: walletNameAppearAfterSeconds
                 }}
               >
