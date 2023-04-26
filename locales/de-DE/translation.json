@@ -412,5 +412,6 @@
   "between": "between",
   "lockTimeConfirmation": "You chose to lock the assets until <1>{{ datetime }}</1>. That is approximately <3>{{ inTimeFromNow }}</3> from now. Are you sure you want to lock the assets until then?",
   "with": "with",
-  "{{ number }} selected": "{{ number }} selected"
+  "{{ number }} selected": "{{ number }} selected",
+  "Contact deleted": "Contact deleted"
 }
