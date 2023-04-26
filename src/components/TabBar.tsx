@@ -94,6 +94,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
   cursor: pointer;
   font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
+  margin-bottom: -1px;
 
   ${({ isActive, theme }) =>
     isActive

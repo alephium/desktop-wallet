@@ -32,6 +32,7 @@ const TableTab = styled(Tab)`
   border: none;
 
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  margin-bottom: 0;
 
   ${({ isActive, theme }) =>
     isActive &&
