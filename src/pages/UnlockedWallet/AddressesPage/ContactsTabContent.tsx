@@ -160,6 +160,7 @@ const Initials = styled.div<{ color: string }>`
 const Name = styled(Truncate)`
   font-size: 18px;
   font-weight: var(--fontWeight-semiBold);
+  max-width: 100%;
 `
 
 const ButtonsRow = styled.div`
