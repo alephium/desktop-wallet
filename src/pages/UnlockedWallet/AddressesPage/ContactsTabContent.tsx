@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { ArrowUp, Pencil } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -35,7 +36,9 @@ import SendModalTransfer from '@/modals/SendModals/Transfer'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
 import { selectAllContacts, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { Contact } from '@/types/contacts'
+import { stringToColour } from '@/utils/colors'
 import { filterContacts } from '@/utils/contacts'
+import { getInitials } from '@/utils/misc'
 
 const ContactsTabContent = () => {
   const { t } = useTranslation()
@@ -88,6 +91,7 @@ const ContactsTabContent = () => {
           {filteredContacts.map((contact) => (
             <Card key={contact.address}>
               <ContentRow>
+                <Initials color={stringToColour(contact.address)}>{getInitials(contact.name)}</Initials>
                 <Name>{contact.name}</Name>
                 <HashEllipsedStyled hash={contact.address} />
               </ContentRow>
@@ -132,14 +136,30 @@ const ContactsTabContent = () => {
 export default ContactsTabContent
 
 const ContentRow = styled.div`
-  padding: 60px 26px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4);
+  gap: 20px;
   text-align: center;
+`
+
+const Initials = styled.div<{ color: string }>`
+  display: flex;
+  height: 80px;
+  width: 80px;
+  font-size: 16px;
+  background-color: ${({ color }) => colord(color).alpha(0.08).toHex()};
+  border: 1px solid ${({ color }) => colord(color).alpha(0.2).toHex()};
+  color: ${({ color }) => colord(color).alpha(0.8).toHex()};
+  border-radius: var(--radius-full);
+  align-items: center;
+  justify-content: center;
 `
 
 const Name = styled(Truncate)`
   font-size: 18px;
   font-weight: var(--fontWeight-semiBold);
-  margin-bottom: 20px;
 `
 
 const ButtonsRow = styled.div`
@@ -149,6 +169,8 @@ const ButtonsRow = styled.div`
 const HashEllipsedStyled = styled(HashEllipsed)`
   font-size: 16px;
   font-weight: var(--fontWeight-medium);
+  width: 65%;
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const BottomButton = styled(Button)`
