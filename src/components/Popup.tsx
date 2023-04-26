@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { fadeInOutScaleFast, fastTransition } from '@/animations'
@@ -44,6 +44,12 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
   const contentRef = useRef<HTMLDivElement>(null)
 
   const [hookOffset, setHookOffset] = useState<Coordinates>()
+
+  const handleHookClick = (e: MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
 
   useEffect(() => {
     if (windowHeight && windowWidth) {
@@ -91,7 +97,11 @@ const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, 
   return (
     <ModalContainer onClose={onClose}>
       {hookCoordinates ? (
-        <Hook hookCoordinates={hookCoordinates} contentWidth={contentRef.current?.clientWidth || 0}>
+        <Hook
+          hookCoordinates={hookCoordinates}
+          contentWidth={contentRef.current?.clientWidth || 0}
+          onClick={handleHookClick}
+        >
           {PopupContent}
         </Hook>
       ) : (
