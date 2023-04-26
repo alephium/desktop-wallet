@@ -164,7 +164,7 @@ const TableHeaderRow = styled(TableRow)`
   justify-content: space-between;
   height: 55px;
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   padding-right: var(--spacing-2);
 `
 

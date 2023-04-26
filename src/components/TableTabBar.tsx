@@ -31,7 +31,7 @@ const TableTab = styled(Tab)`
   background-color: ${({ isActive, theme }) => (isActive ? theme.bg.primary : theme.bg.secondary)};
   border: none;
 
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 
   ${({ isActive, theme }) =>
     isActive &&

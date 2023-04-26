@@ -77,8 +77,8 @@ export default styled(SideBar)`
   width: ${walletSidebarWidthPx}px;
   padding: ${appHeaderHeightPx}px var(--spacing-4) var(--spacing-4);
 
-  border-right: 1px solid ${({ theme }) => theme.border.secondary};
-  background-color: ${({ theme }) => theme.bg.background2};
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
 `
 
 const BottomButtons = styled.div`
