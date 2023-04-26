@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Moon, Sun } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
@@ -29,7 +30,10 @@ interface ThemeSwitcherProps {
   className?: string
 }
 
-const switcherSize = 30
+const switcherSize = 32
+
+const lightColor = '#fab01e'
+const darkColor = '#422c08'
 
 const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   const theme = useAppSelector((state) => state.global.theme)
@@ -52,11 +56,11 @@ const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
       onKeyDown={(e) => onEnterOrSpace(e, handleThemeToggle)}
     >
       <ThemeRotatingContainer animate={{ rotate: isDark ? 0 : 180 }}>
-        <ThemeIconContainer style={{ backgroundColor: 'var(--color-purple)' }}>
-          <Moon size={20} />
+        <ThemeIconContainer style={{ backgroundColor: colord(darkColor).alpha(0.4).toHex() }}>
+          <Moon size={20} stroke={lightColor} />
         </ThemeIconContainer>
-        <ThemeIconContainer style={{ backgroundColor: 'var(--color-orange)' }}>
-          <Sun size={20} />
+        <ThemeIconContainer style={{ backgroundColor: colord(lightColor).alpha(0.1).toHex() }}>
+          <Sun size={20} stroke={lightColor} />
         </ThemeIconContainer>
       </ThemeRotatingContainer>
     </div>
@@ -87,8 +91,4 @@ const ThemeIconContainer = styled.div`
   height: ${switcherSize}px;
   width: ${switcherSize}px;
   border-radius: ${switcherSize}px;
-
-  svg {
-    stroke: var(--color-white);
-  }
 `
