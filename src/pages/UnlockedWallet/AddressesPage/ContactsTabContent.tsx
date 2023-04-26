@@ -192,4 +192,8 @@ const Text = styled.div`
 
 const ContactBox = styled(Box)`
   padding: var(--spacing-4);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
 `
