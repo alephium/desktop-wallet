@@ -181,12 +181,8 @@ const BottomButton = styled(Button)`
   flex-direction: column;
 `
 
-const SendButton = styled(BottomButton)`
-  border-bottom-left-radius: var(--radius-huge);
-`
-const EditButton = styled(BottomButton)`
-  border-bottom-right-radius: var(--radius-huge);
-`
+const SendButton = styled(BottomButton)``
+const EditButton = styled(BottomButton)``
 
 const ButtonText = styled.div`
   font-size: 12px;

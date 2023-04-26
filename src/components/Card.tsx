@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 const Card = styled(motion.div)<{ isPlaceholder?: boolean }>`
   width: 230px;
@@ -25,12 +25,7 @@ const Card = styled(motion.div)<{ isPlaceholder?: boolean }>`
   border-radius: var(--radius-big);
   background-color: ${({ theme, isPlaceholder }) => (isPlaceholder ? theme.bg.secondary : theme.bg.primary)};
   box-shadow: ${({ theme }) => theme.shadow.primary};
-
-  ${({ isPlaceholder }) =>
-    !isPlaceholder &&
-    css`
-      cursor: pointer;
-    `}
+  overflow: hidden;
 `
 
 export default Card
