@@ -167,11 +167,12 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
   return !walletConnectClient ? null : showManualInitialization ? (
     <CenteredModal title="WalletConnect" subtitle={t('Connect to a dApp')} onClose={onClose}>
-      <Section inList>
+      <Section>
         <Input
           onChange={(t) => setUri(t.target.value)}
           value={uri}
           label={t('Paste WalletConnect URI copied from the dApp')}
+          heightSize="big"
         />
       </Section>
       <ModalFooterButtons>

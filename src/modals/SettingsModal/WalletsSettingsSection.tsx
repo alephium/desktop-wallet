@@ -153,22 +153,22 @@ const WalletItem = ({ wallet, isCurrent, onWalletDelete }: WalletItemProps) => {
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {wallet.name}
-        {isCurrent && <CheckMark />}
       </WalletName>
-      {isShowingDeleteButton && (
-        <Button
-          aria-label={t('Delete')}
-          tabIndex={0}
-          squared
-          role="secondary"
-          transparent
-          borderless
-          onClick={() => onWalletDelete(wallet)}
-          onBlur={() => setIsShowingDeleteButton(false)}
-        >
-          <Trash size={15} />
-        </Button>
-      )}
+      {isCurrent && <CheckMark />}
+
+      <ButtonStyled
+        aria-label={t('Delete')}
+        tabIndex={0}
+        squared
+        role="secondary"
+        transparent
+        borderless
+        onClick={() => onWalletDelete(wallet)}
+        onBlur={() => setIsShowingDeleteButton(false)}
+        disabled={!isShowingDeleteButton}
+        isVisible={isShowingDeleteButton}
+        Icon={Trash}
+      />
     </WalletItemContainer>
   )
 }
@@ -180,6 +180,7 @@ const WalletItemContainer = styled.div`
   align-items: center;
   height: var(--inputHeight);
   padding: 0 var(--spacing-2);
+  gap: 10px;
 
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
@@ -208,4 +209,8 @@ const CurrentWalletBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`
+
+const ButtonStyled = styled(Button)<{ isVisible: boolean }>`
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)} !important;
 `

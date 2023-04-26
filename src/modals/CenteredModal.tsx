@@ -210,7 +210,7 @@ const ModalFooterButtonStyled = styled(Button)`
 `
 
 const ModalSubtitle = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
+  color: ${({ theme }) => theme.font.tertiary};
   font-size: 14px;
   margin-top: var(--spacing-1);
 `

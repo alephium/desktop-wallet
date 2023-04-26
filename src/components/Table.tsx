@@ -97,8 +97,8 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 18px 20px;
-  min-height: 52px;
+  padding: 19px 20px;
+  min-height: 55px;
 `
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
@@ -164,7 +164,7 @@ const TableHeaderRow = styled(TableRow)`
   justify-content: space-between;
   height: 55px;
   background-color: ${({ theme }) => theme.bg.secondary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   padding-right: var(--spacing-2);
 `
 
@@ -198,6 +198,8 @@ const ExpandRowStyled = styled.div`
   opacity: 0;
   transition: opacity 0.15s ease-out;
 
+  pointer-events: none;
+
   ${({ theme }) => {
     const gradientMaxOpacity = theme.name === 'light' ? 0.05 : 0.25
 
@@ -223,6 +225,7 @@ export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInP
   &:hover {
     ${ExpandRowStyled} {
       opacity: 1;
+      z-index: 1; // Make sure it is displayed above copy btns
     }
   }
 `

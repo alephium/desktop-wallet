@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { fadeIn } from '@/animations'
+import Box from '@/components/Box'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import HashEllipsed from '@/components/HashEllipsed'
@@ -83,35 +84,37 @@ const ContactsTabContent = () => {
         buttonText={newContactButtonText}
         onButtonClick={openContactFormModal}
       >
-        {filteredContacts.map((contact) => (
-          <Card key={contact.address}>
-            <ContentRow>
-              <Name>{contact.name}</Name>
-              <HashEllipsedStyled hash={contact.address} />
-            </ContentRow>
-            <ButtonsRow>
-              <SendButton transparent borderless onClick={() => openSendModal(contact)}>
-                <ArrowUp strokeWidth={1} />
-                <ButtonText>{t('Send')}</ButtonText>
-              </SendButton>
-              <Separator />
-              <EditButton transparent borderless onClick={() => openEditContactModal(contact)}>
-                <Pencil strokeWidth={1} />
-                <ButtonText>{t('Edit')}</ButtonText>
-              </EditButton>
-            </ButtonsRow>
-          </Card>
-        ))}
-        {contacts.length === 0 && (
-          <PlaceholderCard layout isPlaceholder>
-            <Text>{t('Create contacts to avoid mistakes when sending transactions!')}</Text>
-            <motion.div>
-              <Button role="secondary" short onClick={openContactFormModal}>
-                {newContactButtonText}
-              </Button>
-            </motion.div>
-          </PlaceholderCard>
-        )}
+        <ContactBox>
+          {filteredContacts.map((contact) => (
+            <Card key={contact.address}>
+              <ContentRow>
+                <Name>{contact.name}</Name>
+                <HashEllipsedStyled hash={contact.address} />
+              </ContentRow>
+              <ButtonsRow>
+                <SendButton transparent borderless onClick={() => openSendModal(contact)}>
+                  <ArrowUp strokeWidth={1} />
+                  <ButtonText>{t('Send')}</ButtonText>
+                </SendButton>
+                <Separator />
+                <EditButton transparent borderless onClick={() => openEditContactModal(contact)}>
+                  <Pencil strokeWidth={1} />
+                  <ButtonText>{t('Edit')}</ButtonText>
+                </EditButton>
+              </ButtonsRow>
+            </Card>
+          ))}
+          {contacts.length === 0 && (
+            <PlaceholderCard layout isPlaceholder>
+              <Text>{t('Create contacts to avoid mistakes when sending transactions!')}</Text>
+              <motion.div>
+                <Button role="secondary" short onClick={openContactFormModal}>
+                  {newContactButtonText}
+                </Button>
+              </motion.div>
+            </PlaceholderCard>
+          )}
+        </ContactBox>
         <ModalPortal>
           {isContactFormModalOpen && <ContactFormModal contact={selectedContact} onClose={closeContactFormModal} />}
           {isSendModalOpen && defaultAddress && (
@@ -185,4 +188,8 @@ const Text = styled.div`
   text-align: center;
   line-height: 1.3;
   margin-bottom: 20px;
+`
+
+const ContactBox = styled(Box)`
+  padding: var(--spacing-4);
 `

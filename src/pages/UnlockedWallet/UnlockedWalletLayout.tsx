@@ -110,7 +110,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
                 transition={{
                   type: 'spring',
                   stiffness: 700,
-                  damping: 50,
+                  damping: 70,
                   delay: walletNameAppearAfterSeconds
                 }}
               >
@@ -214,7 +214,7 @@ const MainContent = styled.main`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.bg.background2};
+  background-color: ${({ theme }) => theme.bg.background1};
   position: relative;
 `
 

@@ -40,9 +40,7 @@ export const GlobalStyle = createGlobalStyle`
 
   :root {
     --color-white: #fff;
-    --color-orange: #fab01e;
     --color-grey: #646775;
-    --color-purple: #3A0595;
 
     /* spacial system of 5px linear scale */
     --spacing-1: 5px;
@@ -64,7 +62,7 @@ export const GlobalStyle = createGlobalStyle`
     --fontWeight-normal: 400;
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
-    --fontWeight-bold: 800;
+    --fontWeight-bold: 700;
 
     --inputHeight: 55px;
     --tableCellHeight: 47px;

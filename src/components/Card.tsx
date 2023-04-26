@@ -28,7 +28,6 @@ const Card = styled(motion.div)<{ isPlaceholder?: boolean }>`
   ${({ isPlaceholder }) =>
     !isPlaceholder &&
     css`
-      box-shadow: 0px 7px 15px 0px rgba(0, 0, 0, 0.15);
       cursor: pointer;
     `}
 `

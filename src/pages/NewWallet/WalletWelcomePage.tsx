@@ -86,7 +86,7 @@ const WalletWelcomePage = () => {
         <ReadyParagraph>{t`Everything is ready!`}</ReadyParagraph>
         <SubParagraph>{t`Welcome to Alephium.`}</SubParagraph>
       </Section>
-      <FooterActionsContainer apparitionDelay={0.3}>
+      <FooterActionsContainer>
         <Button onClick={onButtonClick} submit>
           {t`Let's go!`}
         </Button>

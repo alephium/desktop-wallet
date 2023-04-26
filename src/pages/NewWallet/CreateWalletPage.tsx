@@ -127,7 +127,7 @@ const CreateWalletPage = ({ isRestoring = false }: { isRestoring?: boolean }) =>
           <WarningNote>{t("Alephium doesn't have access to your wallet.\nYou are the only owner.")}</WarningNote>
         </Section>
       </PanelContentContainer>
-      <FooterActionsContainer apparitionDelay={0.3}>
+      <FooterActionsContainer>
         <Button role="secondary" onClick={onButtonBack}>
           {t('Back')}
         </Button>

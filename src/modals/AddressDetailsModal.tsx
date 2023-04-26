@@ -153,15 +153,14 @@ const StyledAmountsOverviewPanel = styled(AmountsOverviewPanel)`
 
 const AddressBadgeStyled = styled(AddressBadge)`
   font-size: 23px;
-  font-weight: var(--fontWeight-semiBold);
-  max-width: 150px;
+  max-width: 200px;
 `
 
 const Title = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
-  max-width: 300px;
+  font-weight: var(--fontWeight-bold);
 `
 
 const TitleAddressHash = styled(HashEllipsed)`

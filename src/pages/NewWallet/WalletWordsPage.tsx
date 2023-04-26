@@ -70,7 +70,7 @@ const WalletWordsPage = () => {
           />
         </WordsContent>
       </PanelContentContainer>
-      <FooterActionsContainer apparitionDelay={0.3}>
+      <FooterActionsContainer>
         <Button onClick={onButtonNext}>{t`I've copied the words, continue`}</Button>
       </FooterActionsContainer>
     </FloatingPanel>
