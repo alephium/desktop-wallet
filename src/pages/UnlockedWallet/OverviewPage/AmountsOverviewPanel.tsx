@@ -204,7 +204,7 @@ const Panel = styled.div`
   gap: 30px;
   align-items: center;
 
-  padding: 40px 60px 0;
+  padding: 30px 60px;
 `
 
 const Balances = styled.div`
