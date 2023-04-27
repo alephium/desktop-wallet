@@ -19,9 +19,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatChain, isCompatibleAddressGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { AlertCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
+import ActionLink from '@/components/ActionLink'
+import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
@@ -60,12 +64,22 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
   const currentNetwork = useAppSelector((s) => s.network)
+  const navigate = useNavigate()
 
   const [uri, setUri] = useState('')
+  const [signerAddressOptions, setSignerAddressOptions] = useState<Address[]>([])
+  const [signerAddress, setSignerAddress] = useState<Address>()
 
   const group = requiredChainInfo?.addressGroup
-  const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
-  const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
+
+  useEffect(() => {
+    const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
+
+    setSignerAddressOptions(addressOptions)
+    setSignerAddress(
+      addressOptions.length > 0 ? addressOptions.find((a) => a.isDefault) ?? addressOptions[0] : undefined
+    )
+  }, [addresses, group])
 
   const handleConnect = () => connectToWalletConnect(uri)
 
@@ -161,9 +175,15 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onClose()
   }
 
+  const handleGoToAddressesPageClick = () => {
+    rejectConnectionAndCloseModal()
+    navigate('/wallet/addresses')
+  }
+
   const showManualInitialization = wcSessionState === 'uninitialized' && addresses.length > 0
-  const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent && signerAddress
+  const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent
   const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
+  const validSignerAddressOption = signerAddress || signerAddressOptions.length > 0
 
   return !walletConnectClient ? null : showManualInitialization ? (
     <CenteredModal title="WalletConnect" subtitle={t('Connect to a dApp')} onClose={onClose}>
@@ -194,20 +214,32 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         <DAppMetadataBox metadata={proposalEvent.params.proposer.metadata} />
       </Section>
       <Section>
-        <AddressSelect
-          label={t('Signer address')}
-          title={t('Select an address to sign with.')}
-          options={addressOptions}
-          defaultAddress={signerAddress}
-          onAddressChange={setSignerAddress}
-          id="from-address"
-        />
+        {validSignerAddressOption ? (
+          <AddressSelect
+            label={t('Signer address')}
+            title={t('Select an address to sign with.')}
+            options={signerAddressOptions}
+            defaultAddress={signerAddress}
+            onAddressChange={setSignerAddress}
+            id="from-address"
+            emptyListPlaceholder={t('There are no addresses in the required group: {{ group }}', { group })}
+          />
+        ) : (
+          <InfoBox importance="warning" Icon={AlertCircle}>
+            {t('There are no addresses in the required group: {{ group }}', { group })}
+            <br />
+            <Trans t={t} i18nKey="generateAddressInGroupMessage">
+              Please, <ActionLink onClick={handleGoToAddressesPageClick}>generate a new address</ActionLink> in this
+              group first.
+            </Trans>
+          </InfoBox>
+        )}
       </Section>
       <ModalFooterButtons>
         <ModalFooterButton role="secondary" onClick={handleReject}>
           {t('Reject')}
         </ModalFooterButton>
-        <ModalFooterButton variant="valid" onClick={handleApprove}>
+        <ModalFooterButton variant="valid" onClick={handleApprove} disabled={!validSignerAddressOption}>
           {t('Approve')}
         </ModalFooterButton>
       </ModalFooterButtons>

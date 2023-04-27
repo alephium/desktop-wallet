@@ -46,6 +46,7 @@ interface AddressSelectProps {
   simpleMode?: boolean
   noMargin?: boolean
   className?: string
+  emptyListPlaceholder?: string
 }
 
 function AddressSelect({
@@ -59,7 +60,8 @@ function AddressSelect({
   onAddressChange,
   hideAddressesWithoutAssets,
   noMargin,
-  simpleMode = false
+  simpleMode = false,
+  emptyListPlaceholder
 }: AddressSelectProps) {
   const { t } = useTranslation()
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
@@ -70,8 +72,16 @@ function AddressSelect({
   const addresses = hideAddressesWithoutAssets ? filterAddressesWithoutAssets(options) : options
   const [filteredAddresses, setFilteredAddresses] = useState(addresses)
   const defaultAddressHasAssets = defaultAddress && addressHasAssets(defaultAddress)
-  const initialAddress =
-    hideAddressesWithoutAssets && !defaultAddressHasAssets && addresses.length > 0 ? addresses[0] : defaultAddress
+
+  let initialAddress = defaultAddress
+  if (hideAddressesWithoutAssets) {
+    if (!defaultAddressHasAssets && addresses.length > 0) {
+      initialAddress = addresses[0]
+    }
+  } else if (!initialAddress && addresses.length > 0) {
+    initialAddress = addresses[0]
+  }
+
   const [address, setAddress] = useState(initialAddress)
 
   const addressSelectOptions: SelectOption<AddressHash>[] = addresses.map((address) => ({
@@ -162,9 +172,14 @@ function AddressSelect({
               const address = addresses.find((address) => address.hash === option.value)
               if (address) return <SelectOptionAddress address={address} isSelected={isSelected} />
             }}
-            emptyListPlaceholder={t(
-              'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'
-            )}
+            emptyListPlaceholder={
+              emptyListPlaceholder ||
+              (hideAddressesWithoutAssets
+                ? t(
+                    'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'
+                  )
+                : t('There are no available addresses.'))
+            }
           />
         )}
       </ModalPortal>
