@@ -44,7 +44,7 @@ const DAppMetadataBox = ({ metadata, className }: DAppMetadataBoxProps) => {
       <HorizontalDivider />
       <InfoRow label={t('Network')}>{requiredChainInfo?.networkId}</InfoRow>
       <HorizontalDivider />
-      <InfoRow label={t('Address group')}>{requiredChainInfo?.chainGroup?.toString() ?? t('all')}</InfoRow>
+      <InfoRow label={t('Address group')}>{requiredChainInfo?.addressGroup?.toString() ?? t('all')}</InfoRow>
     </Box>
   )
 }
