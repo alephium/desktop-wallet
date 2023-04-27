@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getHumanReadableError } from '@alephium/sdk'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
-import { ArrowUp, Pencil } from 'lucide-react'
+import { ArrowUp, Pencil, UserMinus } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -26,15 +28,19 @@ import styled from 'styled-components'
 import { fadeIn } from '@/animations'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
+import DeleteButton from '@/components/Buttons/DeleteButton'
 import Card from '@/components/Card'
 import HashEllipsed from '@/components/HashEllipsed'
 import Truncate from '@/components/Truncate'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ConfirmModal from '@/modals/ConfirmModal'
 import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/Transfer'
 import TabContent from '@/pages/UnlockedWallet/AddressesPage/TabContent'
+import { contactDeletedFromPeristentStorage, contactDeletionFailed } from '@/storage/addresses/addressesActions'
 import { selectAllContacts, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { Contact } from '@/types/contacts'
 import { stringToColour } from '@/utils/colors'
 import { filterContacts } from '@/utils/contacts'
@@ -44,12 +50,15 @@ const ContactsTabContent = () => {
   const { t } = useTranslation()
   const contacts = useAppSelector(selectAllContacts)
   const defaultAddress = useAppSelector(selectDefaultAddress)
+  const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
   const [filteredContacts, setFilteredContacts] = useState(contacts)
   const [searchInput, setSearchInput] = useState('')
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
+  const [contactToDelete, setContactToDelete] = useState<Contact>()
 
   const newContactButtonText = `+ ${t('New contact')}`
 
@@ -79,6 +88,18 @@ const ContactsTabContent = () => {
 
   const openContactFormModal = () => setIsContactFormModalOpen(true)
 
+  const handleDeleteContact = (contact: Contact) => {
+    try {
+      ContactsStorage.deleteContact(contact)
+      dispatch(contactDeletedFromPeristentStorage(contact.id))
+      posthog?.capture('Deleted contact')
+    } catch (e) {
+      dispatch(contactDeletionFailed(getHumanReadableError(e, t('Could not delete contact.'))))
+    } finally {
+      setContactToDelete(undefined)
+    }
+  }
+
   return (
     <motion.div {...fadeIn}>
       <TabContent
@@ -89,11 +110,12 @@ const ContactsTabContent = () => {
       >
         <ContactBox>
           {filteredContacts.map((contact) => (
-            <Card key={contact.address}>
+            <ContactCard key={contact.address}>
               <ContentRow>
                 <Initials color={stringToColour(contact.address)}>{getInitials(contact.name)}</Initials>
                 <Name>{contact.name}</Name>
                 <HashEllipsedStyled hash={contact.address} />
+                <DeleteButton onClick={() => setContactToDelete(contact)} />
               </ContentRow>
               <ButtonsRow>
                 <SendButton transparent borderless onClick={() => openSendModal(contact)}>
@@ -106,7 +128,7 @@ const ContactsTabContent = () => {
                   <ButtonText>{t('Edit')}</ButtonText>
                 </EditButton>
               </ButtonsRow>
-            </Card>
+            </ContactCard>
           ))}
           {contacts.length === 0 && (
             <PlaceholderCard layout isPlaceholder>
@@ -127,6 +149,18 @@ const ContactsTabContent = () => {
               onClose={closeSendModal}
             />
           )}
+          {contactToDelete && (
+            <ConfirmModal
+              onConfirm={() => handleDeleteContact(contactToDelete)}
+              onClose={() => setContactToDelete(undefined)}
+              Icon={UserMinus}
+              narrow
+            >
+              {t('Are you sure you want to remove "{{ contactName }}" from your contact list?', {
+                contactName: contactToDelete.name
+              })}
+            </ConfirmModal>
+          )}
         </ModalPortal>
       </TabContent>
     </motion.div>
@@ -142,6 +176,17 @@ const ContentRow = styled.div`
   padding: var(--spacing-4);
   gap: 20px;
   text-align: center;
+  position: relative;
+
+  &:hover {
+    ${DeleteButton} {
+      opacity: 1;
+    }
+  }
+`
+
+const ContactCard = styled(Card)`
+  overflow: initial;
 `
 
 const Initials = styled.div<{ color: string }>`
@@ -165,6 +210,9 @@ const Name = styled(Truncate)`
 
 const ButtonsRow = styled.div`
   display: flex;
+  overflow: hidden;
+  border-bottom-left-radius: var(--radius-big);
+  border-bottom-right-radius: var(--radius-big);
 `
 
 const HashEllipsedStyled = styled(HashEllipsed)`

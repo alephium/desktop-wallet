@@ -19,7 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import i18n from '@/i18n'
-import { syncAddressesData } from '@/storage/addresses/addressesActions'
+import {
+  contactDeletedFromPeristentStorage,
+  contactDeletionFailed,
+  syncAddressesData
+} from '@/storage/addresses/addressesActions'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
@@ -89,12 +93,16 @@ const snackbarSlice = createSlice({
       .addCase(contactStoredInPersistentStorage, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Contact saved'), type: 'success' })
       )
+      .addCase(contactDeletedFromPeristentStorage, (state) =>
+        displayMessageImmediately(state, { text: i18n.t('Contact deleted'), type: 'success' })
+      )
       .addCase(customNetworkSettingsSaved, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Custom network settings saved.') })
       )
       .addCase(transactionBuildFailed, displayError)
       .addCase(transactionSendFailed, displayError)
       .addCase(contactStorageFailed, displayError)
+      .addCase(contactDeletionFailed, displayError)
       .addCase(walletCreationFailed, displayError)
       .addCase(transactionsSendSucceeded, (state, action) => {
         const { nbOfTransactionsSent } = action.payload

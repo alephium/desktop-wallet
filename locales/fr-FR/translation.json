@@ -412,5 +412,8 @@
   "welcomeScreenPassphraseMessage": "Si vous désirez utiliser une <1>phrase de passe</1>, verrouillez votre portefeuille fraîchement créé.",
   "with": "avec",
   "{{ amount }} words entered": "{{ amount }} mots inscrits",
-  "{{ number }} selected": "{{ number }} sélectionnés"
+  "{{ number }} selected": "{{ number }} sélectionnés",
+  "Contact deleted": "Contact deleted",
+  "Could not delete contact.": "Could not delete contact.",
+  "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Are you sure you want to remove \"{{ contactName }}\" from your contact list?"
 }

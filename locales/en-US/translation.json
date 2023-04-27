@@ -412,5 +412,8 @@
   "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
   "with": "with",
   "{{ amount }} words entered": "{{ amount }} words entered",
-  "{{ number }} selected": "{{ number }} selected"
+  "{{ number }} selected": "{{ number }} selected",
+  "Contact deleted": "Contact deleted",
+  "Could not delete contact.": "Could not delete contact.",
+  "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Are you sure you want to remove \"{{ contactName }}\" from your contact list?"
 }

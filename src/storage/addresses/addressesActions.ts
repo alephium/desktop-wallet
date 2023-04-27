@@ -193,3 +193,5 @@ export const contactDeletedFromPeristentStorage = createAction<Contact['id']>(
 )
 
 export const contactStorageFailed = createAction<Message>('contacts/contactStorageFailed')
+
+export const contactDeletionFailed = createAction<Message>('contacts/contactDeletionFailed')
