@@ -178,12 +178,16 @@ export const ExpandRow = ({ onClick }: { onClick: () => void }) => {
 
   return (
     <ExpandRowStyled>
-      <Button role="secondary" onClick={onClick} Icon={ChevronsUpDown} short>
+      <ExpandButton role="secondary" onClick={onClick} Icon={ChevronsUpDown} short>
         {t('Expand')}
-      </Button>
+      </ExpandButton>
     </ExpandRowStyled>
   )
 }
+
+const ExpandButton = styled(Button)`
+  opacity: 0;
+`
 
 const ExpandRowStyled = styled.div`
   position: absolute;
@@ -195,7 +199,7 @@ const ExpandRowStyled = styled.div`
   display: flex;
   align-items: flex-end;
 
-  opacity: 0;
+  opacity: 0.8;
   transition: opacity 0.15s ease-out;
 
   pointer-events: none;
@@ -226,6 +230,10 @@ export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInP
     ${ExpandRowStyled} {
       opacity: 1;
       z-index: 1; // Make sure it is displayed above copy btns
+    }
+
+    ${ExpandButton} {
+      opacity: 1;
     }
   }
 `

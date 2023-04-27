@@ -16,13 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import styled from 'styled-components'
-
 import AppHeader from '@/components/AppHeader'
-import FloatingLogo from '@/components/FloatingLogo'
-import Scrollbar from '@/components/Scrollbar'
 import { StepsContextProvider } from '@/contexts/steps'
 import { WalletContextProvider } from '@/contexts/wallet'
+import LockedWalletLayout from '@/pages/LockedWalletLayout'
 
 interface NewWalletLayoutProps {
   steps: JSX.Element[]
@@ -30,21 +27,12 @@ interface NewWalletLayoutProps {
 }
 
 const NewWalletLayout = ({ steps, baseUrl }: NewWalletLayoutProps) => (
-  <WalletContextProvider>
-    <Scrollbar>
-      <Container>
-        <FloatingLogo />
-        <StepsContextProvider stepElements={steps} baseUrl={baseUrl} />
-        <AppHeader invisible />
-      </Container>
-    </Scrollbar>
-  </WalletContextProvider>
+  <LockedWalletLayout>
+    <WalletContextProvider>
+      <StepsContextProvider stepElements={steps} baseUrl={baseUrl} />
+      <AppHeader invisible />
+    </WalletContextProvider>
+  </LockedWalletLayout>
 )
 
 export default NewWalletLayout
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  min-height: 100%;
-`

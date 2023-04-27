@@ -96,6 +96,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
 
+  const isRequestToApproveContractCall = initialStep === 'info-check'
+
   useEffect(() => {
     if (!consolidationRequired || !transactionData) return
 
@@ -148,20 +150,42 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
         } else {
-          dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
+          const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
+
+          dispatch(transactionBuildFailed(errorMessage))
+
+          if (isRequestToApproveContractCall) {
+            if (requestEvent)
+              onSessionRequestError(requestEvent, {
+                message: errorMessage,
+                code: WALLETCONNECT_ERRORS.TRANSACTION_BUILD_FAILED
+              })
+
+            onClose()
+          }
         }
       }
 
       setIsLoading(false)
     },
-    [buildTransaction, dispatch, isConsolidateUTXOsModalVisible, t, txContext]
+    [
+      buildTransaction,
+      dispatch,
+      isConsolidateUTXOsModalVisible,
+      isRequestToApproveContractCall,
+      onClose,
+      onSessionRequestError,
+      requestEvent,
+      t,
+      txContext
+    ]
   )
 
   useEffect(() => {
-    if (initialStep === 'info-check' && transactionData) {
+    if (isRequestToApproveContractCall && transactionData) {
       buildTransactionExtended(transactionData)
     }
-  }, [buildTransactionExtended, initialStep, transactionData])
+  }, [buildTransactionExtended, isRequestToApproveContractCall, transactionData])
 
   const onCloseExtended = useCallback(() => {
     onClose()
@@ -228,6 +252,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       onBack={onBackCallback}
       focusMode
       noPadding
+      disableBack={isRequestToApproveContractCall}
     >
       <StepsProgress currentStep={step} isContract={isContract} />
       {step === 'addresses' && (

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -237,6 +237,8 @@ if (!gotTheLock) {
     ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
     ipcMain.handle('app:hide', () => app.hide())
+
+    ipcMain.handle('app:show', () => mainWindow.show())
 
     ipcMain.handle('app:getSystemLanguage', () => {
       const preferedLanguages = app.getPreferredSystemLanguages()

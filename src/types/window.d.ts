@@ -46,6 +46,7 @@ export interface AlephiumWindow extends Window {
     }
     app: {
       hide: () => void
+      show: () => void
       getSystemLanguage: () => Promise<string | undefined>
     }
   }

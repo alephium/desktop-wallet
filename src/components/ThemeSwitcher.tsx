@@ -55,7 +55,7 @@ const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
       tabIndex={0}
       onKeyDown={(e) => onEnterOrSpace(e, handleThemeToggle)}
     >
-      <ThemeRotatingContainer animate={{ rotate: isDark ? 0 : 180 }}>
+      <ThemeRotatingContainer animate={{ rotate: isDark ? 0 : 180 }} initial={{ rotate: isDark ? 0 : 180 }}>
         <ThemeIconContainer style={{ backgroundColor: colord(darkColor).alpha(0.4).toHex() }}>
           <Moon size={20} stroke={lightColor} />
         </ThemeIconContainer>

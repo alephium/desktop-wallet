@@ -90,6 +90,9 @@ const initialContext: WalletConnectContextProps = {
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
 
+const _window = window as unknown as AlephiumWindow
+const electron = _window.electron
+
 export const WalletConnectContextProvider: FC = ({ children }) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
@@ -181,6 +184,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         } else if (modalType === TxType.SCRIPT) {
           setIsCallScriptSendModalOpen(true)
         }
+
+        electron?.app.show()
       }
 
       const {
@@ -337,8 +342,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
   useEffect(() => {
-    const _window = window as unknown as AlephiumWindow
-    _window.electron?.walletConnect.onConnect((uri) => {
+    electron?.walletConnect.onConnect((uri) => {
       connectToWalletConnect(uri)
     })
   }, [connectToWalletConnect])
