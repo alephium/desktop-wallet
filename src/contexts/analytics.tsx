@@ -34,6 +34,17 @@ const options: Partial<PostHogConfig> = {
   disable_persistence: true,
   disable_cookie: true,
   ip: false,
+  sanitize_properties: (props) => {
+    props['$current_url'] = ''
+    props['$host'] = ''
+    props['$referrer'] = ''
+    props['$referring_domain'] = ''
+    props['$pathname'] = ''
+    props['$device_type'] = ''
+    props['$browser'] = ''
+
+    return props
+  },
   loaded(posthog) {
     const { analytics } = SettingsStorage.load('general') as GeneralSettings
 
