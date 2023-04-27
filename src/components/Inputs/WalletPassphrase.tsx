@@ -117,7 +117,7 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
 export default WalletPassphrase
 
 const Container = styled.div<{ isOpen: boolean }>`
-  max-width: 400px;
+  max-width: 350px;
 
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0.3)};
   transition: opacity 0.2s ease-out;
