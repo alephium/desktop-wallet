@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatChain, isCompatibleChainGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
+import { formatChain, isCompatibleAddressGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
 import { useState } from 'react'
@@ -63,7 +63,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
   const [uri, setUri] = useState('')
 
-  const group = requiredChainInfo?.chainGroup
+  const group = requiredChainInfo?.addressGroup
   const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
   const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
 
@@ -100,14 +100,14 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         )
       )
 
-    if (!isCompatibleChainGroup(signerAddress.group, requiredChain.chainGroup))
+    if (!isCompatibleAddressGroup(signerAddress.group, requiredChain.addressGroup))
       return dispatch(
         walletConnectProposalApprovalFailed(
           t(
             'The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})',
             {
               addressGroup: signerAddress.group,
-              walletConnectGroup: requiredChain.chainGroup
+              walletConnectGroup: requiredChain.addressGroup
             }
           )
         )
@@ -118,7 +118,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         methods: requiredNamespace.methods,
         events: requiredNamespace.events,
         accounts: [
-          `${formatChain(requiredChain.networkId, requiredChain.chainGroup)}:${signerAddress.publicKey}/default`
+          `${formatChain(requiredChain.networkId, requiredChain.addressGroup)}:${signerAddress.publicKey}/default`
         ]
       }
     }

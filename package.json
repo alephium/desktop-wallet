@@ -35,8 +35,8 @@
   "devDependencies": {
     "@alephium/sdk": "0.6.4-rc.1",
     "@alephium/token-list": "^0.0.7",
-    "@alephium/walletconnect-provider": "^0.10.0",
-    "@alephium/web3": "^0.10.0",
+    "@alephium/walletconnect-provider": "^0.11.0",
+    "@alephium/web3": "^0.11.0",
     "@electron/notarize": "^1.2.3",
     "@json-rpc-tools/utils": "^1.7.6",
     "@reduxjs/toolkit": "^1.9.1",

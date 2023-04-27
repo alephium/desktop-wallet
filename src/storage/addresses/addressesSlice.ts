@@ -195,13 +195,7 @@ const addressesSlice = createSlice({
       })
       .addCase(walletSaved, (state, action) => addInitialAddress(state, action.payload.initialAddress))
       .addCase(walletUnlocked, addPassphraseInitialAddress)
-      .addCase(walletSwitched, (_, action) => {
-        const clearedState = { ...initialState }
-
-        addPassphraseInitialAddress(clearedState, action)
-
-        return clearedState
-      })
+      .addCase(walletSwitched, (_, action) => addPassphraseInitialAddress({ ...initialState }, action))
       .addCase(walletLocked, () => initialState)
       .addCase(activeWalletDeleted, () => initialState)
       .addCase(networkPresetSwitched, clearAddressesNetworkData)
@@ -266,16 +260,16 @@ const clearAddressesNetworkData = (state: AddressesState) => {
 }
 
 const addInitialAddress = (state: AddressesState, address: AddressBase) => {
-  addressesAdapter.setAll(state, [])
-  addressesAdapter.addOne(state, getDefaultAddressState(address))
+  addressesAdapter.removeAll(state)
   state.status = 'uninitialized'
+  return addressesAdapter.addOne(state, getDefaultAddressState(address))
 }
 
 const addPassphraseInitialAddress = (state: AddressesState, action: PayloadAction<UnlockedWallet>) => {
   const { wallet, initialAddress } = action.payload
 
   if (wallet.isPassphraseUsed)
-    addInitialAddress(state, {
+    return addInitialAddress(state, {
       ...initialAddress,
       ...getInitialAddressSettings()
     })
