@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getHumanReadableError } from '@alephium/sdk'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
-import { ArrowUp, Pencil } from 'lucide-react'
+import { ArrowUp, Pencil, UserMinus } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,6 +33,7 @@ import Card from '@/components/Card'
 import HashEllipsed from '@/components/HashEllipsed'
 import Truncate from '@/components/Truncate'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ConfirmModal from '@/modals/ConfirmModal'
 import ContactFormModal from '@/modals/ContactFormModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalTransfer from '@/modals/SendModals/Transfer'
@@ -57,6 +58,7 @@ const ContactsTabContent = () => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isContactFormModalOpen, setIsContactFormModalOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact>()
+  const [contactToDelete, setContactToDelete] = useState<Contact>()
 
   const newContactButtonText = `+ ${t('New contact')}`
 
@@ -93,6 +95,8 @@ const ContactsTabContent = () => {
       posthog?.capture('Deleted contact')
     } catch (e) {
       dispatch(contactDeletionFailed(getHumanReadableError(e, t('Could not delete contact.'))))
+    } finally {
+      setContactToDelete(undefined)
     }
   }
 
@@ -111,7 +115,7 @@ const ContactsTabContent = () => {
                 <Initials color={stringToColour(contact.address)}>{getInitials(contact.name)}</Initials>
                 <Name>{contact.name}</Name>
                 <HashEllipsedStyled hash={contact.address} />
-                <DeleteButton onClick={() => handleDeleteContact(contact)} />
+                <DeleteButton onClick={() => setContactToDelete(contact)} />
               </ContentRow>
               <ButtonsRow>
                 <SendButton transparent borderless onClick={() => openSendModal(contact)}>
@@ -144,6 +148,17 @@ const ContactsTabContent = () => {
               initialTxData={{ fromAddress: defaultAddress, toAddress: selectedContact?.address }}
               onClose={closeSendModal}
             />
+          )}
+          {contactToDelete && (
+            <ConfirmModal
+              onConfirm={() => handleDeleteContact(contactToDelete)}
+              onClose={() => setContactToDelete(undefined)}
+              Icon={UserMinus}
+            >
+              {t('Are you sure you want to remove "{{ contactName }}" from your contact list?', {
+                contactName: contactToDelete.name
+              })}
+            </ConfirmModal>
           )}
         </ModalPortal>
       </TabContent>
