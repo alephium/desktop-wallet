@@ -154,6 +154,7 @@ const ContactsTabContent = () => {
               onConfirm={() => handleDeleteContact(contactToDelete)}
               onClose={() => setContactToDelete(undefined)}
               Icon={UserMinus}
+              narrow
             >
               {t('Are you sure you want to remove "{{ contactName }}" from your contact list?', {
                 contactName: contactToDelete.name
