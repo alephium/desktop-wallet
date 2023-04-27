@@ -108,7 +108,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const handleAnalyticsToggle = (toggle: boolean) => {
     dispatch(analyticsToggled(toggle))
 
-    if (toggle) {
+    if (toggle && !import.meta.env.DEV) {
       const id = AnalyticsStorage.load()
       posthog?.identify(id)
       posthog?.opt_in_capturing()

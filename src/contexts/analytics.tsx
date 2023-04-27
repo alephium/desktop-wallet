@@ -37,10 +37,13 @@ const options: Partial<PostHogConfig> = {
   loaded(posthog) {
     const { analytics } = SettingsStorage.load('general') as GeneralSettings
 
-    if (analytics) {
+    if (analytics && !import.meta.env.DEV) {
       const id = AnalyticsStorage.load()
 
       posthog.identify(id)
+      posthog.opt_in_capturing()
+    } else {
+      posthog.opt_out_capturing()
     }
   }
 }

@@ -100,7 +100,8 @@ settingsListenerMiddleware.startListening({
     languageChanged,
     systemLanguageMatchSucceeded,
     systemLanguageMatchFailed,
-    walletLockTimeChanged
+    walletLockTimeChanged,
+    analyticsToggled
   ),
   effect: (_, { getState }) => {
     const state = getState() as RootState
