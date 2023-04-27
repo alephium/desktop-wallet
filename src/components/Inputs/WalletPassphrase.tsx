@@ -27,17 +27,18 @@ import ToggleSection from '@/components/ToggleSection'
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
-interface Props {
+interface WalletPassphraseProps {
   onPassphraseConfirmed: (passphrase: string) => void
   setIsPassphraseConfirmed: (match: boolean) => void
   className?: string
 }
 
-const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, className }: Props) => {
+const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, className }: WalletPassphraseProps) => {
   const { t } = useTranslation()
   const [isConsentActive, setIsConsentActive] = useState(false)
   const [value, setValue] = useState('')
   const [confirmValue, setConfirmValue] = useState('')
+  const [isToggleSectionOpen, setIsToggleSectionOpen] = useState(false)
 
   const passphraseIsNotUsed = !value && !confirmValue
   const isPassphraseConfirmed = value === confirmValue && (isConsentActive || passphraseIsNotUsed)
@@ -53,6 +54,8 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
   }, [confirmValue, value])
 
   const onExpandableSectionToggle = (isOpen: boolean) => {
+    setIsToggleSectionOpen(isOpen)
+
     if (!isOpen) {
       if (value) setValue('')
       if (confirmValue) setConfirmValue('')
@@ -61,54 +64,68 @@ const WalletPassphrase = ({ onPassphraseConfirmed, setIsPassphraseConfirmed, cla
   }
 
   return (
-    <ToggleSection
-      title={t('Use optional passphrase')}
-      subtitle={t('Advanced feature')}
-      onClick={onExpandableSectionToggle}
-      shadow
-      className={className}
-    >
-      <InfoBox importance="alert">
-        <p>
-          <Trans t={t} i18nKey="passphraseWarningMessage">
-            <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
-            <br />
-            Use it only if you know what you are doing.
-            <br />
-            Please, read our <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>documentation</ActionLink>
-            to learn about it.
-          </Trans>
-        </p>
-      </InfoBox>
-      <ConsentCheckbox>
-        <input
-          type="checkbox"
-          id="passphrase-consent"
-          checked={isConsentActive}
-          onChange={() => setIsConsentActive(!isConsentActive)}
+    <Container className={className} isOpen={isToggleSectionOpen}>
+      <ToggleSection
+        title={t('Use optional passphrase')}
+        subtitle={t('Advanced feature')}
+        onClick={onExpandableSectionToggle}
+        shadow
+      >
+        <InfoBox importance="alert">
+          <p>
+            <Trans t={t} i18nKey="passphraseWarningMessage">
+              <WarningEmphasis>This is an advanced feature!</WarningEmphasis>
+              <br />
+              Use it only if you know what you are doing.
+              <br />
+              Please, read our <ActionLink onClick={() => openInWebBrowser(links.passphrase)}>documentation</ActionLink>
+              to learn about it.
+            </Trans>
+          </p>
+        </InfoBox>
+        <ConsentCheckbox>
+          <input
+            type="checkbox"
+            id="passphrase-consent"
+            checked={isConsentActive}
+            onChange={() => setIsConsentActive(!isConsentActive)}
+          />
+          <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
+        </ConsentCheckbox>
+        <Input
+          id="optional-passphrase"
+          value={value}
+          label={t`Optional passphrase`}
+          type="password"
+          onChange={(e) => setValue(e.target.value)}
+          disabled={!isConsentActive}
         />
-        <label htmlFor="passphrase-consent">{t`I have read and understood the documentation`}</label>
-      </ConsentCheckbox>
-      <Input
-        id="optional-passphrase"
-        value={value}
-        label={t`Optional passphrase`}
-        type="password"
-        onChange={(e) => setValue(e.target.value)}
-        disabled={!isConsentActive}
-      />
-      <Input
-        id="optional-passphrase-confirm"
-        value={confirmValue}
-        label={t`Confirm passphrase`}
-        type="password"
-        onChange={(e) => setConfirmValue(e.target.value)}
-        disabled={!isConsentActive || !value}
-        error={showConfirmError && t`Passphrases don't match`}
-      />
-    </ToggleSection>
+        <Input
+          id="optional-passphrase-confirm"
+          value={confirmValue}
+          label={t`Confirm passphrase`}
+          type="password"
+          onChange={(e) => setConfirmValue(e.target.value)}
+          disabled={!isConsentActive || !value}
+          error={showConfirmError && t`Passphrases don't match`}
+        />
+      </ToggleSection>
+    </Container>
   )
 }
+
+export default WalletPassphrase
+
+const Container = styled.div<{ isOpen: boolean }>`
+  max-width: 350px;
+
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0.3)};
+  transition: opacity 0.2s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
+`
 
 const WarningEmphasis = styled.strong`
   color: ${({ theme }) => theme.global.alert};
@@ -119,8 +136,4 @@ const ConsentCheckbox = styled.div`
   align-items: center;
   gap: 5px;
   margin-bottom: 16px;
-`
-
-export default styled(WalletPassphrase)`
-  max-width: 400px;
 `
