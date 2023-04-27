@@ -23,11 +23,12 @@ interface WorkerPayload {
     mnemonic: Wallet['mnemonic']
     clientUrl: string
     skipIndexes?: number[]
+    passphrase?: string
   }
 }
 
-self.onmessage = ({ data: { mnemonic, clientUrl, skipIndexes } }: WorkerPayload) => {
-  const { masterKey } = walletImport(mnemonic)
+self.onmessage = ({ data: { mnemonic, passphrase, clientUrl, skipIndexes } }: WorkerPayload) => {
+  const { masterKey } = walletImport(mnemonic, passphrase)
   const client = new ExplorerClient({ baseUrl: clientUrl })
 
   discover(masterKey, client, skipIndexes)

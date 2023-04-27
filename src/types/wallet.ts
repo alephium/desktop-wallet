@@ -24,7 +24,7 @@ export type ActiveWallet = {
   id: string
   name: string
   mnemonic: string
-  isPassphraseUsed?: boolean
+  passphrase?: string
 }
 
 export type GeneratedWallet = {

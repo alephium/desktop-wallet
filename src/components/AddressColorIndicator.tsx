@@ -38,7 +38,7 @@ const AddressColorIndicator = ({
   className
 }: AddressColorIndicatorProps) => {
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
-  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.passphrase)
 
   if (!address) return null
 

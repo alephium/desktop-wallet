@@ -34,7 +34,7 @@ const activeWallet = {
   id: nanoid(),
   name: 'Test wallet',
   mnemonic: testWallet.mnemonic,
-  isPassphraseUsed: false
+  passphrase: undefined
 }
 
 const activeWalletAddressSettings = { index: 0, isMain: true, label: 'test', color: 'blue' }

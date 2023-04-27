@@ -34,7 +34,7 @@ const initialState: ActiveWalletState = {
   id: undefined,
   name: undefined,
   mnemonic: undefined,
-  isPassphraseUsed: undefined
+  passphrase: undefined
 }
 
 const activeWalletSlice = createSlice({

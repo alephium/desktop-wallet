@@ -29,8 +29,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
   store(contact: ContactFormData) {
     const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
 
-    if (encryptedStorageProps.isPassphraseUsed)
-      throw new Error('Cannot use contact feature in passphrase-enabled wallets')
+    if (encryptedStorageProps.passphrase) throw new Error('Cannot use contact feature in passphrase-enabled wallets')
 
     let contactId = contact.id
     const contacts: Contact[] = this.load()
@@ -68,8 +67,7 @@ class ContactsStorage extends PersistentEncryptedStorage {
   deleteContact(contact: Contact) {
     const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
 
-    if (encryptedStorageProps.isPassphraseUsed)
-      throw new Error('Cannot use contact feature in passphrase-enabled wallets')
+    if (encryptedStorageProps.passphrase) throw new Error('Cannot use contact feature in passphrase-enabled wallets')
 
     const contacts: Contact[] = this.load()
     const storedContactIndex = contacts.findIndex((c) => c.id === contact.id)

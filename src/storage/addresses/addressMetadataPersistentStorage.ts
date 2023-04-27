@@ -31,7 +31,7 @@ interface AddressMetadataStorageStoreProps {
 class AddressMetadataStorage extends PersistentEncryptedStorage {
   store({ index, settings }: AddressMetadataStorageStoreProps) {
     const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
-    if (encryptedStorageProps.isPassphraseUsed) return
+    if (encryptedStorageProps.passphrase) return
 
     const addressesMetadata = this.load()
     const existingAddressMetadata: AddressMetadata | undefined = addressesMetadata.find(
