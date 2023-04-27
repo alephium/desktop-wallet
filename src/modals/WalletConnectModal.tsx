@@ -166,10 +166,10 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onSessionDelete()
   }
 
-  const rejectConnectionAndCloseModal = () => {
+  const rejectConnectionAndCloseModal = async () => {
     if (walletConnectClient && proposalEvent) {
       onSessionDelete()
-      walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
+      await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
     }
 
     onClose()
