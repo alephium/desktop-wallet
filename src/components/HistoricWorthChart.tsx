@@ -64,7 +64,9 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const addresses = useAppSelector((s) => selectAddresses(s, addressHash ?? (s.addresses.ids as AddressHash[])))
   const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+
   const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
+
   const theme = useTheme()
 
   const [chartData, setChartData] = useState<DataPoint[]>([])
@@ -166,7 +168,7 @@ const getChartOptions = (
     },
     events,
     animations: {
-      enabled: true,
+      enabled: false,
       easing: 'easeout',
       speed: 500,
       dynamicAnimation: {

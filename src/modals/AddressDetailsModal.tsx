@@ -170,7 +170,7 @@ const TitleAddressHash = styled(HashEllipsed)`
 `
 
 const Content = styled.div`
-  padding: 0 var(--spacing-4) var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-4);
   position: relative;
 `
 

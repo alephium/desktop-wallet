@@ -188,7 +188,7 @@ export const UnlockedWalletPanel = styled.div<{
 
   ${({ top, doubleTop }) =>
     css`
-      padding-top: ${top ? 25 : doubleTop ? 50 : 0}px;
+      padding-top: ${top ? 20 : doubleTop ? 40 : 0}px;
     `}
 
   ${({ bottom }) =>
