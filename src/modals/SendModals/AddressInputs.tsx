@@ -193,7 +193,7 @@ const Name = styled(Truncate)`
 const HashEllipsedStyled = styled(HashEllipsed)`
   margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};
-  max-width: 120px;
+  max-width: 150px;
 `
 
 const ContactRow = styled(motion.div)`

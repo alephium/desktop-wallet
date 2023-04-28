@@ -67,7 +67,12 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
           <LeftSide>
             <AddressColorIndicator addressHash={address.hash} size={30} />
             <Title>
-              <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
+              <AddressBadgeStyled
+                addressHash={address.hash}
+                hideColorIndication
+                disableCopy={!!address.label}
+                truncate
+              />
               {address.label && <TitleAddressHash hash={address.hash} />}
             </Title>
             <Badge short color={theme.font.tertiary} border>
