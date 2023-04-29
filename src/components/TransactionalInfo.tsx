@@ -83,7 +83,7 @@ const TransactionalInfo = ({
       <CellTime>
         <CellArrow>
           <TransactionIcon color={iconBgColor}>
-            <Icon size={16} strokeWidth={3} color={iconColor} />
+            <Icon size={15} strokeWidth={2} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
         <AssetTime>
@@ -125,9 +125,9 @@ const TransactionalInfo = ({
         <HiddenLabel text={direction === 'swap' ? t('and') : t('to')} />
         {!showInternalInflows ? (
           direction === 'swap' ? (
-            <ArrowLeftRight size={16} strokeWidth={3} />
+            <ArrowLeftRight size={15} strokeWidth={2} />
           ) : (
-            <ArrowRightIcon size={16} strokeWidth={3} />
+            <ArrowRightIcon size={15} strokeWidth={2} />
           )
         ) : (
           <DirectionText>
