@@ -37,7 +37,6 @@ export interface CenteredModalProps extends ModalContainerProps {
   subtitle?: string
   isLoading?: boolean
   header?: ReactNode
-  footer?: ReactNode
   transparentHeader?: boolean
   narrow?: boolean
   dynamicContent?: boolean
@@ -53,7 +52,6 @@ const CenteredModal: FC<CenteredModalProps> = ({
   focusMode,
   isLoading,
   header,
-  footer,
   transparentHeader = false,
   narrow = false,
   dynamicContent = false,
@@ -98,7 +96,6 @@ const CenteredModal: FC<CenteredModalProps> = ({
         ) : (
           <ScrollableModalContent>{children}</ScrollableModalContent>
         )}
-        {footer && <ModalFooterButtons>{header}</ModalFooterButtons>}
 
         {isLoading && (
           <>
