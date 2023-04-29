@@ -181,7 +181,7 @@ const TokenRow = styled.div`
 `
 
 const AssetLogoStyled = styled(AssetLogo)`
-  margin-right: 25px;
+  margin-right: 20px;
 `
 
 const TokenName = styled(Truncate)`

@@ -188,7 +188,7 @@ const FiatAmountCell = styled(AmountCell)`
 `
 
 const AddressNameCell = styled(Cell)`
-  gap: 15px;
+  gap: 20px;
   cursor: pointer;
 `
 

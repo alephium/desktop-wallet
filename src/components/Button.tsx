@@ -236,7 +236,7 @@ export default styled(Button)`
       ${ButtonIcon} {
         ${children &&
         css`
-          margin-right: var(--spacing-2);
+          margin-right: var(--spacing-3);
         `}
 
         ${({ theme }) => {
