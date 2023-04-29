@@ -108,6 +108,6 @@ const CloseButton = styled(Button)`
 `
 
 const Title = styled.div`
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
   font-size: 16px;
 `

@@ -186,7 +186,7 @@ const AssetLogoStyled = styled(AssetLogo)`
 
 const TokenName = styled(Truncate)`
   font-size: 14px;
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-medium);
   width: 200px;
 `
 

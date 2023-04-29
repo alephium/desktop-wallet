@@ -189,11 +189,16 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
   margin: 0;
   width: auto;
   height: 60px;
-  color: ${({ theme }) => theme.font.primary};
   box-shadow: none;
   max-width: initial;
+
+  color: ${({ theme }) => theme.font.secondary};
+
+  &:hover {
+    color: ${({ theme }) => theme.font.primary};
+  }
 `
 
 const ButtonText = styled.div`
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-medium);
 `

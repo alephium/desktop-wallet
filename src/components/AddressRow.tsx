@@ -60,7 +60,7 @@ const Row = styled.div`
 
 const Label = styled.div`
   font-size: 14px;
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-medium);
   max-width: 200px;
   min-width: 0;
 `

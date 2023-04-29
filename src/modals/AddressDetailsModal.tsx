@@ -165,7 +165,7 @@ const Title = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const TitleAddressHash = styled(HashEllipsed)`
@@ -182,7 +182,8 @@ const Content = styled.div`
 const Shortcuts = styled(Box)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.bg.primary};
-  margin-bottom: 40px;
+  margin: 0 5% 40px 5%;
+  width: auto;
 `
 
 const ButtonsGrid = styled.div`

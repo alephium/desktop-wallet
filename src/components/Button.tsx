@@ -246,7 +246,7 @@ export default styled(Button)`
             css`
               background-color: ${colord(color).alpha(0.08).toHex()};
               border: 1px solid ${colord(color).alpha(0.05).toHex()};
-              padding: 4px;
+              padding: 3px;
               border-radius: var(--radius-full);
 
               svg {
@@ -270,7 +270,7 @@ export default styled(Button)`
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
-  font-weight: var(--fontWeight-medium);
+  font-weight: ${({ role }) => (role === 'secondary' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)')};
   font-size: 13px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};

@@ -86,14 +86,16 @@ const TransactionalInfo = ({
             <Icon size={15} strokeWidth={2} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
-        <AssetTime>
-          {label}
+        <DirectionAndTime>
+          <DirectionLabel>{label}</DirectionLabel>
           {knownAssets.map(({ id, amount, decimals, symbol }) => (
             <HiddenLabel key={id} text={`${formatAmountForDisplay({ amount, amountDecimals: decimals })} ${symbol}`} />
           ))}
           {unknownAssets.length > 0 && <HiddenLabel text={` + ${unknownAssets} ${t('Unknown tokens')}`} />}
-          <TimeSince timestamp={tx.timestamp} faded />
-        </AssetTime>
+          <AssetTime>
+            <TimeSince timestamp={tx.timestamp} faded />
+          </AssetTime>
+        </DirectionAndTime>
       </CellTime>
       <CellAssetBadges compact={compact}>
         <AssetBadges>
@@ -193,8 +195,20 @@ const CellTime = styled.div`
   width: 25%;
 `
 
+const DirectionAndTime = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+`
+
+const DirectionLabel = styled.span`
+  color: ${({ theme }) => theme.font.primary};
+  font-weight: var(--fontWeight-medium);
+  font-size: 14px;
+`
+
 const AssetTime = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
+  font-size: 12px;
 `
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
