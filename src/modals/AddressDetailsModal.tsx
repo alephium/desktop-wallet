@@ -65,7 +65,7 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       header={
         <Header>
           <LeftSide>
-            <AddressColorIndicator addressHash={address.hash} size={30} />
+            <AddressColorIndicator addressHash={address.hash} size={26} />
             <Title>
               <AddressBadgeStyled
                 addressHash={address.hash}
@@ -157,7 +157,7 @@ const StyledAmountsOverviewPanel = styled(AmountsOverviewPanel)`
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
-  font-size: 23px;
+  font-size: 21px;
   max-width: 200px;
 `
 
@@ -182,7 +182,8 @@ const Content = styled.div`
 const Shortcuts = styled(Box)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.bg.primary};
-  margin: 0 5% 45px 5%;
+  margin: 0 60px 45px;
+  border-radius: 100px;
   width: auto;
 `
 
