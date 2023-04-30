@@ -21,7 +21,7 @@ import styled from 'styled-components'
 import Box from '@/components/Box'
 
 export default styled.div`
-  padding-top: 36px;
+  padding-top: 20px;
 
   & > ${Box}:not(:last-child) {
     margin-bottom: 35px;
