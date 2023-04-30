@@ -38,6 +38,7 @@ const languageOptions = [
   { label: 'Español', value: 'es-ES' as Language },
   { label: 'Français', value: 'fr-FR' as Language },
   { label: 'Português', value: 'pt-PT' as Language },
+  { label: 'Bahasa Indonesia', value: 'id-ID' as Language },
   { label: 'Русский', value: 'ru-RU' as Language },
   { label: 'Türkçe', value: 'tr-TR' as Language },
   { label: 'Tiếng Việt', value: 'vi-VN' as Language }
