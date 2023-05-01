@@ -262,8 +262,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         <ScrollableModalContent>
           <BuildTxModalContent
             data={{
-              ...addressesData,
-              ...(transactionData ?? {})
+              ...(transactionData ?? {}),
+              ...addressesData
             }}
             onSubmit={buildTransactionExtended}
             onCancel={onCloseExtended}
