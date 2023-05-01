@@ -51,10 +51,8 @@ const ToggleSection = ({
   }
 
   useEffect(() => {
-    if (isOpen !== undefined && isShown !== isOpen) {
-      setIsShown(isOpen)
-    }
-  }, [isOpen, isShown])
+    if (isOpen !== undefined) setIsShown(isOpen)
+  }, [isOpen])
 
   return (
     <div className={className} style={{ boxShadow: shadow && isShown ? theme.shadow.tertiary : undefined }}>
