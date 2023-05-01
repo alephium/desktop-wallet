@@ -206,12 +206,11 @@ if (!gotTheLock) {
       mainWindow.focus()
     }
 
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop().slice(0, -1)}`)
-
     const url = commandLine.pop().slice(0, -1)
 
     if (url && url.includes(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
       const uri = url.replace(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX, '')
+      dialog.showErrorBox('Welcome Back', `You arrived from: ${uri}`)
       mainWindow.webContents.send('wc:connect', uri)
     }
   })
