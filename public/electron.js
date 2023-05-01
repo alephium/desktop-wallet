@@ -249,7 +249,13 @@ if (!gotTheLock) {
 
     ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
-    ipcMain.handle('app:hide', () => app.hide())
+    ipcMain.handle('app:hide', () => {
+      try {
+        app.hide()
+      } catch (e) {
+        mainWindow.hide()
+      }
+    })
 
     ipcMain.handle('app:show', () => mainWindow.show())
 
