@@ -172,10 +172,10 @@ function createWindow() {
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
 
-  if (isDev) {
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools()
-  }
+  // if (isDev) {
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools()
+  // }
 
   // Set default window open handler (open new windows in the web browser by default)
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -210,7 +210,7 @@ if (!gotTheLock) {
     const url = commandLine.pop().slice(0, -1)
 
     if (url && url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-      const uri = url.split(ALEPHIUM_WALLET_CONNECT_URI_PREFIX).at(1)
+      const uri = extractWalletConnectUri(url)
 
       mainWindow.webContents.send('wc:connect', uri)
     }
@@ -277,8 +277,11 @@ if (!gotTheLock) {
 
   app.on('open-url', (_, url) => {
     if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-      const uri = url.split(ALEPHIUM_WALLET_CONNECT_URI_PREFIX).at(1)
+      const uri = extractWalletConnectUri(url)
       mainWindow.webContents.send('wc:connect', uri)
     }
   })
 }
+
+const extractWalletConnectUri = (url) =>
+  url.substring(url.indexOf(ALEPHIUM_WALLET_CONNECT_URI_PREFIX) + ALEPHIUM_WALLET_CONNECT_URI_PREFIX.length)
