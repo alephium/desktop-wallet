@@ -53,6 +53,7 @@ const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
 const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
+  console.log('WalletConnect modal open!')
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const {

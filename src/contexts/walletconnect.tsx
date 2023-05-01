@@ -112,6 +112,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const initializeWalletConnectClient = useCallback(async () => {
     try {
+      console.log('Trying to initialize WC client...')
       const client = await SignClient.init({
         projectId: '6e2562e43678dd68a9070a62b6d52207',
         relayUrl: 'wss://relay.walletconnect.com',
@@ -124,6 +125,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       })
 
       setWalletConnectClient(client)
+
+      console.log('Initialized Client!:', client)
     } catch (e) {
       console.error('Could not initialize WalletConnect client', e)
     }
@@ -320,6 +323,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         console.log('⏰ trying to pair...')
         await walletConnectClient.pair({ uri })
         console.log('✅ pairing completed!')
+        console.log('metadata:', walletConnectClient.metadata)
       } catch (e) {
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
       }

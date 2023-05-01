@@ -67,7 +67,10 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
 
   useEffect(() => {
-    if (proposalEvent?.id && isAuthenticated) setIsWalletConnectModalOpen(true)
+    if (proposalEvent?.id && isAuthenticated) {
+      console.log('opening wallet connect modal...')
+      setIsWalletConnectModalOpen(true)
+    }
   }, [isAuthenticated, proposalEvent?.id])
 
   const headerStyles = {
