@@ -208,11 +208,13 @@ if (!gotTheLock) {
 
     const url = commandLine.pop().slice(0, -1)
 
-    if (url && url.includes(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-      const uri = url.replace(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX, '')
-      dialog.showErrorBox('Welcome Back', `You arrived from: ${uri}`)
-      mainWindow.webContents.send('wc:connect', uri)
-    }
+    mainWindow.webContents.send('wc:connect', url)
+
+    // if (url && url.includes(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
+    //   const uri = url.replace(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX, '')
+    //   dialog.showErrorBox('Welcome Back', `You arrived from: ${uri}`)
+    //   mainWindow.webContents.send('wc:connect', uri)
+    // }
   })
 
   // This method will be called when Electron has finished
