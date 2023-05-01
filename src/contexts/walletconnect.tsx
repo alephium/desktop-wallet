@@ -135,6 +135,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const onSessionRequestResponse = useCallback(
     async (event: RequestEvent, response: EngineTypes.RespondParams['response']) => {
+      console.log('onSessionRequestResponse')
+
       if (!walletConnectClient) return
 
       await walletConnectClient.respond({ topic: event.topic, response })
@@ -154,6 +156,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
+    console.log('onSessionProposal:', proposalEvent)
+
     const { requiredNamespaces } = proposalEvent.params
     const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
     const requiredChainInfo = requiredChains ? parseChain(requiredChains[0]) : undefined
@@ -166,6 +170,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const onSessionRequest = useCallback(
     async (event: RequestEvent) => {
       if (!walletConnectClient) return
+
+      console.log('onSessionRequest:', event)
 
       setRequestEvent(event)
 
@@ -264,8 +270,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             break
           }
           case 'alph_requestNodeApi': {
+            console.log('alph_requestNodeApi')
+
             const p = request.params as ApiRequestArguments
             const result = await client.web3.request(p)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -273,11 +282,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             break
           }
           case 'alph_requestExplorerApi': {
+            console.log('alph_requestExplorerApi')
+
             const p = request.params as ApiRequestArguments
             // TODO: Remove following code when using explorer client from web3 library
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
             const result = await call(...p.params)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -305,7 +317,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       if (!walletConnectClient || !uri) return
 
       try {
+        console.log('⏰ trying to pair...')
         await walletConnectClient.pair({ uri })
+        console.log('✅ pairing completed!')
       } catch (e) {
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
       }
@@ -314,6 +328,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionDelete = useCallback(() => {
+    console.log('onSessionDelete')
+
     setRequiredChainInfo(undefined)
     setProposalEvent(undefined)
     setWcSessionState('uninitialized')
@@ -321,6 +337,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [])
 
   const onProposalApprove = (topic: string) => {
+    console.log('onProposalApprove:', topic)
+
     setSessionTopic(topic)
     setConnectedDappMetadata(proposalEvent?.params.proposer.metadata)
     setProposalEvent(undefined)
