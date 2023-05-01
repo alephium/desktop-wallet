@@ -172,10 +172,10 @@ function createWindow() {
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
 
-  if (isDev) {
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools()
-  }
+  // if (isDev) {
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools()
+  // }
 
   // Set default window open handler (open new windows in the web browser by default)
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -208,6 +208,8 @@ if (!gotTheLock) {
     }
 
     const url = commandLine.pop().slice(0, -1)
+
+    mainWindow.webContents.send('wc:connect', url)
 
     if (url && url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
       const uri = url.split(ALEPHIUM_WALLET_CONNECT_URI_PREFIX).at(1)

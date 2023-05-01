@@ -343,6 +343,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   useEffect(() => {
     electron?.walletConnect.onConnect((uri) => {
+      console.log(uri)
       connectToWalletConnect(uri)
     })
   }, [connectToWalletConnect])
