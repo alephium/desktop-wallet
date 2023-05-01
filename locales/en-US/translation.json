@@ -419,5 +419,8 @@
   "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Are you sure you want to remove \"{{ contactName }}\" from your contact list?",
   "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
   "There are no available addresses.": "There are no available addresses.",
-  "Please, generate a new address in group {{ group}} first.": "Please, generate a new address in group {{ group}} first."
+  "Please, generate a new address in group {{ group}} first.": "Please, generate a new address in group {{ group}} first.",
+  "System": "System",
+  "Light": "Light",
+  "Dark": "Dark"
 }

@@ -49,12 +49,6 @@ interface GeneralSettingsSectionProps {
 
 const languageOptions = getAvailableLanguageOptions()
 
-const themeOptions = [
-  { label: 'System', value: 'system' as ThemeSettings },
-  { label: 'Light', value: 'light' as ThemeSettings },
-  { label: 'Dark', value: 'dark' as ThemeSettings }
-]
-
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -119,7 +113,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     }
   }
 
-  const discreetModeText = t`Discreet mode`
+  const discreetModeText = t('Discreet mode')
+  const themeOptions = [
+    { label: t('System'), value: 'system' as ThemeSettings },
+    { label: t('Light'), value: 'light' as ThemeSettings },
+    { label: t('Dark'), value: 'dark' as ThemeSettings }
+  ]
 
   return (
     <Box className={className}>
