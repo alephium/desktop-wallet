@@ -154,7 +154,9 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   }
 
   const handleReject = async () => {
+    console.log('handleReject walletConnectClient:', walletConnectClient)
     if (!walletConnectClient) return
+    console.log('handleReject proposalEvent:', proposalEvent)
     if (proposalEvent === undefined) return onSessionDelete()
 
     await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
@@ -164,6 +166,8 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   }
 
   const handleDisconnect = async () => {
+    console.log('handleDisconnect walletConnectClient:', walletConnectClient)
+    console.log('handleDisconnect sessionTopic:', sessionTopic)
     if (!walletConnectClient || !sessionTopic) return
 
     await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
@@ -172,6 +176,8 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   }
 
   const rejectConnectionAndCloseModal = async () => {
+    console.log('rejectConnectionAndCloseModal walletConnectClient:', walletConnectClient)
+    console.log('rejectConnectionAndCloseModal proposalEvent:', proposalEvent)
     if (walletConnectClient && proposalEvent) {
       onSessionDelete()
       await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })

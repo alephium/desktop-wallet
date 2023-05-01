@@ -167,10 +167,10 @@ function createWindow() {
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
 
-  if (isDev) {
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools()
-  }
+  // if (isDev) {
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools()
+  // }
 
   // Set default window open handler (open new windows in the web browser by default)
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -264,6 +264,7 @@ if (!gotTheLock) {
 
   app.on('open-url', (_, url) => {
     const uri = url.replace('alephium://wc?uri=', '')
+    console.log('mainWindow.webContents.send:', uri)
     mainWindow.webContents.send('wc:connect', uri)
   })
 }

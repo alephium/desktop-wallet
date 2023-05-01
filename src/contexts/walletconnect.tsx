@@ -154,6 +154,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
+    console.log('onSessionRequest proposalEvent.params:', proposalEvent.params)
     const { requiredNamespaces } = proposalEvent.params
     const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
     const requiredChainInfo = requiredChains ? parseChain(requiredChains[0]) : undefined
@@ -165,9 +166,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const onSessionRequest = useCallback(
     async (event: RequestEvent) => {
+      console.log('onSessionRequest walletConnectClient:', walletConnectClient)
       if (!walletConnectClient) return
 
       setRequestEvent(event)
+
+      console.log('onSessionRequest event:', event)
 
       const getSignerAddressByHash = (hash: string) => {
         const address = addresses.find((a) => a.hash === hash)
@@ -302,9 +306,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const connectToWalletConnect = useCallback(
     async (uri: string) => {
+      console.log('walletConnectClient:', walletConnectClient)
       if (!walletConnectClient) return
 
       try {
+        console.log('walletConnectClient.pair:', uri)
         await walletConnectClient.pair({ uri })
       } catch (e) {
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
@@ -314,6 +320,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionDelete = useCallback(() => {
+    console.log('onSessionDelete')
+
     setRequiredChainInfo(undefined)
     setProposalEvent(undefined)
     setWcSessionState('uninitialized')
@@ -321,6 +329,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [])
 
   const onProposalApprove = (topic: string) => {
+    console.log('onProposalApprove:', topic)
     setSessionTopic(topic)
     setConnectedDappMetadata(proposalEvent?.params.proposer.metadata)
     setProposalEvent(undefined)
@@ -343,6 +352,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   useEffect(() => {
     electron?.walletConnect.onConnect((uri) => {
+      console.log('electron?.walletConnect.onConnect:', uri)
       connectToWalletConnect(uri)
     })
   }, [connectToWalletConnect])
