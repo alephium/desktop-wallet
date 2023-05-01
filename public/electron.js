@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell, nativeImage } = require('electron')
+const { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell, nativeImage, protocol } = require('electron')
 const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
@@ -29,6 +29,7 @@ const ALEPHIUM = 'alephium'
 const ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX = `${ALEPHIUM}://wc`
 const ALEPHIUM_WALLET_CONNECT_URI_PREFIX = '?uri='
 
+protocol.registerSchemesAsPrivileged([{ scheme: ALEPHIUM, privileges: { secure: true, standard: true } }])
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ALEPHIUM, process.execPath, [path.resolve(process.argv[1])])
@@ -200,19 +201,22 @@ function createWindow() {
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
+  app.on('second-instance', (_event, args) => {
     if (mainWindow) {
+      // Handle deep-link for Windows
+      if (args.length > 1) {
+        const url = args.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
+
+        if (url) {
+          const uri = extractWalletConnectUri(url)
+
+          mainWindow.webContents.send('wc:connect', uri)
+        }
+      }
+
+      // Someone tried to run a second instance, we should focus our window.
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
-    }
-
-    const url = commandLine.pop().slice(0, -1)
-
-    if (url && url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-      const uri = extractWalletConnectUri(url)
-
-      mainWindow.webContents.send('wc:connect', uri)
     }
   })
 
@@ -249,7 +253,13 @@ if (!gotTheLock) {
 
     ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
 
-    ipcMain.handle('app:hide', () => app.hide())
+    ipcMain.handle('app:hide', () => {
+      if (isWindows) {
+        mainWindow.hide()
+      } else {
+        app.hide()
+      }
+    })
 
     ipcMain.handle('app:show', () => mainWindow.show())
 
@@ -285,3 +295,10 @@ if (!gotTheLock) {
 
 const extractWalletConnectUri = (url) =>
   url.substring(url.indexOf(ALEPHIUM_WALLET_CONNECT_URI_PREFIX) + ALEPHIUM_WALLET_CONNECT_URI_PREFIX.length)
+
+// Handle window controls via IPC
+ipcMain.on('shell:open', () => {
+  const pageDirectory = __dirname.replace('app.asar', 'app.asar.unpacked')
+  const pagePath = path.join('file://', pageDirectory, 'index.html')
+  shell.openExternal(pagePath)
+})

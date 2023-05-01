@@ -266,6 +266,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           case 'alph_requestNodeApi': {
             const p = request.params as ApiRequestArguments
             const result = await client.web3.request(p)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -278,6 +279,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
             const result = await call(...p.params)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -307,6 +309,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       try {
         await walletConnectClient.pair({ uri })
       } catch (e) {
+        console.error('Could not pair with WalletConnect', e)
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
       }
     },
