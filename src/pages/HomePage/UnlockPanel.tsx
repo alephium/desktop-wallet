@@ -106,6 +106,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
           onClick={handleUnlock}
           submit
           disabled={!selectedWalletOption || !password || !isPassphraseConfirmed}
+          tall
         >
           {t('Unlock')}
         </ButtonStyled>

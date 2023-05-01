@@ -57,7 +57,7 @@ const OverviewPage = ({ className }: OverviewPageProps) => {
           </ButtonsGrid>
         </Shortcuts>
       </AmountsOverviewPanel>
-      <UnlockedWalletPanel bottom>
+      <UnlockedWalletPanel bottom top>
         <AssetAndAddressesRow>
           <AssetsListStyled maxHeightInPx={maxPanelHeightInPx} />
           <AddressesContactsListStyled maxHeightInPx={maxPanelHeightInPx} />
@@ -75,7 +75,6 @@ export default styled(OverviewPage)`
 const AssetAndAddressesRow = styled.div`
   display: flex;
   gap: 30px;
-  margin-top: var(--spacing-6);
 `
 
 const AssetsListStyled = styled(AssetsList)`

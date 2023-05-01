@@ -181,12 +181,12 @@ const TokenRow = styled.div`
 `
 
 const AssetLogoStyled = styled(AssetLogo)`
-  margin-right: 25px;
+  margin-right: 20px;
 `
 
 const TokenName = styled(Truncate)`
   font-size: 14px;
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-medium);
   width: 200px;
 `
 

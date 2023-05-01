@@ -92,7 +92,7 @@ export const Tab = styled.div<{ isActive: boolean }>`
   border: 1px solid ${({ theme }) => theme.border.primary};
   border-bottom: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: var(--fontWeight-semiBold);
   margin-bottom: -1px;
 

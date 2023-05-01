@@ -143,7 +143,7 @@ const Column = styled.div`
 
 const Label = styled.div`
   font-size: 16px;
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
   display: flex;
   max-width: 150px;
 `
@@ -185,14 +185,10 @@ const AmountCell = styled(Cell)`
 const FiatAmountCell = styled(AmountCell)`
   color: ${({ theme }) => theme.font.primary};
   font-size: 15px;
-
-  * {
-    font-weight: var(--fontWeight-bold) !important;
-  }
 `
 
 const AddressNameCell = styled(Cell)`
-  gap: 15px;
+  gap: 20px;
   cursor: pointer;
 `
 

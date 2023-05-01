@@ -196,10 +196,13 @@ export const ModalContent = styled.div`
 `
 
 export const ModalFooterButtons = styled.div`
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   margin-top: var(--spacing-4);
+  background-color: ${({ theme }) => theme.bg.background1};
 `
 
 export const ModalFooterButton = ({ ...props }) => (
