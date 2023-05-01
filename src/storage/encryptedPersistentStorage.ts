@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { loadingDataFromLocalStorageFailed, storingDataToLocalStorageFailed } from '@/storage/global/globalActions'
 import {
   EncryptedStorageProps,
   StatelessPersistentEncryptedStorage
@@ -24,11 +25,21 @@ import { store } from '@/storage/store'
 
 export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStorage {
   load() {
-    return this._load(getEncryptedStoragePropsFromActiveWallet())
+    try {
+      return this._load(getEncryptedStoragePropsFromActiveWallet())
+    } catch (e) {
+      console.error(e)
+      store.dispatch(loadingDataFromLocalStorageFailed())
+    }
   }
 
   protected _store(data: string) {
-    this._storeStateless(data, getEncryptedStoragePropsFromActiveWallet())
+    try {
+      this._storeStateless(data, getEncryptedStoragePropsFromActiveWallet())
+    } catch (e) {
+      console.error(e)
+      store.dispatch(storingDataToLocalStorageFailed())
+    }
   }
 }
 

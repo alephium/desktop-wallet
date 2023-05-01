@@ -29,6 +29,12 @@ export const copyToClipboardFailed = createAction<OptionalMessage>('app/copyToCl
 
 export const localStorageDataMigrated = createAction('app/localStorageDataMigrated')
 
+export const localStorageDataMigrationFailed = createAction('app/localStorageDataMigrationFailed')
+
+export const loadingDataFromLocalStorageFailed = createAction('app/loadingDataFromLocalStorageFailed')
+
+export const storingDataToLocalStorageFailed = createAction('app/storingDataToLocalStorageFailed')
+
 export const modalOpened = createAction<ModalId>('app/modalOpened')
 
 export const modalClosed = createAction('app/modalClosed')
@@ -42,3 +48,5 @@ export const osThemeChangeDetected = createAction<ThemeType>('app/osThemeChangeD
 export const devModeShortcutDetected = createAction<{ activate: boolean }>('app/devModeShortcutDetected')
 
 export const snackbarDisplayTimeExpired = createAction('app/snackbarDisplayTimeExpired')
+
+export const userDataMigrationFailed = createAction('app/userDataMigrationFailed')

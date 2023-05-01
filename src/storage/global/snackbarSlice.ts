@@ -27,7 +27,15 @@ import {
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
-import { copiedToClipboard, copyToClipboardFailed, snackbarDisplayTimeExpired } from '@/storage/global/globalActions'
+import {
+  copiedToClipboard,
+  copyToClipboardFailed,
+  loadingDataFromLocalStorageFailed,
+  localStorageDataMigrationFailed,
+  snackbarDisplayTimeExpired,
+  storingDataToLocalStorageFailed,
+  userDataMigrationFailed
+} from '@/storage/global/globalActions'
 import { devModeShortcutDetected } from '@/storage/global/globalActions'
 import {
   apiClientInitFailed,
@@ -38,6 +46,7 @@ import {
   csvFileGenerationFinished,
   csvFileGenerationStarted,
   fetchTransactionsCsv,
+  loadingPendingTransactionsFailed,
   transactionBuildFailed,
   transactionSendFailed,
   transactionsSendSucceeded
@@ -120,6 +129,21 @@ const snackbarSlice = createSlice({
       )
       .addCase(passwordValidationFailed, (state) =>
         displayMessageImmediately(state, { text: i18n.t('Invalid password'), type: 'alert' })
+      )
+      .addCase(userDataMigrationFailed, (state) =>
+        displayMessageImmediately(state, { text: 'User data migration failed', type: 'alert' })
+      )
+      .addCase(localStorageDataMigrationFailed, (state) =>
+        displayMessageImmediately(state, { text: 'Local storage data migration failed', type: 'alert' })
+      )
+      .addCase(loadingDataFromLocalStorageFailed, (state) =>
+        displayMessageImmediately(state, { text: 'Loading data from local storage failed', type: 'alert' })
+      )
+      .addCase(storingDataToLocalStorageFailed, (state) =>
+        displayMessageImmediately(state, { text: 'Storing data to local storage failed', type: 'alert' })
+      )
+      .addCase(loadingPendingTransactionsFailed, (state) =>
+        displayMessageImmediately(state, { text: 'Loading pending transactions failed', type: 'alert' })
       )
       .addCase(devModeShortcutDetected, (state, action) =>
         displayMessageImmediately(

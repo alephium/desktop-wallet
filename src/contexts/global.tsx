@@ -29,7 +29,7 @@ import useLatestGitHubRelease from '@/hooks/useLatestGitHubRelease'
 import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
 import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
-import { osThemeChangeDetected } from '@/storage/global/globalActions'
+import { osThemeChangeDetected, userDataMigrationFailed } from '@/storage/global/globalActions'
 import { restorePendingTransactions } from '@/storage/transactions/transactionsStorageUtils'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
 import WalletStorage from '@/storage/wallets/walletPersistentStorage'
@@ -84,40 +84,51 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
   const unlockWallet = async ({ event, walletId, password, afterUnlock, passphrase }: WalletUnlockProps) => {
+    let wallet
+
     try {
-      let wallet = WalletStorage.load(walletId, password)
+      wallet = WalletStorage.load(walletId, password)
+    } catch (e) {
+      console.error(e)
+      dispatch(passwordValidationFailed())
+      return
+    }
 
-      if (passphrase) {
-        wallet = { ...wallet, ...getWalletFromMnemonic(wallet.mnemonic, passphrase) }
+    if (passphrase) {
+      wallet = { ...wallet, ...getWalletFromMnemonic(wallet.mnemonic, passphrase) }
+    }
+
+    const payload = {
+      wallet: {
+        id: walletId,
+        name: wallet.name,
+        mnemonic: wallet.mnemonic,
+        passphrase
+      },
+      initialAddress: getWalletInitialAddress(wallet)
+    }
+
+    dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
+
+    if (!passphrase) {
+      try {
+        migrateUserData()
+      } catch (e) {
+        console.error(e)
+        dispatch(userDataMigrationFailed())
       }
 
-      const payload = {
-        wallet: {
-          id: walletId,
-          name: wallet.name,
-          mnemonic: wallet.mnemonic,
-          passphrase
-        },
-        initialAddress: getWalletInitialAddress(wallet)
-      }
-      dispatch(event === 'unlock' ? walletUnlocked(payload) : walletSwitched(payload))
+      restoreAddressesFromMetadata()
+      restorePendingTransactions()
 
       posthog?.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
         wallet_name_length: wallet.name.length,
         number_of_addresses: (AddressMetadataStorage.load() as []).length,
         number_of_contacts: (ContactsStorage.load() as []).length
       })
-
-      if (!passphrase) {
-        migrateUserData()
-        restoreAddressesFromMetadata()
-        restorePendingTransactions()
-      }
-
-      afterUnlock()
-    } catch (e) {
-      dispatch(passwordValidationFailed())
     }
+
+    afterUnlock()
   }
 
   useIdleForTooLong(() => dispatch(walletLocked()), (settings.walletLockTimeInMinutes || 0) * 60 * 1000)

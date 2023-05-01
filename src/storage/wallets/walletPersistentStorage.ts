@@ -41,11 +41,15 @@ class WalletStorage {
 
         if (!data) continue
 
-        const wallet = JSON.parse(data) as StoredWallet
+        try {
+          const wallet = JSON.parse(data) as StoredWallet
+          if (!wallet.name) continue
 
-        if (!wallet.name) continue
-
-        wallets.push(wallet)
+          wallets.push(wallet)
+        } catch (e) {
+          console.error(e)
+          continue
+        }
       }
     }
 
