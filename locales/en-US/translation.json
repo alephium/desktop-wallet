@@ -410,7 +410,6 @@
   "to": "to",
   "welcomeScreenOneAddressPerGroupMessage": "Advanced user: want to start with <1>one address per group for mining or DeFi?</1>",
   "welcomeScreenPassphraseMessage": "If you want to use a <1>passphrase</1>, lock your newly created wallet.",
-  "generateAddressInGroupMessage": "Please, <1>generate a new address</1> in this group first.",
   "with": "with",
   "{{ amount }} words entered": "{{ amount }} words entered",
   "{{ number }} selected": "{{ number }} selected",
@@ -419,5 +418,5 @@
   "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Are you sure you want to remove \"{{ contactName }}\" from your contact list?",
   "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
   "There are no available addresses.": "There are no available addresses.",
-  "Please, generate a new address in group {{ group}} first.": "Please, generate a new address in group {{ group}} first."
+  "Please, generate a new address in group {{ group }} first.": "Please, generate a new address in group {{ group }} first."
 }
