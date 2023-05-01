@@ -302,7 +302,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const connectToWalletConnect = useCallback(
     async (uri: string) => {
-      if (!walletConnectClient) return
+      if (!walletConnectClient || !uri) return
 
       try {
         await walletConnectClient.pair({ uri })
