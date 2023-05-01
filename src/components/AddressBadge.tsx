@@ -63,7 +63,7 @@ const AddressBadge = ({
       showFull={showFull}
     >
       {contact ? (
-        <Label>
+        <Label truncate={truncate}>
           {disableCopy ? (
             contact.name
           ) : (
