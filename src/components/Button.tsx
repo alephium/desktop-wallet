@@ -246,13 +246,9 @@ export default styled(Button)`
             iconBackground &&
             css`
               background-color: ${colord(color).alpha(0.08).toHex()};
-              border: 1px solid ${colord(color).alpha(0.05).toHex()};
-              padding: 3px;
-              border-radius: var(--radius-full);
-
-              svg {
-                scale: 0.85;
-              }
+              border: 1px solid ${colord(color).alpha(0.1).toHex()};
+              padding: 7px;
+              border-radius: var(--radius-small);
             `
           )
         }}
