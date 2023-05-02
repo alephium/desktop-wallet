@@ -84,7 +84,7 @@ const TransactionalInfo = ({
       <CellTime>
         <CellArrow>
           <TransactionIcon color={iconBgColor}>
-            <Icon size={15} strokeWidth={2} color={iconColor} />
+            <Icon size={13} strokeWidth={3} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
         <DirectionAndTime>

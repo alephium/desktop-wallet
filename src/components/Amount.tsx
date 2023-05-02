@@ -122,7 +122,7 @@ export default styled(Amount)`
       : 'inherit'};
   display: inline-flex;
   white-space: pre;
-  font-weight: var(--fontWeight-semiBold);
+  font-weight: var(--fontWeight-bold);
   font-feature-settings: 'tnum' on;
 `
 
