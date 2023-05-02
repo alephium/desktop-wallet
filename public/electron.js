@@ -148,6 +148,8 @@ const template = [
   }
 ]
 
+let deepLinkUri = null
+
 function createWindow() {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
@@ -193,13 +195,25 @@ function createWindow() {
   autoUpdater.on('error', (error) => mainWindow.webContents.send('updater:error', error))
 
   autoUpdater.on('update-downloaded', (event) => mainWindow.webContents.send('updater:updateDownloaded', event))
+
+  logEverywhere('createWindow process.argv: ' + process.argv.toString())
+  if (isWindows) {
+    if (process.argv.length > 1) {
+      const url = process.argv.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
+
+      if (url) {
+        deepLinkUri = extractWalletConnectUri(url)
+        logEverywhere('createWindow deep link uri: ' + deepLinkUri)
+        mainWindow.webContents.send('wc:connect', deepLinkUri)
+      }
+    }
+  }
 }
 
 if (!app.requestSingleInstanceLock()) {
   app.quit()
+  return
 }
-
-let deepLinkUri = null
 
 // Activate the window of primary instance when a second instance starts
 app.on('second-instance', (_event, args) => {
@@ -214,6 +228,7 @@ app.on('second-instance', (_event, args) => {
 
       if (url) {
         deepLinkUri = extractWalletConnectUri(url)
+        logEverywhere('second-instance deep link uri: ' + deepLinkUri)
         mainWindow.webContents.send('wc:connect', deepLinkUri)
       }
     }
@@ -300,6 +315,7 @@ app.on('activate', function () {
 app.on('open-url', (_, url) => {
   if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
     deepLinkUri = extractWalletConnectUri(url)
+    logEverywhere('open-url: ' + deepLinkUri)
     mainWindow.webContents.send('wc:connect', deepLinkUri)
   }
 })
@@ -313,3 +329,11 @@ ipcMain.on('shell:open', () => {
   const pagePath = path.join('file://', pageDirectory, 'index.html')
   shell.openExternal(pagePath)
 })
+
+// Log both at dev console and at running node console instance
+const logEverywhere = (s) => {
+  console.log(s)
+  if (mainWindow && mainWindow.webContents) {
+    mainWindow.webContents.executeJavaScript(`console.log("${s}")`)
+  }
+}
