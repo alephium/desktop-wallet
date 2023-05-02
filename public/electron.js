@@ -255,13 +255,19 @@ if (!gotTheLock) {
 
     ipcMain.handle('app:hide', () => {
       if (isWindows) {
-        mainWindow.hide()
+        mainWindow.minimize()
       } else {
         app.hide()
       }
     })
 
-    ipcMain.handle('app:show', () => mainWindow.show())
+    ipcMain.handle('app:show', () => {
+      if (isWindows) {
+        mainWindow.restore()
+      } else {
+        mainWindow.show()
+      }
+    })
 
     ipcMain.handle('app:getSystemLanguage', () => {
       const preferedLanguages = app.getPreferredSystemLanguages()
