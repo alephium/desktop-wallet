@@ -295,3 +295,10 @@ if (!gotTheLock) {
 
 const extractWalletConnectUri = (url) =>
   url.substring(url.indexOf(ALEPHIUM_WALLET_CONNECT_URI_PREFIX) + ALEPHIUM_WALLET_CONNECT_URI_PREFIX.length)
+
+// Handle window controls via IPC
+ipcMain.on('shell:open', () => {
+  const pageDirectory = __dirname.replace('app.asar', 'app.asar.unpacked')
+  const pagePath = path.join('file://', pageDirectory, 'index.html')
+  shell.openExternal(pagePath)
+})
