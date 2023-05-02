@@ -334,9 +334,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           icons: ['https://alephium.org/favicon-32x32.png']
         }
       })
-      console.log('Created WC client!')
-
-      setWalletConnectClient(client)
 
       console.log('Setting up wc listeners...')
 
@@ -344,33 +341,36 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       client.on('session_proposal', onSessionProposal)
       client.on('session_delete', onSessionDelete)
 
-      console.log('Set up wc listeners!')
+      console.log('Created WC client and set up listeners!')
 
-      const uri = await electron?.walletConnect.getDeepLinkUri()
-
-      if (uri) {
-        console.log('found saved uri:', uri)
-        connectToWalletConnectAndResetDeepLinkUri(uri)
-      } else {
-        electron?.walletConnect.onConnect(async (uri: string) => {
-          console.log('onConnect was triggered with this uri:', uri)
-          connectToWalletConnectAndResetDeepLinkUri(uri)
-        })
-      }
+      setWalletConnectClient(client)
     } catch (e) {
       console.error('Could not initialize WalletConnect client', e)
     }
-  }, [
-    connectToWalletConnectAndResetDeepLinkUri,
-    onSessionDelete,
-    onSessionProposal,
-    onSessionRequest,
-    walletConnectClient
-  ])
+  }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
+
+  const listenForWalletConnectDeepLinks = useCallback(async () => {
+    console.log('Checking for saved deep link uri...')
+    const uri = await electron?.walletConnect.getDeepLinkUri()
+
+    if (uri) {
+      console.log('found saved uri:', uri)
+      connectToWalletConnectAndResetDeepLinkUri(uri)
+    } else {
+      electron?.walletConnect.onConnect(async (uri: string) => {
+        console.log('onConnect was triggered with this uri:', uri)
+        connectToWalletConnectAndResetDeepLinkUri(uri)
+      })
+    }
+  }, [connectToWalletConnectAndResetDeepLinkUri])
 
   useEffect(() => {
-    if (!walletConnectClient) initializeWalletConnectClient()
-  }, [initializeWalletConnectClient, walletConnectClient])
+    if (!walletConnectClient) {
+      initializeWalletConnectClient()
+    } else {
+      listenForWalletConnectDeepLinks()
+    }
+  }, [initializeWalletConnectClient, listenForWalletConnectDeepLinks, walletConnectClient])
 
   return (
     <WalletConnectContext.Provider
