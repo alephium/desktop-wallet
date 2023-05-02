@@ -297,6 +297,10 @@ const ButtonStyled = styled(Button)<{ isActive: boolean }>`
   height: auto;
   min-width: 32px;
   border-radius: var(--radius-small);
+
+  &:hover {
+    border-color: ${({ theme }) => theme.font.tertiary};
+  }
 `
 
 const ChartOuterContainer = styled(motion.div)`
