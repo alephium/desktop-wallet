@@ -202,7 +202,6 @@ function createWindow() {
 
       if (url) {
         deepLinkUri = extractWalletConnectUri(url)
-        mainWindow.webContents.send('wc:connect', deepLinkUri)
       }
     }
   }
