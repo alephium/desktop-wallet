@@ -147,7 +147,15 @@
     },
     "afterPack": ".afterPack.js",
     "afterAllArtifactBuild": ".afterAllArtifactBuild.js",
-    "afterSign": "electron-builder-notarize"
+    "afterSign": "electron-builder-notarize",
+    "protocols": [
+      {
+        "name": "alephium",
+        "schemes": [
+          "alephium"
+        ]
+      }
+    ]
   },
   "engines": {
     "node": ">=16",
