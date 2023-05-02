@@ -110,29 +110,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [sessionTopic, setSessionTopic] = useState(initialContext.sessionTopic)
   const [connectedDAppMetadata, setConnectedDappMetadata] = useState(initialContext.connectedDAppMetadata)
 
-  const initializeWalletConnectClient = useCallback(async () => {
-    try {
-      const client = await SignClient.init({
-        projectId: '6e2562e43678dd68a9070a62b6d52207',
-        relayUrl: 'wss://relay.walletconnect.com',
-        metadata: {
-          name: 'Alephium desktop wallet',
-          description: 'Alephium desktop wallet',
-          url: 'https://github.com/alephium/desktop-wallet/releases',
-          icons: ['https://alephium.org/favicon-32x32.png']
-        }
-      })
-
-      setWalletConnectClient(client)
-    } catch (e) {
-      console.error('Could not initialize WalletConnect client', e)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!walletConnectClient) initializeWalletConnectClient()
-  }, [initializeWalletConnectClient, walletConnectClient])
-
   const onSessionRequestResponse = useCallback(
     async (event: RequestEvent, response: EngineTypes.RespondParams['response']) => {
       if (!walletConnectClient) return
@@ -304,20 +281,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [addresses, onSessionRequestError, walletConnectClient]
   )
 
-  const connectToWalletConnect = useCallback(
-    async (uri: string) => {
-      if (!walletConnectClient || !uri) return
-
-      try {
-        return await walletConnectClient.pair({ uri })
-      } catch (e) {
-        console.error('Could not pair with WalletConnect', e)
-        dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
-      }
-    },
-    [dispatch, t, walletConnectClient]
-  )
-
   const onSessionDelete = useCallback(() => {
     setRequiredChainInfo(undefined)
     setProposalEvent(undefined)
@@ -332,48 +295,82 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     setWcSessionState('initialized')
   }
 
-  useEffect(() => {
-    if (!walletConnectClient) return
+  const connectToWalletConnect = useCallback(
+    async (uri: string) => {
+      if (!walletConnectClient || !uri) return
 
-    console.log('Setting up wc listeners...')
+      try {
+        return await walletConnectClient.pair({ uri })
+      } catch (e) {
+        console.error('Could not pair with WalletConnect', e)
+        dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
+      }
+    },
+    [dispatch, t, walletConnectClient]
+  )
 
-    walletConnectClient.on('session_request', onSessionRequest)
-    walletConnectClient.on('session_proposal', onSessionProposal)
-    walletConnectClient.on('session_delete', onSessionDelete)
-
-    console.log('Set up wc listeners!')
-
-    return () => {
-      walletConnectClient.removeListener('session_request', onSessionRequest)
-      walletConnectClient.removeListener('session_proposal', onSessionProposal)
-      walletConnectClient.removeListener('session_delete', onSessionDelete)
-    }
-  }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
-
-  useEffect(() => {
-    const connectAndReset = async (uri: string) => {
+  const connectToWalletConnectAndResetDeepLinkUri = useCallback(
+    async (uri: string) => {
       console.log('connecting to WC with uri:', uri)
       await connectToWalletConnect(uri)
       console.log('resetting uri:', uri)
       electron?.walletConnect.resetDeepLinkUri()
-    }
+    },
+    [connectToWalletConnect]
+  )
 
-    const getDeepLinkAndConnect = async () => {
+  const initializeWalletConnectClient = useCallback(async () => {
+    if (walletConnectClient) return
+
+    try {
+      console.log('Creating WC client...')
+      const client = await SignClient.init({
+        projectId: '6e2562e43678dd68a9070a62b6d52207',
+        relayUrl: 'wss://relay.walletconnect.com',
+        metadata: {
+          name: 'Alephium desktop wallet',
+          description: 'Alephium desktop wallet',
+          url: 'https://github.com/alephium/desktop-wallet/releases',
+          icons: ['https://alephium.org/favicon-32x32.png']
+        }
+      })
+      console.log('Created WC client!')
+
+      setWalletConnectClient(client)
+
+      console.log('Setting up wc listeners...')
+
+      client.on('session_request', onSessionRequest)
+      client.on('session_proposal', onSessionProposal)
+      client.on('session_delete', onSessionDelete)
+
+      console.log('Set up wc listeners!')
+
       const uri = await electron?.walletConnect.getDeepLinkUri()
 
       if (uri) {
         console.log('found saved uri:', uri)
-        connectAndReset(uri)
+        connectToWalletConnectAndResetDeepLinkUri(uri)
       } else {
         electron?.walletConnect.onConnect(async (uri: string) => {
           console.log('onConnect was triggered with this uri:', uri)
-          connectAndReset(uri)
+          connectToWalletConnectAndResetDeepLinkUri(uri)
         })
       }
+    } catch (e) {
+      console.error('Could not initialize WalletConnect client', e)
     }
+  }, [
+    connectToWalletConnectAndResetDeepLinkUri,
+    onSessionDelete,
+    onSessionProposal,
+    onSessionRequest,
+    walletConnectClient
+  ])
 
-    getDeepLinkAndConnect()
-  }, [connectToWalletConnect])
+  useEffect(() => {
+    if (!walletConnectClient) initializeWalletConnectClient()
+  }, [initializeWalletConnectClient, walletConnectClient])
 
   return (
     <WalletConnectContext.Provider
