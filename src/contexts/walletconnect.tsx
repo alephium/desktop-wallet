@@ -307,7 +307,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       if (!walletConnectClient || !uri) return
 
       try {
-        await walletConnectClient.pair({ uri })
+        return await walletConnectClient.pair({ uri })
       } catch (e) {
         console.error('Could not pair with WalletConnect', e)
         dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
@@ -345,9 +345,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
   useEffect(() => {
-    electron?.walletConnect.onConnect((uri) => {
-      connectToWalletConnect(uri)
-    })
+    const connectAndReset = async (uri: string) => {
+      await connectToWalletConnect(uri)
+      electron?.walletConnect.resetDeepLinkUri()
+    }
+
+    const uri = electron?.walletConnect.getDeepLinkUri()
+
+    if (uri) {
+      connectAndReset(uri)
+    } else {
+      electron?.walletConnect.onConnect(connectAndReset)
+    }
   }, [connectToWalletConnect])
 
   return (

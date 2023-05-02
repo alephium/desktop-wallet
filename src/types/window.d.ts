@@ -42,7 +42,9 @@ export interface AlephiumWindow extends Window {
       onError: (callback: (error: Error) => void) => () => void
     }
     walletConnect: {
-      onConnect: (callback: (uri: string) => void) => () => void
+      onConnect: (callback: (uri: string) => Promise<void>) => () => void
+      resetDeepLinkUri: () => void
+      getDeepLinkUri: () => string | null
     }
     app: {
       hide: () => void
