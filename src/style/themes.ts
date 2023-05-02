@@ -45,8 +45,8 @@ export const lightTheme: DefaultTheme = {
   },
   shadow: {
     primary: '0 2px 3px rgba(0, 0, 0, 0.02)',
-    secondary: '0 8px 8px rgba(0, 0, 0, 0.03)',
-    tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
+    secondary: '0 8px 10px rgba(0, 0, 0, 0.1)',
+    tertiary: '0 0 50px rgba(0, 0, 0, 0.15)'
   },
   global: {
     accent: '#598bed',
