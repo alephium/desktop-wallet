@@ -46,8 +46,6 @@ autoUpdater.autoDownload = false
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-const gotTheLock = app.requestSingleInstanceLock()
-
 // Build menu
 
 const isMac = process.platform === 'darwin'
@@ -197,107 +195,107 @@ function createWindow() {
   autoUpdater.on('update-downloaded', (event) => mainWindow.webContents.send('updater:updateDownloaded', event))
 }
 
-// Activate the window of primary instance when a second instance starts
-if (!gotTheLock) {
+if (!app.requestSingleInstanceLock()) {
   app.quit()
-} else {
-  app.on('second-instance', (_event, args) => {
-    if (mainWindow) {
-      // Handle deep-link for Windows
-      if (args.length > 1) {
-        const url = args.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
-
-        if (url) {
-          const uri = extractWalletConnectUri(url)
-
-          mainWindow.webContents.send('wc:connect', uri)
-        }
-      }
-
-      // Someone tried to run a second instance, we should focus our window.
-      if (mainWindow.isMinimized()) mainWindow.restore()
-      mainWindow.focus()
-    }
-  })
-
-  // This method will be called when Electron has finished
-  // initialization and is ready to create browser windows.
-  // Some APIs can only be used after this event occurs.
-  app.on('ready', async function () {
-    if (isDev) {
-      const {
-        default: { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS }
-      } = await import('electron-devtools-installer')
-      await installExtension(REACT_DEVELOPER_TOOLS)
-      await installExtension(REDUX_DEVTOOLS)
-    }
-
-    ipcMain.handle('theme:setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))
-
-    // nativeTheme must be reassigned like this because its properties are all computed, so
-    // they can't be serialized to be passed over channels.
-    ipcMain.handle('theme:getNativeTheme', ({ sender }) =>
-      sender.send('theme:getNativeTheme', {
-        shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
-        themeSource: nativeTheme.themeSource
-      })
-    )
-
-    ipcMain.handle('updater:checkForUpdates', async () => {
-      const result = await autoUpdater.checkForUpdates()
-
-      return result?.updateInfo?.version
-    })
-
-    ipcMain.handle('updater:startUpdateDownload', () => autoUpdater.downloadUpdate())
-
-    ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
-
-    ipcMain.handle('app:hide', () => {
-      if (isWindows) {
-        mainWindow.minimize()
-      } else {
-        app.hide()
-      }
-    })
-
-    ipcMain.handle('app:show', () => {
-      if (isWindows) {
-        mainWindow.restore()
-      } else {
-        mainWindow.show()
-      }
-    })
-
-    ipcMain.handle('app:getSystemLanguage', () => {
-      const preferedLanguages = app.getPreferredSystemLanguages()
-
-      if (preferedLanguages.length > 0) return preferedLanguages[0]
-    })
-
-    createWindow()
-  })
-
-  // Quit when all windows are closed.
-  app.on('window-all-closed', function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (!isMac) app.quit()
-  })
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) createWindow()
-  })
-
-  app.on('open-url', (_, url) => {
-    if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-      const uri = extractWalletConnectUri(url)
-      mainWindow.webContents.send('wc:connect', uri)
-    }
-  })
 }
+
+// Activate the window of primary instance when a second instance starts
+app.on('second-instance', (_event, args) => {
+  if (mainWindow) {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus()
+
+    // Handle deep-link for Windows
+    if (args.length > 1) {
+      const url = args.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
+
+      if (url) {
+        const uri = extractWalletConnectUri(url)
+
+        mainWindow.webContents.send('wc:connect', uri)
+      }
+    }
+  }
+})
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', async function () {
+  if (isDev) {
+    const {
+      default: { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS }
+    } = await import('electron-devtools-installer')
+    await installExtension(REACT_DEVELOPER_TOOLS)
+    await installExtension(REDUX_DEVTOOLS)
+  }
+
+  ipcMain.handle('theme:setNativeTheme', (_, theme) => (nativeTheme.themeSource = theme))
+
+  // nativeTheme must be reassigned like this because its properties are all computed, so
+  // they can't be serialized to be passed over channels.
+  ipcMain.handle('theme:getNativeTheme', ({ sender }) =>
+    sender.send('theme:getNativeTheme', {
+      shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+      themeSource: nativeTheme.themeSource
+    })
+  )
+
+  ipcMain.handle('updater:checkForUpdates', async () => {
+    const result = await autoUpdater.checkForUpdates()
+
+    return result?.updateInfo?.version
+  })
+
+  ipcMain.handle('updater:startUpdateDownload', () => autoUpdater.downloadUpdate())
+
+  ipcMain.handle('updater:quitAndInstallUpdate', () => autoUpdater.quitAndInstall())
+
+  ipcMain.handle('app:hide', () => {
+    if (isWindows) {
+      mainWindow.minimize()
+    } else {
+      app.hide()
+    }
+  })
+
+  ipcMain.handle('app:show', () => {
+    if (isWindows) {
+      mainWindow.restore()
+    } else {
+      mainWindow.show()
+    }
+  })
+
+  ipcMain.handle('app:getSystemLanguage', () => {
+    const preferedLanguages = app.getPreferredSystemLanguages()
+
+    if (preferedLanguages.length > 0) return preferedLanguages[0]
+  })
+
+  createWindow()
+})
+
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (!isMac) app.quit()
+})
+
+app.on('activate', function () {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) createWindow()
+})
+
+app.on('open-url', (_, url) => {
+  if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
+    const uri = extractWalletConnectUri(url)
+    mainWindow.webContents.send('wc:connect', uri)
+  }
+})
 
 const extractWalletConnectUri = (url) =>
   url.substring(url.indexOf(ALEPHIUM_WALLET_CONNECT_URI_PREFIX) + ALEPHIUM_WALLET_CONNECT_URI_PREFIX.length)
