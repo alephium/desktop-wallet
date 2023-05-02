@@ -347,14 +347,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
     console.log('Set up wc listeners!')
 
-    return () => {
-      walletConnectClient.removeListener('session_request', onSessionRequest)
-      walletConnectClient.removeListener('session_proposal', onSessionProposal)
-      walletConnectClient.removeListener('session_delete', onSessionDelete)
-    }
-  }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
-
-  useEffect(() => {
     const connectAndReset = async (uri: string) => {
       console.log('connecting to WC with uri:', uri)
       await connectToWalletConnect(uri)
@@ -377,7 +369,13 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     }
 
     getDeepLinkAndConnect()
-  }, [connectToWalletConnect])
+
+    return () => {
+      walletConnectClient.removeListener('session_request', onSessionRequest)
+      walletConnectClient.removeListener('session_proposal', onSessionProposal)
+      walletConnectClient.removeListener('session_delete', onSessionDelete)
+    }
+  }, [connectToWalletConnect, onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
   return (
     <WalletConnectContext.Provider
