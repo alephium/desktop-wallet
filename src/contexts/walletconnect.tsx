@@ -312,7 +312,11 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         return await walletConnectClient.pair({ uri })
       } catch (e) {
         console.error('Could not pair with WalletConnect', e)
-        dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
+        const errorMessage = getHumanReadableError(e, t('Could not pair with WalletConnect'))
+
+        if (!errorMessage.toLowerCase().includes('pairing exists')) {
+          dispatch(walletConnectPairingFailed(errorMessage))
+        }
       }
     },
     [dispatch, t, walletConnectClient]
