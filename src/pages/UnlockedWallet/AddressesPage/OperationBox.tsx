@@ -81,7 +81,7 @@ export default styled(OperationBox)`
   border-radius: var(--radius-huge);
   display: flex;
   align-items: center;
-  transition: box-shadow 0.2s ease-out;
+  transition: box-shadow 0.1s ease-out;
   justify-content: space-between;
   gap: 20px;
 

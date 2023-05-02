@@ -280,8 +280,6 @@ export default styled(Button)`
   text-align: center;
   cursor: pointer;
 
-  transition: 0.15s ease-out;
-
   &:disabled {
     opacity: 0.5;
   }
