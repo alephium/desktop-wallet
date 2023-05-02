@@ -154,8 +154,6 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   )
 
   const onSessionProposal = useCallback(async (proposalEvent: ProposalEvent) => {
-    console.log('onSessionProposal:', proposalEvent.params)
-
     const { requiredNamespaces } = proposalEvent.params
     const requiredChains = requiredNamespaces[PROVIDER_NAMESPACE].chains
     const requiredChainInfo = requiredChains ? parseChain(requiredChains[0]) : undefined
@@ -339,18 +337,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   useEffect(() => {
     if (!walletConnectClient) return
 
-    console.log('Setting up wc listeners...')
-
     walletConnectClient.on('session_request', onSessionRequest)
     walletConnectClient.on('session_proposal', onSessionProposal)
     walletConnectClient.on('session_delete', onSessionDelete)
 
-    console.log('Set up wc listeners!')
-
     const connectAndReset = async (uri: string) => {
-      console.log('connecting to WC with uri:', uri)
       await connectToWalletConnect(uri)
-      console.log('resetting uri:', uri)
       electron?.walletConnect.resetDeepLinkUri()
     }
 
@@ -358,11 +350,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       const uri = await electron?.walletConnect.getDeepLinkUri()
 
       if (uri) {
-        console.log('found saved uri:', uri)
         connectAndReset(uri)
       } else {
         electron?.walletConnect.onConnect(async (uri: string) => {
-          console.log('onConnect was triggered with this uri:', uri)
           connectAndReset(uri)
         })
       }
