@@ -199,6 +199,8 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
 }
 
+let deepLinkUri = null
+
 // Activate the window of primary instance when a second instance starts
 app.on('second-instance', (_event, args) => {
   if (mainWindow) {
@@ -211,9 +213,8 @@ app.on('second-instance', (_event, args) => {
       const url = args.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
 
       if (url) {
-        const uri = extractWalletConnectUri(url)
-
-        mainWindow.webContents.send('wc:connect', uri)
+        deepLinkUri = extractWalletConnectUri(url)
+        mainWindow.webContents.send('wc:connect', deepLinkUri)
       }
     }
   }
@@ -274,6 +275,12 @@ app.on('ready', async function () {
     if (preferedLanguages.length > 0) return preferedLanguages[0]
   })
 
+  ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
+
+  ipcMain.handle('wc:resetDeepLinkUri', () => {
+    deepLinkUri = null
+  })
+
   createWindow()
 })
 
@@ -292,8 +299,8 @@ app.on('activate', function () {
 
 app.on('open-url', (_, url) => {
   if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
-    const uri = extractWalletConnectUri(url)
-    mainWindow.webContents.send('wc:connect', uri)
+    deepLinkUri = extractWalletConnectUri(url)
+    mainWindow.webContents.send('wc:connect', deepLinkUri)
   }
 })
 
