@@ -24,7 +24,7 @@ import { isElectron } from '@/utils/misc'
 
 export const appHeaderHeightPx = 60
 
-export const walletSidebarWidthPx = 80
+export const walletSidebarWidthPx = 75
 
 const extensionWindowDimensions = `
   height: 600px;

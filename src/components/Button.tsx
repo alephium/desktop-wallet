@@ -246,13 +246,9 @@ export default styled(Button)`
             iconBackground &&
             css`
               background-color: ${colord(color).alpha(0.08).toHex()};
-              border: 1px solid ${colord(color).alpha(0.05).toHex()};
-              padding: 3px;
-              border-radius: var(--radius-full);
-
-              svg {
-                scale: 0.85;
-              }
+              border: 1px solid ${colord(color).alpha(0.15).toHex()};
+              padding: 7px;
+              border-radius: var(--radius-medium);
             `
           )
         }}
@@ -279,8 +275,6 @@ export default styled(Button)`
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
   cursor: pointer;
-
-  transition: 0.15s ease-out;
 
   &:disabled {
     opacity: 0.5;

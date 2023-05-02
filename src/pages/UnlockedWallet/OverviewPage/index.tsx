@@ -103,4 +103,9 @@ const ButtonsGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 1px;
   background-color: ${({ theme }) => theme.border.secondary};
+
+  > button {
+    justify-content: flex-start;
+    padding: 0 20px;
+  }
 `

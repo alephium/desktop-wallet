@@ -44,9 +44,9 @@ export const lightTheme: DefaultTheme = {
     secondary: '#f0f0f0'
   },
   shadow: {
-    primary: '0 2px 3px rgba(0, 0, 0, 0.02)',
-    secondary: '0 8px 8px rgba(0, 0, 0, 0.03)',
-    tertiary: '0 0 50px rgba(0, 0, 0, 0.1)'
+    primary: '0 1px 1px rgba(0, 0, 0, 0.03)',
+    secondary: '0 8px 10px rgba(0, 0, 0, 0.1)',
+    tertiary: '0 0 50px rgba(0, 0, 0, 0.15)'
   },
   global: {
     accent: '#598bed',
@@ -67,7 +67,7 @@ export const darkTheme: DefaultTheme = {
     contrast: 'white',
     background1: '#121214',
     background2: '#0e0e10',
-    hover: colord('#18181b').darken(0.01).toHex(),
+    hover: colord('#18181a').lighten(0.01).toHex(),
     accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {
@@ -83,8 +83,8 @@ export const darkTheme: DefaultTheme = {
     secondary: '#202022'
   },
   shadow: {
-    primary: '0 2px 3px rgba(0, 0, 0, 0.2)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.2)',
+    primary: '0 2px 3px rgba(0, 0, 0, 0.3)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.25)',
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {

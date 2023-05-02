@@ -45,6 +45,7 @@ interface HistoricWorthChartProps {
 
 const now = dayjs()
 const startingDates: Record<ChartLength, Dayjs> = {
+  '1d': now.subtract(1, 'day'),
   '1w': now.subtract(1, 'week'),
   '1m': now.subtract(1, 'month'),
   '1y': now.subtract(1, 'year')

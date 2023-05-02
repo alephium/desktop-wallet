@@ -102,7 +102,7 @@ const AddressBadgeStyled = styled.div<Pick<AddressBadgeProps, 'withBorders' | 't
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: ${({ showFull }) => !showFull && 120}px;
+  max-width: ${({ showFull }) => !showFull && 125}px;
 
   ${({ withBorders }) =>
     withBorders &&

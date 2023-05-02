@@ -71,7 +71,14 @@ const AddressesTabContent = ({ tabsRowHeight }: AddressesTabContentProps) => {
             <VerticalDivider />
             <Toggle onToggle={setHideEmptyAddresses} label={t('Hide empty')} toggled={hideEmptyAddresses} />
           </HideEmptyAddressesToggle>
-          <Button role="secondary" squared Icon={Wrench} onClick={() => setIsAdvancedOperationsModalOpen(true)} />
+          <Button
+            role="secondary"
+            squared
+            Icon={Wrench}
+            onClick={() => setIsAdvancedOperationsModalOpen(true)}
+            data-tooltip-id="default"
+            data-tooltip-content={t('Advanced operations')}
+          />
         </HeaderMiddle>
       }
     >

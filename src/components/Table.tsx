@@ -97,13 +97,12 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 19px 20px;
+  padding: 18px 20px;
   min-height: 55px;
 `
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
   border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
-  transition: background-color 0.2s ease-out;
 
   &:last-child {
     border-bottom: none;
@@ -195,7 +194,7 @@ const ExpandRowStyled = styled.div`
   display: flex;
   justify-content: center;
   bottom: 0;
-  height: 100px;
+  height: 70px;
   display: flex;
   align-items: flex-end;
 

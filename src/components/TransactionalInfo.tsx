@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { formatAmountForDisplay } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
+import { colord } from 'colord'
 import { partition } from 'lodash'
 import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -83,7 +84,7 @@ const TransactionalInfo = ({
       <CellTime>
         <CellArrow>
           <TransactionIcon color={iconBgColor}>
-            <Icon size={15} strokeWidth={2} color={iconColor} />
+            <Icon size={13} strokeWidth={3} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
         <DirectionAndTime>
@@ -184,7 +185,7 @@ export default styled(TransactionalInfo)`
 `
 
 const CellArrow = styled.div`
-  margin-right: 25px;
+  margin-right: 20px;
 `
 
 const CellTime = styled.div`
@@ -268,10 +269,15 @@ const TransactionIcon = styled.span<{ color?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 25px;
-  height: 25px;
-  border-radius: 25px;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
   background-color: ${({ color, theme }) => color || theme.font.primary};
+  border: 1px solid
+    ${({ color, theme }) =>
+      colord(color || theme.font.primary)
+        .alpha(0.15)
+        .toHex()};
 `
 
 const AmountContainer = styled.div`

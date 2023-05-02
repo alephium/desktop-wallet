@@ -158,7 +158,6 @@ const Cell = styled.div`
   align-items: center;
   display: flex;
   background-color: ${({ theme }) => theme.bg.primary};
-  transition: background-color 0.2s ease-out;
 `
 
 const GridRow = styled.div`

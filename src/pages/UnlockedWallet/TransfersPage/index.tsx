@@ -133,12 +133,24 @@ const CornerButtons = styled.div`
   border-radius: 100px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => colord(theme.bg.tertiary).alpha(0.7).toHex()};
+  background-color: ${({ theme }) =>
+    colord(theme.name === 'light' ? theme.bg.primary : theme.bg.background2)
+      .alpha(0.9)
+      .toHex()};
   backdrop-filter: blur(10px);
   box-shadow: ${({ theme }) => theme.shadow.secondary};
-  width: 20vw;
   max-width: 320px;
   min-width: 230px;
+
+  button {
+    &:first-child {
+      padding-left: var(--spacing-4);
+    }
+
+    &:last-child {
+      padding-right: var(--spacing-4);
+    }
+  }
 `
 
 const ButtonsGrid = styled.div`

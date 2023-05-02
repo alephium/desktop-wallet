@@ -153,8 +153,6 @@ const MultiSelectInputArea = styled(InputArea)`
   &:hover {
     border: 1px solid ${({ theme }) => theme.border.primary};
   }
-
-  transition: 0.2s ease-out;
 `
 
 const SelectedValue = styled.div`
