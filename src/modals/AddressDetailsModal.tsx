@@ -65,9 +65,14 @@ const AddressDetailsModal = ({ addressHash, onClose }: AddressDetailsModalProps)
       header={
         <Header>
           <LeftSide>
-            <AddressColorIndicator addressHash={address.hash} size={30} />
+            <AddressColorIndicator addressHash={address.hash} size={26} />
             <Title>
-              <AddressBadgeStyled addressHash={address.hash} hideColorIndication disableCopy truncate />
+              <AddressBadgeStyled
+                addressHash={address.hash}
+                hideColorIndication
+                disableCopy={!!address.label}
+                truncate
+              />
               {address.label && <TitleAddressHash hash={address.hash} />}
             </Title>
             <Badge short color={theme.font.tertiary} border>
@@ -152,7 +157,7 @@ const StyledAmountsOverviewPanel = styled(AmountsOverviewPanel)`
 `
 
 const AddressBadgeStyled = styled(AddressBadge)`
-  font-size: 23px;
+  font-size: 21px;
   max-width: 200px;
 `
 
@@ -160,7 +165,7 @@ const Title = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-weight: var(--fontWeight-bold);
+  font-weight: var(--fontWeight-semiBold);
 `
 
 const TitleAddressHash = styled(HashEllipsed)`
@@ -170,14 +175,16 @@ const TitleAddressHash = styled(HashEllipsed)`
 `
 
 const Content = styled.div`
-  padding: 0 var(--spacing-4) var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-4);
   position: relative;
 `
 
 const Shortcuts = styled(Box)`
   overflow: hidden;
   background-color: ${({ theme }) => theme.bg.primary};
-  margin-bottom: 40px;
+  margin: 0 60px 45px;
+  border-radius: 100px;
+  width: auto;
 `
 
 const ButtonsGrid = styled.div`

@@ -53,7 +53,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
   const dispatch = useAppDispatch()
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const mnemonic = useAppSelector((s) => s.activeWallet.mnemonic)
-  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.passphrase)
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
   const addresses = useAppSelector(selectAllAddresses)

@@ -33,9 +33,9 @@ export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStor
 }
 
 export const getEncryptedStoragePropsFromActiveWallet = (): EncryptedStorageProps => {
-  const { id, mnemonic, isPassphraseUsed } = store.getState().activeWallet
+  const { id, mnemonic, passphrase } = store.getState().activeWallet
 
   if (!id || !mnemonic) throw new Error('Active wallet not found.')
 
-  return { walletId: id, mnemonic, isPassphraseUsed }
+  return { walletId: id, mnemonic, passphrase }
 }

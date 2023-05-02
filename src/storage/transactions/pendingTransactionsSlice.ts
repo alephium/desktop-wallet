@@ -68,11 +68,11 @@ pendingTransactionsListenerMiddleware.startListening({
   effect: (_, { getState }) => {
     const state = getState() as RootState
     const transactions = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
-    const { id: walletId, mnemonic, isPassphraseUsed } = state.activeWallet
+    const { id: walletId, mnemonic, passphrase } = state.activeWallet
 
-    if (!walletId || !mnemonic || isPassphraseUsed) return
+    if (!walletId || !mnemonic || passphrase) return
 
-    const encryptionProps = { walletId, mnemonic, isPassphraseUsed }
+    const encryptionProps = { walletId, mnemonic, passphrase }
     const storedTransactions = PendingTransactionsStorage.load(encryptionProps)
     const uniqueTransactions = xorWith(transactions, storedTransactions, (a, b) => a.hash === b.hash)
 

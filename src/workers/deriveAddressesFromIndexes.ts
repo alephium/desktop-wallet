@@ -22,11 +22,12 @@ interface WorkerPayload {
   data: {
     mnemonic: Wallet['mnemonic']
     indexesToDerive: number[]
+    passphrase?: string
   }
 }
 
-self.onmessage = ({ data: { mnemonic, indexesToDerive } }: WorkerPayload) => {
-  const { masterKey } = walletImport(mnemonic)
+self.onmessage = ({ data: { mnemonic, passphrase, indexesToDerive } }: WorkerPayload) => {
+  const { masterKey } = walletImport(mnemonic, passphrase)
 
   derive(masterKey, indexesToDerive)
 }

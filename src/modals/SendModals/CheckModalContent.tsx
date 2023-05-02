@@ -18,12 +18,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import Box from '@/components/Box'
-
 export default styled.div`
-  padding-top: 36px;
-
-  & > ${Box}:not(:last-child) {
-    margin-bottom: 35px;
-  }
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  gap: 20px;
 `

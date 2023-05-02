@@ -65,14 +65,15 @@ const deriveAddressesFromIndexesWorker = new Worker(
 const useAddressGeneration = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
-  const mnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
+  const mnemonic = useAppSelector((s) => s.activeWallet.mnemonic)
+  const passphrase = useAppSelector((s) => s.activeWallet.passphrase)
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 
   const generateAddress = ({ group }: GenerateAddressProps = {}): AddressKeyPair => {
     if (!mnemonic) throw new Error('Could not generate address, mnemonic not found')
 
-    const { masterKey } = getWalletFromMnemonic(mnemonic)
+    const { masterKey } = getWalletFromMnemonic(mnemonic, passphrase)
 
     return deriveNewAddressData(masterKey, group, undefined, currentAddressIndexes)
   }
@@ -98,14 +99,18 @@ const useAddressGeneration = () => {
 
     deriveAddressesInGroupsWorker.postMessage({
       mnemonic,
+      passphrase,
       groups,
       skipIndexes: currentAddressIndexes
     })
   }
 
   const restoreAddressesFromMetadata = async () => {
-    const { mnemonic, isPassphraseUsed } = getEncryptedStoragePropsFromActiveWallet()
-    const addressesMetadata: AddressMetadata[] = isPassphraseUsed ? [] : AddressMetadataStorage.load()
+    const { mnemonic, passphrase } = getEncryptedStoragePropsFromActiveWallet()
+
+    if (passphrase) return
+
+    const addressesMetadata: AddressMetadata[] = AddressMetadataStorage.load()
 
     // When no metadata found (ie, upgrading from a version older then v1.2.0) initialize with default address
     if (addressesMetadata.length === 0) {
@@ -127,6 +132,7 @@ const useAddressGeneration = () => {
 
     deriveAddressesFromIndexesWorker.postMessage({
       mnemonic,
+      passphrase,
       indexesToDerive: addressesMetadata.map((metadata) => metadata.index)
     })
   }
@@ -151,6 +157,7 @@ const useAddressGeneration = () => {
 
     addressDiscoveryWorker.postMessage({
       mnemonic: mnemonicProp ?? mnemonic,
+      passphrase,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : currentAddressIndexes,
       clientUrl: client.explorer.baseUrl
     })

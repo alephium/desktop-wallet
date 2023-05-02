@@ -31,6 +31,7 @@ import Paragraph from '@/components/Paragraph'
 import { useGlobalContext } from '@/contexts/global'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppSelector } from '@/hooks/redux'
+import { StoredWallet } from '@/types/wallet'
 
 interface UnlockPanelProps {
   onNewWalletLinkClick: () => void
@@ -45,7 +46,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
 
-  const [selectedWallet, setSelectedWallet] = useState(walletOptions.length > 0 ? walletOptions[0].value : undefined)
+  const [selectedWallet, setSelectedWallet] = useState<StoredWallet['id']>()
   const selectedWalletOption = walletOptions.find((option) => option.value === selectedWallet)
   const [password, setPassword] = useState('')
   const [passphrase, setPassphrase] = useState('')
@@ -105,6 +106,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
           onClick={handleUnlock}
           submit
           disabled={!selectedWalletOption || !password || !isPassphraseConfirmed}
+          tall
         >
           {t('Unlock')}
         </ButtonStyled>

@@ -38,6 +38,6 @@ const Title = styled.div`
   margin: 24px 12px 15px;
 
   &:first-child {
-    margin-top: 16px;
+    margin-top: 10px;
   }
 `

@@ -19,6 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import styled, { useTheme } from 'styled-components'
 
+import { useAppSelector } from '@/hooks/redux'
+
 interface DeltaPercentageProps {
   initialValue: number
   latestValue: number
@@ -27,6 +29,7 @@ interface DeltaPercentageProps {
 
 const DeltaPercentage = ({ initialValue, latestValue, className }: DeltaPercentageProps) => {
   const theme = useTheme()
+  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
 
   const percentage = Math.round(((latestValue - initialValue) / initialValue) * 10000) / 100
   const isUp = percentage >= 0
@@ -34,7 +37,9 @@ const DeltaPercentage = ({ initialValue, latestValue, className }: DeltaPercenta
 
   const DirectionArrow = percentage >= 0 ? ArrowUpRight : ArrowDownRight
 
-  return (
+  return discreetMode ? (
+    <span className={className}>•••</span>
+  ) : (
     <div className={className} style={{ color }}>
       <DirectionArrow color={color} />
       {percentage}%
@@ -45,4 +50,5 @@ const DeltaPercentage = ({ initialValue, latestValue, className }: DeltaPercenta
 export default styled(DeltaPercentage)`
   display: flex;
   align-items: center;
+  height: 24px;
 `

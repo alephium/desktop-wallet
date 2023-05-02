@@ -39,23 +39,16 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   showFull?: boolean
 }
 
-const AddressBadge = ({
-  addressHash,
-  withBorders,
-  hideStar,
-  className,
-  hideColorIndication,
-  disableA11y = false,
-  disableCopy,
-  ...props
-}: AddressBadgeProps) => {
+const AddressBadge = (props: AddressBadgeProps) => {
+  const { addressHash, hideStar, className, hideColorIndication, disableA11y = false, disableCopy } = props
+
   const { t } = useTranslation()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
   return contact ? (
-    <div className={className}>
+    <AddressBadgeContainer {...props}>
       <Label {...props}>
         {disableCopy ? (
           contact.name
@@ -65,11 +58,11 @@ const AddressBadge = ({
           </ClipboardButton>
         )}
       </Label>
-    </div>
+    </AddressBadgeContainer>
   ) : !address ? (
     <NotKnownAddress className={className} hash={addressHash} disableCopy={disableCopy} />
   ) : (
-    <div className={className}>
+    <AddressBadgeContainer {...props}>
       {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
       {address.label ? (
         <Label {...props}>
@@ -84,11 +77,13 @@ const AddressBadge = ({
       ) : (
         <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
       )}
-    </div>
+    </AddressBadgeContainer>
   )
 }
 
-export default styled(AddressBadge)`
+export default AddressBadge
+
+const AddressBadgeContainer = styled.div<AddressBadgeProps>`
   display: flex;
   align-items: center;
   gap: 4px;

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { calculateAmountWorth } from '@alephium/sdk'
 import dayjs from 'dayjs'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -25,7 +26,6 @@ import styled from 'styled-components'
 import Amount from '@/components/Amount'
 import Button from '@/components/Button'
 import DeltaPercentage from '@/components/DeltaPercentage'
-import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HistoricWorthChart from '@/components/HistoricWorthChart'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { useAppSelector } from '@/hooks/redux'
@@ -47,6 +47,12 @@ interface AmountsOverviewPanelProps {
   isLoading?: boolean
   className?: string
   showChart?: boolean
+  animateChartEntry?: boolean
+}
+
+const chartAnimationVariants = {
+  shown: { height: 100 },
+  hidden: { height: 0 }
 }
 
 const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addressHash, children, showChart }) => {
@@ -57,6 +63,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const selectAddresses = useMemo(makeSelectAddresses, [])
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const network = useAppSelector((s) => s.network)
+  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
+  const [shouldMountChart, setShouldMountChart] = useState(false)
+
   const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
@@ -80,7 +89,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   return (
     <UnlockedWalletPanelStyled className={className}>
-      <Panel worth={worth} hasHistoricBalances={hasHistoricBalances}>
+      <Panel>
         <Balances>
           <BalancesRow>
             <BalancesColumn>
@@ -158,24 +167,26 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
         </Balances>
         {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
       </Panel>
-      {showChart && hasHistoricBalances ? (
-        <ChartContainer>
-          <HistoricWorthChart
-            addressHash={addressHash}
-            currency={currencies.USD.ticker}
-            onDataPointHover={setHoveredDataPoint}
-            onWorthInBeginningOfChartChange={setWorthInBeginningOfChart}
-            latestWorth={totalAmountWorth}
-            length={chartLength}
-          />
-        </ChartContainer>
-      ) : (
-        (stateUninitialized || !hasHistoricBalances) && (
-          <NoChartDivider>
-            <HorizontalDivider secondary />
-          </NoChartDivider>
-        )
-      )}
+      <AnimatePresence>
+        <ChartOuterContainer
+          variants={chartAnimationVariants}
+          animate={showChart && hasHistoricBalances && !discreetMode ? 'shown' : 'hidden'}
+          onAnimationComplete={(variant) => setShouldMountChart(variant === 'shown')}
+        >
+          {shouldMountChart && (
+            <ChartInnerContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+              <HistoricWorthChart
+                addressHash={addressHash}
+                currency={currencies.USD.ticker}
+                onDataPointHover={setHoveredDataPoint}
+                onWorthInBeginningOfChartChange={setWorthInBeginningOfChart}
+                latestWorth={totalAmountWorth}
+                length={chartLength}
+              />
+            </ChartInnerContainer>
+          )}
+        </ChartOuterContainer>
+      </AnimatePresence>
     </UnlockedWalletPanelStyled>
   )
 }
@@ -187,15 +198,13 @@ const UnlockedWalletPanelStyled = styled(UnlockedWalletPanel)`
   padding: 0;
 `
 
-const Panel = styled.div<{ worth?: number; hasHistoricBalances: boolean }>`
+const Panel = styled.div`
   position: relative;
   display: flex;
   gap: 30px;
   align-items: center;
 
-  margin-bottom: ${({ hasHistoricBalances }) => (hasHistoricBalances ? 80 : 0)}px;
-
-  padding: 30px 60px;
+  padding: 40px 60px 0;
 `
 
 const Balances = styled.div`
@@ -206,7 +215,7 @@ const Balances = styled.div`
 
 const BalancesRow = styled.div`
   display: flex;
-  padding: 25px 6%;
+  padding: 0 6%;
 `
 
 const Opacity = styled.div<{ fadeOut?: boolean }>`
@@ -290,20 +299,17 @@ const ButtonStyled = styled(Button)<{ isActive: boolean }>`
   border-radius: var(--radius-small);
 `
 
-const ChartContainer = styled.div`
-  position: absolute;
-  right: 0;
-  left: 0;
-  padding: 10px 0;
-  margin-bottom: var(--spacing-4);
-
-  bottom: -80px;
-  height: 100px;
-`
-
-const NoChartDivider = styled.div`
-  height: 50px;
+const ChartOuterContainer = styled(motion.div)`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-4);
+  right: 0;
+  left: 0;
+  margin: var(--spacing-4) 0;
+
+  overflow: hidden;
+`
+
+const ChartInnerContainer = styled(motion.div)`
+  height: 100%;
+  width: 100%;
 `

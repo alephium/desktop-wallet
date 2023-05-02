@@ -72,7 +72,7 @@ const AssetAmountsInput = ({
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
   const [errors, setErrors] = useState<string[]>([])
 
-  const selectedAssetId = assetAmounts[selectedAssetRowIndex].id
+  const selectedAssetId = assetAmounts[selectedAssetRowIndex]?.id
   const selectedAsset = assets.find((asset) => asset.id === selectedAssetId)
   const minAmountInAlph = toHumanReadableAmount(MIN_UTXO_SET_AMOUNT)
   const selectedAssetIds = assetAmounts.map(({ id }) => id)

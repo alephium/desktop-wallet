@@ -23,7 +23,7 @@ import { StoredWallet } from '@/types/wallet'
 export interface EncryptedStorageProps {
   mnemonic: string
   walletId: string
-  isPassphraseUsed?: boolean
+  passphrase?: string
 }
 
 type LocalStorageEncryptedValue = {
@@ -46,8 +46,8 @@ export class StatelessPersistentEncryptedStorage {
     return `${this.localStorageKeyPrefix}-${id}`
   }
 
-  protected _load({ walletId, mnemonic, isPassphraseUsed }: EncryptedStorageProps) {
-    if (isPassphraseUsed) return []
+  protected _load({ walletId, mnemonic, passphrase }: EncryptedStorageProps) {
+    if (passphrase) return []
 
     const json = localStorage.getItem(this.getKey(walletId))
 
@@ -58,8 +58,8 @@ export class StatelessPersistentEncryptedStorage {
     return JSON.parse(decrypt(mnemonic, encrypted))
   }
 
-  protected _storeStateless(data: string, { mnemonic, walletId, isPassphraseUsed }: EncryptedStorageProps) {
-    if (isPassphraseUsed) return
+  protected _storeStateless(data: string, { mnemonic, walletId, passphrase }: EncryptedStorageProps) {
+    if (passphrase) return
 
     const encryptedValue: LocalStorageEncryptedValue = {
       version: this.version,

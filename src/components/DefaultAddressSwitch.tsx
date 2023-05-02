@@ -72,7 +72,7 @@ const SelectCustomComponent = (value?: SelectOption<AddressHash>) => {
 
   return (
     <Button role="secondary" short transparent data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-      <AddressBadge addressHash={value?.value} disableCopy truncate />
+      {value?.value && <AddressBadge addressHash={value.value} disableCopy truncate />}
     </Button>
   )
 }

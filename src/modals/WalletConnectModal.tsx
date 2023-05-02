@@ -19,23 +19,31 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { formatChain, isCompatibleAddressGroup, parseChain, PROVIDER_NAMESPACE } from '@alephium/walletconnect-provider'
 import { SessionTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
-import { useState } from 'react'
+import { AlertCircle } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { Section } from '@/components/PageComponents/PageContainers'
 import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
 import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
 import DAppMetadataBox from '@/modals/WalletConnectModal/DAppMetadataBoxProps'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { saveNewAddresses } from '@/storage/addresses/addressesStorageUtils'
 import { walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { Address } from '@/types/addresses'
 import { NetworkPreset } from '@/types/network'
 import { NetworkSettings } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
+import { getRandomLabelColor } from '@/utils/colors'
 
 interface WalletConnectModalProps {
   onClose: () => void
@@ -60,12 +68,23 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
   } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
   const currentNetwork = useAppSelector((s) => s.network)
+  const { generateAddress } = useAddressGeneration()
+  const posthog = usePostHog()
 
   const [uri, setUri] = useState('')
+  const [signerAddressOptions, setSignerAddressOptions] = useState<Address[]>([])
+  const [signerAddress, setSignerAddress] = useState<Address>()
 
   const group = requiredChainInfo?.addressGroup
-  const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
-  const [signerAddress, setSignerAddress] = useState<Address | undefined>(addressOptions.find((a) => a.isDefault))
+
+  useEffect(() => {
+    const addressOptions = group === undefined ? addresses : addresses.filter((a) => a.group === group)
+
+    setSignerAddressOptions(addressOptions)
+    setSignerAddress(
+      addressOptions.length > 0 ? addressOptions.find((a) => a.isDefault) ?? addressOptions[0] : undefined
+    )
+  }, [addresses, group])
 
   const handleConnect = () => connectToWalletConnect(uri)
 
@@ -152,18 +171,26 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onSessionDelete()
   }
 
-  const rejectConnectionAndCloseModal = () => {
+  const rejectConnectionAndCloseModal = async () => {
     if (walletConnectClient && proposalEvent) {
       onSessionDelete()
-      walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
+      await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
     }
 
     onClose()
   }
 
+  const generateAddressInGroup = () => {
+    const address = generateAddress()
+    saveNewAddresses([{ ...address, isDefault: false, color: getRandomLabelColor() }])
+
+    posthog?.capture('New address created through WalletConnect modal')
+  }
+
   const showManualInitialization = wcSessionState === 'uninitialized' && addresses.length > 0
-  const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent && signerAddress
+  const showProposalForApproval = wcSessionState === 'proposal' && proposalEvent
   const showConnectedDApp = wcSessionState === 'initialized' && sessionTopic
+  const validSignerAddressOption = signerAddress || signerAddressOptions.length > 0
 
   return !walletConnectClient ? null : showManualInitialization ? (
     <CenteredModal title="WalletConnect" subtitle={t('Connect to a dApp')} onClose={onClose}>
@@ -194,20 +221,35 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
         <DAppMetadataBox metadata={proposalEvent.params.proposer.metadata} />
       </Section>
       <Section>
-        <AddressSelect
-          label={t('Signer address')}
-          title={t('Select an address to sign with.')}
-          options={addressOptions}
-          defaultAddress={signerAddress}
-          onAddressChange={setSignerAddress}
-          id="from-address"
-        />
+        {validSignerAddressOption ? (
+          <AddressSelect
+            label={t('Signer address')}
+            title={t('Select an address to sign with.')}
+            options={signerAddressOptions}
+            defaultAddress={signerAddress}
+            onAddressChange={setSignerAddress}
+            id="from-address"
+            emptyListPlaceholder={t('There are no addresses in the required group: {{ group }}', { group })}
+          />
+        ) : (
+          <InfoBox importance="warning" Icon={AlertCircle}>
+            <GenerateNewAddressContent>
+              <div>
+                <div>{t('There are no addresses in the required group: {{ group }}', { group })}</div>
+                <div>{t('Please, generate a new address in group {{ group }} first.', { group })}</div>
+              </div>
+              <Button short onClick={generateAddressInGroup}>
+                {t('Generate')}
+              </Button>
+            </GenerateNewAddressContent>
+          </InfoBox>
+        )}
       </Section>
       <ModalFooterButtons>
         <ModalFooterButton role="secondary" onClick={handleReject}>
           {t('Reject')}
         </ModalFooterButton>
-        <ModalFooterButton variant="valid" onClick={handleApprove}>
+        <ModalFooterButton variant="valid" onClick={handleApprove} disabled={!validSignerAddressOption}>
           {t('Approve')}
         </ModalFooterButton>
       </ModalFooterButtons>
@@ -236,3 +278,10 @@ const isNetworkValid = (networkId: string, currentNetworkId: NetworkSettings['ne
   (Object.keys(networkPresets) as Array<NetworkPreset>).some(
     (network) => network === networkId && currentNetworkId === networkPresets[network].networkId
   )
+
+const GenerateNewAddressContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+`

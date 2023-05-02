@@ -84,12 +84,10 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
   const resetNewVersionDownloadTrigger = () => setNewVersionDownloadTriggered(false)
 
   const unlockWallet = async ({ event, walletId, password, afterUnlock, passphrase }: WalletUnlockProps) => {
-    const isPassphraseUsed = !!passphrase
-
     try {
       let wallet = WalletStorage.load(walletId, password)
 
-      if (isPassphraseUsed) {
+      if (passphrase) {
         wallet = { ...wallet, ...getWalletFromMnemonic(wallet.mnemonic, passphrase) }
       }
 
@@ -98,7 +96,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
           id: walletId,
           name: wallet.name,
           mnemonic: wallet.mnemonic,
-          isPassphraseUsed
+          passphrase
         },
         initialAddress: getWalletInitialAddress(wallet)
       }
@@ -110,7 +108,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         number_of_contacts: (ContactsStorage.load() as []).length
       })
 
-      if (!isPassphraseUsed) {
+      if (!passphrase) {
         migrateUserData()
         restoreAddressesFromMetadata()
         restorePendingTransactions()

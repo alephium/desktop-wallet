@@ -38,7 +38,7 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const { generateAndSaveOneAddressPerGroup, discoverAndSaveUsedAddresses } = useAddressGeneration()
-  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.isPassphraseUsed)
+  const isPassphraseUsed = useAppSelector((s) => s.activeWallet.passphrase)
   const posthog = usePostHog()
 
   const [isAddressesGenerationModalOpen, setIsAddressesGenerationModalOpen] = useState(false)
@@ -79,7 +79,7 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
           title={t('Generate one address per group')}
           Icon={<HardHat color="#a880ff" strokeWidth={1} size={55} />}
           description={t('Useful for miners or DeFi use.')}
-          buttonText={isPassphraseUsed ? t`Generate` : t`Start`}
+          buttonText={isPassphraseUsed ? t('Generate') : t('Start')}
           onButtonClick={handleOneAddressPerGroupClick}
           infoLink={links.miningWallet}
         />

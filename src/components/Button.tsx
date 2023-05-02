@@ -31,6 +31,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   squared?: boolean
   submit?: boolean
   short?: boolean
+  tall?: boolean
   wide?: boolean
   Icon?: LucideIconType
   iconColor?: string
@@ -236,7 +237,7 @@ export default styled(Button)`
       ${ButtonIcon} {
         ${children &&
         css`
-          margin-right: var(--spacing-2);
+          margin-right: var(--spacing-3);
         `}
 
         ${({ theme }) => {
@@ -246,7 +247,7 @@ export default styled(Button)`
             css`
               background-color: ${colord(color).alpha(0.08).toHex()};
               border: 1px solid ${colord(color).alpha(0.05).toHex()};
-              padding: 4px;
+              padding: 3px;
               border-radius: var(--radius-full);
 
               svg {
@@ -266,11 +267,11 @@ export default styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (short ? '35px' : squared ? '40px' : '52px')};
+  height: ${({ squared, short, tall }) => (short ? '35px' : squared ? '40px' : tall ? '55px' : '52px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
   border-radius: var(--radius-big);
-  font-weight: var(--fontWeight-medium);
+  font-weight: ${({ role }) => (role === 'secondary' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)')};
   font-size: 13px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};

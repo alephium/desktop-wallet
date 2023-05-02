@@ -49,7 +49,7 @@ interface UnlockedWalletLayoutProps {
 dayjs.extend(relativeTime)
 
 const walletNameAppearAfterSeconds = 1
-const walletNameHideAfterSeconds = 6
+const walletNameHideAfterSeconds = 4
 
 const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayoutProps) => {
   const { t } = useTranslation()
@@ -188,7 +188,7 @@ export const UnlockedWalletPanel = styled.div<{
 
   ${({ top, doubleTop }) =>
     css`
-      padding-top: ${top ? 25 : doubleTop ? 50 : 0}px;
+      padding-top: ${top ? 20 : doubleTop ? 40 : 0}px;
     `}
 
   ${({ bottom }) =>
