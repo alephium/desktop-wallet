@@ -248,7 +248,7 @@ export default styled(Button)`
               background-color: ${colord(color).alpha(0.08).toHex()};
               border: 1px solid ${colord(color).alpha(0.15).toHex()};
               padding: 7px;
-              border-radius: var(--radius-small);
+              border-radius: var(--radius-medium);
             `
           )
         }}

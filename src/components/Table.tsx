@@ -97,7 +97,7 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 19px 20px;
+  padding: 18px 20px;
   min-height: 55px;
 `
 
@@ -194,7 +194,7 @@ const ExpandRowStyled = styled.div`
   display: flex;
   justify-content: center;
   bottom: 0;
-  height: 100px;
+  height: 70px;
   display: flex;
   align-items: flex-end;
 
