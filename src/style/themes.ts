@@ -84,7 +84,7 @@ export const darkTheme: DefaultTheme = {
   },
   shadow: {
     primary: '0 2px 3px rgba(0, 0, 0, 0.2)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.2)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.25)',
     tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {

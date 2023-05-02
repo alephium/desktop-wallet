@@ -49,11 +49,11 @@ export const useTransactionUI = (infoType: TransactionInfoType) => {
       swap: theme.font.secondary
     }[infoType],
     iconBgColor: {
-      in: colord(theme.global.valid).alpha(0.11).toRgbString(),
-      out: colord(theme.font.highlight).alpha(0.11).toRgbString(),
-      move: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      pending: colord(theme.font.secondary).alpha(0.11).toRgbString(),
-      swap: colord(theme.font.secondary).alpha(0.11).toRgbString()
+      in: colord(theme.global.valid).alpha(0.08).toRgbString(),
+      out: colord(theme.font.highlight).alpha(0.08).toRgbString(),
+      move: colord(theme.font.secondary).alpha(0.08).toRgbString(),
+      pending: colord(theme.font.secondary).alpha(0.08).toRgbString(),
+      swap: colord(theme.font.secondary).alpha(0.08).toRgbString()
     }[infoType]
   }
 }
