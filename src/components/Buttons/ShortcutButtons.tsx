@@ -201,4 +201,5 @@ const ShortcutButton = styled(Button)<Pick<ShortcutButtonsProps, 'highlight'>>`
 
 const ButtonText = styled.div`
   font-weight: var(--fontWeight-medium);
+  text-align: left;
 `
