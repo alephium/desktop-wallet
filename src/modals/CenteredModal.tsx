@@ -191,7 +191,7 @@ const BackButton = styled(Button)`
 export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-6);
   width: 100%;
 `
 

@@ -153,8 +153,8 @@ const WalletItem = ({ wallet, isCurrent, onWalletDelete }: WalletItemProps) => {
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
         {wallet.name}
+        {isCurrent && <CheckMark />}
       </WalletName>
-      {isCurrent && <CheckMark />}
 
       <ButtonStyled
         aria-label={t('Delete')}
@@ -179,7 +179,7 @@ const WalletItemContainer = styled.div`
   display: flex;
   align-items: center;
   height: var(--inputHeight);
-  padding: 0 var(--spacing-2);
+  padding: 0 var(--spacing-3);
   gap: 10px;
 
   &:not(:last-child) {

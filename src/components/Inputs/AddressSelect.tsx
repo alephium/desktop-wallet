@@ -153,8 +153,12 @@ function AddressSelect({
           value={address.hash}
           label={label}
         >
-          <AddressBadge addressHash={address.hash} showFull disableCopy />
-          {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} disableCopy />}
+          {(!hideAddressesWithoutAssets || options.find((option) => option.hash === address.hash)) && (
+            <>
+              <AddressBadge addressHash={address.hash} showFull disableCopy />
+              {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} disableCopy />}
+            </>
+          )}
         </ClickableInput>
       </AddressSelectContainer>
       <ModalPortal>

@@ -35,11 +35,14 @@ import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
-import { devModeShortcutDetected, localStorageDataMigrated } from '@/storage/global/globalActions'
+import {
+  devModeShortcutDetected,
+  localStorageDataMigrated,
+  localStorageDataMigrationFailed
+} from '@/storage/global/globalActions'
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
 import { makeSelectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
-import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AddressHash } from '@/types/addresses'
@@ -60,6 +63,7 @@ const App = () => {
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
   const loading = useAppSelector((s) => s.global.loading)
   const settings = useAppSelector((s) => s.settings)
+  const wallets = useAppSelector((s) => s.global.wallets)
   const showDevIndication = useDevModeShortcut()
   const posthog = usePostHog()
 
@@ -67,16 +71,19 @@ const App = () => {
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
   useEffect(() => {
-    migrateGeneralSettings()
-    migrateNetworkSettings()
-    migrateWalletData()
+    try {
+      migrateGeneralSettings()
+      migrateNetworkSettings()
+      migrateWalletData()
 
-    dispatch(localStorageDataMigrated())
+      dispatch(localStorageDataMigrated())
+    } catch (e) {
+      console.error(e)
+      dispatch(localStorageDataMigrationFailed())
+    }
   }, [dispatch])
 
   useEffect(() => {
-    const wallets = WalletStorage.list()
-
     posthog?.people.set({
       wallets: wallets.length,
       theme: settings.theme,
@@ -85,7 +92,7 @@ const App = () => {
       language: settings.language,
       passwordRequirement: settings.passwordRequirement
     })
-  }, [posthog?.people, settings])
+  }, [posthog?.people, settings, wallets.length])
 
   const setSystemLanguage = useCallback(async () => {
     const _window = window as unknown as AlephiumWindow

@@ -19,10 +19,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
 import { store } from '@/storage/store'
 import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
-import { storedPendingTransactionsLoaded } from '@/storage/transactions/transactionsActions'
+import {
+  loadingPendingTransactionsFailed,
+  storedPendingTransactionsLoaded
+} from '@/storage/transactions/transactionsActions'
 
 export const restorePendingTransactions = () => {
-  const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
-  const transactions = PendingTransactionsStorage.load(encryptedStorageProps)
-  store.dispatch(storedPendingTransactionsLoaded(transactions))
+  try {
+    const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+    const transactions = PendingTransactionsStorage.load(encryptedStorageProps)
+    store.dispatch(storedPendingTransactionsLoaded(transactions))
+  } catch (e) {
+    console.error(e)
+    store.dispatch(loadingPendingTransactionsFailed())
+  }
 }

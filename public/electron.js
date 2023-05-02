@@ -24,12 +24,17 @@ const contextMenu = require('electron-context-menu')
 const { autoUpdater } = require('electron-updater')
 
 // Handle deep linking for alephium://
+
+const ALEPHIUM = 'alephium'
+const ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX = `${ALEPHIUM}://wc`
+const ALEPHIUM_WALLET_CONNECT_URI_PREFIX = '?uri='
+
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('alephium', process.execPath, [path.resolve(process.argv[1])])
+    app.setAsDefaultProtocolClient(ALEPHIUM, process.execPath, [path.resolve(process.argv[1])])
   }
 } else {
-  app.setAsDefaultProtocolClient('alephium')
+  app.setAsDefaultProtocolClient(ALEPHIUM)
 }
 
 contextMenu()
@@ -201,6 +206,14 @@ if (!gotTheLock) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
     }
+
+    const url = commandLine.pop().slice(0, -1)
+
+    if (url && url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
+      const uri = extractWalletConnectUri(url)
+
+      mainWindow.webContents.send('wc:connect', uri)
+    }
   })
 
   // This method will be called when Electron has finished
@@ -263,7 +276,12 @@ if (!gotTheLock) {
   })
 
   app.on('open-url', (_, url) => {
-    const uri = url.replace('alephium://wc?uri=', '')
-    mainWindow.webContents.send('wc:connect', uri)
+    if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
+      const uri = extractWalletConnectUri(url)
+      mainWindow.webContents.send('wc:connect', uri)
+    }
   })
 }
+
+const extractWalletConnectUri = (url) =>
+  url.substring(url.indexOf(ALEPHIUM_WALLET_CONNECT_URI_PREFIX) + ALEPHIUM_WALLET_CONNECT_URI_PREFIX.length)

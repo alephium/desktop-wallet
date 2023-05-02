@@ -16,19 +16,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ComponentPropsWithoutRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import AddressColorIndicator from '@/components/AddressColorIndicator'
-import Badge from '@/components/Badge'
 import ClipboardButton from '@/components/Buttons/ClipboardButton'
 import HashEllipsed from '@/components/HashEllipsed'
 import { useAppSelector } from '@/hooks/redux'
 import { makeSelectContactByAddress, selectAddressByHash } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
-type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
+interface AddressBadgeProps {
   addressHash: AddressHash
   truncate?: boolean
   withBorders?: boolean
@@ -37,53 +36,69 @@ type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
   disableA11y?: boolean
   disableCopy?: boolean
   showFull?: boolean
+  className?: string
 }
 
-const AddressBadge = (props: AddressBadgeProps) => {
-  const { addressHash, hideStar, className, hideColorIndication, disableA11y = false, disableCopy } = props
-
+const AddressBadge = ({
+  addressHash,
+  hideStar,
+  className,
+  hideColorIndication,
+  disableA11y = false,
+  disableCopy,
+  truncate,
+  showFull,
+  withBorders
+}: AddressBadgeProps) => {
   const { t } = useTranslation()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
   const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
   const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
-  return contact ? (
-    <AddressBadgeContainer {...props}>
-      <Label {...props}>
-        {disableCopy ? (
-          contact.name
-        ) : (
-          <ClipboardButton textToCopy={contact.address} tooltip={t('Copy contact address')} disableA11y={disableA11y}>
-            {contact.name}
-          </ClipboardButton>
-        )}
-      </Label>
-    </AddressBadgeContainer>
-  ) : !address ? (
-    <NotKnownAddress className={className} hash={addressHash} disableCopy={disableCopy} />
-  ) : (
-    <AddressBadgeContainer {...props}>
-      {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
-      {address.label ? (
-        <Label {...props}>
+  return (
+    <AddressBadgeStyled
+      className={className}
+      withBorders={contact || address ? withBorders : false}
+      truncate={truncate}
+      showFull={showFull}
+    >
+      {contact ? (
+        <Label truncate={truncate}>
           {disableCopy ? (
-            address.label
+            contact.name
           ) : (
-            <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
-              {address.label}
+            <ClipboardButton textToCopy={contact.address} tooltip={t('Copy contact address')} disableA11y={disableA11y}>
+              {contact.name}
             </ClipboardButton>
           )}
         </Label>
+      ) : !address ? (
+        <NotKnownAddress hash={addressHash} disableCopy={disableCopy} />
       ) : (
-        <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
+        <>
+          {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
+          {address.label ? (
+            <Label truncate={truncate}>
+              {disableCopy ? (
+                address.label
+              ) : (
+                <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
+                  {address.label}
+                </ClipboardButton>
+              )}
+            </Label>
+          ) : (
+            <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
+          )}
+        </>
       )}
-    </AddressBadgeContainer>
+    </AddressBadgeStyled>
   )
 }
 
 export default AddressBadge
 
-const AddressBadgeContainer = styled.div<AddressBadgeProps>`
+const AddressBadgeStyled = styled.div<Pick<AddressBadgeProps, 'withBorders' | 'truncate' | 'showFull'>>`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -106,7 +121,7 @@ const AddressBadgeContainer = styled.div<AddressBadgeProps>`
     `}
 `
 
-const Label = styled.span<AddressBadgeProps>`
+const Label = styled.span<Pick<AddressBadgeProps, 'truncate'>>`
   margin-right: 2px;
   white-space: nowrap;
 
@@ -118,8 +133,4 @@ const Label = styled.span<AddressBadgeProps>`
     `}
 `
 
-const NotKnownAddress = styled(HashEllipsed)`
-  border: none;
-  border-radius: 0;
-  padding: 0;
-`
+const NotKnownAddress = styled(HashEllipsed)``
