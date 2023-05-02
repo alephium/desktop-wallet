@@ -44,7 +44,7 @@ export const lightTheme: DefaultTheme = {
     secondary: '#f0f0f0'
   },
   shadow: {
-    primary: '0 1px 1px rgba(0, 0, 0, 0.05)',
+    primary: '0 1px 1px rgba(0, 0, 0, 0.03)',
     secondary: '0 8px 10px rgba(0, 0, 0, 0.1)',
     tertiary: '0 0 50px rgba(0, 0, 0, 0.15)'
   },

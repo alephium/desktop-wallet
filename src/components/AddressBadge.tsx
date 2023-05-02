@@ -87,7 +87,7 @@ const AddressBadgeContainer = styled.div<AddressBadgeProps>`
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: ${({ showFull }) => !showFull && 120}px;
+  max-width: ${({ showFull }) => !showFull && 125}px;
 
   ${({ withBorders }) =>
     withBorders &&
