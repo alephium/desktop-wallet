@@ -413,13 +413,13 @@
   "with": "avec",
   "{{ amount }} words entered": "{{ amount }} mots inscrits",
   "{{ number }} selected": "{{ number }} sélectionnés",
-  "Contact deleted": "Contact deleted",
-  "Could not delete contact.": "Could not delete contact.",
-  "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Are you sure you want to remove \"{{ contactName }}\" from your contact list?",
-  "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
-  "There are no available addresses.": "There are no available addresses.",
-  "Please, generate a new address in group {{ group }} first.": "Please, generate a new address in group {{ group }} first.",
-  "System": "System",
-  "Light": "Light",
-  "Dark": "Dark"
+  "Contact deleted": "Contact effacé",
+  "Could not delete contact.": "Impossible d'effacer le contact.",
+  "Are you sure you want to remove \"{{ contactName }}\" from your contact list?": "Etes-vous sur de vouloir effacer \"{{ contactName }}\" de votre liste de contacts?",
+  "There are no addresses in the required group: {{ group }}": "Il n'y a pas d'adresses dans le groupe requis: {{ group }}",
+  "There are no available addresses.": "Il n'y a pas d'adresse disponible.",
+  "Please, generate a new address in group {{ group }} first.": "Merci de générer une nouvelle adresse dans le group {{ group }} d'abord.",
+  "System": "Système",
+  "Light": "Clair",
+  "Dark": "Sombre"
 }
