@@ -155,8 +155,8 @@ function AddressSelect({
         >
           {(!hideAddressesWithoutAssets || options.find((option) => option.hash === address.hash)) && (
             <>
-              <AddressBadge addressHash={address.hash} showFull disableCopy />
-              {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} disableCopy />}
+              <AddressBadge addressHash={address.hash} showFull />
+              {!!address.label && !simpleMode && <HashEllipsed hash={address.hash} />}
             </>
           )}
         </ClickableInput>

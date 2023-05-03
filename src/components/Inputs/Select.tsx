@@ -21,7 +21,6 @@ import { isEqual, partition } from 'lodash'
 import { MoreVertical, SearchIcon } from 'lucide-react'
 import {
   KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent,
   OptionHTMLAttributes,
   ReactNode,
   RefObject,
@@ -76,7 +75,7 @@ interface SelectProps<T extends OptionValue> {
   className?: string
   simpleMode?: boolean
   heightSize?: InputHeight
-  renderCustomComponent?: (value?: SelectOption<T>) => ReactNode
+  renderCustomComponent?: (value?: SelectOption<T>, disablePointer?: boolean) => ReactNode
   ListBottomComponent?: ReactNode
 }
 
@@ -106,6 +105,8 @@ function Select<T extends OptionValue>({
   const [showPopup, setShowPopup] = useState(false)
   const [hookCoordinates, setHookCoordinates] = useState<Coordinates | undefined>(undefined)
 
+  const multipleAvailableOptions = options.length > 1
+
   const getContainerCenter = (): Coordinates | undefined => {
     if (selectedValueRef?.current) {
       const containerElement = selectedValueRef.current
@@ -130,11 +131,8 @@ function Select<T extends OptionValue>({
     [onSelect, skipEqualityCheck, value]
   )
 
-  const handleClick = (e: MouseEvent) => {
-    if (options.length <= 1) {
-      options.length === 1 && onSelect(options[0].value)
-      return
-    }
+  const handleClick = () => {
+    if (!multipleAvailableOptions) return
 
     setHookCoordinates(getContainerCenter())
     setShowPopup(true)
@@ -142,7 +140,7 @@ function Select<T extends OptionValue>({
 
   const handleKeyDown = (e: ReactKeyboardEvent) => {
     if (![' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) return
-    if (options.length <= 1) return
+    if (!multipleAvailableOptions) return
     setHookCoordinates(getContainerCenter())
     setShowPopup(true)
   }
@@ -186,15 +184,18 @@ function Select<T extends OptionValue>({
         heightSize={heightSize}
         simpleMode={simpleMode}
         tabIndex={renderCustomComponent ? -1 : 0}
+        showPointer={multipleAvailableOptions}
       >
         {renderCustomComponent ? (
-          <CustomComponentContainer ref={selectedValueRef}>{renderCustomComponent(value)}</CustomComponentContainer>
+          <CustomComponentContainer ref={selectedValueRef}>
+            {renderCustomComponent(value, !multipleAvailableOptions)}
+          </CustomComponentContainer>
         ) : (
           <>
             <InputLabel isElevated={!!value} htmlFor={id}>
               {label}
             </InputLabel>
-            {options.length > 1 && !simpleMode && (
+            {multipleAvailableOptions && !simpleMode && (
               <MoreIcon>
                 <MoreVertical size={16} />
               </MoreIcon>
@@ -208,6 +209,7 @@ function Select<T extends OptionValue>({
               label={label}
               heightSize={heightSize}
               contrast={contrast}
+              showPointer={multipleAvailableOptions}
             >
               <Truncate>{value?.label}</Truncate>
             </SelectedValue>
@@ -369,7 +371,7 @@ const SelectedValue = styled.div<InputProps>`
   padding-right: 35px;
   font-weight: var(--fontWeight-semiBold);
 
-  cursor: pointer;
+  cursor: ${({ showPointer }) => showPointer && 'pointer'};
 
   display: flex;
   align-items: center;
@@ -387,8 +389,10 @@ const SelectedValue = styled.div<InputProps>`
     `}
 `
 
-export const SelectContainer = styled(InputContainer)<Pick<InputProps, 'noMargin' | 'heightSize' | 'simpleMode'>>`
-  cursor: pointer;
+export const SelectContainer = styled(InputContainer)<
+  Pick<InputProps, 'noMargin' | 'heightSize' | 'simpleMode' | 'showPointer'>
+>`
+  cursor: ${({ showPointer }) => showPointer && 'pointer'};
   margin: ${({ noMargin, simpleMode }) => (noMargin || simpleMode ? 0 : '16px 0')};
   height: ${({ heightSize }) =>
     heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
