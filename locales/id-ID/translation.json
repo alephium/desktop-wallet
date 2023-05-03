@@ -121,7 +121,7 @@
   "Inputs": "Masukan",
   "Outputs": "Keluaran",
   "New version": "Versi baru",
-  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Versi {{ newVersion }} telah tersedia. Klik \"Update\" untuk menghindari masalah dompet.",
+  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Versi {{ newVersion }} telah tersedia. Klik \"Perbarui\" untuk menghindari masalah dompet.",
   "Download": "Unduh",
   "Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.": "Harap pastikan frasa pemulihan Anda telah disimpan dan sudah disimpan di tempat yang aman untuk memulihkan dompet Anda di masa mendatang. Tanpa frasa pemulihan, dompet Anda tidak akan dapat dipulihkan dan hilang secara permanen.",
   "Not your keys, not your coins.": "Bukan kunci Anda, bukan koin Anda.",
