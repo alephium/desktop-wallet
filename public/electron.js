@@ -196,7 +196,7 @@ function createWindow() {
 
   autoUpdater.on('update-downloaded', (event) => mainWindow.webContents.send('updater:updateDownloaded', event))
 
-  if (isWindows) {
+  if (!isMac) {
     if (process.argv.length > 1) {
       const url = process.argv.find((arg) => arg.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX))
 
