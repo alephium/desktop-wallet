@@ -95,6 +95,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
+  const [isTransactionBuildTriggered, setIsTransactionBuildTriggered] = useState(false)
 
   const isRequestToApproveContractCall = initialStep === 'info-check'
 
@@ -182,10 +183,11 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   )
 
   useEffect(() => {
-    if (isRequestToApproveContractCall && transactionData) {
+    if (isRequestToApproveContractCall && !isTransactionBuildTriggered && transactionData) {
+      setIsTransactionBuildTriggered(true)
       buildTransactionExtended(transactionData)
     }
-  }, [buildTransactionExtended, isRequestToApproveContractCall, transactionData])
+  }, [buildTransactionExtended, isRequestToApproveContractCall, isTransactionBuildTriggered, transactionData])
 
   const onCloseExtended = useCallback(() => {
     onClose()
@@ -252,7 +254,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       onBack={onBackCallback}
       focusMode
       noPadding
-      disableBack={isRequestToApproveContractCall}
+      disableBack={isRequestToApproveContractCall && step !== 'password-check'}
     >
       <StepsProgress currentStep={step} isContract={isContract} />
       {step === 'addresses' && (

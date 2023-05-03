@@ -266,6 +266,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           case 'alph_requestNodeApi': {
             const p = request.params as ApiRequestArguments
             const result = await client.web3.request(p)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -278,6 +279,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const call = (client.explorer as any)[`${p.path}`][`${p.method}`] as (...arg0: any[]) => Promise<any>
             const result = await call(...p.params)
+
             await walletConnectClient.respond({
               topic: event.topic,
               response: { id: event.id, jsonrpc: '2.0', result }
@@ -305,9 +307,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
       if (!walletConnectClient || !uri) return
 
       try {
-        await walletConnectClient.pair({ uri })
+        return await walletConnectClient.pair({ uri })
       } catch (e) {
-        dispatch(walletConnectPairingFailed(getHumanReadableError(e, t('Could not pair with WalletConnect'))))
+        console.error('Could not pair with WalletConnect', e)
+        const errorMessage = getHumanReadableError(e, t('Could not pair with WalletConnect'))
+
+        if (!errorMessage.includes('Pairing already exists')) {
+          dispatch(walletConnectPairingFailed(errorMessage))
+        }
       }
     },
     [dispatch, t, walletConnectClient]
@@ -334,18 +341,31 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     walletConnectClient.on('session_proposal', onSessionProposal)
     walletConnectClient.on('session_delete', onSessionDelete)
 
+    const connectAndReset = async (uri: string) => {
+      await connectToWalletConnect(uri)
+      electron?.walletConnect.resetDeepLinkUri()
+    }
+
+    const getDeepLinkAndConnect = async () => {
+      const uri = await electron?.walletConnect.getDeepLinkUri()
+
+      if (uri) {
+        connectAndReset(uri)
+      } else {
+        electron?.walletConnect.onConnect(async (uri: string) => {
+          connectAndReset(uri)
+        })
+      }
+    }
+
+    getDeepLinkAndConnect()
+
     return () => {
       walletConnectClient.removeListener('session_request', onSessionRequest)
       walletConnectClient.removeListener('session_proposal', onSessionProposal)
       walletConnectClient.removeListener('session_delete', onSessionDelete)
     }
-  }, [onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
-
-  useEffect(() => {
-    electron?.walletConnect.onConnect((uri) => {
-      connectToWalletConnect(uri)
-    })
-  }, [connectToWalletConnect])
+  }, [connectToWalletConnect, onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
   return (
     <WalletConnectContext.Provider
