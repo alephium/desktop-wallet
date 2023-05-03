@@ -74,7 +74,7 @@ const NetworkSwitch = () => {
         if (networkId !== undefined) {
           dispatch(networkPresetSwitched(networkName))
 
-          posthog?.capture('Changed network', { network_name: networkName })
+          posthog?.capture('Changed network from app header', { network_name: networkName })
           return
         }
       }
