@@ -181,7 +181,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </DetailsRow>
         )}
         <DetailsRow label={t`Fee`}>
-          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} />
+          <Amount tabIndex={0} value={BigInt(transaction.gasAmount) * BigInt(transaction.gasPrice)} fullPrecision />
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
