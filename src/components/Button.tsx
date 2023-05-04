@@ -205,14 +205,14 @@ export default styled(Button)`
             default: 'white',
             contrast: theme.font.secondary,
             valid: theme.font.primary,
-            alert: theme.font.contrastPrimary,
+            alert: 'white',
             faded: 'white'
           }[variant],
           secondary: {
             default: theme.font.primary,
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.contrastPrimary,
+            alert: theme.global.alert,
             faded: theme.font.primary
           }[variant]
         }[role]
