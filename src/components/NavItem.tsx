@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useLocation, useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import Button from '@/components/Button'
 
@@ -31,6 +31,7 @@ interface NavItemProps {
 const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const theme = useTheme()
 
   const isActive = to !== undefined && location.pathname.startsWith(to)
 
@@ -54,13 +55,14 @@ const NavItem = ({ Icon, label, to, onClick }: NavItemProps) => {
       isActive={isActive}
       data-tooltip-id="sidenav"
       data-tooltip-content={label}
+      iconColor={theme.font.primary}
     />
   )
 }
 
 const ButtonStyled = styled(Button)<{ isActive: boolean }>`
   &:not(:hover) {
-    opacity: ${({ isActive }) => (isActive ? 1 : 0.6)} !important;
+    opacity: ${({ isActive }) => (isActive ? 1 : 0.5)} !important;
   }
 
   &:hover {

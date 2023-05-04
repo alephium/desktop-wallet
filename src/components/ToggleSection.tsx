@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { ReactNode, useEffect, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
@@ -81,6 +82,7 @@ export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => colord(theme.bg.background2).alpha(0.5).toHex()};
   border-radius: var(--radius-big);
   padding-bottom: 16px;
 `

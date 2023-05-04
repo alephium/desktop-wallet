@@ -77,7 +77,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={16} color={iconColor || theme.font.tertiary} />
+          <Icon size={15} color={iconColor || theme.font.tertiary} />
         </ButtonIcon>
       )}
       {children as ReactNode}
@@ -250,7 +250,7 @@ export default styled(Button)`
             background-color: ${colord(iconColor || theme.font.tertiary)
               .alpha(0.08)
               .toHex()};
-            padding: 7px;
+            padding: 6px;
             border-radius: var(--radius-full);
           `}
 

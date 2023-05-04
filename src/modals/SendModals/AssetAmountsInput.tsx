@@ -28,7 +28,6 @@ import ActionLink from '@/components/ActionLink'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
-import Button from '@/components/Button'
 import DeleteButton from '@/components/Buttons/DeleteButton'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
@@ -193,17 +192,9 @@ const AssetAmountsInput = ({
       HeaderActions={
         canAddMultipleAssets && (
           <AddAssetSection>
-            <Button
-              variant="default"
-              role="secondary"
-              title={t('Add asset')}
-              transparent
-              Icon={Plus}
-              short
-              onClick={handleAddAssetClick}
-            >
+            <ActionLink Icon={Plus} onClick={handleAddAssetClick} withBackground>
               {t('Add asset')}
-            </Button>
+            </ActionLink>
           </AddAssetSection>
         )
       }

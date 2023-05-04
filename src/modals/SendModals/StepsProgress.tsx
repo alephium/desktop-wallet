@@ -43,8 +43,8 @@ const stepTitles: Record<Step, TranslationKey> = {
   'tx-sent': 'Sent'
 }
 
-const dotSize = 12
-const lineThickness = 1
+const dotSize = 13
+const lineThickness = 2
 
 const StepsProgress = ({ currentStep, isContract, className }: StepsProgressProps) => {
   const { t } = useTranslation()
@@ -74,7 +74,7 @@ const useStepsUI = (currentStep: Step) => {
   const theme = useTheme()
   const settings = useAppSelector((s) => s.settings)
 
-  const nextColor = colord(theme.font.tertiary).alpha(0.5).toHex()
+  const nextColor = colord(theme.font.tertiary).alpha(0.3).toHex()
 
   const steps: Step[] = !settings.passwordRequirement
     ? ['addresses', 'build-tx', 'info-check', 'tx-sent']
@@ -88,19 +88,19 @@ const useStepsUI = (currentStep: Step) => {
       : 'next'
 
   const textColor: Record<StepStatus, string> = {
-    completed: theme.global.accent,
+    completed: colord(theme.global.accent).alpha(0.7).toHex(),
     active: theme.global.accent,
     next: nextColor
   }
 
   const dotFill: Record<StepStatus, string> = {
-    completed: theme.global.accent,
+    completed: colord(theme.global.accent).alpha(0.7).toHex(),
     active: theme.bg.accent,
     next: 'transparent'
   }
 
   const line: Record<StepStatus, string> = {
-    completed: theme.global.accent,
+    completed: colord(theme.global.accent).alpha(0.7).toHex(),
     active: nextColor,
     next: nextColor
   }
