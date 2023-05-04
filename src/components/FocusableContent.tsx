@@ -55,7 +55,7 @@ const FocusableContent: FC<FocusableContentProps> = ({ className, children, isFo
 
         {isFocused && (
           <CollapseRow onClick={onClose}>
-            <Button role="secondary" variant="contrast" onClick={onClose} Icon={ChevronsDownUp} short>
+            <Button role="secondary" onClick={onClose} Icon={ChevronsDownUp} short>
               {t('Close')}
             </Button>
           </CollapseRow>
