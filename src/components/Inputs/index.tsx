@@ -39,6 +39,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string
   heightSize?: InputHeight
   simpleMode?: boolean
+  showPointer?: boolean
 }
 
 export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {

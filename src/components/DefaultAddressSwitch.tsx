@@ -56,7 +56,7 @@ const DefaultAddressSwitch = () => {
       onSelect={handleDefaultAddressChange}
       controlledValue={addressOptions.find((n) => n.value === defaultAddress?.hash)}
       title={t('Default address')}
-      optionRender={({ value }) => <AddressBadge addressHash={value} disableCopy truncate />}
+      optionRender={({ value }) => <AddressBadge addressHash={value} truncate />}
       id="defaultAddress"
       noMargin
       renderCustomComponent={SelectCustomComponent}
@@ -67,12 +67,19 @@ const DefaultAddressSwitch = () => {
 
 export default DefaultAddressSwitch
 
-const SelectCustomComponent = (value?: SelectOption<AddressHash>) => {
+const SelectCustomComponent = (value?: SelectOption<AddressHash>, disablePointer?: boolean) => {
   const { t } = useTranslation()
 
   return (
-    <Button role="secondary" short transparent data-tooltip-id="default" data-tooltip-content={t('Default address')}>
-      {value?.value && <AddressBadge addressHash={value.value} disableCopy truncate />}
+    <Button
+      role="secondary"
+      short
+      transparent
+      data-tooltip-id="default"
+      data-tooltip-content={t('Default address')}
+      disablePointer={disablePointer}
+    >
+      {value?.value && <AddressBadge addressHash={value.value} truncate />}
     </Button>
   )
 }

@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { addressToGroup } from '@alephium/sdk'
+import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { uniq } from 'lodash'
 

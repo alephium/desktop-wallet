@@ -30,7 +30,7 @@ import ToggleSection from '@/components/ToggleSection'
 import useGasSettings from '@/hooks/useGasSettings'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import { AssetAmount } from '@/types/assets'
+import { AssetAmountInputType } from '@/types/assets'
 import { PartialTxData, TransferTxData } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance } from '@/utils/addresses'
 
@@ -54,7 +54,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
   } = useGasSettings(data?.gasAmount?.toString(), data?.gasPrice)
 
   const [lockTime, setLockTime] = useState(data.lockTime)
-  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[]>(data.assetAmounts || defaultAssetAmounts)
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmountInputType[]>(data.assetAmounts || defaultAssetAmounts)
 
   const { fromAddress, toAddress } = data
 

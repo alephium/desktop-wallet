@@ -38,6 +38,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   iconBackground?: boolean
   borderless?: boolean
   isHighlighted?: boolean
+  disablePointer?: boolean
   className?: string
 }
 
@@ -92,7 +93,8 @@ export default styled(Button)`
     borderless,
     iconBackground,
     iconColor,
-    children
+    children,
+    disablePointer
   }) => {
     const bgColor = transparent
       ? 'transparent'
@@ -274,7 +276,7 @@ export default styled(Button)`
   padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
-  cursor: pointer;
+  cursor: ${({ disablePointer }) => !disablePointer && 'pointer'};
 
   &:disabled {
     opacity: 0.5;

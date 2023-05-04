@@ -30,7 +30,7 @@ import useGasSettings from '@/hooks/useGasSettings'
 import useStateObject from '@/hooks/useStateObject'
 import AssetAmountsInput from '@/modals/SendModals/AssetAmountsInput'
 import GasSettings from '@/modals/SendModals/GasSettings'
-import { AssetAmount } from '@/types/assets'
+import { AssetAmountInputType } from '@/types/assets'
 import { CallContractTxData, PartialTxData, TxPreparation } from '@/types/transactions'
 import { assetAmountsWithinAvailableBalance, getAvailableBalance } from '@/utils/addresses'
 import { isAmountWithinRange } from '@/utils/transactions'
@@ -57,7 +57,7 @@ const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContr
     fromAddress: data.fromAddress ?? '',
     bytecode: data.bytecode ?? ''
   })
-  const [assetAmounts, setAssetAmounts] = useState<AssetAmount[] | undefined>(data.assetAmounts)
+  const [assetAmounts, setAssetAmounts] = useState<AssetAmountInputType[] | undefined>(data.assetAmounts)
   const [isAmountValid, setIsAmountValid] = useState(false)
 
   const { fromAddress, bytecode, alphAmount } = txPrep

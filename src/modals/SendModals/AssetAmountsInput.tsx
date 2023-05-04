@@ -16,8 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { fromHumanReadableAmount, getNumberOfDecimals, MIN_UTXO_SET_AMOUNT, toHumanReadableAmount } from '@alephium/sdk'
+import { fromHumanReadableAmount, getNumberOfDecimals, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
+import { MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
 import { Plus } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,13 +43,13 @@ import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { makeSelectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
-import { Asset, AssetAmount } from '@/types/assets'
+import { Asset, AssetAmountInputType } from '@/types/assets'
 import { onEnterOrSpace } from '@/utils/misc'
 
 interface AssetAmountsInputProps {
   address: Address
-  assetAmounts: AssetAmount[]
-  onAssetAmountsChange: (assetAmounts: AssetAmount[]) => void
+  assetAmounts: AssetAmountInputType[]
+  onAssetAmountsChange: (assetAmounts: AssetAmountInputType[]) => void
   id: string
   allowMultiple?: boolean
   className?: string
@@ -66,7 +67,7 @@ const AssetAmountsInput = ({
   const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
-  const selectedValueRef = useRef<HTMLDivElement>(null)
+  const selectedValueRef = useRef<HTMLButtonElement>(null)
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -102,31 +103,32 @@ const AssetAmountsInput = ({
 
     if (!selectedAsset) return
 
-    const amountValueAsFloat = parseFloat(amountInput)
-    const tooManyDecimals = getNumberOfDecimals(amountInput) > (selectedAsset?.decimals ?? 0)
-
+    const cleanedAmount = amountInput === '00' ? '0' : amountInput
+    const amountValueAsFloat = parseFloat(cleanedAmount)
+    const tooManyDecimals = getNumberOfDecimals(cleanedAmount) > (selectedAsset?.decimals ?? 0)
     const availableAmount = toHumanReadableAmount(
       selectedAsset.balance - selectedAsset.lockedBalance,
       selectedAsset.decimals
     )
+
     const newError =
       amountValueAsFloat > parseFloat(availableAmount)
         ? t('Amount exceeds available balance')
-        : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph)
+        : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph) && amountValueAsFloat !== 0
         ? t('Amount must be greater than {{ minAmountInAlph }}', { minAmountInAlph })
         : tooManyDecimals
         ? t('This asset cannot have more than {{ decimals }} decimals', { decimals: selectedAsset.decimals })
         : ''
-
     const newErrors = [...errors]
     newErrors.splice(assetRowIndex, 1, newError)
     setErrors(newErrors)
 
-    const amount = !amountInput ? undefined : fromHumanReadableAmount(amountInput, selectedAsset.decimals)
+    const amount = !cleanedAmount ? undefined : fromHumanReadableAmount(cleanedAmount, selectedAsset.decimals)
     const newAssetAmounts = [...assetAmounts]
     newAssetAmounts.splice(assetRowIndex, 1, {
       id: selectedAssetId,
-      amount
+      amount,
+      amountInput: cleanedAmount
     })
     onAssetAmountsChange(newAssetAmounts)
   }
@@ -187,11 +189,10 @@ const AssetAmountsInput = ({
   return (
     <InputsSection title={t(assetAmounts.length < 2 ? 'Asset' : 'Assets')} className={className}>
       <AssetAmounts>
-        {assetAmounts.map(({ id, amount }, index) => {
+        {assetAmounts.map(({ id, amountInput = '' }, index) => {
           const asset = assets.find((asset) => asset.id === id)
           if (!asset) return
 
-          const amountValue = amount ? toHumanReadableAmount(amount, asset.decimals) : ''
           const availableAmount = asset.balance - asset.lockedBalance
           const availableHumanReadableAmount = toHumanReadableAmount(availableAmount, asset.decimals)
 
@@ -201,13 +202,7 @@ const AssetAmountsInput = ({
                 onMouseDown={() => handleAssetSelectModalOpen(index)}
                 onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
               >
-                <SelectInput
-                  type="button"
-                  className={className}
-                  disabled={disabled || !allowMultiple}
-                  id={id}
-                  ref={selectedValueRef}
-                >
+                <SelectInput className={className} disabled={disabled || !allowMultiple} id={id} ref={selectedValueRef}>
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
                     <Truncate>
@@ -223,7 +218,7 @@ const AssetAmountsInput = ({
               <HorizontalDividerStyled />
               <AssetAmountRow>
                 <AssetAmountInput
-                  value={amountValue}
+                  value={amountInput}
                   onChange={(e) => handleAssetAmountChange(index, e.target.value)}
                   onClick={() => setSelectedAssetRowIndex(index)}
                   onMouseDown={() => setSelectedAssetRowIndex(index)}
@@ -302,7 +297,7 @@ const AssetSelect = styled(SelectContainer)`
   margin: 0;
 `
 
-const SelectInput = styled.div<InputProps>`
+const SelectInput = styled.button<InputProps>`
   ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, false, true)};
   display: flex;
   align-items: center;
