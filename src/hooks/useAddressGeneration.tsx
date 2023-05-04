@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic } from '@alephium/sdk'
+import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
 
 import client from '@/api/client'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'

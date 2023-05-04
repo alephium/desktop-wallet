@@ -18,15 +18,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import {
   calcTxAmountsDeltaForAddress,
-  DUST_AMOUNT,
   getDirection,
   isConsolidationTx,
-  MIN_UTXO_SET_AMOUNT,
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
 import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
+import { DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
 import dayjs from 'dayjs'
 
 import { SelectOption } from '@/components/Inputs/Select'
