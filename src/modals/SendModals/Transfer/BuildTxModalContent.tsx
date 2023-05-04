@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import FooterButton from '@/components/Buttons/FooterButton'
-import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
 import Input from '@/components/Inputs/Input'
 import ToggleSection from '@/components/ToggleSection'
@@ -90,7 +89,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
           id="asset-amounts"
         />
       </InputFieldsColumn>
-      <HorizontalDividerStyled secondary />
+      <HorizontalDividerStyled />
       <ToggleSection
         title={t('Show advanced options')}
         subtitle={t('Set gas and lock time')}
@@ -141,6 +140,7 @@ const TransferBuildTxModalContent = ({ data, onSubmit }: TransferBuildTxModalCon
 
 export default TransferBuildTxModalContent
 
-const HorizontalDividerStyled = styled(HorizontalDivider)`
-  margin: 20px 0;
+const HorizontalDividerStyled = styled.div`
+  flex: 1;
+  margin: 15px 0;
 `

@@ -16,16 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputsSectionProps {
   title: string
+  HeaderActions?: ReactNode
   className?: string
 }
 
-const InputsSection: FC<InputsSectionProps> = ({ title, className, children }) => (
+const InputsSection: FC<InputsSectionProps> = ({ title, className, HeaderActions, children }) => (
   <div className={className}>
-    <Title>{title}</Title>
+    <Header>
+      <Title>{title}</Title>
+      {HeaderActions}
+    </Header>
     {children}
   </div>
 )
@@ -35,9 +40,12 @@ export default InputsSection
 const Title = styled.div`
   font-size: 15px;
   font-weight: var(--fontWeight-semiBold);
-  margin: 24px 12px 15px;
+`
 
-  &:first-child {
-    margin-top: 10px;
-  }
+const Header = styled.div`
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
 `
