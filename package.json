@@ -130,7 +130,13 @@
         "AppImage",
         "deb",
         "snap"
-      ]
+      ],
+      "mimeTypes": [
+        "x-scheme-handler/alephium"
+      ],
+      "desktop": {
+        "exec": "alephium %U"
+      }
     },
     "win": {
       "artifactName": "${productName}-${version}.${ext}",

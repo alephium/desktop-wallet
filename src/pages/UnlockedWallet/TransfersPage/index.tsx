@@ -70,7 +70,7 @@ const TransfersPage = ({ className }: TransfersPageProps) => {
   return (
     <UnlockedWalletPage
       title={t('Transfers')}
-      subtitle={t('Browse and download your transaction history. Execute new transfers easily.')}
+      subtitle={t('Browse your transaction history. Execute new transfers easily.')}
       isInfoMessageVisible={!infoMessageClosed}
       closeInfoMessage={closeInfoMessage}
       infoMessageLink={links.faq}
