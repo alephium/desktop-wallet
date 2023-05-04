@@ -210,6 +210,7 @@ const DirectionLabel = styled.span`
 
 const AssetTime = styled.div`
   font-size: 12px;
+  max-width: 120px;
 `
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
