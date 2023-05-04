@@ -192,7 +192,7 @@ const AssetAmountsInput = ({
       HeaderActions={
         canAddMultipleAssets && (
           <AddAssetSection>
-            <ActionLink Icon={Plus} onClick={handleAddAssetClick} withBackground>
+            <ActionLink Icon={Plus} onClick={handleAddAssetClick} withBackground iconPosition="left">
               {t('Add asset')}
             </ActionLink>
           </AddAssetSection>

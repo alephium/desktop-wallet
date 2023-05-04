@@ -267,8 +267,9 @@ export default styled(Button)`
   height: ${({ squared, short, tall }) => (short ? '35px' : squared ? '40px' : tall ? '55px' : '52px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
-  border-radius: var(--radius-big);
-  font-weight: ${({ role }) => (role === 'secondary' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)')};
+  border-radius: ${({ short }) => (short ? 'var(--radius-medium)' : 'var(--radius-big)')};
+  font-weight: ${({ role, variant }) =>
+    role === 'secondary' || variant === 'faded' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)'};
   font-size: 13px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};

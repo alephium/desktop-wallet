@@ -22,6 +22,7 @@ import styled, { css } from 'styled-components'
 interface ActionLinkProps {
   onClick: () => void
   Icon?: LucideIconType
+  iconPosition?: 'right' | 'left'
   withBackground?: boolean
   className?: string
 }
@@ -44,6 +45,8 @@ export default styled(ActionLink)`
   align-items: center;
   font-size: inherit;
   font-weight: inherit;
+  flex-direction: ${({ iconPosition }) => (iconPosition === 'left' ? 'row-reverse' : 'row')};
+  gap: 5px;
   padding: 0;
 
   &:hover {
@@ -64,6 +67,5 @@ export default styled(ActionLink)`
 `
 
 const IconContainer = styled.div`
-  margin-left: 5px;
   display: flex;
 `
