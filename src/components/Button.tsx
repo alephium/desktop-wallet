@@ -196,7 +196,22 @@ export default styled(Button)`
             faded: theme.border.secondary
           }[variant]
         }[role]
-      : theme.border.primary
+      : {
+          primary: {
+            default: theme.border.primary,
+            contrast: theme.border.primary,
+            valid: theme.border.primary,
+            alert: theme.border.primary,
+            faded: theme.border.primary
+          }[variant],
+          secondary: {
+            default: theme.border.primary,
+            contrast: theme.border.primary,
+            valid: theme.global.valid,
+            alert: theme.global.alert,
+            faded: theme.border.primary
+          }[variant]
+        }[role]
 
     const hoverColor = transparent
       ? theme.font.primary
