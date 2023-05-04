@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
@@ -45,6 +45,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
 const Button = ({ children, disabled, submit, Icon, className, iconColor, isHighlighted, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const theme = useTheme()
 
   useEffect(() => {
     if (!submit) return
@@ -76,7 +77,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={16} color={iconColor} />
+          <Icon size={15} color={iconColor || theme.font.tertiary} />
         </ButtonIcon>
       )}
       {children as ReactNode}
@@ -168,8 +169,8 @@ export default styled(Button)`
             faded: theme.global.accent
           }[variant],
           secondary: {
-            default: theme.font.primary,
-            contrast: theme.font.secondary,
+            default: theme.font.secondary,
+            contrast: theme.font.contrastSecondary,
             valid: theme.font.contrastPrimary,
             alert: theme.global.alert,
             faded: theme.font.primary
@@ -223,6 +224,7 @@ export default styled(Button)`
       position: relative;
 
       ${!transparent &&
+      !borderless &&
       css`
         box-shadow: ${({ theme }) => theme.shadow.primary};
       `}
@@ -239,21 +241,18 @@ export default styled(Button)`
       ${ButtonIcon} {
         ${children &&
         css`
-          margin-right: var(--spacing-3);
+          margin-right: var(--spacing-2);
         `}
 
-        ${({ theme }) => {
-          const color = iconColor || theme.font.tertiary
-          return (
-            iconBackground &&
-            css`
-              background-color: ${colord(color).alpha(0.08).toHex()};
-              border: 1px solid ${colord(color).alpha(0.15).toHex()};
-              padding: 7px;
-              border-radius: var(--radius-medium);
-            `
-          )
-        }}
+        ${({ theme }) =>
+          iconBackground &&
+          css`
+            background-color: ${colord(iconColor || theme.font.tertiary)
+              .alpha(0.08)
+              .toHex()};
+            padding: 6px;
+            border-radius: var(--radius-full);
+          `}
 
         svg {
           color: ${fontColor};
@@ -268,8 +267,9 @@ export default styled(Button)`
   height: ${({ squared, short, tall }) => (short ? '35px' : squared ? '40px' : tall ? '55px' : '52px')};
   width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
-  border-radius: var(--radius-big);
-  font-weight: ${({ role }) => (role === 'secondary' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)')};
+  border-radius: ${({ short }) => (short ? 'var(--radius-medium)' : 'var(--radius-big)')};
+  font-weight: ${({ role, variant }) =>
+    role === 'secondary' || variant === 'faded' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)'};
   font-size: 13px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};

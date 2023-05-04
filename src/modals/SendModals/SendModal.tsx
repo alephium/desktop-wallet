@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { getSdkError } from '@walletconnect/utils'
+import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PostHog, usePostHog } from 'posthog-js/react'
@@ -297,9 +298,11 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       )}
       {step === 'tx-sent' && (
         <ScrollableModalContent>
-          <ConfirmationAnimation {...fadeIn}>
-            <CheckIcon size={130} />
-          </ConfirmationAnimation>
+          <ConfirmationCheckContainer>
+            <ConfirmationAnimation {...fadeIn}>
+              <CheckIcon size={80} strokeWidth={1} />
+            </ConfirmationAnimation>
+          </ConfirmationCheckContainer>
         </ScrollableModalContent>
       )}
       <ModalPortal>
@@ -323,11 +326,22 @@ const PasswordConfirmationNote = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
 `
 
+const ConfirmationCheckContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+`
+
 const ConfirmationAnimation = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 400px;
+  height: 150px;
+  width: 150px;
+  background-color: ${({ theme }) => colord(theme.global.valid).alpha(0.1).toHex()};
+  border: 1px solid ${({ theme }) => colord(theme.global.valid).alpha(0.1).toHex()};
+  border-radius: var(--radius-full);
 `
 
 const CheckIcon = styled(Check)`

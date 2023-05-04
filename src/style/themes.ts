@@ -52,7 +52,7 @@ export const lightTheme: DefaultTheme = {
     accent: '#598bed',
     complementary: '#ff5d51',
     alert: '#e53b24',
-    valid: '#0EA670',
+    valid: '#19b660',
     highlight: '#d4a10d',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
@@ -67,8 +67,8 @@ export const darkTheme: DefaultTheme = {
     contrast: 'white',
     background1: '#121214',
     background2: '#0e0e10',
-    hover: colord('#18181a').lighten(0.01).toHex(),
-    accent: colord('#598bed').alpha(0.1).toHex()
+    hover: colord('#18181a').lighten(0.02).toHex(),
+    accent: colord('#598bed').alpha(0.07).toHex()
   },
   font: {
     primary: '#e3e3e3',

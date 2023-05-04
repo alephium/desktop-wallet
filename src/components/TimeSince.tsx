@@ -30,5 +30,7 @@ const TimeSince = ({ timestamp, className }: TimeSinceProps) => (
 )
 
 export default styled(TimeSince)`
-  ${({ faded, theme }) => (faded ? `color: ${theme.font.tertiary}` : '')}
+  ${({ faded, theme }) => (faded ? `color: ${theme.font.tertiary}` : '')};
+  overflow: hidden;
+  text-overflow: ellipsis;
 `

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { fromHumanReadableAmount, getNumberOfDecimals, toHumanReadableAmount } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
-import { Plus } from 'lucide-react'
+import { MoreVertical, Plus } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -28,7 +28,6 @@ import ActionLink from '@/components/ActionLink'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import Box from '@/components/Box'
-import Button from '@/components/Button'
 import DeleteButton from '@/components/Buttons/DeleteButton'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import HashEllipsed from '@/components/HashEllipsed'
@@ -83,6 +82,7 @@ const AssetAmountsInput = ({
     value: asset.id,
     label: asset.name ?? asset.id
   }))
+  const canAddMultipleAssets = allowMultiple && assetAmounts.length < assets.length
 
   const openAssetSelectModal = (assetRowIndex: number) => {
     setSelectedAssetRowIndex(assetRowIndex)
@@ -187,7 +187,19 @@ const AssetAmountsInput = ({
   }, [address])
 
   return (
-    <InputsSection title={t(assetAmounts.length < 2 ? 'Asset' : 'Assets')} className={className}>
+    <InputsSection
+      title={t(assetAmounts.length < 2 ? 'Asset' : 'Assets')}
+      HeaderActions={
+        canAddMultipleAssets && (
+          <AddAssetSection>
+            <ActionLink Icon={Plus} onClick={handleAddAssetClick} withBackground iconPosition="left">
+              {t('Add asset')}
+            </ActionLink>
+          </AddAssetSection>
+        )
+      }
+      className={className}
+    >
       <AssetAmounts>
         {assetAmounts.map(({ id, amountInput = '' }, index) => {
           const asset = assets.find((asset) => asset.id === id)
@@ -202,7 +214,12 @@ const AssetAmountsInput = ({
                 onMouseDown={() => handleAssetSelectModalOpen(index)}
                 onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
               >
-                <SelectInput className={className} disabled={disabled || !allowMultiple} id={id} ref={selectedValueRef}>
+                <SelectInput
+                  className={className}
+                  disabled={disabled || !allowMultiple || !canAddMultipleAssets}
+                  id={id}
+                  ref={selectedValueRef}
+                >
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
                     <Truncate>
@@ -213,6 +230,11 @@ const AssetAmountsInput = ({
                       )}
                     </Truncate>
                   </AssetName>
+                  {canAddMultipleAssets && (
+                    <SelectVerticalDots>
+                      <MoreVertical size={16} />
+                    </SelectVerticalDots>
+                  )}
                 </SelectInput>
               </AssetSelect>
               <HorizontalDividerStyled />
@@ -253,13 +275,6 @@ const AssetAmountsInput = ({
           )
         })}
       </AssetAmounts>
-      {allowMultiple && assetAmounts.length < assets.length && (
-        <AddAssetSection>
-          <Button role="secondary" Icon={Plus} short onClick={handleAddAssetClick}>
-            {t('Add asset')}
-          </Button>
-        </AddAssetSection>
-      )}
       <ModalPortal>
         {isAssetSelectModalOpen && selectedAsset && remainingAvailableAssets.length > 0 && (
           <SelectOptionsModal
@@ -283,7 +298,7 @@ const AssetAmountsInput = ({
 export default AssetAmountsInput
 
 const BoxStyled = styled(Box)`
-  padding: 10px;
+  padding: 5px;
   position: relative;
 
   &:hover {
@@ -302,8 +317,8 @@ const SelectInput = styled.button<InputProps>`
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  border: 0;
-  cursor: ${({ disabled }) => (disabled ? 'auto' : 'pointer')};
+  border: 0 !important;
+  cursor: ${({ disabled }) => (disabled ? 'cursor' : 'pointer')};
 
   &:not(:hover) {
     background-color: transparent;
@@ -327,7 +342,7 @@ const AssetAmountInput = styled(Input)`
 `
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
-  margin: 10px 0;
+  margin: 5px 0;
 `
 
 const AssetAmountRow = styled.div`
@@ -361,4 +376,10 @@ const AssetAmounts = styled.div`
   & > :not(:last-child) {
     margin-bottom: 20px;
   }
+`
+
+const SelectVerticalDots = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `
