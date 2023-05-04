@@ -298,7 +298,7 @@ const AssetAmountsInput = ({
 export default AssetAmountsInput
 
 const BoxStyled = styled(Box)`
-  padding: 10px;
+  padding: 5px;
   position: relative;
 
   &:hover {
@@ -342,7 +342,7 @@ const AssetAmountInput = styled(Input)`
 `
 
 const HorizontalDividerStyled = styled(HorizontalDivider)`
-  margin: 10px 0;
+  margin: 5px 0;
 `
 
 const AssetAmountRow = styled.div`
