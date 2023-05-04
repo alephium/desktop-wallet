@@ -2,7 +2,7 @@
 
 The official Alephium desktop wallet.
 
-![Wallet preview](https://user-images.githubusercontent.com/1579899/161780937-94cdf21b-6895-407b-83ab-94103d359bce.png)
+![Wallet preview](https://user-images.githubusercontent.com/1579899/236201682-4e0b0c45-65d3-42c0-b187-d8d6387426d7.png)
 
 ## Development
 
@@ -93,7 +93,3 @@ To release a new version:
    ```ts
    import 'dayjs/locale/fr'
    ```
-
-## Credits
-
-The implementation is inspired by Coinbarn's wallet codebase.
