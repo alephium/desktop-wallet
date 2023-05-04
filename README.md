@@ -93,7 +93,3 @@ To release a new version:
    ```ts
    import 'dayjs/locale/fr'
    ```
-
-## Credits
-
-The implementation is inspired by Coinbarn's wallet codebase.
