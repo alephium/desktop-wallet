@@ -196,13 +196,14 @@ const AssetAmountsInput = ({
             <Button
               variant="default"
               role="secondary"
-              squared
+              title={t('Add asset')}
               transparent
-              borderless
               Icon={Plus}
               short
               onClick={handleAddAssetClick}
-            ></Button>
+            >
+              {t('Add asset')}
+            </Button>
           </AddAssetSection>
         )
       }
@@ -325,7 +326,7 @@ const SelectInput = styled.button<InputProps>`
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  border: 0;
+  border: 0 !important;
   cursor: ${({ disabled }) => (disabled ? 'cursor' : 'pointer')};
 
   &:not(:hover) {

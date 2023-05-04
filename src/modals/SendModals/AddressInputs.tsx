@@ -128,7 +128,7 @@ const AddressInputs = ({
       {toAddress && onToAddressChange && (
         <>
           <DividerArrowRow>
-            <DividerArrow size={15} />
+            <DividerArrow size={20} />
           </DividerArrowRow>
 
           <BoxStyled>
@@ -231,17 +231,19 @@ const InputFixedLabel = styled.div`
 `
 
 const DividerArrowRow = styled.div`
-  height: 25px;
-  margin: 10px 0;
+  height: 20px;
+  margin: -5px 0;
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
 `
 
 const DividerArrow = styled(ArrowDown)`
-  padding: 0 13px;
-  color: ${({ theme }) => theme.border.primary};
-  display: flex;
-  width: auto;
-  height: auto;
+  padding: 2px;
+  color: ${({ theme }) => theme.font.tertiary};
+  border-radius: var(--radius-full);
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 `

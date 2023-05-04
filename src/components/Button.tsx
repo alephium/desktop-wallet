@@ -168,8 +168,8 @@ export default styled(Button)`
             faded: theme.global.accent
           }[variant],
           secondary: {
-            default: theme.font.primary,
-            contrast: theme.font.secondary,
+            default: theme.font.secondary,
+            contrast: theme.font.contrastSecondary,
             valid: theme.font.contrastPrimary,
             alert: theme.global.alert,
             faded: theme.font.primary
@@ -223,6 +223,7 @@ export default styled(Button)`
       position: relative;
 
       ${!transparent &&
+      !borderless &&
       css`
         box-shadow: ${({ theme }) => theme.shadow.primary};
       `}
@@ -239,7 +240,7 @@ export default styled(Button)`
       ${ButtonIcon} {
         ${children &&
         css`
-          margin-right: var(--spacing-3);
+          margin-right: var(--spacing-2);
         `}
 
         ${({ theme }) => {

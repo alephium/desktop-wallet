@@ -80,9 +80,8 @@ const ToggleSection = ({
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.background1};
-  border-radius: var(--radius-big);
   border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-big);
   padding-bottom: 16px;
 `
 
@@ -118,7 +117,7 @@ const Content = styled(motion.div)`
 const Children = styled.div`
   display: flex;
   flex-direction: column;
-  border-top: 1px solid ${({ theme }) => theme.bg.primary};
+  border-top: 1px solid ${({ theme }) => theme.border.primary};
   margin-top: 16px;
   padding: 16px 21px 0 21px;
 `

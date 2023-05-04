@@ -67,7 +67,7 @@ export const darkTheme: DefaultTheme = {
     contrast: 'white',
     background1: '#121214',
     background2: '#0e0e10',
-    hover: colord('#18181a').lighten(0.01).toHex(),
+    hover: colord('#18181a').lighten(0.02).toHex(),
     accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {

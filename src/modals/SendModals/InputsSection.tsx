@@ -43,9 +43,9 @@ const Title = styled.div`
 `
 
 const Header = styled.div`
-  margin: 0 10px;
+  margin-left: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
+  height: 50px;
 `

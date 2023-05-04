@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { colord } from 'colord'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -42,7 +43,8 @@ const stepTitles: Record<Step, TranslationKey> = {
   'tx-sent': 'Sent'
 }
 
-const dotSize = 16
+const dotSize = 12
+const lineThickness = 1
 
 const StepsProgress = ({ currentStep, isContract, className }: StepsProgressProps) => {
   const { t } = useTranslation()
@@ -72,6 +74,8 @@ const useStepsUI = (currentStep: Step) => {
   const theme = useTheme()
   const settings = useAppSelector((s) => s.settings)
 
+  const nextColor = colord(theme.font.tertiary).alpha(0.5).toHex()
+
   const steps: Step[] = !settings.passwordRequirement
     ? ['addresses', 'build-tx', 'info-check', 'tx-sent']
     : ['addresses', 'build-tx', 'info-check', 'password-check', 'tx-sent']
@@ -84,21 +88,21 @@ const useStepsUI = (currentStep: Step) => {
       : 'next'
 
   const textColor: Record<StepStatus, string> = {
-    completed: theme.global.valid,
-    active: theme.font.primary,
-    next: theme.font.tertiary
+    completed: theme.global.accent,
+    active: theme.global.accent,
+    next: nextColor
   }
 
   const dotFill: Record<StepStatus, string> = {
-    completed: theme.global.valid,
-    active: theme.name === 'dark' ? theme.font.primary : 'transparent',
+    completed: theme.global.accent,
+    active: theme.bg.accent,
     next: 'transparent'
   }
 
   const line: Record<StepStatus, string> = {
-    completed: theme.global.valid,
-    active: theme.font.tertiary,
-    next: theme.font.tertiary
+    completed: theme.global.accent,
+    active: nextColor,
+    next: nextColor
   }
 
   const getStepColors = (step: Step) => {
@@ -115,7 +119,7 @@ const useStepsUI = (currentStep: Step) => {
 }
 
 export default styled(StepsProgress)`
-  padding: 15px 100px 30px 100px;
+  padding: 15px 150px 30px 150px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -138,14 +142,14 @@ const StepIndicator = styled.div`
 const StepTitle = styled.span`
   font-size: 12px;
   position: absolute;
-  top: 28px;
+  top: 25px;
   transition: color 0.3s ease-out;
 `
 
 const Line = styled.div<{ color: string }>`
   flex-grow: 1;
-  height: 1px;
+  height: ${lineThickness}px;
   background-color: ${({ color }) => color};
-  margin-top: ${dotSize / 2}px;
+  margin-top: ${dotSize / 2 - lineThickness / 2}px;
   transition: background-color 0.3s ease-out;
 `
