@@ -47,10 +47,7 @@ const TransferCheckTxModalContent = ({ data, fees, onSubmit }: CheckTxProps<Tran
         <CheckAddressesBox fromAddress={data.fromAddress} toAddressHash={data.toAddress} />
         <CheckFeeLocktimeBox fee={fees} lockTime={data.lockTime} />
       </CheckModalContent>
-      <FooterButton
-        onClick={data.lockTime ? () => setIsLockTimeConfirmModalOpen(true) : onSubmit}
-        variant={settings.passwordRequirement ? 'default' : 'valid'}
-      >
+      <FooterButton onClick={data.lockTime ? () => setIsLockTimeConfirmModalOpen(true) : onSubmit}>
         {t(settings.passwordRequirement ? 'Confirm' : 'Send')}
       </FooterButton>
       <ModalPortal>
