@@ -42,13 +42,13 @@ import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { makeSelectAddressesAssets } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
-import { Asset, AssetAmount } from '@/types/assets'
+import { Asset, AssetAmountInputType } from '@/types/assets'
 import { onEnterOrSpace } from '@/utils/misc'
 
 interface AssetAmountsInputProps {
   address: Address
-  assetAmounts: AssetAmount[]
-  onAssetAmountsChange: (assetAmounts: AssetAmount[]) => void
+  assetAmounts: AssetAmountInputType[]
+  onAssetAmountsChange: (assetAmounts: AssetAmountInputType[]) => void
   id: string
   allowMultiple?: boolean
   className?: string
@@ -102,31 +102,32 @@ const AssetAmountsInput = ({
 
     if (!selectedAsset) return
 
-    const amountValueAsFloat = parseFloat(amountInput)
-    const tooManyDecimals = getNumberOfDecimals(amountInput) > (selectedAsset?.decimals ?? 0)
-
+    const cleanedAmount = amountInput === '00' ? '0' : amountInput
+    const amountValueAsFloat = parseFloat(cleanedAmount)
+    const tooManyDecimals = getNumberOfDecimals(cleanedAmount) > (selectedAsset?.decimals ?? 0)
     const availableAmount = toHumanReadableAmount(
       selectedAsset.balance - selectedAsset.lockedBalance,
       selectedAsset.decimals
     )
+
     const newError =
       amountValueAsFloat > parseFloat(availableAmount)
         ? t('Amount exceeds available balance')
-        : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph)
+        : selectedAssetId === ALPH.id && amountValueAsFloat < parseFloat(minAmountInAlph) && amountValueAsFloat !== 0
         ? t('Amount must be greater than {{ minAmountInAlph }}', { minAmountInAlph })
         : tooManyDecimals
         ? t('This asset cannot have more than {{ decimals }} decimals', { decimals: selectedAsset.decimals })
         : ''
-
     const newErrors = [...errors]
     newErrors.splice(assetRowIndex, 1, newError)
     setErrors(newErrors)
 
-    const amount = !amountInput ? undefined : fromHumanReadableAmount(amountInput, selectedAsset.decimals)
+    const amount = !cleanedAmount ? undefined : fromHumanReadableAmount(cleanedAmount, selectedAsset.decimals)
     const newAssetAmounts = [...assetAmounts]
     newAssetAmounts.splice(assetRowIndex, 1, {
       id: selectedAssetId,
-      amount
+      amount,
+      amountInput: cleanedAmount
     })
     onAssetAmountsChange(newAssetAmounts)
   }
@@ -187,11 +188,10 @@ const AssetAmountsInput = ({
   return (
     <InputsSection title={t(assetAmounts.length < 2 ? 'Asset' : 'Assets')} className={className}>
       <AssetAmounts>
-        {assetAmounts.map(({ id, amount }, index) => {
+        {assetAmounts.map(({ id, amountInput = '' }, index) => {
           const asset = assets.find((asset) => asset.id === id)
           if (!asset) return
 
-          const amountValue = amount ? toHumanReadableAmount(amount, asset.decimals) : ''
           const availableAmount = asset.balance - asset.lockedBalance
           const availableHumanReadableAmount = toHumanReadableAmount(availableAmount, asset.decimals)
 
@@ -223,7 +223,7 @@ const AssetAmountsInput = ({
               <HorizontalDividerStyled />
               <AssetAmountRow>
                 <AssetAmountInput
-                  value={amountValue}
+                  value={amountInput}
                   onChange={(e) => handleAssetAmountChange(index, e.target.value)}
                   onClick={() => setSelectedAssetRowIndex(index)}
                   onMouseDown={() => setSelectedAssetRowIndex(index)}
