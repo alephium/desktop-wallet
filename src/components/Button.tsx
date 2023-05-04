@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
@@ -45,6 +45,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
 const Button = ({ children, disabled, submit, Icon, className, iconColor, isHighlighted, ...props }: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const theme = useTheme()
 
   useEffect(() => {
     if (!submit) return
@@ -76,7 +77,7 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
     >
       {Icon && (
         <ButtonIcon>
-          <Icon size={16} color={iconColor} />
+          <Icon size={16} color={iconColor || theme.font.tertiary} />
         </ButtonIcon>
       )}
       {children as ReactNode}
@@ -243,18 +244,15 @@ export default styled(Button)`
           margin-right: var(--spacing-2);
         `}
 
-        ${({ theme }) => {
-          const color = iconColor || theme.font.tertiary
-          return (
-            iconBackground &&
-            css`
-              background-color: ${colord(color).alpha(0.08).toHex()};
-              border: 1px solid ${colord(color).alpha(0.15).toHex()};
-              padding: 7px;
-              border-radius: var(--radius-medium);
-            `
-          )
-        }}
+        ${({ theme }) =>
+          iconBackground &&
+          css`
+            background-color: ${colord(iconColor || theme.font.tertiary)
+              .alpha(0.08)
+              .toHex()};
+            padding: 7px;
+            border-radius: var(--radius-full);
+          `}
 
         svg {
           color: ${fontColor};
