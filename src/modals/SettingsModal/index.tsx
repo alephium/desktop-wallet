@@ -124,9 +124,9 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
         <TabContentsColumn>
           <ColumnHeader>
             <ColumnTitle>{currentTab.label}</ColumnTitle>
-            <CloseButton aria-label={t`Close`} onClick={onClose}>
+            <Button aria-label={t('Close')} squared role="secondary" transparent onClick={onClose} borderless>
               <X />
-            </CloseButton>
+            </Button>
           </ColumnHeader>
           <Scrollbar translateContentSizeYToHolder>
             <ColumnContent>
@@ -177,18 +177,6 @@ const TabTitlesColumn = styled(Column)`
 `
 const TabContentsColumn = styled(Column)`
   flex: 2;
-`
-
-const CloseButton = styled.button`
-  color: ${({ theme }) => theme.font.tertiary};
-  cursor: pointer;
-  transition: color 0.2s ease-out;
-  padding: 0;
-  display: flex;
-
-  &:hover {
-    color: ${({ theme }) => theme.font.primary};
-  }
 `
 
 const ColumnHeader = styled.div`
