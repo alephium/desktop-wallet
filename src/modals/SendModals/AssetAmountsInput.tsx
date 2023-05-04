@@ -67,7 +67,7 @@ const AssetAmountsInput = ({
   const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
   const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
-  const selectedValueRef = useRef<HTMLDivElement>(null)
+  const selectedValueRef = useRef<HTMLButtonElement>(null)
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -202,13 +202,7 @@ const AssetAmountsInput = ({
                 onMouseDown={() => handleAssetSelectModalOpen(index)}
                 onKeyDown={(e) => onEnterOrSpace(e, () => handleAssetSelectModalOpen(index))}
               >
-                <SelectInput
-                  type="button"
-                  className={className}
-                  disabled={disabled || !allowMultiple}
-                  id={id}
-                  ref={selectedValueRef}
-                >
+                <SelectInput className={className} disabled={disabled || !allowMultiple} id={id} ref={selectedValueRef}>
                   <AssetLogo asset={asset} size={20} />
                   <AssetName>
                     <Truncate>
@@ -303,7 +297,7 @@ const AssetSelect = styled(SelectContainer)`
   margin: 0;
 `
 
-const SelectInput = styled.div<InputProps>`
+const SelectInput = styled.button<InputProps>`
   ${({ isValid, Icon }) => inputDefaultStyle(isValid || !!Icon, false, true)};
   display: flex;
   align-items: center;

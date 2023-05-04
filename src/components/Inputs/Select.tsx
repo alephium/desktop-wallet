@@ -247,7 +247,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   searchPlaceholder?: string
   showOnly?: T[]
   emptyListPlaceholder?: string
-  parentSelectRef?: RefObject<HTMLDivElement>
+  parentSelectRef?: RefObject<HTMLDivElement | HTMLButtonElement>
   ListBottomComponent?: ReactNode
 }
 
