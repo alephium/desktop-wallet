@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,24 +19,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 // TODO: Extract to common shared UI library
 
 import { Check, Copy } from 'lucide-react'
-import { ReactNode, SyntheticEvent, useCallback, useEffect, useState } from 'react'
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../../contexts/global'
+import { useAppDispatch } from '@/hooks/redux'
+import { copiedToClipboard } from '@/storage/global/globalActions'
 
 interface ClipboardButtonProps {
   textToCopy: string
   disableA11y?: boolean
-  tipText?: string
-  children?: ReactNode | ReactNode[]
+  tooltip?: string
   className?: string
 }
 
-const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y = false }: ClipboardButtonProps) => {
+const ClipboardButton: FC<ClipboardButtonProps> = ({
+  tooltip,
+  textToCopy,
+  children,
+  className,
+  disableA11y = false
+}) => {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const [hasBeenCopied, setHasBeenCopied] = useState(false)
-  const { setSnackbarMessage } = useGlobalContext()
 
   const handleInput = useCallback(
     (e: SyntheticEvent) => {
@@ -58,7 +64,7 @@ const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y
     let interval: ReturnType<typeof setInterval>
     // Reset icon after copy
     if (hasBeenCopied) {
-      setSnackbarMessage({ text: t`Copied to clipboard!`, type: 'info' })
+      dispatch(copiedToClipboard())
 
       interval = setInterval(() => {
         setHasBeenCopied(false)
@@ -70,49 +76,37 @@ const ClipboardButton = ({ tipText, textToCopy, children, className, disableA11y
         clearInterval(interval)
       }
     }
-  }, [hasBeenCopied, setSnackbarMessage, textToCopy, className, t])
+  }, [dispatch, hasBeenCopied])
 
-  const clipboard = !hasBeenCopied ? (
-    <ClipboardWrapper data-tip={tipText ?? t`Copy to clipboard`}>
-      <Copy
-        className={`${className} clipboard`}
-        size={15}
-        onClick={handleInput}
-        onKeyPress={handleInput}
-        role="button"
-        aria-label={disableA11y ? undefined : t`Copy to clipboard`}
-        tabIndex={disableA11y ? undefined : 0}
-      />
-    </ClipboardWrapper>
-  ) : (
-    <ClipboardWrapper className={className} data-tip={t`Copied`}>
-      <Check className={`${className} check`} size={15} />
-    </ClipboardWrapper>
-  )
-
-  return children ? (
+  return (
     <div className={className}>
-      <CellChildren>{children}</CellChildren>
-      <CellClipboard>{clipboard}</CellClipboard>
+      <ClipboardContent>{children}</ClipboardContent>
+      <ClipboardIcon
+        data-tooltip-content={!hasBeenCopied ? tooltip ?? t('Copy to clipboard') : t('Copied')}
+        data-tooltip-id="copy"
+      >
+        {!hasBeenCopied ? (
+          <Copy
+            className="clipboard"
+            onClick={handleInput}
+            onKeyPress={handleInput}
+            onMouseDown={handleInput}
+            role="button"
+            aria-label={disableA11y ? undefined : t('Copy to clipboard')}
+            tabIndex={disableA11y ? undefined : 0}
+          />
+        ) : (
+          <Check className="check" />
+        )}
+      </ClipboardIcon>
     </div>
-  ) : (
-    clipboard
   )
 }
 
-const CellClipboard = styled.div`
+const ClipboardIcon = styled.div`
   opacity: 0;
   z-index: 1;
-`
 
-const CellChildren = styled.div`
-  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 100%, rgba(0, 0, 0, 0));
-  margin-right: -15px;
-  overflow: hidden;
-  width: 100%;
-`
-
-const ClipboardWrapper = styled.div`
   & > .clipboard {
     cursor: pointer;
     color: ${({ theme }) => theme.font.secondary};
@@ -126,9 +120,23 @@ const ClipboardWrapper = styled.div`
     }
   }
 
-  &.check {
-    color: ${({ theme }) => theme.font.primary};
+  & > .check {
+    color: ${({ theme }) => theme.global.valid};
   }
+
+  & > .clipboard,
+  & > .check {
+    width: 1em;
+    height: 1em;
+  }
+`
+
+const ClipboardContent = styled.div`
+  margin-right: -0.5em;
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 
 export default styled(ClipboardButton)`
@@ -136,11 +144,15 @@ export default styled(ClipboardButton)`
   align-items: center;
   overflow: hidden;
 
-  &:hover > ${CellClipboard} {
+  ${ClipboardIcon} {
+    transform: translateY(1px);
+  }
+
+  &:hover > ${ClipboardIcon} {
     opacity: 1;
   }
 
-  &:hover > ${CellChildren} {
-    -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) calc(100% - 15px));
+  &:hover > ${ClipboardContent} {
+    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 10px, rgba(0, 0, 0, 1) 30px);
   }
 `

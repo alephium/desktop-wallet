@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,61 +16,144 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'dayjs/locale/fr'
-import 'dayjs/locale/pt'
-import 'dayjs/locale/ru'
-
-import dayjs from 'dayjs'
 import { AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import ReactTooltip from 'react-tooltip'
-import styled, { ThemeProvider } from 'styled-components'
+import { usePostHog } from 'posthog-js/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import styled, { css, ThemeProvider } from 'styled-components'
 
-import SnackbarManager from './components/SnackbarManager'
-import Spinner from './components/Spinner'
-import SplashScreen from './components/SplashScreen'
-import Tooltip from './components/Tooltip'
-import { useAddressesContext } from './contexts/addresses'
-import { useGlobalContext } from './contexts/global'
-import UpdateWalletModal from './modals/UpdateWalletModal'
-import Router from './routes'
-import { deviceBreakPoints, GlobalStyle } from './style/globalStyles'
-import { darkTheme, lightTheme } from './style/themes'
+import client from '@/api/client'
+import AppSpinner from '@/components/AppSpinner'
+import { CenteredSection } from '@/components/PageComponents/PageContainers'
+import SnackbarManager from '@/components/SnackbarManager'
+import SplashScreen from '@/components/SplashScreen'
+import UpdateWalletBanner from '@/components/UpdateWalletBanner'
+import { useGlobalContext } from '@/contexts/global'
+import { WalletConnectContextProvider } from '@/contexts/walletconnect'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import UpdateWalletModal from '@/modals/UpdateWalletModal'
+import Router from '@/routes'
+import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
+import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
+import {
+  devModeShortcutDetected,
+  localStorageDataMigrated,
+  localStorageDataMigrationFailed
+} from '@/storage/global/globalActions'
+import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
+import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
+import { makeSelectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import { GlobalStyle } from '@/style/globalStyles'
+import { darkTheme, lightTheme } from '@/style/themes'
+import { AddressHash } from '@/types/addresses'
+import { AlephiumWindow } from '@/types/window'
+import { useInterval } from '@/utils/hooks'
+import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
+import { getAvailableLanguageOptions } from '@/utils/settings'
 
 const App = () => {
-  const { networkStatus, settings, snackbarMessage, isClientLoading, newVersion, newVersionDownloadTriggered } =
-    useGlobalContext()
-  const { mainAddress } = useAddressesContext()
+  const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+  const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
+  const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
+  const network = useAppSelector((s) => s.network)
+  const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const theme = useAppSelector((s) => s.global.theme)
+  const assetsInfo = useAppSelector((s) => s.assetsInfo)
+  const loading = useAppSelector((s) => s.global.loading)
+  const settings = useAppSelector((s) => s.settings)
+  const wallets = useAppSelector((s) => s.global.wallets)
+  const showDevIndication = useDevModeShortcut()
+  const posthog = usePostHog()
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
-  const [isLanguageChanging, setIsLanguageChanging] = useState(false)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
-  const isOffline = networkStatus === 'offline'
+  useEffect(() => {
+    try {
+      migrateGeneralSettings()
+      migrateNetworkSettings()
+      migrateWalletData()
+
+      dispatch(localStorageDataMigrated())
+    } catch (e) {
+      console.error(e)
+      dispatch(localStorageDataMigrationFailed())
+    }
+  }, [dispatch])
 
   useEffect(() => {
-    if (isOffline || mainAddress) ReactTooltip.rebuild()
-  }, [isOffline, mainAddress])
+    posthog?.people.set({
+      wallets: wallets.length,
+      theme: settings.theme,
+      devTools: settings.devTools,
+      lockTimeInMs: settings.walletLockTimeInMinutes,
+      language: settings.language,
+      passwordRequirement: settings.passwordRequirement
+    })
+  }, [posthog?.people, settings, wallets.length])
 
-  const { i18n } = useTranslation()
+  const setSystemLanguage = useCallback(async () => {
+    const _window = window as unknown as AlephiumWindow
+    const electron = _window.electron
+    const systemLanguage = await electron?.app.getSystemLanguage()
+
+    if (!systemLanguage) {
+      dispatch(systemLanguageMatchFailed())
+      return
+    }
+
+    const availableLanguageOptions = getAvailableLanguageOptions()
+    const systemLanguageCode = systemLanguage.substring(0, 2)
+    const matchedLanguage = availableLanguageOptions.find((lang) => lang.value.startsWith(systemLanguageCode))
+
+    if (matchedLanguage) {
+      dispatch(systemLanguageMatchSucceeded(matchedLanguage.value))
+    } else {
+      dispatch(systemLanguageMatchFailed())
+    }
+  }, [dispatch])
 
   useEffect(() => {
-    const handleLanguageChange = async () => {
-      setIsLanguageChanging(true)
-      try {
-        dayjs.locale(settings.general.language.slice(0, 2))
-        await i18n.changeLanguage(settings.general.language)
-      } catch (e) {
-        console.error(e)
-      }
-      setIsLanguageChanging(false)
-    }
+    if (settings.language === undefined) setSystemLanguage()
+  }, [settings.language, setSystemLanguage])
 
-    if (i18n.language !== settings.general.language) {
-      handleLanguageChange()
+  const initializeClient = useCallback(async () => {
+    try {
+      await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
+      const { networkId } = await client.web3.infos.getInfosChainParams()
+      dispatch(apiClientInitSucceeded({ networkId, networkName: network.name }))
+    } catch (e) {
+      dispatch(apiClientInitFailed({ networkName: network.name, networkStatus: network.status }))
     }
-  }, [i18n, settings.general.language])
+  }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])
+
+  useEffect(() => {
+    if (network.status === 'connecting') initializeClient()
+  }, [initializeClient, network.status])
+
+  useInterval(initializeClient, 2000, network.status !== 'offline')
+
+  useEffect(() => {
+    if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
+      dispatch(syncAddressesData())
+      dispatch(syncAddressesHistoricBalances())
+    }
+  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, network.status])
+
+  const refreshAddressesData = useCallback(
+    () => dispatch(syncAddressesData(addressesWithPendingTxs)),
+    [dispatch, addressesWithPendingTxs]
+  )
+
+  useInterval(refreshAddressesData, 2000, addressesWithPendingTxs.length === 0)
+
+  useEffect(() => {
+    if (network.status === 'online' && assetsInfo.status === 'uninitialized') {
+      dispatch(syncNetworkTokensInfo())
+    }
+  }, [dispatch, network.status, assetsInfo.status])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
@@ -81,19 +164,22 @@ const App = () => {
   }, [newVersionDownloadTriggered])
 
   return (
-    <ThemeProvider theme={settings.general.theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
       <GlobalStyle />
-      <AppContainer>
-        {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
-        <Router />
-      </AppContainer>
-      {((isClientLoading && !isOffline) || isLanguageChanging) && (
-        <ClientLoading>
-          <Spinner size="60px" />
-        </ClientLoading>
-      )}
-      <SnackbarManager message={snackbarMessage} />
-      <Tooltip />
+
+      {splashScreenVisible && <SplashScreen onSplashScreenShown={() => setSplashScreenVisible(false)} />}
+
+      <WalletConnectContextProvider>
+        <AppContainer showDevIndication={showDevIndication}>
+          <CenteredSection>
+            <Router />
+          </CenteredSection>
+          <BannerSection>{newVersion && <UpdateWalletBanner />}</BannerSection>
+        </AppContainer>
+      </WalletConnectContextProvider>
+
+      <SnackbarManager />
+      {loading && <AppSpinner />}
       <AnimatePresence>
         {isUpdateWalletModalVisible && <UpdateWalletModal onClose={() => setUpdateWalletModalVisible(false)} />}
       </AnimatePresence>
@@ -101,32 +187,45 @@ const App = () => {
   )
 }
 
-const AppContainer = styled.div`
-  flex: 1;
+export default App
+
+const AppContainer = styled.div<{ showDevIndication: boolean }>`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  flex: 1;
+
   background-color: ${({ theme }) => theme.bg.secondary};
 
-  @media ${deviceBreakPoints.mobile} {
-    background-color: ${({ theme }) => theme.bg.primary};
-    justify-content: initial;
-  }
+  ${({ showDevIndication, theme }) =>
+    showDevIndication &&
+    css`
+      border: 5px solid ${theme.global.valid};
+    `};
 `
 
-const ClientLoading = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--color-black);
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(3px);
-  z-index: 1002;
+const BannerSection = styled.div`
+  flex-shrink: 0;
 `
 
-export default App
+const useDevModeShortcut = () => {
+  const dispatch = useAppDispatch()
+  const devMode = useAppSelector((s) => s.global.devMode)
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const isCommandDShortcutPressed = event.metaKey === true && event.key === 'd' // Cmd + d (for dev)
+
+      if (!isCommandDShortcutPressed) return
+
+      dispatch(devModeShortcutDetected({ activate: !devMode }))
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [devMode, dispatch])
+
+  return devMode
+}

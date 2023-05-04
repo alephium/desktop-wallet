@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,40 +17,59 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ReactNode, useState } from 'react'
-import styled from 'styled-components'
+import { ReactNode, useEffect, useState } from 'react'
+import styled, { useTheme } from 'styled-components'
 
-import Toggle from './Inputs/Toggle'
+import { fastTransition } from '@/animations'
+import Toggle from '@/components/Inputs/Toggle'
 
 export interface ToggleSectionProps {
   title: string
   children: ReactNode
+  subtitle?: string
   isOpen?: boolean
   onClick?: (b: boolean) => void
+  shadow?: boolean
   className?: string
 }
 
-const ToggleSection = ({ title, isOpen = false, onClick = () => null, children, className }: ToggleSectionProps) => {
-  const [isShown, setIsShown] = useState(isOpen)
+const ToggleSection = ({
+  title,
+  subtitle,
+  isOpen,
+  onClick = () => null,
+  shadow,
+  children,
+  className
+}: ToggleSectionProps) => {
+  const [isShown, setIsShown] = useState(isOpen || false)
+  const theme = useTheme()
 
   const handleToggle = () => {
+    onClick(!isShown)
     setIsShown(!isShown)
-    onClick(isShown)
   }
 
+  useEffect(() => {
+    if (isOpen !== undefined) setIsShown(isOpen)
+  }, [isOpen])
+
   return (
-    <div className={className}>
-      <Title>
-        {title}
-        <Toggle onToggle={handleToggle} label={title} toggled={isShown} hasDarkerBgOnLightTheme />
-      </Title>
+    <div className={className} style={{ boxShadow: shadow && isShown ? theme.shadow.tertiary : undefined }}>
+      <Header>
+        <TitleColumn>
+          <Title>{title}</Title>
+          {subtitle && <Subtitle>{subtitle}</Subtitle>}
+        </TitleColumn>
+        <Toggle onToggle={handleToggle} label={title} toggled={isShown} />
+      </Header>
       <Content
         animate={{
           height: isShown ? 'auto' : 0,
           opacity: isShown ? 1 : 0,
           visibility: isShown ? 'visible' : 'hidden'
         }}
-        transition={{ duration: 0.2 }}
+        {...fastTransition}
       >
         <Children>{children}</Children>
       </Content>
@@ -61,17 +80,32 @@ const ToggleSection = ({ title, isOpen = false, onClick = () => null, children, 
 export default styled(ToggleSection)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.accent};
-  border-radius: var(--radius-medium);
+  background-color: ${({ theme }) => theme.bg.background1};
+  border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.primary};
   padding-bottom: 16px;
 `
 
-const Title = styled.div`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 400;
-  padding: 16px 21px 0 21px;
+  padding: 15px;
+  padding-bottom: 0px;
+`
+
+const TitleColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const Title = styled.div`
+  font-weight: var(--fontWeight-semiBold);
+`
+
+const Subtitle = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const Content = styled(motion.div)`

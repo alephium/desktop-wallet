@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,15 +17,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { HTMLMotionProps, motion, MotionStyle, Variants } from 'framer-motion'
-import { FC } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
-import { appHeaderHeightPx, deviceBreakPoints, walletSidebarWidthPx } from '../../style/globalStyles'
+import { fadeIn } from '@/animations'
+import Box from '@/components/Box'
+import { appHeaderHeightPx, deviceBreakPoints } from '@/style/globalStyles'
+
 interface MainPanelProps {
   verticalAlign?: 'center' | 'flex-start'
   horizontalAlign?: 'center' | 'stretch'
   enforceMinHeight?: boolean
   transparentBg?: boolean
+  borderless?: boolean
 }
 
 type SectionContentAlignment = 'flex-start' | 'center' | 'stretch'
@@ -42,11 +45,11 @@ const sectionVariants: Variants = {
   shown: (apparitionDelay = 0) => ({
     opacity: 1,
     transition: {
-      duration: 0,
+      duration: 0.1,
       when: 'beforeChildren',
       delay: apparitionDelay,
-      staggerChildren: 0.05,
-      delayChildren: 0.05
+      staggerChildren: 0.1,
+      delayChildren: 0.1
     }
   }),
   out: {
@@ -55,13 +58,12 @@ const sectionVariants: Variants = {
 }
 
 export const sectionChildrenVariants: Variants = {
-  hidden: { y: 5, opacity: 0 },
   shown: (disabled) => ({ y: 0, opacity: disabled ? 0.5 : 1 }),
   disabled: { y: 0, opacity: 0.5 }
 }
 
 export const FloatingPanel: FC<MainPanelProps> = ({ children, ...props }) => (
-  <StyledFloatingPanel initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
+  <StyledFloatingPanel {...fadeIn} {...props}>
     {children}
   </StyledFloatingPanel>
 )
@@ -90,7 +92,7 @@ export const BoxContainer = ({ children, ...props }: HTMLMotionProps<'div'>) => 
 
 const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   width: 100%;
-  margin: 0 auto;
+  margin: ${appHeaderHeightPx}px auto;
   max-width: 600px;
   min-height: ${({ enforceMinHeight }) => (enforceMinHeight ? '600px' : 'initial')};
   padding: var(--spacing-5);
@@ -98,10 +100,9 @@ const StyledFloatingPanel = styled(motion.div)<MainPanelProps>`
   flex-direction: column;
   justify-content: ${({ verticalAlign }) => verticalAlign || 'flex-start'};
   align-items: ${({ horizontalAlign }) => horizontalAlign || 'stretch'};
-  background-color: ${({ theme, transparentBg }) => !transparentBg && theme.bg.primary};
-  border-radius: var(--radius);
-  border: 1px solid ${({ theme }) => theme.border.secondary};
-  box-shadow: ${({ transparentBg, theme }) => !transparentBg && theme.shadow.secondary};
+  border-radius: var(--radius-huge);
+
+  ${({ borderless, theme }) => !borderless && css``}
 
   @media ${deviceBreakPoints.mobile} {
     box-shadow: none;
@@ -128,11 +129,9 @@ export const SectionContainer = styled(motion.div)<{ align: SectionContentAlignm
   margin-top: ${({ inList }) => (inList ? 'var(--spacing-5)' : '0')};
 `
 
-const StyledBoxContainer = styled(motion.div)`
+const StyledBoxContainer = styled(Box)`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  border-radius: var(--radius);
   width: 100%;
 `
 
@@ -142,34 +141,18 @@ export const FooterActionsContainer = styled(Section)`
   width: 100%;
 `
 
-export let MainContent: FC = ({ children, ...props }) => (
-  <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} {...props}>
-    {children}
-  </motion.main>
-)
-
-MainContent = styled(MainContent)`
-  position: absolute;
-  left: ${walletSidebarWidthPx}px;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 56px;
-  padding-top: ${appHeaderHeightPx}px;
-  background-color: ${({ theme }) => theme.bg.secondary};
-  min-height: 100vh;
-
-  @media ${deviceBreakPoints.mobile} {
-    position: relative;
-    overflow: initial;
-    padding: var(--spacing-5);
-    left: 0;
-  }
-`
-
 export const PageTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-3);
+`
+
+export const CenteredSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  background-color: ${({ theme }) => theme.bg.background1};
 `

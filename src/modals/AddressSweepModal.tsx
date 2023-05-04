@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,17 +19,26 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { getHumanReadableError } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
 import { Info } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Amount from '../components/Amount'
-import InfoBox from '../components/InfoBox'
-import AddressSelect from '../components/Inputs/AddressSelect'
-import HorizontalDivider from '../components/PageComponents/HorizontalDivider'
-import { Address, useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
+import Amount from '@/components/Amount'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
+import InfoBox from '@/components/InfoBox'
+import AddressSelect from '@/components/Inputs/AddressSelect'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import {
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionSent
+} from '@/storage/transactions/transactionsActions'
+import { Address } from '@/types/addresses'
+import { getName } from '@/utils/addresses'
 
 type SweepAddress = Address | undefined
 
@@ -41,9 +50,14 @@ interface AddressSweepModal {
 
 const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: AddressSweepModal) => {
   const { t } = useTranslation()
-  const { addresses, mainAddress } = useAddressesContext()
-  const fromAddress = sweepAddress || mainAddress
+  const dispatch = useAppDispatch()
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const addresses = useAppSelector(selectAllAddresses)
+  const posthog = usePostHog()
+
+  const fromAddress = sweepAddress || defaultAddress
   const toAddressOptions = sweepAddress ? addresses.filter(({ hash }) => hash !== fromAddress?.hash) : addresses
+
   const [sweepAddresses, setSweepAddresses] = useState<{
     from: SweepAddress
     to: SweepAddress
@@ -52,57 +66,55 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     to: toAddressOptions.length > 0 ? toAddressOptions[0] : fromAddress
   })
   const [fee, setFee] = useState(BigInt(0))
-  const { client, currentNetwork, setSnackbarMessage } = useGlobalContext()
-  const { setAddress } = useAddressesContext()
   const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const buildTransactions = async () => {
-      if (!client || !sweepAddresses.from || !sweepAddresses.to) return
+      if (!sweepAddresses.from || !sweepAddresses.to) return
       setIsLoading(true)
       try {
-        const { unsignedTxs, fees } = await client.buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
+        const { unsignedTxs, fees } = await buildSweepTransactions(sweepAddresses.from, sweepAddresses.to.hash)
         setBuiltUnsignedTxs(unsignedTxs)
         setFee(fees)
       } catch (e) {
-        setSnackbarMessage({
-          text: getHumanReadableError(e, t`Error while building transaction`),
-          type: 'alert',
-          duration: 5000
-        })
+        dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
       }
       setIsLoading(false)
     }
 
     buildTransactions()
-  }, [client, setSnackbarMessage, sweepAddresses.from, sweepAddresses.to, t])
+  }, [dispatch, sweepAddresses.from, sweepAddresses.to, t])
 
   const onSweepClick = async () => {
-    if (!client || !sweepAddresses.from || !sweepAddresses.to) return
+    if (!sweepAddresses.from || !sweepAddresses.to) return
     setIsLoading(true)
     try {
       for (const { txId, unsignedTx } of builtUnsignedTxs) {
-        const txSendResp = await client.signAndSendTransaction(
-          sweepAddresses.from,
-          txId,
-          unsignedTx,
-          sweepAddresses.to.hash,
-          'sweep',
-          currentNetwork
+        const data = await signAndSendTransaction(sweepAddresses.from, txId, unsignedTx)
+
+        dispatch(
+          transactionSent({
+            hash: data.txId,
+            fromAddress: sweepAddresses.from.hash,
+            toAddress: sweepAddresses.to.hash,
+            timestamp: new Date().getTime(),
+            type: 'sweep',
+            status: 'pending'
+          })
         )
-        if (txSendResp) {
-          setAddress(sweepAddresses.from)
-        }
       }
+
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
+
+      posthog?.capture('Swept address assets')
     } catch (e) {
-      setSnackbarMessage({
-        text: getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from })),
-        type: 'alert',
-        duration: 5000
-      })
+      dispatch(
+        transactionSendFailed(
+          getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from }))
+        )
+      )
     }
     setIsLoading(false)
   }
@@ -128,7 +140,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           onAddressChange={(newAddress) => onAddressChange('from', newAddress)}
           disabled={sweepAddress !== undefined}
           id="from-address"
-          hideEmptyAvailableBalance
+          hideAddressesWithoutAssets
         />
         <AddressSelect
           label={t`To address`}
@@ -139,23 +151,26 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           id="to-address"
         />
         <InfoBox Icon={Info} contrast noBorders>
-          <Trans t={t} i18nKey="sweepOperationFromTo">
-            This operation will sweep all funds from
-            <ColoredWord color={sweepAddresses.from.settings.color}>
-              {{ from: sweepAddresses.from.getName() }}
-            </ColoredWord>
-            and transfer them to
-            <ColoredWord color={sweepAddresses.to.settings.color}>{{ to: sweepAddresses.to.getName() }}</ColoredWord>.
+          <Trans
+            t={t}
+            i18nKey="sweepOperationFromTo"
+            values={{ from: getName(sweepAddresses.from), to: getName(sweepAddresses.to) }}
+            components={{
+              1: <ColoredWord color={sweepAddresses.from.color} />,
+              3: <ColoredWord color={sweepAddresses.to.color} />
+            }}
+          >
+            {'This operation will sweep all funds from <1>{{ from }}</1> and transfer them to <3>{{ to }}</3>.'}
           </Trans>
         </InfoBox>
         <Fee>
           {t`Fee`}
-          <Amount value={fee} fadeDecimals />
+          <Amount value={fee} />
         </Fee>
       </Content>
       <HorizontalDivider narrow />
       <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onClose}>
+        <ModalFooterButton role="secondary" onClick={onClose}>
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onSweepClick} disabled={builtUnsignedTxs.length === 0}>

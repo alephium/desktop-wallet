@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,77 +16,121 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay } from '@alephium/sdk'
+import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import AlefSymbol from './AlefSymbol'
+import { useAppSelector } from '@/hooks/redux'
+import { convertToPositive } from '@/utils/misc'
 
 interface AmountProps {
-  value: bigint | undefined
+  value?: bigint | number
+  decimals?: number
+  isFiat?: boolean
   fadeDecimals?: boolean
   fullPrecision?: boolean
   nbOfDecimalsToShow?: number
   color?: string
+  overrideSuffixColor?: boolean
   tabIndex?: number
+  suffix?: string
+  isUnknownToken?: boolean
+  highlight?: boolean
+  showPlusMinus?: boolean
   className?: string
 }
 
 const Amount = ({
   value,
+  decimals,
+  isFiat,
   className,
   fadeDecimals,
   fullPrecision = false,
-  color,
   nbOfDecimalsToShow,
-  tabIndex
+  suffix,
+  color,
+  overrideSuffixColor,
+  tabIndex,
+  isUnknownToken,
+  showPlusMinus = false
 }: AmountProps) => {
-  const {
-    settings: {
-      general: { discreetMode }
-    }
-  } = useGlobalContext()
-  let integralPart = ''
-  let fractionalPart = ''
-  let suffix = ''
+  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
+
+  let quantitySymbol = ''
+  let amount = ''
+  let isNegative = false
 
   if (!discreetMode && value !== undefined) {
-    let amount = formatAmountForDisplay({ amount: value, fullPrecision, displayDecimals: nbOfDecimalsToShow })
+    if (isFiat && typeof value === 'number') {
+      amount = formatFiatAmountForDisplay(value)
+    } else if (isUnknownToken) {
+      amount = value.toString()
+    } else {
+      isNegative = value < 0
+      amount = formatAmountForDisplay({
+        amount: convertToPositive(value as bigint),
+        amountDecimals: decimals,
+        displayDecimals: nbOfDecimalsToShow,
+        fullPrecision
+      })
+    }
+
     if (fadeDecimals && ['K', 'M', 'B', 'T'].some((char) => amount.endsWith(char))) {
-      suffix = amount.slice(-1)
+      quantitySymbol = amount.slice(-1)
       amount = amount.slice(0, -1)
     }
-    const amountParts = amount.split('.')
-    integralPart = amountParts[0]
-    fractionalPart = amountParts[1]
   }
+
+  const [integralPart, fractionalPart] = amount.split('.')
 
   return (
     <span className={className} tabIndex={tabIndex ?? -1}>
       {discreetMode ? (
         '•••'
       ) : value !== undefined ? (
-        fadeDecimals ? (
-          <>
-            <span>{integralPart}</span>
-            <Decimals>.{fractionalPart}</Decimals>
-            {suffix && <span>{suffix}</span>}
-          </>
-        ) : (
-          `${integralPart}.${fractionalPart}`
-        )
+        <>
+          {showPlusMinus && <span>{isNegative ? '-' : '+'}</span>}
+          {fadeDecimals ? (
+            <>
+              <span>{integralPart}</span>
+              {fractionalPart && <Decimals>.{fractionalPart}</Decimals>}
+              {quantitySymbol && <span>{quantitySymbol}</span>}
+            </>
+          ) : fractionalPart ? (
+            `${integralPart}.${fractionalPart}`
+          ) : (
+            integralPart
+          )}
+        </>
       ) : (
         '-'
       )}
-      <AlefSymbol color={color} />
+
+      {!isUnknownToken && <Suffix color={overrideSuffixColor ? color : undefined}>{` ${suffix ?? 'ALPH'}`}</Suffix>}
     </span>
   )
 }
 
 export default styled(Amount)`
-  color: ${({ theme, color }) => color ?? theme.font.primary};
+  color: ${({ color, highlight, value, theme }) =>
+    color
+      ? color
+      : highlight && value !== undefined
+      ? value < 0
+        ? theme.font.highlight
+        : theme.global.valid
+      : 'inherit'};
+  display: inline-flex;
+  white-space: pre;
+  font-weight: var(--fontWeight-bold);
+  font-feature-settings: 'tnum' on;
 `
 
 const Decimals = styled.span`
   opacity: 0.7;
+`
+
+const Suffix = styled.span<{ color?: string }>`
+  color: ${({ color, theme }) => color ?? theme.font.secondary};
+  font-weight: var(--fontWeight-medium);
 `

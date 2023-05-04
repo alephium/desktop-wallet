@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,42 +16,41 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import './index.css' // Importing CSS through CSS file to avoid font flickering
-import './i18n'
+import '@/index.css' // Importing CSS through CSS file to avoid font flickering
+import '@/i18n'
 import '@yaireo/tagify/dist/tagify.css' // Tagify CSS: important to import after index.css file
 
 import { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
-import { ThemeProvider } from 'styled-components'
 
-import App from './App'
-import { AddressesContextProvider } from './contexts/addresses'
-import { GlobalContextProvider } from './contexts/global'
-import { SendModalContextProvider } from './contexts/sendModal'
-import { WalletConnectContextProvider } from './contexts/walletconnect'
-import * as serviceWorker from './serviceWorker'
-import { GlobalStyle } from './style/globalStyles'
-import { lightTheme } from './style/themes'
+import App from '@/App'
+import Tooltips from '@/components/Tooltips'
+import AnalyticsProvider from '@/contexts/analytics'
+import { GlobalContextProvider } from '@/contexts/global'
+import * as serviceWorker from '@/serviceWorker'
+import { store } from '@/storage/store'
+
+// The app still behaves as if React 17 is used. This is because
+// `react-custom-scrollbars` is not working with React 18 yet.
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+// const root = createRoot(document.getElementById('root')!)
 
 ReactDOM.render(
   <StrictMode>
-    <Router>
-      <ThemeProvider theme={lightTheme}>
+    <Provider store={store}>
+      <Router>
         <Suspense fallback="loading">
-          <GlobalContextProvider>
-            <AddressesContextProvider>
-              <SendModalContextProvider>
-                <WalletConnectContextProvider>
-                  <GlobalStyle />
-                  <App />
-                </WalletConnectContextProvider>
-              </SendModalContextProvider>
-            </AddressesContextProvider>
-          </GlobalContextProvider>
+          <AnalyticsProvider>
+            <GlobalContextProvider>
+              <App />
+              <Tooltips />
+            </GlobalContextProvider>
+          </AnalyticsProvider>
         </Suspense>
-      </ThemeProvider>
-    </Router>
+      </Router>
+    </Provider>
   </StrictMode>,
   document.getElementById('root')
 )

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -78,16 +78,13 @@ export const useWindowSize = () => {
   return windowSize
 }
 
-export function useStateWithLocalStorage<T>(localStorageKey: string, defaultValue: T) {
-  const [value, setValue] = useState(localStorage.getItem(localStorageKey) || defaultValue)
-
-  useEffect(() => {
-    localStorage.setItem(localStorageKey, value as string)
-  }, [localStorageKey, value])
-
-  return [value, setValue]
-}
-
 // Helper function to run React effect only once, without eslint screaming
 // eslint-disable-next-line react-hooks/exhaustive-deps
 export const useMountEffect = (fun: () => void) => useEffect(fun, [])
+
+export const useWindowResize = (onResize: () => void) => {
+  useEffect(() => {
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [onResize])
+}

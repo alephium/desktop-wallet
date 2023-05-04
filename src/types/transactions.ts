@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,14 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
 import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
 
-import { Address } from '../contexts/addresses'
-import { NetworkName } from '../utils/settings'
+import { Address, AddressHash } from '@/types/addresses'
+import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
-export type TransactionDirection = 'out' | 'in'
-export type TransactionInfoType = TransactionDirection | 'move' | 'pending'
-export type TransactionStatus = 'pending' | 'confirmed'
 export enum TxType {
   TRANSFER,
   DEPLOY_CONTRACT,
@@ -32,19 +31,19 @@ export enum TxType {
 
 export type PendingTxType = 'consolidation' | 'transfer' | 'sweep' | 'contract'
 
-export type PendingTx = {
-  txId: string
+export type PendingTransaction = {
+  hash: string
   fromAddress: string
   toAddress: string
   timestamp: number
   type: PendingTxType
-  network: NetworkName
-  amount?: bigint
-  lockTime?: Date
+  amount?: string
+  tokens?: Token[]
+  lockTime?: number
   status: 'pending'
 }
 
-export type DappTxData = TransferTxData | DeployContractTxData | ScriptTxData
+export type DappTxData = TransferTxData | DeployContractTxData | CallContractTxData
 
 export type TxDataToModalType =
   | {
@@ -57,24 +56,24 @@ export type TxDataToModalType =
     }
   | {
       modalType: TxType.SCRIPT
-      txData: ScriptTxData
+      txData: CallContractTxData
     }
 
 export interface DeployContractTxData {
   fromAddress: Address
   bytecode: string
 
-  initialAlphAmount?: string
+  initialAlphAmount?: AssetAmount
   issueTokenAmount?: string
   gasAmount?: number
   gasPrice?: string
 }
 
-export interface ScriptTxData {
+export interface CallContractTxData {
   fromAddress: Address
   bytecode: string
 
-  alphAmount?: string
+  assetAmounts?: AssetAmount[]
   gasAmount?: number
   gasPrice?: string
 }
@@ -82,7 +81,7 @@ export interface ScriptTxData {
 export interface TransferTxData {
   fromAddress: Address
   toAddress: string
-  alphAmount: string
+  assetAmounts: AssetAmount[]
   gasAmount?: number
   gasPrice?: string
   lockTime?: Date
@@ -102,6 +101,7 @@ export type PartialTxData<T, K extends keyof T> = {
 export type CheckTxProps<T> = {
   data: T
   fees: bigint
+  onSubmit: () => void
 }
 
 export type UnsignedTx = {
@@ -123,6 +123,29 @@ export type TxContext = {
   setUnsignedTxId: (txId: string) => void
   isSweeping: boolean
   consolidationRequired: boolean
-  currentNetwork: NetworkName
-  setAddress: (address: Address) => void
+}
+
+export type AddressConfirmedTransaction = Transaction & { address: Address }
+export type AddressPendingTransaction = PendingTransaction & { address: Address }
+export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction
+
+export type TransactionTimePeriod = '24h' | '1w' | '1m' | '6m' | '12m' | 'previousYear' | 'thisYear'
+
+export type Direction = Omit<TransactionInfoType, 'pending'>
+
+export type TransactionInfo = {
+  assets: TransactionInfoAsset[]
+  direction: TransactionDirection
+  infoType: TransactionInfoType
+  outputs: Output[]
+  lockTime?: Date
+}
+
+export type CsvExportTimerangeQueryParams = {
+  fromTs: number
+  toTs: number
+}
+
+export type CsvExportQueryParams = CsvExportTimerangeQueryParams & {
+  addressHash: AddressHash
 }

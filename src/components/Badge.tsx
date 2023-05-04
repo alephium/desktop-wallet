@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,44 +17,44 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
-import { HasTooltip } from './Tooltip'
-import Truncate from './Truncate'
+import { HasTooltip } from '@/components/Tooltip'
+import Truncate from '@/components/Truncate'
 
 interface BadgeProps {
   color?: string
   border?: boolean
+  transparent?: boolean
   truncate?: boolean
   rounded?: boolean
+  short?: boolean
   className?: string
 }
 
-const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, 'data-tip': dataTip }) =>
-  truncate ? (
-    <Truncate className={className} data-tip={dataTip}>
-      {children}
-    </Truncate>
-  ) : (
-    <span className={className} data-tip={dataTip}>
-      {children}
-    </span>
-  )
+const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tooltip }) => (
+  <div className={className} data-tooltip-id="default" data-tooltip-content={tooltip}>
+    {truncate ? <Truncate>{children}</Truncate> : <span>{children}</span>}
+  </div>
+)
 
 export default styled(Badge)`
-  ${({ color, theme, rounded, border, truncate }) => {
+  ${({ color, theme, rounded, border, short, truncate, transparent }) => {
     const usedColor = color || theme.font.primary
 
     return css`
-      display: inline;
-      padding: 5px 10px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      height: ${short ? 25 : 35}px;
       color: ${usedColor};
-      border-radius: ${rounded ? '20px' : 'var(--radius-small)'};
-      background-color: ${colord(usedColor).alpha(0.08).toRgbString()};
+      border-radius: ${rounded ? '50px' : 'var(--radius-big)'};
+      background-color: ${!transparent && colord(usedColor).alpha(0.02).toRgbString()};
+      white-space: nowrap;
+
       ${border &&
       css`
-        border: 1px solid ${colord(usedColor).alpha(0.2).toRgbString()};
+        border: 1px solid ${theme.border.primary};
       `};
       ${truncate &&
       css`

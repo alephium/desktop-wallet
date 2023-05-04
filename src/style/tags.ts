@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ export default css`
 
     .tagify__dropdown__wrapper {
       border: none;
-      border-radius: var(--radius);
+      border-radius: var(--radius-small);
       background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
     }
 

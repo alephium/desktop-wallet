@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,52 +16,47 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence } from 'framer-motion'
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import KeyValueInput from '../../components/Inputs/InlineLabelValueInput'
-import Input from '../../components/Inputs/Input'
-import Select from '../../components/Inputs/Select'
-import Toggle from '../../components/Inputs/Toggle'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import PasswordConfirmation from '../../components/PasswordConfirmation'
-import { useGlobalContext } from '../../contexts/global'
-import useSwitchTheme from '../../hooks/useSwitchTheme'
-import { Language, ThemeType } from '../../types/settings'
-import { loadSettings } from '../../utils/settings'
-import CenteredModal from '../CenteredModal'
+import Box from '@/components/Box'
+import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
+import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
+import Input from '@/components/Inputs/Input'
+import Select from '@/components/Inputs/Select'
+import Toggle from '@/components/Inputs/Toggle'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import CenteredModal from '@/modals/CenteredModal'
+import ModalPortal from '@/modals/ModalPortal'
+import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
+import {
+  analyticsToggled,
+  discreetModeToggled,
+  languageChanged,
+  passwordRequirementToggled,
+  walletLockTimeChanged
+} from '@/storage/settings/settingsActions'
+import { switchTheme } from '@/storage/settings/settingsStorageUtils'
+import { Language, ThemeSettings } from '@/types/settings'
+import { links } from '@/utils/links'
+import { getAvailableLanguageOptions } from '@/utils/settings'
 
-const languageOptions = [
-  { label: 'Deutsch', value: 'de-DE' as Language },
-  { label: 'English', value: 'en-US' as Language },
-  { label: 'Español', value: 'es-ES' as Language },
-  { label: 'Français', value: 'fr-FR' as Language },
-  { label: 'Português', value: 'pt-PT' as Language },
-  { label: 'Bahasa Indonesia', value: 'id-ID' as Language },
-  { label: 'Русский', value: 'ru-RU' as Language },
-  { label: 'Türkçe', value: 'tr-TR' as Language },
-  { label: 'Tiếng Việt', value: 'vi-VN' as Language }
-]
+interface GeneralSettingsSectionProps {
+  className?: string
+}
 
-const themeOptions = [
-  { label: 'System', value: 'system' as ThemeType },
-  { label: 'Light', value: 'light' as ThemeType },
-  { label: 'Dark', value: 'dark' as ThemeType }
-]
+const languageOptions = getAvailableLanguageOptions()
 
-const GeneralSettingsSection = () => {
+const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
-  const switchTheme = useSwitchTheme()
-  const {
-    settings: {
-      general: { walletLockTimeInMinutes, discreetMode, passwordRequirement, language }
-    },
-    updateSettings,
-    wallet
-  } = useGlobalContext()
-
-  const storedSettings = loadSettings()
+  const dispatch = useAppDispatch()
+  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics } = useAppSelector(
+    (s) => s.settings
+  )
+  const posthog = usePostHog()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
 
@@ -69,21 +64,64 @@ const GeneralSettingsSection = () => {
     if (passwordRequirement) {
       setIsPasswordModalOpen(true)
     } else {
-      updateSettings('general', { passwordRequirement: true })
+      dispatch(passwordRequirementToggled())
+
+      posthog?.capture('Enabled password requirement')
     }
-  }, [passwordRequirement, updateSettings])
+  }, [dispatch, passwordRequirement, posthog])
 
   const disablePasswordRequirement = useCallback(() => {
-    updateSettings('general', { passwordRequirement: false })
+    dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
-  }, [updateSettings])
 
-  const onLanguageChange = (language: Language) => updateSettings('general', { language })
+    posthog?.capture('Disabled password requirement')
+  }, [dispatch, posthog])
 
-  const discreetModeText = t`Discreet mode`
+  const handleLanguageChange = (language: Language) => {
+    dispatch(languageChanged(language))
+
+    posthog?.capture('Changed language', { language })
+  }
+
+  const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
+
+  const handleWalletLockTimeChange = (mins: string) => {
+    const time = mins ? parseInt(mins) : null
+
+    dispatch(walletLockTimeChanged(time))
+
+    posthog?.capture('Changed wallet lock time', { time })
+  }
+
+  const handleThemeSelect = (theme: ThemeSettings) => {
+    switchTheme(theme)
+
+    posthog?.capture('Changed theme', { theme })
+  }
+
+  const handleAnalyticsToggle = (toggle: boolean) => {
+    dispatch(analyticsToggled(toggle))
+
+    if (toggle && !import.meta.env.DEV) {
+      const id = AnalyticsStorage.load()
+      posthog?.identify(id)
+      posthog?.opt_in_capturing()
+      posthog?.capture('Enabled analytics')
+    } else {
+      posthog?.capture('Disabled analytics')
+      posthog?.opt_out_capturing()
+    }
+  }
+
+  const discreetModeText = t('Discreet mode')
+  const themeOptions = [
+    { label: t('System'), value: 'system' as ThemeSettings },
+    { label: t('Light'), value: 'light' as ThemeSettings },
+    { label: t('Dark'), value: 'dark' as ThemeSettings }
+  ]
 
   return (
-    <>
+    <Box className={className}>
       <KeyValueInput
         label={t`Lock time`}
         description={t`Duration in minutes after which an idle wallet will lock automatically.`}
@@ -91,18 +129,17 @@ const GeneralSettingsSection = () => {
           <Input
             id="wallet-lock-time-in-minutes"
             value={walletLockTimeInMinutes || ''}
-            onChange={(v) =>
-              updateSettings('general', { walletLockTimeInMinutes: v.target.value ? parseInt(v.target.value) : null })
-            }
+            onChange={(v) => handleWalletLockTimeChange(v.target.value)}
             label={walletLockTimeInMinutes ? t`Minutes` : t`Off`}
             type="number"
             step={1}
             min={1}
             noMargin
+            heightSize="small"
           />
         }
       />
-      <HorizontalDivider narrow />
+      <HorizontalDivider />
       <KeyValueInput
         label={t`Theme`}
         description={t`Select the theme and please your eyes.`}
@@ -110,34 +147,29 @@ const GeneralSettingsSection = () => {
           <Select
             id="theme"
             options={themeOptions}
-            onValueChange={(v) => v?.value && switchTheme(v.value)}
-            controlledValue={themeOptions.find((l) => l.value === storedSettings.general.theme)}
+            onSelect={handleThemeSelect}
+            controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
             title={t`Theme`}
+            heightSize="small"
           />
         }
       />
-      <HorizontalDivider narrow />
+      <HorizontalDivider />
       <KeyValueInput
         label={discreetModeText}
         description={t`Toggle discreet mode (hide amounts).`}
-        InputComponent={
-          <Toggle
-            label={discreetModeText}
-            toggled={discreetMode}
-            onToggle={() => updateSettings('general', { discreetMode: !discreetMode })}
-          />
-        }
+        InputComponent={<Toggle label={discreetModeText} toggled={discreetMode} onToggle={handleDiscreetModeToggle} />}
       />
-      <HorizontalDivider narrow />
-      {wallet && (
+      <HorizontalDivider />
+      {isAuthenticated && (
         <>
           <KeyValueInput
             label={t`Password requirement`}
             description={t`Require password confirmation before sending each transaction.`}
             InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
           />
-          <HorizontalDivider narrow />
+          <HorizontalDivider />
         </>
       )}
       <KeyValueInput
@@ -147,25 +179,33 @@ const GeneralSettingsSection = () => {
           <Select
             id="language"
             options={languageOptions}
-            onValueChange={(v) => v?.value && onLanguageChange(v.value)}
+            onSelect={handleLanguageChange}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
             title={t`Language`}
+            heightSize="small"
           />
         }
       />
-      <AnimatePresence>
+      <HorizontalDivider />
+      <KeyValueInput
+        label={t('Analytics')}
+        description={t('Help us improve your experience!')}
+        moreInfoLink={links.analytics}
+        InputComponent={<Toggle toggled={analytics} onToggle={handleAnalyticsToggle} />}
+      />
+      <ModalPortal>
         {isPasswordModelOpen && (
-          <CenteredModal title={t`Password`} onClose={() => setIsPasswordModalOpen(false)} focusMode narrow>
+          <CenteredModal title={t('Password')} onClose={() => setIsPasswordModalOpen(false)} focusMode skipFocusOnMount>
             <PasswordConfirmation
-              text={t`Type your password to change this setting.`}
-              buttonText={t`Enter`}
+              text={t('Type your password to change this setting.')}
+              buttonText={t('Enter')}
               onCorrectPasswordEntered={disablePasswordRequirement}
             />
           </CenteredModal>
         )}
-      </AnimatePresence>
-    </>
+      </ModalPortal>
+    </Box>
   )
 }
 

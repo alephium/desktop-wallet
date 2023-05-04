@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,20 +16,16 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import classNames from 'classnames'
-import { FC } from 'react'
+import { motion } from 'framer-motion'
+import { ChevronsUpDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
+
+import Button from '@/components/Button'
 
 type AlignType = 'start' | 'center' | 'end'
 
 export interface TableProps {
-  headers?: {
-    title: string
-    align?: AlignType
-    width?: string
-  }[]
-  isLoading?: boolean
   minWidth?: string
   className?: string
 }
@@ -39,41 +35,29 @@ interface TableCellProps {
   align?: AlignType
 }
 
-const Table: FC<TableProps> = ({ className, children, headers, isLoading }) => {
-  const { t } = useTranslation()
+const Table: FC<TableProps> = ({ className, children, minWidth }) => (
+  <TableWrapper className={className} minWidth={minWidth}>
+    <div role="table" tabIndex={0}>
+      {children}
+    </div>
+  </TableWrapper>
+)
 
-  return (
-    <ScrollableWrapper>
-      <div role="table" tabIndex={0} className={classNames(className, { 'skeleton-loader': isLoading })}>
-        {headers && headers.length > 0 && (
-          <TableHeaderRow role="rowheader" tabIndex={0} columnWidths={headers.map(({ width }) => width)}>
-            {headers.map(({ title, align }) => (
-              <TableHeaderCell role="rowheader" key={title} align={align}>
-                {t(title)}
-              </TableHeaderCell>
-            ))}
-          </TableHeaderRow>
-        )}
-        {children}
-      </div>
-    </ScrollableWrapper>
-  )
-}
+export default Table
 
-export default styled(Table)`
+const TableWrapper = styled(motion.div)<Pick<TableProps, 'minWidth'>>`
+  width: 100%;
+  overflow: auto;
+  border-radius: var(--radius-big);
+  border: 1px solid ${({ theme }) => theme.border.primary};
+
   background-color: ${({ theme }) => theme.bg.primary};
+  box-shadow: ${({ theme }) => theme.shadow.primary};
 
   ${({ minWidth }) =>
     minWidth &&
     css`
       min-width: ${minWidth};
-    `}
-
-  ${({ isLoading }) =>
-    isLoading &&
-    css`
-      min-height: 300px;
-      width: 100%;
     `}
 `
 
@@ -100,10 +84,6 @@ export const TableCell = styled.div<TableCellProps>`
     `};
 `
 
-const TableHeaderCell = styled(TableCell)`
-  color: ${({ theme }) => theme.font.secondary};
-`
-
 const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
   display: grid;
   ${({ columnWidths }) =>
@@ -117,23 +97,17 @@ const TableColumns = styled.div<{ columnWidths?: (string | undefined)[] }>`
         `};
 
   align-items: center;
-  padding: 8px 20px;
-  min-height: 52px;
-`
-
-const TableHeaderRow = styled(TableColumns)`
-  background-color: ${({ theme }) => theme.bg.tertiary};
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
+  padding: 18px 20px;
+  min-height: 55px;
 `
 
 export const TableRow = styled(TableColumns)<{ onClick?: () => void; blinking?: boolean }>`
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
 
   &:last-child {
     border-bottom: none;
-    border-bottom-left-radius: var(--radius);
-    border-bottom-right-radius: var(--radius);
+    border-bottom-left-radius: var(--radius-small);
+    border-bottom-right-radius: var(--radius-small);
   }
 
   ${({ onClick }) =>
@@ -177,9 +151,88 @@ export const TableCellPlaceholder = styled(TableCell)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const ScrollableWrapper = styled.div`
+export const TableHeader: FC<{ title: string; className?: string }> = ({ title, children, className }) => (
+  <TableHeaderRow className={className}>
+    <TableTitle>{title}</TableTitle>
+    {children}
+  </TableHeaderRow>
+)
+
+const TableHeaderRow = styled(TableRow)`
+  display: flex;
+  justify-content: space-between;
+  height: 55px;
+  background-color: ${({ theme }) => theme.bg.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  padding-right: var(--spacing-2);
+`
+
+const TableTitle = styled.div`
+  font-size: 15px;
+  font-weight: var(--fontWeight-semiBold);
+`
+
+export const ExpandRow = ({ onClick }: { onClick: () => void }) => {
+  const { t } = useTranslation()
+
+  return (
+    <ExpandRowStyled>
+      <ExpandButton role="secondary" onClick={onClick} Icon={ChevronsUpDown} short>
+        {t('Expand')}
+      </ExpandButton>
+    </ExpandRowStyled>
+  )
+}
+
+const ExpandButton = styled(Button)`
+  opacity: 0;
+`
+
+const ExpandRowStyled = styled.div`
+  position: absolute;
   width: 100%;
-  overflow: auto;
-  border-radius: var(--radius-medium);
-  border: 1px solid ${({ theme }) => theme.border.primary};
+  display: flex;
+  justify-content: center;
+  bottom: 0;
+  height: 70px;
+  display: flex;
+  align-items: flex-end;
+
+  opacity: 0.8;
+  transition: opacity 0.15s ease-out;
+
+  pointer-events: none;
+
+  ${({ theme }) => {
+    const gradientMaxOpacity = theme.name === 'light' ? 0.05 : 0.25
+
+    return css`
+      background: linear-gradient(0deg, rgba(0, 0, 0, ${gradientMaxOpacity}) 0%, rgba(0, 0, 0, 0) 100%);
+    `
+  }}
+`
+
+export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInPx?: number }>`
+  max-height: ${({ maxHeightInPx }) => maxHeightInPx && maxHeightInPx}px;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+
+  ${({ isExpanded }) =>
+    isExpanded &&
+    css`
+      max-height: none;
+      box-shadow: ${({ theme }) => theme.shadow.tertiary};
+    `}
+
+  &:hover {
+    ${ExpandRowStyled} {
+      opacity: 1;
+      z-index: 1; // Make sure it is displayed above copy btns
+    }
+
+    ${ExpandButton} {
+      opacity: 1;
+    }
+  }
 `

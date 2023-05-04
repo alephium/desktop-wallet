@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,93 +16,96 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { decrypt, encrypt } from '@alephium/sdk'
+import { Transaction } from '@alephium/sdk/api/explorer'
+import { TokenInfo } from '@alephium/token-list'
+import { ALPH } from '@alephium/token-list'
+import { Dictionary } from '@reduxjs/toolkit'
 
-import { Address } from '../contexts/addresses'
-import { latestUserDataVersion } from './migration'
-import { stringToDoubleSHA256HexString } from './misc'
+import { Address, AddressSettings } from '@/types/addresses'
+import { AssetAmount } from '@/types/assets'
+import { AddressTransaction, PendingTransaction } from '@/types/transactions'
+import { getRandomLabelColor } from '@/utils/colors'
 
-const addressesMetadataLocalStorageKeyPrefix = 'addresses-metadata'
+export const selectAddressTransactions = (addresses: Address[], transactions: (Transaction | PendingTransaction)[]) => {
+  const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
+  const processedTxHashes: Transaction['hash'][] = []
 
-export type AddressSettings = {
-  isMain: boolean
-  label?: string
-  color?: string
-}
+  return transactions.reduce((txs, tx) => {
+    const addressTxs = addressesTxs.filter(({ txHash }) => txHash === tx.hash)
 
-export type AddressVariant = Address | AddressSettings
-
-export type AddressMetadata = AddressSettings & {
-  index: number
-}
-
-export const isAddressValid = (address: string) => {
-  const match = address.match(/^[1-9A-HJ-NP-Za-km-z]+$/)
-
-  if (match === null) return false
-
-  return match[0] === address && address
-}
-
-export const constructMetadataKey = (walletName: string) =>
-  `${addressesMetadataLocalStorageKeyPrefix}-${stringToDoubleSHA256HexString(walletName)}`
-
-interface AddressMetadataKey {
-  mnemonic: string
-  walletName: string
-}
-
-export const loadStoredAddressesMetadataOfWallet = (
-  { mnemonic, walletName }: AddressMetadataKey,
-  isPassphraseUsed?: boolean
-): AddressMetadata[] => {
-  if (isPassphraseUsed) return []
-
-  const json = localStorage.getItem(constructMetadataKey(walletName))
-
-  if (json === null) return []
-  const { encryptedSettings } = JSON.parse(json)
-  return JSON.parse(decrypt(mnemonic, encryptedSettings))
-}
-
-export const storeAddressMetadataOfWallet = (
-  { mnemonic, walletName }: AddressMetadataKey,
-  index: number,
-  settings: AddressSettings,
-  isPassphraseUsed?: boolean
-) => {
-  if (isPassphraseUsed) return
-
-  const addressesMetadata = loadStoredAddressesMetadataOfWallet({ walletName, mnemonic })
-  const existingAddressMetadata = addressesMetadata.find((data: AddressMetadata) => data.index === index)
-
-  if (!existingAddressMetadata) {
-    addressesMetadata.push({
-      index,
-      ...settings
+    addressTxs.forEach((addressTx) => {
+      if (
+        (!isPendingTransaction(tx) || tx.fromAddress === addressTx.address.hash) &&
+        !processedTxHashes.includes(tx.hash)
+      ) {
+        processedTxHashes.push(tx.hash)
+        txs.push({ ...tx, address: addressTx.address })
+      }
     })
-  } else {
-    Object.assign(existingAddressMetadata, settings)
-  }
-  console.log(`🟠 Storing address index ${index} metadata locally`)
 
-  localStorage.setItem(
-    constructMetadataKey(walletName),
-    JSON.stringify({
-      version: latestUserDataVersion,
-      encryptedSettings: encrypt(mnemonic, JSON.stringify(addressesMetadata))
-    })
-  )
+    return txs
+  }, [] as AddressTransaction[])
 }
 
-export const deleteStoredAddressMetadataOfWallet = (walletName: string) => {
-  localStorage.removeItem(constructMetadataKey(walletName))
-}
+export const getAvailableBalance = (address: Address): bigint => BigInt(address.balance) - BigInt(address.lockedBalance)
 
-export const sortAddressList = (addresses: Address[]): Address[] =>
-  addresses.sort((a, b) => {
-    // Always keep default address to the top of the list
-    if (a.settings.isMain) return -1
-    if (b.settings.isMain) return 1
-    return (b.lastUsed ?? 0) - (a.lastUsed ?? 0)
+export const getName = (address: Address): string => address.label || `${address.hash.substring(0, 10)}...`
+
+export const getInitialAddressSettings = (): AddressSettings => ({
+  isDefault: true,
+  color: getRandomLabelColor()
+})
+
+export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<TokenInfo>) =>
+  text.length < 2
+    ? addresses
+    : addresses.filter((address) => {
+        const addressTokenIds = address.tokens.filter((token) => token.balance !== '0').map((token) => token.id)
+        const addressTokenNames = addressTokenIds
+          .map((tokenId) => {
+            const tokenInfo = assetsInfo[tokenId]
+            return tokenInfo ? `${tokenInfo.name} ${tokenInfo.symbol}` : undefined
+          })
+          .filter((searchableText) => searchableText !== undefined)
+          .join(' ')
+
+        const addressAssetNames = `${address.balance !== '0' ? 'Alephium ALPH ' : ''}${addressTokenNames}`.toLowerCase()
+
+        return (
+          address.label?.toLowerCase().includes(text) ||
+          address.hash.toLowerCase().includes(text) ||
+          addressAssetNames.includes(text)
+        )
+      })
+
+export const getAddressAssetsAvailableBalance = (address: Address) => [
+  {
+    id: ALPH.id,
+    availableBalance: getAvailableBalance(address)
+  },
+  ...address.tokens.map((token) => ({
+    id: token.id,
+    availableBalance: BigInt(token.balance) - BigInt(token.lockedBalance)
+  }))
+]
+
+export const assetAmountsWithinAvailableBalance = (address: Address, assetAmounts: AssetAmount[]) => {
+  const assetsAvailableBalance = getAddressAssetsAvailableBalance(address)
+
+  return assetAmounts.every((asset) => {
+    if (!asset?.amount) return true
+
+    const assetAvailableBalance = assetsAvailableBalance.find(({ id }) => id === asset.id)?.availableBalance
+
+    if (!assetAvailableBalance) return false
+    return asset.amount <= assetAvailableBalance
   })
+}
+
+const isPendingTransaction = (tx: Transaction | PendingTransaction): tx is PendingTransaction =>
+  (tx as PendingTransaction).status === 'pending'
+
+export const addressHasAssets = (address: Address): boolean =>
+  address.balance !== '0' || address.tokens.some((token) => token.balance !== '0')
+
+export const filterAddressesWithoutAssets = (addresses: Address[]): Address[] => addresses.filter(addressHasAssets)

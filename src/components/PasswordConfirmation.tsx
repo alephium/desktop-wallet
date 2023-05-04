@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,47 +16,52 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getStorage, walletOpen } from '@alephium/sdk'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import Button from './Button'
-import Input from './Inputs/Input'
-import { Section } from './PageComponents/PageContainers'
-
-const Storage = getStorage()
+import Button from '@/components/Button'
+import Input from '@/components/Inputs/Input'
+import { Section } from '@/components/PageComponents/PageContainers'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { passwordValidationFailed } from '@/storage/auth/authActions'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 
 interface PasswordConfirmationProps {
   onCorrectPasswordEntered: (password: string) => void
   isSubmitDisabled?: boolean
   text?: string
   buttonText?: string
-  walletName?: string
+  highlightButton?: boolean
+  walletId?: string
 }
 
 const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
   text,
   buttonText,
   onCorrectPasswordEntered,
-  walletName,
+  walletId,
   isSubmitDisabled = false,
+  highlightButton = false,
   children
 }) => {
   const { t } = useTranslation()
-  const { activeWalletName, setSnackbarMessage } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const activeWallet = useAppSelector((state) => state.activeWallet)
+
   const [password, setPassword] = useState('')
 
-  const validatePassword = () => {
-    const walletEncrypted = Storage.load(walletName || activeWalletName)
+  const storedWalletId = walletId || activeWallet.id
 
+  if (!storedWalletId) return null
+
+  const validatePassword = () => {
     try {
-      if (walletOpen(password, walletEncrypted)) {
+      if (WalletStorage.load(storedWalletId, password)) {
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
-      setSnackbarMessage({ text: t`Invalid password`, type: 'alert' })
+      dispatch(passwordValidationFailed())
     }
   }
 
@@ -67,8 +72,13 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         {children && <Children>{children}</Children>}
       </Section>
       <Section>
-        <ButtonStyled onClick={validatePassword} submit wide disabled={isSubmitDisabled || !password}>
-          {buttonText || t`Submit`}
+        <ButtonStyled
+          onClick={validatePassword}
+          submit
+          disabled={isSubmitDisabled || !password}
+          variant={highlightButton ? 'valid' : 'default'}
+        >
+          {buttonText || t('Submit')}
         </ButtonStyled>
       </Section>
     </>
@@ -82,5 +92,5 @@ const Children = styled.div`
 `
 
 const ButtonStyled = styled(Button)`
-  margin-top: 20px;
+  margin-top: var(--spacing-4);
 `

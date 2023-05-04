@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import Button from '../Button'
+import Button, { ButtonProps } from '@/components/Button'
 
-interface CompactToggleProps {
+interface CompactToggleProps extends ButtonProps {
   toggled: boolean
   onToggle: (value: boolean) => void
   IconOn: LucideIconType
@@ -26,7 +26,7 @@ interface CompactToggleProps {
 }
 
 const CompactToggle = ({ toggled, onToggle, IconOn, IconOff, ...props }: CompactToggleProps) => (
-  <Button squared transparent onClick={() => onToggle(!toggled)} {...props}>
+  <Button squared transparent role="secondary" onClick={() => onToggle(!toggled)} {...props}>
     {toggled ? <IconOn /> : <IconOff />}
   </Button>
 )

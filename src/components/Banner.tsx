@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,15 +20,12 @@ import { motion } from 'framer-motion'
 import styled from 'styled-components'
 
 export default styled(motion.div)`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  height: 50px;
+
   color: var(--color-white);
   background-color: ${({ theme }) => theme.global.accent};
-  z-index: 1001;
 `

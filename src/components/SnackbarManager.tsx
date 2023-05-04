@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,61 +16,64 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { colord } from 'colord'
+import { motion } from 'framer-motion'
 import { useEffect } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import { deviceBreakPoints } from '../style/globalStyles'
+import { fadeInBottom, fadeOut } from '@/animations'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
+import { snackbarDisplayTimeExpired } from '@/storage/global/globalActions'
+import { deviceBreakPoints, walletSidebarWidthPx } from '@/style/globalStyles'
 
-export interface SnackbarMessage {
-  text: string
-  type: 'info' | 'alert' | 'success'
-  duration?: number
-}
+const SnackbarManager = () => {
+  const dispatch = useAppDispatch()
+  const messages = useAppSelector((state) => state.snackbar.messages)
 
-const SnackbarManager = ({ message }: { message: SnackbarMessage | undefined }) => {
-  const { setSnackbarMessage } = useGlobalContext()
+  const message = messages.length > 0 ? messages[0] : undefined
 
   // Remove snackbar popup after its duration
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
 
-    if (message) {
-      timer = setTimeout(() => setSnackbarMessage(undefined), message.duration || 3000)
+    if (message && message.duration >= 0) {
+      timer = setTimeout(() => dispatch(snackbarDisplayTimeExpired()), message.duration)
     }
+
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [message, setSnackbarMessage])
+  }, [dispatch, message])
 
   return (
-    <SnackbarManagerContainer>
-      <AnimatePresence>
-        {message && (
-          <SnackbarPopup
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={message?.type}
-          >
-            {message?.text}
+    <ModalPortal>
+      {message?.text && (
+        <SnackbarManagerContainer>
+          <SnackbarPopup {...fadeInBottom} {...fadeOut} className={message.type}>
+            {message.text}
           </SnackbarPopup>
-        )}
-      </AnimatePresence>
-    </SnackbarManagerContainer>
+        </SnackbarManagerContainer>
+      )}
+    </ModalPortal>
   )
 }
 
 export default SnackbarManager
 
+const getSnackbarStyling = (color: string) => css`
+  background-color: ${colord(color).alpha(0.9).toHex()};
+  border: 1px solid ${colord(color).lighten(0.1).toHex()};
+  color: rgba(255, 255, 255, 0.8);
+`
+
 const SnackbarManagerContainer = styled.div`
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: ${walletSidebarWidthPx}px;
   display: flex;
   justify-content: flex-end;
-  z-index: 10001;
+  z-index: 2;
 
   @media ${deviceBreakPoints.mobile} {
     justify-content: center;
@@ -82,21 +85,22 @@ const SnackbarPopup = styled(motion.div)`
   text-align: center;
   min-width: 200px;
   padding: var(--spacing-4) var(--spacing-3);
-  color: ${({ theme }) => (theme.name === 'light' ? theme.font.contrastPrimary : theme.font.primary)};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius);
-  z-index: 1000;
-  box-shadow: var(--shadow-3);
+  color: ${({ theme }) => theme.font.primary};
+  border-radius: var(--radius-medium);
+  backdrop-filter: blur(10px);
+  max-width: 800px;
+  word-wrap: break-word;
 
   &.alert {
-    background-color: ${({ theme }) => theme.global.alert};
+    ${({ theme }) => getSnackbarStyling(theme.global.alert)}
   }
 
   &.info {
-    background-color: ${({ theme }) => (theme.name === 'light' ? theme.bg.contrast : theme.bg.primary)};
+    ${({ theme }) =>
+      theme.name === 'light' ? getSnackbarStyling(theme.bg.contrast) : getSnackbarStyling(theme.bg.background2)}
   }
 
   &.success {
-    background-color: ${({ theme }) => theme.global.valid};
+    ${({ theme }) => getSnackbarStyling(theme.global.valid)}
   }
 `

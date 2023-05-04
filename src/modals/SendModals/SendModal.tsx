@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,62 +18,76 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
 import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { getSdkError } from '@walletconnect/utils'
+import { motion } from 'framer-motion'
+import { Check } from 'lucide-react'
+import { PostHog, usePostHog } from 'posthog-js/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
-import PasswordConfirmation from '../../components/PasswordConfirmation'
-import { Address, useAddressesContext } from '../../contexts/addresses'
-import { Client, useGlobalContext } from '../../contexts/global'
-import { useWalletConnectContext } from '../../contexts/walletconnect'
-import { ReactComponent as PaperPlaneDarkSVG } from '../../images/paper-plane-dark.svg'
-import { ReactComponent as PaperPlaneLightSVG } from '../../images/paper-plane-light.svg'
-import { TxContext, UnsignedTx } from '../../types/transactions'
-import { extractErrorMsg } from '../../utils/misc'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '../CenteredModal'
-import ConsolidateUTXOsModal from '../ConsolidateUTXOsModal'
-
-type Step = 'build-tx' | 'info-check' | 'password-check'
+import { fadeIn } from '@/animations'
+import { buildSweepTransactions } from '@/api/transactions'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useWalletConnectContext } from '@/contexts/walletconnect'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
+import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
+import ModalPortal from '@/modals/ModalPortal'
+import StepsProgress, { Step } from '@/modals/SendModals/StepsProgress'
+import {
+  transactionBuildFailed,
+  transactionSendFailed,
+  transactionsSendSucceeded
+} from '@/storage/transactions/transactionsActions'
+import { Address } from '@/types/addresses'
+import { CheckTxProps, TxContext, UnsignedTx } from '@/types/transactions'
+import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   title: string
   initialTxData: PT
   onClose: () => void
+  AddressesTxModalContent: (props: {
+    data: PT
+    onSubmit: (data: PT) => void
+    onCancel: () => void
+  }) => JSX.Element | null
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
-  CheckTxModalContent: (props: { data: T; fees: bigint }) => JSX.Element | null
-  buildTransaction: (client: Client, data: T, context: TxContext) => Promise<void>
-  handleSend: (client: Client, data: T, context: TxContext) => Promise<string | undefined>
+  CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
+  buildTransaction: (data: T, context: TxContext) => Promise<void>
+  handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => SignResult
+  txData?: T
+  initialStep?: Step
+  isContract?: boolean
 }
 
 function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   title,
   initialTxData,
   onClose,
+  AddressesTxModalContent,
   BuildTxModalContent,
   CheckTxModalContent,
   buildTransaction,
   handleSend,
-  getWalletConnectResult
+  getWalletConnectResult,
+  txData,
+  initialStep,
+  isContract
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
-  const { requestEvent, walletConnectClient, onError, setDappTxData } = useWalletConnectContext()
-  const { setAddress } = useAddressesContext()
-  const {
-    currentNetwork,
-    client,
-    wallet,
-    settings: {
-      general: { passwordRequirement }
-    },
-    setSnackbarMessage
-  } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const { requestEvent, walletConnectClient, onSessionRequestError, onSessionRequestSuccess } =
+    useWalletConnectContext()
+  const settings = useAppSelector((s) => s.settings)
+  const posthog = usePostHog()
 
-  const [modalTitle, setModalTitle] = useState(title)
-  const [transactionData, setTransactionData] = useState<T | undefined>()
+  const [addressesData, setAddressesData] = useState<PT>(txData ?? initialTxData)
+  const [transactionData, setTransactionData] = useState<T | undefined>(txData)
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState<Step>('build-tx')
+  const [step, setStep] = useState<Step>('addresses')
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
@@ -81,29 +95,19 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
+  const [isTransactionBuildTriggered, setIsTransactionBuildTriggered] = useState(false)
 
-  const theme = useTheme()
-  const modalHeader = theme.name === 'dark' ? <PaperPlaneDarkSVG width="315px" /> : <PaperPlaneLightSVG width="315px" />
-
-  useEffect(() => {
-    if (step === 'info-check') {
-      setModalTitle(t`Review`)
-    } else if (step === 'password-check') {
-      setModalTitle(t`Password Check`)
-    } else if (step === 'build-tx') {
-      setModalTitle(title)
-    }
-  }, [step, t, title])
+  const isRequestToApproveContractCall = initialStep === 'info-check'
 
   useEffect(() => {
-    if (!consolidationRequired || !transactionData || !client) return
+    if (!consolidationRequired || !transactionData) return
 
     const buildConsolidationTransactions = async () => {
       setIsSweeping(true)
       setIsLoading(true)
 
       const { fromAddress } = transactionData
-      const { unsignedTxs, fees } = await client.buildSweepTransactions(fromAddress, fromAddress.hash)
+      const { unsignedTxs, fees } = await buildSweepTransactions(fromAddress, fromAddress.hash)
 
       setSweepUnsignedTxs(unsignedTxs)
       setFees(fees)
@@ -111,145 +115,221 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     }
 
     buildConsolidationTransactions()
-  }, [client, consolidationRequired, transactionData])
+  }, [consolidationRequired, transactionData])
 
-  const txContext: TxContext = {
-    setIsSweeping,
-    sweepUnsignedTxs,
-    setSweepUnsignedTxs,
-    setFees,
-    unsignedTransaction,
-    setUnsignedTransaction,
-    unsignedTxId,
-    setUnsignedTxId,
-    isSweeping,
-    consolidationRequired,
-    currentNetwork,
-    setAddress
-  }
+  const txContext: TxContext = useMemo(
+    () => ({
+      setIsSweeping,
+      sweepUnsignedTxs,
+      setSweepUnsignedTxs,
+      setFees,
+      unsignedTransaction,
+      setUnsignedTransaction,
+      unsignedTxId,
+      setUnsignedTxId,
+      isSweeping,
+      consolidationRequired
+    }),
+    [consolidationRequired, isSweeping, sweepUnsignedTxs, unsignedTransaction, unsignedTxId]
+  )
 
-  const buildTransactionExtended = async (data: T) => {
-    setTransactionData(data)
+  const buildTransactionExtended = useCallback(
+    async (data: T) => {
+      setTransactionData(data)
+      setIsLoading(true)
 
-    if (!wallet || !client) return
-    setIsLoading(true)
+      try {
+        await buildTransaction(data, txContext)
 
-    try {
-      await buildTransaction(client, data, txContext)
+        if (!isConsolidateUTXOsModalVisible) {
+          setStep('info-check')
+        }
+      } catch (e) {
+        // TODO: When API error codes are available, replace this substring check with a proper error code check
+        const { error } = e as APIError
+        if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
+          setIsConsolidateUTXOsModalVisible(true)
+          setConsolidationRequired(true)
+        } else {
+          const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
 
-      if (!isConsolidateUTXOsModalVisible) {
-        setStep('info-check')
+          dispatch(transactionBuildFailed(errorMessage))
+
+          if (isRequestToApproveContractCall) {
+            if (requestEvent)
+              onSessionRequestError(requestEvent, {
+                message: errorMessage,
+                code: WALLETCONNECT_ERRORS.TRANSACTION_BUILD_FAILED
+              })
+
+            onClose()
+          }
+        }
       }
-    } catch (e) {
-      // TODO: When API error codes are available, replace this substring check with a proper error code check
-      const { error } = e as APIError
-      if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
-        setIsConsolidateUTXOsModalVisible(true)
-        setConsolidationRequired(true)
-      } else {
-        setSnackbarMessage({
-          text: getHumanReadableError(e, t`Error while building the transaction`),
-          type: 'alert',
-          duration: 5000
-        })
-      }
+
+      setIsLoading(false)
+    },
+    [
+      buildTransaction,
+      dispatch,
+      isConsolidateUTXOsModalVisible,
+      isRequestToApproveContractCall,
+      onClose,
+      onSessionRequestError,
+      requestEvent,
+      t,
+      txContext
+    ]
+  )
+
+  useEffect(() => {
+    if (isRequestToApproveContractCall && !isTransactionBuildTriggered && transactionData) {
+      setIsTransactionBuildTriggered(true)
+      buildTransactionExtended(transactionData)
     }
+  }, [buildTransactionExtended, isRequestToApproveContractCall, isTransactionBuildTriggered, transactionData])
 
-    setIsLoading(false)
-  }
-
-  const onCloseExtended = () => {
-    setDappTxData(undefined)
+  const onCloseExtended = useCallback(() => {
     onClose()
-  }
+
+    if (requestEvent) onSessionRequestError(requestEvent, getSdkError('USER_REJECTED_EVENTS'))
+  }, [onClose, requestEvent, onSessionRequestError])
 
   const handleSendExtended = async () => {
-    if (!client || !transactionData) return
+    if (!transactionData) return
 
     setIsLoading(true)
 
     try {
-      const signature = await handleSend(client, transactionData, txContext)
+      const signature = await handleSend(transactionData, txContext, posthog)
 
-      if (signature && requestEvent && walletConnectClient) {
-        const wcResult = getWalletConnectResult(txContext, signature)
-
-        await walletConnectClient.respond({
-          topic: requestEvent.topic,
-          response: {
-            id: requestEvent.id,
-            jsonrpc: '2.0',
-            result: wcResult
-          }
-        })
+      if (walletConnectClient && requestEvent && signature) {
+        const result = getWalletConnectResult(txContext, signature)
+        await onSessionRequestSuccess(requestEvent, result)
       }
 
-      setAddress(transactionData.fromAddress)
-      setSnackbarMessage({
-        text: isSweeping && sweepUnsignedTxs.length > 1 ? t`Transactions sent!` : t`Transaction sent!`,
-        type: 'success'
-      })
-      onCloseExtended()
+      dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
+      setStep('tx-sent')
     } catch (e) {
-      console.error(e)
+      dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
 
-      const error = extractErrorMsg(e)
-      setSnackbarMessage({
-        text: getHumanReadableError(e, `${t('Error while sending the transaction')}: ${error}`),
-        type: 'alert',
-        duration: 5000
-      })
-      onError(error)
+      if (requestEvent)
+        onSessionRequestError(requestEvent, {
+          message: getHumanReadableError(e, 'Error while sending the transaction'),
+          code: WALLETCONNECT_ERRORS.TRANSACTION_SEND_FAILED
+        })
+    } finally {
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
+
+  const moveToSecondStep = (data: PT) => {
+    setAddressesData(data)
+    setStep('build-tx')
+  }
+
+  useEffect(() => {
+    if (step === 'tx-sent') setTimeout(onCloseExtended, 2000)
+  }, [onCloseExtended, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
     setStep('password-check')
   }
 
+  const onBackCallback = {
+    addresses: undefined,
+    'build-tx': () => setStep('addresses'),
+    'info-check': () => setStep('build-tx'),
+    'password-check': () => setStep('info-check'),
+    'tx-sent': undefined
+  }[step]
+
   return (
-    <CenteredModal title={modalTitle} onClose={onCloseExtended} isLoading={isLoading} header={modalHeader} key={step}>
+    <CenteredModal
+      title={title}
+      onClose={onCloseExtended}
+      isLoading={isLoading}
+      dynamicContent
+      onBack={onBackCallback}
+      focusMode
+      noPadding
+      disableBack={isRequestToApproveContractCall && step !== 'password-check'}
+    >
+      <StepsProgress currentStep={step} isContract={isContract} />
+      {step === 'addresses' && (
+        <AddressesTxModalContent data={addressesData} onSubmit={moveToSecondStep} onCancel={onCloseExtended} />
+      )}
       {step === 'build-tx' && (
-        <BuildTxModalContent
-          data={transactionData ?? initialTxData}
-          onSubmit={buildTransactionExtended}
-          onCancel={onCloseExtended}
-        />
-      )}
-      {step === 'info-check' && transactionData && fees && (
-        <>
-          <CheckTxModalContent data={transactionData} fees={fees} />
-          <ModalFooterButtons>
-            <ModalFooterButton secondary onClick={() => setStep('build-tx')}>
-              {t`Back`}
-            </ModalFooterButton>
-            <ModalFooterButton onClick={passwordRequirement ? confirmPassword : handleSendExtended}>
-              {t`Send`}
-            </ModalFooterButton>
-          </ModalFooterButtons>
-        </>
-      )}
-      {step === 'password-check' && passwordRequirement && (
-        <PasswordConfirmation
-          text={t`Enter your password to send the transaction.`}
-          buttonText={t`Send`}
-          onCorrectPasswordEntered={handleSendExtended}
-        />
-      )}
-      <AnimatePresence>
-        {isConsolidateUTXOsModalVisible && (
-          <ConsolidateUTXOsModal
-            onClose={() => setIsConsolidateUTXOsModalVisible(false)}
-            onConsolidateClick={passwordRequirement ? confirmPassword : handleSendExtended}
-            fee={fees}
+        <ScrollableModalContent>
+          <BuildTxModalContent
+            data={{
+              ...(transactionData ?? {}),
+              ...addressesData
+            }}
+            onSubmit={buildTransactionExtended}
+            onCancel={onCloseExtended}
           />
+        </ScrollableModalContent>
+      )}
+      {step === 'info-check' && !!transactionData && !!fees && (
+        <ScrollableModalContent>
+          <CheckTxModalContent
+            data={transactionData}
+            fees={fees}
+            onSubmit={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+          />
+        </ScrollableModalContent>
+      )}
+      {step === 'password-check' && settings.passwordRequirement && (
+        <ScrollableModalContent>
+          <PasswordConfirmation
+            text={t('Enter your password to send the transaction.')}
+            buttonText={t('Send')}
+            highlightButton
+            onCorrectPasswordEntered={handleSendExtended}
+          >
+            <PasswordConfirmationNote>
+              {t('You can disable this confirmation step from the wallet settings.')}
+            </PasswordConfirmationNote>
+          </PasswordConfirmation>
+        </ScrollableModalContent>
+      )}
+      {step === 'tx-sent' && (
+        <ScrollableModalContent>
+          <ConfirmationAnimation {...fadeIn}>
+            <CheckIcon size={130} />
+          </ConfirmationAnimation>
+        </ScrollableModalContent>
+      )}
+      <ModalPortal>
+        {isConsolidateUTXOsModalVisible && (
+          <ScrollableModalContent>
+            <ConsolidateUTXOsModal
+              onClose={() => setIsConsolidateUTXOsModalVisible(false)}
+              onConsolidateClick={settings.passwordRequirement ? confirmPassword : handleSendExtended}
+              fee={fees}
+            />
+          </ScrollableModalContent>
         )}
-      </AnimatePresence>
+      </ModalPortal>
     </CenteredModal>
   )
 }
 
 export default SendModal
+
+const PasswordConfirmationNote = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+`
+
+const ConfirmationAnimation = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+`
+
+const CheckIcon = styled(Check)`
+  color: ${({ theme }) => theme.global.valid};
+`

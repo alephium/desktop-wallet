@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,51 +16,260 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { motion } from 'framer-motion'
+import { Settings, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
-import { PanelContentContainer, Section } from '../../components/PageComponents/PageContainers'
-import TabBar, { TabItem } from '../../components/TabBar'
-import CenteredModal from '../CenteredModal'
-import GeneralSettingsSection from './GeneralSettingsSection'
-import NetworkSettingsSection from './NetworkSettingsSection'
-import WalletsSettingsSection from './WalletsSettingsSection'
+import { fadeInOutScaleFast } from '@/animations'
+import Button from '@/components/Button'
+import Scrollbar from '@/components/Scrollbar'
+import { TabItem } from '@/components/TabBar'
+import { useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
+import discordLogo from '@/images/brand-icon-discord.svg'
+import githubLogo from '@/images/brand-icon-github.svg'
+import twitterLogo from '@/images/brand-icon-twitter.svg'
+import ModalContainer from '@/modals/ModalContainer'
+import DevToolsSettingsSection from '@/modals/SettingsModal/DevToolsSettingsSection'
+import GeneralSettingsSection from '@/modals/SettingsModal/GeneralSettingsSection'
+import NetworkSettingsSection from '@/modals/SettingsModal/NetworkSettingsSection'
+import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSection'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
-const tabs = [
-  { value: 'general', label: 'General', component: <GeneralSettingsSection /> },
-  { value: 'client', label: 'Networks', component: <NetworkSettingsSection /> },
-  { value: 'wallets', label: 'Wallets', component: <WalletsSettingsSection /> }
+export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
+
+interface SettingsTabItem extends TabItem {
+  value: settingsTabNames
+}
+
+export const settingsModalTabs: SettingsTabItem[] = [
+  { value: 'general', label: i18next.t('General') },
+  { value: 'wallets', label: i18next.t('Wallets') },
+  { value: 'network', label: i18next.t('Network') },
+  { value: 'devtools', label: i18next.t('Developer tools') }
+]
+
+interface SocialMediaLogo {
+  media: keyof Pick<typeof links, 'twitter' | 'discord' | 'github'>
+  img: string
+}
+
+const socialMediaLogos: SocialMediaLogo[] = [
+  { media: 'twitter', img: twitterLogo },
+  { media: 'discord', img: discordLogo },
+  { media: 'github', img: githubLogo }
 ]
 
 interface SettingsModalProps {
   onClose: () => void
+  initialTabValue?: (typeof settingsModalTabs)[number]['value']
 }
 
-const SettingsModal = ({ onClose }: SettingsModalProps) => {
+const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
   const { t } = useTranslation()
-  const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
+  const theme = useTheme()
+  const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
 
-  const tabsI18n = tabs.map((tab) => ({ ...tab, label: t(tab.label) }))
+  const [currentTab, setCurrentTab] = useState<TabItem>(
+    settingsModalTabs.find((t) => t.value === initialTabValue) || settingsModalTabs[0]
+  )
+
+  const enabledTabs = !isAuthenticated
+    ? settingsModalTabs.filter(({ value }) => value !== 'devtools')
+    : settingsModalTabs
 
   return (
-    <CenteredModal title={t`Settings`} onClose={onClose}>
-      <PanelContentContainer>
-        <TabBar tabItems={tabsI18n} onTabChange={(tab) => setCurrentTab(tab)} activeTab={currentTab} />
-        {tabsI18n.find((t) => t.value === currentTab.value)?.component}
-        <Section>
-          <VersionNumber>
-            {t`Version`}: {import.meta.env.VITE_VERSION}
-          </VersionNumber>
-        </Section>
-      </PanelContentContainer>
-    </CenteredModal>
+    <ModalContainer onClose={onClose}>
+      <CenteredBox role="dialog" {...fadeInOutScaleFast}>
+        <TabTitlesColumn>
+          <TabTitlesColumnHeader>
+            <ColumnTitle>
+              <Settings color={theme.font.secondary} strokeWidth={1} />
+              {t('Settings')}
+            </ColumnTitle>
+          </TabTitlesColumnHeader>
+          <TabTitlesColumnContent>
+            <TabTitles>
+              {enabledTabs.map((tab) => (
+                <TabTitleButton
+                  key={tab.value}
+                  role="secondary"
+                  wide
+                  transparent={currentTab.value !== tab.value}
+                  borderless={currentTab.value !== tab.value}
+                  onClick={() => setCurrentTab(tab)}
+                >
+                  {tab.label}
+                </TabTitleButton>
+              ))}
+            </TabTitles>
+            <SidebarFooter>
+              <SocialMedias>
+                {socialMediaLogos.map(({ media, img }) => (
+                  <SocialMedia key={media} src={img} onClick={() => openInWebBrowser(links[media])} />
+                ))}
+              </SocialMedias>
+              <Version>v{import.meta.env.VITE_VERSION}</Version>
+            </SidebarFooter>
+          </TabTitlesColumnContent>
+        </TabTitlesColumn>
+        <TabContentsColumn>
+          <ColumnHeader>
+            <ColumnTitle>{currentTab.label}</ColumnTitle>
+            <CloseButton aria-label={t`Close`} onClick={onClose}>
+              <X />
+            </CloseButton>
+          </ColumnHeader>
+          <Scrollbar translateContentSizeYToHolder>
+            <ColumnContent>
+              {
+                {
+                  general: <GeneralSettingsSection />,
+                  wallets: <WalletsSettingsSection />,
+                  network: <NetworkSettingsSection />,
+                  devtools: <DevToolsSettingsSection />
+                }[currentTab.value]
+              }
+            </ColumnContent>
+          </Scrollbar>
+        </TabContentsColumn>
+      </CenteredBox>
+    </ModalContainer>
   )
 }
 
-const VersionNumber = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
-  margin-top: var(--spacing-3);
+export default SettingsModal
+
+const CenteredBox = styled(motion.div)`
+  display: flex;
+
+  position: relative;
+  overflow: hidden;
+
+  width: 85vw;
+  max-width: 748px;
+  height: 85vh;
+  margin: auto;
+
+  box-shadow: ${({ theme }) => theme.shadow.tertiary};
+  border-radius: var(--radius-huge);
+  background-color: ${({ theme }) => theme.bg.background1};
+  border: 1px solid ${({ theme }) => theme.border.primary};
 `
 
-export default SettingsModal
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const TabTitlesColumn = styled(Column)`
+  flex: 1;
+  border-right: 1px solid ${({ theme }) => theme.border.primary};
+  background-color: ${({ theme }) => theme.bg.background2};
+`
+const TabContentsColumn = styled(Column)`
+  flex: 2;
+`
+
+const CloseButton = styled.button`
+  color: ${({ theme }) => theme.font.tertiary};
+  cursor: pointer;
+  transition: color 0.2s ease-out;
+  padding: 0;
+  display: flex;
+
+  &:hover {
+    color: ${({ theme }) => theme.font.primary};
+  }
+`
+
+const ColumnHeader = styled.div`
+  padding: 20px;
+  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+const ColumnTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: var(--fontWeight-semiBold);
+  color: ${({ theme }) => theme.font.primary};
+`
+
+const ColumnContent = styled.div`
+  padding: 20px;
+
+  // Special styling for settings modal
+  // TODO: Create standalone components if used elesewhere?
+
+  h2 {
+    width: 100%;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  }
+`
+
+const SidebarFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-8);
+`
+
+const Version = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.font.tertiary};
+`
+
+const SocialMedias = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
+const SocialMedia = styled.div<{ src: string }>`
+  ${({ src }) =>
+    css`
+      mask: url(${src}) no-repeat center;
+    `}
+
+  height: 20px;
+  width: 20px;
+  background-color: ${({ theme }) => theme.font.tertiary};
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme }) => theme.font.primary};
+  }
+`
+
+const TabTitlesColumnContent = styled(ColumnContent)`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 15px 10px;
+  height: 100%;
+`
+
+const TabTitles = styled.div``
+
+const TabTitlesColumnHeader = styled(ColumnHeader)`
+  padding-left: 22px;
+  padding-right: 22px;
+`
+
+const TabTitleButton = styled(Button)`
+  height: 46px;
+  justify-content: flex-start;
+
+  &:first-child {
+    margin-top: 0;
+  }
+`

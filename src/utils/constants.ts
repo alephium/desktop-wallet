@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -21,3 +21,11 @@ import { BILLION } from '@alephium/sdk'
 export const MINIMAL_GAS_AMOUNT = 20000
 export const MINIMAL_GAS_PRICE = BigInt(BILLION * 100) // 100 nanoALPH for the first year to prevent DoS attacks
 export const GENESIS_TIMESTAMP = 1231006505000
+
+export enum WALLETCONNECT_ERRORS {
+  TRANSACTION_SEND_FAILED = -32000,
+  PARSING_SESSION_REQUEST_FAILED = -33000,
+  TRANSACTION_BUILD_FAILED = -34000
+}
+
+export const CHART_DATE_FORMAT = 'YYYY-MM-DD'

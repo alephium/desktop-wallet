@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,15 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion, useTransform, useViewportScroll } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
 
 interface PanelTitleProps {
   color?: string
   onBackButtonClick?: () => void
-  smaller?: boolean
+  size?: 'small' | 'big'
   useLayoutId?: boolean
   isSticky?: boolean
 }
@@ -33,11 +32,11 @@ const PanelTitle: FC<PanelTitleProps> = ({
   color,
   children,
   onBackButtonClick,
-  smaller,
+  size,
   useLayoutId = true,
-  isSticky = true
+  isSticky = false
 }) => {
-  const { scrollY } = useViewportScroll()
+  const { scrollY } = useScroll()
 
   const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
 
@@ -52,7 +51,7 @@ const PanelTitle: FC<PanelTitleProps> = ({
           tabIndex={0}
         />
       )}
-      <H1 color={color} smaller={smaller} style={isSticky ? { scale: titleScale, originX: 0 } : {}}>
+      <H1 color={color} size={size} style={isSticky ? { scale: titleScale, originX: 0 } : {}}>
         {children}
       </H1>
     </TitleContainer>
@@ -64,13 +63,15 @@ export default PanelTitle
 export const TitleContainer = styled(motion.div)<{ isSticky: boolean }>`
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-3);
   top: 0;
 
   ${({ isSticky }) =>
     isSticky &&
     css`
       position: sticky;
+      padding: var(--spacing-8) 0 var(--spacing-4) 0;
+      background-color: ${({ theme }) => theme.bg.background1};
+      border-bottom: 1px solid ${({ theme }) => theme.border.primary};
     `}
 `
 
@@ -81,10 +82,10 @@ const BackArrow = styled(ArrowLeft)`
   cursor: pointer;
 `
 
-const H1 = styled(motion.h1)<{ color?: string; smaller?: boolean }>`
+const H1 = styled(motion.h1)<PanelTitleProps>`
   flex: 1;
   margin: 0;
   color: ${({ theme, color }) => (color ? color : theme.font.primary)};
-  font-size: ${({ smaller }) => (smaller ? '2.0em' : 'revert')};
-  font-weight: var(--fontWeight-medium);
+  font-size: ${({ size }) => (size === 'small' ? '21px' : size === 'big' ? '42px' : 'revert')};
+  font-weight: ${({ size }) => (size === 'big' ? 'var(--fontWeight-bold)' : 'var(--fontWeight-semiBold)')};
 `

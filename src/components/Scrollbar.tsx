@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,12 +18,17 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 // Used as reference: https://github.com/xobotyi/react-scrollbars-custom/issues/46#issuecomment-897506147
 
-import React, { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
+import { colord } from 'colord'
+import { useMotionValue } from 'framer-motion'
+import { isNumber } from 'lodash'
+import { CSSProperties, useCallback, useRef, useState, WheelEvent } from 'react'
 import Scrollbar, { ScrollbarProps } from 'react-scrollbars-custom'
 import { ElementPropsWithElementRef, ScrollState } from 'react-scrollbars-custom/dist/types/types'
 import { useTheme } from 'styled-components'
 
-import { ScrollContextProvider } from '../contexts/scroll'
+import { ScrollContextProvider, ScrollContextType, ScrollDirection } from '@/contexts/scroll'
+
+const scrollDirectionDeltaThreshold = 10
 
 const paddingRight = '6px'
 const width = `calc(6px + ${paddingRight})`
@@ -36,8 +41,8 @@ const createScrollbarPiece = (regular: CSSProperties, additional?: CSSProperties
     // The only way to know the scrollbar is being rendered is if bottom > 0...
     const overflowStyle = {
       overflow:
-        (restProps.key === 'ScrollbarsCustom-Wrapper' && style?.bottom && style.bottom > 0) ||
-        (style?.right && style.right > 0)
+        (restProps.key === 'ScrollbarsCustom-Wrapper' && style?.bottom && isNumber(style.bottom) && style.bottom > 0) ||
+        (style?.right && isNumber(style.right) && style.right > 0)
           ? 'hidden'
           : 'unset'
     }
@@ -59,10 +64,15 @@ interface ScrollbarCustomProps extends ScrollbarProps {
 
 const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProps) => {
   const theme = useTheme()
-  const [scroll, setScroll] = useState<ScrollState>()
+  const scrollY = useMotionValue(0)
+  const scrollDirection = useMotionValue(undefined as ScrollDirection)
+
   const [isScrolling, setIsScrolling] = useState(false)
   const [isMouseOver, setIsMouseOver] = useState(false)
+
   const scrollerElemRef = useRef<HTMLDivElement | null>(null)
+  const prevScrollY = useRef(0)
+  const contextValueRef = useRef<ScrollContextType>({ scrollY, scrollDirection })
 
   const isShow = isScrolling || isMouseOver
 
@@ -83,7 +93,8 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
   const transparencyStyle = {
     backgroundColor: 'transparent',
     opacity: isShow ? 1 : 0,
-    transition: 'opacity 0.4s ease-in-out'
+    transition: 'opacity 0.2s ease-out',
+    zIndex: 1
   }
 
   const trackXProps = createScrollbarPiece({ height, paddingTop }, transparencyStyle, true)
@@ -99,7 +110,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
     )
   }
 
-  const thumbProps = createScrollbarPiece({ backgroundColor: theme.font.tertiary })
+  const thumbProps = createScrollbarPiece({ backgroundColor: colord(theme.font.primary).alpha(0.15).toHex() })
 
   const rendererProps = createScrollbarPiece(
     {},
@@ -141,6 +152,23 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
     isDynamic
   )
 
+  const handleScrollUpdate = (s: ScrollState) => {
+    contextValueRef.current.scrollY?.set(s.scrollTop)
+
+    const delta = prevScrollY.current - s.scrollTop
+    const direction = delta > 0 ? 'up' : 'down'
+
+    if (s.scrollTop === 0) {
+      contextValueRef.current.scrollDirection?.set(undefined)
+    } else if (direction === 'up' && delta > scrollDirectionDeltaThreshold) {
+      contextValueRef.current.scrollDirection?.set('up')
+    } else if (direction === 'down' && delta < -scrollDirectionDeltaThreshold) {
+      contextValueRef.current.scrollDirection?.set('down')
+    }
+
+    prevScrollY.current = s.scrollTop
+  }
+
   // react-scrollbars-custom has a type issue where you can't just spread props
   // onto the component. That's why needed props are added as necessary.
   return (
@@ -156,7 +184,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
       thumbYProps={thumbProps}
       onScrollStart={onScrollStart}
       onScrollStop={onScrollStop}
-      onUpdate={(s: ScrollState) => setScroll(s)}
+      onUpdate={handleScrollUpdate}
       scrollDetectionThreshold={500} // ms
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -165,7 +193,7 @@ const ScrollbarCustom = ({ isDynamic, noScrollX, ...props }: ScrollbarCustomProp
       noScrollX={noScrollX}
       translateContentSizeYToHolder={props.translateContentSizeYToHolder}
     >
-      <ScrollContextProvider value={{ scroll }}>{props.children}</ScrollContextProvider>
+      <ScrollContextProvider value={contextValueRef.current}>{props.children}</ScrollContextProvider>
     </Scrollbar>
   )
 }

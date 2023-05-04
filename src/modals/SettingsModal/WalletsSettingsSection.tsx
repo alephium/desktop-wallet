@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,92 +16,132 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Trash } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '../../components/Button'
-import InfoBox from '../../components/InfoBox'
-import HorizontalDivider from '../../components/PageComponents/HorizontalDivider'
-import { BoxContainer, Section } from '../../components/PageComponents/PageContainers'
-import { useGlobalContext } from '../../contexts/global'
-import SecretPhraseModal from '../SecretPhraseModal'
-import WalletRemovalModal from '../WalletRemovalModal'
+import Button from '@/components/Button'
+import CheckMark from '@/components/CheckMark'
+import InfoBox from '@/components/InfoBox'
+import { BoxContainer, Section } from '@/components/PageComponents/PageContainers'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import ModalPortal from '@/modals/ModalPortal'
+import SecretPhraseModal from '@/modals/SecretPhraseModal'
+import EditWalletNameModal from '@/modals/SettingsModal/EditWalletNameModal'
+import WalletQRCodeExportModal from '@/modals/WalletQRCodeExportModal'
+import WalletRemovalModal from '@/modals/WalletRemovalModal'
+import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersistentStorage'
+import { activeWalletDeleted, walletLocked } from '@/storage/wallets/walletActions'
+import { walletDeleted } from '@/storage/wallets/walletActions'
+import WalletStorage from '@/storage/wallets/walletPersistentStorage'
+import { ActiveWallet, StoredWallet } from '@/types/wallet'
 
 const WalletsSettingsSection = () => {
   const { t } = useTranslation()
-  const { activeWalletName, wallet, walletNames, deleteWallet, lockWallet } = useGlobalContext()
+  const dispatch = useAppDispatch()
+  const activeWallet = useAppSelector((s) => s.activeWallet)
+  const wallets = useAppSelector((s) => s.global.wallets)
+  const posthog = usePostHog()
+
+  const [walletToRemove, setWalletToRemove] = useState<StoredWallet | ActiveWallet>()
   const [isDisplayingSecretModal, setIsDisplayingSecretModal] = useState(false)
-  const [walletToRemove, setWalletToRemove] = useState<string>('')
+  const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false)
+  const [isEditWalletNameModalOpen, setIsEditWalletNameModalOpen] = useState(false)
 
-  const openRemoveWalletModal = (walletName: string) => setWalletToRemove(walletName)
-  const openSecretPhraseModal = () => setIsDisplayingSecretModal(true)
-  const closeSecretPhraseModal = () => setIsDisplayingSecretModal(false)
+  const isAuthenticated = !!activeWallet.mnemonic && !!activeWallet.id
 
-  const handleRemoveWallet = (walletName: string) => {
-    deleteWallet(walletName)
+  const handleRemoveWallet = (walletId: string) => {
+    WalletStorage.delete(walletId)
+    AddressMetadataStorage.delete(walletId)
+    dispatch(walletId === activeWallet.id ? activeWalletDeleted() : walletDeleted(walletId))
+    setWalletToRemove(undefined)
 
-    walletName === activeWalletName ? lockWallet() : setWalletToRemove('')
+    posthog?.capture('Deleted wallet')
+  }
+
+  const lockWallet = () => {
+    dispatch(walletLocked())
+
+    posthog?.capture('Locked wallet', { origin: 'settings' })
   }
 
   return (
     <>
-      {isDisplayingSecretModal && <SecretPhraseModal onClose={closeSecretPhraseModal} />}
-
-      {walletToRemove && (
-        <WalletRemovalModal
-          walletName={walletToRemove}
-          onClose={() => setWalletToRemove('')}
-          onWalletRemove={() => handleRemoveWallet(walletToRemove)}
-        />
-      )}
       <Section align="flex-start" role="table">
         <h2 tabIndex={0} role="label">
-          {t`Wallet list`} ({walletNames.length})
+          {t('Wallet list')} ({wallets.length})
         </h2>
         <BoxContainer role="rowgroup">
-          {walletNames.map((n) => (
+          {wallets.map((wallet) => (
             <WalletItem
-              key={n}
-              walletName={n}
-              isCurrent={n === activeWalletName}
-              onWalletDelete={(name) => setWalletToRemove(name)}
+              key={wallet.id}
+              wallet={wallet}
+              isCurrent={wallet.id === activeWallet.id}
+              onWalletDelete={setWalletToRemove}
             />
           ))}
         </BoxContainer>
       </Section>
-      {wallet && (
-        <>
-          <HorizontalDivider />
-          <Section align="flex-start">
-            <h2>{t`Current wallet`}</h2>
-            <InfoBox label={t`Wallet name`} text={activeWalletName} />
-          </Section>
-          <Section>
-            <Button secondary onClick={lockWallet}>
-              {t`Lock current wallet`}
+      {isAuthenticated && (
+        <CurrentWalletSection align="flex-start">
+          <h2>{t('Current wallet')}</h2>
+          <InfoBox label={t('Wallet name')} short>
+            <CurrentWalletBox>
+              <WalletName>{activeWallet.name}</WalletName>
+              <Button
+                aria-label={t('Delete')}
+                tabIndex={0}
+                squared
+                role="secondary"
+                transparent
+                borderless
+                onClick={() => setIsEditWalletNameModalOpen(true)}
+              >
+                <Pencil size={15} />
+              </Button>
+            </CurrentWalletBox>
+          </InfoBox>
+          <ActionButtons>
+            <Button role="secondary" onClick={lockWallet}>
+              {t('Lock current wallet')}
             </Button>
-            <Button secondary alert onClick={openSecretPhraseModal}>
-              {t`Show your secret recovery phrase`}
+            <Button role="secondary" onClick={() => setIsQRCodeModalVisible(true)}>
+              {t('Export current wallet')}
             </Button>
-            <Button alert onClick={() => openRemoveWalletModal(activeWalletName)}>
-              {t`Remove current wallet`}
+            <Button transparent variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
+              {t('Show your secret recovery phrase')}
             </Button>
-          </Section>
-        </>
+            <Button variant="alert" onClick={() => setWalletToRemove(activeWallet as ActiveWallet)}>
+              {t('Remove current wallet')}
+            </Button>
+          </ActionButtons>
+        </CurrentWalletSection>
       )}
+      <ModalPortal>
+        {isDisplayingSecretModal && <SecretPhraseModal onClose={() => setIsDisplayingSecretModal(false)} />}
+        {isQRCodeModalVisible && <WalletQRCodeExportModal onClose={() => setIsQRCodeModalVisible(false)} />}
+        {isEditWalletNameModalOpen && <EditWalletNameModal onClose={() => setIsEditWalletNameModalOpen(false)} />}
+        {walletToRemove && (
+          <WalletRemovalModal
+            walletName={walletToRemove.name}
+            onClose={() => setWalletToRemove(undefined)}
+            onConfirm={() => handleRemoveWallet(walletToRemove.id)}
+          />
+        )}
+      </ModalPortal>
     </>
   )
 }
 
 interface WalletItemProps {
-  walletName: string
+  wallet: StoredWallet
   isCurrent: boolean
-  onWalletDelete: (walletName: string) => void
+  onWalletDelete: (wallet: StoredWallet) => void
 }
 
-const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) => {
+const WalletItem = ({ wallet, isCurrent, onWalletDelete }: WalletItemProps) => {
   const { t } = useTranslation()
   const [isShowingDeleteButton, setIsShowingDeleteButton] = useState(false)
 
@@ -112,21 +152,23 @@ const WalletItem = ({ walletName, isCurrent, onWalletDelete }: WalletItemProps) 
       onMouseLeave={() => setIsShowingDeleteButton(false)}
     >
       <WalletName role="cell" tabIndex={0} onFocus={() => setIsShowingDeleteButton(true)}>
-        {walletName}
-        {isCurrent && <CurrentWalletLabel> {t`(current)`}</CurrentWalletLabel>}
+        {wallet.name}
+        {isCurrent && <CheckMark />}
       </WalletName>
-      {isShowingDeleteButton && (
-        <WalletDeleteButton
-          aria-label={t`Delete`}
-          tabIndex={0}
-          squared
-          transparent
-          onClick={() => onWalletDelete(walletName)}
-          onBlur={() => setIsShowingDeleteButton(false)}
-        >
-          <Trash size={15} />
-        </WalletDeleteButton>
-      )}
+
+      <ButtonStyled
+        aria-label={t('Delete')}
+        tabIndex={0}
+        squared
+        role="secondary"
+        transparent
+        borderless
+        onClick={() => onWalletDelete(wallet)}
+        onBlur={() => setIsShowingDeleteButton(false)}
+        disabled={!isShowingDeleteButton}
+        isVisible={isShowingDeleteButton}
+        Icon={Trash}
+      />
     </WalletItemContainer>
   )
 }
@@ -137,19 +179,38 @@ const WalletItemContainer = styled.div`
   display: flex;
   align-items: center;
   height: var(--inputHeight);
-  padding: 0 var(--spacing-2);
+  padding: 0 var(--spacing-3);
+  gap: 10px;
 
   &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
   }
 `
 
 const WalletName = styled.div`
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `
 
-const CurrentWalletLabel = styled.span`
-  color: ${({ theme }) => theme.font.secondary};
+const ActionButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `
 
-const WalletDeleteButton = styled(Button)``
+const CurrentWalletSection = styled(Section)`
+  margin-top: var(--spacing-4);
+`
+
+const CurrentWalletBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const ButtonStyled = styled(Button)<{ isVisible: boolean }>`
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)} !important;
+`

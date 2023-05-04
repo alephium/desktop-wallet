@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { compareVersions } from 'compare-versions'
 import { useState } from 'react'
 
-import { AlephiumWindow } from '../types/window'
-import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '../utils/app-data'
-import { useTimeout } from '../utils/hooks'
-import { links } from '../utils/links'
+import { AlephiumWindow } from '@/types/window'
+import { AppMetaData, KEY_APPMETADATA, toAppMetaData } from '@/utils/app-data'
+import { useTimeout } from '@/utils/hooks'
+import { links } from '@/utils/links'
 
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron

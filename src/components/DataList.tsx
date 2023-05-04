@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ import styled from 'styled-components'
 
 export default styled.div`
   border: 1px solid ${({ theme }) => theme.border.primary};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   background-color: ${({ theme }) => theme.bg.primary};
   box-shadow: ${({ theme }) => theme.shadow.primary};
 `

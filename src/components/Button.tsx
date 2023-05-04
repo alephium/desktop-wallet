@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,29 +18,39 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import styled, { css } from 'styled-components'
 
-import { sectionChildrenVariants } from './PageComponents/PageContainers'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
-interface ButtonProps extends HTMLMotionProps<'button'> {
-  secondary?: boolean
-  alert?: boolean
-  disabled?: boolean
+export interface ButtonProps extends HTMLMotionProps<'button'> {
+  role?: 'primary' | 'secondary'
+  variant?: 'default' | 'contrast' | 'valid' | 'alert' | 'faded'
   transparent?: boolean
+  disabled?: boolean
   squared?: boolean
   submit?: boolean
   short?: boolean
+  tall?: boolean
   wide?: boolean
+  Icon?: LucideIconType
+  iconColor?: string
+  iconBackground?: boolean
+  borderless?: boolean
+  isHighlighted?: boolean
+  disablePointer?: boolean
+  className?: string
 }
 
-const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
-  const [canBeAnimated, setCanBeAnimateds] = useState(props.squared ? true : false)
+const Button = ({ children, disabled, submit, Icon, className, iconColor, isHighlighted, ...props }: ButtonProps) => {
+  const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    if (!submit) return
+
     const listener = (e: KeyboardEvent) => {
-      if ((submit && e.code === 'Enter') || e.code === 'NumpadEnter') {
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') {
         buttonRef.current?.click()
       }
     }
@@ -50,93 +60,223 @@ const Button = ({ children, disabled, submit, ...props }: ButtonProps) => {
     return () => {
       document.removeEventListener('keydown', listener)
     }
-  })
+  }, [submit])
 
   return (
-    <StyledButton
+    <motion.button
       {...props}
+      className={className}
       variants={sectionChildrenVariants}
       custom={disabled}
       disabled={disabled}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
-      onAnimationComplete={() => setCanBeAnimateds(true)}
+      onAnimationComplete={() => setCanBeAnimated(true)}
       type={submit ? 'submit' : 'button'}
       ref={buttonRef}
     >
-      {children}
-    </StyledButton>
+      {Icon && (
+        <ButtonIcon>
+          <Icon size={16} color={iconColor} />
+        </ButtonIcon>
+      )}
+      {children as ReactNode}
+    </motion.button>
   )
 }
 
-export default Button
+export default styled(Button)`
+  ${({
+    theme,
+    role = 'primary',
+    variant = 'default',
+    transparent,
+    borderless,
+    iconBackground,
+    iconColor,
+    children,
+    disablePointer
+  }) => {
+    const bgColor = transparent
+      ? 'transparent'
+      : {
+          primary: {
+            default: theme.global.accent,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert,
+            faded: colord(theme.global.accent).alpha(0.07).toRgbString()
+          }[variant],
+          secondary: {
+            default: theme.bg.primary,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: colord(theme.global.alert).alpha(0.1).toRgbString(),
+            faded: colord(theme.bg.primary).alpha(0.07).toRgbString()
+          }[variant]
+        }[role]
 
-const StyledButton = styled(motion.button)<ButtonProps>`
+    const hoverBgColor = transparent
+      ? colord(theme.bg.primary).isDark()
+        ? colord(theme.bg.primary).lighten(0.02).toRgbString()
+        : colord(theme.bg.primary).darken(0.03).toRgbString()
+      : {
+          primary: {
+            default: colord(theme.global.accent).darken(0.04).toRgbString(),
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
+            alert: colord(theme.global.alert).darken(0.04).toRgbString(),
+            faded: colord(theme.global.accent).darken(0.04).toRgbString()
+          }[variant],
+          secondary: {
+            default: theme.bg.hover,
+            contrast: colord(theme.bg.background2).lighten(0.04).toRgbString(),
+            valid: colord(theme.global.valid).darken(0.04).toRgbString(),
+            alert: colord(theme.global.alert).alpha(0.2).toRgbString(),
+            faded: colord(theme.bg.primary).lighten(0.04).toRgbString()
+          }[variant]
+        }[role]
+
+    const activeBgColor = transparent
+      ? colord(theme.bg.primary).isDark()
+        ? colord(theme.global.accent).alpha(0.4).toRgbString()
+        : colord(theme.global.accent).lighten(0.1).alpha(0.15).toRgbString()
+      : {
+          primary: {
+            default: colord(theme.global.accent).lighten(0.03).toRgbString(),
+            contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
+            valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.03).toRgbString(),
+            faded: colord(theme.global.accent).lighten(0.03).toRgbString()
+          }[variant],
+          secondary: {
+            default: colord(theme.bg.primary).darken(0.08).toRgbString(),
+            contrast: colord(theme.bg.background2).darken(0.08).toRgbString(),
+            valid: colord(theme.global.valid).lighten(0.03).toRgbString(),
+            alert: colord(theme.global.alert).lighten(0.3).toRgbString(),
+            faded: colord(theme.bg.primary).darken(0.08).toRgbString()
+          }[variant]
+        }[role]
+
+    const fontColor = transparent
+      ? theme.font.secondary
+      : {
+          primary: {
+            default: 'white',
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.primary,
+            faded: theme.global.accent
+          }[variant],
+          secondary: {
+            default: theme.font.primary,
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.global.alert,
+            faded: theme.font.primary
+          }[variant]
+        }[role]
+
+    const borderColor = borderless
+      ? 'transparent'
+      : transparent
+      ? {
+          primary: {
+            default: theme.global.accent,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert,
+            faded: colord(theme.global.accent).alpha(0.25).toRgbString()
+          }[variant],
+          secondary: {
+            default: theme.border.primary,
+            contrast: theme.bg.background2,
+            valid: theme.global.valid,
+            alert: theme.global.alert,
+            faded: theme.border.secondary
+          }[variant]
+        }[role]
+      : theme.border.primary
+
+    const hoverColor = transparent
+      ? theme.font.primary
+      : {
+          primary: {
+            default: 'white',
+            contrast: theme.font.secondary,
+            valid: theme.font.primary,
+            alert: theme.font.contrastPrimary,
+            faded: 'white'
+          }[variant],
+          secondary: {
+            default: theme.font.primary,
+            contrast: theme.font.secondary,
+            valid: theme.font.contrastPrimary,
+            alert: theme.font.contrastPrimary,
+            faded: theme.font.primary
+          }[variant]
+        }[role]
+
+    return css`
+      background-color: ${bgColor};
+      color: ${fontColor};
+      border: 1px solid ${borderColor};
+      position: relative;
+
+      ${!transparent &&
+      css`
+        box-shadow: ${({ theme }) => theme.shadow.primary};
+      `}
+
+      &:hover {
+        color: ${hoverColor};
+        background-color: ${hoverBgColor};
+      }
+
+      &:active {
+        background-color: ${activeBgColor};
+      }
+
+      ${ButtonIcon} {
+        ${children &&
+        css`
+          margin-right: var(--spacing-3);
+        `}
+
+        ${({ theme }) => {
+          const color = iconColor || theme.font.tertiary
+          return (
+            iconBackground &&
+            css`
+              background-color: ${colord(color).alpha(0.08).toHex()};
+              border: 1px solid ${colord(color).alpha(0.15).toHex()};
+              padding: 7px;
+              border-radius: var(--radius-medium);
+            `
+          )
+        }}
+
+        svg {
+          color: ${fontColor};
+        }
+      }
+    `
+  }}
+
   display: flex;
   align-items: center;
   justify-content: center;
-  height: ${({ squared, short }) => (squared ? '40px' : short ? '34px' : 'var(--inputHeight)')};
-  width: ${({ squared, short, wide }) => (squared ? '40px' : short ? 'auto' : wide ? '100%' : '80%')};
+  height: ${({ squared, short, tall }) => (short ? '35px' : squared ? '40px' : tall ? '55px' : '52px')};
+  width: ${({ squared, short, wide }) => (squared ? '40px' : short && !wide ? 'auto' : wide ? '100%' : '80%')};
   max-width: ${({ wide }) => (wide ? 'auto' : '250px')};
-  border-radius: var(--radius-small);
-  border: none;
-  background-color: ${({ theme, secondary, transparent, alert }) =>
-    alert && !secondary
-      ? theme.global.alert
-      : transparent
-      ? 'transparent'
-      : secondary
-      ? theme.bg.secondary
-      : theme.global.accent};
-  color: ${({ theme, secondary, alert, transparent }) =>
-    alert && secondary
-      ? theme.global.alert
-      : transparent
-      ? theme.font.secondary
-      : alert
-      ? theme.font.contrastPrimary
-      : secondary
-      ? theme.global.accent
-      : theme.name === 'light'
-      ? theme.font.contrastPrimary
-      : theme.font.primary};
-  font-weight: var(--fontWeight-medium);
-  font-size: 12px;
+  border-radius: var(--radius-big);
+  font-weight: ${({ role }) => (role === 'secondary' ? 'var(--fontWeight-medium)' : 'var(--fontWeight-semiBold)')};
+  font-size: 13px;
   font-family: inherit;
   margin: ${({ squared }) => (squared ? '0' : '12px 0')};
   padding: ${({ squared }) => (squared ? 'var(--spacing-2)' : '0 13px')};
   min-width: ${({ squared }) => (squared ? '40px' : '60px')};
   text-align: center;
-
-  transition: 0.2s ease-out;
-
-  &:hover {
-    background-color: ${({ theme, secondary, transparent, alert }) =>
-      transparent
-        ? colord(theme.bg.primary).isDark()
-          ? colord(theme.bg.accent).lighten(0.7).alpha(0.5).toRgbString()
-          : colord(theme.bg.accent).lighten(0.9).alpha(0.4).toRgbString()
-        : secondary
-        ? colord(theme.bg.tertiary).lighten(0.3).toRgbString()
-        : alert
-        ? colord(theme.global.alert).darken(0.08).toRgbString()
-        : colord(theme.global.accent).darken(0.08).toRgbString()};
-
-    color: ${({ theme, transparent }) => transparent && theme.font.primary};
-    cursor: pointer;
-  }
-
-  &:active {
-    background-color: ${({ theme, secondary, transparent, alert }) =>
-      transparent
-        ? colord(theme.bg.primary).isDark()
-          ? colord(theme.bg.accent).alpha(0.4).toRgbString()
-          : colord(theme.bg.accent).lighten(0.1).alpha(0.15).toRgbString()
-        : secondary
-        ? colord(theme.bg.tertiary).darken(0.4).toRgbString()
-        : alert
-        ? colord(theme.global.alert).lighten(0.03).toRgbString()
-        : colord(theme.global.accent).lighten(0.03).toRgbString()};
-  }
+  cursor: ${({ disablePointer }) => !disablePointer && 'pointer'};
 
   &:disabled {
     opacity: 0.5;
@@ -145,6 +285,33 @@ const StyledButton = styled(motion.button)<ButtonProps>`
   pointer-events: ${({ disabled: deactivated }) => (deactivated ? 'none' : 'auto')};
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${({ theme }) => colord(theme.global.accent).darken(0.2).toRgbString()};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
   }
+
+  // Highlight animation
+
+  ${({ isHighlighted }) =>
+    isHighlighted &&
+    css`
+      animation-name: breathing;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      animation-timing-function: ease-in-out;
+      border: 1px solid ${({ theme }) => theme.bg.accent};
+    `}
+
+  @keyframes breathing {
+    from {
+      background-color: ${({ theme }) => theme.bg.accent};
+    }
+    to {
+      background-color: initial;
+    }
+  }
+`
+
+const ButtonIcon = styled.div`
+  display: flex;
 `

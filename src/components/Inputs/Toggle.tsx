@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,8 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
-import { KeyboardEvent, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
+
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ToggleProps {
   toggled: boolean
@@ -27,29 +29,19 @@ interface ToggleProps {
   ToggleIcons?: [LucideIconType, LucideIconType]
   handleColors?: [string, string]
   label?: string
-  hasDarkerBgOnLightTheme?: boolean
   className?: string
 }
 
-const Toggle = ({
-  toggled,
-  onToggle,
-  className,
-  disabled,
-  ToggleIcons,
-  handleColors,
-  label,
-  hasDarkerBgOnLightTheme
-}: ToggleProps) => {
+const Toggle = ({ toggled, onToggle, className, disabled, ToggleIcons, handleColors, label }: ToggleProps) => {
   const theme = useTheme()
   const [toggleWidth, setToggleWidth] = useState(0)
   const [ToggleIconRight, ToggleIconLeft] = ToggleIcons ?? [undefined, undefined]
 
   const toggleBackgroundVariants = {
     off: {
-      backgroundColor: theme.name === 'light' && hasDarkerBgOnLightTheme ? 'rgba(0, 0, 0, 0.15)' : theme.bg.tertiary
+      backgroundColor: theme.name === 'light' ? 'rgba(0, 0, 0, 0.15)' : theme.bg.background2
     },
-    on: { backgroundColor: handleColors ? theme.bg.tertiary : theme.global.accent }
+    on: { backgroundColor: handleColors ? theme.bg.background2 : theme.global.accent }
   }
 
   const handleContainerVariants = {
@@ -78,17 +70,10 @@ const Toggle = ({
 
   const getToggleIconColor = (isActive: boolean) => (isActive ? 'var(--color-white)' : theme.font.tertiary)
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.stopPropagation()
-      handleSwitch()
-    }
-  }
-
   return (
     <StyledToggle
       onClick={handleSwitch}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => onEnterOrSpace(e, handleSwitch)}
       className={className}
       aria-label={label}
       aria-checked={toggled}
@@ -100,6 +85,9 @@ const Toggle = ({
       transition={transition}
       disabled={disabled}
     >
+      <ToggleHandleContainer variants={handleContainerVariants} animate={toggleState} transition={transition}>
+        <ToggleHandle variants={handleVariants} animate={toggleState} transition={transition} />
+      </ToggleHandleContainer>
       {ToggleIconRight && ToggleIconLeft && (
         <ToggleContent>
           <ToggleIconContainer>
@@ -110,9 +98,6 @@ const Toggle = ({
           </ToggleIconContainer>
         </ToggleContent>
       )}
-      <ToggleHandleContainer variants={handleContainerVariants} animate={toggleState} transition={transition}>
-        <ToggleHandle variants={handleVariants} animate={toggleState} transition={transition} />
-      </ToggleHandleContainer>
     </StyledToggle>
   )
 }
@@ -129,6 +114,13 @@ export const StyledToggle = styled(motion.div)<Omit<ToggleProps, 'onToggle'>>`
   overflow: hidden;
   cursor: pointer;
   box-sizing: content-box;
+  border: 1px solid ${({ theme }) => (theme.name === 'dark' ? theme.border.primary : 'transparent')};
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.global.accent};
+    border: 1px solid ${({ theme }) => theme.global.accent};
+  }
 
   svg {
     cursor: pointer;
@@ -146,7 +138,6 @@ const ToggleHandleContainer = styled(motion.div)`
   position: absolute;
   width: calc(var(--toggleWidth) / 2);
   height: calc(var(--toggleWidth) / 2);
-  z-index: 0;
   padding: 2px;
 `
 
@@ -155,7 +146,6 @@ const ToggleHandle = styled(motion.div)`
   width: 100%;
   background-color: var(--color-white);
   border-radius: var(--toggleWidth);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 `
 
 const ToggleContent = styled.div`
@@ -165,7 +155,6 @@ const ToggleContent = styled.div`
   top: 0;
   bottom: 0;
   display: flex;
-  z-index: 1;
 `
 
 const ToggleIconContainer = styled.div`

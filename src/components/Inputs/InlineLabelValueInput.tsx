@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,25 +16,48 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Info } from 'lucide-react'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
+import { openInWebBrowser } from '@/utils/misc'
+
 interface InlineLabelValueInputProps {
-  label: string
+  label: ReactNode
   InputComponent: ReactNode
   description?: string
+  moreInfoLink?: string
   className?: string
 }
 
-const InlineLabelValueInput = ({ label, InputComponent, description, className }: InlineLabelValueInputProps) => (
-  <KeyValueInputContainer className={className}>
-    <KeyContainer>
-      <Label>{label}</Label>
-      {description && <DescriptionContainer>{description}</DescriptionContainer>}
-    </KeyContainer>
-    <InputContainer>{InputComponent}</InputContainer>
-  </KeyValueInputContainer>
-)
+const InlineLabelValueInput = ({
+  label,
+  InputComponent,
+  description,
+  moreInfoLink,
+  className
+}: InlineLabelValueInputProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <KeyValueInputContainer className={className}>
+      <KeyContainer>
+        <Label>{label}</Label>
+        {description && <DescriptionContainer>{description}</DescriptionContainer>}
+        {moreInfoLink && (
+          <ActionLinkStyled onClick={() => openInWebBrowser(moreInfoLink)}>
+            <Info size={12} /> {t('More info')}
+          </ActionLinkStyled>
+        )}
+      </KeyContainer>
+      <InputContainer>{InputComponent}</InputContainer>
+    </KeyValueInputContainer>
+  )
+}
+
+export default InlineLabelValueInput
 
 const KeyValueInputContainer = styled.div`
   display: flex;
@@ -56,7 +79,7 @@ const Label = styled.label`
 `
 
 const DescriptionContainer = styled.div`
-  color: ${({ theme }) => theme.font.secondary};
+  color: ${({ theme }) => theme.font.tertiary};
 `
 
 const InputContainer = styled.div`
@@ -66,4 +89,6 @@ const InputContainer = styled.div`
   flex: 1;
 `
 
-export default InlineLabelValueInput
+const ActionLinkStyled = styled(ActionLink)`
+  gap: 0.3em;
+`

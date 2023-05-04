@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Error, ProgressInfo, UpdateDownloadedEvent } from 'electron-updater'
 
-import { ThemeType } from './settings'
+import { ThemeSettings } from './settings'
 
 interface NativeTheme {
   shouldUseDarkColors: boolean
@@ -28,7 +28,7 @@ interface NativeTheme {
 export interface AlephiumWindow extends Window {
   electron?: {
     theme: {
-      setNativeTheme: (theme: ThemeType) => void
+      setNativeTheme: (theme: ThemeSettings) => void
       getNativeTheme: () => void
       onGetNativeTheme: (callback: (nativeTheme: NativeTheme) => void) => () => void
       onShouldUseDarkColors: (callback: (useDark: boolean) => void) => () => void
@@ -40,6 +40,16 @@ export interface AlephiumWindow extends Window {
       onUpdateDownloaded: (callback: (updateDownloadedEvent: UpdateDownloadedEvent) => void) => () => void
       quitAndInstallUpdate: () => void
       onError: (callback: (error: Error) => void) => () => void
+    }
+    walletConnect: {
+      onConnect: (callback: (uri: string) => Promise<void>) => () => void
+      resetDeepLinkUri: () => void
+      getDeepLinkUri: () => Promise<string | null>
+    }
+    app: {
+      hide: () => void
+      show: () => void
+      getSystemLanguage: () => Promise<string | undefined>
     }
   }
 }

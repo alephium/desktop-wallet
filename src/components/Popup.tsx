@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -15,76 +15,138 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
+
 import { motion } from 'framer-motion'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import { fadeInOutScaleFast, fastTransition } from '@/animations'
+import Scrollbar from '@/components/Scrollbar'
+import ModalContainer from '@/modals/ModalContainer'
+import { Coordinates } from '@/types/numbers'
+import { useWindowSize } from '@/utils/hooks'
+
 interface PopupProps {
-  onBackgroundClick: () => void
+  onClose: () => void
   children?: ReactNode | ReactNode[]
   title?: string
+  extraHeaderContent?: ReactNode
+  hookCoordinates?: Coordinates
+  minWidth?: number
 }
 
-const Popup = ({ children, onBackgroundClick, title }: PopupProps) => {
-  const handleEscapeKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onBackgroundClick()
-      }
-    },
-    [onBackgroundClick]
-  )
+const minMarginToEdge = 20
+const headerHeight = 50
+
+const Popup = ({ children, onClose, title, hookCoordinates, extraHeaderContent, minWidth = 200 }: PopupProps) => {
+  const { height: windowHeight, width: windowWidth } = useWindowSize() // Recompute position on window resize
+
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const [hookOffset, setHookOffset] = useState<Coordinates>()
+
+  const handleHookClick = (e: MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
 
   useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress, false)
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress, false)
+    if (windowHeight && windowWidth) {
+      const contentElement = contentRef.current
+      const contentRect = contentElement?.getBoundingClientRect()
+
+      const baseOffsetX =
+        contentRect?.left && contentRect.left < minMarginToEdge
+          ? -contentRect.left + 2 * minMarginToEdge
+          : contentRect?.right && windowWidth - contentRect.right < minMarginToEdge
+          ? windowWidth - contentRect.right - 2 * minMarginToEdge
+          : 0
+
+      const baseOffsetY =
+        contentRect?.top && contentRect.top < minMarginToEdge
+          ? -contentRect.top + 2 * minMarginToEdge
+          : contentRect?.bottom && windowHeight - contentRect.bottom < minMarginToEdge
+          ? windowHeight - contentRect.bottom - 2 * minMarginToEdge
+          : 0
+
+      setHookOffset({ x: baseOffsetX, y: baseOffsetY - 5 })
     }
-  }, [handleEscapeKeyPress, onBackgroundClick])
+  }, [windowHeight, windowWidth])
+
+  const PopupContent = (
+    <Content
+      role="dialog"
+      ref={contentRef}
+      style={hookOffset && { x: hookOffset.x, y: hookOffset.y - 15 }}
+      animate={hookOffset && { ...fadeInOutScaleFast.animate, ...hookOffset }}
+      exit={fadeInOutScaleFast.exit}
+      minWidth={minWidth}
+      {...fastTransition}
+    >
+      {title && (
+        <Header hasExtraContent={!!extraHeaderContent}>
+          <h2>{title}</h2>
+          {extraHeaderContent}
+        </Header>
+      )}
+      <Scrollbar translateContentSizeYToHolder>{children}</Scrollbar>
+    </Content>
+  )
 
   return (
-    <PopupContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onBackgroundClick}>
-      <PopupContent onClick={(e) => e.stopPropagation()} initial={{ y: -10 }} animate={{ y: 0 }} exit={{ y: -10 }}>
-        {title && (
-          <PopupHeader>
-            <h2>{title}</h2>
-          </PopupHeader>
-        )}
-        {children}
-      </PopupContent>
-    </PopupContainer>
+    <ModalContainer onClose={onClose}>
+      {hookCoordinates ? (
+        <Hook
+          hookCoordinates={hookCoordinates}
+          contentWidth={contentRef.current?.clientWidth || 0}
+          onClick={handleHookClick}
+        >
+          {PopupContent}
+        </Hook>
+      ) : (
+        PopupContent
+      )}
+    </ModalContainer>
   )
 }
 
 export default Popup
 
-const PopupContainer = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
+const Hook = styled.div<{ hookCoordinates: Coordinates; contentWidth: number }>`
+  position: absolute;
   display: flex;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  top: ${({ hookCoordinates }) => hookCoordinates.y - headerHeight / 2}px;
+  left: ${({ hookCoordinates, contentWidth }) => hookCoordinates.x - contentWidth / 2}px;
 `
 
-const PopupContent = styled(motion.div)`
-  border-radius: var(--radius);
-  margin: auto;
-  width: 30vw;
-  min-width: 300px;
-  max-height: 500px;
+const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
+  opacity: 0; // for initial mount computation
+  position: relative;
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow: var(--shadow-3);
+  display: flex;
+  flex-direction: column;
+
+  min-width: ${({ minWidth }) => minWidth}px;
+  max-height: 510px;
+  margin: auto;
+
+  box-shadow: ${({ theme }) => theme.shadow.tertiary};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-radius: var(--radius-big);
   background-color: ${({ theme }) => theme.bg.primary};
 `
 
-const PopupHeader = styled.div`
-  padding: var(--spacing-1) var(--spacing-3);
+const Header = styled.div<{ hasExtraContent: boolean }>`
+  height: ${({ hasExtraContent }) => (hasExtraContent ? 'auto' : `${headerHeight}px`)};
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.tertiary};
+
   display: flex;
   align-items: center;
+  z-index: 1;
 `

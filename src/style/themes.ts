@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -24,33 +24,36 @@ export const lightTheme: DefaultTheme = {
   bg: {
     primary: '#ffffff',
     secondary: '#fbfbfb',
-    tertiary: 'rgba(0, 0, 0, 0.05)',
-    hover: 'rgba(0, 0, 0, 0.012)',
+    tertiary: '#f9f9f9',
     contrast: '#212126',
-    accent: colord('#000').alpha(0.04).toRgbString()
+    background1: '#f7f7f7',
+    background2: '#f0f0f0',
+    accent: colord('#598bed').alpha(0.05).toHex(),
+    hover: colord('#ffffff').darken(0.015).toHex()
   },
   font: {
-    primary: '#000',
-    secondary: '#4b4b4b',
-    tertiary: '#adadad',
+    primary: '#1d1d1d',
+    secondary: '#6a6a6a',
+    tertiary: '#989898',
     contrastPrimary: 'rgba(255, 255, 255, 1)',
     contrastSecondary: 'rgba(255, 255, 255, 0.8)',
-    highlight: '#ffb800'
+    highlight: '#d4a10d'
   },
   border: {
-    primary: '#ebebeb',
-    secondary: '#f1f1f1'
+    primary: '#e7e7e7',
+    secondary: '#f0f0f0'
   },
   shadow: {
-    primary: '0 2px 2px rgba(0, 0, 0, 0.03)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.04)',
-    tertiary: '0 20px 20px rgba(0, 0, 0, 0.05)'
+    primary: '0 1px 1px rgba(0, 0, 0, 0.03)',
+    secondary: '0 8px 10px rgba(0, 0, 0, 0.1)',
+    tertiary: '0 0 50px rgba(0, 0, 0, 0.15)'
   },
   global: {
-    accent: '#5981f3',
-    complementary: '#FF5D51',
-    alert: '#ed4a34',
-    valid: '#3ed282',
+    accent: '#598bed',
+    complementary: '#ff5d51',
+    alert: '#e53b24',
+    valid: '#0EA670',
+    highlight: '#d4a10d',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }
@@ -58,35 +61,38 @@ export const lightTheme: DefaultTheme = {
 export const darkTheme: DefaultTheme = {
   name: 'dark',
   bg: {
-    primary: '#19191E',
-    secondary: '#141417',
-    tertiary: '#101012',
-    hover: 'rgba(61, 64, 74, 0.1)',
+    primary: '#18181a',
+    secondary: '#161618',
+    tertiary: '#141416',
     contrast: 'white',
-    accent: colord('#101012').alpha(0.32).toRgbString()
+    background1: '#121214',
+    background2: '#0e0e10',
+    hover: colord('#18181a').lighten(0.01).toHex(),
+    accent: colord('#598bed').alpha(0.1).toHex()
   },
   font: {
-    primary: 'rgba(255, 255, 255, 0.95)',
-    secondary: '#C0C0C0',
-    tertiary: '#767679',
+    primary: '#e3e3e3',
+    secondary: '#c0c0c0',
+    tertiary: 'rgba(255, 255, 255, 0.4)',
     contrastPrimary: 'rgba(0, 0, 0, 1)',
     contrastSecondary: 'rgba(0, 0, 0, 0.8)',
-    highlight: '#ffb800'
+    highlight: '#f0d590'
   },
   border: {
-    primary: 'rgb(43, 43, 48)',
-    secondary: 'rgb(34, 34, 38)'
+    primary: '#232325',
+    secondary: '#202022'
   },
   shadow: {
-    primary: '0 2px 2px rgba(0, 0, 0, 0.25)',
-    secondary: '0 10px 10px rgba(0, 0, 0, 0.3)',
-    tertiary: '0 25px 25px rgba(0, 0, 0, 0.2)'
+    primary: '0 2px 3px rgba(0, 0, 0, 0.3)',
+    secondary: '0 10px 10px rgba(0, 0, 0, 0.25)',
+    tertiary: '0 0 50px rgb(0, 0, 0)'
   },
   global: {
-    accent: '#6083FF',
-    complementary: '#FF5D51',
+    accent: '#598bed',
+    complementary: '#ff5d51',
     alert: '#ed4a34',
     valid: '#3ed282',
+    highlight: '#f0d590',
     highlightGradient: 'linear-gradient(45deg, rgba(18,0,218,1) 0%, rgba(255,93,81,1) 100%)'
   }
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,15 +17,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { HTMLMotionProps, motion } from 'framer-motion'
-import { FC } from 'react'
 import styled, { css } from 'styled-components'
+
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 interface ParagraphProps {
   centered?: boolean
   secondary?: boolean
 }
-
-import { sectionChildrenVariants } from './PageComponents/PageContainers'
 
 const Paragraph: FC<HTMLMotionProps<'p'> & ParagraphProps> = ({
   centered,

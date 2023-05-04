@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createHash } from '@alephium/sdk'
 import dayjs from 'dayjs'
+import { KeyboardEvent } from 'react'
 
 // ===================== //
 // ==== RUNNING ENV ==== //
@@ -54,16 +55,36 @@ export const stringToDoubleSHA256HexString = (data: string): string => {
   return hash.digest('hex')
 }
 
-export const extractErrorMsg = (e: unknown): string => {
-  let error: string
-  if (typeof e === 'string') {
-    error = e
-  } else if (e instanceof Error) {
-    error = e.message
-  } else {
-    error = 'Unknown internal error'
-  }
-  return error
+export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')
+
+export const getInitials = (str: string) => {
+  if (!str) return ''
+
+  const words = str.split(' ')
+  const initials = words.length > 1 ? `${words[0][0]}${words[1][0]}` : str.length > 1 ? str.substring(0, 2) : str[0]
+
+  return initials.toUpperCase()
 }
 
-export const formatDateForDisplay = (date: Date | number): string => dayjs(date).format('YYYY-MM-DD HH:mm')
+export const onEnterOrSpace = (event: KeyboardEvent, callback: () => void) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+
+  event.stopPropagation()
+  callback()
+}
+
+export const onTabPress = (event: KeyboardEvent, callback: () => void) => {
+  if (event.key !== 'Tab') return
+
+  event.stopPropagation()
+  callback()
+}
+
+export const convertToPositive = (num: bigint): bigint => (num < 0 ? num * BigInt(-1) : num)
+export const convertToNegative = (num: bigint): bigint => (num > 0 ? num * BigInt(-1) : num)
+
+export function removeItemFromArray<T>(array: T[], index: number) {
+  const newArray = [...array]
+  newArray.splice(index, 1)
+  return newArray
+}

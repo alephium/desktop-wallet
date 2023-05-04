@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,21 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// TODO: Extract to common shared UI library
+import 'react-tooltip/dist/react-tooltip.css'
 
-import { FC } from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
+import styled from 'styled-components'
 
-interface TooltipProps {
-  id?: string
-}
+export type HasTooltip<T> = T & { tooltip?: string }
 
-export type HasTooltip<T> = T & { 'data-tip'?: string }
-
-const Tooltip: FC<TooltipProps> = ({ id, children }) => (
-  <ReactTooltip backgroundColor="rgb(34,34,38)" textColor="#fff" id={id}>
-    {children}
-  </ReactTooltip>
-)
-
-export default Tooltip
+export default styled(Tooltip)`
+  background-color: rgb(10, 10, 10);
+  color: #fff;
+  z-index: 1;
+`

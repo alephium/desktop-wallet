@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,13 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createGlobalStyle } from 'styled-components'
 
-import { isElectron } from '../utils/misc'
-import resets from './resets'
-import tags from './tags'
+import resets from '@/style/resets'
+import tags from '@/style/tags'
+import { isElectron } from '@/utils/misc'
 
 export const appHeaderHeightPx = 60
 
-export const walletSidebarWidthPx = 250
+export const walletSidebarWidthPx = 75
 
 const extensionWindowDimensions = `
   height: 600px;
@@ -40,9 +40,7 @@ export const GlobalStyle = createGlobalStyle`
 
   :root {
     --color-white: #fff;
-    --color-orange: #F6C76A;
     --color-grey: #646775;
-    --color-purple: #3A0595;
 
     /* spacial system of 5px linear scale */
     --spacing-1: 5px;
@@ -54,17 +52,19 @@ export const GlobalStyle = createGlobalStyle`
     --spacing-7: 35px;
     --spacing-8: 40px;
 
-    --radius-small: 4px;
-    --radius: 7px;
+    --radius-tiny: 4px;
+    --radius-small: 7px;
     --radius-medium: 9px;
-    --radius-big: 14px;
+    --radius-big: 12px;
+    --radius-huge: 17px;
     --radius-full: 100%;
 
+    --fontWeight-normal: 400;
     --fontWeight-medium: 500;
     --fontWeight-semiBold: 600;
-    --fontWeight-bold: 800;
+    --fontWeight-bold: 700;
 
-    --inputHeight: 45px;
+    --inputHeight: 55px;
     --tableCellHeight: 47px;
     --toggleWidth: 52px;
   }
@@ -94,6 +94,15 @@ export const GlobalStyle = createGlobalStyle`
       }
     }
   }
+
+  // Charts custom styling (can't do that in JS apparently)
+  .apexcharts-marker {
+    transition: none !important;
+  }
+
+  .apexcharts-tooltip {
+    display: none !important;
+  }
 `
 
 // Breakpoints
@@ -107,6 +116,6 @@ export const deviceSizes = {
 export const deviceBreakPoints = {
   mobile: `(max-width: ${deviceSizes.mobile}px)`,
   tablet: `(max-width: ${deviceSizes.tablet}px)`,
-  desktop: `(min-width: ${deviceSizes.desktop}px)`,
+  desktop: `(max-width: ${deviceSizes.desktop}px)`,
   short: '(max-height: 600px)'
 }

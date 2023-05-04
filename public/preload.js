@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -51,5 +51,19 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.on('updater:error', callbackWithEventArg)
       return () => ipcRenderer.removeListener('updater:error', callbackWithEventArg)
     }
+  },
+  walletConnect: {
+    onConnect: (callback) => {
+      const callbackWithEventArg = (_, arg2) => callback(arg2)
+      ipcRenderer.on('wc:connect', callbackWithEventArg)
+      return () => ipcRenderer.removeListener('wc:connect', callbackWithEventArg)
+    },
+    resetDeepLinkUri: () => ipcRenderer.invoke('wc:resetDeepLinkUri'),
+    getDeepLinkUri: () => ipcRenderer.invoke('wc:getDeepLinkUri')
+  },
+  app: {
+    hide: () => ipcRenderer.invoke('app:hide'),
+    show: () => ipcRenderer.invoke('app:show'),
+    getSystemLanguage: async () => ipcRenderer.invoke('app:getSystemLanguage')
   }
 })

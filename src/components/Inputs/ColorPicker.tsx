@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -23,9 +23,11 @@ import { useDetectClickOutside } from 'react-detect-click-outside'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { getRandomLabelColor, labelColorPalette } from '../../utils/colors'
-import InputArea from '../Inputs/InputArea'
-import { inputDefaultStyle, InputProps } from '.'
+import { fadeInOut } from '@/animations'
+import { inputDefaultStyle, InputProps } from '@/components/Inputs'
+import InputArea from '@/components/Inputs/InputArea'
+import { getRandomLabelColor, labelColorPalette } from '@/utils/colors'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ColorPickerProps {
   value: string
@@ -46,12 +48,17 @@ const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
 
   return (
     <ColorPickerContainer ref={ref}>
-      <InputAreaStyled aria-label={t`Pick a color`} onInput={handlePopupOpen}>
+      <InputAreaStyled
+        aria-label={t`Pick a color`}
+        onInput={handlePopupOpen}
+        onClick={handlePopupOpen}
+        onKeyDown={(e) => onEnterOrSpace(e, handlePopupOpen)}
+      >
         <Circle color={color} />
       </InputAreaStyled>
-      <AnimatePresence exitBeforeEnter initial={true}>
+      <AnimatePresence>
         {isPopupOpen && (
-          <Popup initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <Popup {...fadeInOut}>
             <TwitterPickerStyled
               color={color}
               onChangeComplete={onChangeComplete}
@@ -75,11 +82,11 @@ const ColorPickerContainer = styled.div<InputProps>`
 `
 
 const InputAreaStyled = styled(InputArea)<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)}
-  position: relative;
+  ${({ isValid, value, label, Icon }) => inputDefaultStyle(isValid || !!Icon, !!value, !!label)}
   display: inline-flex;
   align-items: center;
   width: auto;
+  cursor: pointer;
 `
 
 const Popup = styled(motion.div)`

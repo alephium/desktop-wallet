@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,11 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import styled from 'styled-components'
 
-import { ReactComponent as AlephiumLogoSVG } from '../images/alephium_logo_monochrome.svg'
-import { deviceBreakPoints } from '../style/globalStyles'
+import { ReactComponent as AlephiumLogoSVG } from '@/images/alephium_logo_monochrome.svg'
+import { deviceBreakPoints } from '@/style/globalStyles'
 
 export default styled(AlephiumLogoSVG)<{ position?: 'top' | 'bottom' }>`
-  position: absolute;
+  position: fixed;
   left: var(--spacing-5);
   width: 35px;
   height: auto;

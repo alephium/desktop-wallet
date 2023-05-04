@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,11 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useGlobalContext } from '../contexts/global'
-import { links } from '../utils/links'
-import { openInWebBrowser } from '../utils/misc'
-import Banner from './Banner'
-import Button from './Button'
+import Banner from '@/components/Banner'
+import Button from '@/components/Button'
+import { useGlobalContext } from '@/contexts/global'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface UpdateWalletBannerProps {
   className?: string

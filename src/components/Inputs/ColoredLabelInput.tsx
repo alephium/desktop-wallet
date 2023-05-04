@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -19,8 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import ColorPicker from './ColorPicker'
-import Input from './Input'
+import ColorPicker from '@/components/Inputs/ColorPicker'
+import Input from '@/components/Inputs/Input'
 
 export type ColoredLabelInputValue = {
   title: string

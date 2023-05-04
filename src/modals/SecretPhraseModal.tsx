@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -21,35 +21,43 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import PasswordConfirmation from '../components/PasswordConfirmation'
-import { useGlobalContext } from '../contexts/global'
-import CenteredModal from './CenteredModal'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import PasswordConfirmation from '@/components/PasswordConfirmation'
+import { useAppSelector } from '@/hooks/redux'
+import CenteredModal from '@/modals/CenteredModal'
 
 const SecretPhraseModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation()
-  const { wallet } = useGlobalContext()
+  const activeWalletMnemonic = useAppSelector((state) => state.activeWallet.mnemonic)
   const [isDisplayingPhrase, setIsDisplayingPhrase] = useState(false)
 
+  if (!activeWalletMnemonic) return null
+
   return (
-    <CenteredModal title={t`Secret recovery phrase`} onClose={onClose} focusMode narrow={!isDisplayingPhrase}>
+    <CenteredModal
+      title={t('Secret recovery phrase')}
+      onClose={onClose}
+      focusMode
+      narrow={!isDisplayingPhrase}
+      skipFocusOnMount
+    >
       {!isDisplayingPhrase ? (
         <div>
           <PasswordConfirmation
-            text={t`Type your password to show the phrase.`}
-            buttonText={t`Show`}
+            text={t('Type your password to show the phrase.')}
+            buttonText={t('Show')}
             onCorrectPasswordEntered={() => setIsDisplayingPhrase(true)}
           />
         </div>
       ) : (
         <Section>
           <InfoBox
-            text={t`Carefully note down the words! They are your wallet's secret recovery phrase.`}
+            text={t("Carefully note down the words! They are your wallet's secret recovery phrase.")}
             Icon={Edit3}
             importance="alert"
           />
-          <PhraseBox>{wallet?.mnemonic || t`No recovery phrase was stored along with this wallet`}</PhraseBox>
+          <PhraseBox>{activeWalletMnemonic}</PhraseBox>
         </Section>
       )}
     </CenteredModal>
@@ -62,7 +70,7 @@ const PhraseBox = styled.div`
   color: ${({ theme }) => theme.font.contrastPrimary};
   font-weight: var(--fontWeight-semiBold);
   background-color: ${({ theme }) => theme.global.alert};
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   margin-bottom: var(--spacing-4);
 `
 

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,57 +16,58 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { motion, MotionProps } from 'framer-motion'
+import { KeyboardEvent, ReactNode, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
-export interface ModalContainerProps {
+import { fadeInOutFast } from '@/animations'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import useFocusOnMount from '@/hooks/useFocusOnMount'
+import { modalClosed, modalOpened } from '@/storage/global/globalActions'
+
+export interface ModalContainerProps extends MotionProps {
   onClose: () => void
   children?: ReactNode | ReactNode[]
   focusMode?: boolean
   hasPadding?: boolean
   className?: string
+  skipFocusOnMount?: boolean
 }
 
-const ModalContainer = ({ onClose, children, focusMode, className }: ModalContainerProps) => {
+const ModalContainer = ({ onClose, children, focusMode, className, skipFocusOnMount }: ModalContainerProps) => {
+  const dispatch = useAppDispatch()
+  const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
+  const modalRef = useFocusOnMount<HTMLDivElement>(skipFocusOnMount)
+  const modalId = useRef<string>(`modal-${new Date().valueOf()}`)
+
   // Prevent body scroll on mount
   useEffect(() => {
     document.body.style.overflow = 'hidden'
+    dispatch(modalOpened(modalId.current))
+
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [])
+  }, [dispatch])
 
   // Handle escape key press
-  const handleEscapeKeyPress = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleEscapeKeyPress, false)
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKeyPress, false)
+  const handleEscapeKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      closeModal()
+      e.stopPropagation()
     }
-  }, [handleEscapeKeyPress, onClose])
+  }
+
+  const closeModal = () => {
+    onClose()
+    moveFocusOnPreviousModal()
+  }
 
   return (
-    <div className={className}>
+    <motion.div className={className} onKeyDown={handleEscapeKeyPress} tabIndex={0} id={modalId.current} ref={modalRef}>
+      <ModalBackdrop {...fadeInOutFast} onClick={closeModal} focusMode={focusMode} />
       {children}
-      <ModalBackdrop
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        onClick={onClose}
-        focusMode={focusMode}
-      />
-    </div>
+    </motion.div>
   )
 }
 
@@ -78,7 +79,11 @@ export default styled(ModalContainer)<{ hasPadding?: boolean }>`
   left: 0;
   display: flex;
   padding: ${({ hasPadding }) => hasPadding && 'var(--spacing-4)'};
-  z-index: 1001;
+  z-index: 1;
+
+  &:focus {
+    outline: none;
+  }
 `
 
 export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: boolean }>`
@@ -98,3 +103,18 @@ export const ModalBackdrop = styled(motion.div)<{ focusMode?: boolean; light?: b
       ? 'rgba(0, 0, 0, 0.15)'
       : 'rgba(0, 0, 0, 0.6)'};
 `
+
+export const useMoveFocusOnPreviousModal = () => {
+  const visibleModals = useAppSelector((state) => state.global.visibleModals)
+  const dispatch = useAppDispatch()
+
+  const previouslyOpenedModal = visibleModals.at(-2)
+
+  const moveFocusOnPreviousModal = () => {
+    dispatch(modalClosed())
+
+    if (previouslyOpenedModal) document.getElementById(previouslyOpenedModal)?.focus()
+  }
+
+  return moveFocusOnPreviousModal
+}

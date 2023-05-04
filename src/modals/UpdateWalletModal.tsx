@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,13 +20,13 @@ import { BellPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import { useGlobalContext } from '../contexts/global'
-import { AlephiumWindow } from '../types/window'
-import { links } from '../utils/links'
-import { openInWebBrowser } from '../utils/misc'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import { useGlobalContext } from '@/contexts/global'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { AlephiumWindow } from '@/types/window'
+import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface UpdateWalletModalProps {
   onClose: () => void

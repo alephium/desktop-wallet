@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,61 +16,101 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { colord } from 'colord'
-import { ComponentPropsWithoutRef } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import { Address } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import dotSvg from '../images/dot.svg'
-import AddressEllipsed from './AddressEllipsed'
-import Badge from './Badge'
-import ClipboardButton from './Buttons/ClipboardButton'
+import AddressColorIndicator from '@/components/AddressColorIndicator'
+import ClipboardButton from '@/components/Buttons/ClipboardButton'
+import HashEllipsed from '@/components/HashEllipsed'
+import { useAppSelector } from '@/hooks/redux'
+import { makeSelectContactByAddress, selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { AddressHash } from '@/types/addresses'
 
-type AddressBadgeProps = ComponentPropsWithoutRef<typeof Badge> & {
-  address: Address
+interface AddressBadgeProps {
+  addressHash: AddressHash
   truncate?: boolean
-  showHashWhenNoLabel?: boolean
   withBorders?: boolean
   hideStar?: boolean
+  hideColorIndication?: boolean
   disableA11y?: boolean
+  disableCopy?: boolean
+  showFull?: boolean
+  className?: string
 }
 
 const AddressBadge = ({
-  address,
-  showHashWhenNoLabel,
-  withBorders,
+  addressHash,
   hideStar,
   className,
+  hideColorIndication,
   disableA11y = false,
-  ...props
+  disableCopy,
+  truncate,
+  showFull,
+  withBorders
 }: AddressBadgeProps) => {
   const { t } = useTranslation()
-  const { isPassphraseUsed } = useGlobalContext()
+  const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
+  const selectContactByAddress = useMemo(makeSelectContactByAddress, [])
+  const contact = useAppSelector((s) => selectContactByAddress(s, addressHash))
 
-  if (!address) return null
-
-  return showHashWhenNoLabel && !address.settings.label ? (
-    <Hash className={className}>
-      {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
-      <AddressEllipsed addressHash={address.hash} disableA11y={disableA11y} />
-    </Hash>
-  ) : (
-    <ClipboardButton textToCopy={address.hash} tipText={t`Copy address`} disableA11y={disableA11y}>
-      <RoundBorders className={className} withBorders={withBorders}>
-        {!isPassphraseUsed && address.settings.isMain && !hideStar && <Star>★</Star>}
-        <Label {...props}>{address.getName()}</Label>
-        {!!address.settings.label && <DotIcon color={address.settings.color} />}
-      </RoundBorders>
-    </ClipboardButton>
+  return (
+    <AddressBadgeStyled
+      className={className}
+      withBorders={contact || address ? withBorders : false}
+      truncate={truncate}
+      showFull={showFull}
+    >
+      {contact ? (
+        <Label truncate={truncate}>
+          {disableCopy ? (
+            contact.name
+          ) : (
+            <ClipboardButton textToCopy={contact.address} tooltip={t('Copy contact address')} disableA11y={disableA11y}>
+              {contact.name}
+            </ClipboardButton>
+          )}
+        </Label>
+      ) : !address ? (
+        <NotKnownAddress hash={addressHash} disableCopy={disableCopy} />
+      ) : (
+        <>
+          {!hideColorIndication && <AddressColorIndicator addressHash={address.hash} hideMainAddressBadge={hideStar} />}
+          {address.label ? (
+            <Label truncate={truncate}>
+              {disableCopy ? (
+                address.label
+              ) : (
+                <ClipboardButton textToCopy={address.hash} tooltip={t('Copy address')} disableA11y={disableA11y}>
+                  {address.label}
+                </ClipboardButton>
+              )}
+            </Label>
+          ) : (
+            <HashEllipsed hash={address.hash} disableA11y={disableA11y} disableCopy={disableCopy} />
+          )}
+        </>
+      )}
+    </AddressBadgeStyled>
   )
 }
 
-export default styled(AddressBadge)`
+export default AddressBadge
+
+const AddressBadgeStyled = styled.div<Pick<AddressBadgeProps, 'withBorders' | 'truncate' | 'showFull'>>`
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  max-width: ${({ showFull }) => !showFull && 125}px;
+
+  ${({ withBorders }) =>
+    withBorders &&
+    css`
+      border: 1px solid ${({ theme }) => theme.border.primary};
+      border-radius: 25px;
+      padding: 5px 10px;
+    `}
 
   ${({ truncate }) =>
     truncate &&
@@ -81,8 +121,9 @@ export default styled(AddressBadge)`
     `}
 `
 
-const Label = styled.span<AddressBadgeProps>`
+const Label = styled.span<Pick<AddressBadgeProps, 'truncate'>>`
   margin-right: 2px;
+  white-space: nowrap;
 
   ${({ truncate }) =>
     truncate &&
@@ -92,37 +133,4 @@ const Label = styled.span<AddressBadgeProps>`
     `}
 `
 
-export const dotStyling = {
-  width: '1rem',
-  marginRight: '0.2rem'
-}
-
-const DotIcon = styled.div<{ color?: string }>`
-  display: inline-block;
-  width: 7px;
-  height: 8px;
-  -webkit-mask: url(${dotSvg}) no-repeat 100% 100%;
-  mask: url(${dotSvg}) no-repeat 100% 100%;
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  background-color: ${({ color, theme }) => color || theme.font.primary};
-  flex-shrink: 0;
-`
-
-const Hash = styled.div`
-  width: 100%;
-`
-
-const Star = styled.span`
-  opacity: 0.6;
-`
-
-const RoundBorders = styled.div<{ withBorders?: boolean }>`
-  ${({ withBorders }) =>
-    withBorders &&
-    css`
-      border: 1px solid ${({ theme }) => colord(theme.border.primary).alpha(0.8).toRgbString()};
-      border-radius: 25px;
-      padding: 5px 10px;
-    `}
-`
+const NotKnownAddress = styled(HashEllipsed)``

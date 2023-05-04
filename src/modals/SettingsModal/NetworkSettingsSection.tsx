@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,46 +16,54 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { capitalize } from 'lodash'
-import { AlertTriangle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import Button from '../../components/Button'
-import ExpandableSection from '../../components/ExpandableSection'
-import InfoBox from '../../components/InfoBox'
-import Input from '../../components/Inputs/Input'
-import Select from '../../components/Inputs/Select'
-import { Section } from '../../components/PageComponents/PageContainers'
-import { useGlobalContext } from '../../contexts/global'
-import { useMountEffect } from '../../utils/hooks'
-import { getNetworkName, networkEndpoints, NetworkName, networkNames, Settings } from '../../utils/settings'
+import client from '@/api/client'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import Input from '@/components/Inputs/Input'
+import Select from '@/components/Inputs/Select'
+import { Section } from '@/components/PageComponents/PageContainers'
+import ToggleSection from '@/components/ToggleSection'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import i18next from '@/i18n'
+import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { NetworkName, NetworkNames } from '@/types/network'
+import { NetworkSettings } from '@/types/settings'
+import { useMountEffect } from '@/utils/hooks'
+import { getNetworkName } from '@/utils/settings'
 
 interface NetworkSelectOption {
   label: string
   value: NetworkName
 }
 
-type NetworkSettings = Settings['network']
+const networkNames = Object.values(NetworkNames) as (keyof typeof NetworkNames)[]
+
+const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
+  label: {
+    mainnet: i18next.t('Mainnet'),
+    testnet: i18next.t('Testnet'),
+    localhost: i18next.t('Localhost'),
+    custom: i18next.t('Custom')
+  }[networkName],
+  value: networkName
+}))
 
 const NetworkSettingsSection = () => {
   const { t } = useTranslation()
-  const {
-    client,
-    settings: currentSettings,
-    updateNetworkSettings,
-    setSnackbarMessage,
-    currentNetwork
-  } = useGlobalContext()
-  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(currentSettings.network)
+  const dispatch = useAppDispatch()
+  const network = useAppSelector((state) => state.network)
+  const posthog = usePostHog()
+
+  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
-
-  const networkSelectOptions: NetworkSelectOption[] = networkNames.map((networkName) => ({
-    label: t(capitalize(networkName)),
-    value: networkName
-  }))
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
@@ -78,77 +86,87 @@ const NetworkSettingsSection = () => {
   }
 
   const handleNetworkPresetChange = useCallback(
-    async (option: typeof networkSelectOptions[number] | undefined) => {
-      if (option && option.value !== selectedNetwork) {
-        setSelectedNetwork(option.value)
+    async (networkName: NetworkName) => {
+      if (networkName !== selectedNetwork) {
+        setSelectedNetwork(networkName)
 
-        if (option.value === 'custom') {
-          // Make sure to open expandable advanced section
+        if (networkName === 'custom') {
           setAdvancedSectionOpen(true)
-        } else {
-          const newNetworkSettings = networkEndpoints[option.value]
-          let networkId = newNetworkSettings.networkId
-          if (typeof networkId === 'undefined' && typeof client !== 'undefined') {
-            const response = await client.web3.infos.getInfosChainParams()
-            networkId = response.networkId
-          }
-          if (typeof networkId !== 'undefined') {
-            const settings = { ...newNetworkSettings, networkId: networkId }
-            updateNetworkSettings(settings)
-            setTempAdvancedSettings(settings)
-          }
+          return
+        }
+
+        setAdvancedSectionOpen(false)
+
+        const newNetworkSettings = networkPresets[networkName]
+
+        let networkId = newNetworkSettings.networkId
+
+        if (networkId !== undefined) {
+          dispatch(networkPresetSwitched(networkName))
+          setTempAdvancedSettings(newNetworkSettings)
+
+          posthog?.capture('Changed network', { network_name: networkName })
+          return
+        }
+
+        if (networkId === undefined) {
+          const response = await client.web3.infos.getInfosChainParams()
+          networkId = response.networkId
+        }
+
+        if (networkId !== undefined) {
+          const settings = { ...newNetworkSettings, networkId: networkId }
+          dispatch(customNetworkSettingsSaved(settings))
+          setTempAdvancedSettings(settings)
+
+          posthog?.capture('Saved custom network settings')
         }
       }
     },
-    [selectedNetwork, updateNetworkSettings, client]
+    [dispatch, posthog, selectedNetwork]
   )
 
   const handleAdvancedSettingsSave = useCallback(() => {
     if (
       selectedNetwork !== 'custom' &&
-      (selectedNetwork === currentNetwork || getNetworkName(tempAdvancedSettings) === currentNetwork)
+      (selectedNetwork === network.name || getNetworkName(tempAdvancedSettings) === network.name)
     ) {
       setAdvancedSectionOpen(false)
-      setSelectedNetwork(currentNetwork)
+      setSelectedNetwork(network.name)
       return
     }
 
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    updateNetworkSettings(tempAdvancedSettings)
-    setSnackbarMessage({ text: t`Custom network settings saved.`, type: 'info' })
-  }, [
-    selectedNetwork,
-    currentNetwork,
-    tempAdvancedSettings,
-    overrideSelectionIfMatchesPreset,
-    updateNetworkSettings,
-    setSnackbarMessage,
-    t
-  ])
+    dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
+
+    posthog?.capture('Saved custom network settings')
+  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, posthog, selectedNetwork, tempAdvancedSettings])
 
   // Set existing value on mount
   useMountEffect(() => {
-    overrideSelectionIfMatchesPreset(currentSettings.network)
+    overrideSelectionIfMatchesPreset(network.settings)
   })
 
   return (
     <>
-      <InfoBox
-        Icon={AlertTriangle}
+      <StyledInfoBox
+        Icon={AlertCircle}
         text={t`Make sure to always check what is the selected network before sending transactions.`}
+        importance="accent"
       />
       <Select
         options={networkSelectOptions}
-        onValueChange={handleNetworkPresetChange}
+        onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
         title={t`Network`}
         label={t`Current network`}
         id="network"
       />
-      <ExpandableSection
-        sectionTitleClosed={t`Advanced settings`}
-        open={advancedSectionOpen}
-        onOpenChange={(isOpen) => setAdvancedSectionOpen(isOpen)}
+      <ToggleSection
+        title={t('Advanced settings')}
+        subtitle={t('Set custom network URLs')}
+        isOpen={advancedSectionOpen}
+        onClick={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >
         <UrlInputs>
           <Input
@@ -173,7 +191,7 @@ const NetworkSettingsSection = () => {
         <Section inList>
           <Button onClick={handleAdvancedSettingsSave}>{t`Save`}</Button>
         </Section>
-      </ExpandableSection>
+      </ToggleSection>
     </>
   )
 }
@@ -181,6 +199,10 @@ const NetworkSettingsSection = () => {
 const UrlInputs = styled.div`
   display: flex;
   flex-direction: column;
+`
+
+const StyledInfoBox = styled(InfoBox)`
+  margin-top: 0;
 `
 
 export default NetworkSettingsSection

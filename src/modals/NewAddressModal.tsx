@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -15,21 +15,25 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-
-import { AddressKeyPair, addressToGroup, deriveNewAddressData, TOTAL_NUMBER_OF_GROUPS } from '@alephium/sdk'
+import { AddressKeyPair, addressToGroup } from '@alephium/sdk'
+import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
 import { Info } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { usePostHog } from 'posthog-js/react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import AddressMetadataForm from '../components/AddressMetadataForm'
-import ExpandableSection from '../components/ExpandableSection'
-import InfoBox from '../components/InfoBox'
-import Select, { SelectOption } from '../components/Inputs/Select'
-import { Section } from '../components/PageComponents/PageContainers'
-import { Address, useAddressesContext } from '../contexts/addresses'
-import { useGlobalContext } from '../contexts/global'
-import { getRandomLabelColor } from '../utils/colors'
-import CenteredModal, { ModalFooterButton, ModalFooterButtons } from './CenteredModal'
+import AddressMetadataForm from '@/components/AddressMetadataForm'
+import InfoBox from '@/components/InfoBox'
+import Select from '@/components/Inputs/Select'
+import { Section } from '@/components/PageComponents/PageContainers'
+import ToggleSection from '@/components/ToggleSection'
+import { useAppSelector } from '@/hooks/redux'
+import useAddressGeneration from '@/hooks/useAddressGeneration'
+import CenteredModal, { ModalFooterButton, ModalFooterButtons } from '@/modals/CenteredModal'
+import { selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { saveNewAddresses } from '@/storage/addresses/addressesStorageUtils'
+import { getName } from '@/utils/addresses'
+import { getRandomLabelColor } from '@/utils/colors'
 
 interface NewAddressModalProps {
   title: string
@@ -38,62 +42,67 @@ interface NewAddressModalProps {
 }
 
 const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps) => {
-  const { wallet, isPassphraseUsed } = useGlobalContext()
+  const { t } = useTranslation()
+  const isPassphraseUsed = useAppSelector((state) => state.activeWallet.passphrase)
+  const defaultAddress = useAppSelector(selectDefaultAddress)
+  const { generateAddress, generateAndSaveOneAddressPerGroup } = useAddressGeneration()
+  const posthog = usePostHog()
+
   const [addressLabel, setAddressLabel] = useState({ title: '', color: isPassphraseUsed ? '' : getRandomLabelColor() })
-  const [isMainAddress, setIsMainAddress] = useState(false)
+  const [isDefaultAddress, setIsDefaultAddress] = useState(false)
   const [newAddressData, setNewAddressData] = useState<AddressKeyPair>()
   const [newAddressGroup, setNewAddressGroup] = useState<number>()
-  const { addresses, updateAddressSettings, saveNewAddress, mainAddress, generateOneAddressPerGroup } =
-    useAddressesContext()
-  const currentAddressIndexes = useRef(addresses.map(({ index }) => index))
-  const { t } = useTranslation()
-
-  const generateNewAddress = useCallback(
-    (group?: number) => {
-      if (!wallet?.seed) return
-      const data = deriveNewAddressData(wallet.masterKey, group, undefined, currentAddressIndexes.current)
-      setNewAddressData(data)
-      setNewAddressGroup(group ?? addressToGroup(data.hash, TOTAL_NUMBER_OF_GROUPS))
-    },
-    [wallet]
-  )
 
   useEffect(() => {
-    singleAddress && generateNewAddress()
-  }, [generateNewAddress, singleAddress])
+    if (singleAddress) {
+      const address = generateAddress()
+      setNewAddressData(address)
+      setNewAddressGroup(addressToGroup(address.hash, TOTAL_NUMBER_OF_GROUPS))
+    }
+    // Without disabling eslint, we need to add `generateAddress` in the deps. Doing so results in infinite renders,
+    // even after wrapping it in a useCallback. The only solution would be to implement generateAddress in this
+    // component and wrap it in useCallback. Which might not be a bad idea since it's not used anywhere else. But then
+    // we don't have a unique place for all address generation function. Which is also fine.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [singleAddress])
 
   const onGenerateClick = () => {
-    if (newAddressData) {
-      saveNewAddress(
-        new Address(newAddressData.hash, newAddressData.publicKey, newAddressData.privateKey, newAddressData.index, {
-          isMain: isMainAddress,
-          label: addressLabel.title,
-          color: addressLabel.color
-        })
-      )
-      if (isMainAddress && mainAddress && mainAddress.index !== newAddressData.index) {
-        updateAddressSettings(mainAddress, { ...mainAddress.settings, isMain: false })
+    if (singleAddress && newAddressData) {
+      const settings = {
+        isDefault: isDefaultAddress,
+        color: addressLabel.color,
+        label: addressLabel.title
       }
+
+      saveNewAddresses([{ ...newAddressData, ...settings }])
+
+      posthog?.capture('New address created', { label_length: settings.label.length })
     } else {
-      generateOneAddressPerGroup(addressLabel.title, addressLabel.color)
+      generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
+
+      posthog?.capture('One address per group generated', { label_length: addressLabel.title.length })
     }
     onClose()
   }
 
-  let mainAddressMessage = t`Default address for sending transactions.`
+  let defaultAddressMessage = t('Default address for sending transactions.')
 
-  if (mainAddress && wallet?.seed) {
-    const address = mainAddress.settings.label || `${mainAddress.hash.substring(0, 10)}...`
-    mainAddressMessage +=
-      mainAddress.index !== newAddressData?.index
-        ? ' ' + t('Note that if activated, "{{ address }}" will not be the default address anymore.', { address })
+  if (defaultAddress) {
+    defaultAddressMessage +=
+      defaultAddress.index !== newAddressData?.index
+        ? ' ' +
+          t('Note that if activated, "{{ address }}" will not be the default address anymore.', {
+            address: getName(defaultAddress)
+          })
         : ''
   }
 
-  function onValueChange(newValue?: SelectOption<number>) {
-    if (newValue === undefined) return
+  function onSelect(group?: number) {
+    if (group === undefined) return
 
-    generateNewAddress(newValue.value)
+    const address = generateAddress({ group })
+    setNewAddressData(address)
+    setNewAddressGroup(group)
   }
 
   return (
@@ -103,10 +112,10 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
           <AddressMetadataForm
             label={addressLabel}
             setLabel={setAddressLabel}
-            mainAddressMessage={mainAddressMessage}
-            isMain={isMainAddress}
-            setIsMain={setIsMainAddress}
-            isMainAddressToggleEnabled
+            defaultAddressMessage={defaultAddressMessage}
+            isDefault={isDefaultAddress}
+            setIsDefault={setIsDefaultAddress}
+            isDefaultAddressToggleEnabled
             singleAddress={singleAddress}
           />
           {!singleAddress && (
@@ -122,19 +131,19 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
         </InfoBox>
       )}
       {singleAddress && (
-        <ExpandableSection sectionTitleClosed={t`Advanced options`}>
+        <ToggleSection title={t('Advanced options')} subtitle={t('Select address group')}>
           <Select
             label={t`Group`}
             controlledValue={newAddressGroup !== undefined ? generateGroupSelectOption(newAddressGroup) : undefined}
             options={Array.from(Array(TOTAL_NUMBER_OF_GROUPS)).map((_, index) => generateGroupSelectOption(index))}
-            onValueChange={onValueChange}
+            onSelect={onSelect}
             title={t`Select group`}
             id="group"
           />
-        </ExpandableSection>
+        </ToggleSection>
       )}
       <ModalFooterButtons>
-        <ModalFooterButton secondary onClick={onClose}>
+        <ModalFooterButton role="secondary" onClick={onClose}>
           {t`Cancel`}
         </ModalFooterButton>
         <ModalFooterButton onClick={onGenerateClick}>{t`Generate`}</ModalFooterButton>

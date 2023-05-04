@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,112 +16,113 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { motion } from 'framer-motion'
-import { HTMLAttributes, ReactNode } from 'react'
+import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
+
+import ActionLink from '@/components/ActionLink'
 
 export interface TabItem {
   value: string
   label: string
 }
 
-interface TabBarProps {
-  tabItems: TabItem[]
+export interface TabBarProps {
+  items: TabItem[]
   onTabChange: (tab: TabItem) => void
   activeTab: TabItem
+  linkText?: string
+  onLinkClick?: () => void
+  TabComponent?: typeof Tab
+  className?: string
 }
 
-const TabBar = ({ tabItems, onTabChange, activeTab }: TabBarProps) => {
+const TabBar = ({
+  items,
+  onTabChange,
+  activeTab,
+  linkText,
+  onLinkClick,
+  TabComponent = Tab,
+  className
+}: TabBarProps) => {
   const { t } = useTranslation()
 
   return (
-    <Wrapper>
-      <TabBarContainer role="tablist" aria-label={t('Tab navigation')}>
-        <TabSelector
-          animate={{ x: `${tabItems.findIndex((t) => t.value === activeTab.value) * 100}%` }}
-          transition={{ duration: 0.2 }}
-          style={{ width: `${100 / tabItems.length}%` }}
-        />
-        <TabBarContent>
-          {tabItems.map((i) => (
-            <TabContainer key={i.value}>
-              <TabStyled
-                onClick={() => onTabChange(i)}
-                onKeyPress={() => onTabChange(i)}
-                isActive={activeTab.value === i.value}
-              >
-                {i.label}
-              </TabStyled>
-            </TabContainer>
-          ))}
-        </TabBarContent>
-      </TabBarContainer>
-    </Wrapper>
+    <div className={className} role="tablist" aria-label={t`Tab navigation`}>
+      {items.map((item) => {
+        const isActive = activeTab.value === item.value
+
+        return (
+          <TabComponent
+            key={item.value}
+            onClick={() => onTabChange(item)}
+            onKeyPress={() => onTabChange(item)}
+            role="tab"
+            tabIndex={0}
+            aria-selected={isActive}
+            isActive={isActive}
+          >
+            <TabLabel isActive={isActive}>{item.label}</TabLabel>
+          </TabComponent>
+        )
+      })}
+      {linkText && onLinkClick && (
+        <ActionLinkStyled onClick={onLinkClick} Icon={ChevronRight}>
+          {linkText}
+        </ActionLinkStyled>
+      )}
+    </div>
   )
 }
 
-export default TabBar
-
-const Wrapper = styled.div`
-  margin: var(--spacing-2) 0;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background-color: ${({ theme }) => theme.bg.primary};
-  border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-`
-
-const TabBarContainer = styled.div`
-  width: 100%;
-  border-radius: var(--radius);
-  height: 40px;
-`
-
-const TabBarContent = styled.div`
-  position: relative;
+export default styled(TabBar)`
   display: flex;
-  width: 100%;
-  height: 100%;
+  height: 55px;
 `
 
-const TabContainer = styled.div`
-  position: relative;
+export const Tab = styled.div<{ isActive: boolean }>`
   flex: 1;
   display: flex;
-`
-
-const TabSelector = styled(motion.div)`
-  position: absolute;
-  bottom: 0;
-  height: 2px;
-  border-radius: var(--radius);
-  flex: 1;
-  background-color: ${({ theme }) => theme.global.accent};
-  z-index: -1;
-`
-
-interface TabProps extends HTMLAttributes<HTMLDivElement> {
-  isActive: boolean
-  children: ReactNode | ReactNode[]
-}
-
-const Tab = ({ isActive, children, ...props }: TabProps) => (
-  <div {...props} role="tab" tabIndex={0} aria-selected={isActive}>
-    {children}
-  </div>
-)
-
-const TabStyled = styled(Tab)`
-  flex: 1;
+  min-width: 50px;
   text-align: center;
-  padding: 8px;
-  color: ${({ theme, isActive }) => (isActive ? theme.font.primary : theme.font.secondary)};
-  font-weight: var(--fontWeight-semiBold);
-  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ isActive, theme }) => (isActive ? theme.bg.background1 : 'transparent')};
+  border: 1px solid ${({ theme }) => theme.border.primary};
+  border-bottom: none;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: var(--fontWeight-semiBold);
+  margin-bottom: -1px;
+
+  ${({ isActive, theme }) =>
+    isActive
+      ? css`
+          color: ${theme.font.primary};
+        `
+      : css`
+          color: ${theme.font.tertiary};
+        `}
+
+  &:not(:first-child) {
+    border-left: none;
+  }
 
   &:hover {
     color: ${({ theme }) => theme.font.primary};
   }
+`
+
+const TabLabel = styled.span<{ isActive: boolean }>`
+  ${({ isActive }) =>
+    !isActive &&
+    css`
+      filter: saturate(10%);
+    `}
+`
+
+const ActionLinkStyled = styled(ActionLink)`
+  margin-left: auto;
+  margin-right: 20px;
 `

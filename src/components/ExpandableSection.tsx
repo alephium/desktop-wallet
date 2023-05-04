@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,11 +18,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled, { css } from 'styled-components'
 
-import InputArea from './Inputs/InputArea'
-import { Section } from './PageComponents/PageContainers'
+import { fastTransition } from '@/animations'
+import InputArea from '@/components/Inputs/InputArea'
+import { Section } from '@/components/PageComponents/PageContainers'
+import { onEnterOrSpace } from '@/utils/misc'
 
 interface ExpandableSectionProps {
   sectionTitleClosed: string
@@ -71,7 +73,11 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
 
   return (
     <ExpandableSectionContainer className={className} shrinkWhenOpen={shrinkWhenOpen} isOpen={isExpanded}>
-      <Title onInput={handleTitleExpansion} aria-expanded={isExpanded}>
+      <Title
+        onMouseDown={handleTitleExpansion}
+        onKeyDown={(e) => onEnterOrSpace(e, handleTitleExpansion)}
+        aria-expanded={isExpanded}
+      >
         {centered && <LeftDivider />}
         {isCheckbox ? (
           <input type="checkbox" tabIndex={-1} checked={isExpanded} onChange={() => setIsExpanded(!isExpanded)} />
@@ -86,7 +92,7 @@ const ExpandableSection: FC<ExpandableSectionProps> = ({
         <ContentWrapper
           onAnimationComplete={() => setIsVisible(isExpanded)}
           animate={{ height: isExpanded ? 'auto' : 0 }}
-          transition={{ duration: 0.2 }}
+          {...fastTransition}
         >
           <Content>
             <Section align="stretch">{children}</Section>
@@ -102,7 +108,7 @@ export default ExpandableSection
 const ExpandableSectionContainer = styled.div<{ shrinkWhenOpen: boolean; isOpen?: boolean }>`
   display: flex;
   flex-direction: column;
-  margin: var(--spacing-5) 0;
+  margin: var(--spacing-3) 0;
   transition: margin 0.2s ease-in-out;
 
   ${({ shrinkWhenOpen, isOpen }) =>

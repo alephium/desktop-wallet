@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,20 +17,30 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, MotionProps } from 'framer-motion'
-import { ReactNode } from 'react'
+import { KeyboardEventHandler, MouseEventHandler, MutableRefObject, ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputAreaProps extends MotionProps {
   children: ReactNode | ReactNode[]
+  onKeyDown?: KeyboardEventHandler
   onInput?: () => void
+  onMouseDown?: MouseEventHandler
+  className?: string
+  innerRef?: MutableRefObject<HTMLDivElement>
+  tabIndex?: number
 }
 
-const InputArea = ({ onInput, children, ...rest }: InputAreaProps) => (
-  <motion.div role="button" tabIndex={0} onClick={onInput} onKeyPress={onInput} {...rest}>
+const InputArea = ({ onKeyDown, onInput, children, className, onMouseDown, ...rest }: InputAreaProps) => (
+  <motion.div onMouseDown={onMouseDown} onInput={onInput} onKeyDown={onKeyDown} className={className} {...rest}>
     {children}
   </motion.div>
 )
 
 export default styled(InputArea)`
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: var(--inputHeight);
+  width: 100%;
   cursor: pointer;
 `

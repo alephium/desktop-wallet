@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ const useIdleForTooLong = (onIdleForTooLong: () => void, timeoutInMs?: number) =
   }, [])
 
   useEffect(() => {
-    let checkIfIdleForTooLong: ReturnType<typeof setInterval> | null = null
+    let checkIfIdleForTooLong: ReturnType<typeof setInterval>
 
     if (timeoutInMs) {
       checkIfIdleForTooLong = setInterval(() => {

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -17,9 +17,15 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { render } from '@testing-library/react'
+import { Provider } from 'react-redux'
 import { PartialDeep } from 'type-fest'
 
-import { GlobalContextProps, GlobalContextProvider } from '../contexts/global'
+import { GlobalContextProps, GlobalContextProvider } from '@/contexts/global'
+import { store } from '@/storage/store'
 
 export const renderWithGlobalContext = (el: JSX.Element, contextObject?: PartialDeep<GlobalContextProps>) =>
-  render(<GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>)
+  render(
+    <Provider store={store}>
+      <GlobalContextProvider overrideContextValue={contextObject}>{el}</GlobalContextProvider>
+    </Provider>
+  )

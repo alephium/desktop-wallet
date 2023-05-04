@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@ import { formatAmountForDisplay } from '@alephium/sdk'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import AlefSymbol from '../../components/AlefSymbol'
-import InfoBox, { InfoBoxProps } from '../../components/InfoBox'
+import AlefSymbol from '@/components/AlefSymbol'
+import InfoBox, { InfoBoxProps } from '@/components/InfoBox'
 
 interface AlphAmountInfoBoxProps extends InfoBoxProps {
   amount: bigint

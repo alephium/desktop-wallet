@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -18,16 +18,20 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
 import _ from 'lodash'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { AddressHash, useAddressesContext } from '../contexts/addresses'
-import useAddressLinkHandler from '../hooks/useAddressLinkHandler'
-import { GENESIS_TIMESTAMP } from '../utils/constants'
-import ActionLink from './ActionLink'
-import AddressBadge from './AddressBadge'
-import AddressEllipsed from './AddressEllipsed'
-import Badge from './Badge'
+import ActionLink from '@/components/ActionLink'
+import AddressBadge from '@/components/AddressBadge'
+import Badge from '@/components/Badge'
+import { useAppSelector } from '@/hooks/redux'
+import AddressDetailsModal from '@/modals/AddressDetailsModal'
+import ModalPortal from '@/modals/ModalPortal'
+import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { AddressHash } from '@/types/addresses'
+import { GENESIS_TIMESTAMP } from '@/utils/constants'
+import { openInWebBrowser } from '@/utils/misc'
 
 interface IOListProps {
   currentAddress: string
@@ -51,14 +55,23 @@ const IOList = ({
   disableA11y = false
 }: IOListProps) => {
   const { t } = useTranslation()
-  const { getAddress } = useAddressesContext()
-  const handleShowAddress = useAddressLinkHandler()
+  const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
+  const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
+
+  const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
+
   const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
+
+  const handleShowAddress = (addressHash: AddressHash) =>
+    internalAddressHashes.includes(addressHash)
+      ? setSelectedAddressHash(addressHash)
+      : openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)
 
   if (io && io.length > 0) {
     const isAllCurrentAddress = io.every((o) => o.address === currentAddress)
     const notCurrentAddresses = _(io.filter((o) => o.address !== currentAddress))
       .map((v) => v.address)
+      .filter((v): v is string => v !== undefined)
       .uniq()
       .value()
 
@@ -71,27 +84,17 @@ const IOList = ({
     // make it a change address but a legimitate receiving address.
     const addressesToShow = notCurrentAddresses.length === 0 ? [currentAddress] : notCurrentAddresses
 
-    const getAddressComponent = (addressHash: AddressHash) => {
-      const address = getAddress(addressHash)
-
-      return address ? (
-        <AddressBadge truncate address={address} showHashWhenNoLabel withBorders disableA11y={disableA11y} />
-      ) : (
-        <AddressEllipsed addressHash={addressHash} disableA11y={disableA11y} />
-      )
-    }
-
     return truncate ? (
       <TruncateWrap>
-        {getAddressComponent(addressHash)}
+        <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} withBorders />
         {extraAddressesText && <AddressesHidden>{extraAddressesText}</AddressesHidden>}
       </TruncateWrap>
     ) : (
       <Addresses>
         {addressesToShow.map((addressHash) => {
-          if (!addressHash) return null
-
-          const addressComponent = getAddressComponent(addressHash)
+          const addressComponent = (
+            <AddressBadge truncate addressHash={addressHash} disableA11y={disableA11y} withBorders />
+          )
           return linkToExplorer ? (
             <ActionLinkStyled onClick={() => handleShowAddress(addressHash)} key={addressHash}>
               {addressComponent}
@@ -100,6 +103,11 @@ const IOList = ({
             addressComponent
           )
         })}
+        <ModalPortal>
+          {selectedAddressHash && (
+            <AddressDetailsModal addressHash={selectedAddressHash} onClose={() => setSelectedAddressHash(undefined)} />
+          )}
+        </ModalPortal>
       </Addresses>
     )
   } else if (timestamp === GENESIS_TIMESTAMP) {

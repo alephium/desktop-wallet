@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ export default TextAreaTags
 const TextAreaTagsContainer = styled(motion.div)`
   width: 100%;
   margin: var(--spacing-3) 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-small);
   color: ${({ theme }) => theme.font.secondary};
 
   .tagify__input:empty::before {
@@ -76,7 +76,8 @@ const TextAreaTagsContainer = styled(motion.div)`
 const StyledTags = styled(Tags)`
   ${inputDefaultStyle(true)}
   height: auto;
+  min-height: 100px;
   padding: var(--spacing-1);
   line-height: 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-big);
 `

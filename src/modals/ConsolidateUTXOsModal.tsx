@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,12 +20,12 @@ import { Codesandbox } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
-import Amount from '../components/Amount'
-import Button from '../components/Button'
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import Spinner from '../components/Spinner'
-import CenteredModal, { HeaderContent, HeaderLogo } from './CenteredModal'
+import Amount from '@/components/Amount'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import Spinner from '@/components/Spinner'
+import CenteredModal, { HeaderContent, HeaderLogo } from '@/modals/CenteredModal'
 
 interface ConsolidateUTXOsModalProps {
   onConsolidateClick: () => void
@@ -47,13 +47,12 @@ const ConsolidateUTXOsModal = ({ onConsolidateClick, onClose, fee }: Consolidate
           <InfoBox
             importance="accent"
             text={t(
-              'It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate ' +
-                '(merge) your UTXOs first. This will cost a small fee.'
+              'It appears that your wallet has too many UTXOs to be able to send this transaction. Please, consolidate (merge) your UTXOs first. This will cost a small fee.'
             )}
           />
           <Fee>
             {t`Fee`}
-            {fee ? <Amount value={fee} fadeDecimals /> : <Spinner size="12px" />}
+            {fee ? <Amount value={fee} /> : <Spinner size="12px" />}
           </Fee>
           <Button onClick={onConsolidateClick} submit disabled={!fee}>
             {t`Consolidate`}

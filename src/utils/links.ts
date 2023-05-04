@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -23,5 +23,9 @@ export const links = {
   latestReleaseApi: 'https://api.github.com/repos/alephium/desktop-wallet/releases/latest',
   utxoConsolidation: 'https://docs.alephium.org/wallet/desktop-wallet/advanced-features#1-utxo-consolidation',
   miningWallet: 'https://docs.alephium.org/wallet/desktop-wallet/configure-mining-wallet',
-  discord: 'https://discord.com/channels/747741246667227157/930164826418860032'
+  discord: 'https://www.alephium.org/discord',
+  faq: 'https://docs.alephium.org/frequently-asked-questions',
+  analytics: 'https://docs.alephium.org/frequently-asked-questions#what-analytics-does-the-desktop-wallet-collect',
+  github: 'https://github.com/alephium',
+  twitter: 'https://twitter.com/alephium'
 }

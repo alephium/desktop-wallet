@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -20,19 +20,19 @@ import { AlertTriangle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from 'styled-components'
 
-import Button from '../components/Button'
-import InfoBox from '../components/InfoBox'
-import { Section } from '../components/PageComponents/PageContainers'
-import Paragraph from '../components/Paragraph'
-import CenteredModal from './CenteredModal'
+import Button from '@/components/Button'
+import InfoBox from '@/components/InfoBox'
+import { Section } from '@/components/PageComponents/PageContainers'
+import Paragraph from '@/components/Paragraph'
+import CenteredModal from '@/modals/CenteredModal'
 
 interface WalletRemovalModalProps {
   walletName: string
-  onWalletRemove: () => void
+  onConfirm: () => void
   onClose: () => void
 }
 
-const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemovalModalProps) => {
+const WalletRemovalModal = ({ walletName, onConfirm, onClose }: WalletRemovalModalProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
 
@@ -51,7 +51,7 @@ const WalletRemovalModal = ({ walletName, onWalletRemove, onClose }: WalletRemov
         </Paragraph>
       </Section>
       <Section inList>
-        <Button alert onClick={onWalletRemove}>
+        <Button variant="alert" onClick={onConfirm}>
           {t`CONFIRM REMOVAL`}
         </Button>
       </Section>

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -22,10 +22,19 @@ import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { WheelEvent } from 'react'
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
-import { sectionChildrenVariants } from '../PageComponents/PageContainers'
-import { inputDefaultStyle, InputErrorMessage, InputLabel, InputProps, InputValidIconContainer } from '.'
+import { fadeInBottom } from '@/animations'
+import Button from '@/components/Button'
+import {
+  inputDefaultStyle,
+  InputErrorMessage,
+  InputIconContainer,
+  InputLabel,
+  InputProps,
+  inputStyling
+} from '@/components/Inputs'
+import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
 
 const Input = ({
   label,
@@ -36,10 +45,18 @@ const Input = ({
   value,
   noMargin,
   hint,
+  contrast,
+  Icon,
+  onIconPress,
   children,
+  inputFieldStyle,
+  inputFieldRef,
   liftLabel = false,
+  heightSize = 'normal',
   ...props
 }: InputProps) => {
+  const theme = useTheme()
+
   const [canBeAnimated, setCanBeAnimated] = useState(false)
 
   const className = classNames(props.className, {
@@ -58,24 +75,45 @@ const Input = ({
       onAnimationComplete={() => setCanBeAnimated(true)}
       custom={disabled}
       noMargin={noMargin}
+      className={className}
+      heightSize={heightSize}
     >
-      <InputLabel inputHasValue={!!value || liftLabel} htmlFor={props.id}>
-        {label}
-      </InputLabel>
-      <StyledInput
-        {...props}
-        value={value}
-        onChange={onChange}
-        className={className}
-        disabled={disabled}
-        isValid={isValid}
-        onWheel={handleScroll}
-      />
-      {!disabled && isValid && (
-        <InputValidIconContainer initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-          <Check strokeWidth={3} />
-        </InputValidIconContainer>
-      )}
+      <InputRow>
+        {label && (
+          <InputLabel isElevated={!!value || liftLabel} htmlFor={props.id}>
+            {label}
+          </InputLabel>
+        )}
+        <InputBase
+          {...props}
+          style={inputFieldStyle}
+          label={label}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          isValid={isValid}
+          onWheel={handleScroll}
+          Icon={Icon}
+          ref={inputFieldRef}
+          heightSize={heightSize}
+          contrast={contrast}
+        />
+        {!!Icon && !onIconPress && !isValid && (
+          <InputIconContainer>
+            <Icon size={16} />
+          </InputIconContainer>
+        )}
+        {!!Icon && !!onIconPress && (
+          <InputButtonContainer>
+            <Button onClick={onIconPress} Icon={Icon} transparent squared borderless />
+          </InputButtonContainer>
+        )}
+        {!disabled && isValid && (
+          <InputIconContainer {...fadeInBottom}>
+            <Check strokeWidth={3} color={theme.global.valid} />
+          </InputIconContainer>
+        )}
+      </InputRow>
       {!disabled && error && <InputErrorMessage animate={{ y: 10, opacity: 1 }}>{error}</InputErrorMessage>}
       {hint && <Hint>{hint}</Hint>}
       {children}
@@ -85,15 +123,17 @@ const Input = ({
 
 export default Input
 
-export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin'>>`
+export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin' | 'heightSize'>>`
   position: relative;
-  min-height: var(--inputHeight);
+  min-height: ${({ heightSize }) =>
+    heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
   width: 100%;
   margin: ${({ noMargin }) => (noMargin ? 0 : '16px 0')};
 `
 
-const StyledInput = styled.input<InputProps>`
-  ${({ isValid }) => inputDefaultStyle(isValid)};
+export const InputBase = styled.input<InputProps>`
+  ${({ isValid, value, label, Icon, heightSize, contrast }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize, contrast)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 
@@ -102,4 +142,17 @@ const Hint = styled.div`
   color: ${({ theme }) => theme.font.secondary};
   margin-left: 12px;
   margin-top: 6px;
+`
+
+const InputRow = styled.div`
+  position: relative;
+`
+
+const InputButtonContainer = styled.div`
+  position: absolute;
+  right: ${inputStyling.paddingRight};
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
 `

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 - 2022 The Alephium Authors
+Copyright 2018 - 2023 The Alephium Authors
 This file is part of the alephium project.
 
 The library is free software: you can redistribute it and/or modify
@@ -16,32 +16,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, isConsolidationTx } from '@alephium/sdk'
+import { formatAmountForDisplay } from '@alephium/sdk'
 import { Transaction } from '@alephium/sdk/api/explorer'
-import { ArrowRight as ArrowRightIcon } from 'lucide-react'
+import { colord } from 'colord'
+import { partition } from 'lodash'
+import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 
-import { AddressHash, useAddressesContext } from '../contexts/addresses'
-import { useTransactionInfo } from '../hooks/useTransactionInfo'
-import { useTransactionUI } from '../hooks/useTransactionUI'
-import { isPendingTx, TransactionVariant } from '../utils/transactions'
-import AddressBadge from './AddressBadge'
-import AddressEllipsed from './AddressEllipsed'
-import Amount from './Amount'
-import HiddenLabel from './HiddenLabel'
-import IOList from './IOList'
-import Lock from './Lock'
-import TimeSince from './TimeSince'
-import Token from './Token'
-
-const token = 'alph'
+import AddressBadge from '@/components/AddressBadge'
+import Amount from '@/components/Amount'
+import AssetBadge from '@/components/AssetBadge'
+import Badge from '@/components/Badge'
+import HiddenLabel from '@/components/HiddenLabel'
+import IOList from '@/components/IOList'
+import Lock from '@/components/Lock'
+import TableCellAmount from '@/components/TableCellAmount'
+import TimeSince from '@/components/TimeSince'
+import { useAppSelector } from '@/hooks/redux'
+import { useTransactionUI } from '@/hooks/useTransactionUI'
+import { selectAddressByHash } from '@/storage/addresses/addressesSelectors'
+import { deviceBreakPoints } from '@/style/globalStyles'
+import { AddressHash } from '@/types/addresses'
+import { AddressTransaction } from '@/types/transactions'
+import { getTransactionInfo, isPendingTx } from '@/utils/transactions'
 
 interface TransactionalInfoProps {
-  transaction: TransactionVariant
+  transaction: AddressTransaction
   addressHash?: AddressHash
-  isDisplayedInAddressDetailsPage?: boolean
+  showInternalInflows?: boolean
+  compact?: boolean
   className?: string
 }
 
@@ -49,87 +54,103 @@ const TransactionalInfo = ({
   transaction: tx,
   addressHash: addressHashProp,
   className,
-  isDisplayedInAddressDetailsPage
+  showInternalInflows,
+  compact
 }: TransactionalInfoProps) => {
+  const { t } = useTranslation()
   const { addressHash: addressHashParam = '' } = useParams<{ addressHash: AddressHash }>()
   const addressHash = addressHashProp ?? addressHashParam
-  const { getAddress } = useAddressesContext()
-  const { amount, direction, outputs, lockTime, infoType } = useTransactionInfo(tx, addressHash)
-  const { label, amountTextColor, amountSign: sign, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
+  const address = useAppSelector((state) => selectAddressByHash(state, addressHash))
+  const { assets, direction, outputs, lockTime, infoType } = getTransactionInfo(tx, showInternalInflows)
+  const { label, Icon, iconColor, iconBgColor } = useTransactionUI(infoType)
 
-  const { t } = useTranslation()
-
-  const address = getAddress(addressHash)
+  const isMoved = infoType === 'move'
+  const isPending = isPendingTx(tx)
 
   if (!address) return null
 
-  let pendingToAddressComponent
-
-  if (isPendingTx(tx)) {
-    const pendingToAddress = getAddress(tx.toAddress)
-
-    pendingToAddressComponent = pendingToAddress ? (
-      <AddressBadge truncate address={pendingToAddress} showHashWhenNoLabel withBorders />
+  const pendingDestinationAddress = isPending ? (
+    tx.type === 'contract' ? (
+      <Badge>{t('Smart contract')}</Badge>
     ) : (
-      <AddressEllipsed addressHash={tx.toAddress} />
+      <AddressBadge truncate addressHash={tx.toAddress} />
     )
-  }
+  ) : null
 
-  const amountSign =
-    isDisplayedInAddressDetailsPage && infoType === 'move' && !isPendingTx(tx) && !isConsolidationTx(tx) ? '- ' : sign
+  const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
 
   return (
     <div className={className}>
       <CellTime>
         <CellArrow>
           <TransactionIcon color={iconBgColor}>
-            <Icon size={16} strokeWidth={3} color={iconColor} />
+            <Icon size={13} strokeWidth={3} color={iconColor} />
           </TransactionIcon>
         </CellArrow>
-        <TokenTimeInner>
-          {label}
-          <HiddenLabel text={`${formatAmountForDisplay({ amount: BigInt(amount ?? 0) })} ${token}`} />
-          <TimeSince timestamp={tx.timestamp} faded />
-        </TokenTimeInner>
+        <DirectionAndTime>
+          <DirectionLabel>{label}</DirectionLabel>
+          {knownAssets.map(({ id, amount, decimals, symbol }) => (
+            <HiddenLabel key={id} text={`${formatAmountForDisplay({ amount, amountDecimals: decimals })} ${symbol}`} />
+          ))}
+          {unknownAssets.length > 0 && <HiddenLabel text={` + ${unknownAssets} ${t('Unknown tokens')}`} />}
+          <AssetTime>
+            <TimeSince timestamp={tx.timestamp} faded />
+          </AssetTime>
+        </DirectionAndTime>
       </CellTime>
-      <CellToken>
-        <TokenStyled type={token} disableA11y />
-      </CellToken>
-      {!isDisplayedInAddressDetailsPage && (
+      <CellAssetBadges compact={compact}>
+        <AssetBadges>
+          {assets.map(({ id }) => (
+            <AssetBadge assetId={id} simple key={id} />
+          ))}
+        </AssetBadges>
+      </CellAssetBadges>
+      {!showInternalInflows && (
         <CellAddress alignRight>
-          <HiddenLabel text={t`from`} />
-          {direction === 'out' && (
-            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
+          <HiddenLabel text={direction === 'swap' ? t('between') : t('from')} />
+          {(direction === 'out' || direction === 'swap') && (
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
           )}
-          {direction === 'in' &&
-            (pendingToAddressComponent || (
-              <IOList
-                currentAddress={addressHash}
-                isOut={false}
-                outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
-                truncate
-                disableA11y
-              />
-            ))}
+          {direction === 'in' && (
+            <IOList
+              currentAddress={addressHash}
+              isOut={false}
+              outputs={outputs}
+              inputs={(tx as Transaction).inputs}
+              timestamp={(tx as Transaction).timestamp}
+              truncate
+              disableA11y
+            />
+          )}
         </CellAddress>
       )}
       <CellDirection>
-        <HiddenLabel text={t`to`} />
-        {!isDisplayedInAddressDetailsPage ? (
-          <ArrowRightIcon size={16} strokeWidth={3} />
+        <HiddenLabel text={direction === 'swap' ? t('and') : t('to')} />
+        {!showInternalInflows ? (
+          direction === 'swap' ? (
+            <ArrowLeftRight size={15} strokeWidth={2} />
+          ) : (
+            <ArrowRightIcon size={15} strokeWidth={2} />
+          )
         ) : (
-          <DirectionText>{direction === 'out' ? t`to` : t`from`}</DirectionText>
+          <DirectionText>
+            {
+              {
+                in: t('from'),
+                out: t('to'),
+                swap: t('with')
+              }[direction]
+            }
+          </DirectionText>
         )}
       </CellDirection>
       <CellAddress>
         <DirectionalAddress>
-          {direction === 'in' && !isDisplayedInAddressDetailsPage && (
-            <AddressBadgeStyled address={address} truncate showHashWhenNoLabel withBorders disableA11y />
+          {direction === 'in' && !showInternalInflows && (
+            <AddressBadge addressHash={addressHash} truncate disableA11y withBorders />
           )}
-          {((direction === 'in' && isDisplayedInAddressDetailsPage) || direction === 'out') &&
-            (pendingToAddressComponent || (
+          {((direction === 'in' && showInternalInflows) || direction === 'out' || direction === 'swap') &&
+            (pendingDestinationAddress || (
               <IOList
                 currentAddress={addressHash}
                 isOut={direction === 'out'}
@@ -142,17 +163,14 @@ const TransactionalInfo = ({
             ))}
         </DirectionalAddress>
       </CellAddress>
-      <CellAmount aria-hidden="true" color={amountTextColor}>
-        {amount !== undefined && (
-          <>
+      <TableCellAmount aria-hidden="true">
+        {knownAssets.map(({ id, amount, decimals, symbol }) => (
+          <AmountContainer key={id}>
             {lockTime && lockTime > new Date() && <LockStyled unlockAt={lockTime} />}
-            <div>
-              {amountSign}
-              <Amount value={amount} fadeDecimals color={amountTextColor} />
-            </div>
-          </>
-        )}
-      </CellAmount>
+            <Amount value={amount} decimals={decimals} suffix={symbol} highlight={!isMoved} showPlusMinus={!isMoved} />
+          </AmountContainer>
+        ))}
+      </TableCellAmount>
     </div>
   )
 }
@@ -167,7 +185,7 @@ export default styled(TransactionalInfo)`
 `
 
 const CellArrow = styled.div`
-  margin-right: 25px;
+  margin-right: 20px;
 `
 
 const CellTime = styled.div`
@@ -175,16 +193,28 @@ const CellTime = styled.div`
   align-items: center;
   margin-right: 28px;
   text-align: left;
+  width: 25%;
 `
 
-const TokenTimeInner = styled.div`
-  width: 11em;
-  color: ${({ theme }) => theme.font.secondary};
+const DirectionAndTime = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+`
+
+const DirectionLabel = styled.span`
+  color: ${({ theme }) => theme.font.primary};
+  font-weight: var(--fontWeight-medium);
+  font-size: 14px;
+`
+
+const AssetTime = styled.div`
+  font-size: 12px;
 `
 
 const CellAddress = styled.div<{ alignRight?: boolean }>`
   min-width: 0;
-  max-width: 340px;
+  max-width: 120px;
   flex-grow: 1;
   align-items: baseline;
   margin-right: 21px;
@@ -197,21 +227,6 @@ const CellAddress = styled.div<{ alignRight?: boolean }>`
     css`
       justify-content: flex-end;
     `}
-`
-
-const TokenStyled = styled(Token)`
-  font-weight: var(--fontWeight-semiBold);
-`
-
-const CellAmount = styled.div<{ color: string }>`
-  flex-grow: 1;
-  justify-content: right;
-  display: flex;
-  min-width: 6em;
-  flex-basis: 120px;
-  gap: 6px;
-  align-items: center;
-  color: ${({ color }) => color};
 `
 
 const DirectionText = styled.div`
@@ -240,17 +255,41 @@ const LockStyled = styled(Lock)`
   color: ${({ theme }) => theme.font.secondary};
 `
 
-const CellToken = styled.div`
+const CellAssetBadges = styled.div<Pick<TransactionalInfoProps, 'compact'>>`
   flex-grow: 1;
-  margin-right: 28px;
+  flex-shrink: 0;
+  width: ${({ compact }) => (compact ? '80px' : '180px')};
+
+  @media ${deviceBreakPoints.desktop} {
+    width: 80px;
+  }
 `
 
 const TransactionIcon = styled.span<{ color?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 25px;
-  height: 25px;
-  border-radius: 25px;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
   background-color: ${({ color, theme }) => color || theme.font.primary};
+  border: 1px solid
+    ${({ color, theme }) =>
+      colord(color || theme.font.primary)
+        .alpha(0.15)
+        .toHex()};
+`
+
+const AmountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+const AssetBadges = styled.div`
+  display: flex;
+  gap: 20px;
+  row-gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
 `
