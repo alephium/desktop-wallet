@@ -58,11 +58,12 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
     .filter((asset): asset is Required<AssetAmount> => asset.id !== ALPH.id && asset.amount !== undefined)
     .map((asset) => ({ id: asset.id, amount: asset.amount.toString() }))
 
-  const dustAmount = DUST_AMOUNT * BigInt(tokens.length)
-  const attoAlphAmount = (alphAmount + dustAmount).toString()
+  const minAlphAmountRequirement = DUST_AMOUNT * BigInt(tokens.length)
+  const minDiff = minAlphAmountRequirement - alphAmount
+  const totalAlphAmount = minDiff > 0 ? alphAmount + minDiff : alphAmount
 
   return {
-    attoAlphAmount,
+    attoAlphAmount: totalAlphAmount.toString(),
     tokens
   }
 }
