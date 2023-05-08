@@ -98,6 +98,7 @@ const Header = styled.div`
 const TitleColumn = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
 `
 
@@ -107,6 +108,7 @@ const Title = styled.div`
 
 const Subtitle = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
+  text-align: left;
 `
 
 const Content = styled(motion.div)`

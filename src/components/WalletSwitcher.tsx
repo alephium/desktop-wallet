@@ -87,6 +87,7 @@ const WalletSwitcher = ({ onUnlock }: WalletSwitcherProps) => {
           id="wallet"
           raised
           skipEqualityCheck
+          allowReselectionOnClickWhenSingleOption
         />
       )}
       <ModalPortal>
