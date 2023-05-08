@@ -185,6 +185,7 @@ const ColumnHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 65px;
 `
 
 const ColumnTitle = styled.div`
