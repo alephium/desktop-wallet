@@ -165,7 +165,7 @@ export default styled(Button)`
             default: 'white',
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.primary,
+            alert: 'white',
             faded: theme.global.accent
           }[variant],
           secondary: {
@@ -196,7 +196,22 @@ export default styled(Button)`
             faded: theme.border.secondary
           }[variant]
         }[role]
-      : theme.border.primary
+      : {
+          primary: {
+            default: theme.border.primary,
+            contrast: theme.border.primary,
+            valid: theme.border.primary,
+            alert: theme.border.primary,
+            faded: theme.border.primary
+          }[variant],
+          secondary: {
+            default: theme.border.primary,
+            contrast: theme.border.primary,
+            valid: theme.global.valid,
+            alert: theme.global.alert,
+            faded: theme.border.primary
+          }[variant]
+        }[role]
 
     const hoverColor = transparent
       ? theme.font.primary
@@ -205,14 +220,14 @@ export default styled(Button)`
             default: 'white',
             contrast: theme.font.secondary,
             valid: theme.font.primary,
-            alert: theme.font.contrastPrimary,
+            alert: 'white',
             faded: 'white'
           }[variant],
           secondary: {
             default: theme.font.primary,
             contrast: theme.font.secondary,
             valid: theme.font.contrastPrimary,
-            alert: theme.font.contrastPrimary,
+            alert: theme.global.alert,
             faded: theme.font.primary
           }[variant]
         }[role]

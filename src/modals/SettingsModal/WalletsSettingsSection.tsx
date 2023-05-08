@@ -110,7 +110,7 @@ const WalletsSettingsSection = () => {
             <Button role="secondary" onClick={() => setIsQRCodeModalVisible(true)}>
               {t('Export current wallet')}
             </Button>
-            <Button transparent variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
+            <Button role="secondary" variant="alert" onClick={() => setIsDisplayingSecretModal(true)}>
               {t('Show your secret recovery phrase')}
             </Button>
             <Button variant="alert" onClick={() => setWalletToRemove(activeWallet as ActiveWallet)}>

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { Settings, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -27,7 +27,6 @@ import Button from '@/components/Button'
 import Scrollbar from '@/components/Scrollbar'
 import { TabItem } from '@/components/TabBar'
 import { useAppSelector } from '@/hooks/redux'
-import i18next from '@/i18n'
 import discordLogo from '@/images/brand-icon-discord.svg'
 import githubLogo from '@/images/brand-icon-github.svg'
 import twitterLogo from '@/images/brand-icon-twitter.svg'
@@ -39,18 +38,11 @@ import WalletsSettingsSection from '@/modals/SettingsModal/WalletsSettingsSectio
 import { links } from '@/utils/links'
 import { openInWebBrowser } from '@/utils/misc'
 
-export type settingsTabNames = 'general' | 'wallets' | 'network' | 'devtools'
+type SettingsModalTabNames = 'general' | 'wallets' | 'network' | 'devtools'
 
 interface SettingsTabItem extends TabItem {
-  value: settingsTabNames
+  value: SettingsModalTabNames
 }
-
-export const settingsModalTabs: SettingsTabItem[] = [
-  { value: 'general', label: i18next.t('General') },
-  { value: 'wallets', label: i18next.t('Wallets') },
-  { value: 'network', label: i18next.t('Network') },
-  { value: 'devtools', label: i18next.t('Developer tools') }
-]
 
 interface SocialMediaLogo {
   media: keyof Pick<typeof links, 'twitter' | 'discord' | 'github'>
@@ -65,7 +57,7 @@ const socialMediaLogos: SocialMediaLogo[] = [
 
 interface SettingsModalProps {
   onClose: () => void
-  initialTabValue?: (typeof settingsModalTabs)[number]['value']
+  initialTabValue?: SettingsModalTabNames
 }
 
 const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
@@ -73,13 +65,26 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
   const theme = useTheme()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
 
-  const [currentTab, setCurrentTab] = useState<TabItem>(
-    settingsModalTabs.find((t) => t.value === initialTabValue) || settingsModalTabs[0]
+  const settingsModalTabs: SettingsTabItem[] = useMemo(
+    () => [
+      { value: 'general', label: t('General') },
+      { value: 'wallets', label: t('Wallets') },
+      { value: 'network', label: t('Network') },
+      { value: 'devtools', label: t('Developer tools') }
+    ],
+    [t]
   )
+  const activeTab = settingsModalTabs.find((t) => t.value === initialTabValue) || settingsModalTabs[0]
+
+  const [currentTab, setCurrentTab] = useState<TabItem>(activeTab)
 
   const enabledTabs = !isAuthenticated
     ? settingsModalTabs.filter(({ value }) => value !== 'devtools')
     : settingsModalTabs
+
+  useEffect(() => {
+    setCurrentTab(activeTab)
+  }, [activeTab])
 
   return (
     <ModalContainer onClose={onClose}>
@@ -119,9 +124,9 @@ const SettingsModal = ({ onClose, initialTabValue }: SettingsModalProps) => {
         <TabContentsColumn>
           <ColumnHeader>
             <ColumnTitle>{currentTab.label}</ColumnTitle>
-            <CloseButton aria-label={t`Close`} onClick={onClose}>
+            <Button aria-label={t('Close')} squared role="secondary" transparent onClick={onClose} borderless>
               <X />
-            </CloseButton>
+            </Button>
           </ColumnHeader>
           <Scrollbar translateContentSizeYToHolder>
             <ColumnContent>
@@ -174,24 +179,13 @@ const TabContentsColumn = styled(Column)`
   flex: 2;
 `
 
-const CloseButton = styled.button`
-  color: ${({ theme }) => theme.font.tertiary};
-  cursor: pointer;
-  transition: color 0.2s ease-out;
-  padding: 0;
-  display: flex;
-
-  &:hover {
-    color: ${({ theme }) => theme.font.primary};
-  }
-`
-
 const ColumnHeader = styled.div`
   padding: 20px;
   border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 65px;
 `
 
 const ColumnTitle = styled.div`
