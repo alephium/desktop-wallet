@@ -77,6 +77,7 @@ interface SelectProps<T extends OptionValue> {
   heightSize?: InputHeight
   renderCustomComponent?: (value?: SelectOption<T>, disablePointer?: boolean) => ReactNode
   ListBottomComponent?: ReactNode
+  allowReselectionOnClickWhenSingleOption?: boolean
 }
 
 function Select<T extends OptionValue>({
@@ -96,7 +97,8 @@ function Select<T extends OptionValue>({
   className,
   heightSize,
   renderCustomComponent,
-  ListBottomComponent
+  ListBottomComponent,
+  allowReselectionOnClickWhenSingleOption
 }: SelectProps<T>) {
   const selectedValueRef = useRef<HTMLDivElement>(null)
 
@@ -132,7 +134,11 @@ function Select<T extends OptionValue>({
   )
 
   const handleClick = () => {
-    if (!multipleAvailableOptions) return
+    if (!multipleAvailableOptions) {
+      allowReselectionOnClickWhenSingleOption && options.length === 1 && onSelect(options[0].value)
+
+      return
+    }
 
     setHookCoordinates(getContainerCenter())
     setShowPopup(true)
