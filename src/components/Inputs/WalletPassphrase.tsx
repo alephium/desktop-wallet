@@ -136,4 +136,6 @@ const ConsentCheckbox = styled.div`
   align-items: center;
   gap: 5px;
   margin-bottom: 16px;
+  text-align: left;
+  justify-content: flex-start;
 `
