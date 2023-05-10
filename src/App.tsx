@@ -121,8 +121,9 @@ const App = () => {
 
   const initializeClient = useCallback(async () => {
     try {
-      await client.init(network.settings.nodeHost, network.settings.explorerApiHost)
-      const { networkId } = await client.web3.infos.getInfosChainParams()
+      client.init(network.settings.nodeHost, network.settings.explorerApiHost)
+      const { networkId } = await client.node.infos.getInfosChainParams()
+      // TODO: Check if connection to explorer also works
       dispatch(apiClientInitSucceeded({ networkId, networkName: network.name }))
     } catch (e) {
       dispatch(apiClientInitFailed({ networkName: network.name, networkStatus: network.status }))

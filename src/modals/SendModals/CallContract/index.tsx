@@ -66,7 +66,7 @@ export default SendModalCallContract
 const buildTransaction = async (txData: CallContractTxData, ctx: TxContext) => {
   const { attoAlphAmount, tokens } = getOptionalTransactionAssetAmounts(txData.assetAmounts)
 
-  const response = await client.web3.contracts.postContractsUnsignedTxExecuteScript({
+  const response = await client.node.contracts.postContractsUnsignedTxExecuteScript({
     fromPublicKey: txData.fromAddress.publicKey,
     bytecode: txData.bytecode,
     attoAlphAmount,
