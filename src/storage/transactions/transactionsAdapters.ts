@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { createEntityAdapter } from '@reduxjs/toolkit'
 
 import { PendingTransaction } from '@/types/transactions'
 
-export const confirmedTransactionsAdapter = createEntityAdapter<Transaction>({
+export const confirmedTransactionsAdapter = createEntityAdapter<explorer.Transaction>({
   selectId: (transaction) => transaction.hash,
   sortComparer: (a, b) => b.timestamp - a.timestamp
 })

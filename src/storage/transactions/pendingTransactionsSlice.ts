@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
 import { xorWith } from 'lodash'
@@ -84,7 +84,9 @@ pendingTransactionsListenerMiddleware.startListening({
 
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<
+    { transactions: explorer.Transaction[] }[] | { transactions: explorer.Transaction[] } | undefined
+  >
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

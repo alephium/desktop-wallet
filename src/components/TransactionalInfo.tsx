@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { formatAmountForDisplay } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { colord } from 'colord'
 import { partition } from 'lodash'
 import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -116,8 +116,8 @@ const TransactionalInfo = ({
               currentAddress={addressHash}
               isOut={false}
               outputs={outputs}
-              inputs={(tx as Transaction).inputs}
-              timestamp={(tx as Transaction).timestamp}
+              inputs={(tx as explorer.Transaction).inputs}
+              timestamp={(tx as explorer.Transaction).timestamp}
               truncate
               disableA11y
             />
@@ -155,8 +155,8 @@ const TransactionalInfo = ({
                 currentAddress={addressHash}
                 isOut={direction === 'out'}
                 outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
+                inputs={(tx as explorer.Transaction).inputs}
+                timestamp={(tx as explorer.Transaction).timestamp}
                 truncate
                 disableA11y
               />

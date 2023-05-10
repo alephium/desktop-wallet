@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { node } from '@alephium/web3'
 import { Info } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     to: toAddressOptions.length > 0 ? toAddressOptions[0] : fromAddress
   })
   const [fee, setFee] = useState(BigInt(0))
-  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<node.SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {

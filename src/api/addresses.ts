@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 
 import client from '@/api/client'
 import { Address, AddressDataSyncResult, AddressHash } from '@/types/addresses'
@@ -53,7 +53,7 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
 
 export const fetchAddressTransactionsNextPage = async (address: Address) => {
   let nextPage = address.transactionsPageLoaded
-  let nextPageTransactions = [] as Transaction[]
+  let nextPageTransactions = [] as explorer.Transaction[]
 
   if (!address.allTransactionPagesLoaded) {
     nextPage += 1
