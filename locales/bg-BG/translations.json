@@ -121,7 +121,7 @@
   "Inputs": "Входове",
   "Outputs": "Изходи",
   "New version": "Нова версия",
-  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Налична е версия {{ newVersion }}. Кликнете върху \"Update\" за да избегнете проблеми с портфейла.",
+  "Version {{ newVersion }} is available. Click \"Update\" to avoid any issues with wallet.": "Налична е версия {{ newVersion }}. Кликнете върху \"Актуализиране\" за да избегнете проблеми с портфейла.",
   "Download": "Изтегляне",
   "Please make sure to have your recovery phrase saved and stored somewhere secure to restore your wallet in the future. Without the recovery phrase, your wallet will be unrecoverable and permanently lost.": "Уверете се, че сте запазили и съхранили фразата си за възстановяване на сигурно място, за да възстановите портфейла си в бъдеще. Без фразата за възстановяване портфейлът ви няма да може да бъде възстановен и ще бъде окончателно загубен.",
   "Not your keys, not your coins.": "Не ваши ключове, не ваши монети.",
