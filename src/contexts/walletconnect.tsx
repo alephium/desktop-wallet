@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { SignResult } from '@alephium/sdk/api/alephium'
 import { ALPH } from '@alephium/token-list'
 import { ChainInfo, parseChain, PROVIDER_NAMESPACE, RelayMethod } from '@alephium/walletconnect-provider'
 import {
@@ -26,6 +25,7 @@ import {
   SignExecuteScriptTxParams,
   SignTransferTxParams
 } from '@alephium/web3'
+import { node } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { EngineTypes, SignClientTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
@@ -63,7 +63,7 @@ export interface WalletConnectContextProps {
   proposalEvent?: ProposalEvent
   dappTxData?: DappTxData
   onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
-  onSessionRequestSuccess: (event: RequestEvent, result: SignResult) => Promise<void>
+  onSessionRequestSuccess: (event: RequestEvent, result: node.SignResult) => Promise<void>
   onSessionDelete: () => void
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
@@ -144,7 +144,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [walletConnectClient]
   )
 
-  const onSessionRequestSuccess = async (event: RequestEvent, result: SignResult) =>
+  const onSessionRequestSuccess = async (event: RequestEvent, result: node.SignResult) =>
     await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', result })
 
   const onSessionRequestError = useCallback(

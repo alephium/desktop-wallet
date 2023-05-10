@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressBalance, Token } from '@alephium/sdk/api/explorer'
 import { TokenInfo } from '@alephium/token-list'
 import { Optional } from '@alephium/web3'
+import { explorer } from '@alephium/web3'
 
 // Used in Redux, amounts need to be in string format
-export type TokenBalances = AddressBalance & { id: Token['id'] }
+export type TokenBalances = explorer.AddressBalance & { id: explorer.Token['id'] }
 
 // Same as TokenBalances, but amounts are in BigInt, useful for display purposes
 export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalance'> & {

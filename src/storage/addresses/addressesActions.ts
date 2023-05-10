@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { IntervalType, Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
@@ -99,7 +99,7 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
 
 export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
   'addresses/syncAllAddressesTransactionsNextPage',
-  async (_, { getState, dispatch }): Promise<{ pageLoaded: number; transactions: Transaction[] }> => {
+  async (_, { getState, dispatch }): Promise<{ pageLoaded: number; transactions: explorer.Transaction[] }> => {
     dispatch(loadingStarted())
 
     const state = getState() as RootState
@@ -107,7 +107,7 @@ export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
 
     let nextPageToLoad = state.confirmedTransactions.pageLoaded + 1
     let newTransactionsFound = false
-    let transactions: Transaction[] = []
+    let transactions: explorer.Transaction[] = []
 
     while (!newTransactionsFound) {
       // NOTE: Explorer backend limits this query to 80 addresses
@@ -155,7 +155,7 @@ export const syncAddressesHistoricBalances = createAsyncThunk(
       const balances = []
       const data = await client.explorer.addresses.getAddressesAddressAmountHistory(
         addressHash,
-        { fromTs: oneYearAgo, toTs: thisMoment, 'interval-type': IntervalType.Daily },
+        { fromTs: oneYearAgo, toTs: thisMoment, 'interval-type': explorer.IntervalType.Daily },
         { format: 'text' }
       )
 
