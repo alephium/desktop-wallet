@@ -16,15 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CliqueClient, ExplorerClient } from '@alephium/sdk'
-import { NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
+import { CliqueClient } from '@alephium/sdk'
+import { ExplorerProvider, NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
 
 import { defaultSettings } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
 
 export class Client {
   clique: CliqueClient
-  explorer: ExplorerClient
+  explorer: ExplorerProvider
   web3: Web3Client
 
   constructor() {
@@ -53,7 +53,7 @@ export class Client {
   private getClients(nodeHost: NetworkSettings['nodeHost'], explorerApiHost: NetworkSettings['explorerApiHost']) {
     return {
       clique: new CliqueClient({ baseUrl: nodeHost, customFetch: throttledFetch(5) }),
-      explorer: new ExplorerClient({ baseUrl: explorerApiHost, customFetch: throttledFetch(5) }),
+      explorer: new ExplorerProvider(explorerApiHost, undefined, throttledFetch(5)),
       web3: new Web3Client(nodeHost, undefined, throttledFetch(5))
     }
   }

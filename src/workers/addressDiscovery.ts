@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { discoverActiveAddresses, ExplorerClient, Wallet, walletImport } from '@alephium/sdk'
+import { discoverActiveAddresses, Wallet, walletImport } from '@alephium/sdk'
+import { ExplorerProvider, throttledFetch } from '@alephium/web3'
 
 interface WorkerPayload {
   data: {
@@ -29,12 +30,12 @@ interface WorkerPayload {
 
 self.onmessage = ({ data: { mnemonic, passphrase, clientUrl, skipIndexes } }: WorkerPayload) => {
   const { masterKey } = walletImport(mnemonic, passphrase)
-  const client = new ExplorerClient({ baseUrl: clientUrl })
+  const client = new ExplorerProvider(clientUrl, undefined, throttledFetch(5))
 
   discover(masterKey, client, skipIndexes)
 }
 
-const discover = async (masterKey: Wallet['masterKey'], client: ExplorerClient, skipIndexes?: number[]) => {
+const discover = async (masterKey: Wallet['masterKey'], client: ExplorerProvider, skipIndexes?: number[]) => {
   const activeAddresses = await discoverActiveAddresses(masterKey, client, skipIndexes)
   self.postMessage(activeAddresses)
 }

@@ -19,7 +19,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair, deriveNewAddressData, getWalletFromMnemonic } from '@alephium/sdk'
 import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
 
-import client from '@/api/client'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import {
   addressDiscoveryFinished,
@@ -68,6 +67,7 @@ const useAddressGeneration = () => {
   const addresses = useAppSelector(selectAllAddresses)
   const mnemonic = useAppSelector((s) => s.activeWallet.mnemonic)
   const passphrase = useAppSelector((s) => s.activeWallet.passphrase)
+  const explorerApiHost = useAppSelector((s) => s.network.settings.explorerApiHost)
 
   const currentAddressIndexes = addresses.map(({ index }) => index)
 
@@ -160,7 +160,7 @@ const useAddressGeneration = () => {
       mnemonic: mnemonicProp ?? mnemonic,
       passphrase,
       skipIndexes: skipIndexes && skipIndexes.length > 0 ? skipIndexes : currentAddressIndexes,
-      clientUrl: client.explorer.baseUrl
+      clientUrl: explorerApiHost
     })
   }
 
