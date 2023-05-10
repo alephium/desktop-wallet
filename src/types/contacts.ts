@@ -16,8 +16,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Optional } from '@alephium/web3'
+
 import { AddressHash } from '@/types/addresses'
-import { PartialBy } from '@/types/generics'
 
 export type Contact = {
   id: string
@@ -25,4 +26,4 @@ export type Contact = {
   address: AddressHash
 }
 
-export type ContactFormData = PartialBy<Contact, 'id'>
+export type ContactFormData = Optional<Contact, 'id'>
