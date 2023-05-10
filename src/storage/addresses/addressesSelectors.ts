@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Asset, TokenDisplayBalances } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { createSelector } from '@reduxjs/toolkit'
 
@@ -23,7 +24,6 @@ import { addressesAdapter, contactsAdapter } from '@/storage/addresses/addresses
 import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
 import { AddressHash } from '@/types/addresses'
-import { Asset, TokenDisplayBalances } from '@/types/assets'
 import { filterAddressesWithoutAssets } from '@/utils/addresses'
 
 export const {

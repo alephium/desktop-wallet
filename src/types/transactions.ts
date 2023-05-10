@@ -16,11 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
+import { AssetAmount, TransactionDirection, TransactionInfoAsset, TransactionInfoType } from '@alephium/sdk'
 import { explorer, node } from '@alephium/web3'
 
 import { Address, AddressHash } from '@/types/addresses'
-import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
 export enum TxType {
   TRANSFER,
