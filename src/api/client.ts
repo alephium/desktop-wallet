@@ -16,45 +16,34 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { CliqueClient } from '@alephium/sdk'
-import { ExplorerProvider, NodeProvider as Web3Client, throttledFetch } from '@alephium/web3'
+import { ExplorerProvider, NodeProvider, throttledFetch } from '@alephium/web3'
 
 import { defaultSettings } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
 
 export class Client {
-  clique: CliqueClient
   explorer: ExplorerProvider
-  web3: Web3Client
+  node: NodeProvider
 
   constructor() {
     const { nodeHost, explorerApiHost } = defaultSettings.network
-    const { clique, explorer, web3 } = this.getClients(nodeHost, explorerApiHost)
+    const { explorer, node } = this.getClients(nodeHost, explorerApiHost)
 
-    this.clique = clique
     this.explorer = explorer
-    this.web3 = web3
+    this.node = node
   }
 
-  async init(
-    nodeHost: NetworkSettings['nodeHost'],
-    explorerApiHost: NetworkSettings['explorerApiHost'],
-    isMultiNodesClique = false
-  ) {
-    const { clique, explorer, web3 } = this.getClients(nodeHost, explorerApiHost)
+  init(nodeHost: NetworkSettings['nodeHost'], explorerApiHost: NetworkSettings['explorerApiHost']) {
+    const { explorer, node } = this.getClients(nodeHost, explorerApiHost)
 
-    this.clique = clique
     this.explorer = explorer
-    this.web3 = web3
-
-    await this.clique.init(isMultiNodesClique)
+    this.node = node
   }
 
   private getClients(nodeHost: NetworkSettings['nodeHost'], explorerApiHost: NetworkSettings['explorerApiHost']) {
     return {
-      clique: new CliqueClient({ baseUrl: nodeHost, customFetch: throttledFetch(5) }),
       explorer: new ExplorerProvider(explorerApiHost, undefined, throttledFetch(5)),
-      web3: new Web3Client(nodeHost, undefined, throttledFetch(5))
+      node: new NodeProvider(nodeHost, undefined, throttledFetch(5))
     }
   }
 }

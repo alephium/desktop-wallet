@@ -110,7 +110,7 @@ const NetworkSettingsSection = () => {
         }
 
         if (networkId === undefined) {
-          const response = await client.web3.infos.getInfosChainParams()
+          const response = await client.node.infos.getInfosChainParams()
           networkId = response.networkId
         }
 
