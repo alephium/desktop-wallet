@@ -16,11 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
+import { convertToPositive, formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
 import styled from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
-import { convertToPositive } from '@/utils/misc'
 
 interface AmountProps {
   value?: bigint | number

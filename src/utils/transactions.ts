@@ -17,9 +17,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
+  AssetAmount,
   calcTxAmountsDeltaForAddress,
+  convertToNegative,
   getDirection,
   isConsolidationTx,
+  isSwap,
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
@@ -32,7 +35,6 @@ import { SelectOption } from '@/components/Inputs/Select'
 import i18n from '@/i18n'
 import { store } from '@/storage/store'
 import { Address } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
 import { TranslationKey } from '@/types/i18next'
 import {
   AddressPendingTransaction,
@@ -41,7 +43,6 @@ import {
   TransactionInfo,
   TransactionTimePeriod
 } from '@/types/transactions'
-import { convertToNegative } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -192,12 +193,4 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     outputs,
     lockTime
   }
-}
-
-const isSwap = (alphAmout: bigint, tokensAmount: Required<AssetAmount>[]) => {
-  const allAmounts = [alphAmout, ...tokensAmount.map((tokenAmount) => tokenAmount.amount)]
-  const allAmountsArePositive = allAmounts.every((amount) => amount >= 0)
-  const allAmountsAreNegative = allAmounts.every((amount) => amount <= 0)
-
-  return !allAmountsArePositive && !allAmountsAreNegative
 }
