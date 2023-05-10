@@ -70,12 +70,7 @@ export const signAndSendTransaction = async (fromAddress: Address, txId: string,
   return { ...data, signature: signature }
 }
 
-export const fetchCsv = async ({ addressHash, ...timeRangeQueryParams }: CsvExportQueryParams) => {
-  const { data } = await client.explorer.addresses.getAddressesAddressExportTransactionsCsv(
-    addressHash,
-    timeRangeQueryParams,
-    { format: 'text' }
-  )
-
-  return data
-}
+export const fetchCsv = async ({ addressHash, ...timeRangeQueryParams }: CsvExportQueryParams) =>
+  await client.explorer.addresses.getAddressesAddressExportTransactionsCsv(addressHash, timeRangeQueryParams, {
+    format: 'text'
+  })

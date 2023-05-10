@@ -25,16 +25,14 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
   const results = []
 
   for (const addressHash of addressHashes) {
-    const { data: details } = await client.explorer.getAddressDetails(addressHash)
-    const { data: transactions } = await client.explorer.getAddressTransactions(addressHash, 1)
-    const { data: mempoolTransactions } = await client.explorer.addresses.getAddressesAddressMempoolTransactions(
-      addressHash
-    )
-    const { data: tokenIds } = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
+    const details = await client.explorer.addresses.getAddressesAddress(addressHash)
+    const transactions = await client.explorer.addresses.getAddressesAddressTransactions(addressHash, { page: 1 })
+    const mempoolTransactions = await client.explorer.addresses.getAddressesAddressMempoolTransactions(addressHash)
+    const tokenIds = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
 
     const tokens = await Promise.all(
       tokenIds.map((id) =>
-        client.explorer.addresses.getAddressesAddressTokensTokenIdBalance(addressHash, id).then(({ data }) => ({
+        client.explorer.addresses.getAddressesAddressTokensTokenIdBalance(addressHash, id).then((data) => ({
           id,
           ...data
         }))
@@ -59,8 +57,9 @@ export const fetchAddressTransactionsNextPage = async (address: Address) => {
 
   if (!address.allTransactionPagesLoaded) {
     nextPage += 1
-    const { data: transactions } = await client.explorer.getAddressTransactions(address.hash, nextPage)
-    nextPageTransactions = transactions
+    nextPageTransactions = await client.explorer.addresses.getAddressesAddressTransactions(address.hash, {
+      page: nextPage
+    })
   }
 
   return {
@@ -72,10 +71,7 @@ export const fetchAddressTransactionsNextPage = async (address: Address) => {
 
 export const fetchAddressesTransactionsNextPage = async (addresses: Address[], nextPage: number) => {
   const addressHashes = addresses.filter((address) => !address.allTransactionPagesLoaded).map((address) => address.hash)
-  const { data: transactions } = await client.explorer.addresses.postAddressesTransactions(
-    { page: nextPage },
-    addressHashes
-  )
+  const transactions = await client.explorer.addresses.postAddressesTransactions({ page: nextPage }, addressHashes)
 
   return transactions
 }
