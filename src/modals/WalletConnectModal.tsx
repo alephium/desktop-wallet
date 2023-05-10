@@ -150,6 +150,9 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onProposalApprove(topic)
     await acknowledged()
     onClose()
+
+    posthog?.capture('Approved WalletConnect connection')
+
     electron?.app.hide()
   }
 
@@ -160,6 +163,9 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
     onSessionDelete()
     onClose()
+
+    posthog?.capture('Rejected WalletConnect connection by clicking "Reject"')
+
     electron?.app.hide()
   }
 
@@ -169,6 +175,8 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
     onClose()
     onSessionDelete()
+
+    posthog?.capture('Clicked WalletConnect disconnect button')
   }
 
   const rejectConnectionAndCloseModal = async () => {
@@ -178,6 +186,8 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     }
 
     onClose()
+
+    posthog?.capture('Rejected WalletConnect connection by closing modal')
   }
 
   const generateAddressInGroup = () => {
