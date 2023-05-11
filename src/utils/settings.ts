@@ -29,8 +29,9 @@ export const getNetworkName = (settings: NetworkSettings) =>
     'custom') as NetworkName | 'custom'
 
 export const getAvailableLanguageOptions = () => [
-  { label: 'Deutsch', value: 'de-DE' as Language },
   { label: 'English', value: 'en-US' as Language },
+  { label: 'Български', value: 'bg-BG' as Language },
+  { label: 'Deutsch', value: 'de-DE' as Language },
   { label: 'Español', value: 'es-ES' as Language },
   { label: 'Français', value: 'fr-FR' as Language },
   { label: 'Bahasa Indonesia', value: 'id-ID' as Language },

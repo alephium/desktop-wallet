@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
+import bg from '../locales/bg-BG/translation.json'
 import de from '../locales/de-DE/translation.json'
 import en from '../locales/en-US/translation.json'
 import es from '../locales/es-ES/translation.json'
@@ -32,6 +33,7 @@ import vi from '../locales/vi-VN/translation.json'
 i18next.use(initReactI18next).init({
   resources: {
     'en-US': { translation: en },
+    'bg-BG': { translation: bg },
     'es-ES': { translation: es },
     'de-DE': { translation: de },
     'id-ID': { translation: id },
