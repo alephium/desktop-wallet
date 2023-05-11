@@ -25,7 +25,8 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
   const results = []
 
   for (const addressHash of addressHashes) {
-    const details = await client.explorer.addresses.getAddressesAddress(addressHash)
+    const balances = await client.explorer.addresses.getAddressesAddressBalance(addressHash)
+    const txNumber = await client.explorer.addresses.getAddressesAddressTotalTransactions(addressHash)
     const transactions = await client.explorer.addresses.getAddressesAddressTransactions(addressHash, { page: 1 })
     const mempoolTransactions = await client.explorer.addresses.getAddressesAddressMempoolTransactions(addressHash)
     const tokenIds = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
@@ -41,7 +42,10 @@ export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<
 
     results.push({
       hash: addressHash,
-      details,
+      details: {
+        ...balances,
+        txNumber
+      },
       transactions,
       mempoolTransactions,
       tokens

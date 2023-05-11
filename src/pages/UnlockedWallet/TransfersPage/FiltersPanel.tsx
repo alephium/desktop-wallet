@@ -15,6 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
+import { Asset } from '@alephium/sdk'
 import { colord } from 'colord'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,7 +31,6 @@ import { makeSelectAddressesAssets, selectAllAddresses } from '@/storage/address
 import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
-import { Asset } from '@/types/assets'
 import { directionOptions } from '@/utils/transactions'
 
 interface FiltersPanelProps {
