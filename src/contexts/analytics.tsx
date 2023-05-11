@@ -23,7 +23,7 @@ import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { GeneralSettings } from '@/types/settings'
 
-const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST } = import.meta.env
+const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST, VITE_VERSION } = import.meta.env
 
 const options: Partial<PostHogConfig> = {
   api_host: VITE_PUBLIC_POSTHOG_HOST,
@@ -42,6 +42,7 @@ const options: Partial<PostHogConfig> = {
     props['$pathname'] = ''
     props['$device_type'] = ''
     props['$browser'] = ''
+    props['desktop_wallet_version'] = VITE_VERSION
 
     return props
   },
