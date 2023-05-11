@@ -175,26 +175,26 @@ function createWindow() {
 
   if (isDev) {
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    mainWindow?.webContents.openDevTools()
   }
 
   // Set default window open handler (open new windows in the web browser by default)
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow?.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
   })
 
   nativeTheme.on('updated', () =>
-    mainWindow.webContents.send('theme:shouldUseDarkColors', nativeTheme.shouldUseDarkColors)
+    mainWindow?.webContents.send('theme:shouldUseDarkColors', nativeTheme.shouldUseDarkColors)
   )
 
   mainWindow.on('closed', () => (mainWindow = null))
 
-  autoUpdater.on('download-progress', (info) => mainWindow.webContents.send('updater:download-progress', info))
+  autoUpdater.on('download-progress', (info) => mainWindow?.webContents.send('updater:download-progress', info))
 
-  autoUpdater.on('error', (error) => mainWindow.webContents.send('updater:error', error))
+  autoUpdater.on('error', (error) => mainWindow?.webContents.send('updater:error', error))
 
-  autoUpdater.on('update-downloaded', (event) => mainWindow.webContents.send('updater:updateDownloaded', event))
+  autoUpdater.on('update-downloaded', (event) => mainWindow?.webContents.send('updater:updateDownloaded', event))
 
   if (!isMac) {
     if (process.argv.length > 1) {
@@ -225,7 +225,7 @@ app.on('second-instance', (_event, args) => {
 
       if (url) {
         deepLinkUri = extractWalletConnectUri(url)
-        mainWindow.webContents.send('wc:connect', deepLinkUri)
+        mainWindow?.webContents.send('wc:connect', deepLinkUri)
       }
     }
   }
@@ -315,7 +315,7 @@ app.on('activate', function () {
 app.on('open-url', (_, url) => {
   if (url.startsWith(ALEPHIUM_WALLET_CONNECT_DEEP_LINK_PREFIX)) {
     deepLinkUri = extractWalletConnectUri(url)
-    if (mainWindow) mainWindow.webContents.send('wc:connect', deepLinkUri)
+    if (mainWindow) mainWindow?.webContents.send('wc:connect', deepLinkUri)
   }
 })
 
