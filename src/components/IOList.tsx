@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Input, Output } from '@alephium/sdk/dist/api/api-explorer'
+import { GENESIS_TIMESTAMP } from '@alephium/sdk'
+import { explorer } from '@alephium/web3'
 import _ from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,15 +31,14 @@ import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
-import { GENESIS_TIMESTAMP } from '@/utils/constants'
 import { openInWebBrowser } from '@/utils/misc'
 
 interface IOListProps {
   currentAddress: string
   isOut: boolean
   timestamp: number
-  outputs?: Output[]
-  inputs?: Input[]
+  outputs?: explorer.Output[]
+  inputs?: explorer.Input[]
   linkToExplorer?: boolean
   truncate?: boolean
   disableA11y?: boolean
@@ -60,7 +60,7 @@ const IOList = ({
 
   const [selectedAddressHash, setSelectedAddressHash] = useState<AddressHash>()
 
-  const io = (isOut ? outputs : inputs) as Array<Output | Input> | undefined
+  const io = (isOut ? outputs : inputs) as Array<explorer.Output | explorer.Input> | undefined
 
   const handleShowAddress = (addressHash: AddressHash) =>
     internalAddressHashes.includes(addressHash)

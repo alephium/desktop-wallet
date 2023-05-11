@@ -23,9 +23,9 @@ import {
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
-import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
 import { DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
+import { explorer } from '@alephium/web3'
 import dayjs from 'dayjs'
 
 import { SelectOption } from '@/components/Inputs/Select'
@@ -49,7 +49,7 @@ export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean 
 export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransaction =>
   (tx as AddressPendingTransaction).status === 'pending'
 
-export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
+export const hasOnlyOutputsWith = (outputs: explorer.Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
 export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
@@ -139,7 +139,7 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
   let infoType: TransactionInfoType
-  let outputs: Output[] = []
+  let outputs: explorer.Output[] = []
   let lockTime: Date | undefined
   let tokens: Required<AssetAmount>[] = []
 
@@ -173,7 +173,10 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     }
 
     lockTime = outputs.reduce(
-      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
+      (a, b) =>
+        a > new Date((b as explorer.AssetOutput).lockTime ?? 0)
+          ? a
+          : new Date((b as explorer.AssetOutput).lockTime ?? 0),
       new Date(0)
     )
     lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime

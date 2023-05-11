@@ -81,7 +81,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
   } else {
     const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
 
-    const { data } = await client.clique.transactions.postTransactionsBuild({
+    const data = await client.node.transactions.postTransactionsBuild({
       fromPublicKey: fromAddress.publicKey,
       destinations: [
         {

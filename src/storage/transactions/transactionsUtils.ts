@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { calcTxAmountsDeltaForAddress } from '@alephium/sdk'
-import { MempoolTransaction, Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 
 import { Address, AddressHash } from '@/types/addresses'
 import { PendingTransaction } from '@/types/transactions'
@@ -25,7 +25,7 @@ import { PendingTransaction } from '@/types/transactions'
 // It can currently only take care of sending transactions.
 // See: https://github.com/alephium/explorer-backend/issues/360
 export const convertUnconfirmedTxToPendingTx = (
-  tx: MempoolTransaction,
+  tx: explorer.MempoolTransaction,
   fromAddress: AddressHash
 ): PendingTransaction => {
   if (!tx.outputs) throw 'Missing transaction details'
@@ -50,14 +50,14 @@ export const convertUnconfirmedTxToPendingTx = (
 }
 
 export const extractNewTransactionHashes = (
-  incomingTransactions: Transaction[],
-  existingTransactions: Transaction['hash'][]
-): Transaction['hash'][] =>
+  incomingTransactions: explorer.Transaction[],
+  existingTransactions: explorer.Transaction['hash'][]
+): explorer.Transaction['hash'][] =>
   incomingTransactions
     .filter((newTx) => !existingTransactions.some((existingTx) => existingTx === newTx.hash))
     .map((tx) => tx.hash)
 
-export const getTransactionsOfAddress = (transactions: Transaction[], address: Address) =>
+export const getTransactionsOfAddress = (transactions: explorer.Transaction[], address: Address) =>
   transactions.filter(
     (tx) =>
       tx.inputs?.some((input) => input.address === address.hash) ||

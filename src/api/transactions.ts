@@ -16,66 +16,32 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { transactionSign } from '@alephium/web3'
+
 import client from '@/api/client'
 import { Address, AddressHash } from '@/types/addresses'
 import { CsvExportQueryParams } from '@/types/transactions'
-import { getAvailableBalance } from '@/utils/addresses'
 
 export const buildSweepTransactions = async (fromAddress: Address, toAddressHash: AddressHash) => {
-  const { data } = await client.clique.transactionConsolidateUTXOs(
-    fromAddress.publicKey,
-    fromAddress.hash,
-    toAddressHash
-  )
+  const { unsignedTxs } = await client.node.transactions.postTransactionsSweepAddressBuild({
+    fromPublicKey: fromAddress.publicKey,
+    toAddress: toAddressHash
+  })
 
   return {
-    unsignedTxs: data.unsignedTxs,
-    fees: data.unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
-  }
-}
-
-export const buildUnsignedTransactions = async (
-  fromAddress: Address,
-  toAddressHash: string,
-  amountInSet: bigint,
-  gasAmount: string,
-  gasPriceInSet?: bigint
-) => {
-  const isSweep = amountInSet.toString() === getAvailableBalance(fromAddress).toString()
-
-  if (isSweep) {
-    return await buildSweepTransactions(fromAddress, toAddressHash)
-  } else {
-    const { data } = await client.clique.transactionCreate(
-      fromAddress.hash,
-      fromAddress.publicKey,
-      toAddressHash,
-      amountInSet.toString(),
-      undefined,
-      gasAmount ? parseInt(gasAmount) : undefined,
-      gasPriceInSet ? gasPriceInSet.toString() : undefined
-    )
-
-    return {
-      unsignedTxs: [{ txId: data.txId, unsignedTx: data.unsignedTx }],
-      fees: BigInt(data.gasAmount) * BigInt(data.gasPrice)
-    }
+    unsignedTxs,
+    fees: unsignedTxs.reduce((acc, tx) => acc + BigInt(tx.gasPrice) * BigInt(tx.gasAmount), BigInt(0))
   }
 }
 
 export const signAndSendTransaction = async (fromAddress: Address, txId: string, unsignedTx: string) => {
-  const signature = client.clique.transactionSign(txId, fromAddress.privateKey)
-  const { data } = await client.clique.transactionSend(fromAddress.hash, unsignedTx, signature)
+  const signature = transactionSign(txId, fromAddress.privateKey)
+  const data = await client.node.transactions.postTransactionsSubmit({ unsignedTx, signature })
 
-  return { ...data, signature: signature }
+  return { ...data, signature }
 }
 
-export const fetchCsv = async ({ addressHash, ...timeRangeQueryParams }: CsvExportQueryParams) => {
-  const { data } = await client.explorer.addresses.getAddressesAddressExportTransactionsCsv(
-    addressHash,
-    timeRangeQueryParams,
-    { format: 'text' }
-  )
-
-  return data
-}
+export const fetchCsv = async ({ addressHash, ...timeRangeQueryParams }: CsvExportQueryParams) =>
+  await client.explorer.addresses.getAddressesAddressExportTransactionsCsv(addressHash, timeRangeQueryParams, {
+    format: 'text'
+  })

@@ -16,13 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressBalance, Token } from '@alephium/sdk/api/explorer'
 import { TokenInfo } from '@alephium/token-list'
-
-import { PartialBy } from '@/types/generics'
+import { Optional } from '@alephium/web3'
+import { explorer } from '@alephium/web3'
 
 // Used in Redux, amounts need to be in string format
-export type TokenBalances = AddressBalance & { id: Token['id'] }
+export type TokenBalances = explorer.AddressBalance & { id: explorer.Token['id'] }
 
 // Same as TokenBalances, but amounts are in BigInt, useful for display purposes
 export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalance'> & {
@@ -30,11 +29,11 @@ export type TokenDisplayBalances = Omit<TokenBalances, 'balance' | 'lockedBalanc
   lockedBalance: bigint
 }
 
-export type Asset = TokenDisplayBalances & PartialBy<TokenInfo, 'symbol' | 'name'>
+export type Asset = TokenDisplayBalances & Optional<TokenInfo, 'symbol' | 'name'>
 
 export type AssetAmount = { id: Asset['id']; amount?: bigint }
 
 export type AssetAmountInputType = AssetAmount & { amountInput?: string }
 
-export type TransactionInfoAsset = PartialBy<Omit<Asset, 'balance' | 'lockedBalance'>, 'decimals'> &
+export type TransactionInfoAsset = Optional<Omit<Asset, 'balance' | 'lockedBalance'>, 'decimals'> &
   Required<AssetAmount>

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
-import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { node } from '@alephium/web3'
 import { getSdkError } from '@walletconnect/utils'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
@@ -58,7 +58,7 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
   handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
-  getWalletConnectResult: (context: TxContext, signature: string) => SignResult
+  getWalletConnectResult: (context: TxContext, signature: string) => node.SignResult
   txData?: T
   initialStep?: Step
   isContract?: boolean
@@ -92,7 +92,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
-  const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<node.SweepAddressTransaction[]>([])
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()

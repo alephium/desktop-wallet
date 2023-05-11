@@ -45,7 +45,7 @@ const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContr
   const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
       data.initialAlphAmount !== undefined ? data.initialAlphAmount.amount?.toString() : undefined
-    const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
+    const response = await client.node.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
       initialAttoAlphAmount,
