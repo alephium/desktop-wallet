@@ -17,9 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ALPH, TokenInfo } from '@alephium/token-list'
+import { hexToString } from '@alephium/web3'
 import { createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
+import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 
@@ -48,6 +49,21 @@ const assetsSlice = createSlice({
         if (metadata) {
           assetsInfoAdapter.upsertMany(state, metadata.tokens)
           state.status = 'initialized'
+        }
+      })
+      .addCase(syncUnknownTokensInfo.fulfilled, (state, action) => {
+        const metadata = action.payload
+
+        if (metadata) {
+          assetsInfoAdapter.upsertMany(
+            state,
+            metadata.map((token) => ({
+              id: token.id,
+              name: hexToString(token.name),
+              symbol: hexToString(token.symbol),
+              decimals: token.decimals
+            }))
+          )
         }
       })
       .addCase(networkPresetSwitched, resetState)

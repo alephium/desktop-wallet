@@ -16,9 +16,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
+import client from '@/api/client'
 import { RootState } from '@/storage/store'
 
 export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensInfo', async (_, { getState }) => {
@@ -41,3 +43,19 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
 
   return metadata
 })
+
+export const syncUnknownTokensInfo = createAsyncThunk(
+  'assets/syncUnknownTokensInfo',
+  async (unknownTokenIds: Asset['id'][]) => {
+    const tokens = await Promise.all(
+      unknownTokenIds.map((id) =>
+        client.node.fetchStdTokenMetaData(id).then((data) => ({
+          id,
+          ...data
+        }))
+      )
+    )
+
+    return tokens
+  }
+)

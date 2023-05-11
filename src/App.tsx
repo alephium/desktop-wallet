@@ -33,8 +33,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
-import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
-import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
+import { makeSelectAddressesAssets, selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import {
   devModeShortcutDetected,
   localStorageDataMigrated,
@@ -57,6 +57,9 @@ const App = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
   const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
+  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
+  const assets = useAppSelector(selectAddressesAssets)
+  const unknownTokens = assets.filter((token) => !token.name)
   const network = useAppSelector((s) => s.network)
   const addressesStatus = useAppSelector((s) => s.addresses.status)
   const theme = useAppSelector((s) => s.global.theme)
@@ -155,6 +158,17 @@ const App = () => {
       dispatch(syncNetworkTokensInfo())
     }
   }, [dispatch, network.status, assetsInfo.status])
+
+  useEffect(() => {
+    if (
+      network.status === 'online' &&
+      addressesStatus === 'initialized' &&
+      (assetsInfo.status === 'initialized' || (network.settings.networkId !== 0 && network.settings.networkId !== 1)) &&
+      unknownTokens.length > 0
+    ) {
+      dispatch(syncUnknownTokensInfo(unknownTokens.map((token) => token.id)))
+    }
+  }, [dispatch, network.status, assetsInfo.status, addressesStatus, unknownTokens, network.settings.networkId])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
