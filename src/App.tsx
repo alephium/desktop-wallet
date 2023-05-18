@@ -49,7 +49,7 @@ import { AddressHash } from '@/types/addresses'
 import { AlephiumWindow } from '@/types/window'
 import { useInterval } from '@/utils/hooks'
 import { migrateGeneralSettings, migrateNetworkSettings, migrateWalletData } from '@/utils/migration'
-import { getAvailableLanguageOptions } from '@/utils/settings'
+import { availableLanguageOptions } from '@/utils/settings'
 
 const App = () => {
   const { newVersion, newVersionDownloadTriggered } = useGlobalContext()
@@ -104,7 +104,6 @@ const App = () => {
       return
     }
 
-    const availableLanguageOptions = getAvailableLanguageOptions()
     const systemLanguageCode = systemLanguage.substring(0, 2)
     const matchedLanguage = availableLanguageOptions.find((lang) => lang.value.startsWith(systemLanguageCode))
 

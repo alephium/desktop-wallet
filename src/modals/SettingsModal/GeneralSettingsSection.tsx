@@ -33,20 +33,22 @@ import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import {
   analyticsToggled,
   discreetModeToggled,
+  fiatCurrencyChanged,
   languageChanged,
   passwordRequirementToggled,
   walletLockTimeChanged
 } from '@/storage/settings/settingsActions'
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
-import { Language, ThemeSettings } from '@/types/settings'
+import { Currency, Language, ThemeSettings } from '@/types/settings'
 import { links } from '@/utils/links'
-import { getAvailableLanguageOptions } from '@/utils/settings'
+import {
+  availableFiatCurrencyOptions as fiatCurrencyOptions,
+  availableLanguageOptions as languageOptions
+} from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
   className?: string
 }
-
-const languageOptions = getAvailableLanguageOptions()
 
 const locktimeInMinutesOptions = [0, 2, 5, 10, 30]
 
@@ -54,9 +56,8 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
-  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics } = useAppSelector(
-    (s) => s.settings
-  )
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics, fiatCurrency } =
+    useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
@@ -80,6 +81,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
   const handleLanguageChange = (language: Language) => {
     dispatch(languageChanged(language))
+
+    posthog?.capture('Changed language', { language })
+  }
+
+  const handleFiatCurrencyChange = (currency: Currency) => {
+    dispatch(fiatCurrencyChanged(currency))
 
     posthog?.capture('Changed language', { language })
   }
@@ -187,13 +194,28 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       )}
       <KeyValueInput
         label={t('Language')}
-        description={t('Change the wallet language')}
+        description={t('Change the wallet language.')}
         InputComponent={
           <Select
             id="language"
             options={languageOptions}
             onSelect={handleLanguageChange}
             controlledValue={languageOptions.find((l) => l.value === language)}
+            noMargin
+            title={t('Language')}
+            heightSize="small"
+          />
+        }
+      />
+      <KeyValueInput
+        label={t('Currency')}
+        description={t('Change the currency to use to display amounts.')}
+        InputComponent={
+          <Select
+            id="fiat-currency"
+            options={fiatCurrencyOptions}
+            onSelect={handleFiatCurrencyChange}
+            controlledValue={fiatCurrencyOptions.find((l) => l.value === fiatCurrency)}
             noMargin
             title={t('Language')}
             heightSize="small"

@@ -50,7 +50,8 @@ export const defaultSettings: Settings = {
     passwordRequirement: false,
     language: undefined,
     devTools: false,
-    analytics: true
+    analytics: true,
+    fiatCurrency: 'USD'
   },
   network: clone(networkPresets.mainnet) as NetworkSettings
 }

@@ -52,11 +52,13 @@
   "Call contract": "Call contract",
   "Cancel": "Abbrechen",
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Notieren Sie sich die Wörter sorgfältig! Sie sind die geheime Wiederherstellungsphrase Ihrer Wallet.",
-  "Change the wallet language": "Sprache der Wallet ändern",
+  "Change the currency to use to display amounts.": "Change the currency to use to display amounts.",
+  "Change the wallet language.": "Change the wallet language.",
   "Change wallet name": "Change wallet name",
   "Check": "Prüfen",
   "Choose a contact": "Choose a contact",
   "Click on an address to copy its private key.": "Click on an address to copy its private key.",
+  "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Klicken, um weniger anzuzeigen",
   "Click to see more": "Klicken, um mehr anzuzeigen",
   "Close": "Schließen",
@@ -95,6 +97,7 @@
   "Could not save contact.": "Could not save contact.",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
+  "Currency": "Currency",
   "Current dApp connection details": "Current dApp connection details",
   "Current network": "Aktuelles Netzwerk",
   "Current wallet": "Aktuelle Wallet",
@@ -421,6 +424,5 @@
   "Your addresses": "Ihre Adressen",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Ihre Wallet",
-  "Click to deactivate discreet mode": "Click to deactivate discreet mode"
+  "Your Wallet": "Ihre Wallet"
 }

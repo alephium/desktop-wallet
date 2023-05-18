@@ -52,11 +52,13 @@
   "Call contract": "Kontrak panggilan",
   "Cancel": "Batalkan",
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Catat kata-kata dengan hati-hati! Itu adalah frasa pemulihan rahasia dompet Anda.",
-  "Change the wallet language": "Ubah bahasa dompet",
+  "Change the currency to use to display amounts.": "Change the currency to use to display amounts.",
+  "Change the wallet language.": "Change the wallet language.",
   "Change wallet name": "Change wallet name",
   "Check": "Periksa",
   "Choose a contact": "Choose a contact",
   "Click on an address to copy its private key.": "Click on an address to copy its private key.",
+  "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Klik untuk melihat lebih sedikit",
   "Click to see more": "Klik untuk melihat lebih banyak",
   "Close": "Tutup",
@@ -95,6 +97,7 @@
   "Could not save contact.": "Could not save contact.",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
+  "Currency": "Currency",
   "Current dApp connection details": "Current dApp connection details",
   "Current network": "Jaringan saat ini",
   "Current wallet": "Dompet saat ini",
@@ -421,6 +424,5 @@
   "Your addresses": "Your addresses",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Dompet Anda",
-  "Click to deactivate discreet mode": "Click to deactivate discreet mode"
+  "Your Wallet": "Dompet Anda"
 }

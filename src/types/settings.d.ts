@@ -26,6 +26,7 @@ export interface GeneralSettings {
   language: Language | undefined
   devTools: boolean
   analytics: boolean
+  fiatCurrency: Currency
 }
 
 export interface NetworkSettings {
@@ -45,6 +46,8 @@ export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU'
 export type ThemeType = 'light' | 'dark'
 
 export type ThemeSettings = ThemeType | 'system'
+
+export type Currency = 'CHF' | 'GBP' | 'EUR' | 'USD'
 
 declare module 'styled-components' {
   export interface DefaultTheme {
