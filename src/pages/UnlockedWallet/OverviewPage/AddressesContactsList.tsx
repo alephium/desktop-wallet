@@ -78,7 +78,8 @@ const AddressesContactsList = ({ className, limit, maxHeightInPx }: AddressesCon
 
 const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
-  const { data: price } = useGetPriceQuery(currencies.USD.ticker)
+  const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
+  const { data: price } = useGetPriceQuery(currencies[fiatCurrency].ticker)
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedAddress, setSelectedAddress] = useState<Address>()

@@ -89,5 +89,3 @@ declare module 'styled-components' {
     }
   }
 }
-
-export type Currency = 'CHF' | 'GBP' | 'EUR' | 'USD'
