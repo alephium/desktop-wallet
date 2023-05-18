@@ -49,6 +49,8 @@ export const fiatCurrencyOptions: SelectOption<Currency>[] = [
   { label: 'USD', value: 'USD' }
 ]
 
+export const locktimeInMinutes = [0, 2, 5, 10, 30]
+
 export const getThemeType = () => {
   const storedSettings = SettingsStorage.load('general') as GeneralSettings
 

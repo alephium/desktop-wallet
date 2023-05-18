@@ -41,13 +41,11 @@ import {
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Currency, Language, ThemeSettings } from '@/types/settings'
 import { links } from '@/utils/links'
-import { fiatCurrencyOptions, languageOptions } from '@/utils/settings'
+import { fiatCurrencyOptions, languageOptions, locktimeInMinutes } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
   className?: string
 }
-
-const locktimeInMinutesOptions = [0, 2, 5, 10, 30]
 
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
@@ -128,7 +126,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
   // Make sure to find the closest available locktime if the previous one was set before using a Select component.
   const currentLockTime = walletLockTimeInMinutes
-    ? locktimeInMinutesOptions.reduce((prev, curr) =>
+    ? locktimeInMinutes.reduce((prev, curr) =>
         Math.abs(curr - walletLockTimeInMinutes) < Math.abs(prev - walletLockTimeInMinutes) ? curr : prev
       )
     : 0
@@ -141,7 +139,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
         InputComponent={
           <Select
             id="wallet-lock-time-in-minutes"
-            options={locktimeInMinutesOptions.map((v) => ({
+            options={locktimeInMinutes.map((v) => ({
               label: v ? `${v} ${t('Minutes')}` : t('Off'),
               value: v.toString()
             }))}
