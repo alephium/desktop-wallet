@@ -17,9 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertToPositive, formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
+import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { discreetModeToggled } from '@/storage/settings/settingsActions'
 
 interface AmountProps {
   value?: bigint | number
@@ -54,7 +56,9 @@ const Amount = ({
   isUnknownToken,
   showPlusMinus = false
 }: AmountProps) => {
+  const dispatch = useAppDispatch()
   const discreetMode = useAppSelector((state) => state.settings.discreetMode)
+  const { t } = useTranslation()
 
   let quantitySymbol = ''
   let amount = ''
@@ -84,7 +88,13 @@ const Amount = ({
   const [integralPart, fractionalPart] = amount.split('.')
 
   return (
-    <AmountStyled {...{ className, color, value, highlight, tabIndex: tabIndex ?? -1, discreetMode }}>
+    <AmountStyled
+      {...{ className, color, value, highlight, tabIndex: tabIndex ?? -1, discreetMode }}
+      data-tooltip-id="default"
+      data-tooltip-content={discreetMode ? t('Click to deactivate discreet mode') : ''}
+      data-tooltip-delay-show={500}
+      onClick={() => discreetMode && dispatch(discreetModeToggled())}
+    >
       {value !== undefined ? (
         <>
           {showPlusMinus && <span>{isNegative ? '-' : '+'}</span>}
@@ -130,6 +140,7 @@ const AmountStyled = styled.div<Pick<AmountProps, 'color' | 'highlight' | 'value
       filter: blur(10px);
       max-width: 100px;
       overflow: hidden;
+      cursor: pointer;
     `}
 `
 
