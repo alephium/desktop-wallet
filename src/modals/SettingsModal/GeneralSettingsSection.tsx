@@ -41,10 +41,7 @@ import {
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Currency, Language, ThemeSettings } from '@/types/settings'
 import { links } from '@/utils/links'
-import {
-  availableFiatCurrencyOptions as fiatCurrencyOptions,
-  availableLanguageOptions as languageOptions
-} from '@/utils/settings'
+import { fiatCurrencyOptions, languageOptions } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
   className?: string
@@ -207,6 +204,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
           />
         }
       />
+      <HorizontalDivider />
       <KeyValueInput
         label={t('Currency')}
         description={t('Change the currency to use to display amounts.')}

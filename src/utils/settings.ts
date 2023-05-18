@@ -29,20 +29,20 @@ export const getNetworkName = (settings: NetworkSettings) =>
   (Object.entries(networkPresets).find(([, presetSettings]) => isEqualNetwork(presetSettings, settings))?.[0] ||
     'custom') as NetworkName | 'custom'
 
-export const availableLanguageOptions = [
-  { label: 'English', value: 'en-US' as Language },
-  { label: 'Български', value: 'bg-BG' as Language },
-  { label: 'Deutsch', value: 'de-DE' as Language },
-  { label: 'Español', value: 'es-ES' as Language },
-  { label: 'Français', value: 'fr-FR' as Language },
-  { label: 'Bahasa Indonesia', value: 'id-ID' as Language },
-  { label: 'Português', value: 'pt-PT' as Language },
-  { label: 'Русский', value: 'ru-RU' as Language },
-  { label: 'Türkçe', value: 'tr-TR' as Language },
-  { label: 'Tiếng Việt', value: 'vi-VN' as Language }
+export const languageOptions: SelectOption<Language>[] = [
+  { label: 'English', value: 'en-US' },
+  { label: 'Български', value: 'bg-BG' },
+  { label: 'Deutsch', value: 'de-DE' },
+  { label: 'Español', value: 'es-ES' },
+  { label: 'Français', value: 'fr-FR' },
+  { label: 'Bahasa Indonesia', value: 'id-ID' },
+  { label: 'Português', value: 'pt-PT' },
+  { label: 'Русский', value: 'ru-RU' },
+  { label: 'Türkçe', value: 'tr-TR' },
+  { label: 'Tiếng Việt', value: 'vi-VN' }
 ]
 
-export const availableFiatCurrencyOptions: SelectOption<Currency>[] = [
+export const fiatCurrencyOptions: SelectOption<Currency>[] = [
   { label: 'CHF', value: 'CHF' },
   { label: 'EUR', value: 'EUR' },
   { label: 'GBP', value: 'GBP' },
