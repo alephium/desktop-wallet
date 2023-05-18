@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { convertToPositive, formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { useAppSelector } from '@/hooks/redux'
 
@@ -50,6 +50,7 @@ const Amount = ({
   color,
   overrideSuffixColor,
   tabIndex,
+  highlight,
   isUnknownToken,
   showPlusMinus = false
 }: AmountProps) => {
@@ -59,7 +60,7 @@ const Amount = ({
   let amount = ''
   let isNegative = false
 
-  if (!discreetMode && value !== undefined) {
+  if (value !== undefined) {
     if (isFiat && typeof value === 'number') {
       amount = formatFiatAmountForDisplay(value)
     } else if (isUnknownToken) {
@@ -83,10 +84,8 @@ const Amount = ({
   const [integralPart, fractionalPart] = amount.split('.')
 
   return (
-    <span className={className} tabIndex={tabIndex ?? -1}>
-      {discreetMode ? (
-        '•••'
-      ) : value !== undefined ? (
+    <AmountStyled {...{ className, color, value, highlight, tabIndex: tabIndex ?? -1, discreetMode }}>
+      {value !== undefined ? (
         <>
           {showPlusMinus && <span>{isNegative ? '-' : '+'}</span>}
           {fadeDecimals ? (
@@ -106,11 +105,13 @@ const Amount = ({
       )}
 
       {!isUnknownToken && <Suffix color={overrideSuffixColor ? color : undefined}>{` ${suffix ?? 'ALPH'}`}</Suffix>}
-    </span>
+    </AmountStyled>
   )
 }
 
-export default styled(Amount)`
+export default Amount
+
+const AmountStyled = styled.div<Pick<AmountProps, 'color' | 'highlight' | 'value'> & { discreetMode: boolean }>`
   color: ${({ color, highlight, value, theme }) =>
     color
       ? color
@@ -123,6 +124,13 @@ export default styled(Amount)`
   white-space: pre;
   font-weight: var(--fontWeight-bold);
   font-feature-settings: 'tnum' on;
+  ${({ discreetMode }) =>
+    discreetMode &&
+    css`
+      filter: blur(10px);
+      max-width: 100px;
+      overflow: hidden;
+    `}
 `
 
 const Decimals = styled.span`
