@@ -23,7 +23,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { receiveTestnetTokens } from '@/api/faucet'
 import AddressRow from '@/components/AddressRow'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
@@ -40,6 +39,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContact from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
+import { receiveTestnetTokens } from '@/storage/assets/assetsActions'
 import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
 import { devToolsToggled } from '@/storage/settings/settingsActions'
 import { Address } from '@/types/addresses'
@@ -119,7 +119,7 @@ const DevToolsSettingsSection = () => {
             )}
             <Button
               Icon={Download}
-              onClick={() => defaultAddress && receiveTestnetTokens(defaultAddress?.hash)}
+              onClick={() => defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))}
               role="secondary"
               wide
             >

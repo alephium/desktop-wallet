@@ -19,7 +19,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { TokenList } from '@alephium/token-list'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
+import i18n from '@/i18n'
 import { RootState } from '@/storage/store'
+import { AddressHash } from '@/types/addresses'
+import { SnackbarMessage } from '@/types/snackbar'
 
 export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensInfo', async (_, { getState }) => {
   const state = getState() as RootState
@@ -41,3 +44,22 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
 
   return metadata
 })
+
+export const receiveTestnetTokens = createAsyncThunk<undefined, AddressHash, { rejectValue: SnackbarMessage }>(
+  'assets/receiveTestnetTokens',
+  async (destinationAddress: AddressHash, { rejectWithValue }) => {
+    const response = await fetch('https://faucet.testnet.alephium.org/send', {
+      method: 'POST',
+      body: destinationAddress
+    })
+
+    console.log(response)
+
+    if (!response.ok) {
+      return rejectWithValue({
+        text: i18n.t('Encountered error while calling the faucet. Please try again in a few minutes.'),
+        type: 'alert'
+      })
+    }
+  }
+)

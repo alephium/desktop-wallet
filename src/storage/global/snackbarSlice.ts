@@ -25,6 +25,7 @@ import {
   syncAddressesData
 } from '@/storage/addresses/addressesActions'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
+import { receiveTestnetTokens } from '@/storage/assets/assetsActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import {
@@ -179,6 +180,17 @@ const snackbarSlice = createSlice({
       })
       .addCase(walletConnectPairingFailed, displayError)
       .addCase(walletConnectProposalApprovalFailed, displayError)
+      .addCase(receiveTestnetTokens.fulfilled, (state) =>
+        displayMessageImmediately(state, {
+          text: i18n.t('Testnet tokens incoming.'),
+          type: 'success'
+        })
+      )
+      .addCase(receiveTestnetTokens.rejected, (state, action) => {
+        const message = action.payload
+
+        if (message) displayMessageImmediately(state, message)
+      })
   }
 })
 
