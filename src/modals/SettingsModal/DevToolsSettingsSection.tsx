@@ -17,12 +17,13 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { AlertTriangle, FileCode, TerminalSquare } from 'lucide-react'
+import { AlertOctagon, AlertTriangle, Download, FileCode, TerminalSquare } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { receiveTestnetTokens } from '@/api/faucet'
 import AddressRow from '@/components/AddressRow'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
@@ -48,6 +49,7 @@ const DevToolsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
+  const currentNetwork = useAppSelector((s) => s.network)
   const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
@@ -100,6 +102,30 @@ const DevToolsSettingsSection = () => {
       </Section>
       {devTools && (
         <>
+          <Section align="flex-start" inList>
+            <h2 tabIndex={0} role="label">
+              {t('Testnet faucet')}
+            </h2>
+            <Paragraph>{t('Receive testnet tokens in your default address.')}</Paragraph>
+            {currentNetwork.name !== 'testnet' && (
+              <InfoBox
+                importance="accent"
+                Icon={AlertOctagon}
+                text={t(
+                  'You are currently connected to the {{ currentNetwork }} network. Make sure to connect to the testnet network to see your tokens.',
+                  { currentNetwork: currentNetwork.name }
+                )}
+              />
+            )}
+            <Button
+              Icon={Download}
+              onClick={() => defaultAddress && receiveTestnetTokens(defaultAddress?.hash)}
+              role="secondary"
+              wide
+            >
+              {t('Receive testnet tokens')}
+            </Button>
+          </Section>
           <Section align="flex-start" inList>
             <h2 tabIndex={0} role="label">
               {t('Smart contracts')}
