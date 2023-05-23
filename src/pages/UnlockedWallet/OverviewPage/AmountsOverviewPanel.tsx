@@ -103,7 +103,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                 <FiatDeltaPercentage>
                   {isPriceLoading ||
                   stateUninitialized ||
-                  (hasHistoricBalances && worthInBeginningOfChart === undefined) ? (
+                  (hasHistoricBalances && worthInBeginningOfChart === undefined && !discreetMode) ? (
                     <SkeletonLoader height="18px" width="70px" style={{ marginBottom: 6 }} />
                   ) : hasHistoricBalances && worthInBeginningOfChart ? (
                     <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />

@@ -421,5 +421,6 @@
   "Please, generate a new address in group {{ group }} first.": "Please, generate a new address in group {{ group }} first.",
   "System": "System",
   "Light": "Light",
-  "Dark": "Dark"
+  "Dark": "Dark",
+  "Click to deactivate discreet mode": "Click to deactivate discreet mode"
 }
