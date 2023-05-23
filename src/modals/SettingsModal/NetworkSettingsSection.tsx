@@ -32,9 +32,10 @@ import ToggleSection from '@/components/ToggleSection'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
-import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { defaultProxySettings, networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName, NetworkNames } from '@/types/network'
-import { NetworkSettings } from '@/types/settings'
+import { NetworkSettings, ProxySettings } from '@/types/settings'
+import { AlephiumWindow } from '@/types/window'
 import { useMountEffect } from '@/utils/hooks'
 import { getNetworkName } from '@/utils/settings'
 
@@ -61,8 +62,16 @@ const NetworkSettingsSection = () => {
   const network = useAppSelector((state) => state.network)
   const posthog = usePostHog()
 
-  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
+  const _window = window as unknown as AlephiumWindow
+  const electron = _window.electron
+
+  const proxySettings = electron?.app.getProxySettings()
+
+  const [tempNetworkSettings, setTempNetworkSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
+
+  const [tempProxySettings, setTempProxySettings] = useState<ProxySettings>(proxySettings || defaultProxySettings)
+
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
@@ -72,8 +81,8 @@ const NetworkSettingsSection = () => {
     setSelectedNetwork(newNetwork)
   }, [])
 
-  const editAdvancedSettings = (v: Partial<NetworkSettings>) => {
-    const newSettings = { ...tempAdvancedSettings, ...v }
+  const editNetworkSettings = (v: Partial<NetworkSettings>) => {
+    const newSettings = { ...tempNetworkSettings, ...v }
 
     // Check if we need to append the http:// protocol if an IP or localhost is used
     if (v.nodeHost?.match(/^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|localhost)(?::[0-9]*)?$/)) {
@@ -82,7 +91,13 @@ const NetworkSettingsSection = () => {
 
     overrideSelectionIfMatchesPreset(newSettings)
 
-    setTempAdvancedSettings(newSettings)
+    setTempNetworkSettings(newSettings)
+  }
+
+  const editProxySettings = (v: Partial<ProxySettings>) => {
+    console.log(v)
+    console.log(tempProxySettings)
+    setTempProxySettings((p) => ({ ...p, ...v }))
   }
 
   const handleNetworkPresetChange = useCallback(
@@ -103,7 +118,7 @@ const NetworkSettingsSection = () => {
 
         if (networkId !== undefined) {
           dispatch(networkPresetSwitched(networkName))
-          setTempAdvancedSettings(newNetworkSettings)
+          setTempNetworkSettings(newNetworkSettings)
 
           posthog?.capture('Changed network', { network_name: networkName })
           return
@@ -117,7 +132,7 @@ const NetworkSettingsSection = () => {
         if (networkId !== undefined) {
           const settings = { ...newNetworkSettings, networkId: networkId }
           dispatch(customNetworkSettingsSaved(settings))
-          setTempAdvancedSettings(settings)
+          setTempNetworkSettings(settings)
 
           posthog?.capture('Saved custom network settings')
         }
@@ -129,18 +144,31 @@ const NetworkSettingsSection = () => {
   const handleAdvancedSettingsSave = useCallback(() => {
     if (
       selectedNetwork !== 'custom' &&
-      (selectedNetwork === network.name || getNetworkName(tempAdvancedSettings) === network.name)
+      (selectedNetwork === network.name || getNetworkName(tempNetworkSettings) === network.name)
     ) {
       setAdvancedSectionOpen(false)
       setSelectedNetwork(network.name)
       return
     }
 
-    overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
+    overrideSelectionIfMatchesPreset(tempNetworkSettings)
+    dispatch(customNetworkSettingsSaved(tempNetworkSettings))
+
+    // Proxy settings
+    electron?.app.setProxySettings(tempProxySettings.address, tempProxySettings.port)
 
     posthog?.capture('Saved custom network settings')
-  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, posthog, selectedNetwork, tempAdvancedSettings])
+  }, [
+    dispatch,
+    electron?.app,
+    network.name,
+    overrideSelectionIfMatchesPreset,
+    posthog,
+    selectedNetwork,
+    tempNetworkSettings,
+    tempProxySettings.address,
+    tempProxySettings.port
+  ])
 
   // Set existing value on mount
   useMountEffect(() => {
@@ -170,25 +198,40 @@ const NetworkSettingsSection = () => {
       >
         <UrlInputs>
           <h2 tabIndex={0} role="label">
-            {t("Alephium's services")})
+            {t("Alephium's services")}
           </h2>
           <Input
             id="node-host"
             label={t`Node host`}
-            value={tempAdvancedSettings.nodeHost}
-            onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
+            value={tempNetworkSettings.nodeHost}
+            onChange={(e) => editNetworkSettings({ nodeHost: e.target.value })}
           />
           <Input
             id="explorer-api-host"
             label={t`Explorer API host`}
-            value={tempAdvancedSettings.explorerApiHost}
-            onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
+            value={tempNetworkSettings.explorerApiHost}
+            onChange={(e) => editNetworkSettings({ explorerApiHost: e.target.value })}
           />
           <Input
             id="explorer-url"
             label={t`Explorer URL`}
-            value={tempAdvancedSettings.explorerUrl}
-            onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
+            value={tempNetworkSettings.explorerUrl}
+            onChange={(e) => editNetworkSettings({ explorerUrl: e.target.value })}
+          />
+          <h2 tabIndex={0} role="label">
+            {t('Custom proxy')}
+          </h2>
+          <Input
+            id="proxy-address"
+            label={t`Proxy address`}
+            value={tempProxySettings.address}
+            onChange={(e) => editProxySettings({ address: e.target.value })}
+          />
+          <Input
+            id="proxy-port"
+            label={t`Proxy port`}
+            value={tempProxySettings.port}
+            onChange={(e) => editProxySettings({ port: e.target.value })}
           />
         </UrlInputs>
         <Section inList>

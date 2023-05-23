@@ -302,10 +302,10 @@ app.on('ready', async function () {
   })
 
   ipcMain.handle('app:setProxySettings', (address, port) => {
-    appDataStore.set('proxyServer', { address, port })
+    appDataStore.set('proxy-server', { address, port })
   })
 
-  ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxyServer'))
+  ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxy-server'))
 
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
 

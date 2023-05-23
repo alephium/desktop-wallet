@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { clone, merge } from 'lodash'
 
 import { NetworkPreset } from '@/types/network'
-import { NetworkSettings, Settings } from '@/types/settings'
+import { NetworkSettings, ProxySettings, Settings } from '@/types/settings'
 
 export const networkPresets: Record<NetworkPreset, NetworkSettings> = {
   mainnet: {
@@ -54,6 +54,11 @@ export const defaultSettings: Settings = {
     fiatCurrency: 'USD'
   },
   network: clone(networkPresets.mainnet) as NetworkSettings
+}
+
+export const defaultProxySettings: ProxySettings = {
+  address: '',
+  port: ''
 }
 
 type SettingsKey = keyof Settings
