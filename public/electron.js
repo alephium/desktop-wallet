@@ -22,6 +22,7 @@ const path = require('path')
 const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
 const { autoUpdater } = require('electron-updater')
+const AppDataStore = require('./appDataStore.js')
 
 // Handle deep linking for alephium://
 
@@ -45,6 +46,16 @@ autoUpdater.autoDownload = false
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+// App data
+
+// Proxy settings
+const appDataStore = new AppDataStore({
+  configName: 'app-data',
+  defaults: {
+    proxyServer: { address: '', port: '' }
+  }
+})
 
 // Build menu
 
@@ -289,6 +300,12 @@ app.on('ready', async function () {
 
     if (preferedLanguages.length > 0) return preferedLanguages[0]
   })
+
+  ipcMain.handle('app:setProxySettings', (address, port) => {
+    appDataStore.set('proxyServer', { address, port })
+  })
+
+  ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxyServer'))
 
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
 

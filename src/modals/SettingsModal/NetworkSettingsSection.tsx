@@ -169,6 +169,9 @@ const NetworkSettingsSection = () => {
         onClick={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >
         <UrlInputs>
+          <h2 tabIndex={0} role="label">
+            {t("Alephium's services")})
+          </h2>
           <Input
             id="node-host"
             label={t`Node host`}
