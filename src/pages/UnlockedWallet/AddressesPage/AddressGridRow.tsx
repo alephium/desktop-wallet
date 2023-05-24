@@ -56,7 +56,8 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const assets = useAppSelector((s) => selectAddressesAssets(s, addressHash))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker)
+  const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker)
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 

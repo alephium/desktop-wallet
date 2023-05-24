@@ -31,6 +31,7 @@ import {
   analyticsToggled,
   devToolsToggled,
   discreetModeToggled,
+  fiatCurrencyChanged,
   languageChanged,
   languageChangeFinished,
   languageChangeStarted,
@@ -84,6 +85,9 @@ const settingsSlice = createSlice({
       .addCase(analyticsToggled, (state, action) => {
         state.analytics = action.payload
       })
+      .addCase(fiatCurrencyChanged, (state, action) => {
+        state.fiatCurrency = action.payload
+      })
   }
 })
 
@@ -101,7 +105,8 @@ settingsListenerMiddleware.startListening({
     systemLanguageMatchSucceeded,
     systemLanguageMatchFailed,
     walletLockTimeChanged,
-    analyticsToggled
+    analyticsToggled,
+    fiatCurrencyChanged
   ),
   effect: (_, { getState }) => {
     const state = getState() as RootState

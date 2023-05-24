@@ -52,11 +52,13 @@
   "Call contract": "Chamar o contrato",
   "Cancel": "Cancelar",
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Anotar cuidadosamente as palavras! Elas são a frase secreta de recuperação da sua carteira.",
-  "Change the wallet language": "Alterar o idioma da carteira",
+  "Change the currency to use to display amounts.": "Change the currency to use to display amounts.",
+  "Change the wallet language.": "Change the wallet language.",
   "Change wallet name": "Change wallet name",
   "Check": "Verificar",
   "Choose a contact": "Choose a contact",
   "Click on an address to copy its private key.": "Click on an address to copy its private key.",
+  "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Clique para ver menos",
   "Click to see more": "Clique para ver mais",
   "Close": "Fechar",
@@ -95,6 +97,7 @@
   "Could not save contact.": "Could not save contact.",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
+  "Currency": "Currency",
   "Current dApp connection details": "Current dApp connection details",
   "Current network": "Rede atual",
   "Current wallet": "Carteira atual",
@@ -421,6 +424,5 @@
   "Your addresses": "Your addresses",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "A sua carteira",
-  "Click to deactivate discreet mode": "Click to deactivate discreet mode"
+  "Your Wallet": "A sua carteira"
 }

@@ -37,7 +37,9 @@ const swapDelayInSeconds = 8
 const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const { t } = useTranslation()
   const activeWallet = useAppSelector((s) => s.activeWallet)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
+
+  const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker, {
     pollingInterval: 60000
   })
 

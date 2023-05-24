@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
-import Input from '@/components/Inputs/Input'
 import Select from '@/components/Inputs/Select'
 import Toggle from '@/components/Inputs/Toggle'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
@@ -34,28 +33,26 @@ import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import {
   analyticsToggled,
   discreetModeToggled,
+  fiatCurrencyChanged,
   languageChanged,
   passwordRequirementToggled,
   walletLockTimeChanged
 } from '@/storage/settings/settingsActions'
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
-import { Language, ThemeSettings } from '@/types/settings'
+import { Currency, Language, ThemeSettings } from '@/types/settings'
 import { links } from '@/utils/links'
-import { getAvailableLanguageOptions } from '@/utils/settings'
+import { fiatCurrencyOptions, languageOptions, locktimeInMinutes } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
   className?: string
 }
 
-const languageOptions = getAvailableLanguageOptions()
-
 const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector((s) => !!s.activeWallet.mnemonic)
-  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics } = useAppSelector(
-    (s) => s.settings
-  )
+  const { walletLockTimeInMinutes, discreetMode, passwordRequirement, language, theme, analytics, fiatCurrency } =
+    useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
   const [isPasswordModelOpen, setIsPasswordModalOpen] = useState(false)
@@ -81,6 +78,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     dispatch(languageChanged(language))
 
     posthog?.capture('Changed language', { language })
+  }
+
+  const handleFiatCurrencyChange = (currency: Currency) => {
+    dispatch(fiatCurrencyChanged(currency))
+
+    posthog?.capture('Changed fiat currency', { currency })
   }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
@@ -114,35 +117,47 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   }
 
   const discreetModeText = t('Discreet mode')
+
   const themeOptions = [
     { label: t('System'), value: 'system' as ThemeSettings },
     { label: t('Light'), value: 'light' as ThemeSettings },
     { label: t('Dark'), value: 'dark' as ThemeSettings }
   ]
 
+  // Make sure to find the closest available locktime if the previous one was set before using a Select component.
+  const currentLockTime = walletLockTimeInMinutes
+    ? locktimeInMinutes.reduce((prev, curr) =>
+        Math.abs(curr - walletLockTimeInMinutes) < Math.abs(prev - walletLockTimeInMinutes) ? curr : prev
+      )
+    : 0
+
   return (
     <Box className={className}>
       <KeyValueInput
-        label={t`Lock time`}
-        description={t`Duration in minutes after which an idle wallet will lock automatically.`}
+        label={t('Lock time')}
+        description={t('Duration in minutes after which an idle wallet will lock automatically.')}
         InputComponent={
-          <Input
+          <Select
             id="wallet-lock-time-in-minutes"
-            value={walletLockTimeInMinutes || ''}
-            onChange={(v) => handleWalletLockTimeChange(v.target.value)}
-            label={walletLockTimeInMinutes ? t`Minutes` : t`Off`}
-            type="number"
-            step={1}
-            min={1}
+            options={locktimeInMinutes.map((v) => ({
+              label: v ? `${v} ${t('Minutes')}` : t('Off'),
+              value: v.toString()
+            }))}
+            onSelect={handleWalletLockTimeChange}
+            controlledValue={{
+              value: currentLockTime?.toString() || '',
+              label: currentLockTime ? `${currentLockTime} ${t('Minutes')}` : t('Off')
+            }}
             noMargin
+            title={t('Lock time')}
             heightSize="small"
           />
         }
       />
       <HorizontalDivider />
       <KeyValueInput
-        label={t`Theme`}
-        description={t`Select the theme and please your eyes.`}
+        label={t('Theme')}
+        description={t('Select the theme and please your eyes.')}
         InputComponent={
           <Select
             id="theme"
@@ -150,7 +165,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             onSelect={handleThemeSelect}
             controlledValue={themeOptions.find((l) => l.value === theme)}
             noMargin
-            title={t`Theme`}
+            title={t('Theme')}
             heightSize="small"
           />
         }
@@ -158,23 +173,23 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       <HorizontalDivider />
       <KeyValueInput
         label={discreetModeText}
-        description={t`Toggle discreet mode (hide amounts).`}
+        description={t('Toggle discreet mode (hide amounts).')}
         InputComponent={<Toggle label={discreetModeText} toggled={discreetMode} onToggle={handleDiscreetModeToggle} />}
       />
       <HorizontalDivider />
       {isAuthenticated && (
         <>
           <KeyValueInput
-            label={t`Password requirement`}
-            description={t`Require password confirmation before sending each transaction.`}
+            label={t('Password requirement')}
+            description={t('Require password confirmation before sending each transaction.')}
             InputComponent={<Toggle toggled={passwordRequirement} onToggle={onPasswordRequirementChange} />}
           />
           <HorizontalDivider />
         </>
       )}
       <KeyValueInput
-        label={t`Language`}
-        description={t`Change the wallet language`}
+        label={t('Language')}
+        description={t('Change the wallet language.')}
         InputComponent={
           <Select
             id="language"
@@ -182,7 +197,23 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             onSelect={handleLanguageChange}
             controlledValue={languageOptions.find((l) => l.value === language)}
             noMargin
-            title={t`Language`}
+            title={t('Language')}
+            heightSize="small"
+          />
+        }
+      />
+      <HorizontalDivider />
+      <KeyValueInput
+        label={t('Currency')}
+        description={t('Change the currency to use to display amounts.')}
+        InputComponent={
+          <Select
+            id="fiat-currency"
+            options={fiatCurrencyOptions}
+            onSelect={handleFiatCurrencyChange}
+            controlledValue={fiatCurrencyOptions.find((l) => l.value === fiatCurrency)}
+            noMargin
+            title={t('Currency')}
             heightSize="small"
           />
         }

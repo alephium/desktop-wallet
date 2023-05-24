@@ -68,7 +68,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
   const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies.USD.ticker, {
+  const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker, {
     pollingInterval: 60000
   })
 
@@ -97,7 +98,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
               {isPriceLoading || stateUninitialized ? (
                 <SkeletonLoader height="32px" style={{ marginBottom: 7, marginTop: 7 }} />
               ) : (
-                <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies['USD'].symbol} />
+                <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies[fiatCurrency].symbol} />
               )}
               <Opacity fadeOut={isShowingHistoricWorth}>
                 <FiatDeltaPercentage>
@@ -177,7 +178,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             <ChartInnerContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <HistoricWorthChart
                 addressHash={addressHash}
-                currency={currencies.USD.ticker}
+                currency={currencies[fiatCurrency].ticker}
                 onDataPointHover={setHoveredDataPoint}
                 onWorthInBeginningOfChartChange={setWorthInBeginningOfChart}
                 latestWorth={totalAmountWorth}

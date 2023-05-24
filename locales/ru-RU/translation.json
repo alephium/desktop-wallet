@@ -52,11 +52,13 @@
   "Call contract": "Вызов контракта",
   "Cancel": "Отмена",
   "Carefully note down the words! They are your wallet's secret recovery phrase.": "Внимательно запишите слова! Они являются секретной фразой восстановления вашего кошелька.",
-  "Change the wallet language": "Изменить язык кошелька",
+  "Change the currency to use to display amounts.": "Change the currency to use to display amounts.",
+  "Change the wallet language.": "Change the wallet language.",
   "Change wallet name": "Change wallet name",
   "Check": "Проверить",
   "Choose a contact": "Choose a contact",
   "Click on an address to copy its private key.": "Click on an address to copy its private key.",
+  "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Нажмите, чтобы увидеть меньше",
   "Click to see more": "Нажмите, чтобы увидеть больше",
   "Close": "Закрыть",
@@ -95,6 +97,7 @@
   "Could not save contact.": "Could not save contact.",
   "Could not save new wallet name.": "Could not save new wallet name.",
   "Create contacts to avoid mistakes when sending transactions!": "Create contacts to avoid mistakes when sending transactions!",
+  "Currency": "Currency",
   "Current dApp connection details": "Current dApp connection details",
   "Current network": "Текущая сеть",
   "Current wallet": "Текущий кошелек",
@@ -421,6 +424,5 @@
   "Your addresses": "Your addresses",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Ваш кошелек",
-  "Click to deactivate discreet mode": "Click to deactivate discreet mode"
+  "Your Wallet": "Ваш кошелек"
 }
