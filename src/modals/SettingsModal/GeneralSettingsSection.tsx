@@ -83,7 +83,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const handleFiatCurrencyChange = (currency: Currency) => {
     dispatch(fiatCurrencyChanged(currency))
 
-    posthog?.capture('Changed language', { language })
+    posthog?.capture('Changed fiat currency', { currency })
   }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
@@ -213,7 +213,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             onSelect={handleFiatCurrencyChange}
             controlledValue={fiatCurrencyOptions.find((l) => l.value === fiatCurrency)}
             noMargin
-            title={t('Language')}
+            title={t('Currency')}
             heightSize="small"
           />
         }
