@@ -90,7 +90,8 @@ const App = () => {
       devTools: settings.devTools,
       lockTimeInMs: settings.walletLockTimeInMinutes,
       language: settings.language,
-      passwordRequirement: settings.passwordRequirement
+      passwordRequirement: settings.passwordRequirement,
+      fiatCurrency: settings.fiatCurrency
     })
   }, [posthog?.people, settings, wallets.length])
 
