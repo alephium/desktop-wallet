@@ -53,8 +53,6 @@ export const receiveTestnetTokens = createAsyncThunk<undefined, AddressHash, { r
       body: destinationAddress
     })
 
-    console.log(response)
-
     if (!response.ok) {
       return rejectWithValue({
         text: i18n.t('Encountered error while calling the faucet. Please try again in a few minutes.'),
