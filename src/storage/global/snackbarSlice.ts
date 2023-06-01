@@ -25,7 +25,6 @@ import {
   syncAddressesData
 } from '@/storage/addresses/addressesActions'
 import { contactStorageFailed, contactStoredInPersistentStorage } from '@/storage/addresses/addressesActions'
-import { receiveTestnetTokens } from '@/storage/assets/assetsActions'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
 import {
@@ -43,6 +42,7 @@ import {
   apiClientInitSucceeded,
   customNetworkSettingsSaved
 } from '@/storage/settings/networkActions'
+import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
 import {
   csvFileGenerationFinished,
   csvFileGenerationStarted,
@@ -183,7 +183,8 @@ const snackbarSlice = createSlice({
       .addCase(receiveTestnetTokens.fulfilled, (state) =>
         displayMessageImmediately(state, {
           text: i18n.t('Testnet tokens incoming.'),
-          type: 'success'
+          type: 'success',
+          duration: 5000
         })
       )
       .addCase(receiveTestnetTokens.rejected, (state, action) => {

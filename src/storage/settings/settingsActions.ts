@@ -16,9 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createAction } from '@reduxjs/toolkit'
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
+import i18n from '@/i18n'
+import { AddressHash } from '@/types/addresses'
 import { Language, Settings, ThemeType } from '@/types/settings'
+import { SnackbarMessage } from '@/types/snackbar'
 
 export const languageChangeStarted = createAction('settings/languageChangeStarted')
 
@@ -47,3 +50,20 @@ export const walletLockTimeChanged = createAction<Settings['general']['walletLoc
 export const analyticsToggled = createAction<Settings['general']['analytics']>('settings/analyticsToggled')
 
 export const fiatCurrencyChanged = createAction<Settings['general']['fiatCurrency']>('settings/fiatCurrencyChanged')
+
+export const receiveTestnetTokens = createAsyncThunk<undefined, AddressHash, { rejectValue: SnackbarMessage }>(
+  'assets/receiveTestnetTokens',
+  async (destinationAddress: AddressHash, { rejectWithValue }) => {
+    const response = await fetch('https://faucet.testnet.alephium.org/send', {
+      method: 'POST',
+      body: destinationAddress
+    })
+
+    if (!response.ok) {
+      return rejectWithValue({
+        text: i18n.t('Encountered error while calling the faucet. Please try again in a few minutes.'),
+        type: 'alert'
+      })
+    }
+  }
+)
