@@ -343,7 +343,7 @@
   "Tell us!": "Dites-nous!",
   "Testnet": "Testnet",
   "Testnet faucet": "Testnet faucet",
-  "Testnet tokens incoming.": "'Testnet tokens incoming.",
+  "Testnet tokens incoming.": "Testnet tokens incoming.",
   "The amount must be greater than {{ minAmount }}": "Le montant doit être supérieur à {{ minAmount }}",
   "The current network ({{ currentNetwork }}) does not match the network requested by WalletConnect ({{ walletConnectNetwork }})": "Le réseau actuel ({{ currentNetwork }}) ne correspond pas au réseau demandé par WalletConnect ({{ walletConnectNetwork }})",
   "The easiest way to get started with Alephium.": "Le moyen le plus simple de commencer avec Alephium.",
