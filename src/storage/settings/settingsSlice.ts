@@ -48,12 +48,12 @@ import { RootState } from '@/storage/store'
 import { GeneralSettings } from '@/types/settings'
 
 interface SettingsState extends GeneralSettings {
-  faucetCallLoading: boolean
+  faucetCallPending: boolean
 }
 
 const initialState: SettingsState = {
   ...(SettingsStorage.load('general') as GeneralSettings),
-  faucetCallLoading: false
+  faucetCallPending: false
 }
 
 const settingsSlice = createSlice({
@@ -97,13 +97,13 @@ const settingsSlice = createSlice({
         state.fiatCurrency = action.payload
       })
       .addCase(receiveTestnetTokens.pending, (state) => {
-        state.faucetCallLoading = true
+        state.faucetCallPending = true
       })
       .addCase(receiveTestnetTokens.fulfilled, (state) => {
-        state.faucetCallLoading = false
+        state.faucetCallPending = false
       })
       .addCase(receiveTestnetTokens.rejected, (state) => {
-        state.faucetCallLoading = false
+        state.faucetCallPending = false
       })
   }
 })

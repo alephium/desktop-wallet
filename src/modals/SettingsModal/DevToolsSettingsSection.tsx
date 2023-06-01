@@ -49,6 +49,7 @@ const DevToolsSettingsSection = () => {
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const currentNetwork = useAppSelector((s) => s.network)
+  const faucetCallPending = useAppSelector((s) => s.settings.faucetCallPending)
   const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
@@ -88,6 +89,11 @@ const DevToolsSettingsSection = () => {
     setSelectedAddress(undefined)
   }
 
+  const handleFaucetCall = () => {
+    defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))
+    posthog?.capture('Testnet faucet call')
+  }
+
   return (
     <>
       <Section align="flex-start">
@@ -116,12 +122,7 @@ const DevToolsSettingsSection = () => {
                 )}
               />
             )}
-            <Button
-              Icon={Download}
-              onClick={() => defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))}
-              role="secondary"
-              wide
-            >
+            <Button Icon={Download} onClick={handleFaucetCall} role="secondary" loading={faucetCallPending} wide>
               {t('Receive testnet tokens')}
             </Button>
           </Section>
