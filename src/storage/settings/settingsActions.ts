@@ -78,7 +78,7 @@ export const receiveTestnetTokens = createAsyncThunk<PendingTransaction, Address
       hash: hash,
       fromAddress: 'Faucet',
       toAddress: destinationAddress,
-      amount: '-',
+      amount: '12',
       timestamp: new Date().getTime(),
       status: 'pending',
       type: 'transfer'

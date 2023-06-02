@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 import { uniq } from 'lodash'
 
 import {
@@ -36,6 +36,7 @@ import {
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter, balanceHistoryAdapter } from '@/storage/addresses/addressesAdapters'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
+import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
@@ -82,14 +83,6 @@ const addressesSlice = createSlice({
             isDefault: true
           }
         })
-      })
-      .addCase(transactionSent, (state, action) => {
-        const pendingTransaction = action.payload
-        const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
-        const toAddress = state.entities[pendingTransaction.toAddress]
-
-        fromAddress.transactions.push(pendingTransaction.hash)
-        if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
       })
       .addCase(newAddressesSaved, (state, action) => {
         const addresses = action.payload
@@ -210,6 +203,15 @@ const addressesSlice = createSlice({
           }
         })
       })
+
+    builder.addMatcher(isAnyOf(transactionSent, receiveTestnetTokens.fulfilled), (state, action) => {
+      const pendingTransaction = action.payload
+      const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
+      const toAddress = state.entities[pendingTransaction.toAddress] as Address
+
+      ;(fromAddress || toAddress).transactions.push(pendingTransaction.hash)
+      if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
+    })
   }
 })
 
