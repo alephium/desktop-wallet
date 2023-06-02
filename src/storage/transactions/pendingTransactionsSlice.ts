@@ -26,6 +26,7 @@ import {
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
+import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
 import { RootState } from '@/storage/store'
 import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
 import { storedPendingTransactionsLoaded, transactionSent } from '@/storage/transactions/transactionsActions'
@@ -44,6 +45,7 @@ const pendingTransactionsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(transactionSent, pendingTransactionsAdapter.addOne)
+      .addCase(receiveTestnetTokens.fulfilled, pendingTransactionsAdapter.addOne)
       .addCase(syncAddressesData.fulfilled, removeTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
@@ -62,6 +64,7 @@ pendingTransactionsListenerMiddleware.startListening({
   matcher: isAnyOf(
     transactionSent,
     syncAddressesData.fulfilled,
+    receiveTestnetTokens.fulfilled,
     syncAddressTransactionsNextPage.fulfilled,
     syncAllAddressesTransactionsNextPage.fulfilled
   ),

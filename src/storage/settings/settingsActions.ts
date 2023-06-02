@@ -22,6 +22,7 @@ import i18n from '@/i18n'
 import { AddressHash } from '@/types/addresses'
 import { Language, Settings, ThemeType } from '@/types/settings'
 import { SnackbarMessage } from '@/types/snackbar'
+import { PendingTransaction } from '@/types/transactions'
 
 export const languageChangeStarted = createAction('settings/languageChangeStarted')
 
@@ -51,9 +52,9 @@ export const analyticsToggled = createAction<Settings['general']['analytics']>('
 
 export const fiatCurrencyChanged = createAction<Settings['general']['fiatCurrency']>('settings/fiatCurrencyChanged')
 
-export const receiveTestnetTokens = createAsyncThunk<undefined, AddressHash, { rejectValue: SnackbarMessage }>(
+export const receiveTestnetTokens = createAsyncThunk<PendingTransaction, AddressHash, { rejectValue: SnackbarMessage }>(
   'assets/receiveTestnetTokens',
-  async (destinationAddress: AddressHash, { rejectWithValue }) => {
+  async (destinationAddress: AddressHash, { rejectWithValue, fulfillWithValue }) => {
     const response = await fetch('https://faucet.testnet.alephium.org/send', {
       method: 'POST',
       body: destinationAddress
@@ -61,9 +62,26 @@ export const receiveTestnetTokens = createAsyncThunk<undefined, AddressHash, { r
 
     if (!response.ok) {
       return rejectWithValue({
-        text: i18n.t('Encountered error while calling the faucet. Please try again in a few minutes.'),
+        text:
+          response.status === 429
+            ? i18n.t('You have reached the maximum calls limit. Please try again in a few minutes.')
+            : i18n.t('Encountered error while calling the faucet.'),
         type: 'alert'
       })
     }
+
+    const responseURL = await (await response.text()).trim()
+
+    const hash = responseURL.match(/\/([a-fA-F0-9]+)$/)?.[1] || ''
+
+    return fulfillWithValue({
+      hash: hash,
+      fromAddress: 'Faucet',
+      toAddress: destinationAddress,
+      amount: '-',
+      timestamp: new Date().getTime(),
+      status: 'pending',
+      type: 'transfer'
+    })
   }
 )
