@@ -159,6 +159,7 @@ const NetworkSettingsSection = () => {
 
     // Proxy settings
     electron?.app.setProxySettings(tempProxySettings.address, tempProxySettings.port)
+    electron?.app.applyProxySettings(tempProxySettings.address, tempProxySettings.port)
 
     posthog?.capture('Saved custom network settings')
   }, [

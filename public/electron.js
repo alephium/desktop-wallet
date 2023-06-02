@@ -159,6 +159,8 @@ const template = [
   }
 ]
 
+const appURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
+
 let deepLinkUri = null
 
 function createWindow() {
@@ -182,7 +184,7 @@ function createWindow() {
     mainWindow.setIcon(nativeImage.createFromPath(path.join(__dirname, 'icons/logo-48.png')))
   }
 
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+  mainWindow.loadURL(appURL)
 
   if (isDev) {
     // Open the DevTools.
@@ -307,11 +309,11 @@ app.on('ready', async function () {
 
   ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxy'))
 
-  ipcMain.handle('app:applyProxySettings', (_, address, port) =>
-    mainWindow.webContents.session
-      .setProxy({ proxyRules: `socks5://${address}:${port}` })
-      .catch((err) => console.error(err))
-  )
+  ipcMain.handle('app:applyProxySettings', (_, address, port) => {
+    let proxyRules = !address && !port ? undefined : `socks5://${address}:${port}`
+
+    mainWindow.webContents.session.setProxy({ proxyRules }).catch((err) => console.error(err))
+  })
 
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
 
