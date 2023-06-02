@@ -307,6 +307,12 @@ app.on('ready', async function () {
 
   ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxy'))
 
+  ipcMain.handle('app:applyProxySettings', (_, address, port) =>
+    mainWindow.webContents.session
+      .setProxy({ proxyRules: `socks5://${address}:${port}` })
+      .catch((err) => console.error(err))
+  )
+
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
 
   ipcMain.handle('wc:resetDeepLinkUri', () => {
