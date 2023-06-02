@@ -53,7 +53,7 @@ let mainWindow
 const appDataStore = new AppDataStore({
   configName: 'app-data',
   defaults: {
-    proxyServer: { address: '', port: '' }
+    proxy: { address: '', port: '' }
   }
 })
 
@@ -301,11 +301,11 @@ app.on('ready', async function () {
     if (preferedLanguages.length > 0) return preferedLanguages[0]
   })
 
-  ipcMain.handle('app:setProxySettings', (address, port) => {
-    appDataStore.set('proxy-server', { address, port })
+  ipcMain.handle('app:setProxySettings', (_, address, port) => {
+    appDataStore.set('proxy', { address, port })
   })
 
-  ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxy-server'))
+  ipcMain.handle('app:getProxySettings', () => appDataStore.get('proxy'))
 
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)
 

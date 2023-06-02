@@ -22,9 +22,11 @@ const fs = require('fs')
 
 class Store {
   constructor(opts) {
-    const appDataPath = electron.app.getPath('appData')
+    const appDataPath = electron.app.getPath('userData')
     this.path = path.join(appDataPath, opts.configName + '.json')
+    console.log(this.path)
     this.data = parseDataFile(this.path, opts.defaults)
+    console.log(this.path)
   }
 
   get(key) {
@@ -33,6 +35,8 @@ class Store {
 
   set(key, val) {
     this.data[key] = val
+    console.log(this.path)
+    console.log(this.data[key])
     fs.writeFileSync(this.path, JSON.stringify(this.data))
   }
 }

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AlertCircle } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -65,14 +65,21 @@ const NetworkSettingsSection = () => {
   const _window = window as unknown as AlephiumWindow
   const electron = _window.electron
 
-  const proxySettings = electron?.app.getProxySettings()
-
   const [tempNetworkSettings, setTempNetworkSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
 
-  const [tempProxySettings, setTempProxySettings] = useState<ProxySettings>(proxySettings || defaultProxySettings)
+  const [tempProxySettings, setTempProxySettings] = useState<ProxySettings>(defaultProxySettings)
 
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
+
+  useEffect(() => {
+    const getProxySttings = async () => {
+      const proxySettings = await electron?.app.getProxySettings()
+      setTempProxySettings(proxySettings || defaultProxySettings)
+    }
+
+    getProxySttings()
+  }, [electron?.app])
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
@@ -95,8 +102,6 @@ const NetworkSettingsSection = () => {
   }
 
   const editProxySettings = (v: Partial<ProxySettings>) => {
-    console.log(v)
-    console.log(tempProxySettings)
     setTempProxySettings((p) => ({ ...p, ...v }))
   }
 
@@ -146,9 +151,7 @@ const NetworkSettingsSection = () => {
       selectedNetwork !== 'custom' &&
       (selectedNetwork === network.name || getNetworkName(tempNetworkSettings) === network.name)
     ) {
-      setAdvancedSectionOpen(false)
       setSelectedNetwork(network.name)
-      return
     }
 
     overrideSelectionIfMatchesPreset(tempNetworkSettings)
@@ -166,8 +169,7 @@ const NetworkSettingsSection = () => {
     posthog,
     selectedNetwork,
     tempNetworkSettings,
-    tempProxySettings.address,
-    tempProxySettings.port
+    tempProxySettings
   ])
 
   // Set existing value on mount
@@ -205,18 +207,21 @@ const NetworkSettingsSection = () => {
             label={t`Node host`}
             value={tempNetworkSettings.nodeHost}
             onChange={(e) => editNetworkSettings({ nodeHost: e.target.value })}
+            noMargin
           />
           <Input
             id="explorer-api-host"
             label={t`Explorer API host`}
             value={tempNetworkSettings.explorerApiHost}
             onChange={(e) => editNetworkSettings({ explorerApiHost: e.target.value })}
+            noMargin
           />
           <Input
             id="explorer-url"
             label={t`Explorer URL`}
             value={tempNetworkSettings.explorerUrl}
             onChange={(e) => editNetworkSettings({ explorerUrl: e.target.value })}
+            noMargin
           />
           <h2 tabIndex={0} role="label">
             {t('Custom proxy')}
@@ -226,12 +231,14 @@ const NetworkSettingsSection = () => {
             label={t`Proxy address`}
             value={tempProxySettings.address}
             onChange={(e) => editProxySettings({ address: e.target.value })}
+            noMargin
           />
           <Input
             id="proxy-port"
             label={t`Proxy port`}
             value={tempProxySettings.port}
             onChange={(e) => editProxySettings({ port: e.target.value })}
+            noMargin
           />
         </UrlInputs>
         <Section inList>
@@ -245,6 +252,7 @@ const NetworkSettingsSection = () => {
 const UrlInputs = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 15px;
 `
 
 const StyledInfoBox = styled(InfoBox)`
