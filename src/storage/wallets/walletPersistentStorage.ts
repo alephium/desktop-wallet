@@ -79,7 +79,8 @@ class WalletStorage {
     const dataToStore: StoredWallet = {
       id,
       name,
-      encrypted: wallet.encrypt(password)
+      encrypted: wallet.encrypt(password),
+      lastUse: new Date()
     }
 
     localStorage.setItem(this.getKey(id), JSON.stringify(dataToStore))

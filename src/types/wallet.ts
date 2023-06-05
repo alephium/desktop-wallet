@@ -41,6 +41,7 @@ export type StoredWallet = {
   id: ActiveWallet['id']
   name: ActiveWallet['name']
   encrypted: string
+  lastUse: Date
 }
 
 export type UnencryptedWallet = Wallet & {
