@@ -196,7 +196,8 @@ describe('_v140_networkSettingsMigration', () => {
       networkId: 3,
       nodeHost: 'https://mainnet-wallet.custom.com',
       explorerApiHost: 'https://mainnet-backend.custom.com',
-      explorerUrl: 'https://explorer.custom.com'
+      explorerUrl: 'https://explorer.custom.com',
+      proxy: { address: 'foo', port: 'bar' }
     }
 
     SettingsStorage.store('network', customSettings)
@@ -208,6 +209,7 @@ describe('_v140_networkSettingsMigration', () => {
     expect(migratedSettings.nodeHost).toEqual(customSettings.nodeHost)
     expect(migratedSettings.explorerApiHost).toEqual(customSettings.explorerApiHost)
     expect(migratedSettings.explorerUrl).toEqual(customSettings.explorerUrl)
+    expect(migratedSettings.proxy?.address).toEqual('foo')
   })
 })
 
@@ -217,7 +219,8 @@ describe('_v150_networkSettingsMigration', () => {
       networkId: 0,
       nodeHost: 'https://wallet-v18.mainnet.alephium.org',
       explorerApiHost: 'https://backend-v18.mainnet.alephium.org',
-      explorerUrl: 'https://explorer-v18.mainnet.alephium.org'
+      explorerUrl: 'https://explorer-v18.mainnet.alephium.org',
+      proxy: { address: 'foo', port: 'bar' }
     })
 
     migrate._v150_networkSettingsMigration()
@@ -227,6 +230,7 @@ describe('_v150_networkSettingsMigration', () => {
     expect(migratedSettings.nodeHost).toEqual(networkPresets.mainnet.nodeHost)
     expect(migratedSettings.explorerApiHost).toEqual(networkPresets.mainnet.explorerApiHost)
     expect(migratedSettings.explorerUrl).toEqual(networkPresets.mainnet.explorerUrl)
+    expect(migratedSettings.proxy?.address).toEqual('foo')
   })
 
   it('should migrate pre-v1.5.0 deprecated testnet network settings', () => {

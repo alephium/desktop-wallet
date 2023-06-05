@@ -16,13 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Optional } from '@alephium/web3'
 import { clone, mapValues, merge } from 'lodash'
 
 import { NetworkPreset } from '@/types/network'
 import { NetworkSettings, Settings } from '@/types/settings'
 
-const networkBasePresets: Record<NetworkPreset, Optional<NetworkSettings, 'proxy'>> = {
+const networkBasePresets: Record<NetworkPreset, NetworkSettings> = {
   mainnet: {
     networkId: 0,
     nodeHost: 'https://wallet-v20.mainnet.alephium.org',

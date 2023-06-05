@@ -30,8 +30,8 @@ export interface GeneralSettings {
 }
 
 export interface ProxySettings {
-  address: string
-  port: string
+  address?: string
+  port?: string
 }
 
 export interface NetworkSettings {
@@ -39,7 +39,7 @@ export interface NetworkSettings {
   nodeHost: string
   explorerApiHost: string
   explorerUrl: string
-  proxy: ProxySettings
+  proxy?: ProxySettings
 }
 
 export interface Settings {

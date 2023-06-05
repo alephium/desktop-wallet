@@ -91,7 +91,7 @@ const NetworkSettingsSection = () => {
   }
 
   useEffect(() => {
-    if (network.name === 'custom' || network.settings.proxy.address) {
+    if (network.name === 'custom' || network.settings.proxy?.address) {
       setAdvancedSectionOpen(true)
     }
   }, [network.name, network.settings.proxy])
@@ -219,14 +219,14 @@ const NetworkSettingsSection = () => {
           <Input
             id="proxy-address"
             label={t`Proxy address`}
-            value={tempNetworkSettings.proxy.address}
+            value={tempNetworkSettings.proxy?.address}
             onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, address: e.target.value } })}
             noMargin
           />
           <Input
             id="proxy-port"
             label={t`Proxy port`}
-            value={tempNetworkSettings.proxy.port}
+            value={tempNetworkSettings.proxy?.port}
             onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, port: e.target.value } })}
             noMargin
           />
