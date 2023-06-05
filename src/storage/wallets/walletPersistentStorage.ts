@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Wallet, walletOpen } from '@alephium/sdk'
+import { orderBy } from 'lodash'
 import { nanoid } from 'nanoid'
 
 import { StoredWallet, UnencryptedWallet } from '@/types/wallet'
@@ -53,7 +54,7 @@ class WalletStorage {
       }
     }
 
-    return wallets
+    return orderBy(wallets, (w) => w.name.toLowerCase())
   }
 
   load(id: StoredWallet['id'], password: string): UnencryptedWallet {
