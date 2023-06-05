@@ -39,8 +39,8 @@ import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContact from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
-import { devToolsToggled, receiveTestnetTokens } from '@/storage/settings/settingsActions'
+import { copiedToClipboard, copyToClipboardFailed, receiveTestnetTokens } from '@/storage/global/globalActions'
+import { devToolsToggled } from '@/storage/settings/settingsActions'
 import { Address } from '@/types/addresses'
 
 const DevToolsSettingsSection = () => {
@@ -49,7 +49,7 @@ const DevToolsSettingsSection = () => {
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const currentNetwork = useAppSelector((s) => s.network)
-  const faucetCallPending = useAppSelector((s) => s.settings.faucetCallPending)
+  const faucetCallPending = useAppSelector((s) => s.global.faucetCallPending)
   const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
@@ -91,7 +91,7 @@ const DevToolsSettingsSection = () => {
 
   const handleFaucetCall = () => {
     defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))
-    posthog?.capture('Testnet faucet call')
+    posthog?.capture('Requested testnet tokens')
   }
 
   return (

@@ -35,8 +35,8 @@ import {
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter, balanceHistoryAdapter } from '@/storage/addresses/addressesAdapters'
+import { receiveTestnetTokens } from '@/storage/global/globalActions'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
-import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
 import {
@@ -209,7 +209,7 @@ const addressesSlice = createSlice({
       const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
       const toAddress = state.entities[pendingTransaction.toAddress] as Address
 
-      ;(fromAddress || toAddress).transactions.push(pendingTransaction.hash)
+      if (fromAddress) fromAddress.transactions.push(pendingTransaction.hash)
       if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
     })
   }

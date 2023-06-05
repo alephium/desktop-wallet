@@ -32,6 +32,7 @@ import {
   copyToClipboardFailed,
   loadingDataFromLocalStorageFailed,
   localStorageDataMigrationFailed,
+  receiveTestnetTokens,
   snackbarDisplayTimeExpired,
   storingDataToLocalStorageFailed,
   userDataMigrationFailed
@@ -42,7 +43,6 @@ import {
   apiClientInitSucceeded,
   customNetworkSettingsSaved
 } from '@/storage/settings/networkActions'
-import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
 import {
   csvFileGenerationFinished,
   csvFileGenerationStarted,

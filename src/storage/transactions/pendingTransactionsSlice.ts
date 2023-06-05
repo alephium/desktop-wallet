@@ -26,7 +26,7 @@ import {
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
-import { receiveTestnetTokens } from '@/storage/settings/settingsActions'
+import { receiveTestnetTokens } from '@/storage/global/globalActions'
 import { RootState } from '@/storage/store'
 import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
 import { storedPendingTransactionsLoaded, transactionSent } from '@/storage/transactions/transactionsActions'

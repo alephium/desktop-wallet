@@ -36,7 +36,6 @@ import {
   languageChangeFinished,
   languageChangeStarted,
   passwordRequirementToggled,
-  receiveTestnetTokens,
   systemLanguageMatchFailed,
   systemLanguageMatchSucceeded,
   themeSettingsChanged,
@@ -47,14 +46,7 @@ import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
 import { GeneralSettings } from '@/types/settings'
 
-interface SettingsState extends GeneralSettings {
-  faucetCallPending: boolean
-}
-
-const initialState: SettingsState = {
-  ...(SettingsStorage.load('general') as GeneralSettings),
-  faucetCallPending: false
-}
+const initialState = SettingsStorage.load('general') as GeneralSettings
 
 const settingsSlice = createSlice({
   name: 'settings',
@@ -62,7 +54,7 @@ const settingsSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as SettingsState)
+      .addCase(localStorageDataMigrated, () => SettingsStorage.load('general') as GeneralSettings)
       .addCase(systemLanguageMatchSucceeded, (state, { payload: language }) => {
         state.language = language
       })
@@ -95,15 +87,6 @@ const settingsSlice = createSlice({
       })
       .addCase(fiatCurrencyChanged, (state, action) => {
         state.fiatCurrency = action.payload
-      })
-      .addCase(receiveTestnetTokens.pending, (state) => {
-        state.faucetCallPending = true
-      })
-      .addCase(receiveTestnetTokens.fulfilled, (state) => {
-        state.faucetCallPending = false
-      })
-      .addCase(receiveTestnetTokens.rejected, (state) => {
-        state.faucetCallPending = false
       })
   }
 })
