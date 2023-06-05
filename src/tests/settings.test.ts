@@ -35,7 +35,8 @@ const mockSettings = {
     networkId: 123,
     nodeHost: 'https://node',
     explorerApiHost: 'https://explorer-backend',
-    explorerUrl: 'https://explorer'
+    explorerUrl: 'https://explorer',
+    proxy: { address: '1.1.1.1', port: '42' }
   }
 }
 
@@ -43,7 +44,15 @@ it('Should return the network name if all settings match exactly', () => {
   expect(getNetworkName(networkPresets.localhost)).toEqual('localhost'),
     expect(getNetworkName(networkPresets.testnet)).toEqual('testnet'),
     expect(getNetworkName(networkPresets.mainnet)).toEqual('mainnet'),
-    expect(getNetworkName({ nodeHost: '', explorerApiHost: '', explorerUrl: '', networkId: 0 })).toEqual('custom'),
+    expect(
+      getNetworkName({
+        nodeHost: '',
+        explorerApiHost: '',
+        explorerUrl: '',
+        networkId: 0,
+        proxy: { address: '', port: '' }
+      })
+    ).toEqual('custom'),
     expect(
       getNetworkName({
         ...networkPresets.mainnet,
@@ -69,7 +78,8 @@ it('Should update stored settings', () => {
     networkId: 1,
     nodeHost: 'https://node1',
     explorerApiHost: 'https://explorer-backend1',
-    explorerUrl: 'https://explorer1'
+    explorerUrl: 'https://explorer1',
+    proxy: { address: '2.2.2.2', port: '69' }
   }
   SettingsStorage.store('network', newNetworkSettings)
   expect(localStorage.getItem('settings')).toEqual(JSON.stringify({ ...mockSettings, network: newNetworkSettings }))
