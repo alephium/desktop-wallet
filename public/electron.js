@@ -292,13 +292,6 @@ app.on('ready', async function () {
     if (preferedLanguages.length > 0) return preferedLanguages[0]
   })
 
-  ipcMain.handle('app:getProxySettings', async (_, url) => {
-    const proxyString = await mainWindow.webContents.session.resolveProxy(url)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const matches = proxyString.match(/SOCKS5\s([0-9a-zA-Z.-]+):(\d+)/)
-    return { address: matches[1], port: matches[2] }
-  })
-
   ipcMain.handle('app:setProxySettings', async (_, proxySettings) => {
     const { address, port } = proxySettings
     let proxyRules = !address && !port ? undefined : `socks5://${address}:${port}`
