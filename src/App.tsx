@@ -114,7 +114,7 @@ const App = () => {
     } else {
       dispatch(systemLanguageMatchFailed())
     }
-  }, [dispatch])
+  }, [dispatch, electron?.app])
 
   useEffect(() => {
     if (settings.language === undefined) setSystemLanguage()

@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AlertCircle } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -89,6 +89,12 @@ const NetworkSettingsSection = () => {
 
     setTempNetworkSettings(newSettings)
   }
+
+  useEffect(() => {
+    if (network.name === 'custom' || network.settings.proxy.address) {
+      setAdvancedSectionOpen(true)
+    }
+  }, [network.name, network.settings.proxy])
 
   const handleNetworkPresetChange = useCallback(
     async (networkName: NetworkName) => {
