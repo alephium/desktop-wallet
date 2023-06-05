@@ -180,9 +180,11 @@ export const _v200_networkSettingsMigration = () =>
   })
 
 const migrateReleaseNetworkSettings = (migrationsMapping: Record<string, string>) => {
-  const { nodeHost, explorerApiHost, explorerUrl } = SettingsStorage.load('network') as NetworkSettings
+  const previousSettings = SettingsStorage.load('network') as NetworkSettings
+  const { nodeHost, explorerApiHost, explorerUrl } = previousSettings
 
   const migratedNetworkSettings = {
+    ...previousSettings,
     nodeHost: migrationsMapping[nodeHost] ?? nodeHost,
     explorerApiHost: migrationsMapping[explorerApiHost] ?? explorerApiHost,
     explorerUrl: migrationsMapping[explorerUrl] ?? explorerUrl

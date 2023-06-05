@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AlertCircle } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -32,9 +32,9 @@ import ToggleSection from '@/components/ToggleSection'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import i18next from '@/i18n'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
-import { defaultProxySettings, networkPresets } from '@/storage/settings/settingsPersistentStorage'
+import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName, NetworkNames } from '@/types/network'
-import { NetworkSettings, ProxySettings } from '@/types/settings'
+import { NetworkSettings } from '@/types/settings'
 import { AlephiumWindow } from '@/types/window'
 import { useMountEffect } from '@/utils/hooks'
 import { getNetworkName } from '@/utils/settings'
@@ -68,18 +68,7 @@ const NetworkSettingsSection = () => {
   const [tempNetworkSettings, setTempNetworkSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
 
-  const [tempProxySettings, setTempProxySettings] = useState<ProxySettings>(defaultProxySettings)
-
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
-
-  useEffect(() => {
-    const getProxySttings = async () => {
-      const proxySettings = await electron?.app.getProxySettings()
-      setTempProxySettings(proxySettings || defaultProxySettings)
-    }
-
-    getProxySttings()
-  }, [electron?.app])
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
     // Check if values correspond to an existing preset
@@ -99,10 +88,6 @@ const NetworkSettingsSection = () => {
     overrideSelectionIfMatchesPreset(newSettings)
 
     setTempNetworkSettings(newSettings)
-  }
-
-  const editProxySettings = (v: Partial<ProxySettings>) => {
-    setTempProxySettings((p) => ({ ...p, ...v }))
   }
 
   const handleNetworkPresetChange = useCallback(
@@ -158,8 +143,7 @@ const NetworkSettingsSection = () => {
     dispatch(customNetworkSettingsSaved(tempNetworkSettings))
 
     // Proxy settings
-    electron?.app.setProxySettings(tempProxySettings.address, tempProxySettings.port)
-    electron?.app.applyProxySettings(tempProxySettings.address, tempProxySettings.port)
+    electron?.app.setProxySettings(tempNetworkSettings.proxy)
 
     posthog?.capture('Saved custom network settings')
   }, [
@@ -169,8 +153,7 @@ const NetworkSettingsSection = () => {
     overrideSelectionIfMatchesPreset,
     posthog,
     selectedNetwork,
-    tempNetworkSettings,
-    tempProxySettings
+    tempNetworkSettings
   ])
 
   // Set existing value on mount
@@ -225,20 +208,20 @@ const NetworkSettingsSection = () => {
             noMargin
           />
           <h2 tabIndex={0} role="label">
-            {t('Custom proxy')}
+            {t('Custom proxy (SOCKS5)')}
           </h2>
           <Input
             id="proxy-address"
             label={t`Proxy address`}
-            value={tempProxySettings.address}
-            onChange={(e) => editProxySettings({ address: e.target.value })}
+            value={tempNetworkSettings.proxy.address}
+            onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, address: e.target.value } })}
             noMargin
           />
           <Input
             id="proxy-port"
             label={t`Proxy port`}
-            value={tempProxySettings.port}
-            onChange={(e) => editProxySettings({ port: e.target.value })}
+            value={tempNetworkSettings.proxy.port}
+            onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, port: e.target.value } })}
             noMargin
           />
         </UrlInputs>

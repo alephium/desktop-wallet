@@ -29,11 +29,17 @@ export interface GeneralSettings {
   fiatCurrency: Currency
 }
 
+export interface ProxySettings {
+  address: string
+  port: string
+}
+
 export interface NetworkSettings {
   networkId: number
   nodeHost: string
   explorerApiHost: string
   explorerUrl: string
+  proxy: ProxySettings
 }
 
 export interface Settings {
@@ -42,14 +48,6 @@ export interface Settings {
 }
 
 export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'es-ES' | 'id-ID' | 'tr-TR'
-
-// Proxy settings are not part of the network settings
-// because they have an impact on the OS level (ie. not stored in app).
-// I prefer to keep this separated and avoid bloating our app state structure up.
-export interface ProxySettings {
-  address: string
-  port: string
-}
 
 export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG'
 

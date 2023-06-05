@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Error, ProgressInfo, UpdateDownloadedEvent } from 'electron-updater'
 
-import { ProxySettings, ThemeSettings } from './settings'
+import { ThemeSettings } from './settings'
 
 interface NativeTheme {
   shouldUseDarkColors: boolean
@@ -50,9 +50,7 @@ export interface AlephiumWindow extends Window {
       hide: () => void
       show: () => void
       getSystemLanguage: () => Promise<string | undefined>
-      setProxySettings: (address: string, port: string) => void
-      getProxySettings: () => Promise<ProxySettings>
-      applyProxySettings: (address: string, port: string) => Promise<void>
+      setProxySettings: (proxySettings: ProxySettings) => Promise<void>
     }
   }
 }

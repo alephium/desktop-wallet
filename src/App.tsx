@@ -70,6 +70,9 @@ const App = () => {
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
 
+  const _window = window as unknown as AlephiumWindow
+  const electron = _window.electron
+
   useEffect(() => {
     try {
       migrateGeneralSettings()
@@ -96,8 +99,6 @@ const App = () => {
   }, [posthog?.people, settings, wallets.length])
 
   const setSystemLanguage = useCallback(async () => {
-    const _window = window as unknown as AlephiumWindow
-    const electron = _window.electron
     const systemLanguage = await electron?.app.getSystemLanguage()
 
     if (!systemLanguage) {
@@ -131,8 +132,9 @@ const App = () => {
   }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])
 
   useEffect(() => {
+    electron?.app.setProxySettings(network.settings.proxy)
     if (network.status === 'connecting') initializeClient()
-  }, [initializeClient, network.status])
+  }, [electron?.app, initializeClient, network.settings.proxy, network.status])
 
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
