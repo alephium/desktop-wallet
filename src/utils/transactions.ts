@@ -30,6 +30,7 @@ import { ALPH } from '@alephium/token-list'
 import { DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
 import { explorer } from '@alephium/web3'
 import dayjs from 'dayjs'
+import { map } from 'lodash'
 
 import { SelectOption } from '@/components/Inputs/Select'
 import i18n from '@/i18n'
@@ -145,7 +146,7 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   let tokens: Required<AssetAmount>[] = []
 
   if (isPendingTx(tx)) {
-    direction = 'out'
+    direction = map(addresses, 'hash').includes(tx.toAddress) ? 'in' : 'out'
     infoType = 'pending'
     amount = tx.amount ? convertToNegative(BigInt(tx.amount)) : undefined
     tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: convertToNegative(BigInt(token.amount)) })) : []

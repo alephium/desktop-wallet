@@ -32,6 +32,7 @@ import {
   copyToClipboardFailed,
   loadingDataFromLocalStorageFailed,
   localStorageDataMigrationFailed,
+  receiveTestnetTokens,
   snackbarDisplayTimeExpired,
   storingDataToLocalStorageFailed,
   userDataMigrationFailed
@@ -179,6 +180,18 @@ const snackbarSlice = createSlice({
       })
       .addCase(walletConnectPairingFailed, displayError)
       .addCase(walletConnectProposalApprovalFailed, displayError)
+      .addCase(receiveTestnetTokens.fulfilled, (state) =>
+        displayMessageImmediately(state, {
+          text: i18n.t('Testnet tokens incoming.'),
+          type: 'success',
+          duration: 5000
+        })
+      )
+      .addCase(receiveTestnetTokens.rejected, (state, action) => {
+        const message = action.payload
+
+        if (message) displayMessageImmediately(state, message)
+      })
   }
 })
 

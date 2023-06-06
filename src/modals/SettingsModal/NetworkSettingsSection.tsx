@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AlertCircle } from 'lucide-react'
+import { AlertOctagon } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -150,7 +150,7 @@ const NetworkSettingsSection = () => {
   return (
     <>
       <StyledInfoBox
-        Icon={AlertCircle}
+        Icon={AlertOctagon}
         text={t`Make sure to always check what is the selected network before sending transactions.`}
         importance="accent"
       />

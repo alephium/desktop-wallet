@@ -29,6 +29,7 @@ import AddressBadge from '@/components/AddressBadge'
 import Amount from '@/components/Amount'
 import AssetBadge from '@/components/AssetBadge'
 import Badge from '@/components/Badge'
+import HashEllipsed from '@/components/HashEllipsed'
 import HiddenLabel from '@/components/HiddenLabel'
 import IOList from '@/components/IOList'
 import Lock from '@/components/Lock'
@@ -111,16 +112,20 @@ const TransactionalInfo = ({
           {(direction === 'out' || direction === 'swap') && (
             <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
           )}
-          {direction === 'in' && (
-            <IOList
-              currentAddress={addressHash}
-              isOut={false}
-              outputs={outputs}
-              inputs={(tx as explorer.Transaction).inputs}
-              timestamp={(tx as explorer.Transaction).timestamp}
-              truncate
-              disableA11y
-            />
+          {isPending ? (
+            <HashEllipsed hash={tx.fromAddress} />
+          ) : (
+            direction === 'in' && (
+              <IOList
+                currentAddress={addressHash}
+                isOut={false}
+                outputs={outputs}
+                inputs={(tx as explorer.Transaction).inputs}
+                timestamp={(tx as explorer.Transaction).timestamp}
+                truncate
+                disableA11y
+              />
+            )
           )}
         </CellAddress>
       )}

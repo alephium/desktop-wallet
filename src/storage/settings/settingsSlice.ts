@@ -46,7 +46,7 @@ import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
 import { GeneralSettings } from '@/types/settings'
 
-const initialState: GeneralSettings = SettingsStorage.load('general') as GeneralSettings
+const initialState = SettingsStorage.load('general') as GeneralSettings
 
 const settingsSlice = createSlice({
   name: 'settings',
