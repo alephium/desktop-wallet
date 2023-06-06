@@ -97,9 +97,9 @@ const globalSlice = createSlice({
       .addCase(languageChangeStarted, (state) => toggleLoading(state, true, true))
       .addCase(languageChangeFinished, (state) => toggleLoading(state, false, true))
       .addCase(walletSaved, (state, action) => {
-        const { id, name, encrypted } = action.payload.wallet
+        const { id, name, encrypted, lastUsed } = action.payload.wallet
 
-        state.wallets.push({ id, name, encrypted })
+        state.wallets.push({ id, name, encrypted, lastUsed })
       })
       .addCase(walletLocked, resetState)
       .addCase(activeWalletDeleted, resetState)

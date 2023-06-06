@@ -228,7 +228,8 @@ export const _20230228_155100 = () => {
         const newValue: StoredWallet = {
           id,
           name,
-          encrypted: typeof wallet === 'string' ? wallet : JSON.stringify(wallet)
+          encrypted: typeof wallet === 'string' ? wallet : JSON.stringify(wallet),
+          lastUsed: Date.now()
         }
 
         localStorage.setItem(newKey, JSON.stringify(newValue))

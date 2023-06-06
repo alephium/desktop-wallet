@@ -19,6 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AddressKeyPair, Wallet } from '@alephium/sdk'
 
 import { AddressBase } from '@/types/addresses'
+import { TimeInMs } from '@/types/numbers'
 
 export type ActiveWallet = {
   id: string
@@ -41,6 +42,7 @@ export type StoredWallet = {
   id: ActiveWallet['id']
   name: ActiveWallet['name']
   encrypted: string
+  lastUsed: TimeInMs
 }
 
 export type UnencryptedWallet = Wallet & {
