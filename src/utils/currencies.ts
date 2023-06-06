@@ -35,7 +35,6 @@ export const currencies: Record<Currency, CurrencyData> = {
     ticker: 'EUR',
     symbol: '€'
   },
-  },
   IDR: {
     name: 'Rupiah',
     ticker: 'IDR',
