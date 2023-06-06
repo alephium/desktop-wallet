@@ -121,7 +121,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       restoreAddressesFromMetadata()
       restorePendingTransactions()
 
-      WalletStorage.update(walletId, { lastUse: new Date() })
+      WalletStorage.update(walletId, { lastUsed: Date.now() })
 
       posthog?.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
         wallet_name_length: wallet.name.length,

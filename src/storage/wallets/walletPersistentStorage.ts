@@ -81,7 +81,7 @@ class WalletStorage {
       id,
       name,
       encrypted: wallet.encrypt(password),
-      lastUse: new Date()
+      lastUsed: Date.now()
     }
 
     localStorage.setItem(this.getKey(id), JSON.stringify(dataToStore))
