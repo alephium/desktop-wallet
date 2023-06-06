@@ -24,6 +24,7 @@ import styled, { useTheme } from 'styled-components'
 import { fadeIn } from '@/animations'
 import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
+import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
 import SkeletonLoader from '@/components/SkeletonLoader'
@@ -121,6 +122,13 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
                   )}
                 </TokenSymbol>
               </NameColumn>
+              {!asset.verified && (
+                <Column>
+                  <Badge color={asset.verified === undefined ? undefined : theme.global.highlight}>
+                    {asset.verified === undefined ? t('Unknown') : t('Unverified')}
+                  </Badge>
+                </Column>
+              )}
               <TableCellAmount>
                 {stateUninitialized ? (
                   <SkeletonLoader height="20px" width="30%" />

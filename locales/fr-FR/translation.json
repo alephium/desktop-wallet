@@ -431,5 +431,7 @@
   "Your addresses": "Vos adresses",
   "Your CSV file has been generated successfully.": "Votre fichier CSV a été généré correctement.",
   "Your CSV file is being compiled in the background.": "Votre fichier CSV est en cours de création.",
-  "Your Wallet": "Votre portefeuille"
+  "Your Wallet": "Votre portefeuille",
+  "Unknown": "Unknown",
+  "Unverified": "Unverified"
 }
