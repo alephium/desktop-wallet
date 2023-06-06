@@ -16,14 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ALPH, TokenInfo } from '@alephium/token-list'
+import { AssetInfo } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
 import { Ghost } from 'lucide-react'
 import styled, { css } from 'styled-components'
 
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
 
 interface AssetLogoProps {
-  asset: Pick<TokenInfo, 'id' | 'logoURI'>
+  asset: Pick<AssetInfo, 'id' | 'logoURI'>
   size: number
   className?: string
 }

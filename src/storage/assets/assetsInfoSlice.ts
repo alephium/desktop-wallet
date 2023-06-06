@@ -16,7 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ALPH, TokenInfo } from '@alephium/token-list'
+import { AssetInfo } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
 import { hexToString } from '@alephium/web3'
 import { createSlice, EntityState } from '@reduxjs/toolkit'
 
@@ -24,7 +25,7 @@ import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/a
 import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 
-interface AssetsInfoState extends EntityState<TokenInfo> {
+interface AssetsInfoState extends EntityState<AssetInfo> {
   status: 'initialized' | 'uninitialized'
 }
 
@@ -33,7 +34,8 @@ const initialState: AssetsInfoState = assetsInfoAdapter.addOne(
     status: 'uninitialized'
   }),
   {
-    ...ALPH
+    ...ALPH,
+    verified: true
   }
 )
 
@@ -47,7 +49,13 @@ const assetsSlice = createSlice({
         const metadata = action.payload
 
         if (metadata) {
-          assetsInfoAdapter.upsertMany(state, metadata.tokens)
+          assetsInfoAdapter.upsertMany(
+            state,
+            metadata.tokens.map((tokenInfo) => ({
+              ...tokenInfo,
+              verified: true
+            }))
+          )
           state.status = 'initialized'
         }
       })
@@ -61,7 +69,8 @@ const assetsSlice = createSlice({
               id: token.id,
               name: hexToString(token.name),
               symbol: hexToString(token.symbol),
-              decimals: token.decimals
+              decimals: token.decimals,
+              verified: false
             }))
           )
         }

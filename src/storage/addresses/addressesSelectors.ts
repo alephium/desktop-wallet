@@ -63,7 +63,8 @@ export const makeSelectAddressesAlphAsset = () =>
 
     return {
       ...ALPH,
-      ...alphBalances
+      ...alphBalances,
+      verified: true
     }
   })
 
@@ -101,7 +102,8 @@ export const makeSelectAddressesAssets = () =>
           symbol: assetInfo?.symbol,
           description: assetInfo?.description,
           logoURI: assetInfo?.logoURI,
-          decimals: assetInfo?.decimals ?? 0
+          decimals: assetInfo?.decimals ?? 0,
+          verified: assetInfo?.verified
         }
       })
 
