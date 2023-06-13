@@ -108,7 +108,15 @@ export const makeSelectAddressesAssets = () =>
         }
       })
 
-      return [alphAsset, ...sortBy(tokenAssets, [(a) => !a.verified, (a) => a.verified === undefined, 'name', 'id'])]
+      return [
+        alphAsset,
+        ...sortBy(tokenAssets, [
+          (a) => !a.verified,
+          (a) => a.verified === undefined,
+          (a) => a.name?.toLowerCase(),
+          'id'
+        ])
+      ]
     }
   )
 
