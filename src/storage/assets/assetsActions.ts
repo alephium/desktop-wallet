@@ -18,11 +18,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
-import { TokenMetaData } from '@alephium/web3'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import client from '@/api/client'
 import { RootState } from '@/storage/store'
+import { TokenBasicMetadata, TokenMetadataWithId } from '@/types/assets'
 
 export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensInfo', async (_, { getState }) => {
   const state = getState() as RootState
@@ -47,7 +47,7 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
 
 export const syncUnknownTokensInfo = createAsyncThunk(
   'assets/syncUnknownTokensInfo',
-  async (unknownTokenIds: Asset['id'][]) => {
+  async (unknownTokenIds: Asset['id'][]): Promise<TokenBasicMetadata[]> => {
     const results = await Promise.allSettled(
       unknownTokenIds.map((id) =>
         client.node.fetchStdTokenMetaData(id).then((data) => ({
@@ -57,8 +57,8 @@ export const syncUnknownTokensInfo = createAsyncThunk(
       )
     )
 
-    return (results.filter(({ status }) => status === 'fulfilled') as PromiseFulfilledResult<TokenMetaData>[]).map(
-      ({ value: { totalSupply, ...rest } }) => rest
-    )
+    return (
+      results.filter(({ status }) => status === 'fulfilled') as PromiseFulfilledResult<TokenMetadataWithId>[]
+    ).map(({ value: { totalSupply, ...rest } }) => rest)
   }
 )
