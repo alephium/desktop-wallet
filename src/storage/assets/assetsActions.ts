@@ -56,6 +56,6 @@ export const syncUnknownTokensInfo = createAsyncThunk(
       )
     )
 
-    return tokens.map(({ name, symbol, decimals, id }) => ({ name, symbol, decimals, id }))
+    return tokens.map(({ totalSupply, ...rest }) => rest)
   }
 )
