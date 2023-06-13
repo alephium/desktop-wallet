@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Asset, TokenDisplayBalances, UnverifiedAsset, VerifiedAsset } from '@alephium/sdk'
+import { Asset, TokenDisplayBalances } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { createSelector } from '@reduxjs/toolkit'
-import { partition } from 'lodash'
+import { sortBy } from 'lodash'
 
 import { addressesAdapter, contactsAdapter } from '@/storage/addresses/addressesAdapters'
 import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
@@ -108,17 +108,7 @@ export const makeSelectAddressesAssets = () =>
         }
       })
 
-      const [verifiedTokens, remainingTokens] = partition(tokenAssets, (token) => token.verified)
-      const [unverifiedTokens, unknownTokens] = partition(remainingTokens, (token) => token.verified === false)
-
-      return [
-        alphAsset,
-        ...(verifiedTokens as VerifiedAsset[]).sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
-        ...(unverifiedTokens as UnverifiedAsset[]).sort((a, b) =>
-          a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        ),
-        ...unknownTokens.sort((a, b) => a.id.toLowerCase().localeCompare(b.id.toLowerCase()))
-      ]
+      return [alphAsset, ...sortBy(tokenAssets, [(a) => !a.verified, (a) => a.verified === undefined, 'name', 'id'])]
     }
   )
 
