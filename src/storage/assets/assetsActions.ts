@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
+import { TokenMetaData } from '@alephium/web3'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import client from '@/api/client'
@@ -47,7 +48,7 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
 export const syncUnknownTokensInfo = createAsyncThunk(
   'assets/syncUnknownTokensInfo',
   async (unknownTokenIds: Asset['id'][]) => {
-    const tokens = await Promise.all(
+    const results = await Promise.allSettled(
       unknownTokenIds.map((id) =>
         client.node.fetchStdTokenMetaData(id).then((data) => ({
           id,
@@ -56,6 +57,8 @@ export const syncUnknownTokensInfo = createAsyncThunk(
       )
     )
 
-    return tokens.map(({ totalSupply, ...rest }) => rest)
+    return (results.filter(({ status }) => status === 'fulfilled') as PromiseFulfilledResult<TokenMetaData>[]).map(
+      ({ value: { totalSupply, ...rest } }) => rest
+    )
   }
 )
