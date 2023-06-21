@@ -81,6 +81,7 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "events": "^3.3.0",
+    "fetch-retry": "^5.0.6",
     "framer-motion": "^10.11.6",
     "i18next": "^22.4.9",
     "jsdom": "^21.1.1",

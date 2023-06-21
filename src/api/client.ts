@@ -16,10 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ExplorerProvider, NodeProvider, throttledFetch } from '@alephium/web3'
+import { ExplorerProvider, NodeProvider } from '@alephium/web3'
+import fetchRetry from 'fetch-retry'
 
 import { defaultSettings } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
+
+const exponentialBackoffFetchRetry = fetchRetry(fetch, {
+  retryOn: [429],
+  retries: 3,
+  retryDelay: (attempt) => Math.pow(2, attempt) * 1000
+})
 
 export class Client {
   explorer: ExplorerProvider
@@ -42,8 +49,8 @@ export class Client {
 
   private getClients(nodeHost: NetworkSettings['nodeHost'], explorerApiHost: NetworkSettings['explorerApiHost']) {
     return {
-      explorer: new ExplorerProvider(explorerApiHost, undefined, throttledFetch(5)),
-      node: new NodeProvider(nodeHost, undefined, throttledFetch(5))
+      explorer: new ExplorerProvider(explorerApiHost, undefined, exponentialBackoffFetchRetry),
+      node: new NodeProvider(nodeHost, undefined, exponentialBackoffFetchRetry)
     }
   }
 }
