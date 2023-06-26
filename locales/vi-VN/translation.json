@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Gõ mật khẩu để hiện cụm từ khôi phục.",
   "Type your recovery phrase": "Gõ cụm từ khôi phục bí mật",
   "Unable to convert the amount": "Không thể chuyển đổi số lượng",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Tên ví không xác định",
@@ -396,6 +397,7 @@
   "Unlocked at": "Đã khoá tại",
   "Unlocks at": "Mở khoá tại",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Cập nhật",
   "Use an existing wallet": "Sử dụng ví đã có sẳn",
   "Use max amount": "Sử dụng tất cả số dư",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Ví của bạn",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

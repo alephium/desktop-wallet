@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Введите свой пароль для отображения фразы.",
   "Type your recovery phrase": "Введите фразу восстановления",
   "Unable to convert the amount": "Невозможно конвертировать сумму",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Неизвестное имя кошелька",
@@ -396,6 +397,7 @@
   "Unlocked at": "Разблокирован в",
   "Unlocks at": "Разблокируется в",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Обновить",
   "Use an existing wallet": "Использовать существующий кошелек",
   "Use max amount": "Использовать максимальную сумму",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Ваш кошелек",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

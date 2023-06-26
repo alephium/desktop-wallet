@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Geben Sie Ihr Passwort ein, um die Phrase anzuzeigen.",
   "Type your recovery phrase": "Geben Sie Ihre Wiederherstellungsphrase ein",
   "Unable to convert the amount": "Betrag kann nicht konvertiert werden",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Unbekannter Walletname",
@@ -396,6 +397,7 @@
   "Unlocked at": "Entsperrt am",
   "Unlocks at": "Entsperrt zum",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Update",
   "Use an existing wallet": "Vorhandene Wallet verwenden",
   "Use max amount": "Maximalbetrag verwenden",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Ihre Wallet",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Sözcükleri görmek için şifrenizi yazın.",
   "Type your recovery phrase": "Kurtarma sözcüklerinizi yazın",
   "Unable to convert the amount": "Miktar dönüştürülemiyor",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Bilinmeyen adres ismi",
@@ -396,6 +397,7 @@
   "Unlocked at": "Kilidi açıldı",
   "Unlocks at": "Kilidi açılır",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Güncelle",
   "Use an existing wallet": "Varolan bir cüzdanı kullan",
   "Use max amount": "Tüm miktarı kullan",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Cüzdanınız",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

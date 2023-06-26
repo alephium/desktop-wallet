@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Escriba su contraseña para enseñar la frase.",
   "Type your recovery phrase": "Escriba su frase de recuperación",
   "Unable to convert the amount": "Incapaz de convertir el monto",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Nombre de billetera desconocida",
@@ -396,6 +397,7 @@
   "Unlocked at": "Desbloqueado en",
   "Unlocks at": "Se desbloquea en",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Actualizar",
   "Use an existing wallet": "Utilizar una billetera existente",
   "Use max amount": "Utilizar la cantidad máxima",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Su billetera",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

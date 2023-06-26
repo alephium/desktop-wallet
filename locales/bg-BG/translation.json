@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Въведете паролата си, за да покажете фразата.",
   "Type your recovery phrase": "Въведете фразата си за възстановяване",
   "Unable to convert the amount": "Неуспешен опит за преобразуване на сумата",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Неизвестно име на портфейл",
@@ -396,6 +397,7 @@
   "Unlocked at": "Отключено на",
   "Unlocks at": "Отключва се на",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Актуализиране",
   "Use an existing wallet": "Използване на вече съществуващ портфейл",
   "Use max amount": "Използване на максимална сума",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Вашият портфейл",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }

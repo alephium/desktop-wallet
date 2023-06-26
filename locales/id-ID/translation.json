@@ -385,6 +385,7 @@
   "Type your password to show the phrase.": "Ketikkan kata sandi Anda untuk menampilkan frasa.",
   "Type your recovery phrase": "Ketikkan frasa pemulihan Anda",
   "Unable to convert the amount": "Tidak dapat mengonversi jumlah",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Nama dompet tidak dikenal",
@@ -396,6 +397,7 @@
   "Unlocked at": "Tidak terkunci pada",
   "Unlocks at": "Buka kunci di",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Perbarui",
   "Use an existing wallet": "Gunakan dompet yang sudah ada",
   "Use max amount": "Gunakan jumlah maksimum",
@@ -432,6 +434,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Dompet Anda",
-  "Unknown": "Unknown",
-  "Unverified": "Unverified"
+  "No NFTs found.": "No NFTs found."
 }
