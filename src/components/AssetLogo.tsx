@@ -22,18 +22,20 @@ import { HelpCircle } from 'lucide-react'
 import styled, { css } from 'styled-components'
 
 import AlephiumLogoSVG from '@/images/alephium_logo_monochrome.svg'
+import { NFT } from '@/types/assets'
 
 interface AssetLogoProps {
-  asset: Pick<AssetInfo, 'id' | 'logoURI'>
+  assetId: AssetInfo['id']
+  assetImageUrl: AssetInfo['logoURI'] | NFT['image']
   size: number
   className?: string
 }
 
-const AssetLogo = ({ asset, size, className }: AssetLogoProps) => (
+const AssetLogo = ({ assetId, assetImageUrl, size, className }: AssetLogoProps) => (
   <div className={className}>
-    {asset.logoURI ? (
-      <LogoImage src={asset.logoURI} />
-    ) : asset.id === ALPH.id ? (
+    {assetImageUrl ? (
+      <LogoImage src={assetImageUrl} />
+    ) : assetId === ALPH.id ? (
       <LogoImage src={AlephiumLogoSVG} />
     ) : (
       <HelpCircle size={size} />
@@ -49,14 +51,15 @@ export default styled(AssetLogo)`
   height: ${({ size }) => size}px;
   border-radius: ${({ size }) => size}px;
   flex-shrink: 0;
+  overflow: hidden;
 
-  ${({ asset, theme }) =>
-    asset.id === ALPH.id
+  ${({ assetId, assetImageUrl, theme }) =>
+    assetId === ALPH.id
       ? css`
           padding: 5px;
           background: linear-gradient(218.53deg, #0075ff 9.58%, #d340f8 86.74%);
         `
-      : !asset.logoURI &&
+      : !assetImageUrl &&
         css`
           background: ${theme.bg.tertiary};
         `}

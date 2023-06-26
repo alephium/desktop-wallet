@@ -32,7 +32,7 @@ import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import {
-  makeSelectAddressesAssets,
+  makeSelectAddressesTokens,
   selectAddressByHash,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
@@ -52,8 +52,8 @@ const maxDisplayedAssets = 7 // Allow 2 rows by default
 const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const { t } = useTranslation()
   const address = useAppSelector((s) => selectAddressByHash(s, addressHash))
-  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
-  const assets = useAppSelector((s) => selectAddressesAssets(s, addressHash))
+  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
+  const assets = useAppSelector((s) => selectAddressesTokens(s, addressHash))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)

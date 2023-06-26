@@ -33,7 +33,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
-import { makeSelectAddressesAssets, selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesTokens, selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import {
   devModeShortcutDetected,
@@ -57,9 +57,9 @@ const App = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
   const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
-  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
-  const assets = useAppSelector(selectAddressesAssets)
-  const unknownTokens = assets.filter((token) => !token.name)
+  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
+  const tokens = useAppSelector(selectAddressesTokens)
+  const unknownTokens = tokens.filter((token) => !token.name)
   const network = useAppSelector((s) => s.network)
   const addressesStatus = useAppSelector((s) => s.addresses.status)
   const theme = useAppSelector((s) => s.global.theme)

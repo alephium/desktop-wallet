@@ -16,22 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Asset, AssetAmount } from '@alephium/sdk'
-import { FungibleTokenMetaData, NFTMetaData } from '@alephium/web3'
+import styled from 'styled-components'
 
-export type AssetAmountInputType = AssetAmount & { amountInput?: string }
+import { NFT } from '@/types/assets'
 
-export type FungibleTokenBasicMetadata = Omit<FungibleTokenMetaData, 'totalSupply'> & { id: Asset['id'] }
-
-export type NFT = {
-  id: Asset['id']
-  collectionAddress: NFTMetaData['collectionAddress']
-  name: string
-  description: string
-  image: string
+interface NFTThumbnailProps {
+  nft: NFT
+  className?: string
 }
 
-export type SyncUnknownTokensInfoResult = {
-  tokens: FungibleTokenBasicMetadata[]
-  nfts: NFT[]
-}
+const NFTThumbnail = ({ nft, className }: NFTThumbnailProps) => (
+  <NFTThumbnailStyled src={nft.image} alt={nft.description} className={className} />
+)
+
+export default NFTThumbnail
+
+const NFTThumbnailStyled = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-medium);
+`

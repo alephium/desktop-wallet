@@ -19,6 +19,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { AssetInfo } from '@alephium/sdk'
 import { createEntityAdapter } from '@reduxjs/toolkit'
 
+import { NFT } from '@/types/assets'
+
 export const assetsInfoAdapter = createEntityAdapter<AssetInfo>({
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
+})
+
+export const nftsAdapter = createEntityAdapter<NFT>({
   sortComparer: (a, b) => a.name.localeCompare(b.name)
 })

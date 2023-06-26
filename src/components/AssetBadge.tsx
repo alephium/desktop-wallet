@@ -21,7 +21,7 @@ import styled from 'styled-components'
 
 import AssetLogo from '@/components/AssetLogo'
 import { useAppSelector } from '@/hooks/redux'
-import { selectAssetInfoById } from '@/storage/assets/assetsSelectors'
+import { selectAssetInfoById, selectNFTById } from '@/storage/assets/assetsSelectors'
 
 interface AssetBadgeProps {
   assetId: Asset['id']
@@ -30,15 +30,17 @@ interface AssetBadgeProps {
 }
 
 const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
-  const assetInfo = useAppSelector((state) => selectAssetInfoById(state, assetId)) ?? {
+  const assetInfo = useAppSelector((s) => selectAssetInfoById(s, assetId)) ?? {
     id: assetId,
     symbol: undefined,
-    name: undefined
+    name: undefined,
+    logoURI: undefined
   }
+  const nftInfo = useAppSelector((s) => selectNFTById(s, assetId))
 
   return (
     <div className={className} data-tooltip-id="default" data-tooltip-content={assetInfo.name ?? assetId}>
-      <AssetLogo asset={assetInfo} size={20} />
+      <AssetLogo assetId={assetInfo.id} assetImageUrl={assetInfo.logoURI || nftInfo?.image} size={20} />
       {!simple && assetInfo.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
   )

@@ -60,7 +60,7 @@ const assetsSlice = createSlice({
         }
       })
       .addCase(syncUnknownTokensInfo.fulfilled, (state, action) => {
-        const metadata = action.payload
+        const metadata = action.payload.tokens
 
         if (metadata) {
           assetsInfoAdapter.upsertMany(

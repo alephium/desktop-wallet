@@ -19,10 +19,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import { omit } from 'lodash'
 
-import client from '@/api/client'
+import client, { exponentialBackoffFetchRetry } from '@/api/client'
 import { RootState } from '@/storage/store'
-import { TokenBasicMetadata, TokenMetadataWithId } from '@/types/assets'
+import { SyncUnknownTokensInfoResult } from '@/types/assets'
 
 export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensInfo', async (_, { getState }) => {
   const state = getState() as RootState
@@ -47,18 +48,40 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
 
 export const syncUnknownTokensInfo = createAsyncThunk(
   'assets/syncUnknownTokensInfo',
-  async (unknownTokenIds: Asset['id'][]): Promise<TokenBasicMetadata[]> => {
-    const results = await Promise.allSettled(
-      unknownTokenIds.map((id) =>
-        client.node.fetchStdTokenMetaData(id).then((data) => ({
-          id,
-          ...data
-        }))
-      )
-    )
+  async (unknownTokenIds: Asset['id'][]): Promise<SyncUnknownTokensInfoResult> => {
+    const results = {
+      tokens: [],
+      nfts: []
+    } as SyncUnknownTokensInfoResult
 
-    return (
-      results.filter(({ status }) => status === 'fulfilled') as PromiseFulfilledResult<TokenMetadataWithId>[]
-    ).map(({ value: { totalSupply, ...rest } }) => rest)
+    for await (const id of unknownTokenIds) {
+      const type = await client.node.guessStdTokenType(id)
+
+      try {
+        if (type === 'fungible' || type === undefined) {
+          const tokenMetadata = await client.node.fetchFungibleTokenMetaData(id)
+
+          results.tokens.push({
+            id,
+            ...omit(tokenMetadata, ['totalSupply'])
+          })
+        } else if (type === 'non-fungible') {
+          const { tokenUri, collectionAddress } = await client.node.fetchNFTMetaData(id)
+          const nftData = await exponentialBackoffFetchRetry(tokenUri).then((res) => res.json())
+
+          results.nfts.push({
+            id,
+            collectionAddress,
+            name: nftData?.name,
+            description: nftData?.description,
+            image: nftData?.image
+          })
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    return results
   }
 )

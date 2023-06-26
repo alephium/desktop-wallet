@@ -40,7 +40,7 @@ import { useAppSelector } from '@/hooks/redux'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
-import { makeSelectAddressesAssets } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesTokens } from '@/storage/addresses/addressesSelectors'
 import { Address } from '@/types/addresses'
 import { AssetAmountInputType } from '@/types/assets'
 import { onEnterOrSpace } from '@/utils/misc'
@@ -63,8 +63,8 @@ const AssetAmountsInput = ({
 }: AssetAmountsInputProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
-  const assets = useAppSelector((state) => selectAddressesAssets(state, address.hash))
+  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
+  const assets = useAppSelector((state) => selectAddressesTokens(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
   const selectedValueRef = useRef<HTMLButtonElement>(null)
 
@@ -220,7 +220,7 @@ const AssetAmountsInput = ({
                   id={id}
                   ref={selectedValueRef}
                 >
-                  <AssetLogo asset={asset} size={20} />
+                  <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} />
                   <AssetName>
                     <Truncate>
                       {asset.name && asset.symbol ? (

@@ -22,9 +22,10 @@ import { createSelector } from '@reduxjs/toolkit'
 import { sortBy } from 'lodash'
 
 import { addressesAdapter, contactsAdapter } from '@/storage/addresses/addressesAdapters'
-import { selectAllAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { selectAllAssetsInfo, selectAllNFTs, selectNFTIds } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
 import { AddressHash } from '@/types/addresses'
+import { NFT } from '@/types/assets'
 import { filterAddressesWithoutAssets } from '@/utils/addresses'
 
 export const {
@@ -69,25 +70,27 @@ export const makeSelectAddressesAlphAsset = () =>
     }
   })
 
-export const makeSelectAddressesAssets = () =>
+export const makeSelectAddressesTokens = () =>
   createSelector(
-    [selectAllAssetsInfo, makeSelectAddressesAlphAsset(), makeSelectAddresses()],
-    (assetsInfo, alphAsset, addresses): Asset[] => {
+    [selectAllAssetsInfo, makeSelectAddressesAlphAsset(), selectNFTIds, makeSelectAddresses()],
+    (assetsInfo, alphAsset, nftIds, addresses): Asset[] => {
       const tokenBalances = addresses.reduce((acc, { tokens }) => {
-        tokens.forEach((token) => {
-          const existingToken = acc.find((t) => t.id === token.id)
+        tokens
+          .filter((token) => !nftIds.includes(token.id))
+          .forEach((token) => {
+            const existingToken = acc.find((t) => t.id === token.id)
 
-          if (!existingToken) {
-            acc.push({
-              id: token.id,
-              balance: BigInt(token.balance),
-              lockedBalance: BigInt(token.lockedBalance)
-            })
-          } else {
-            existingToken.balance = existingToken.balance + BigInt(token.balance)
-            existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
-          }
-        })
+            if (!existingToken) {
+              acc.push({
+                id: token.id,
+                balance: BigInt(token.balance),
+                lockedBalance: BigInt(token.lockedBalance)
+              })
+            } else {
+              existingToken.balance = existingToken.balance + BigInt(token.balance)
+              existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
+            }
+          })
 
         return acc
       }, [] as TokenDisplayBalances[])
@@ -119,6 +122,13 @@ export const makeSelectAddressesAssets = () =>
       ]
     }
   )
+
+export const makeSelectAddressesNFTs = () =>
+  createSelector([selectAllNFTs, makeSelectAddresses()], (nfts, addresses): NFT[] => {
+    const addressesTokenIds = addresses.flatMap(({ tokens }) => tokens.map(({ id }) => id))
+
+    return nfts.filter((nft) => addressesTokenIds.includes(nft.id))
+  })
 
 export const { selectAll: selectAllContacts } = contactsAdapter.getSelectors<RootState>((state) => state.contacts)
 

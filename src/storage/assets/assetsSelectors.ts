@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { createSelector } from '@reduxjs/toolkit'
 
-import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
+import { assetsInfoAdapter, nftsAdapter } from '@/storage/assets/assetsAdapter'
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { RootState } from '@/storage/store'
 
@@ -31,3 +31,9 @@ export const selectIsLoadingAssetsInfo = createSelector(
     (networkId === networkPresets.mainnet.networkId || networkId === networkPresets.testnet.networkId) &&
     status === 'uninitialized'
 )
+
+export const {
+  selectAll: selectAllNFTs,
+  selectById: selectNFTById,
+  selectIds: selectNFTIds
+} = nftsAdapter.getSelectors<RootState>((state) => state.nfts)

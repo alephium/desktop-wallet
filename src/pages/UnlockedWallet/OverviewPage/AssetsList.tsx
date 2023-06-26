@@ -27,6 +27,7 @@ import AssetLogo from '@/components/AssetLogo'
 import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
+import NFTThumbnail from '@/components/NFTThumbnail'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
@@ -34,7 +35,11 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { makeSelectAddressesAssets, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
+import {
+  makeSelectAddressesNFTs,
+  makeSelectAddressesTokens,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -101,8 +106,8 @@ const AssetsList = ({
 const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
-  const assets = useAppSelector((s) => selectAddressesAssets(s, addressHashes))
+  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
+  const assets = useAppSelector((s) => selectAddressesTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const displayedAssets = limit ? assets.slice(0, limit) : assets
@@ -113,7 +118,7 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
         {displayedAssets.map((asset) => (
           <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
             <TokenRow>
-              <AssetLogoStyled asset={asset} size={30} />
+              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
               <NameColumn>
                 <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
                 <TokenSymbol>
@@ -166,14 +171,19 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
   )
 }
 
-const NFTsList = ({ className, isExpanded }: AssetsListProps) => {
+const NFTsList = ({ className, addressHashes, isExpanded }: AssetsListProps) => {
   const { t } = useTranslation()
+  const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
+  const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
 
   return (
     <motion.div {...fadeIn} className={className}>
-      <TableRow role="row" tabIndex={isExpanded ? 0 : -1}>
-        <PlaceholderText>{t('Coming soon!')}</PlaceholderText>
-      </TableRow>
+      <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
+        {nfts.map((nft) => (
+          <NFTThumbnail key={nft.id} nft={nft} />
+        ))}
+        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
+      </TableRowStyled>
     </motion.div>
   )
 }
@@ -228,4 +238,9 @@ const PlaceholderText = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+const TableRowStyled = styled(TableRow)`
+  display: flex;
+  gap: 20px;
 `
