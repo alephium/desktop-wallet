@@ -94,9 +94,10 @@ const App = () => {
       lockTimeInMs: settings.walletLockTimeInMinutes,
       language: settings.language,
       passwordRequirement: settings.passwordRequirement,
-      fiatCurrency: settings.fiatCurrency
+      fiatCurrency: settings.fiatCurrency,
+      network: network.name
     })
-  }, [posthog.people, settings, wallets.length])
+  }, [network.name, posthog.people, settings, wallets.length])
 
   const setSystemLanguage = useCallback(async () => {
     const _window = window as unknown as AlephiumWindow
