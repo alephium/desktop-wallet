@@ -118,7 +118,7 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
         {displayedAssets.map((asset) => (
           <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
             <TokenRow>
-              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
+              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} assetName={asset.name} />
               <NameColumn>
                 <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
                 <TokenSymbol>

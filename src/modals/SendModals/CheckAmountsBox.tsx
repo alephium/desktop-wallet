@@ -48,7 +48,14 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
           <Fragment key={asset.id}>
             {index > 0 && <HorizontalDivider />}
             <AssetAmountRow>
-              {assetInfo && <AssetLogoStyled assetId={assetInfo.id} assetImageUrl={assetInfo.logoURI} size={30} />}
+              {assetInfo && (
+                <AssetLogoStyled
+                  assetId={assetInfo.id}
+                  assetImageUrl={assetInfo.logoURI}
+                  size={30}
+                  assetName={assetInfo.name}
+                />
+              )}
               <AssetAmountStyled
                 value={BigInt(asset.amount)}
                 suffix={assetInfo?.symbol}

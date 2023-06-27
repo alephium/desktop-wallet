@@ -28,15 +28,18 @@ interface AssetLogoProps {
   assetId: AssetInfo['id']
   assetImageUrl: AssetInfo['logoURI'] | NFT['image']
   size: number
+  assetName?: AssetInfo['name']
   className?: string
 }
 
-const AssetLogo = ({ assetId, assetImageUrl, size, className }: AssetLogoProps) => (
+const AssetLogo = ({ assetId, assetImageUrl, size, assetName, className }: AssetLogoProps) => (
   <div className={className}>
     {assetImageUrl ? (
       <LogoImage src={assetImageUrl} />
     ) : assetId === ALPH.id ? (
       <LogoImage src={AlephiumLogoSVG} />
+    ) : assetName ? (
+      <Initials size={size}>{assetName.slice(0, 2)}</Initials>
     ) : (
       <HelpCircle size={size} />
     )}
@@ -68,4 +71,9 @@ export default styled(AssetLogo)`
 const LogoImage = styled.img`
   width: 100%;
   height: 100%;
+`
+
+const Initials = styled.span<{ size: number }>`
+  font-size: ${({ size }) => size * 0.45}px;
+  text-transform: uppercase;
 `

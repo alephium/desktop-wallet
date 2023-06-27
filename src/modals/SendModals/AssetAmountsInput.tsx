@@ -220,7 +220,7 @@ const AssetAmountsInput = ({
                   id={id}
                   ref={selectedValueRef}
                 >
-                  <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} />
+                  <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} assetName={asset.name} />
                   <AssetName>
                     <Truncate>
                       {asset.name && asset.symbol ? (
