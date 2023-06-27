@@ -66,7 +66,7 @@ const AssetAmountsInput = ({
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((state) => selectAddressesTokens(state, address.hash))
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
-  const selectedValueRef = useRef<HTMLButtonElement>(null)
+  const selectedValueRef = useRef<HTMLDivElement>(null)
 
   const [isAssetSelectModalOpen, setIsAssetSelectModalOpen] = useState(false)
   const [selectedAssetRowIndex, setSelectedAssetRowIndex] = useState(0)
@@ -200,7 +200,7 @@ const AssetAmountsInput = ({
       }
       className={className}
     >
-      <AssetAmounts>
+      <AssetAmounts ref={selectedValueRef}>
         {assetAmounts.map(({ id, amountInput = '' }, index) => {
           const asset = assets.find((asset) => asset.id === id)
           if (!asset) return
@@ -218,7 +218,6 @@ const AssetAmountsInput = ({
                   className={className}
                   disabled={disabled || !allowMultiple || !canAddMultipleAssets}
                   id={id}
-                  ref={selectedValueRef}
                 >
                   <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} assetName={asset.name} />
                   <AssetName>
