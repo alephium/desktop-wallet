@@ -82,7 +82,7 @@ const App = () => {
       dispatch(localStorageDataMigrated())
     } catch (e) {
       console.error(e)
-      posthog.capture('Error - Local storage data migration failed')
+      posthog.capture('Error', { message: 'Local storage data migration failed' })
       dispatch(localStorageDataMigrationFailed())
     }
   }, [dispatch, posthog])

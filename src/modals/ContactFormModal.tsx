@@ -75,7 +75,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
       })
     } catch (e) {
       dispatch(contactStorageFailed(getHumanReadableError(e, t('Could not save contact.'))))
-      posthog.capture('Error - Could not save contact')
+      posthog.capture('Error', { message: 'Could not save contact' })
     }
   }
 
@@ -88,7 +88,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
       posthog.capture('Deleted contact')
     } catch (e) {
       dispatch(contactDeletionFailed(getHumanReadableError(e, t('Could not delete contact.'))))
-      posthog.capture('Error - Could not delete contact')
+      posthog.capture('Error', { message: 'Could not delete contact' })
     } finally {
       onClose()
     }

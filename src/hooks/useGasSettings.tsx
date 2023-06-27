@@ -62,7 +62,7 @@ const useGasSettings = (initialGasAmount?: string, initialGasPrice?: string) => 
       )
     } catch (e) {
       console.error(e)
-      posthog.capture('Error - Setting gas price')
+      posthog.capture('Error', { message: 'Setting gas price' })
       return
     }
   }

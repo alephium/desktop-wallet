@@ -79,7 +79,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         setFee(fees)
       } catch (e) {
         dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
-        posthog.capture('Error - Building transaction')
+        posthog.capture('Error', { message: 'Building transaction' })
       }
       setIsLoading(false)
     }
@@ -116,7 +116,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
           getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from }))
         )
       )
-      posthog.capture('Error - Sweeping address')
+      posthog.capture('Error', { message: 'Sweeping address' })
     }
     setIsLoading(false)
   }

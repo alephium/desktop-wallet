@@ -55,7 +55,7 @@ const GasSettings = ({
       setExpectedFee(BigInt(gasAmount) * fromHumanReadableAmount(gasPrice))
     } catch (e) {
       console.error(e)
-      posthog.capture('Error - Could not set expected fee')
+      posthog.capture('Error', { message: 'Could not set expected fee' })
     }
   }, [gasAmount, gasPrice, posthog])
 

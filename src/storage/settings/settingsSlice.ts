@@ -137,7 +137,7 @@ settingsListenerMiddleware.startListening({
         await i18next.changeLanguage(settings.language)
       } catch (e) {
         console.error(e)
-        posthog.capture('Error - Changing language')
+        posthog.capture('Error', { message: 'Changing language' })
       } finally {
         dispatch(languageChangeFinished())
       }

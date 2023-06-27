@@ -77,7 +77,7 @@ export const syncAddressesData = createAsyncThunk<
   try {
     return await fetchAddressesData(addresses)
   } catch (e) {
-    posthog.capture('Error - Synching address data')
+    posthog.capture('Error', { message: 'Synching address data' })
     return rejectWithValue({
       text: getHumanReadableError(e, i18n.t("Encountered error while synching your addresses' data.")),
       type: 'alert'
@@ -174,7 +174,7 @@ export const syncAddressesHistoricBalances = createAsyncThunk(
         }
       } catch (e) {
         console.error('Could not parse amount history data', e)
-        posthog.capture('Error - Could not parse amount history data')
+        posthog.capture('Error', { message: 'Could not parse amount history data' })
       }
 
       addressesBalances.push({

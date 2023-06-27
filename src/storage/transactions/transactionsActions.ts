@@ -45,7 +45,7 @@ export const fetchTransactionsCsv = createAsyncThunk<string, CsvExportQueryParam
     try {
       return await fetchCsv(queryParams)
     } catch (e) {
-      posthog.capture('Error - Fetching CSV')
+      posthog.capture('Error', { message: 'Fetching CSV' })
       return rejectWithValue({
         text: getHumanReadableError(e, i18n.t('Encountered error while exporting your transactions.')),
         type: 'alert'

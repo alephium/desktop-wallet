@@ -32,7 +32,7 @@ export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStor
     } catch (e) {
       console.error(e)
       store.dispatch(loadingDataFromLocalStorageFailed())
-      posthog.capture('Error - Could not load data from local storage')
+      posthog.capture('Error', { message: 'Could not load data from local storage' })
     }
   }
 
@@ -42,7 +42,7 @@ export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStor
     } catch (e) {
       console.error(e)
       store.dispatch(storingDataToLocalStorageFailed())
-      posthog.capture('Error - Could not store data from local storage')
+      posthog.capture('Error', { message: 'Could not store data from local storage' })
     }
   }
 }

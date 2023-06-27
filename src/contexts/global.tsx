@@ -116,7 +116,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         migrateUserData()
       } catch (e) {
         console.error(e)
-        posthog.capture('Error - User data migration failed')
+        posthog.capture('Error', { message: 'User data migration failed ' })
         dispatch(userDataMigrationFailed())
       }
 

@@ -74,7 +74,7 @@ class SettingsStorage {
       return merge({}, defaultSettings, parsedSettings)
     } catch (e) {
       console.error(e)
-      posthog.capture('Error - Parsing stored settings')
+      posthog.capture('Error', { message: 'Parsing stored settings' })
       return defaultSettings // Fallback to default settings if something went wrong
     }
   }

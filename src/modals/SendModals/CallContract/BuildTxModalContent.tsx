@@ -70,7 +70,7 @@ const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContr
       setIsAmountValid(!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
     } catch (e) {
       console.error(e)
-      posthog.capture('Error - Could not determine if amount is valid')
+      posthog.capture('Error', { message: 'Could not determine if amount is valid' })
     }
   }, [alphAmount, availableBalance, posthog])
 

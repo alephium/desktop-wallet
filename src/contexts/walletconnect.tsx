@@ -126,7 +126,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
       setWalletConnectClient(client)
     } catch (e) {
-      posthog.capture('Error - Could not initialize WalletConnect client')
+      posthog.capture('Error', { message: 'Could not initialize WalletConnect client' })
       console.error('Could not initialize WalletConnect client', e)
     }
   }, [posthog])
@@ -295,7 +295,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
-        posthog.capture('Error - Could not parse WalletConnect session request')
+        posthog.capture('Error', { message: 'Could not parse WalletConnect session request' })
         onSessionRequestError(event, {
           message: getHumanReadableError(e, 'Error while parsing WalletConnect session request'),
           code: WALLETCONNECT_ERRORS.PARSING_SESSION_REQUEST_FAILED
@@ -317,9 +317,9 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
         if (!errorMessage.includes('Pairing already exists')) {
           dispatch(walletConnectPairingFailed(errorMessage))
-          posthog.capture('Error - Could not pair with WalletConnect')
+          posthog.capture('Error', { message: 'Could not pair with WalletConnect' })
         } else {
-          posthog.capture('Error - Could not pair with WalletConnect: Pairing already exists')
+          posthog.capture('Error', { message: 'Could not pair with WalletConnect: Pairing already exists' })
         }
       }
     },

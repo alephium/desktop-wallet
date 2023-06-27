@@ -50,7 +50,7 @@ class WalletStorage {
           wallets.push(wallet)
         } catch (e) {
           console.error(e)
-          posthog.capture('Error - Parsing stored wallet data')
+          posthog.capture('Error', { message: 'Parsing stored wallet data' })
           continue
         }
       }

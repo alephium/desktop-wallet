@@ -41,7 +41,7 @@ export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensI
       metadata = (await response.json()) as TokenList
     } catch (e) {
       console.warn('No metadata for network ID ', state.network.settings.networkId)
-      posthog.capture(`Error - No metadata for network ID ${state.network.settings.networkId}`)
+      posthog.capture('Error', { message: `No metadata for network ID ${state.network.settings.networkId}` })
     }
   }
 
@@ -81,7 +81,7 @@ export const syncUnknownTokensInfo = createAsyncThunk(
         }
       } catch (e) {
         console.error(e)
-        posthog.capture('Error - Syncing unknown tokens info')
+        posthog.capture('Error', { message: 'Syncing unknown tokens info' })
       }
     }
 

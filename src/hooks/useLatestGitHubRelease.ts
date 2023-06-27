@@ -70,7 +70,7 @@ const useLatestGitHubRelease = () => {
       try {
         await checkForManualDownload()
       } catch (e) {
-        posthog.capture('Error - Checking for latest release version for manual download')
+        posthog.capture('Error', { message: 'Checking for latest release version for manual download' })
         console.error(e)
       }
     } else if (isVersionNewer(version)) {

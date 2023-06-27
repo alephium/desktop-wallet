@@ -34,6 +34,6 @@ export const restorePendingTransactions = () => {
   } catch (e) {
     console.error(e)
     store.dispatch(loadingPendingTransactionsFailed())
-    posthog.capture('Error - Restoringi pending transactions')
+    posthog.capture('Error', { message: 'Restoring pending transactions' })
   }
 }

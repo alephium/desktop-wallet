@@ -79,7 +79,7 @@ const DevToolsSettingsSection = () => {
       posthog.capture('Copied address private key')
     } catch (e) {
       dispatch(copyToClipboardFailed(getHumanReadableError(e, t('Could not copy private key.'))))
-      posthog.capture('Error - Could not copy private key')
+      posthog.capture('Error', { message: 'Could not copy private key' })
     } finally {
       closePasswordModal()
     }
