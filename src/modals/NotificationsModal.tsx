@@ -38,7 +38,7 @@ const NotificationsModal = ({ onClose, focusMode }: ModalContainerProps) => {
   const lockWallet = () => {
     dispatch(walletLocked())
 
-    posthog?.capture('Locked wallet', { origin: 'notifications' })
+    posthog.capture('Locked wallet', { origin: 'notifications' })
   }
 
   return (

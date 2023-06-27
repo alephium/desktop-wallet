@@ -57,7 +57,7 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
   CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
-  handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
+  handleSend: (data: T, context: TxContext, posthog: PostHog) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => node.SignResult
   txData?: T
   initialStep?: Step

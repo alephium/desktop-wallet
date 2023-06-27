@@ -63,7 +63,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     } else {
       dispatch(passwordRequirementToggled())
 
-      posthog?.capture('Enabled password requirement')
+      posthog.capture('Enabled password requirement')
     }
   }, [dispatch, passwordRequirement, posthog])
 
@@ -71,19 +71,19 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
 
-    posthog?.capture('Disabled password requirement')
+    posthog.capture('Disabled password requirement')
   }, [dispatch, posthog])
 
   const handleLanguageChange = (language: Language) => {
     dispatch(languageChanged(language))
 
-    posthog?.capture('Changed language', { language })
+    posthog.capture('Changed language', { language })
   }
 
   const handleFiatCurrencyChange = (currency: Currency) => {
     dispatch(fiatCurrencyChanged(currency))
 
-    posthog?.capture('Changed fiat currency', { currency })
+    posthog.capture('Changed fiat currency', { currency })
   }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
@@ -93,13 +93,13 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
     dispatch(walletLockTimeChanged(time))
 
-    posthog?.capture('Changed wallet lock time', { time })
+    posthog.capture('Changed wallet lock time', { time })
   }
 
   const handleThemeSelect = (theme: ThemeSettings) => {
     switchTheme(theme)
 
-    posthog?.capture('Changed theme', { theme })
+    posthog.capture('Changed theme', { theme })
   }
 
   const handleAnalyticsToggle = (toggle: boolean) => {
@@ -107,12 +107,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
     if (toggle && !import.meta.env.DEV) {
       const id = AnalyticsStorage.load()
-      posthog?.identify(id)
-      posthog?.opt_in_capturing()
-      posthog?.capture('Enabled analytics')
+      posthog.identify(id)
+      posthog.opt_in_capturing()
+      posthog.capture('Enabled analytics')
     } else {
-      posthog?.capture('Disabled analytics')
-      posthog?.opt_out_capturing()
+      posthog.capture('Disabled analytics')
+      posthog.opt_out_capturing()
     }
   }
 

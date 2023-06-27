@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { upperFirst } from 'lodash'
 import { ArrowRight } from 'lucide-react'
-import posthog from 'posthog-js'
+import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -44,6 +44,7 @@ const NetworkSwitch = () => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
+  const posthog = usePostHog()
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
@@ -74,12 +75,12 @@ const NetworkSwitch = () => {
         if (networkId !== undefined) {
           dispatch(networkPresetSwitched(networkName))
 
-          posthog?.capture('Changed network from app header', { network_name: networkName })
+          posthog.capture('Changed network from app header', { network_name: networkName })
           return
         }
       }
     },
-    [dispatch, network.name]
+    [dispatch, network.name, posthog]
   )
 
   return (

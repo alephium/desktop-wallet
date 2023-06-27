@@ -94,7 +94,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
   const refreshAddressesData = () => {
     dispatch(syncAddressesData())
 
-    posthog?.capture('Refreshed data')
+    posthog.capture('Refreshed data')
   }
 
   return (

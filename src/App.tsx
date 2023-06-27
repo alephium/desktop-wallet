@@ -87,7 +87,7 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    posthog?.people.set({
+    posthog.people.set({
       wallets: wallets.length,
       theme: settings.theme,
       devTools: settings.devTools,
@@ -96,7 +96,7 @@ const App = () => {
       passwordRequirement: settings.passwordRequirement,
       fiatCurrency: settings.fiatCurrency
     })
-  }, [posthog?.people, settings, wallets.length])
+  }, [posthog.people, settings, wallets.length])
 
   const setSystemLanguage = useCallback(async () => {
     const _window = window as unknown as AlephiumWindow

@@ -70,7 +70,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
       dispatch(contactStoredInPersistentStorage({ ...contactData, id }))
       onClose()
 
-      posthog?.capture(contactData.id ? 'Edited contact' : 'Saved new contact', {
+      posthog.capture(contactData.id ? 'Edited contact' : 'Saved new contact', {
         contact_name_length: contactData.name.length
       })
     } catch (e) {
@@ -84,7 +84,7 @@ const ContactFormModal = ({ contact, onClose }: ContactFormModalProps) => {
     try {
       ContactsStorage.deleteContact(contact)
       dispatch(contactDeletedFromPeristentStorage(contact.id))
-      posthog?.capture('Deleted contact')
+      posthog.capture('Deleted contact')
     } catch (e) {
       dispatch(contactDeletionFailed(getHumanReadableError(e, t('Could not delete contact.'))))
     } finally {

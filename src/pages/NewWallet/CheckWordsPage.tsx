@@ -187,7 +187,7 @@ const CheckWordsPage = () => {
     if (areWordsValid && plainWallet) {
       saveNewWallet({ wallet: plainWallet, walletName, password })
 
-      posthog?.capture('New wallet created', { wallet_name_length: walletName.length })
+      posthog.capture('New wallet created', { wallet_name_length: walletName.length })
 
       return true
     }
