@@ -151,10 +151,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
+          posthog.capture('Error - Could not build tx, consolidation required')
         } else {
           const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
 
           dispatch(transactionBuildFailed(errorMessage))
+          posthog.capture('Error - Could not build tx')
 
           if (isRequestToApproveContractCall) {
             if (requestEvent)
@@ -177,6 +179,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       isRequestToApproveContractCall,
       onClose,
       onSessionRequestError,
+      posthog,
       requestEvent,
       t,
       txContext
@@ -213,6 +216,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
+      posthog.capture('Error - Could not send tx')
 
       if (requestEvent)
         onSessionRequestError(requestEvent, {

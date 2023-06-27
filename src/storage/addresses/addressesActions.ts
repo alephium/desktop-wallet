@@ -21,6 +21,7 @@ import { explorer } from '@alephium/web3'
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import dayjs from 'dayjs'
 import { chunk } from 'lodash'
+import { posthog } from 'posthog-js'
 
 import {
   fetchAddressesData,
@@ -76,6 +77,7 @@ export const syncAddressesData = createAsyncThunk<
   try {
     return await fetchAddressesData(addresses)
   } catch (e) {
+    posthog.capture('Error - Synching address data')
     return rejectWithValue({
       text: getHumanReadableError(e, i18n.t("Encountered error while synching your addresses' data.")),
       type: 'alert'
@@ -172,6 +174,7 @@ export const syncAddressesHistoricBalances = createAsyncThunk(
         }
       } catch (e) {
         console.error('Could not parse amount history data', e)
+        posthog.capture('Error - Could not parse amount history data')
       }
 
       addressesBalances.push({

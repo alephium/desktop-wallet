@@ -61,6 +61,7 @@ const PasswordConfirmation: FC<PasswordConfirmationProps> = ({
         onCorrectPasswordEntered(password)
       }
     } catch (e) {
+      // Discuss: Do we want to capture password validation errors?
       dispatch(passwordValidationFailed())
     }
   }

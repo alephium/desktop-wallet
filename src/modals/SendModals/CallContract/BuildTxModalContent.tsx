@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { fromHumanReadableAmount } from '@alephium/sdk'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -43,6 +44,7 @@ interface CallContractBuildTxModalContentProps {
 
 const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContractBuildTxModalContentProps) => {
   const { t } = useTranslation()
+  const posthog = usePostHog()
   const {
     gasAmount,
     gasAmountError,
@@ -68,8 +70,9 @@ const CallContractBuildTxModalContent = ({ data, onSubmit, onCancel }: CallContr
       setIsAmountValid(!alphAmount || isAmountWithinRange(fromHumanReadableAmount(alphAmount), availableBalance))
     } catch (e) {
       console.error(e)
+      posthog.capture('Error - Could not determine if amount is valid')
     }
-  }, [alphAmount, availableBalance])
+  }, [alphAmount, availableBalance, posthog])
 
   if (fromAddress === undefined) {
     onCancel()

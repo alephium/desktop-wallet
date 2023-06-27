@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError } from '@alephium/sdk'
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import posthog from 'posthog-js'
 
 import { fetchCsv } from '@/api/transactions'
 import i18n from '@/i18n'
@@ -44,6 +45,7 @@ export const fetchTransactionsCsv = createAsyncThunk<string, CsvExportQueryParam
     try {
       return await fetchCsv(queryParams)
     } catch (e) {
+      posthog.capture('Error - Fetching CSV')
       return rejectWithValue({
         text: getHumanReadableError(e, i18n.t('Encountered error while exporting your transactions.')),
         type: 'alert'

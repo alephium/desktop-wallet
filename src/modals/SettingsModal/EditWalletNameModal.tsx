@@ -60,6 +60,7 @@ const EditWalletNameModal = (props: CenteredModalProps) => {
       posthog.capture('Changed wallet name', { wallet_name_length: data.name.length })
     } catch (e) {
       dispatch(walletNameStorageFailed(getHumanReadableError(e, t('Could not save new wallet name.'))))
+      posthog.capture('Error - Could not save new wallet name')
     }
   }
 

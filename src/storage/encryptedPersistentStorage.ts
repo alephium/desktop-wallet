@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import posthog from 'posthog-js'
+
 import { loadingDataFromLocalStorageFailed, storingDataToLocalStorageFailed } from '@/storage/global/globalActions'
 import {
   EncryptedStorageProps,
@@ -30,6 +32,7 @@ export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStor
     } catch (e) {
       console.error(e)
       store.dispatch(loadingDataFromLocalStorageFailed())
+      posthog.capture('Error - Could not load data from local storage')
     }
   }
 
@@ -39,6 +42,7 @@ export class PersistentEncryptedStorage extends StatelessPersistentEncryptedStor
     } catch (e) {
       console.error(e)
       store.dispatch(storingDataToLocalStorageFailed())
+      posthog.capture('Error - Could not store data from local storage')
     }
   }
 }

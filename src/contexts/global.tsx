@@ -90,6 +90,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       wallet = WalletStorage.load(walletId, password)
     } catch (e) {
       console.error(e)
+      // Discuss: Do we want to capture password validation errors?
       dispatch(passwordValidationFailed())
       return
     }
@@ -115,6 +116,7 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         migrateUserData()
       } catch (e) {
         console.error(e)
+        posthog.capture('Error - User data migration failed')
         dispatch(userDataMigrationFailed())
       }
 

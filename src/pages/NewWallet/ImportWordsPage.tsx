@@ -86,6 +86,7 @@ const ImportWordsPage = () => {
       onButtonNext()
     } catch (e) {
       dispatch(walletCreationFailed(getHumanReadableError(e, t('Error while importing wallet'))))
+      posthog.capture('Error - Could not import wallet')
     }
   }
 
