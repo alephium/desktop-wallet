@@ -79,16 +79,16 @@ To release a new version:
    })
    ```
 
-3. Add new language option in `src/modals/SettingsModal/GeneralSettingsSection.tsx`
+3. Add new language option in `src/utils/settings.ts`
 
    ```ts
    const languageOptions = [
-     { label: 'English', value: 'en-US' as Language },
-     { label: 'Français', value: 'fr-FR' as Language }
+     { label: 'English', value: 'en-US' },
+     { label: 'Français', value: 'fr-FR' }
    ]
    ```
 
-4. Import `dayjs` translation file in `src/App.tsx`
+4. Import `dayjs` translation file in `src/storage/settings/settingsSlice.ts`
 
    ```ts
    import 'dayjs/locale/fr'
