@@ -33,8 +33,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
-import { makeSelectAddressesTokens, selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { selectAddressIds, selectAllUnknownTokens } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
+import { selectIsLoadingTokensInfo } from '@/storage/assets/assetsSelectors'
 import {
   devModeShortcutDetected,
   localStorageDataMigrated,
@@ -57,11 +58,10 @@ const App = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
   const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
-  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
-  const tokens = useAppSelector(selectAddressesTokens)
-  const unknownTokens = tokens.filter((token) => !token.name)
+  const unknownTokens = useAppSelector(selectAllUnknownTokens)
   const network = useAppSelector((s) => s.network)
   const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const isLoadingTokensInfo = useAppSelector(selectIsLoadingTokensInfo)
   const theme = useAppSelector((s) => s.global.theme)
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
   const loading = useAppSelector((s) => s.global.loading)
@@ -163,12 +163,12 @@ const App = () => {
     if (
       network.status === 'online' &&
       addressesStatus === 'initialized' &&
-      (assetsInfo.status === 'initialized' || (network.settings.networkId !== 0 && network.settings.networkId !== 1)) &&
+      !isLoadingTokensInfo &&
       unknownTokens.length > 0
     ) {
       dispatch(syncUnknownTokensInfo(unknownTokens.map((token) => token.id)))
     }
-  }, [dispatch, network.status, assetsInfo.status, addressesStatus, unknownTokens, network.settings.networkId])
+  }, [addressesStatus, dispatch, isLoadingTokensInfo, network.status, unknownTokens])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

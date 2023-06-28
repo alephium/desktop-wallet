@@ -28,7 +28,7 @@ import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
 import { makeSelectAddressesTokens, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
-import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { selectIsLoadingTokensInfo } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
 import { directionOptions } from '@/utils/transactions'
@@ -57,7 +57,7 @@ const FiltersPanel = ({
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector(selectAddressesTokens)
 
-  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
+  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingTokensInfo)
   const stateUninitialized = useAppSelector((s) => s.addresses.status === 'uninitialized') // TODO: Use selector from next PR
 
   const renderAddressesSelectedValue = () =>

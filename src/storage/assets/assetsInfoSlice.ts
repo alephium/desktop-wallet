@@ -27,11 +27,13 @@ import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/set
 
 interface AssetsInfoState extends EntityState<AssetInfo> {
   status: 'initialized' | 'uninitialized'
+  checkedUnknownTokenIds: AssetInfo['id'][]
 }
 
 const initialState: AssetsInfoState = assetsInfoAdapter.addOne(
   assetsInfoAdapter.getInitialState({
-    status: 'uninitialized'
+    status: 'uninitialized',
+    checkedUnknownTokenIds: []
   }),
   {
     ...ALPH,
@@ -61,6 +63,9 @@ const assetsSlice = createSlice({
       })
       .addCase(syncUnknownTokensInfo.fulfilled, (state, action) => {
         const metadata = action.payload.tokens
+        const initiallyUnknownTokenIds = action.meta.arg
+
+        state.checkedUnknownTokenIds = [...initiallyUnknownTokenIds, ...state.checkedUnknownTokenIds]
 
         if (metadata) {
           assetsInfoAdapter.upsertMany(
