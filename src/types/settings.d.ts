@@ -87,4 +87,4 @@ declare module 'styled-components' {
   }
 }
 
-export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD' | 'VND' | 'RUB' | 'TRY' 
+export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD' | 'VND' | 'RUB' | 'TRY'
