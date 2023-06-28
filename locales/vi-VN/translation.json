@@ -230,6 +230,7 @@
   "New wallet name": "Tên ví mới",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "No contacts found. You can create contacts in the Addresses page.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "No options match the search criteria.",
   "No recovery phrase was stored along with this wallet": "Không có cụm từ khôi phục nào được lưu với ví này",
   "No transactions to display": "Không có giao dịch nào để hiển thị",
@@ -434,5 +435,6 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Ví của bạn",
-  "No NFTs found.": "No NFTs found."
+  "Disclaimer": "Disclaimer",
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version."
 }
