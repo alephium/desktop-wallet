@@ -90,7 +90,6 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
       wallet = WalletStorage.load(walletId, password)
     } catch (e) {
       console.error(e)
-      // Discuss: Do we want to capture password validation errors?
       dispatch(passwordValidationFailed())
       return
     }

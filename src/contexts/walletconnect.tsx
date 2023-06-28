@@ -317,13 +317,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
         if (!errorMessage.includes('Pairing already exists')) {
           dispatch(walletConnectPairingFailed(errorMessage))
-          posthog.capture('Error', { message: 'Could not pair with WalletConnect' })
-        } else {
-          posthog.capture('Error', { message: 'Could not pair with WalletConnect: Pairing already exists' })
         }
       }
     },
-    [dispatch, posthog, t, walletConnectClient]
+    [dispatch, t, walletConnectClient]
   )
 
   const onSessionDelete = useCallback(() => {
