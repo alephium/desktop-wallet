@@ -40,7 +40,7 @@ export interface Settings {
   network: NetworkSettings
 }
 
-export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'id-ID' | 'tr-TR' 
+export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'id-ID' | 'tr-TR'
 
 export type ThemeType = 'light' | 'dark'
 
@@ -87,4 +87,4 @@ declare module 'styled-components' {
   }
 }
 
-export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD' | 'VND' | 'RUB'| 'TRY'   
+export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD' | 'VND' | 'RUB'| 'TRY' 
