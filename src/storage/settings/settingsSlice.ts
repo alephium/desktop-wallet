@@ -28,6 +28,7 @@ import 'dayjs/locale/vi'
 
 import { createListenerMiddleware, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import dayjs from 'dayjs'
+import posthog from 'posthog-js'
 
 import i18next from '@/i18n'
 import { localStorageDataMigrated } from '@/storage/global/globalActions'
@@ -136,6 +137,7 @@ settingsListenerMiddleware.startListening({
         await i18next.changeLanguage(settings.language)
       } catch (e) {
         console.error(e)
+        posthog.capture('Error', { message: 'Changing language' })
       } finally {
         dispatch(languageChangeFinished())
       }

@@ -53,7 +53,7 @@ const CSVExportModal = ({ addressHash, ...props }: CSVExportModalProps) => {
     props.onClose()
     getCSVFile()
 
-    posthog?.capture('Exported CSV', { time_period: selectedTimePeriod })
+    posthog.capture('Exported CSV', { time_period: selectedTimePeriod })
   }
 
   const getCSVFile = async () => {

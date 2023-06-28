@@ -58,13 +58,13 @@ const WalletsSettingsSection = () => {
     dispatch(walletId === activeWallet.id ? activeWalletDeleted() : walletDeleted(walletId))
     setWalletToRemove(undefined)
 
-    posthog?.capture('Deleted wallet')
+    posthog.capture('Deleted wallet')
   }
 
   const lockWallet = () => {
     dispatch(walletLocked())
 
-    posthog?.capture('Locked wallet', { origin: 'settings' })
+    posthog.capture('Locked wallet', { origin: 'settings' })
   }
 
   return (

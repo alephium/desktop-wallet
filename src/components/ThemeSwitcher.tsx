@@ -44,7 +44,7 @@ const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   const handleThemeToggle = () => {
     toggleTheme(isDark ? 'light' : 'dark')
 
-    posthog?.capture('Toggled theme', { theme })
+    posthog.capture('Toggled theme', { theme })
   }
 
   return (

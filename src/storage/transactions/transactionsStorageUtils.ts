@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import posthog from 'posthog-js'
+
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
 import { store } from '@/storage/store'
 import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
@@ -32,5 +34,6 @@ export const restorePendingTransactions = () => {
   } catch (e) {
     console.error(e)
     store.dispatch(loadingPendingTransactionsFailed())
+    posthog.capture('Error', { message: 'Restoring pending transactions' })
   }
 }

@@ -105,7 +105,7 @@ const NetworkSettingsSection = () => {
           dispatch(networkPresetSwitched(networkName))
           setTempAdvancedSettings(newNetworkSettings)
 
-          posthog?.capture('Changed network', { network_name: networkName })
+          posthog.capture('Changed network', { network_name: networkName })
           return
         }
 
@@ -119,7 +119,7 @@ const NetworkSettingsSection = () => {
           dispatch(customNetworkSettingsSaved(settings))
           setTempAdvancedSettings(settings)
 
-          posthog?.capture('Saved custom network settings')
+          posthog.capture('Saved custom network settings')
         }
       }
     },
@@ -139,7 +139,7 @@ const NetworkSettingsSection = () => {
     overrideSelectionIfMatchesPreset(tempAdvancedSettings)
     dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
 
-    posthog?.capture('Saved custom network settings')
+    posthog.capture('Saved custom network settings')
   }, [dispatch, network.name, overrideSelectionIfMatchesPreset, posthog, selectedNetwork, tempAdvancedSettings])
 
   // Set existing value on mount

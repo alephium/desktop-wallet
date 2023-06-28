@@ -61,7 +61,7 @@ const DevToolsSettingsSection = () => {
   const toggleDevTools = () => {
     dispatch(devToolsToggled())
 
-    posthog?.capture('Enabled dev tools')
+    posthog.capture('Enabled dev tools')
   }
 
   const confirmAddressPrivateKeyCopyWithPassword = (address: Address) => {
@@ -76,9 +76,10 @@ const DevToolsSettingsSection = () => {
       await navigator.clipboard.writeText(selectedAddress.privateKey)
       dispatch(copiedToClipboard(t('Private key copied!')))
 
-      posthog?.capture('Copied address private key')
+      posthog.capture('Copied address private key')
     } catch (e) {
       dispatch(copyToClipboardFailed(getHumanReadableError(e, t('Could not copy private key.'))))
+      posthog.capture('Error', { message: 'Could not copy private key' })
     } finally {
       closePasswordModal()
     }
@@ -91,7 +92,7 @@ const DevToolsSettingsSection = () => {
 
   const handleFaucetCall = () => {
     defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))
-    posthog?.capture('Requested testnet tokens')
+    posthog.capture('Requested testnet tokens')
   }
 
   return (

@@ -82,21 +82,23 @@ const App = () => {
       dispatch(localStorageDataMigrated())
     } catch (e) {
       console.error(e)
+      posthog.capture('Error', { message: 'Local storage data migration failed' })
       dispatch(localStorageDataMigrationFailed())
     }
-  }, [dispatch])
+  }, [dispatch, posthog])
 
   useEffect(() => {
-    posthog?.people.set({
+    posthog.people.set({
       wallets: wallets.length,
       theme: settings.theme,
       devTools: settings.devTools,
       lockTimeInMs: settings.walletLockTimeInMinutes,
       language: settings.language,
       passwordRequirement: settings.passwordRequirement,
-      fiatCurrency: settings.fiatCurrency
+      fiatCurrency: settings.fiatCurrency,
+      network: network.name
     })
-  }, [posthog?.people, settings, wallets.length])
+  }, [network.name, posthog.people, settings, wallets.length])
 
   const setSystemLanguage = useCallback(async () => {
     const _window = window as unknown as AlephiumWindow
@@ -129,6 +131,7 @@ const App = () => {
       // TODO: Check if connection to explorer also works
       dispatch(apiClientInitSucceeded({ networkId, networkName: network.name }))
     } catch (e) {
+      // Discuss: Do we want to capture client init errors?
       dispatch(apiClientInitFailed({ networkName: network.name, networkStatus: network.status }))
     }
   }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])

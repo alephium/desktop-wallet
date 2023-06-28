@@ -46,22 +46,22 @@ const AdvancedOperationsSideModal = (props: AdvancedOperationsSideModal) => {
 
   const handleOneAddressPerGroupClick = () => {
     isPassphraseUsed ? generateAndSaveOneAddressPerGroup() : setIsAddressesGenerationModalOpen(true)
-    posthog?.capture('Advanced operation to generate one address per group clicked')
+    posthog.capture('Advanced operation to generate one address per group clicked')
   }
 
   const handleDiscoverAddressesClick = () => {
     discoverAndSaveUsedAddresses()
-    posthog?.capture('Advanced operation to discover addresses clicked')
+    posthog.capture('Advanced operation to discover addresses clicked')
   }
 
   const handleConsolidationClick = () => {
     setIsConsolidationModalOpen(true)
-    posthog?.capture('Advanced operation to consolidate UTXOs clicked')
+    posthog.capture('Advanced operation to consolidate UTXOs clicked')
   }
 
   const handleTellUsIdeasClick = () => {
     openInWebBrowser(links.discord)
-    posthog?.capture('Advanced operation to share ideas clicked')
+    posthog.capture('Advanced operation to share ideas clicked')
   }
 
   return (

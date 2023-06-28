@@ -80,12 +80,13 @@ const ImportWordsPage = () => {
 
       saveNewWallet({ wallet, walletName, password })
 
-      posthog?.capture('New wallet imported', { wallet_name_length: walletName.length })
+      posthog.capture('New wallet imported', { wallet_name_length: walletName.length })
 
       discoverAndSaveUsedAddresses({ mnemonic: wallet.mnemonic, skipIndexes: [0], enableLoading: false })
       onButtonNext()
     } catch (e) {
       dispatch(walletCreationFailed(getHumanReadableError(e, t('Error while importing wallet'))))
+      posthog.capture('Error', { message: 'Could not import wallet' })
     }
   }
 

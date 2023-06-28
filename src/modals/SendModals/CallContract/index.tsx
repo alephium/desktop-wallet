@@ -79,7 +79,7 @@ const buildTransaction = async (txData: CallContractTxData, ctx: TxContext) => {
   ctx.setFees(BigInt(response.gasAmount) * BigInt(response.gasPrice))
 }
 
-const handleSend = async ({ fromAddress, assetAmounts }: CallContractTxData, ctx: TxContext, posthog?: PostHog) => {
+const handleSend = async ({ fromAddress, assetAmounts }: CallContractTxData, ctx: TxContext, posthog: PostHog) => {
   if (!ctx.unsignedTransaction) throw Error('No unsignedTransaction available')
 
   const { attoAlphAmount, tokens } = getOptionalTransactionAssetAmounts(assetAmounts)
@@ -98,7 +98,7 @@ const handleSend = async ({ fromAddress, assetAmounts }: CallContractTxData, ctx
     })
   )
 
-  posthog?.capture('Called smart contract')
+  posthog.capture('Called smart contract')
 
   return data.signature
 }
