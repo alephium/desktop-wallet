@@ -45,6 +45,21 @@ export const currencies: Record<Currency, CurrencyData> = {
     ticker: 'GBP',
     symbol: '£'
   },
+  TRY: {
+    name: 'Turkish Lira',
+    ticker: 'TRY',
+    symbol: '₺'
+  },
+  VND: {
+    name: 'Vietnamese Dong',
+    ticker: 'VND',
+    symbol: '₫'
+  },
+  RUB: {
+    name: 'Russian Ruble',
+    ticker: 'RUB',
+    symbol: '₽'
+  },
   USD: {
     name: 'United States Dollar',
     ticker: 'USD',
