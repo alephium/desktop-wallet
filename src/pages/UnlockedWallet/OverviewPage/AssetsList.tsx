@@ -27,7 +27,6 @@ import AssetLogo from '@/components/AssetLogo'
 import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
-import NFTThumbnail from '@/components/NFTThumbnail'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
@@ -35,11 +34,7 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import {
-  makeSelectAddressesNFTs,
-  makeSelectAddressesTokens,
-  selectIsStateUninitialized
-} from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesTokens, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -173,16 +168,17 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
 
 const NFTsList = ({ className, addressHashes, isExpanded }: AssetsListProps) => {
   const { t } = useTranslation()
-  const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
-  const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
+  // const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
+  // const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
 
   return (
     <motion.div {...fadeIn} className={className}>
       <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
-        {nfts.map((nft) => (
+        {/* {nfts.map((nft) => (
           <NFTThumbnail key={nft.id} nft={nft} />
         ))}
-        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
+        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>} */}
+        <PlaceholderText>{t('Coming soon!')}</PlaceholderText>
       </TableRowStyled>
     </motion.div>
   )
