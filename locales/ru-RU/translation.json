@@ -112,6 +112,7 @@
   "Developer tools": "Developer tools",
   "Direction": "Путь",
   "Directions": "Directions",
+  "Disclaimer": "Disclaimer",
   "Disconnect": "Disconnect",
   "Discover active addresses": "Discover active addresses",
   "Discreet mode": "Скрытый режим",
@@ -350,6 +351,7 @@
   "The easiest way to get started with Alephium.": "Самый простой способ начать работу с Alephium.",
   "The group number will be automatically be appended to the addresses’ label.": "Номер группы будет автоматически добавлен к имени адреса.",
   "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})": "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})",
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.",
   "The wallet is offline.": "Кошелек находится в режиме оффлайн.",
   "Theme": "Тема",
   "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
@@ -435,6 +437,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Ваш кошелек",
-  "Disclaimer": "Disclaimer",
-  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version."
+  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info."
 }

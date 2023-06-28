@@ -112,6 +112,7 @@
   "Developer tools": "Developer tools",
   "Direction": "Direction",
   "Directions": "Directions",
+  "Disclaimer": "Disclaimer",
   "Disconnect": "Disconnect",
   "Discover active addresses": "Discover active addresses",
   "Discreet mode": "Дискретен режим",
@@ -350,6 +351,7 @@
   "The easiest way to get started with Alephium.": "Най-лесният начин да започнете работа с Alephium.",
   "The group number will be automatically be appended to the addresses’ label.": "Номерът на групата ще бъде добавен автоматично към етикета на адреса.",
   "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})": "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})",
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.",
   "The wallet is offline.": "Портфейлът е офлайн.",
   "Theme": "Тема на изглед",
   "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
@@ -435,6 +437,5 @@
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
   "Your Wallet": "Вашият портфейл",
-  "Disclaimer": "Disclaimer",
-  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version."
+  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info."
 }
