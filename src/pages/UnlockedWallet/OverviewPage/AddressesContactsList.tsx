@@ -103,7 +103,7 @@ const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick 
                 <AmountStyled
                   value={calculateAmountWorth(BigInt(address.balance), price ?? 0)}
                   isFiat
-                  suffix={currencies['USD'].symbol}
+                  suffix={currencies[fiatCurrency].symbol}
                   tabIndex={0}
                 />
               )}
