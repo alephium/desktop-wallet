@@ -230,6 +230,7 @@
   "New wallet name": "Ново име на портфейла",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "No contacts found. You can create contacts in the Addresses page.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "No options match the search criteria.",
   "No recovery phrase was stored along with this wallet": "Не е съхранена фраза за възстановяване заедно с този портфейл",
   "No transactions to display": "Няма транзакции за показване",
@@ -433,6 +434,5 @@
   "Your addresses": "Your addresses",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Вашият портфейл",
-  "No NFTs found.": "No NFTs found."
+  "Your Wallet": "Вашият портфейл"
 }

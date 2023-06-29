@@ -168,7 +168,7 @@ function createWindow() {
   })
 
   if (!isMac && !isWindows) {
-    mainWindow.setIcon(nativeImage.createFromPath(path.join(__dirname, 'icons/logo-48.png')))
+    mainWindow.setIcon(nativeImage.createFromPath(path.join(__dirname, isDev ? 'icons/logo-48.png' : '../build/icons/logo-48.png')))
   }
 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)

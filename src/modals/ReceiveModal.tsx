@@ -39,7 +39,7 @@ const ReceiveModal = ({ onClose, addressHash }: ReceiveModalProps) => {
   const defaultAddress = useAppSelector(selectDefaultAddress)
   const address = useAppSelector((state) => selectAddressByHash(state, addressHash ?? ''))
 
-  const [selectedAddress, setSelectedAddress] = useState(defaultAddress)
+  const [selectedAddress, setSelectedAddress] = useState(address ?? defaultAddress)
 
   return (
     <CenteredModal title={t('Receive')} onClose={onClose}>

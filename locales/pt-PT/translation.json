@@ -230,6 +230,7 @@
   "New wallet name": "Novo nome da carteira",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "No contacts found. You can create contacts in the Addresses page.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "No options match the search criteria.",
   "No recovery phrase was stored along with this wallet": "Nenhuma frase de recuperação foi guardada juntamente com esta carteira",
   "No transactions to display": "Sem transações a exibir",
@@ -433,6 +434,5 @@
   "Your addresses": "Your addresses",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "A sua carteira",
-  "No NFTs found.": "No NFTs found."
+  "Your Wallet": "A sua carteira"
 }
