@@ -32,7 +32,8 @@ import {
   syncAddressesData,
   syncAddressesHistoricBalances,
   syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAllAddressesTransactionsNextPage,
+  syncingAddressDataStarted
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter, balanceHistoryAdapter } from '@/storage/addresses/addressesAdapters'
 import { receiveTestnetTokens } from '@/storage/global/globalActions'
@@ -52,6 +53,7 @@ import { getInitialAddressSettings } from '@/utils/addresses'
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,
+  syncingAddressData: false,
   isRestoringAddressesFromMetadata: false,
   status: 'uninitialized'
 })
@@ -62,6 +64,10 @@ const addressesSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(syncingAddressDataStarted, (state) => {
+        state.syncingAddressData = true
+        state.loading = true
+      })
       .addCase(addressSettingsSaved, (state, action) => {
         const { addressHash, settings } = action.payload
 
@@ -117,6 +123,7 @@ const addressesSlice = createSlice({
       })
       .addCase(syncAddressesData.rejected, (state) => {
         state.loading = false
+        state.syncingAddressData = false
       })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
@@ -146,6 +153,7 @@ const addressesSlice = createSlice({
 
         state.status = 'initialized'
         state.loading = false
+        state.syncingAddressData = false
       })
       .addCase(syncAddressTransactionsNextPage.fulfilled, (state, action) => {
         const addressTransactionsData = action.payload

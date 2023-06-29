@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
+import { difference } from 'lodash'
 import { usePostHog } from 'posthog-js/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
@@ -35,7 +36,7 @@ import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
 import { selectAddressIds, selectAllUnknownTokens } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
-import { selectIsLoadingTokensInfo } from '@/storage/assets/assetsSelectors'
+import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
 import {
   devModeShortcutDetected,
   localStorageDataMigrated,
@@ -58,11 +59,7 @@ const App = () => {
   const addressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
   const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
-  const unknownTokens = useAppSelector(selectAllUnknownTokens)
   const network = useAppSelector((s) => s.network)
-  const addressesStatus = useAppSelector((s) => s.addresses.status)
-  const isLoadingAddressData = useAppSelector((s) => s.addresses.loading)
-  const isLoadingTokensInfo = useAppSelector(selectIsLoadingTokensInfo)
   const theme = useAppSelector((s) => s.global.theme)
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
   const loading = useAppSelector((s) => s.global.loading)
@@ -70,6 +67,16 @@ const App = () => {
   const wallets = useAppSelector((s) => s.global.wallets)
   const showDevIndication = useDevModeShortcut()
   const posthog = usePostHog()
+
+  const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const isSyncingAddressData = useAppSelector((s) => s.addresses.syncingAddressData)
+  const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
+  const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
+
+  const unknownTokens = useAppSelector(selectAllUnknownTokens)
+  const checkedUnknownTokenIds = useAppSelector((s) => s.assetsInfo.checkedUnknownTokenIds)
+  const unknownTokenIds = unknownTokens.map((token) => token.id)
+  const newUnknownTokens = difference(unknownTokenIds, checkedUnknownTokenIds)
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
@@ -141,16 +148,32 @@ const App = () => {
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
   useEffect(() => {
-    if (
-      network.status === 'online' &&
-      addressesStatus === 'uninitialized' &&
-      !isLoadingAddressData &&
-      addressHashes.length > 0
-    ) {
-      dispatch(syncAddressesData())
-      dispatch(syncAddressesHistoricBalances())
+    if (network.status === 'online') {
+      if (assetsInfo.status === 'uninitialized' && !isLoadingTokensMetadata) {
+        dispatch(syncNetworkTokensInfo())
+      }
+      if (addressesStatus === 'uninitialized') {
+        if (!isSyncingAddressData && addressHashes.length > 0) {
+          dispatch(syncAddressesData())
+          dispatch(syncAddressesHistoricBalances())
+        }
+      } else if (addressesStatus === 'initialized') {
+        if (!isTokensMetadataUninitialized && !isLoadingTokensMetadata && newUnknownTokens.length > 0) {
+          dispatch(syncUnknownTokensInfo(newUnknownTokens))
+        }
+      }
     }
-  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, isLoadingAddressData, network.status])
+  }, [
+    addressHashes.length,
+    addressesStatus,
+    assetsInfo.status,
+    dispatch,
+    isSyncingAddressData,
+    isLoadingTokensMetadata,
+    isTokensMetadataUninitialized,
+    network.status,
+    newUnknownTokens
+  ])
 
   const refreshAddressesData = useCallback(
     () => dispatch(syncAddressesData(addressesWithPendingTxs)),
@@ -158,23 +181,6 @@ const App = () => {
   )
 
   useInterval(refreshAddressesData, 2000, addressesWithPendingTxs.length === 0)
-
-  useEffect(() => {
-    if (network.status === 'online' && assetsInfo.status === 'uninitialized') {
-      dispatch(syncNetworkTokensInfo())
-    }
-  }, [dispatch, network.status, assetsInfo.status])
-
-  useEffect(() => {
-    if (
-      network.status === 'online' &&
-      addressesStatus === 'initialized' &&
-      !isLoadingTokensInfo &&
-      unknownTokens.length > 0
-    ) {
-      dispatch(syncUnknownTokensInfo(unknownTokens.map((token) => token.id)))
-    }
-  }, [addressesStatus, dispatch, isLoadingTokensInfo, network.status, unknownTokens])
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
