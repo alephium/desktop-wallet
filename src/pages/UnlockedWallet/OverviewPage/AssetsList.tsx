@@ -39,7 +39,6 @@ import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
   className?: string
-  limit?: number
   addressHashes?: AddressHash[]
   tokensTabTitle?: string
   nftsTabTitle?: string
@@ -50,14 +49,7 @@ interface AssetsListProps {
   maxHeightInPx?: number
 }
 
-const AssetsList = ({
-  className,
-  limit,
-  addressHashes,
-  tokensTabTitle,
-  nftsTabTitle,
-  maxHeightInPx
-}: AssetsListProps) => {
+const AssetsList = ({ className, addressHashes, tokensTabTitle, nftsTabTitle, maxHeightInPx }: AssetsListProps) => {
   const { t } = useTranslation()
 
   const tabs = [
@@ -77,7 +69,6 @@ const AssetsList = ({
           {
             tokens: (
               <TokensList
-                limit={limit}
                 addressHashes={addressHashes}
                 isExpanded={isExpanded || !maxHeightInPx}
                 onExpand={handleButtonClick}
@@ -85,7 +76,6 @@ const AssetsList = ({
             ),
             nfts: (
               <NFTsList
-                limit={limit}
                 addressHashes={addressHashes}
                 isExpanded={isExpanded || !maxHeightInPx}
                 onExpand={handleButtonClick}
@@ -98,19 +88,17 @@ const AssetsList = ({
   )
 }
 
-const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
+const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
-  const displayedAssets = limit ? assets.slice(0, limit) : assets
-
   return (
     <>
       <motion.div {...fadeIn} className={className}>
-        {displayedAssets.map((asset) => (
+        {assets.map((asset) => (
           <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
             <TokenRow>
               <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
@@ -161,7 +149,7 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
         ))}
       </motion.div>
 
-      {!isExpanded && displayedAssets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
+      {!isExpanded && assets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
     </>
   )
 }
