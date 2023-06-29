@@ -89,3 +89,8 @@ declare module 'styled-components' {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD'
+>>>>>>> master
