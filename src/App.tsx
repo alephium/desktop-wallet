@@ -45,6 +45,10 @@ import {
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
 import { makeSelectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import {
+  getStoredPendingTransactions,
+  restorePendingTransactions
+} from '@/storage/transactions/transactionsStorageUtils'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AddressHash } from '@/types/addresses'
@@ -154,7 +158,15 @@ const App = () => {
       }
       if (addressesStatus === 'uninitialized') {
         if (!isSyncingAddressData && addressHashes.length > 0) {
+          const storedPendingTxs = getStoredPendingTransactions()
+
           dispatch(syncAddressesData())
+            .unwrap()
+            .then((results) => {
+              const mempoolTxHashes = results.flatMap((result) => result.mempoolTransactions.map((tx) => tx.hash))
+
+              restorePendingTransactions(mempoolTxHashes, storedPendingTxs)
+            })
           dispatch(syncAddressesHistoricBalances())
         }
       } else if (addressesStatus === 'initialized') {
@@ -175,12 +187,11 @@ const App = () => {
     newUnknownTokens
   ])
 
-  const refreshAddressesData = useCallback(
-    () => dispatch(syncAddressesData(addressesWithPendingTxs)),
-    [dispatch, addressesWithPendingTxs]
-  )
+  const refreshAddressesData = useCallback(() => {
+    dispatch(syncAddressesData(addressesWithPendingTxs))
+  }, [dispatch, addressesWithPendingTxs])
 
-  useInterval(refreshAddressesData, 2000, addressesWithPendingTxs.length === 0)
+  useInterval(refreshAddressesData, 5000, addressesWithPendingTxs.length === 0 || isSyncingAddressData)
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)
