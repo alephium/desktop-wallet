@@ -85,8 +85,8 @@ const UpdateWalletModal = ({ onClose }: UpdateWalletModalProps) => {
   const downloadMessage = {
     'download-available': t(
       requiresManualDownload
-        ? 'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with wallet.'
-        : 'Version {{ newVersion }} is available. Click "Update" to avoid any issues with wallet.',
+        ? 'Version {{ newVersion }} is available. Please, download it and install it to avoid any issues with the wallet.'
+        : 'Version {{ newVersion }} is available. Click "Update" to avoid any issues with the wallet.',
       {
         newVersion
       }

@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { maxBy } from 'lodash'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -46,7 +47,9 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
 
-  const [selectedWallet, setSelectedWallet] = useState<StoredWallet['id']>()
+  const [selectedWallet, setSelectedWallet] = useState<StoredWallet['id']>(
+    maxBy(wallets, 'lastUsed')?.id || wallets[0]?.id
+  )
   const selectedWalletOption = walletOptions.find((option) => option.value === selectedWallet)
   const [password, setPassword] = useState('')
   const [passphrase, setPassphrase] = useState('')
@@ -88,6 +91,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
         <Select
           label={t('Wallet')}
           options={walletOptions}
+          controlledValue={walletOptions.find((w) => w.value === selectedWallet)}
           onSelect={setSelectedWallet}
           title={t('Select a wallet')}
           id="wallet"

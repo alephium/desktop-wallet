@@ -38,7 +38,7 @@ export const selectAddressTransactions = (
 
     addressTxs.forEach((addressTx) => {
       if (
-        (!isPendingTransaction(tx) || tx.fromAddress === addressTx.address.hash) &&
+        (!isPendingTransaction(tx) || [tx.fromAddress, tx.toAddress].includes(addressTx.address.hash)) &&
         !processedTxHashes.includes(tx.hash)
       ) {
         processedTxHashes.push(tx.hash)
