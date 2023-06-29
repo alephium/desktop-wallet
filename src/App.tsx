@@ -61,6 +61,7 @@ const App = () => {
   const unknownTokens = useAppSelector(selectAllUnknownTokens)
   const network = useAppSelector((s) => s.network)
   const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const isLoadingAddressData = useAppSelector((s) => s.addresses.loading)
   const isLoadingTokensInfo = useAppSelector(selectIsLoadingTokensInfo)
   const theme = useAppSelector((s) => s.global.theme)
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
@@ -140,11 +141,16 @@ const App = () => {
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
   useEffect(() => {
-    if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
+    if (
+      network.status === 'online' &&
+      addressesStatus === 'uninitialized' &&
+      !isLoadingAddressData &&
+      addressHashes.length > 0
+    ) {
       dispatch(syncAddressesData())
       dispatch(syncAddressesHistoricBalances())
     }
-  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, network.status])
+  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, isLoadingAddressData, network.status])
 
   const refreshAddressesData = useCallback(
     () => dispatch(syncAddressesData(addressesWithPendingTxs)),
