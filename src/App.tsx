@@ -132,8 +132,12 @@ const App = () => {
   }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])
 
   useEffect(() => {
-    electron?.app.setProxySettings(network.settings.proxy)
-    if (network.status === 'connecting') initializeClient()
+    const setProxySettings = async () => {
+      await electron?.app.setProxySettings(network.settings.proxy)
+      if (network.status === 'connecting') initializeClient()
+    }
+
+    setProxySettings()
   }, [electron?.app, initializeClient, network.settings.proxy, network.status])
 
   useInterval(initializeClient, 2000, network.status !== 'offline')

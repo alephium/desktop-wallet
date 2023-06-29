@@ -49,8 +49,6 @@ export interface Settings {
 
 export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'es-ES' | 'id-ID' | 'tr-TR'
 
-export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG'
-
 export type ThemeType = 'light' | 'dark'
 
 export type ThemeSettings = ThemeType | 'system'

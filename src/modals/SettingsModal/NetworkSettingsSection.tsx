@@ -148,7 +148,7 @@ const NetworkSettingsSection = () => {
     overrideSelectionIfMatchesPreset(tempNetworkSettings)
     dispatch(customNetworkSettingsSaved(tempNetworkSettings))
 
-    // Proxy settings
+    // Proxy settings (no need to be awaited)
     electron?.app.setProxySettings(tempNetworkSettings.proxy)
 
     posthog?.capture('Saved custom network settings')
@@ -171,15 +171,15 @@ const NetworkSettingsSection = () => {
     <>
       <StyledInfoBox
         Icon={AlertCircle}
-        text={t`Make sure to always check what is the selected network before sending transactions.`}
+        text={t('Make sure to always check what is the selected network before sending transactions.')}
         importance="accent"
       />
       <Select
         options={networkSelectOptions}
         onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
-        title={t`Network`}
-        label={t`Current network`}
+        title={t('Network')}
+        label={t('Current network')}
         id="network"
       />
       <ToggleSection
@@ -194,21 +194,21 @@ const NetworkSettingsSection = () => {
           </h2>
           <Input
             id="node-host"
-            label={t`Node host`}
+            label={t('Node host')}
             value={tempNetworkSettings.nodeHost}
             onChange={(e) => editNetworkSettings({ nodeHost: e.target.value })}
             noMargin
           />
           <Input
             id="explorer-api-host"
-            label={t`Explorer API host`}
+            label={t('Explorer API host')}
             value={tempNetworkSettings.explorerApiHost}
             onChange={(e) => editNetworkSettings({ explorerApiHost: e.target.value })}
             noMargin
           />
           <Input
             id="explorer-url"
-            label={t`Explorer URL`}
+            label={t('Explorer URL')}
             value={tempNetworkSettings.explorerUrl}
             onChange={(e) => editNetworkSettings({ explorerUrl: e.target.value })}
             noMargin
@@ -218,21 +218,21 @@ const NetworkSettingsSection = () => {
           </h2>
           <Input
             id="proxy-address"
-            label={t`Proxy address`}
+            label={t('Proxy address')}
             value={tempNetworkSettings.proxy?.address}
             onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, address: e.target.value } })}
             noMargin
           />
           <Input
             id="proxy-port"
-            label={t`Proxy port`}
+            label={t('Proxy port')}
             value={tempNetworkSettings.proxy?.port}
             onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, port: e.target.value } })}
             noMargin
           />
         </UrlInputs>
         <Section inList>
-          <Button onClick={handleAdvancedSettingsSave}>{t`Save`}</Button>
+          <Button onClick={handleAdvancedSettingsSave}>{t('Save')}</Button>
         </Section>
       </ToggleSection>
     </>
