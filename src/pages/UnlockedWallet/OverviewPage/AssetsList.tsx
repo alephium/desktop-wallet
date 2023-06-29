@@ -94,6 +94,7 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
 
   return (
     <>
@@ -147,6 +148,11 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
             </TokenRow>
           </TableRow>
         ))}
+        {(isLoadingTokensMetadata || stateUninitialized) && (
+          <TableRow>
+            <SkeletonLoader height="37.5px" />
+          </TableRow>
+        )}
       </motion.div>
 
       {!isExpanded && assets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
