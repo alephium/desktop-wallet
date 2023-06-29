@@ -24,7 +24,7 @@ import { NetworkSettings } from '@/types/settings'
 
 export const exponentialBackoffFetchRetry = fetchRetry(fetch, {
   retryOn: [429],
-  retries: 3,
+  retries: 10,
   retryDelay: (attempt) => Math.pow(2, attempt) * 1000
 })
 

@@ -24,7 +24,7 @@ import { sortBy } from 'lodash'
 import { addressesAdapter, contactsAdapter } from '@/storage/addresses/addressesAdapters'
 import { selectAllAssetsInfo, selectAllNFTs, selectNFTIds } from '@/storage/assets/assetsSelectors'
 import { RootState } from '@/storage/store'
-import { AddressHash } from '@/types/addresses'
+import { Address, AddressHash } from '@/types/addresses'
 import { NFT } from '@/types/assets'
 import { filterAddressesWithoutAssets } from '@/utils/addresses'
 
@@ -72,48 +72,31 @@ export const makeSelectAddressesAlphAsset = () =>
 
 export const makeSelectAddressesTokens = () =>
   createSelector(
-    [selectAllAssetsInfo, makeSelectAddressesAlphAsset(), selectNFTIds, makeSelectAddresses()],
-    (assetsInfo, alphAsset, nftIds, addresses): Asset[] => {
-      const tokenBalances = addresses.reduce((acc, { tokens }) => {
-        tokens
-          .filter((token) => !nftIds.includes(token.id))
-          .forEach((token) => {
-            const existingToken = acc.find((t) => t.id === token.id)
-
-            if (!existingToken) {
-              acc.push({
-                id: token.id,
-                balance: BigInt(token.balance),
-                lockedBalance: BigInt(token.lockedBalance)
-              })
-            } else {
-              existingToken.balance = existingToken.balance + BigInt(token.balance)
-              existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
-            }
-          })
-
-        return acc
-      }, [] as TokenDisplayBalances[])
-
-      const tokenAssets = tokenBalances.map((token) => {
+    [selectAllAssetsInfo, makeSelectAddressesAlphAsset(), makeSelectAddresses()],
+    (assetsInfo, alphAsset, addresses): Asset[] => {
+      const tokensWithMetadata = getAddressesTokenBalances(addresses).reduce((acc, token) => {
         const assetInfo = assetsInfo.find((t) => t.id === token.id)
 
-        return {
-          id: token.id,
-          balance: BigInt(token.balance.toString()),
-          lockedBalance: BigInt(token.lockedBalance.toString()),
-          name: assetInfo?.name,
-          symbol: assetInfo?.symbol,
-          description: assetInfo?.description,
-          logoURI: assetInfo?.logoURI,
-          decimals: assetInfo?.decimals ?? 0,
-          verified: assetInfo?.verified
+        if (assetInfo) {
+          acc.push({
+            id: token.id,
+            balance: BigInt(token.balance.toString()),
+            lockedBalance: BigInt(token.lockedBalance.toString()),
+            name: assetInfo.name,
+            symbol: assetInfo.symbol,
+            description: assetInfo.description,
+            logoURI: assetInfo.logoURI,
+            decimals: assetInfo.decimals,
+            verified: assetInfo.verified
+          })
         }
-      })
+
+        return acc
+      }, [] as Asset[])
 
       return [
         alphAsset,
-        ...sortBy(tokenAssets, [
+        ...sortBy(tokensWithMetadata, [
           (a) => !a.verified,
           (a) => a.verified === undefined,
           (a) => a.name?.toLowerCase(),
@@ -122,6 +105,35 @@ export const makeSelectAddressesTokens = () =>
       ]
     }
   )
+
+export const selectAllUnknownTokens = createSelector(
+  [
+    selectAllAssetsInfo,
+    selectNFTIds,
+    makeSelectAddresses(),
+    (state: RootState) => state.assetsInfo.checkedUnknownTokenIds
+  ],
+  (assetsInfo, nftIds, addresses, checkedUnknownTokenIds) => {
+    const tokensWithoutMetadata = getAddressesTokenBalances(addresses).reduce((acc, token) => {
+      const hasTokenMetadata = !!assetsInfo.find((t) => t.id === token.id)
+      const hasNFTMetadata = nftIds.includes(token.id)
+      const hasAlreadyBeenChecked = checkedUnknownTokenIds.includes(token.id)
+
+      if (!hasTokenMetadata && !hasNFTMetadata && !hasAlreadyBeenChecked) {
+        acc.push({
+          id: token.id,
+          balance: BigInt(token.balance.toString()),
+          lockedBalance: BigInt(token.lockedBalance.toString()),
+          decimals: 0
+        })
+      }
+
+      return acc
+    }, [] as Asset[])
+
+    return tokensWithoutMetadata
+  }
+)
 
 export const makeSelectAddressesNFTs = () =>
   createSelector([selectAllNFTs, makeSelectAddresses()], (nfts, addresses): NFT[] => {
@@ -161,3 +173,23 @@ export const makeSelectAddressesHaveHistoricBalances = () =>
   )
 
 export const selectAddressesWithSomeBalance = createSelector(selectAllAddresses, filterAddressesWithoutAssets)
+
+const getAddressesTokenBalances = (addresses: Address[]) =>
+  addresses.reduce((acc, { tokens }) => {
+    tokens.forEach((token) => {
+      const existingToken = acc.find((t) => t.id === token.id)
+
+      if (!existingToken) {
+        acc.push({
+          id: token.id,
+          balance: BigInt(token.balance),
+          lockedBalance: BigInt(token.lockedBalance)
+        })
+      } else {
+        existingToken.balance = existingToken.balance + BigInt(token.balance)
+        existingToken.lockedBalance = existingToken.lockedBalance + BigInt(token.lockedBalance)
+      }
+    })
+
+    return acc
+  }, [] as TokenDisplayBalances[])

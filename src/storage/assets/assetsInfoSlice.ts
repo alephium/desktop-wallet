@@ -21,17 +21,21 @@ import { ALPH } from '@alephium/token-list'
 import { hexToString } from '@alephium/web3'
 import { createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
+import { loadingStarted, syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 
 interface AssetsInfoState extends EntityState<AssetInfo> {
+  loading: boolean
   status: 'initialized' | 'uninitialized'
+  checkedUnknownTokenIds: AssetInfo['id'][]
 }
 
 const initialState: AssetsInfoState = assetsInfoAdapter.addOne(
   assetsInfoAdapter.getInitialState({
-    status: 'uninitialized'
+    loading: false,
+    status: 'uninitialized',
+    checkedUnknownTokenIds: []
   }),
   {
     ...ALPH,
@@ -45,6 +49,9 @@ const assetsSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(loadingStarted, (state) => {
+        state.loading = true
+      })
       .addCase(syncNetworkTokensInfo.fulfilled, (state, action) => {
         const metadata = action.payload
 
@@ -57,10 +64,14 @@ const assetsSlice = createSlice({
             }))
           )
           state.status = 'initialized'
+          state.loading = false
         }
       })
       .addCase(syncUnknownTokensInfo.fulfilled, (state, action) => {
         const metadata = action.payload.tokens
+        const initiallyUnknownTokenIds = action.meta.arg
+
+        state.checkedUnknownTokenIds = [...initiallyUnknownTokenIds, ...state.checkedUnknownTokenIds]
 
         if (metadata) {
           assetsInfoAdapter.upsertMany(
@@ -74,6 +85,8 @@ const assetsSlice = createSlice({
             }))
           )
         }
+
+        state.loading = false
       })
       .addCase(networkPresetSwitched, resetState)
       .addCase(customNetworkSettingsSaved, resetState)

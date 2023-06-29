@@ -25,7 +25,7 @@ import { RootState } from '@/storage/store'
 export const { selectAll: selectAllAssetsInfo, selectById: selectAssetInfoById } =
   assetsInfoAdapter.getSelectors<RootState>((state) => state.assetsInfo)
 
-export const selectIsLoadingAssetsInfo = createSelector(
+export const selectIsTokensMetadataUninitialized = createSelector(
   [(state: RootState) => state.assetsInfo.status, (state: RootState) => state.network.settings.networkId],
   (status, networkId) =>
     (networkId === networkPresets.mainnet.networkId || networkId === networkPresets.testnet.networkId) &&

@@ -112,6 +112,7 @@
   "Developer tools": "Developer tools",
   "Direction": "Direction",
   "Directions": "Directions",
+  "Disclaimer": "Disclaimer",
   "Disconnect": "Disconnect",
   "Discover active addresses": "Discover active addresses",
   "Discreet mode": "Diskreter Modus",
@@ -350,6 +351,7 @@
   "The easiest way to get started with Alephium.": "Der einfachste Weg, mit Alephium zu beginnen.",
   "The group number will be automatically be appended to the addresses’ label.": "Die Gruppennummer wird automatisch an das Etikett der Adresse angehängt.",
   "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})": "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})",
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.",
   "The wallet is offline.": "Die Wallet ist offline.",
   "Theme": "Erscheinungsbild",
   "There are no addresses in the required group: {{ group }}": "There are no addresses in the required group: {{ group }}",
@@ -434,7 +436,5 @@
   "Your addresses": "Ihre Adressen",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Ihre Wallet",
-  "Disclaimer": "Disclaimer",
-  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version."
+  "Your Wallet": "Ihre Wallet"
 }

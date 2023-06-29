@@ -36,7 +36,7 @@ import {
   selectAddressByHash,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
-import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
 import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -55,7 +55,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, addressHash))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
-  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
+  const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
   const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker)
 
@@ -97,7 +97,7 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
           </Column>
         </AddressNameCell>
         <Cell>
-          {isLoadingAssetsInfo || stateUninitialized ? (
+          {isTokensMetadataUninitialized || stateUninitialized ? (
             <SkeletonLoader height="33.5px" />
           ) : (
             <AssetLogos>

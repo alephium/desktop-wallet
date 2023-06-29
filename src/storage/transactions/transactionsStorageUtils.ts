@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { MempoolTransaction } from '@alephium/web3/dist/src/api/api-explorer'
 import posthog from 'posthog-js'
 
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
@@ -25,12 +26,24 @@ import {
   loadingPendingTransactionsFailed,
   storedPendingTransactionsLoaded
 } from '@/storage/transactions/transactionsActions'
+import { PendingTransaction } from '@/types/transactions'
 
-export const restorePendingTransactions = () => {
+export const getStoredPendingTransactions = () => {
+  const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
+
+  return PendingTransactionsStorage.load(encryptedStorageProps)
+}
+
+export const restorePendingTransactions = (
+  mempoolTxHashes: MempoolTransaction['hash'][],
+  storedPendingTxs: PendingTransaction[]
+) => {
   try {
     const encryptedStorageProps = getEncryptedStoragePropsFromActiveWallet()
-    const transactions = PendingTransactionsStorage.load(encryptedStorageProps)
-    store.dispatch(storedPendingTransactionsLoaded(transactions))
+    const usefulPendingTxs = storedPendingTxs.filter((tx) => mempoolTxHashes.includes(tx.hash))
+
+    store.dispatch(storedPendingTransactionsLoaded(usefulPendingTxs))
+    PendingTransactionsStorage.store(usefulPendingTxs, encryptedStorageProps)
   } catch (e) {
     console.error(e)
     store.dispatch(loadingPendingTransactionsFailed())

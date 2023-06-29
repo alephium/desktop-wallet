@@ -27,7 +27,6 @@ import AssetLogo from '@/components/AssetLogo'
 import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
-import NFTThumbnail from '@/components/NFTThumbnail'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
@@ -35,16 +34,11 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import {
-  makeSelectAddressesNFTs,
-  makeSelectAddressesTokens,
-  selectIsStateUninitialized
-} from '@/storage/addresses/addressesSelectors'
+import { makeSelectAddressesTokens, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
   className?: string
-  limit?: number
   addressHashes?: AddressHash[]
   tokensTabTitle?: string
   nftsTabTitle?: string
@@ -55,14 +49,7 @@ interface AssetsListProps {
   maxHeightInPx?: number
 }
 
-const AssetsList = ({
-  className,
-  limit,
-  addressHashes,
-  tokensTabTitle,
-  nftsTabTitle,
-  maxHeightInPx
-}: AssetsListProps) => {
+const AssetsList = ({ className, addressHashes, tokensTabTitle, nftsTabTitle, maxHeightInPx }: AssetsListProps) => {
   const { t } = useTranslation()
 
   const tabs = [
@@ -82,7 +69,6 @@ const AssetsList = ({
           {
             tokens: (
               <TokensList
-                limit={limit}
                 addressHashes={addressHashes}
                 isExpanded={isExpanded || !maxHeightInPx}
                 onExpand={handleButtonClick}
@@ -90,7 +76,6 @@ const AssetsList = ({
             ),
             nfts: (
               <NFTsList
-                limit={limit}
                 addressHashes={addressHashes}
                 isExpanded={isExpanded || !maxHeightInPx}
                 onExpand={handleButtonClick}
@@ -103,19 +88,18 @@ const AssetsList = ({
   )
 }
 
-const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
+const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
-
-  const displayedAssets = limit ? assets.slice(0, limit) : assets
+  const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
 
   return (
     <>
       <motion.div {...fadeIn} className={className}>
-        {displayedAssets.map((asset) => (
+        {assets.map((asset) => (
           <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
             <TokenRow>
               <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} assetName={asset.name} />
@@ -164,25 +148,31 @@ const TokensList = ({ className, limit, addressHashes, isExpanded, onExpand }: A
             </TokenRow>
           </TableRow>
         ))}
+        {(isLoadingTokensMetadata || stateUninitialized) && (
+          <TableRow>
+            <SkeletonLoader height="37.5px" />
+          </TableRow>
+        )}
       </motion.div>
 
-      {!isExpanded && displayedAssets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
+      {!isExpanded && assets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
     </>
   )
 }
 
 const NFTsList = ({ className, addressHashes, isExpanded }: AssetsListProps) => {
   const { t } = useTranslation()
-  const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
-  const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
+  // const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
+  // const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
 
   return (
     <motion.div {...fadeIn} className={className}>
       <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
-        {nfts.map((nft) => (
+        {/* {nfts.map((nft) => (
           <NFTThumbnail key={nft.id} nft={nft} />
         ))}
-        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
+        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>} */}
+        <PlaceholderText>{t('Coming soon!')}</PlaceholderText>
       </TableRowStyled>
     </motion.div>
   )

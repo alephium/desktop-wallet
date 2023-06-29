@@ -26,5 +26,5 @@ export const assetsInfoAdapter = createEntityAdapter<AssetInfo>({
 })
 
 export const nftsAdapter = createEntityAdapter<NFT>({
-  sortComparer: (a, b) => a.name.localeCompare(b.name)
+  sortComparer: (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : a.id.localeCompare(b.id))
 })
