@@ -434,5 +434,6 @@
   "Your addresses": "Các địa chỉ ví của bạn",
   "Your CSV file has been generated successfully.": "Tệp tin CSV của bạn đã được tạo thành công.",
   "Your CSV file is being compiled in the background.": "Tệp tin CSV của bạn đang được soạn trong nền.",
-  "Your Wallet": "Ví của bạn"
+  "Your Wallet": "Ví của bạn",
+  "Address unknown tokens": "Address unknown tokens"
 }
