@@ -22,9 +22,9 @@ import fetchRetry from 'fetch-retry'
 import { defaultSettings } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkSettings } from '@/types/settings'
 
-const exponentialBackoffFetchRetry = fetchRetry(fetch, {
+export const exponentialBackoffFetchRetry = fetchRetry(fetch, {
   retryOn: [429],
-  retries: 3,
+  retries: 10,
   retryDelay: (attempt) => Math.pow(2, attempt) * 1000
 })
 

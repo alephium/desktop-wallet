@@ -60,6 +60,7 @@ export default pendingTransactionsSlice
 
 export const pendingTransactionsListenerMiddleware = createListenerMiddleware()
 
+// Keep state and local storage of pending transactions in sync
 pendingTransactionsListenerMiddleware.startListening({
   matcher: isAnyOf(
     transactionSent,
@@ -70,16 +71,16 @@ pendingTransactionsListenerMiddleware.startListening({
   ),
   effect: (_, { getState }) => {
     const state = getState() as RootState
-    const transactions = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
+    const pendingTxsInState = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
     const { id: walletId, mnemonic, passphrase } = state.activeWallet
 
     if (!walletId || !mnemonic || passphrase) return
 
     const encryptionProps = { walletId, mnemonic, passphrase }
-    const storedTransactions = PendingTransactionsStorage.load(encryptionProps)
-    const uniqueTransactions = xorWith(transactions, storedTransactions, (a, b) => a.hash === b.hash)
+    const storedPendingTxs = PendingTransactionsStorage.load(encryptionProps)
+    const uniqueTransactions = xorWith(pendingTxsInState, storedPendingTxs, (a, b) => a.hash === b.hash)
 
-    if (uniqueTransactions.length > 0) PendingTransactionsStorage.store(transactions, encryptionProps)
+    if (uniqueTransactions.length > 0) PendingTransactionsStorage.store(pendingTxsInState, encryptionProps)
   }
 })
 

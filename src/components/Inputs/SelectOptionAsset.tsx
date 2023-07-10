@@ -36,9 +36,9 @@ const SelectOptionAsset = ({ asset, hideAmount, className }: SelectOptionAssetPr
     className={className}
     MainContent={
       <AssetName>
-        <AssetLogo asset={asset} size={20} />
+        <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} />
         <Truncate>
-          {asset.name && asset.symbol ? `${asset.name} (${asset.symbol})` : <HashEllipsed hash={asset.id} />}
+          {asset.name ? `${asset.name} ${asset.symbol ? `(${asset.symbol})` : ''}` : <HashEllipsed hash={asset.id} />}
         </Truncate>
       </AssetName>
     }

@@ -230,6 +230,7 @@
   "New wallet name": "Tên ví mới",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "Không có danh bạ nào được tìm thấy. Bạn có thể tạo các danh bạ trong trang Các địa chỉ ví .",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "Không có tuỳ chọn nào phù hợp với tìm kiếm.",
   "No recovery phrase was stored along with this wallet": "Không có cụm từ khôi phục nào được lưu với ví này",
   "No transactions to display": "Không có giao dịch nào để hiển thị",
@@ -385,6 +386,7 @@
   "Type your password to show the phrase.": "Gõ mật khẩu để hiện cụm từ khôi phục.",
   "Type your recovery phrase": "Gõ cụm từ khôi phục bí mật",
   "Unable to convert the amount": "Không thể chuyển đổi số lượng",
+  "Unknown": "Unknown",
   "Unknown token": "Token không xác định",
   "Unknown tokens": "Các token không xác định",
   "Unknown wallet name": "Tên ví không xác định",
@@ -396,6 +398,7 @@
   "Unlocked at": "Đã khoá tại",
   "Unlocks at": "Mở khoá tại",
   "Unselect all": "Bỏ chọn tất cả",
+  "Unverified": "Unverified",
   "Update": "Cập nhật",
   "Use an existing wallet": "Sử dụng ví đã có sẳn",
   "Use max amount": "Sử dụng tất cả số dư",
@@ -431,5 +434,6 @@
   "Your addresses": "Các địa chỉ ví của bạn",
   "Your CSV file has been generated successfully.": "Tệp tin CSV của bạn đã được tạo thành công.",
   "Your CSV file is being compiled in the background.": "Tệp tin CSV của bạn đang được soạn trong nền.",
-  "Your Wallet": "Ví của bạn"
+  "Your Wallet": "Ví của bạn",
+  "Address unknown tokens": "Address unknown tokens"
 }
