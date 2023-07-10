@@ -36,9 +36,9 @@ import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import {
+  makeSelectAddressesCheckedUnknownTokens,
   makeSelectAddressesKnownFungibleTokens,
   makeSelectAddressesNFTs,
-  makeSelectAllCheckedUnknownTokens,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
@@ -65,8 +65,8 @@ const AssetsList = ({
   maxHeightInPx
 }: AssetsListProps) => {
   const { t } = useTranslation()
-  const selectAllCheckedUnknownTokens = useMemo(makeSelectAllCheckedUnknownTokens, [])
-  const unknownTokens = useAppSelector((s) => selectAllCheckedUnknownTokens(s, addressHashes))
+  const selectAddressesCheckedUnknownTokens = useMemo(makeSelectAddressesCheckedUnknownTokens, [])
+  const unknownTokens = useAppSelector((s) => selectAddressesCheckedUnknownTokens(s, addressHashes))
 
   const [tabs, setTabs] = useState([
     { value: 'tokens', label: tokensTabTitle ?? '💰 ' + t('Tokens') },
@@ -190,8 +190,8 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
 const UnknownTokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const selectAllCheckedUnknownTokens = useMemo(makeSelectAllCheckedUnknownTokens, [])
-  const unknownTokens = useAppSelector((s) => selectAllCheckedUnknownTokens(s, addressHashes))
+  const selectAddressesCheckedUnknownTokens = useMemo(makeSelectAddressesCheckedUnknownTokens, [])
+  const unknownTokens = useAppSelector((s) => selectAddressesCheckedUnknownTokens(s, addressHashes))
 
   return (
     <>

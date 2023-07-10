@@ -103,7 +103,7 @@ export const makeSelectAddressesTokens = () =>
 export const makeSelectAddressesKnownFungibleTokens = () =>
   createSelector([makeSelectAddressesTokens()], (tokens): Asset[] => tokens.filter((token) => !!token?.symbol))
 
-export const makeSelectAllUnknownTokens = () =>
+export const makeSelectAddressesUnknownTokens = () =>
   createSelector(
     [selectAllAssetsInfo, selectNFTIds, makeSelectAddresses()],
     (assetsInfo, nftIds, addresses): Asset[] => {
@@ -127,9 +127,9 @@ export const makeSelectAllUnknownTokens = () =>
     }
   )
 
-export const makeSelectAllCheckedUnknownTokens = () =>
+export const makeSelectAddressesCheckedUnknownTokens = () =>
   createSelector(
-    [makeSelectAllUnknownTokens(), (state: RootState) => state.assetsInfo.checkedUnknownTokenIds],
+    [makeSelectAddressesUnknownTokens(), (state: RootState) => state.assetsInfo.checkedUnknownTokenIds],
     (tokensWithoutMetadata, checkedUnknownTokenIds) =>
       tokensWithoutMetadata.filter((token) => checkedUnknownTokenIds.includes(token.id))
   )
