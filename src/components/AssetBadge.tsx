@@ -30,18 +30,17 @@ interface AssetBadgeProps {
 }
 
 const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
-  const assetInfo = useAppSelector((s) => selectAssetInfoById(s, assetId)) ?? {
-    id: assetId,
-    symbol: undefined,
-    name: undefined,
-    logoURI: undefined
-  }
+  const assetInfo = useAppSelector((s) => selectAssetInfoById(s, assetId))
   const nftInfo = useAppSelector((s) => selectNFTById(s, assetId))
 
   return (
-    <div className={className} data-tooltip-id="default" data-tooltip-content={assetInfo.name ?? assetId}>
-      <AssetLogo assetId={assetInfo.id} assetImageUrl={assetInfo.logoURI || nftInfo?.image} size={20} />
-      {!simple && assetInfo.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
+    <div
+      className={className}
+      data-tooltip-id="default"
+      data-tooltip-content={assetInfo?.name ?? nftInfo?.name ?? assetId}
+    >
+      <AssetLogo assetId={assetId} assetImageUrl={assetInfo?.logoURI || nftInfo?.image} size={20} />
+      {!simple && assetInfo?.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
   )
 }

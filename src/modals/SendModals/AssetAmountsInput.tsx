@@ -76,7 +76,9 @@ const AssetAmountsInput = ({
   const selectedAsset = assets.find((asset) => asset.id === selectedAssetId)
   const minAmountInAlph = toHumanReadableAmount(MIN_UTXO_SET_AMOUNT)
   const selectedAssetIds = assetAmounts.map(({ id }) => id)
-  const remainingAvailableAssets = assets.filter((asset) => !selectedAssetIds.includes(asset.id))
+  const remainingAvailableAssets = assets.filter(
+    (asset) => !selectedAssetIds.includes(asset.id) && asset.balance > BigInt(0)
+  )
   const disabled = remainingAvailableAssets.length === 0
   const availableAssetOptions: SelectOption<Asset['id']>[] = remainingAvailableAssets.map((asset) => ({
     value: asset.id,
@@ -223,8 +225,8 @@ const AssetAmountsInput = ({
                   <AssetLogo assetId={asset.id} assetImageUrl={asset.logoURI} size={20} />
                   <AssetName>
                     <Truncate>
-                      {asset.name && asset.symbol ? (
-                        `${asset.name} (${asset.symbol})`
+                      {asset.name ? (
+                        `${asset.name} ${asset.symbol ? `(${asset.symbol})` : ''}`
                       ) : (
                         <HashEllipsed hash={asset.id} />
                       )}

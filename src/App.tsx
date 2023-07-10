@@ -34,7 +34,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
-import { selectAddressIds, selectAllUnknownTokens } from '@/storage/addresses/addressesSelectors'
+import { makeSelectAllUnknownTokens, selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
 import {
@@ -77,6 +77,7 @@ const App = () => {
   const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
   const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
 
+  const selectAllUnknownTokens = useMemo(makeSelectAllUnknownTokens, [])
   const unknownTokens = useAppSelector(selectAllUnknownTokens)
   const checkedUnknownTokenIds = useAppSelector((s) => s.assetsInfo.checkedUnknownTokenIds)
   const unknownTokenIds = unknownTokens.map((token) => token.id)

@@ -71,7 +71,7 @@ export const syncUnknownTokensInfo = createAsyncThunk(
       const type = await client.node.guessStdTokenType(id)
 
       try {
-        if (type === 'fungible' || type === undefined) {
+        if (type === 'fungible') {
           const tokenMetadata = await client.node.fetchFungibleTokenMetaData(id)
 
           results.tokens.push({

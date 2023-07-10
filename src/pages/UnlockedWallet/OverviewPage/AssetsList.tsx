@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -27,6 +27,7 @@ import AssetLogo from '@/components/AssetLogo'
 import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
+import NFTThumbnail from '@/components/NFTThumbnail'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
@@ -34,13 +35,19 @@ import TableCellAmount from '@/components/TableCellAmount'
 import TableTabBar from '@/components/TableTabBar'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
-import { makeSelectAddressesTokens, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
+import {
+  makeSelectAddressesKnownFungibleTokens,
+  makeSelectAddressesNFTs,
+  makeSelectAllCheckedUnknownTokens,
+  selectIsStateUninitialized
+} from '@/storage/addresses/addressesSelectors'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
   className?: string
   addressHashes?: AddressHash[]
   tokensTabTitle?: string
+  unknownTokensTabTitle?: string
   nftsTabTitle?: string
   showTokens?: boolean
   showNfts?: boolean
@@ -49,17 +56,32 @@ interface AssetsListProps {
   maxHeightInPx?: number
 }
 
-const AssetsList = ({ className, addressHashes, tokensTabTitle, nftsTabTitle, maxHeightInPx }: AssetsListProps) => {
+const AssetsList = ({
+  className,
+  addressHashes,
+  tokensTabTitle,
+  unknownTokensTabTitle,
+  nftsTabTitle,
+  maxHeightInPx
+}: AssetsListProps) => {
   const { t } = useTranslation()
+  const selectAllCheckedUnknownTokens = useMemo(makeSelectAllCheckedUnknownTokens, [])
+  const unknownTokens = useAppSelector((s) => selectAllCheckedUnknownTokens(s, addressHashes))
 
-  const tabs = [
+  const [tabs, setTabs] = useState([
     { value: 'tokens', label: tokensTabTitle ?? '💰 ' + t('Tokens') },
     { value: 'nfts', label: nftsTabTitle ?? '🖼️ ' + t('NFTs') }
-  ]
+  ])
   const [currentTab, setCurrentTab] = useState<TabItem>(tabs[0])
   const [isExpanded, setIsExpanded] = useState(false)
 
   const handleButtonClick = () => setIsExpanded(!isExpanded)
+
+  useEffect(() => {
+    if (unknownTokens.length > 0 && tabs.length === 2) {
+      setTabs([...tabs, { value: 'unknownTokens', label: unknownTokensTabTitle ?? '❔' + t('Unknown tokens') }])
+    }
+  }, [t, tabs, unknownTokens.length, unknownTokensTabTitle])
 
   return (
     <FocusableContent className={className} isFocused={isExpanded} onClose={() => setIsExpanded(false)}>
@@ -80,6 +102,13 @@ const AssetsList = ({ className, addressHashes, tokensTabTitle, nftsTabTitle, ma
                 isExpanded={isExpanded || !maxHeightInPx}
                 onExpand={handleButtonClick}
               />
+            ),
+            unknownTokens: (
+              <UnknownTokensList
+                addressHashes={addressHashes}
+                isExpanded={isExpanded || !maxHeightInPx}
+                onExpand={handleButtonClick}
+              />
             )
           }[currentTab.value]
         }
@@ -91,20 +120,20 @@ const AssetsList = ({ className, addressHashes, tokensTabTitle, nftsTabTitle, ma
 const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
-  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
-  const assets = useAppSelector((s) => selectAddressesTokens(s, addressHashes))
+  const selectAddressesKnownFungibleTokens = useMemo(makeSelectAddressesKnownFungibleTokens, [])
+  const knownFungibleTokens = useAppSelector((s) => selectAddressesKnownFungibleTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
 
   return (
     <>
       <motion.div {...fadeIn} className={className}>
-        {assets.map((asset) => (
+        {knownFungibleTokens.map((asset) => (
           <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
             <TokenRow>
               <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
               <NameColumn>
-                <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
+                <TokenName>{asset.name}</TokenName>
                 <TokenSymbol>
                   {asset.symbol ?? (
                     <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
@@ -113,9 +142,7 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
               </NameColumn>
               {!asset.verified && (
                 <Column>
-                  <Badge color={asset.verified === undefined ? undefined : theme.global.highlight}>
-                    {asset.verified === undefined ? t('Unknown') : t('Unverified')}
-                  </Badge>
+                  <Badge color={theme.global.highlight}>{t('Unverified')}</Badge>
                 </Column>
               )}
               <TableCellAmount>
@@ -155,26 +182,86 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
         )}
       </motion.div>
 
-      {!isExpanded && assets.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
+      {!isExpanded && knownFungibleTokens.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
     </>
   )
 }
 
-const NFTsList = ({ className, addressHashes, isExpanded }: AssetsListProps) => {
+const UnknownTokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
   const { t } = useTranslation()
-  // const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
-  // const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
+  const theme = useTheme()
+  const selectAllCheckedUnknownTokens = useMemo(makeSelectAllCheckedUnknownTokens, [])
+  const unknownTokens = useAppSelector((s) => selectAllCheckedUnknownTokens(s, addressHashes))
 
   return (
-    <motion.div {...fadeIn} className={className}>
-      <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
-        {/* {nfts.map((nft) => (
-          <NFTThumbnail key={nft.id} nft={nft} />
+    <>
+      <motion.div {...fadeIn} className={className}>
+        {unknownTokens.map((asset) => (
+          <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
+            <TokenRow>
+              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
+              <NameColumn>
+                <TokenName>{t('Unknown token')}</TokenName>
+                <TokenSymbol>
+                  {asset.symbol ?? (
+                    <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
+                  )}
+                </TokenSymbol>
+              </NameColumn>
+
+              <Column>
+                <Badge>{t('Unknown')}</Badge>
+              </Column>
+
+              <TableCellAmount>
+                <TokenAmount
+                  value={asset.balance}
+                  suffix={asset.symbol}
+                  decimals={asset.decimals}
+                  isUnknownToken={!asset.symbol}
+                />
+                {asset.lockedBalance > 0 && (
+                  <AmountSubtitle>
+                    {`${t('Available')}: `}
+                    <Amount
+                      value={asset.balance - asset.lockedBalance}
+                      suffix={asset.symbol}
+                      color={theme.font.tertiary}
+                      decimals={asset.decimals}
+                      isUnknownToken={!asset.symbol}
+                    />
+                  </AmountSubtitle>
+                )}
+                {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
+              </TableCellAmount>
+            </TokenRow>
+          </TableRow>
         ))}
-        {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>} */}
-        <PlaceholderText>{t('Coming soon!')}</PlaceholderText>
-      </TableRowStyled>
-    </motion.div>
+      </motion.div>
+
+      {!isExpanded && unknownTokens.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
+    </>
+  )
+}
+
+const NFTsList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
+  const { t } = useTranslation()
+  const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
+  const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
+
+  return (
+    <>
+      <motion.div {...fadeIn} className={className}>
+        <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
+          {nfts.map((nft) => (
+            <NFTThumbnail key={nft.id} nft={nft} />
+          ))}
+          {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
+        </TableRowStyled>
+      </motion.div>
+
+      {!isExpanded && nfts.length > 10 && onExpand && <ExpandRow onClick={onExpand} />}
+    </>
   )
 }
 
@@ -233,4 +320,5 @@ const PlaceholderText = styled.div`
 const TableRowStyled = styled(TableRow)`
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 `
