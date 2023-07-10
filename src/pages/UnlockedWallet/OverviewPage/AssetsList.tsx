@@ -224,16 +224,24 @@ const NFTsList = ({ className, addressHashes, isExpanded, onExpand }: AssetsList
   const { t } = useTranslation()
   const selectAddressesNFTs = useMemo(makeSelectAddressesNFTs, [])
   const nfts = useAppSelector((s) => selectAddressesNFTs(s, addressHashes))
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
 
   return (
     <>
       <motion.div {...fadeIn} className={className}>
-        <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
-          {nfts.map((nft) => (
-            <NFTThumbnail key={nft.id} nft={nft} />
-          ))}
-          {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
-        </TableRowStyled>
+        {isLoadingTokensMetadata || stateUninitialized ? (
+          <TableRow>
+            <SkeletonLoader height="37.5px" />
+          </TableRow>
+        ) : (
+          <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
+            {nfts.map((nft) => (
+              <NFTThumbnail key={nft.id} nft={nft} />
+            ))}
+            {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
+          </TableRowStyled>
+        )}
       </motion.div>
 
       {!isExpanded && nfts.length > 10 && onExpand && <ExpandRow onClick={onExpand} />}
