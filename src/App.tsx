@@ -144,7 +144,6 @@ const App = () => {
       // TODO: Check if connection to explorer also works
       dispatch(apiClientInitSucceeded({ networkId, networkName: network.name }))
     } catch (e) {
-      // Discuss: Do we want to capture client init errors?
       dispatch(apiClientInitFailed({ networkName: network.name, networkStatus: network.status }))
     }
   }, [network.settings.nodeHost, network.settings.explorerApiHost, network.name, network.status, dispatch])
