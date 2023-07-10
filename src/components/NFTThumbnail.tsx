@@ -35,4 +35,5 @@ const NFTThumbnailStyled = styled.img`
   width: 100px;
   height: 100px;
   border-radius: var(--radius-medium);
+  object-fit: cover;
 `

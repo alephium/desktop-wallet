@@ -35,7 +35,8 @@ interface CheckAmountsBoxProps {
 
 const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
   const { attoAlphAmount, tokens } = getTransactionAssetAmounts(assetAmounts)
-  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
+  const assetsInfo = useAppSelector((s) => s.assetsInfo.entities)
+  const nfts = useAppSelector((s) => s.nfts.entities)
 
   const assets = [{ id: ALPH.id, amount: attoAlphAmount }, ...tokens]
 
@@ -43,19 +44,18 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
     <Box className={className}>
       {assets.map((asset, index) => {
         const assetInfo = assetsInfo[asset.id]
+        const nftInfo = nfts[asset.id]
 
         return (
           <Fragment key={asset.id}>
             {index > 0 && <HorizontalDivider />}
             <AssetAmountRow>
-              {assetInfo && (
-                <AssetLogoStyled
-                  assetId={assetInfo.id}
-                  assetImageUrl={assetInfo.logoURI}
-                  size={30}
-                  assetName={assetInfo.name}
-                />
-              )}
+              <AssetLogoStyled
+                assetId={asset.id}
+                assetImageUrl={assetInfo?.logoURI ?? nftInfo?.image}
+                size={30}
+                assetName={assetInfo?.name}
+              />
               <AssetAmountStyled
                 value={BigInt(asset.amount)}
                 suffix={assetInfo?.symbol}

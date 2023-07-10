@@ -436,5 +436,6 @@
   "Your addresses": "Ваши адреса",
   "Your CSV file has been generated successfully.": "Ваш CSV-файл был успешно создан.",
   "Your CSV file is being compiled in the background.": "Ваш CSV-файл формируется в фоновом режиме.",
-  "Your Wallet": "Ваш кошелек"
+  "Your Wallet": "Ваш кошелек",
+  "Address unknown tokens": "Address unknown tokens"
 }

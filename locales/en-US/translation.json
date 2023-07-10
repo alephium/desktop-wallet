@@ -436,5 +436,6 @@
   "{{ number }} selected": "{{ number }} selected",
   "No NFTs found.": "No NFTs found.",
   "Disclaimer": "Disclaimer",
-  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version."
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.",
+  "Address unknown tokens": "Address unknown tokens"
 }
