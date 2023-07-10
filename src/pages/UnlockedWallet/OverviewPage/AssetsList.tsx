@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Asset } from '@alephium/sdk'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -118,8 +119,6 @@ const AssetsList = ({
 }
 
 const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
-  const { t } = useTranslation()
-  const theme = useTheme()
   const selectAddressesKnownFungibleTokens = useMemo(makeSelectAddressesKnownFungibleTokens, [])
   const knownFungibleTokens = useAppSelector((s) => selectAddressesKnownFungibleTokens(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
@@ -129,51 +128,7 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
     <>
       <motion.div {...fadeIn} className={className}>
         {knownFungibleTokens.map((asset) => (
-          <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
-            <TokenRow>
-              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
-              <NameColumn>
-                <TokenName>{asset.name}</TokenName>
-                <TokenSymbol>
-                  {asset.symbol ?? (
-                    <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
-                  )}
-                </TokenSymbol>
-              </NameColumn>
-              {!asset.verified && (
-                <Column>
-                  <Badge color={theme.global.highlight}>{t('Unverified')}</Badge>
-                </Column>
-              )}
-              <TableCellAmount>
-                {stateUninitialized ? (
-                  <SkeletonLoader height="20px" width="30%" />
-                ) : (
-                  <>
-                    <TokenAmount
-                      value={asset.balance}
-                      suffix={asset.symbol}
-                      decimals={asset.decimals}
-                      isUnknownToken={!asset.symbol}
-                    />
-                    {asset.lockedBalance > 0 && (
-                      <AmountSubtitle>
-                        {`${t('Available')}: `}
-                        <Amount
-                          value={asset.balance - asset.lockedBalance}
-                          suffix={asset.symbol}
-                          color={theme.font.tertiary}
-                          decimals={asset.decimals}
-                          isUnknownToken={!asset.symbol}
-                        />
-                      </AmountSubtitle>
-                    )}
-                    {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
-                  </>
-                )}
-              </TableCellAmount>
-            </TokenRow>
-          </TableRow>
+          <TokenListRow asset={asset} isExpanded={isExpanded} key={asset.id} />
         ))}
         {(isLoadingTokensMetadata || stateUninitialized) && (
           <TableRow>
@@ -188,8 +143,6 @@ const TokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsLi
 }
 
 const UnknownTokensList = ({ className, addressHashes, isExpanded, onExpand }: AssetsListProps) => {
-  const { t } = useTranslation()
-  const theme = useTheme()
   const selectAddressesCheckedUnknownTokens = useMemo(makeSelectAddressesCheckedUnknownTokens, [])
   const unknownTokens = useAppSelector((s) => selectAddressesCheckedUnknownTokens(s, addressHashes))
 
@@ -197,50 +150,73 @@ const UnknownTokensList = ({ className, addressHashes, isExpanded, onExpand }: A
     <>
       <motion.div {...fadeIn} className={className}>
         {unknownTokens.map((asset) => (
-          <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
-            <TokenRow>
-              <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
-              <NameColumn>
-                <TokenName>{t('Unknown token')}</TokenName>
-                <TokenSymbol>
-                  {asset.symbol ?? (
-                    <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
-                  )}
-                </TokenSymbol>
-              </NameColumn>
-
-              <Column>
-                <Badge>{t('Unknown')}</Badge>
-              </Column>
-
-              <TableCellAmount>
-                <TokenAmount
-                  value={asset.balance}
-                  suffix={asset.symbol}
-                  decimals={asset.decimals}
-                  isUnknownToken={!asset.symbol}
-                />
-                {asset.lockedBalance > 0 && (
-                  <AmountSubtitle>
-                    {`${t('Available')}: `}
-                    <Amount
-                      value={asset.balance - asset.lockedBalance}
-                      suffix={asset.symbol}
-                      color={theme.font.tertiary}
-                      decimals={asset.decimals}
-                      isUnknownToken={!asset.symbol}
-                    />
-                  </AmountSubtitle>
-                )}
-                {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
-              </TableCellAmount>
-            </TokenRow>
-          </TableRow>
+          <TokenListRow asset={asset} isExpanded={isExpanded} key={asset.id} />
         ))}
       </motion.div>
 
       {!isExpanded && unknownTokens.length > 3 && onExpand && <ExpandRow onClick={onExpand} />}
     </>
+  )
+}
+
+interface TokenListRowProps {
+  asset: Asset
+  isExpanded: AssetsListProps['isExpanded']
+}
+
+const TokenListRow = ({ asset, isExpanded }: TokenListRowProps) => {
+  const { t } = useTranslation()
+  const theme = useTheme()
+  const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+
+  return (
+    <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
+      <TokenRow>
+        <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
+        <NameColumn>
+          <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
+          <TokenSymbol>
+            {asset.symbol ?? (
+              <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
+            )}
+          </TokenSymbol>
+        </NameColumn>
+        {!asset.verified && (
+          <Column>
+            <Badge color={asset.verified === undefined ? undefined : theme.global.highlight}>
+              {asset.verified === undefined ? t('Unknown') : t('Unverified')}
+            </Badge>
+          </Column>
+        )}
+        <TableCellAmount>
+          {stateUninitialized ? (
+            <SkeletonLoader height="20px" width="30%" />
+          ) : (
+            <>
+              <TokenAmount
+                value={asset.balance}
+                suffix={asset.symbol}
+                decimals={asset.decimals}
+                isUnknownToken={!asset.symbol}
+              />
+              {asset.lockedBalance > 0 && (
+                <AmountSubtitle>
+                  {`${t('Available')}: `}
+                  <Amount
+                    value={asset.balance - asset.lockedBalance}
+                    suffix={asset.symbol}
+                    color={theme.font.tertiary}
+                    decimals={asset.decimals}
+                    isUnknownToken={!asset.symbol}
+                  />
+                </AmountSubtitle>
+              )}
+              {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
+            </>
+          )}
+        </TableCellAmount>
+      </TokenRow>
+    </TableRow>
   )
 }
 
