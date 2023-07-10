@@ -174,18 +174,16 @@ const TokenListRow = ({ asset, isExpanded }: TokenListRowProps) => {
       <TokenRow>
         <AssetLogoStyled assetId={asset.id} assetImageUrl={asset.logoURI} size={30} />
         <NameColumn>
-          <TokenName>{asset.name ?? t('Unknown token')}</TokenName>
-          <TokenSymbol>
-            {asset.symbol ?? (
+          <TokenName>
+            {asset.name ?? (
               <HashEllipsed hash={asset.id} tooltipText={t('Copy token hash')} disableCopy={!isExpanded} />
             )}
-          </TokenSymbol>
+          </TokenName>
+          {asset.symbol && <TokenSymbol>{asset.symbol}</TokenSymbol>}
         </NameColumn>
-        {!asset.verified && (
+        {asset.verified === false && (
           <Column>
-            <Badge color={asset.verified === undefined ? undefined : theme.global.highlight}>
-              {asset.verified === undefined ? t('Unknown') : t('Unverified')}
-            </Badge>
+            <Badge color={theme.global.highlight}>{t('Unverified')}</Badge>
           </Column>
         )}
         <TableCellAmount>
