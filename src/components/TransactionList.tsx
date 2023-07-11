@@ -212,7 +212,6 @@ const TransactionList = ({
       <ModalPortal>
         {selectedTransaction && (
           <TransactionDetailsModal
-            address={selectedTransaction.address}
             transaction={selectedTransaction}
             onClose={() => setSelectedTransaction(undefined)}
           />

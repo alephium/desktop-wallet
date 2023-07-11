@@ -38,7 +38,7 @@ import { ModalHeader } from '@/modals/CenteredModal'
 import ModalPortal from '@/modals/ModalPortal'
 import SideModal from '@/modals/SideModal'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
-import { Address, AddressHash } from '@/types/addresses'
+import { AddressHash } from '@/types/addresses'
 import { NFT } from '@/types/assets'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
@@ -46,7 +46,6 @@ import { getTransactionInfo } from '@/utils/transactions'
 
 interface TransactionDetailsModalProps {
   transaction: AddressConfirmedTransaction
-  address: Address
   onClose: () => void
 }
 
@@ -55,7 +54,7 @@ interface DetailsRowProps {
   className?: string
 }
 
-const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
+const TransactionDetailsModal = ({ transaction, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
   const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
   const allNFTs = useAppSelector((s) => s.nfts.entities)
@@ -110,13 +109,22 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
               }[direction]
             }
           </FromIn>
-          <AddressBadgeStyled addressHash={address.hash} truncate withBorders />
+          {(direction === 'in' || direction === 'out') && (
+            <IOList
+              currentAddress={transaction.address.hash}
+              isOut={direction === 'out'}
+              outputs={transaction.outputs}
+              inputs={transaction.inputs}
+              timestamp={transaction.timestamp}
+            />
+          )}
           {direction === 'swap' && (
             <>
+              <AddressBadgeStyled addressHash={transaction.address.hash} truncate withBorders />
               <FromIn>{t('and')}</FromIn>
               <SwapPartnerAddress>
                 <IOList
-                  currentAddress={address.hash}
+                  currentAddress={transaction.address.hash}
                   isOut={false}
                   outputs={transaction.outputs}
                   inputs={transaction.inputs}
@@ -137,13 +145,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <DetailsRow label={t('From')}>
               {direction === 'out' ? (
                 <AddressList>
-                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                    <AddressBadge addressHash={address.hash} truncate withBorders />
+                  <ActionLinkStyled
+                    onClick={() => handleShowAddress(transaction.address.hash)}
+                    key={transaction.address.hash}
+                  >
+                    <AddressBadge addressHash={transaction.address.hash} truncate withBorders />
                   </ActionLinkStyled>
                 </AddressList>
               ) : (
                 <IOList
-                  currentAddress={address.hash}
+                  currentAddress={transaction.address.hash}
                   isOut={false}
                   outputs={transaction.outputs}
                   inputs={transaction.inputs}
@@ -155,13 +166,16 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             <DetailsRow label={t('To')}>
               {direction !== 'out' ? (
                 <AddressList>
-                  <ActionLinkStyled onClick={() => handleShowAddress(address.hash)} key={address.hash}>
-                    <AddressBadge addressHash={address.hash} withBorders />
+                  <ActionLinkStyled
+                    onClick={() => handleShowAddress(transaction.address.hash)}
+                    key={transaction.address.hash}
+                  >
+                    <AddressBadge addressHash={transaction.address.hash} withBorders />
                   </ActionLinkStyled>
                 </AddressList>
               ) : (
                 <IOList
-                  currentAddress={address.hash}
+                  currentAddress={transaction.address.hash}
                   isOut={direction === 'out'}
                   outputs={transaction.outputs}
                   inputs={transaction.inputs}
