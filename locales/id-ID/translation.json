@@ -58,7 +58,6 @@
   "Change wallet name": "Ubah nama dompet",
   "Check": "Periksa",
   "Choose a contact": "Pilih kontak",
-  "Click on an address to copy its private key.": "Klik pada alamat untuk menyalin kunci privatnya.",
   "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Klik untuk melihat lebih sedikit",
   "Click to see more": "Klik untuk melihat lebih banyak",
@@ -267,7 +266,6 @@
   "Please, generate a new address in group {{ group }} first.": "Harap buat alamat baru di grup {{ group }} terlebih dahulu.",
   "Previous year": "Tahun sebelumnya",
   "Private key copied!": "Kunci pribadi telah disalin!",
-  "Private key export": "Ekspor kunci pribadi",
   "Proxy address": "Proxy address",
   "Proxy port": "Proxy port",
   "Raw amount": "Jumlah Raw",
@@ -443,5 +441,11 @@
   "Your Wallet": "Dompet Anda",
   "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
   "Address unknown tokens": "Address unknown tokens",
-  "Experimental": "Experimental"
+  "Experimental": "Experimental",
+  "Public key": "Public key",
+  "Private key": "Private key",
+  "Address keys export": "Address keys export",
+  "Public key copied!": "Public key copied!",
+  "Could not copy public key.": "Could not copy public key.",
+  "Copy the keys of an address.": "Copy the keys of an address."
 }

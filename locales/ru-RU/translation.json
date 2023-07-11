@@ -58,7 +58,6 @@
   "Change wallet name": "Изменить имя кошелька",
   "Check": "Проверить",
   "Choose a contact": "Выберите контакт",
-  "Click on an address to copy its private key.": "Нажмите на адрес, чтобы скопировать его закрытый ключ.",
   "Click to deactivate discreet mode": "Click to deactivate discreet mode",
   "Click to see less": "Нажмите, чтобы увидеть меньше",
   "Click to see more": "Нажмите, чтобы увидеть больше",
@@ -267,7 +266,6 @@
   "Please, generate a new address in group {{ group }} first.": "Пожалуйста, сначала создайте новый адрес в группе {{ group }}.",
   "Previous year": "Прошлый год",
   "Private key copied!": "Закрытый ключ скопирован!",
-  "Private key export": "Экспорт закрытого ключа",
   "Proxy address": "Proxy address",
   "Proxy port": "Proxy port",
   "Raw amount": "Необработанная сумма",
@@ -443,5 +441,11 @@
   "Your Wallet": "Ваш кошелек",
   "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
   "Address unknown tokens": "Address unknown tokens",
-  "Experimental": "Experimental"
+  "Experimental": "Experimental",
+  "Public key": "Public key",
+  "Private key": "Private key",
+  "Address keys export": "Address keys export",
+  "Public key copied!": "Public key copied!",
+  "Could not copy public key.": "Could not copy public key.",
+  "Copy the keys of an address.": "Copy the keys of an address."
 }
