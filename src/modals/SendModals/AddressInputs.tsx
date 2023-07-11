@@ -140,7 +140,7 @@ const AddressInputs = ({
               error={toAddress.error}
               onFocus={handleFocus}
               onBlur={() => setInputFieldMode('view')}
-              onChange={(e) => onToAddressChange(e.target.value)}
+              onChange={(e) => onToAddressChange(e.target.value.trim())}
               inputFieldStyle={{
                 color: isContactVisible ? 'transparent' : undefined,
                 transition: 'all 0.2s ease-out'

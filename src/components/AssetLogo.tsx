@@ -29,6 +29,7 @@ interface AssetLogoProps {
   assetImageUrl: AssetInfo['logoURI'] | NFT['image']
   size: number
   assetName?: AssetInfo['name']
+  isNft?: boolean
   className?: string
 }
 
@@ -52,7 +53,7 @@ export default styled(AssetLogo)`
   align-items: center;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
-  border-radius: ${({ size }) => size}px;
+  border-radius: ${({ size, isNft }) => (isNft ? 'var(--radius-tiny)' : `${size}px`)};
   flex-shrink: 0;
   overflow: hidden;
 

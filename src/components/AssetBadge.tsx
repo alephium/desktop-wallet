@@ -44,6 +44,7 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
         assetImageUrl={assetInfo?.logoURI || nftInfo?.image}
         size={20}
         assetName={assetInfo?.name}
+        isNft={!!nftInfo}
       />
       {!simple && assetInfo?.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
