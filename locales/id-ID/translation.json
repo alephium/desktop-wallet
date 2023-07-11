@@ -439,5 +439,6 @@
   "Your CSV file has been generated successfully.": "File CSV Anda telah berhasil dibuat.",
   "Your CSV file is being compiled in the background.": "File CSV Anda sedang dikompilasi di latar belakang.",
   "Your Wallet": "Dompet Anda",
-  "Address unknown tokens": "Address unknown tokens"
+  "Address unknown tokens": "Address unknown tokens",
+  "Experimental": "Experimental"
 }

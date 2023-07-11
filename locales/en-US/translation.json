@@ -439,5 +439,6 @@
   "{{ amount }} words entered": "{{ amount }} words entered",
   "{{ number }} selected": "{{ number }} selected",
   "No NFTs found.": "No NFTs found.",
-  "Address unknown tokens": "Address unknown tokens"
+  "Address unknown tokens": "Address unknown tokens",
+  "Experimental": "Experimental"
 }

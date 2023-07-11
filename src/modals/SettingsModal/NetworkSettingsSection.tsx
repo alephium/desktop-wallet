@@ -20,9 +20,10 @@ import { AlertOctagon } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import client from '@/api/client'
+import Badge from '@/components/Badge'
 import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import Input from '@/components/Inputs/Input'
@@ -61,6 +62,7 @@ const NetworkSettingsSection = () => {
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const posthog = usePostHog()
+  const theme = useTheme()
 
   const _window = window as unknown as AlephiumWindow
   const electron = _window.electron
@@ -215,6 +217,9 @@ const NetworkSettingsSection = () => {
           />
           <h2 tabIndex={0} role="label">
             {t('Custom proxy (SOCKS5)')}
+            <ExperimentalBadge color={theme.global.accent} compact>
+              {t('Experimental')}
+            </ExperimentalBadge>
           </h2>
           <Input
             id="proxy-address"
@@ -247,6 +252,11 @@ const UrlInputs = styled.div`
 
 const StyledInfoBox = styled(InfoBox)`
   margin-top: 0;
+`
+
+// TODO: Refactor Badges to allow for smaller version?
+const ExperimentalBadge = styled(Badge)`
+  margin-left: var(--spacing-2);
 `
 
 export default NetworkSettingsSection

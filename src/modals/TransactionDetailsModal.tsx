@@ -173,7 +173,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
           </>
         )}
         <DetailsRow label={t`Status`}>
-          <Badge color={theme.global.valid} border>
+          <Badge color={theme.global.valid}>
             <span tabIndex={0}>{t`Confirmed`}</span>
           </Badge>
         </DetailsRow>
