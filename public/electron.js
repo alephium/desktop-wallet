@@ -170,7 +170,9 @@ function createWindow() {
   })
 
   if (!isMac && !isWindows) {
-    mainWindow.setIcon(nativeImage.createFromPath(path.join(__dirname, isDev ? 'icons/logo-48.png' : '../build/icons/logo-48.png')))
+    mainWindow.setIcon(
+      nativeImage.createFromPath(path.join(__dirname, isDev ? 'icons/logo-48.png' : '../build/icons/logo-48.png'))
+    )
   }
 
   mainWindow.loadURL(appURL)
@@ -294,7 +296,7 @@ app.on('ready', async function () {
 
   ipcMain.handle('app:setProxySettings', async (_, proxySettings) => {
     const { address, port } = proxySettings
-    let proxyRules = !address && !port ? undefined : `socks5://${address}:${port}`
+    const proxyRules = !address && !port ? undefined : `socks5://${address}:${port}`
 
     try {
       await mainWindow.webContents.session.setProxy({ proxyRules })
