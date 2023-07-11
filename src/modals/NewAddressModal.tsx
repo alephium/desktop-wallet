@@ -76,11 +76,11 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
       saveNewAddresses([{ ...newAddressData, ...settings }])
 
-      posthog?.capture('New address created', { label_length: settings.label.length })
+      posthog.capture('New address created', { label_length: settings.label.length })
     } else {
       generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
 
-      posthog?.capture('One address per group generated', { label_length: addressLabel.title.length })
+      posthog.capture('One address per group generated', { label_length: addressLabel.title.length })
     }
     onClose()
   }

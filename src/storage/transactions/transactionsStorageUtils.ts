@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { MempoolTransaction } from '@alephium/web3/dist/src/api/api-explorer'
+import posthog from 'posthog-js'
 
 import { getEncryptedStoragePropsFromActiveWallet } from '@/storage/encryptedPersistentStorage'
 import { store } from '@/storage/store'
@@ -46,5 +47,6 @@ export const restorePendingTransactions = (
   } catch (e) {
     console.error(e)
     store.dispatch(loadingPendingTransactionsFailed())
+    posthog.capture('Error', { message: 'Restoring pending transactions' })
   }
 }

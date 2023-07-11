@@ -42,4 +42,5 @@ export default styled(AppSpinner)`
   color: var(--color-black);
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(3px);
+  z-index: 2;
 `

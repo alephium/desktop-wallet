@@ -30,6 +30,7 @@ import SignClient from '@walletconnect/sign-client'
 import { EngineTypes, SignClientTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
 import { partition } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -96,6 +97,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
   const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
@@ -124,9 +126,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
       setWalletConnectClient(client)
     } catch (e) {
+      posthog.capture('Error', { message: 'Could not initialize WalletConnect client' })
       console.error('Could not initialize WalletConnect client', e)
     }
-  }, [])
+  }, [posthog])
 
   useEffect(() => {
     if (!walletConnectClient) initializeWalletConnectClient()
@@ -292,13 +295,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
+        posthog.capture('Error', { message: 'Could not parse WalletConnect session request' })
         onSessionRequestError(event, {
           message: getHumanReadableError(e, 'Error while parsing WalletConnect session request'),
           code: WALLETCONNECT_ERRORS.PARSING_SESSION_REQUEST_FAILED
         })
       }
     },
-    [addresses, onSessionRequestError, walletConnectClient]
+    [addresses, onSessionRequestError, posthog, walletConnectClient]
   )
 
   const connectToWalletConnect = useCallback(

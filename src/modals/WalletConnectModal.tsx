@@ -151,7 +151,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     await acknowledged()
     onClose()
 
-    posthog?.capture('Approved WalletConnect connection')
+    posthog.capture('Approved WalletConnect connection')
 
     electron?.app.hide()
   }
@@ -164,7 +164,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onSessionDelete()
     onClose()
 
-    posthog?.capture('Rejected WalletConnect connection by clicking "Reject"')
+    posthog.capture('Rejected WalletConnect connection by clicking "Reject"')
 
     electron?.app.hide()
   }
@@ -176,7 +176,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     onClose()
     onSessionDelete()
 
-    posthog?.capture('Clicked WalletConnect disconnect button')
+    posthog.capture('Clicked WalletConnect disconnect button')
   }
 
   const rejectConnectionAndCloseModal = async () => {
@@ -187,14 +187,14 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
     onClose()
 
-    posthog?.capture('Rejected WalletConnect connection by closing modal')
+    posthog.capture('Rejected WalletConnect connection by closing modal')
   }
 
   const generateAddressInGroup = () => {
     const address = generateAddress({ group })
     saveNewAddresses([{ ...address, isDefault: false, color: getRandomLabelColor() }])
 
-    posthog?.capture('New address created through WalletConnect modal')
+    posthog.capture('New address created through WalletConnect modal')
   }
 
   const showManualInitialization = wcSessionState === 'uninitialized' && addresses.length > 0

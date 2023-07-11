@@ -39,7 +39,12 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
       data-tooltip-id="default"
       data-tooltip-content={assetInfo?.name ?? nftInfo?.name ?? assetId}
     >
-      <AssetLogo assetId={assetId} assetImageUrl={assetInfo?.logoURI || nftInfo?.image} size={20} />
+      <AssetLogo
+        assetId={assetId}
+        assetImageUrl={assetInfo?.logoURI || nftInfo?.image}
+        size={20}
+        assetName={assetInfo?.name}
+      />
       {!simple && assetInfo?.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
     </div>
   )

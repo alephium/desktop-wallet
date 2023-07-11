@@ -16,10 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { AlertTriangle, Info } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
+import ActionLink from '@/components/ActionLink'
 import Box from '@/components/Box'
 import HorizontalDivider from '@/components/Dividers/HorizontalDivider'
 import KeyValueInput from '@/components/Inputs/InlineLabelValueInput'
@@ -41,6 +44,7 @@ import {
 import { switchTheme } from '@/storage/settings/settingsStorageUtils'
 import { Currency, Language, ThemeSettings } from '@/types/settings'
 import { links } from '@/utils/links'
+import { openInWebBrowser } from '@/utils/misc'
 import { fiatCurrencyOptions, languageOptions, locktimeInMinutes } from '@/utils/settings'
 
 interface GeneralSettingsSectionProps {
@@ -63,7 +67,7 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     } else {
       dispatch(passwordRequirementToggled())
 
-      posthog?.capture('Enabled password requirement')
+      posthog.capture('Enabled password requirement')
     }
   }, [dispatch, passwordRequirement, posthog])
 
@@ -71,19 +75,19 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
     dispatch(passwordRequirementToggled())
     setIsPasswordModalOpen(false)
 
-    posthog?.capture('Disabled password requirement')
+    posthog.capture('Disabled password requirement')
   }, [dispatch, posthog])
 
   const handleLanguageChange = (language: Language) => {
     dispatch(languageChanged(language))
 
-    posthog?.capture('Changed language', { language })
+    posthog.capture('Changed language', { language })
   }
 
   const handleFiatCurrencyChange = (currency: Currency) => {
     dispatch(fiatCurrencyChanged(currency))
 
-    posthog?.capture('Changed fiat currency', { currency })
+    posthog.capture('Changed fiat currency', { currency })
   }
 
   const handleDiscreetModeToggle = () => dispatch(discreetModeToggled())
@@ -93,13 +97,13 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
     dispatch(walletLockTimeChanged(time))
 
-    posthog?.capture('Changed wallet lock time', { time })
+    posthog.capture('Changed wallet lock time', { time })
   }
 
   const handleThemeSelect = (theme: ThemeSettings) => {
     switchTheme(theme)
 
-    posthog?.capture('Changed theme', { theme })
+    posthog.capture('Changed theme', { theme })
   }
 
   const handleAnalyticsToggle = (toggle: boolean) => {
@@ -107,12 +111,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 
     if (toggle && !import.meta.env.DEV) {
       const id = AnalyticsStorage.load()
-      posthog?.identify(id)
-      posthog?.opt_in_capturing()
-      posthog?.capture('Enabled analytics')
+      posthog.identify(id)
+      posthog.opt_in_capturing()
+      posthog.capture('Enabled analytics')
     } else {
-      posthog?.capture('Disabled analytics')
-      posthog?.opt_out_capturing()
+      posthog.capture('Disabled analytics')
+      posthog.opt_out_capturing()
     }
   }
 
@@ -201,7 +205,18 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
             heightSize="small"
           />
         }
-      />
+      >
+        {language !== 'en-US' && (
+          <Disclaimer
+            data-tooltip-html={t(
+              'The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.'
+            )}
+            data-tooltip-id="default"
+          >
+            <AlertTriangle size={12} /> <span>{t('Disclaimer')}</span>
+          </Disclaimer>
+        )}
+      </KeyValueInput>
       <HorizontalDivider />
       <KeyValueInput
         label={t('Currency')}
@@ -222,9 +237,12 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
       <KeyValueInput
         label={t('Analytics')}
         description={t('Help us improve your experience!')}
-        moreInfoLink={links.analytics}
         InputComponent={<Toggle toggled={analytics} onToggle={handleAnalyticsToggle} />}
-      />
+      >
+        <ActionLinkStyled onClick={() => openInWebBrowser(links.analytics)}>
+          <Info size={12} /> {t('More info')}
+        </ActionLinkStyled>
+      </KeyValueInput>
       <ModalPortal>
         {isPasswordModelOpen && (
           <CenteredModal title={t('Password')} onClose={() => setIsPasswordModalOpen(false)} focusMode skipFocusOnMount>
@@ -241,3 +259,14 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
 }
 
 export default GeneralSettingsSection
+
+const ActionLinkStyled = styled(ActionLink)`
+  gap: 0.3em;
+`
+
+const Disclaimer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  color: ${({ theme }) => theme.global.highlight};
+`

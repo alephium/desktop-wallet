@@ -16,14 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'dayjs/locale/fr'
+import 'dayjs/locale/bg'
 import 'dayjs/locale/de'
-import 'dayjs/locale/vi'
+import 'dayjs/locale/es'
+import 'dayjs/locale/fr'
+import 'dayjs/locale/id'
 import 'dayjs/locale/pt'
 import 'dayjs/locale/ru'
+import 'dayjs/locale/tr'
+import 'dayjs/locale/vi'
 
 import { createListenerMiddleware, createSlice, isAnyOf } from '@reduxjs/toolkit'
 import dayjs from 'dayjs'
+import posthog from 'posthog-js'
 
 import i18next from '@/i18n'
 import { localStorageDataMigrated } from '@/storage/global/globalActions'
@@ -132,6 +137,7 @@ settingsListenerMiddleware.startListening({
         await i18next.changeLanguage(settings.language)
       } catch (e) {
         console.error(e)
+        posthog.capture('Error', { message: 'Changing language' })
       } finally {
         dispatch(languageChangeFinished())
       }

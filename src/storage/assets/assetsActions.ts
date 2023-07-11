@@ -20,6 +20,7 @@ import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { omit } from 'lodash'
+import posthog from 'posthog-js'
 
 import client, { exponentialBackoffFetchRetry } from '@/api/client'
 import { RootState } from '@/storage/store'
@@ -50,6 +51,7 @@ export const syncNetworkTokensInfo = createAsyncThunk(
         metadata = (await response.json()) as TokenList
       } catch (e) {
         console.warn('No metadata for network ID ', state.network.settings.networkId)
+        posthog.capture('Error', { message: `No metadata for network ID ${state.network.settings.networkId}` })
       }
     }
 
@@ -92,6 +94,7 @@ export const syncUnknownTokensInfo = createAsyncThunk(
         }
       } catch (e) {
         console.error(e)
+        posthog.capture('Error', { message: 'Syncing unknown tokens info' })
       }
     }
 
