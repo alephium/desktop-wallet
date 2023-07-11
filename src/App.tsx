@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { AnimatePresence } from 'framer-motion'
+import { difference } from 'lodash'
 import { usePostHog } from 'posthog-js/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
@@ -33,8 +34,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import UpdateWalletModal from '@/modals/UpdateWalletModal'
 import Router from '@/routes'
 import { syncAddressesData, syncAddressesHistoricBalances } from '@/storage/addresses/addressesActions'
-import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
-import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
+import { makeSelectAddressesUnknownTokens, selectAddressIds } from '@/storage/addresses/addressesSelectors'
+import { syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
+import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
 import {
   devModeShortcutDetected,
   localStorageDataMigrated,
@@ -43,6 +45,10 @@ import {
 import { apiClientInitFailed, apiClientInitSucceeded } from '@/storage/settings/networkActions'
 import { systemLanguageMatchFailed, systemLanguageMatchSucceeded } from '@/storage/settings/settingsActions'
 import { makeSelectAddressesHashesWithPendingTransactions } from '@/storage/transactions/transactionsSelectors'
+import {
+  getStoredPendingTransactions,
+  restorePendingTransactions
+} from '@/storage/transactions/transactionsStorageUtils'
 import { GlobalStyle } from '@/style/globalStyles'
 import { darkTheme, lightTheme } from '@/style/themes'
 import { AddressHash } from '@/types/addresses'
@@ -58,7 +64,6 @@ const App = () => {
   const selectAddressesHashesWithPendingTransactions = useMemo(makeSelectAddressesHashesWithPendingTransactions, [])
   const addressesWithPendingTxs = useAppSelector(selectAddressesHashesWithPendingTransactions)
   const network = useAppSelector((s) => s.network)
-  const addressesStatus = useAppSelector((s) => s.addresses.status)
   const theme = useAppSelector((s) => s.global.theme)
   const assetsInfo = useAppSelector((s) => s.assetsInfo)
   const loading = useAppSelector((s) => s.global.loading)
@@ -66,6 +71,17 @@ const App = () => {
   const wallets = useAppSelector((s) => s.global.wallets)
   const showDevIndication = useDevModeShortcut()
   const posthog = usePostHog()
+
+  const addressesStatus = useAppSelector((s) => s.addresses.status)
+  const isSyncingAddressData = useAppSelector((s) => s.addresses.syncingAddressData)
+  const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
+  const isLoadingTokensMetadata = useAppSelector((s) => s.assetsInfo.loading)
+
+  const selectAddressesUnknownTokens = useMemo(makeSelectAddressesUnknownTokens, [])
+  const unknownTokens = useAppSelector(selectAddressesUnknownTokens)
+  const checkedUnknownTokenIds = useAppSelector((s) => s.assetsInfo.checkedUnknownTokenIds)
+  const unknownTokenIds = unknownTokens.map((token) => token.id)
+  const newUnknownTokens = difference(unknownTokenIds, checkedUnknownTokenIds)
 
   const [splashScreenVisible, setSplashScreenVisible] = useState(true)
   const [isUpdateWalletModalVisible, setUpdateWalletModalVisible] = useState(!!newVersion)
@@ -143,24 +159,46 @@ const App = () => {
   useInterval(initializeClient, 2000, network.status !== 'offline')
 
   useEffect(() => {
-    if (network.status === 'online' && addressesStatus === 'uninitialized' && addressHashes.length > 0) {
-      dispatch(syncAddressesData())
-      dispatch(syncAddressesHistoricBalances())
+    if (network.status === 'online') {
+      if (assetsInfo.status === 'uninitialized' && !isLoadingTokensMetadata) {
+        dispatch(syncNetworkTokensInfo())
+      }
+      if (addressesStatus === 'uninitialized') {
+        if (!isSyncingAddressData && addressHashes.length > 0) {
+          const storedPendingTxs = getStoredPendingTransactions()
+
+          dispatch(syncAddressesData())
+            .unwrap()
+            .then((results) => {
+              const mempoolTxHashes = results.flatMap((result) => result.mempoolTransactions.map((tx) => tx.hash))
+
+              restorePendingTransactions(mempoolTxHashes, storedPendingTxs)
+            })
+          dispatch(syncAddressesHistoricBalances())
+        }
+      } else if (addressesStatus === 'initialized') {
+        if (!isTokensMetadataUninitialized && !isLoadingTokensMetadata && newUnknownTokens.length > 0) {
+          dispatch(syncUnknownTokensInfo(newUnknownTokens))
+        }
+      }
     }
-  }, [addressHashes, addressHashes.length, addressesStatus, dispatch, network.status])
+  }, [
+    addressHashes.length,
+    addressesStatus,
+    assetsInfo.status,
+    dispatch,
+    isSyncingAddressData,
+    isLoadingTokensMetadata,
+    isTokensMetadataUninitialized,
+    network.status,
+    newUnknownTokens
+  ])
 
-  const refreshAddressesData = useCallback(
-    () => dispatch(syncAddressesData(addressesWithPendingTxs)),
-    [dispatch, addressesWithPendingTxs]
-  )
+  const refreshAddressesData = useCallback(() => {
+    dispatch(syncAddressesData(addressesWithPendingTxs))
+  }, [dispatch, addressesWithPendingTxs])
 
-  useInterval(refreshAddressesData, 2000, addressesWithPendingTxs.length === 0)
-
-  useEffect(() => {
-    if (network.status === 'online' && assetsInfo.status === 'uninitialized') {
-      dispatch(syncNetworkTokensInfo())
-    }
-  }, [dispatch, network.status, assetsInfo.status])
+  useInterval(refreshAddressesData, 5000, addressesWithPendingTxs.length === 0 || isSyncingAddressData)
 
   useEffect(() => {
     if (newVersion) setUpdateWalletModalVisible(true)

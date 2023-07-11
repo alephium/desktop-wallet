@@ -232,6 +232,7 @@
   "New wallet name": "Neuer Walletname",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "No contacts found. You can create contacts in the Addresses page.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "No options match the search criteria.",
   "No recovery phrase was stored along with this wallet": "Es wurde keine Wiederherstellungsphrase zusammen mit dieser Wallet gespeichert.",
   "No transactions to display": "Keine anzuzeigende Transaktionen",
@@ -389,6 +390,7 @@
   "Type your password to show the phrase.": "Geben Sie Ihr Passwort ein, um die Phrase anzuzeigen.",
   "Type your recovery phrase": "Geben Sie Ihre Wiederherstellungsphrase ein",
   "Unable to convert the amount": "Betrag kann nicht konvertiert werden",
+  "Unknown": "Unknown",
   "Unknown token": "Unknown token",
   "Unknown tokens": "Unknown tokens",
   "Unknown wallet name": "Unbekannter Walletname",
@@ -400,6 +402,7 @@
   "Unlocked at": "Entsperrt am",
   "Unlocks at": "Entsperrt zum",
   "Unselect all": "Unselect all",
+  "Unverified": "Unverified",
   "Update": "Update",
   "Use an existing wallet": "Vorhandene Wallet verwenden",
   "Use max amount": "Maximalbetrag verwenden",
@@ -435,5 +438,6 @@
   "Your addresses": "Ihre Adressen",
   "Your CSV file has been generated successfully.": "Your CSV file has been generated successfully.",
   "Your CSV file is being compiled in the background.": "Your CSV file is being compiled in the background.",
-  "Your Wallet": "Ihre Wallet"
+  "Your Wallet": "Ihre Wallet",
+  "Address unknown tokens": "Address unknown tokens"
 }

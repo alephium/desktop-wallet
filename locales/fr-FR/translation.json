@@ -232,6 +232,7 @@
   "New wallet name": "Nouveau nom de portefeuille",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "Aucun de contact trouvé. Vous pouvez créer des contacts dans le menu Adresse.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "Aucune option ne correspond à ces critères.",
   "No recovery phrase was stored along with this wallet": "Aucune phrase de récupération n'a été enregistrée avec ce portefeuille",
   "No transactions to display": "Aucune transaction à afficher",
@@ -389,6 +390,7 @@
   "Type your password to show the phrase.": "Entrez votre mot de passe pour afficher la phrase.",
   "Type your recovery phrase": "Taper votre phrase de récupération",
   "Unable to convert the amount": "Impossible de convertir le montant",
+  "Unknown": "Unknown",
   "Unknown token": "Jeton inconnu",
   "Unknown tokens": "Jetons inconnus",
   "Unknown wallet name": "Nom de portefeuille inconnu",
@@ -400,6 +402,7 @@
   "Unlocked at": "Déverrouillé à",
   "Unlocks at": "Sera déverrouillé à",
   "Unselect all": "Tout désélectionner",
+  "Unverified": "Unverified",
   "Update": "Mettre à jour",
   "Use an existing wallet": "Utiliser un portefeuille existant",
   "Use max amount": "Utiliser le montant max",
@@ -435,5 +438,6 @@
   "Your addresses": "Vos adresses",
   "Your CSV file has been generated successfully.": "Votre fichier CSV a été généré correctement.",
   "Your CSV file is being compiled in the background.": "Votre fichier CSV est en cours de création.",
-  "Your Wallet": "Votre portefeuille"
+  "Your Wallet": "Votre portefeuille",
+  "Address unknown tokens": "Address unknown tokens"
 }

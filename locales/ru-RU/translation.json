@@ -232,6 +232,7 @@
   "New wallet name": "Новое имя кошелька",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "Контакты не найдены. Вы можете создать контакты на странице Адреса.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "Ни один параметр не соответствует критериям поиска.",
   "No recovery phrase was stored along with this wallet": "Никакая фраза восстановления не была сохранена для этого кошелька",
   "No transactions to display": "Транзакции для отображения отсутствуют",
@@ -389,6 +390,7 @@
   "Type your password to show the phrase.": "Введите свой пароль для отображения фразы.",
   "Type your recovery phrase": "Введите фразу восстановления",
   "Unable to convert the amount": "Невозможно конвертировать сумму",
+  "Unknown": "Unknown",
   "Unknown token": "Неизвестный токен",
   "Unknown tokens": "Неизвестные токены",
   "Unknown wallet name": "Неизвестное имя кошелька",
@@ -400,6 +402,7 @@
   "Unlocked at": "Разблокирован в",
   "Unlocks at": "Разблокируется в",
   "Unselect all": "Отменить выбор",
+  "Unverified": "Unverified",
   "Update": "Обновить",
   "Use an existing wallet": "Использовать существующий кошелек",
   "Use max amount": "Использовать максимальную сумму",
@@ -435,5 +438,6 @@
   "Your addresses": "Ваши адреса",
   "Your CSV file has been generated successfully.": "Ваш CSV-файл был успешно создан.",
   "Your CSV file is being compiled in the background.": "Ваш CSV-файл формируется в фоновом режиме.",
-  "Your Wallet": "Ваш кошелек"
+  "Your Wallet": "Ваш кошелек",
+  "Address unknown tokens": "Address unknown tokens"
 }

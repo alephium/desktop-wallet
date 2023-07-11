@@ -232,6 +232,7 @@
   "New wallet name": "Nama dompet baru",
   "NFTs": "NFTs",
   "No contacts found. You can create contacts in the Addresses page.": "Tidak ditemukan kontak. Anda dapat membuat kontak di halaman Alamat.",
+  "No NFTs found.": "No NFTs found.",
   "No options match the search criteria.": "Tidak ada opsi yang cocok dengan kriteria pencarian.",
   "No recovery phrase was stored along with this wallet": "Tidak ada frase pemulihan yang disimpan bersama dompet ini",
   "No transactions to display": "Tidak ada transaksi untuk ditampilkan",
@@ -389,6 +390,7 @@
   "Type your password to show the phrase.": "Ketikkan kata sandi Anda untuk menampilkan frasa.",
   "Type your recovery phrase": "Ketikkan frasa pemulihan Anda",
   "Unable to convert the amount": "Tidak dapat mengonversi jumlah",
+  "Unknown": "Unknown",
   "Unknown token": "Token tidak dikenal",
   "Unknown tokens": "Token tidak dikenal",
   "Unknown wallet name": "Nama dompet tidak dikenal",
@@ -400,6 +402,7 @@
   "Unlocked at": "Tidak terkunci pada",
   "Unlocks at": "Buka kunci di",
   "Unselect all": "Batalkan semua pilihan",
+  "Unverified": "Unverified",
   "Update": "Perbarui",
   "Use an existing wallet": "Gunakan dompet yang sudah ada",
   "Use max amount": "Gunakan jumlah maksimum",
@@ -435,5 +438,6 @@
   "Your addresses": "Alamat Milik Anda",
   "Your CSV file has been generated successfully.": "File CSV Anda telah berhasil dibuat.",
   "Your CSV file is being compiled in the background.": "File CSV Anda sedang dikompilasi di latar belakang.",
-  "Your Wallet": "Dompet Anda"
+  "Your Wallet": "Dompet Anda",
+  "Address unknown tokens": "Address unknown tokens"
 }

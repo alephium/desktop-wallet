@@ -29,6 +29,7 @@ import Badge from '@/components/Badge'
 import ExpandableSection from '@/components/ExpandableSection'
 import HashEllipsed from '@/components/HashEllipsed'
 import IOList from '@/components/IOList'
+import NFTThumbnail from '@/components/NFTThumbnail'
 import Tooltip from '@/components/Tooltip'
 import { useAppSelector } from '@/hooks/redux'
 import { useTransactionUI } from '@/hooks/useTransactionUI'
@@ -38,6 +39,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import SideModal from '@/modals/SideModal'
 import { selectAddressIds } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
+import { NFT } from '@/types/assets'
 import { AddressConfirmedTransaction } from '@/types/transactions'
 import { formatDateForDisplay, openInWebBrowser } from '@/utils/misc'
 import { getTransactionInfo } from '@/utils/transactions'
@@ -56,6 +58,7 @@ interface DetailsRowProps {
 const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionDetailsModalProps) => {
   const { t } = useTranslation()
   const explorerUrl = useAppSelector((state) => state.network.settings.explorerUrl)
+  const allNFTs = useAppSelector((s) => s.nfts.entities)
   const internalAddressHashes = useAppSelector(selectAddressIds) as AddressHash[]
   const theme = useTheme()
   const { assets, direction, lockTime, infoType } = getTransactionInfo(transaction)
@@ -72,13 +75,15 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
       ? setSelectedAddressHash(addressHash)
       : openInWebBrowser(`${explorerUrl}/addresses/${addressHash}`)
 
-  const [knownAssets, unknownAssets] = partition(assets, (asset) => !!asset.symbol)
+  const [tokensWithSymbol, tokensWithoutSymbol] = partition(assets, (asset) => !!asset.symbol)
+  const [nfts, unknownTokens] = partition(tokensWithoutSymbol, (token) => !!allNFTs[token.id])
+  const nftsData = nfts.map((nft) => allNFTs[nft.id] as NFT)
 
   return (
     <SideModal onClose={onClose} title={t('Transaction details')} hideHeader>
       <Header>
         <AmountWrapper tabIndex={0}>
-          {knownAssets.map(({ id, amount, decimals, symbol }) => (
+          {tokensWithSymbol.map(({ id, amount, decimals, symbol }) => (
             <AmountContainer key={id}>
               <Amount
                 tabIndex={0}
@@ -185,7 +190,7 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
         </DetailsRow>
         <DetailsRow label={t`Total value`}>
           <Amounts>
-            {knownAssets.map(({ id, amount, decimals, symbol }) => (
+            {tokensWithSymbol.map(({ id, amount, decimals, symbol }) => (
               <AmountContainer key={id}>
                 <Amount
                   tabIndex={0}
@@ -202,10 +207,17 @@ const TransactionDetailsModal = ({ transaction, address, onClose }: TransactionD
             ))}
           </Amounts>
         </DetailsRow>
-        {unknownAssets.length > 0 && (
+        {nftsData.length > 0 && (
+          <DetailsRow label={t('NFTs')}>
+            {nftsData.map((nft) => (
+              <NFTThumbnail nft={nft} key={nft.id} />
+            ))}
+          </DetailsRow>
+        )}
+        {unknownTokens.length > 0 && (
           <DetailsRow label={t('Unknown tokens')}>
             <Amounts>
-              {unknownAssets.map(({ id, amount, decimals, symbol }) => (
+              {unknownTokens.map(({ id, amount, symbol }) => (
                 <AmountContainer key={id}>
                   <Amount tabIndex={0} value={amount} isUnknownToken={!symbol} highlight />
                   {!symbol && <TokenHash hash={id} />}

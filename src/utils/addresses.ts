@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AssetAmount } from '@alephium/sdk'
-import { TokenInfo } from '@alephium/token-list'
+import { AssetAmount, AssetInfo } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { explorer } from '@alephium/web3'
 import { Dictionary } from '@reduxjs/toolkit'
@@ -59,7 +58,7 @@ export const getInitialAddressSettings = (): AddressSettings => ({
   color: getRandomLabelColor()
 })
 
-export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<TokenInfo>) =>
+export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<AssetInfo>) =>
   text.length < 2
     ? addresses
     : addresses.filter((address) => {
