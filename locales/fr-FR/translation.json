@@ -25,6 +25,7 @@
   "Alephium": "Alephium",
   "Alephium doesn't have access to your wallet.\nYou are the only owner.": "Alephium n'a pas accès à votre portefeuille.\nVous êtes le seul propriétaire.",
   "Alephium Logo": "Logo Alephium",
+  "Alephium's services": "Alephium's services",
   "all": "tous",
   "All good? Let's continue!": "Tout bon ? Continuons !",
   "All selected": "Tous",
@@ -103,6 +104,7 @@
   "Current wallet": "Portefeuille actif",
   "Custom": "Personnalisé",
   "Custom network settings saved.": "Paramètres de réseau enregistrés.",
+  "Custom proxy (SOCKS5)": "Custom proxy (SOCKS5)",
   "Dark": "Sombre",
   "Default address": "Adresse par défaut",
   "Default address for sending transactions.": "Adresse par défaut pour effectuer des transactions.",
@@ -266,6 +268,8 @@
   "Previous year": "Année précédente",
   "Private key copied!": "Clé privée copiée !",
   "Private key export": "Export de clé privée",
+  "Proxy address": "Proxy address",
+  "Proxy port": "Proxy port",
   "Raw amount": "Montant brut",
   "Ready!": "C'est parti !",
   "Receive": "Recevoir",
@@ -438,5 +442,6 @@
   "Your CSV file is being compiled in the background.": "Votre fichier CSV est en cours de création.",
   "Your Wallet": "Votre portefeuille",
   "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
-  "Address unknown tokens": "Address unknown tokens"
+  "Address unknown tokens": "Address unknown tokens",
+  "Experimental": "Experimental"
 }

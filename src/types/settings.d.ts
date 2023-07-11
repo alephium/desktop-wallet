@@ -29,11 +29,17 @@ export interface GeneralSettings {
   fiatCurrency: Currency
 }
 
+export interface ProxySettings {
+  address?: string
+  port?: string
+}
+
 export interface NetworkSettings {
   networkId: number
   nodeHost: string
   explorerApiHost: string
   explorerUrl: string
+  proxy?: ProxySettings
 }
 
 export interface Settings {

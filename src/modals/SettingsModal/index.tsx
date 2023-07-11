@@ -206,8 +206,8 @@ const ColumnContent = styled.div`
   h2 {
     width: 100%;
     padding-bottom: 10px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+    margin-bottom: 0;
+    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
   }
 `
 

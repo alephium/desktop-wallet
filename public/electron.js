@@ -148,6 +148,8 @@ const template = [
   }
 ]
 
+const appURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
+
 let deepLinkUri = null
 
 function createWindow() {
@@ -168,10 +170,12 @@ function createWindow() {
   })
 
   if (!isMac && !isWindows) {
-    mainWindow.setIcon(nativeImage.createFromPath(path.join(__dirname, isDev ? 'icons/logo-48.png' : '../build/icons/logo-48.png')))
+    mainWindow.setIcon(
+      nativeImage.createFromPath(path.join(__dirname, isDev ? 'icons/logo-48.png' : '../build/icons/logo-48.png'))
+    )
   }
 
-  mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`)
+  mainWindow.loadURL(appURL)
 
   if (isDev) {
     // Open the DevTools.
@@ -288,6 +292,17 @@ app.on('ready', async function () {
     const preferedLanguages = app.getPreferredSystemLanguages()
 
     if (preferedLanguages.length > 0) return preferedLanguages[0]
+  })
+
+  ipcMain.handle('app:setProxySettings', async (_, proxySettings) => {
+    const { address, port } = proxySettings
+    const proxyRules = !address && !port ? undefined : `socks5://${address}:${port}`
+
+    try {
+      await mainWindow.webContents.session.setProxy({ proxyRules })
+    } catch (e) {
+      console.error(e)
+    }
   })
 
   ipcMain.handle('wc:getDeepLinkUri', () => deepLinkUri)

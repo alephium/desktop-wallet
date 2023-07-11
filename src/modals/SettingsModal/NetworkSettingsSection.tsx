@@ -18,11 +18,12 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { AlertOctagon } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import client from '@/api/client'
+import Badge from '@/components/Badge'
 import Button from '@/components/Button'
 import InfoBox from '@/components/InfoBox'
 import Input from '@/components/Inputs/Input'
@@ -35,6 +36,7 @@ import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/set
 import { networkPresets } from '@/storage/settings/settingsPersistentStorage'
 import { NetworkName, NetworkNames } from '@/types/network'
 import { NetworkSettings } from '@/types/settings'
+import { AlephiumWindow } from '@/types/window'
 import { useMountEffect } from '@/utils/hooks'
 import { getNetworkName } from '@/utils/settings'
 
@@ -60,9 +62,14 @@ const NetworkSettingsSection = () => {
   const dispatch = useAppDispatch()
   const network = useAppSelector((state) => state.network)
   const posthog = usePostHog()
+  const theme = useTheme()
 
-  const [tempAdvancedSettings, setTempAdvancedSettings] = useState<NetworkSettings>(network.settings)
+  const _window = window as unknown as AlephiumWindow
+  const electron = _window.electron
+
+  const [tempNetworkSettings, setTempNetworkSettings] = useState<NetworkSettings>(network.settings)
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkName>()
+
   const [advancedSectionOpen, setAdvancedSectionOpen] = useState(false)
 
   const overrideSelectionIfMatchesPreset = useCallback((newSettings: NetworkSettings) => {
@@ -72,8 +79,8 @@ const NetworkSettingsSection = () => {
     setSelectedNetwork(newNetwork)
   }, [])
 
-  const editAdvancedSettings = (v: Partial<NetworkSettings>) => {
-    const newSettings = { ...tempAdvancedSettings, ...v }
+  const editNetworkSettings = (v: Partial<NetworkSettings>) => {
+    const newSettings = { ...tempNetworkSettings, ...v }
 
     // Check if we need to append the http:// protocol if an IP or localhost is used
     if (v.nodeHost?.match(/^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|localhost)(?::[0-9]*)?$/)) {
@@ -82,8 +89,14 @@ const NetworkSettingsSection = () => {
 
     overrideSelectionIfMatchesPreset(newSettings)
 
-    setTempAdvancedSettings(newSettings)
+    setTempNetworkSettings(newSettings)
   }
+
+  useEffect(() => {
+    if (network.name === 'custom' || network.settings.proxy?.address) {
+      setAdvancedSectionOpen(true)
+    }
+  }, [network.name, network.settings.proxy])
 
   const handleNetworkPresetChange = useCallback(
     async (networkName: NetworkName) => {
@@ -103,7 +116,7 @@ const NetworkSettingsSection = () => {
 
         if (networkId !== undefined) {
           dispatch(networkPresetSwitched(networkName))
-          setTempAdvancedSettings(newNetworkSettings)
+          setTempNetworkSettings(newNetworkSettings)
 
           posthog.capture('Changed network', { network_name: networkName })
           return
@@ -117,7 +130,7 @@ const NetworkSettingsSection = () => {
         if (networkId !== undefined) {
           const settings = { ...newNetworkSettings, networkId: networkId }
           dispatch(customNetworkSettingsSaved(settings))
-          setTempAdvancedSettings(settings)
+          setTempNetworkSettings(settings)
 
           posthog.capture('Saved custom network settings')
         }
@@ -129,18 +142,27 @@ const NetworkSettingsSection = () => {
   const handleAdvancedSettingsSave = useCallback(() => {
     if (
       selectedNetwork !== 'custom' &&
-      (selectedNetwork === network.name || getNetworkName(tempAdvancedSettings) === network.name)
+      (selectedNetwork === network.name || getNetworkName(tempNetworkSettings) === network.name)
     ) {
-      setAdvancedSectionOpen(false)
       setSelectedNetwork(network.name)
-      return
     }
 
-    overrideSelectionIfMatchesPreset(tempAdvancedSettings)
-    dispatch(customNetworkSettingsSaved(tempAdvancedSettings))
+    overrideSelectionIfMatchesPreset(tempNetworkSettings)
+    dispatch(customNetworkSettingsSaved(tempNetworkSettings))
 
-    posthog.capture('Saved custom network settings')
-  }, [dispatch, network.name, overrideSelectionIfMatchesPreset, posthog, selectedNetwork, tempAdvancedSettings])
+    // Proxy settings (no need to be awaited)
+    electron?.app.setProxySettings(tempNetworkSettings.proxy)
+
+    posthog?.capture('Saved custom network settings')
+  }, [
+    dispatch,
+    electron?.app,
+    network.name,
+    overrideSelectionIfMatchesPreset,
+    posthog,
+    selectedNetwork,
+    tempNetworkSettings
+  ])
 
   // Set existing value on mount
   useMountEffect(() => {
@@ -151,15 +173,15 @@ const NetworkSettingsSection = () => {
     <>
       <StyledInfoBox
         Icon={AlertOctagon}
-        text={t`Make sure to always check what is the selected network before sending transactions.`}
+        text={t('Make sure to always check what is the selected network before sending transactions.')}
         importance="accent"
       />
       <Select
         options={networkSelectOptions}
         onSelect={handleNetworkPresetChange}
         controlledValue={networkSelectOptions.find((n) => n.value === selectedNetwork)}
-        title={t`Network`}
-        label={t`Current network`}
+        title={t('Network')}
+        label={t('Current network')}
         id="network"
       />
       <ToggleSection
@@ -169,27 +191,53 @@ const NetworkSettingsSection = () => {
         onClick={(isOpen) => setAdvancedSectionOpen(isOpen)}
       >
         <UrlInputs>
+          <h2 tabIndex={0} role="label">
+            {t("Alephium's services")}
+          </h2>
           <Input
             id="node-host"
-            label={t`Node host`}
-            value={tempAdvancedSettings.nodeHost}
-            onChange={(e) => editAdvancedSettings({ nodeHost: e.target.value })}
+            label={t('Node host')}
+            value={tempNetworkSettings.nodeHost}
+            onChange={(e) => editNetworkSettings({ nodeHost: e.target.value })}
+            noMargin
           />
           <Input
             id="explorer-api-host"
-            label={t`Explorer API host`}
-            value={tempAdvancedSettings.explorerApiHost}
-            onChange={(e) => editAdvancedSettings({ explorerApiHost: e.target.value })}
+            label={t('Explorer API host')}
+            value={tempNetworkSettings.explorerApiHost}
+            onChange={(e) => editNetworkSettings({ explorerApiHost: e.target.value })}
+            noMargin
           />
           <Input
             id="explorer-url"
-            label={t`Explorer URL`}
-            value={tempAdvancedSettings.explorerUrl}
-            onChange={(e) => editAdvancedSettings({ explorerUrl: e.target.value })}
+            label={t('Explorer URL')}
+            value={tempNetworkSettings.explorerUrl}
+            onChange={(e) => editNetworkSettings({ explorerUrl: e.target.value })}
+            noMargin
+          />
+          <h2 tabIndex={0} role="label">
+            {t('Custom proxy (SOCKS5)')}
+            <ExperimentalBadge color={theme.global.accent} compact>
+              {t('Experimental')}
+            </ExperimentalBadge>
+          </h2>
+          <Input
+            id="proxy-address"
+            label={t('Proxy address')}
+            value={tempNetworkSettings.proxy?.address}
+            onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, address: e.target.value } })}
+            noMargin
+          />
+          <Input
+            id="proxy-port"
+            label={t('Proxy port')}
+            value={tempNetworkSettings.proxy?.port}
+            onChange={(e) => editNetworkSettings({ proxy: { ...tempNetworkSettings.proxy, port: e.target.value } })}
+            noMargin
           />
         </UrlInputs>
         <Section inList>
-          <Button onClick={handleAdvancedSettingsSave}>{t`Save`}</Button>
+          <Button onClick={handleAdvancedSettingsSave}>{t('Save')}</Button>
         </Section>
       </ToggleSection>
     </>
@@ -199,10 +247,16 @@ const NetworkSettingsSection = () => {
 const UrlInputs = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 15px;
 `
 
 const StyledInfoBox = styled(InfoBox)`
   margin-top: 0;
+`
+
+// TODO: Refactor Badges to allow for smaller version?
+const ExperimentalBadge = styled(Badge)`
+  margin-left: var(--spacing-2);
 `
 
 export default NetworkSettingsSection
