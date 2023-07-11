@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { getHumanReadableError } from '@alephium/sdk'
-import { SignResult } from '@alephium/sdk/api/alephium'
+import { AssetAmount, getHumanReadableError } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
 import { ChainInfo, parseChain, PROVIDER_NAMESPACE, RelayMethod } from '@alephium/walletconnect-provider'
 import {
@@ -26,10 +25,12 @@ import {
   SignExecuteScriptTxParams,
   SignTransferTxParams
 } from '@alephium/web3'
+import { node } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { EngineTypes, SignClientTypes } from '@walletconnect/types'
 import { getSdkError } from '@walletconnect/utils'
 import { partition } from 'lodash'
+import { usePostHog } from 'posthog-js/react'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -40,7 +41,6 @@ import SendModalCallContract from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
-import { AssetAmount } from '@/types/assets'
 import {
   CallContractTxData,
   DappTxData,
@@ -63,7 +63,7 @@ export interface WalletConnectContextProps {
   proposalEvent?: ProposalEvent
   dappTxData?: DappTxData
   onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
-  onSessionRequestSuccess: (event: RequestEvent, result: SignResult) => Promise<void>
+  onSessionRequestSuccess: (event: RequestEvent, result: node.SignResult) => Promise<void>
   onSessionDelete: () => void
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
@@ -97,6 +97,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
   const dispatch = useAppDispatch()
+  const posthog = usePostHog()
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
@@ -125,9 +126,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
       setWalletConnectClient(client)
     } catch (e) {
+      posthog.capture('Error', { message: 'Could not initialize WalletConnect client' })
       console.error('Could not initialize WalletConnect client', e)
     }
-  }, [])
+  }, [posthog])
 
   useEffect(() => {
     if (!walletConnectClient) initializeWalletConnectClient()
@@ -144,7 +146,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [walletConnectClient]
   )
 
-  const onSessionRequestSuccess = async (event: RequestEvent, result: SignResult) =>
+  const onSessionRequestSuccess = async (event: RequestEvent, result: node.SignResult) =>
     await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', result })
 
   const onSessionRequestError = useCallback(
@@ -265,7 +267,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           case 'alph_requestNodeApi': {
             const p = request.params as ApiRequestArguments
-            const result = await client.web3.request(p)
+            const result = await client.node.request(p)
 
             await walletConnectClient.respond({
               topic: event.topic,
@@ -293,13 +295,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
+        posthog.capture('Error', { message: 'Could not parse WalletConnect session request' })
         onSessionRequestError(event, {
           message: getHumanReadableError(e, 'Error while parsing WalletConnect session request'),
           code: WALLETCONNECT_ERRORS.PARSING_SESSION_REQUEST_FAILED
         })
       }
     },
-    [addresses, onSessionRequestError, walletConnectClient]
+    [addresses, onSessionRequestError, posthog, walletConnectClient]
   )
 
   const connectToWalletConnect = useCallback(

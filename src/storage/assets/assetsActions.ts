@@ -16,28 +16,88 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Asset } from '@alephium/sdk'
 import { TokenList } from '@alephium/token-list'
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { omit } from 'lodash'
+import posthog from 'posthog-js'
 
+import client, { exponentialBackoffFetchRetry } from '@/api/client'
 import { RootState } from '@/storage/store'
+import { SyncUnknownTokensInfoResult } from '@/types/assets'
 
-export const syncNetworkTokensInfo = createAsyncThunk('assets/syncNetworkTokensInfo', async (_, { getState }) => {
-  const state = getState() as RootState
+export const loadingStarted = createAction('assets/loadingStarted')
 
-  let metadata = undefined
-  const network =
-    state.network.settings.networkId === 0 ? 'mainnet' : state.network.settings.networkId === 1 ? 'testnet' : undefined
+export const syncNetworkTokensInfo = createAsyncThunk(
+  'assets/syncNetworkTokensInfo',
+  async (_, { getState, dispatch }) => {
+    const state = getState() as RootState
 
-  if (network) {
-    try {
-      const response = await fetch(
-        `https://raw.githubusercontent.com/alephium/token-list/master/tokens/${network}.json`
-      )
-      metadata = (await response.json()) as TokenList
-    } catch (e) {
-      console.warn('No metadata for network ID ', state.network.settings.networkId)
+    dispatch(loadingStarted())
+
+    let metadata = undefined
+    const network =
+      state.network.settings.networkId === 0
+        ? 'mainnet'
+        : state.network.settings.networkId === 1
+        ? 'testnet'
+        : undefined
+
+    if (network) {
+      try {
+        const response = await fetch(
+          `https://raw.githubusercontent.com/alephium/token-list/master/tokens/${network}.json`
+        )
+        metadata = (await response.json()) as TokenList
+      } catch (e) {
+        console.warn('No metadata for network ID ', state.network.settings.networkId)
+        posthog.capture('Error', { message: `No metadata for network ID ${state.network.settings.networkId}` })
+      }
     }
-  }
 
-  return metadata
-})
+    return metadata
+  }
+)
+
+export const syncUnknownTokensInfo = createAsyncThunk(
+  'assets/syncUnknownTokensInfo',
+  async (unknownTokenIds: Asset['id'][], { dispatch }): Promise<SyncUnknownTokensInfoResult> => {
+    const results = {
+      tokens: [],
+      nfts: []
+    } as SyncUnknownTokensInfoResult
+
+    dispatch(loadingStarted())
+
+    for await (const id of unknownTokenIds) {
+      const type = await client.node.guessStdTokenType(id)
+
+      try {
+        if (type === 'fungible') {
+          const tokenMetadata = await client.node.fetchFungibleTokenMetaData(id)
+
+          results.tokens.push({
+            id,
+            ...omit(tokenMetadata, ['totalSupply'])
+          })
+        } else if (type === 'non-fungible') {
+          const { tokenUri, collectionAddress } = await client.node.fetchNFTMetaData(id)
+          const nftData = await exponentialBackoffFetchRetry(tokenUri).then((res) => res.json())
+
+          results.nfts.push({
+            id,
+            collectionAddress,
+            name: nftData?.name,
+            description: nftData?.description,
+            image: nftData?.image
+          })
+        }
+      } catch (e) {
+        console.error(e)
+        posthog.capture('Error', { message: 'Syncing unknown tokens info' })
+      }
+    }
+
+    return results
+  }
+)

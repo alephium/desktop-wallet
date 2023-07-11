@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { compareVersions } from 'compare-versions'
+import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 
 import { AlephiumWindow } from '@/types/window'
@@ -33,6 +34,8 @@ const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
 const ONE_HOUR = 1000 * 60 * 60
 
 const useLatestGitHubRelease = () => {
+  const posthog = usePostHog()
+
   const [newVersion, setNewVersion] = useState('')
   const [timeUntilNextFetch, setTimeUntilNextFetch] = useState(0)
   const [requiresManualDownload, setRequiresManualDownload] = useState(false)
@@ -67,6 +70,7 @@ const useLatestGitHubRelease = () => {
       try {
         await checkForManualDownload()
       } catch (e) {
+        posthog.capture('Error', { message: 'Checking for latest release version for manual download' })
         console.error(e)
       }
     } else if (isVersionNewer(version)) {

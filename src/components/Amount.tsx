@@ -16,11 +16,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
-import styled from 'styled-components'
+import { convertToPositive, formatAmountForDisplay, formatFiatAmountForDisplay } from '@alephium/sdk'
+import { useTranslation } from 'react-i18next'
+import styled, { css } from 'styled-components'
 
-import { useAppSelector } from '@/hooks/redux'
-import { convertToPositive } from '@/utils/misc'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { discreetModeToggled } from '@/storage/settings/settingsActions'
 
 interface AmountProps {
   value?: bigint | number
@@ -51,16 +52,19 @@ const Amount = ({
   color,
   overrideSuffixColor,
   tabIndex,
+  highlight,
   isUnknownToken,
   showPlusMinus = false
 }: AmountProps) => {
+  const dispatch = useAppDispatch()
   const discreetMode = useAppSelector((state) => state.settings.discreetMode)
+  const { t } = useTranslation()
 
   let quantitySymbol = ''
   let amount = ''
   let isNegative = false
 
-  if (!discreetMode && value !== undefined) {
+  if (value !== undefined) {
     if (isFiat && typeof value === 'number') {
       amount = formatFiatAmountForDisplay(value)
     } else if (isUnknownToken) {
@@ -84,10 +88,14 @@ const Amount = ({
   const [integralPart, fractionalPart] = amount.split('.')
 
   return (
-    <span className={className} tabIndex={tabIndex ?? -1}>
-      {discreetMode ? (
-        '•••'
-      ) : value !== undefined ? (
+    <AmountStyled
+      {...{ className, color, value, highlight, tabIndex: tabIndex ?? -1, discreetMode }}
+      data-tooltip-id="default"
+      data-tooltip-content={discreetMode ? t('Click to deactivate discreet mode') : ''}
+      data-tooltip-delay-show={500}
+      onClick={() => discreetMode && dispatch(discreetModeToggled())}
+    >
+      {value !== undefined ? (
         <>
           {showPlusMinus && <span>{isNegative ? '-' : '+'}</span>}
           {fadeDecimals ? (
@@ -107,11 +115,13 @@ const Amount = ({
       )}
 
       {!isUnknownToken && <Suffix color={overrideSuffixColor ? color : undefined}>{` ${suffix ?? 'ALPH'}`}</Suffix>}
-    </span>
+    </AmountStyled>
   )
 }
 
-export default styled(Amount)`
+export default Amount
+
+const AmountStyled = styled.div<Pick<AmountProps, 'color' | 'highlight' | 'value'> & { discreetMode: boolean }>`
   color: ${({ color, highlight, value, theme }) =>
     color
       ? color
@@ -124,6 +134,14 @@ export default styled(Amount)`
   white-space: pre;
   font-weight: var(--fontWeight-bold);
   font-feature-settings: 'tnum' on;
+  ${({ discreetMode }) =>
+    discreetMode &&
+    css`
+      filter: blur(10px);
+      max-width: 100px;
+      overflow: hidden;
+      cursor: pointer;
+    `}
 `
 
 const Decimals = styled.span`

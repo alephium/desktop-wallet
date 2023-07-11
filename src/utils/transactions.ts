@@ -17,22 +17,25 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {
+  AssetAmount,
   calcTxAmountsDeltaForAddress,
+  convertToNegative,
   getDirection,
   isConsolidationTx,
+  isSwap,
   TransactionDirection,
   TransactionInfoType
 } from '@alephium/sdk'
-import { AssetOutput, Output } from '@alephium/sdk/api/explorer'
 import { ALPH } from '@alephium/token-list'
 import { DUST_AMOUNT, MIN_UTXO_SET_AMOUNT } from '@alephium/web3'
+import { explorer } from '@alephium/web3'
 import dayjs from 'dayjs'
+import { map } from 'lodash'
 
 import { SelectOption } from '@/components/Inputs/Select'
 import i18n from '@/i18n'
 import { store } from '@/storage/store'
 import { Address } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
 import { TranslationKey } from '@/types/i18next'
 import {
   AddressPendingTransaction,
@@ -41,7 +44,6 @@ import {
   TransactionInfo,
   TransactionTimePeriod
 } from '@/types/transactions'
-import { convertToNegative } from '@/utils/misc'
 
 export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean =>
   amount >= MIN_UTXO_SET_AMOUNT && amount <= maxAmount
@@ -49,7 +51,7 @@ export const isAmountWithinRange = (amount: bigint, maxAmount: bigint): boolean 
 export const isPendingTx = (tx: AddressTransaction): tx is AddressPendingTransaction =>
   (tx as AddressPendingTransaction).status === 'pending'
 
-export const hasOnlyOutputsWith = (outputs: Output[], addresses: Address[]): boolean =>
+export const hasOnlyOutputsWith = (outputs: explorer.Output[], addresses: Address[]): boolean =>
   outputs.every((o) => o?.address && addresses.map((a) => a.hash).indexOf(o.address) >= 0)
 
 export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
@@ -64,6 +66,7 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
 
   return {
     attoAlphAmount: totalAlphAmount.toString(),
+    extraAlphForDust: minDiff > 0 ? minDiff : undefined,
     tokens
   }
 }
@@ -139,12 +142,12 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   let amount: bigint | undefined = BigInt(0)
   let direction: TransactionDirection
   let infoType: TransactionInfoType
-  let outputs: Output[] = []
+  let outputs: explorer.Output[] = []
   let lockTime: Date | undefined
   let tokens: Required<AssetAmount>[] = []
 
   if (isPendingTx(tx)) {
-    direction = 'out'
+    direction = map(addresses, 'hash').includes(tx.toAddress) ? 'in' : 'out'
     infoType = 'pending'
     amount = tx.amount ? convertToNegative(BigInt(tx.amount)) : undefined
     tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: convertToNegative(BigInt(token.amount)) })) : []
@@ -173,7 +176,10 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     }
 
     lockTime = outputs.reduce(
-      (a, b) => (a > new Date((b as AssetOutput).lockTime ?? 0) ? a : new Date((b as AssetOutput).lockTime ?? 0)),
+      (a, b) =>
+        a > new Date((b as explorer.AssetOutput).lockTime ?? 0)
+          ? a
+          : new Date((b as explorer.AssetOutput).lockTime ?? 0),
       new Date(0)
     )
     lockTime = lockTime.toISOString() === new Date(0).toISOString() ? undefined : lockTime
@@ -189,12 +195,4 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
     outputs,
     lockTime
   }
-}
-
-const isSwap = (alphAmout: bigint, tokensAmount: Required<AssetAmount>[]) => {
-  const allAmounts = [alphAmout, ...tokensAmount.map((tokenAmount) => tokenAmount.amount)]
-  const allAmountsArePositive = allAmounts.every((amount) => amount >= 0)
-  const allAmountsAreNegative = allAmounts.every((amount) => amount <= 0)
-
-  return !allAmountsArePositive && !allAmountsAreNegative
 }

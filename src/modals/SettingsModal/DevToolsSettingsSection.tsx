@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { AlertTriangle, FileCode, TerminalSquare } from 'lucide-react'
+import { AlertOctagon, AlertTriangle, Download, FileCode, TerminalSquare } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -39,7 +39,7 @@ import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContact from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
-import { copiedToClipboard, copyToClipboardFailed } from '@/storage/global/globalActions'
+import { copiedToClipboard, copyToClipboardFailed, receiveTestnetTokens } from '@/storage/global/globalActions'
 import { devToolsToggled } from '@/storage/settings/settingsActions'
 import { Address } from '@/types/addresses'
 
@@ -48,6 +48,8 @@ const DevToolsSettingsSection = () => {
   const dispatch = useAppDispatch()
   const addresses = useAppSelector(selectAllAddresses)
   const defaultAddress = useAppSelector(selectDefaultAddress)
+  const currentNetwork = useAppSelector((s) => s.network)
+  const faucetCallPending = useAppSelector((s) => s.global.faucetCallPending)
   const devTools = useAppSelector((state) => state.settings.devTools)
   const posthog = usePostHog()
 
@@ -59,7 +61,7 @@ const DevToolsSettingsSection = () => {
   const toggleDevTools = () => {
     dispatch(devToolsToggled())
 
-    posthog?.capture('Enabled dev tools')
+    posthog.capture('Enabled dev tools')
   }
 
   const confirmAddressPrivateKeyCopyWithPassword = (address: Address) => {
@@ -74,9 +76,10 @@ const DevToolsSettingsSection = () => {
       await navigator.clipboard.writeText(selectedAddress.privateKey)
       dispatch(copiedToClipboard(t('Private key copied!')))
 
-      posthog?.capture('Copied address private key')
+      posthog.capture('Copied address private key')
     } catch (e) {
       dispatch(copyToClipboardFailed(getHumanReadableError(e, t('Could not copy private key.'))))
+      posthog.capture('Error', { message: 'Could not copy private key' })
     } finally {
       closePasswordModal()
     }
@@ -85,6 +88,11 @@ const DevToolsSettingsSection = () => {
   const closePasswordModal = () => {
     setIsPasswordModalOpen(false)
     setSelectedAddress(undefined)
+  }
+
+  const handleFaucetCall = () => {
+    defaultAddress && dispatch(receiveTestnetTokens(defaultAddress?.hash))
+    posthog.capture('Requested testnet tokens')
   }
 
   return (
@@ -100,6 +108,25 @@ const DevToolsSettingsSection = () => {
       </Section>
       {devTools && (
         <>
+          <Section align="flex-start" inList>
+            <h2 tabIndex={0} role="label">
+              {t('Testnet faucet')}
+            </h2>
+            <Paragraph>{t('Receive testnet tokens in your default address.')}</Paragraph>
+            {currentNetwork.name !== 'testnet' && (
+              <InfoBox
+                importance="accent"
+                Icon={AlertOctagon}
+                text={t(
+                  'You are currently connected to the {{ currentNetwork }} network. Make sure to connect to the testnet network to see your tokens.',
+                  { currentNetwork: currentNetwork.name }
+                )}
+              />
+            )}
+            <Button Icon={Download} onClick={handleFaucetCall} role="secondary" loading={faucetCallPending} wide>
+              {t('Receive testnet tokens')}
+            </Button>
+          </Section>
           <Section align="flex-start" inList>
             <h2 tabIndex={0} role="label">
               {t('Smart contracts')}

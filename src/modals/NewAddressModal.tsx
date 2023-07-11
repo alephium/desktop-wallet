@@ -15,8 +15,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import { AddressKeyPair, addressToGroup } from '@alephium/sdk'
-import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
+import { AddressKeyPair } from '@alephium/sdk'
+import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
 import { Info } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
@@ -76,11 +76,11 @@ const NewAddressModal = ({ title, onClose, singleAddress }: NewAddressModalProps
 
       saveNewAddresses([{ ...newAddressData, ...settings }])
 
-      posthog?.capture('New address created', { label_length: settings.label.length })
+      posthog.capture('New address created', { label_length: settings.label.length })
     } else {
       generateAndSaveOneAddressPerGroup({ labelPrefix: addressLabel.title, labelColor: addressLabel.color })
 
-      posthog?.capture('One address per group generated', { label_length: addressLabel.title.length })
+      posthog.capture('One address per group generated', { label_length: addressLabel.title.length })
     }
     onClose()
   }

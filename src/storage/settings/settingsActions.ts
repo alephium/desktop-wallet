@@ -45,3 +45,5 @@ export const walletLockTimeChanged = createAction<Settings['general']['walletLoc
 )
 
 export const analyticsToggled = createAction<Settings['general']['analytics']>('settings/analyticsToggled')
+
+export const fiatCurrencyChanged = createAction<Settings['general']['fiatCurrency']>('settings/fiatCurrencyChanged')

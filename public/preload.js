@@ -34,7 +34,7 @@ contextBridge.exposeInMainWorld('electron', {
     }
   },
   updater: {
-    checkForUpdates: async () => ipcRenderer.invoke('updater:checkForUpdates'),
+    checkForUpdates: () => ipcRenderer.invoke('updater:checkForUpdates'),
     startUpdateDownload: () => ipcRenderer.invoke('updater:startUpdateDownload'),
     onUpdateDownloadProgress: (callback) => {
       const callbackWithEventArg = (_, arg2) => callback(arg2)
@@ -64,6 +64,7 @@ contextBridge.exposeInMainWorld('electron', {
   app: {
     hide: () => ipcRenderer.invoke('app:hide'),
     show: () => ipcRenderer.invoke('app:show'),
-    getSystemLanguage: async () => ipcRenderer.invoke('app:getSystemLanguage')
+    getSystemLanguage: () => ipcRenderer.invoke('app:getSystemLanguage'),
+    setProxySettings: (proxySettings) => ipcRenderer.invoke('app:setProxySettings', proxySettings)
   }
 })

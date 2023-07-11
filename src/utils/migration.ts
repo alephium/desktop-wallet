@@ -180,9 +180,11 @@ export const _v200_networkSettingsMigration = () =>
   })
 
 const migrateReleaseNetworkSettings = (migrationsMapping: Record<string, string>) => {
-  const { nodeHost, explorerApiHost, explorerUrl } = SettingsStorage.load('network') as NetworkSettings
+  const previousSettings = SettingsStorage.load('network') as NetworkSettings
+  const { nodeHost, explorerApiHost, explorerUrl } = previousSettings
 
   const migratedNetworkSettings = {
+    ...previousSettings,
     nodeHost: migrationsMapping[nodeHost] ?? nodeHost,
     explorerApiHost: migrationsMapping[explorerApiHost] ?? explorerApiHost,
     explorerUrl: migrationsMapping[explorerUrl] ?? explorerUrl
@@ -228,7 +230,8 @@ export const _20230228_155100 = () => {
         const newValue: StoredWallet = {
           id,
           name,
-          encrypted: typeof wallet === 'string' ? wallet : JSON.stringify(wallet)
+          encrypted: typeof wallet === 'string' ? wallet : JSON.stringify(wallet),
+          lastUsed: Date.now()
         }
 
         localStorage.setItem(newKey, JSON.stringify(newValue))

@@ -26,6 +26,12 @@ export interface GeneralSettings {
   language: Language | undefined
   devTools: boolean
   analytics: boolean
+  fiatCurrency: Currency
+}
+
+export interface ProxySettings {
+  address?: string
+  port?: string
 }
 
 export interface NetworkSettings {
@@ -33,6 +39,7 @@ export interface NetworkSettings {
   nodeHost: string
   explorerApiHost: string
   explorerUrl: string
+  proxy?: ProxySettings
 }
 
 export interface Settings {
@@ -40,11 +47,13 @@ export interface Settings {
   network: NetworkSettings
 }
 
-export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'id-ID'
+export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'es-ES' | 'id-ID' | 'tr-TR'
 
 export type ThemeType = 'light' | 'dark'
 
 export type ThemeSettings = ThemeType | 'system'
+
+export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD'
 
 declare module 'styled-components' {
   export interface DefaultTheme {
@@ -86,5 +95,3 @@ declare module 'styled-components' {
     }
   }
 }
-
-export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD'

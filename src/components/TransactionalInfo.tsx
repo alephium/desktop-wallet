@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { formatAmountForDisplay } from '@alephium/sdk'
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { colord } from 'colord'
 import { partition } from 'lodash'
 import { ArrowLeftRight, ArrowRight as ArrowRightIcon } from 'lucide-react'
@@ -29,6 +29,7 @@ import AddressBadge from '@/components/AddressBadge'
 import Amount from '@/components/Amount'
 import AssetBadge from '@/components/AssetBadge'
 import Badge from '@/components/Badge'
+import HashEllipsed from '@/components/HashEllipsed'
 import HiddenLabel from '@/components/HiddenLabel'
 import IOList from '@/components/IOList'
 import Lock from '@/components/Lock'
@@ -111,16 +112,20 @@ const TransactionalInfo = ({
           {(direction === 'out' || direction === 'swap') && (
             <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
           )}
-          {direction === 'in' && (
-            <IOList
-              currentAddress={addressHash}
-              isOut={false}
-              outputs={outputs}
-              inputs={(tx as Transaction).inputs}
-              timestamp={(tx as Transaction).timestamp}
-              truncate
-              disableA11y
-            />
+          {isPending ? (
+            <HashEllipsed hash={tx.fromAddress} />
+          ) : (
+            direction === 'in' && (
+              <IOList
+                currentAddress={addressHash}
+                isOut={false}
+                outputs={outputs}
+                inputs={(tx as explorer.Transaction).inputs}
+                timestamp={(tx as explorer.Transaction).timestamp}
+                truncate
+                disableA11y
+              />
+            )
           )}
         </CellAddress>
       )}
@@ -155,8 +160,8 @@ const TransactionalInfo = ({
                 currentAddress={addressHash}
                 isOut={direction === 'out'}
                 outputs={outputs}
-                inputs={(tx as Transaction).inputs}
-                timestamp={(tx as Transaction).timestamp}
+                inputs={(tx as explorer.Transaction).inputs}
+                timestamp={(tx as explorer.Transaction).timestamp}
                 truncate
                 disableA11y
               />

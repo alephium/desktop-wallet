@@ -16,26 +16,28 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
-import { TokenInfo } from '@alephium/token-list'
+import { AssetAmount, AssetInfo } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
+import { explorer } from '@alephium/web3'
 import { Dictionary } from '@reduxjs/toolkit'
 
 import { Address, AddressSettings } from '@/types/addresses'
-import { AssetAmount } from '@/types/assets'
 import { AddressTransaction, PendingTransaction } from '@/types/transactions'
 import { getRandomLabelColor } from '@/utils/colors'
 
-export const selectAddressTransactions = (addresses: Address[], transactions: (Transaction | PendingTransaction)[]) => {
+export const selectAddressTransactions = (
+  addresses: Address[],
+  transactions: (explorer.Transaction | PendingTransaction)[]
+) => {
   const addressesTxs = addresses.flatMap((address) => address.transactions.map((txHash) => ({ txHash, address })))
-  const processedTxHashes: Transaction['hash'][] = []
+  const processedTxHashes: explorer.Transaction['hash'][] = []
 
   return transactions.reduce((txs, tx) => {
     const addressTxs = addressesTxs.filter(({ txHash }) => txHash === tx.hash)
 
     addressTxs.forEach((addressTx) => {
       if (
-        (!isPendingTransaction(tx) || tx.fromAddress === addressTx.address.hash) &&
+        (!isPendingTransaction(tx) || [tx.fromAddress, tx.toAddress].includes(addressTx.address.hash)) &&
         !processedTxHashes.includes(tx.hash)
       ) {
         processedTxHashes.push(tx.hash)
@@ -56,7 +58,7 @@ export const getInitialAddressSettings = (): AddressSettings => ({
   color: getRandomLabelColor()
 })
 
-export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<TokenInfo>) =>
+export const filterAddresses = (addresses: Address[], text: string, assetsInfo: Dictionary<AssetInfo>) =>
   text.length < 2
     ? addresses
     : addresses.filter((address) => {
@@ -102,7 +104,7 @@ export const assetAmountsWithinAvailableBalance = (address: Address, assetAmount
   })
 }
 
-const isPendingTransaction = (tx: Transaction | PendingTransaction): tx is PendingTransaction =>
+const isPendingTransaction = (tx: explorer.Transaction | PendingTransaction): tx is PendingTransaction =>
   (tx as PendingTransaction).status === 'pending'
 
 export const addressHasAssets = (address: Address): boolean =>

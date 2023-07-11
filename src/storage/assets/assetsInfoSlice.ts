@@ -16,23 +16,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { ALPH, TokenInfo } from '@alephium/token-list'
+import { AssetInfo } from '@alephium/sdk'
+import { ALPH } from '@alephium/token-list'
+import { hexToString } from '@alephium/web3'
 import { createSlice, EntityState } from '@reduxjs/toolkit'
 
-import { syncNetworkTokensInfo } from '@/storage/assets/assetsActions'
+import { loadingStarted, syncNetworkTokensInfo, syncUnknownTokensInfo } from '@/storage/assets/assetsActions'
 import { assetsInfoAdapter } from '@/storage/assets/assetsAdapter'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 
-interface AssetsInfoState extends EntityState<TokenInfo> {
+interface AssetsInfoState extends EntityState<AssetInfo> {
+  loading: boolean
   status: 'initialized' | 'uninitialized'
+  checkedUnknownTokenIds: AssetInfo['id'][]
 }
 
 const initialState: AssetsInfoState = assetsInfoAdapter.addOne(
   assetsInfoAdapter.getInitialState({
-    status: 'uninitialized'
+    loading: false,
+    status: 'uninitialized',
+    checkedUnknownTokenIds: []
   }),
   {
-    ...ALPH
+    ...ALPH,
+    verified: true
   }
 )
 
@@ -42,13 +49,44 @@ const assetsSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(loadingStarted, (state) => {
+        state.loading = true
+      })
       .addCase(syncNetworkTokensInfo.fulfilled, (state, action) => {
         const metadata = action.payload
 
         if (metadata) {
-          assetsInfoAdapter.upsertMany(state, metadata.tokens)
+          assetsInfoAdapter.upsertMany(
+            state,
+            metadata.tokens.map((tokenInfo) => ({
+              ...tokenInfo,
+              verified: true
+            }))
+          )
           state.status = 'initialized'
+          state.loading = false
         }
+      })
+      .addCase(syncUnknownTokensInfo.fulfilled, (state, action) => {
+        const metadata = action.payload.tokens
+        const initiallyUnknownTokenIds = action.meta.arg
+
+        state.checkedUnknownTokenIds = [...initiallyUnknownTokenIds, ...state.checkedUnknownTokenIds]
+
+        if (metadata) {
+          assetsInfoAdapter.upsertMany(
+            state,
+            metadata.map((token) => ({
+              id: token.id,
+              name: hexToString(token.name),
+              symbol: hexToString(token.symbol),
+              decimals: token.decimals,
+              verified: false
+            }))
+          )
+        }
+
+        state.loading = false
       })
       .addCase(networkPresetSwitched, resetState)
       .addCase(customNetworkSettingsSaved, resetState)

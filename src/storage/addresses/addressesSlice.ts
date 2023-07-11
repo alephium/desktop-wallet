@@ -16,9 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { addressToGroup } from '@alephium/sdk'
-import { TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { addressToGroup, TOTAL_NUMBER_OF_GROUPS } from '@alephium/web3'
+import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 import { uniq } from 'lodash'
 
 import {
@@ -33,9 +32,11 @@ import {
   syncAddressesData,
   syncAddressesHistoricBalances,
   syncAddressTransactionsNextPage,
-  syncAllAddressesTransactionsNextPage
+  syncAllAddressesTransactionsNextPage,
+  syncingAddressDataStarted
 } from '@/storage/addresses/addressesActions'
 import { addressesAdapter, balanceHistoryAdapter } from '@/storage/addresses/addressesAdapters'
+import { receiveTestnetTokens } from '@/storage/global/globalActions'
 import { customNetworkSettingsSaved, networkPresetSwitched } from '@/storage/settings/networkActions'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage/transactions/transactionsUtils'
@@ -52,6 +53,7 @@ import { getInitialAddressSettings } from '@/utils/addresses'
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
   loading: false,
+  syncingAddressData: false,
   isRestoringAddressesFromMetadata: false,
   status: 'uninitialized'
 })
@@ -62,6 +64,10 @@ const addressesSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      .addCase(syncingAddressDataStarted, (state) => {
+        state.syncingAddressData = true
+        state.loading = true
+      })
       .addCase(addressSettingsSaved, (state, action) => {
         const { addressHash, settings } = action.payload
 
@@ -83,14 +89,6 @@ const addressesSlice = createSlice({
             isDefault: true
           }
         })
-      })
-      .addCase(transactionSent, (state, action) => {
-        const pendingTransaction = action.payload
-        const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
-        const toAddress = state.entities[pendingTransaction.toAddress]
-
-        fromAddress.transactions.push(pendingTransaction.hash)
-        if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
       })
       .addCase(newAddressesSaved, (state, action) => {
         const addresses = action.payload
@@ -125,6 +123,7 @@ const addressesSlice = createSlice({
       })
       .addCase(syncAddressesData.rejected, (state) => {
         state.loading = false
+        state.syncingAddressData = false
       })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
         const addressData = action.payload
@@ -154,6 +153,7 @@ const addressesSlice = createSlice({
 
         state.status = 'initialized'
         state.loading = false
+        state.syncingAddressData = false
       })
       .addCase(syncAddressTransactionsNextPage.fulfilled, (state, action) => {
         const addressTransactionsData = action.payload
@@ -211,6 +211,15 @@ const addressesSlice = createSlice({
           }
         })
       })
+
+    builder.addMatcher(isAnyOf(transactionSent, receiveTestnetTokens.fulfilled), (state, action) => {
+      const pendingTransaction = action.payload
+      const fromAddress = state.entities[pendingTransaction.fromAddress] as Address
+      const toAddress = state.entities[pendingTransaction.toAddress] as Address
+
+      if (fromAddress) fromAddress.transactions.push(pendingTransaction.hash)
+      if (toAddress && toAddress !== fromAddress) toAddress.transactions.push(pendingTransaction.hash)
+    })
   }
 })
 

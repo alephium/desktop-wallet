@@ -17,9 +17,11 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
-import styled, { useTheme } from 'styled-components'
+import { useTranslation } from 'react-i18next'
+import styled, { css, useTheme } from 'styled-components'
 
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { discreetModeToggled } from '@/storage/settings/settingsActions'
 
 interface DeltaPercentageProps {
   initialValue: number
@@ -29,26 +31,44 @@ interface DeltaPercentageProps {
 
 const DeltaPercentage = ({ initialValue, latestValue, className }: DeltaPercentageProps) => {
   const theme = useTheme()
+  const dispatch = useAppDispatch()
+  const { t } = useTranslation()
   const discreetMode = useAppSelector((state) => state.settings.discreetMode)
 
   const percentage = Math.round(((latestValue - initialValue) / initialValue) * 10000) / 100
   const isUp = percentage >= 0
-  const color = isUp ? theme.global.valid : theme.global.alert
+  const color = discreetMode ? theme.font.primary : isUp ? theme.global.valid : theme.global.alert
 
   const DirectionArrow = percentage >= 0 ? ArrowUpRight : ArrowDownRight
 
-  return discreetMode ? (
-    <span className={className}>•••</span>
-  ) : (
-    <div className={className} style={{ color }}>
+  return (
+    <DeltaPercentageStyled
+      className={className}
+      style={{ color }}
+      discreetMode={discreetMode}
+      data-tooltip-id="default"
+      data-tooltip-content={discreetMode ? t('Click to deactivate discreet mode') : ''}
+      data-tooltip-delay-show={500}
+      onClick={() => discreetMode && dispatch(discreetModeToggled())}
+    >
       <DirectionArrow color={color} />
       {percentage}%
-    </div>
+    </DeltaPercentageStyled>
   )
 }
 
-export default styled(DeltaPercentage)`
+export default DeltaPercentage
+
+const DeltaPercentageStyled = styled.div<{ discreetMode: boolean }>`
   display: flex;
   align-items: center;
   height: 24px;
+
+  ${({ discreetMode }) =>
+    discreetMode &&
+    css`
+      filter: blur(10px);
+      overflow: hidden;
+      cursor: pointer;
+    `}
 `

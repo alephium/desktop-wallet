@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
 import { xorWith } from 'lodash'
@@ -26,6 +26,7 @@ import {
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
+import { receiveTestnetTokens } from '@/storage/global/globalActions'
 import { RootState } from '@/storage/store'
 import PendingTransactionsStorage from '@/storage/transactions/pendingTransactionsPersistentStorage'
 import { storedPendingTransactionsLoaded, transactionSent } from '@/storage/transactions/transactionsActions'
@@ -44,6 +45,7 @@ const pendingTransactionsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(transactionSent, pendingTransactionsAdapter.addOne)
+      .addCase(receiveTestnetTokens.fulfilled, pendingTransactionsAdapter.addOne)
       .addCase(syncAddressesData.fulfilled, removeTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, removeTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, removeTransactions)
@@ -58,25 +60,27 @@ export default pendingTransactionsSlice
 
 export const pendingTransactionsListenerMiddleware = createListenerMiddleware()
 
+// Keep state and local storage of pending transactions in sync
 pendingTransactionsListenerMiddleware.startListening({
   matcher: isAnyOf(
     transactionSent,
     syncAddressesData.fulfilled,
+    receiveTestnetTokens.fulfilled,
     syncAddressTransactionsNextPage.fulfilled,
     syncAllAddressesTransactionsNextPage.fulfilled
   ),
   effect: (_, { getState }) => {
     const state = getState() as RootState
-    const transactions = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
+    const pendingTxsInState = Object.values(state.pendingTransactions.entities) as PendingTransaction[]
     const { id: walletId, mnemonic, passphrase } = state.activeWallet
 
     if (!walletId || !mnemonic || passphrase) return
 
     const encryptionProps = { walletId, mnemonic, passphrase }
-    const storedTransactions = PendingTransactionsStorage.load(encryptionProps)
-    const uniqueTransactions = xorWith(transactions, storedTransactions, (a, b) => a.hash === b.hash)
+    const storedPendingTxs = PendingTransactionsStorage.load(encryptionProps)
+    const uniqueTransactions = xorWith(pendingTxsInState, storedPendingTxs, (a, b) => a.hash === b.hash)
 
-    if (uniqueTransactions.length > 0) PendingTransactionsStorage.store(transactions, encryptionProps)
+    if (uniqueTransactions.length > 0) PendingTransactionsStorage.store(pendingTxsInState, encryptionProps)
   }
 })
 
@@ -84,7 +88,9 @@ pendingTransactionsListenerMiddleware.startListening({
 
 const removeTransactions = (
   state: PendingTransactionsState,
-  action: PayloadAction<{ transactions: Transaction[] }[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<
+    { transactions: explorer.Transaction[] }[] | { transactions: explorer.Transaction[] } | undefined
+  >
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

@@ -38,7 +38,7 @@ const sync = () => {
         if (!newData[key]) newData[key] = source[key]
       })
 
-      fs.writeFileSync(filepath, JSON.stringify(newData))
+      fs.writeFileSync(filepath, JSON.stringify(newData, null, 2)) // Null and 2 arguments to format the JSON in the file
     } catch (e) {
       console.error('Error occurred while parsing file "' + filepath + '"')
     }

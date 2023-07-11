@@ -26,6 +26,7 @@ import {
   modalClosed,
   modalOpened,
   osThemeChangeDetected,
+  receiveTestnetTokens,
   transfersPageInfoMessageClosed
 } from '@/storage/global/globalActions'
 import { languageChangeFinished, languageChangeStarted, themeToggled } from '@/storage/settings/settingsActions'
@@ -46,6 +47,7 @@ interface AppState {
   wallets: StoredWallet[]
   theme: ThemeType
   devMode: boolean
+  faucetCallPending: boolean
 }
 
 const initialState: AppState = {
@@ -55,7 +57,8 @@ const initialState: AppState = {
   transfersPageInfoMessageClosed: true, // See: https://github.com/alephium/desktop-wallet/issues/644
   wallets: WalletStorage.list(),
   theme: getThemeType(),
-  devMode: false
+  devMode: false,
+  faucetCallPending: false
 }
 
 const globalSlice = createSlice({
@@ -94,9 +97,9 @@ const globalSlice = createSlice({
       .addCase(languageChangeStarted, (state) => toggleLoading(state, true, true))
       .addCase(languageChangeFinished, (state) => toggleLoading(state, false, true))
       .addCase(walletSaved, (state, action) => {
-        const { id, name, encrypted } = action.payload.wallet
+        const { id, name, encrypted, lastUsed } = action.payload.wallet
 
-        state.wallets.push({ id, name, encrypted })
+        state.wallets.push({ id, name, encrypted, lastUsed })
       })
       .addCase(walletLocked, resetState)
       .addCase(activeWalletDeleted, resetState)
@@ -109,6 +112,15 @@ const globalSlice = createSlice({
       })
       .addCase(localStorageDataMigrated, refreshWalletList)
       .addCase(newWalletNameStored, refreshWalletList)
+      .addCase(receiveTestnetTokens.pending, (state) => {
+        state.faucetCallPending = true
+      })
+      .addCase(receiveTestnetTokens.fulfilled, (state) => {
+        state.faucetCallPending = false
+      })
+      .addCase(receiveTestnetTokens.rejected, (state) => {
+        state.faucetCallPending = false
+      })
   }
 })
 

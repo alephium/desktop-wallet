@@ -16,4 +16,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+import styled from 'styled-components'
+
+import { NFT } from '@/types/assets'
+
+interface NFTThumbnailProps {
+  nft: NFT
+  className?: string
+}
+
+const NFTThumbnail = ({ nft, className }: NFTThumbnailProps) => (
+  <NFTThumbnailStyled src={nft.image} alt={nft.description} className={className} />
+)
+
+export default NFTThumbnail
+
+const NFTThumbnailStyled = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-medium);
+  object-fit: cover;
+`

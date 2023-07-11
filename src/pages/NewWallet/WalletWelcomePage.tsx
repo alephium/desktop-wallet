@@ -71,7 +71,7 @@ const WalletWelcomePage = () => {
         label: `Address ${defaultAddress.group}`
       })
 
-      posthog?.capture('Generated one address per group on wallet creation')
+      posthog.capture('Generated one address per group on wallet creation')
     }
 
     navigate('/wallet/overview')

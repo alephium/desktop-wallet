@@ -16,12 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TransactionDirection, TransactionInfoType } from '@alephium/sdk'
-import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
-import { Output, Token, Transaction } from '@alephium/sdk/api/explorer'
+import { AssetAmount, TransactionDirection, TransactionInfoAsset, TransactionInfoType } from '@alephium/sdk'
+import { explorer, node } from '@alephium/web3'
 
 import { Address, AddressHash } from '@/types/addresses'
-import { AssetAmount, TransactionInfoAsset } from '@/types/assets'
 
 export enum TxType {
   TRANSFER,
@@ -38,7 +36,7 @@ export type PendingTransaction = {
   timestamp: number
   type: PendingTxType
   amount?: string
-  tokens?: Token[]
+  tokens?: explorer.Token[]
   lockTime?: number
   status: 'pending'
 }
@@ -114,8 +112,8 @@ export type UnsignedTx = {
 
 export type TxContext = {
   setIsSweeping: (isSweeping: boolean) => void
-  sweepUnsignedTxs: SweepAddressTransaction[]
-  setSweepUnsignedTxs: (txs: SweepAddressTransaction[]) => void
+  sweepUnsignedTxs: node.SweepAddressTransaction[]
+  setSweepUnsignedTxs: (txs: node.SweepAddressTransaction[]) => void
   setFees: (fees: bigint | undefined) => void
   unsignedTransaction: UnsignedTx | undefined
   setUnsignedTransaction: (tx: UnsignedTx | undefined) => void
@@ -125,7 +123,7 @@ export type TxContext = {
   consolidationRequired: boolean
 }
 
-export type AddressConfirmedTransaction = Transaction & { address: Address }
+export type AddressConfirmedTransaction = explorer.Transaction & { address: Address }
 export type AddressPendingTransaction = PendingTransaction & { address: Address }
 export type AddressTransaction = AddressConfirmedTransaction | AddressPendingTransaction
 
@@ -137,7 +135,7 @@ export type TransactionInfo = {
   assets: TransactionInfoAsset[]
   direction: TransactionDirection
   infoType: TransactionInfoType
-  outputs: Output[]
+  outputs: explorer.Output[]
   lockTime?: Date
 }
 

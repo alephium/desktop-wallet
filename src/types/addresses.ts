@@ -16,11 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { AddressKeyPair } from '@alephium/sdk'
-import { AddressInfo, MempoolTransaction, Transaction } from '@alephium/sdk/api/explorer'
+import { AddressKeyPair, TokenBalances } from '@alephium/sdk'
+import { explorer } from '@alephium/web3'
 import { EntityState } from '@reduxjs/toolkit'
 
-import { TokenBalances } from '@/types/assets'
 import { TimeInMs } from '@/types/numbers'
 import { PendingTransaction } from '@/types/transactions'
 
@@ -52,9 +51,9 @@ export type BalanceHistory = {
 }
 
 export type Address = AddressBase &
-  AddressInfo & {
+  explorer.AddressInfo & {
     group: number
-    transactions: (Transaction['hash'] | PendingTransaction['hash'])[]
+    transactions: (explorer.Transaction['hash'] | PendingTransaction['hash'])[]
     transactionsPageLoaded: number
     allTransactionPagesLoaded: boolean
     tokens: TokenBalances[]
@@ -69,14 +68,15 @@ export type LoadingEnabled = boolean | undefined
 
 export type AddressDataSyncResult = {
   hash: AddressHash
-  details: AddressInfo
-  transactions: Transaction[]
-  mempoolTransactions: MempoolTransaction[]
+  details: explorer.AddressInfo
+  transactions: explorer.Transaction[]
+  mempoolTransactions: explorer.MempoolTransaction[]
   tokens: TokenBalances[]
 }
 
 export interface AddressesState extends EntityState<Address> {
   loading: boolean
+  syncingAddressData: boolean
   isRestoringAddressesFromMetadata: boolean
   status: 'uninitialized' | 'initialized'
 }

@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { getHumanReadableError } from '@alephium/sdk'
-import { SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { node } from '@alephium/web3'
 import { Info } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,7 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
     to: toAddressOptions.length > 0 ? toAddressOptions[0] : fromAddress
   })
   const [fee, setFee] = useState(BigInt(0))
-  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [builtUnsignedTxs, setBuiltUnsignedTxs] = useState<node.SweepAddressTransaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -79,12 +79,13 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
         setFee(fees)
       } catch (e) {
         dispatch(transactionBuildFailed(getHumanReadableError(e, t('Error while building transaction'))))
+        posthog.capture('Error', { message: 'Building transaction' })
       }
       setIsLoading(false)
     }
 
     buildTransactions()
-  }, [dispatch, sweepAddresses.from, sweepAddresses.to, t])
+  }, [dispatch, posthog, sweepAddresses.from, sweepAddresses.to, t])
 
   const onSweepClick = async () => {
     if (!sweepAddresses.from || !sweepAddresses.to) return
@@ -108,13 +109,14 @@ const AddressSweepModal = ({ sweepAddress, onClose, onSuccessfulSweep }: Address
       onClose()
       onSuccessfulSweep && onSuccessfulSweep()
 
-      posthog?.capture('Swept address assets')
+      posthog.capture('Swept address assets')
     } catch (e) {
       dispatch(
         transactionSendFailed(
           getHumanReadableError(e, t('Error while sweeping address {{ from }}', { from: sweepAddresses.from }))
         )
       )
+      posthog.capture('Error', { message: 'Sweeping address' })
     }
     setIsLoading(false)
   }

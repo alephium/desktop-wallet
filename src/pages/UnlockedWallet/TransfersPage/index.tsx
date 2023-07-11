@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { Asset } from '@alephium/sdk'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { map } from 'lodash'
@@ -36,7 +37,6 @@ import UnlockedWalletPage from '@/pages/UnlockedWallet/UnlockedWalletPage'
 import { selectAllAddresses, selectDefaultAddress } from '@/storage/addresses/addressesSelectors'
 import { transfersPageInfoMessageClosed } from '@/storage/global/globalActions'
 import { walletSidebarWidthPx } from '@/style/globalStyles'
-import { Asset } from '@/types/assets'
 import { links } from '@/utils/links'
 import { directionOptions } from '@/utils/transactions'
 

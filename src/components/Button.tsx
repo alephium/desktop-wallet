@@ -22,6 +22,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
+import Spinner from '@/components/Spinner'
 
 export interface ButtonProps extends HTMLMotionProps<'button'> {
   role?: 'primary' | 'secondary'
@@ -39,10 +40,21 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   borderless?: boolean
   isHighlighted?: boolean
   disablePointer?: boolean
+  loading?: boolean
   className?: string
 }
 
-const Button = ({ children, disabled, submit, Icon, className, iconColor, isHighlighted, ...props }: ButtonProps) => {
+const Button = ({
+  children,
+  disabled,
+  submit,
+  Icon,
+  className,
+  iconColor,
+  isHighlighted,
+  loading,
+  ...props
+}: ButtonProps) => {
   const [canBeAnimated, setCanBeAnimated] = useState(props.squared ? true : false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const theme = useTheme()
@@ -69,18 +81,24 @@ const Button = ({ children, disabled, submit, Icon, className, iconColor, isHigh
       className={className}
       variants={sectionChildrenVariants}
       custom={disabled}
-      disabled={disabled}
+      disabled={disabled || loading}
       animate={canBeAnimated ? (!disabled ? 'shown' : 'disabled') : false}
       onAnimationComplete={() => setCanBeAnimated(true)}
       type={submit ? 'submit' : 'button'}
       ref={buttonRef}
     >
-      {Icon && (
-        <ButtonIcon>
-          <Icon size={15} color={iconColor || theme.font.tertiary} />
-        </ButtonIcon>
+      {loading ? (
+        <Spinner size="18px" />
+      ) : (
+        <>
+          {Icon && (
+            <ButtonIcon>
+              <Icon size={15} color={iconColor || theme.font.tertiary} />
+            </ButtonIcon>
+          )}
+          {children as ReactNode}
+        </>
       )}
-      {children as ReactNode}
     </motion.button>
   )
 }
@@ -94,8 +112,7 @@ export default styled(Button)`
     borderless,
     iconBackground,
     iconColor,
-    children,
-    disablePointer
+    children
   }) => {
     const bgColor = transparent
       ? 'transparent'

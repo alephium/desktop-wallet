@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { APIError, getHumanReadableError } from '@alephium/sdk'
-import { SignResult, SweepAddressTransaction } from '@alephium/sdk/api/alephium'
+import { node } from '@alephium/web3'
 import { getSdkError } from '@walletconnect/utils'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
@@ -57,8 +57,8 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   BuildTxModalContent: (props: { data: PT; onSubmit: (data: T) => void; onCancel: () => void }) => JSX.Element | null
   CheckTxModalContent: (props: CheckTxProps<T>) => JSX.Element | null
   buildTransaction: (data: T, context: TxContext) => Promise<void>
-  handleSend: (data: T, context: TxContext, posthog?: PostHog) => Promise<string | undefined>
-  getWalletConnectResult: (context: TxContext, signature: string) => SignResult
+  handleSend: (data: T, context: TxContext, posthog: PostHog) => Promise<string | undefined>
+  getWalletConnectResult: (context: TxContext, signature: string) => node.SignResult
   txData?: T
   initialStep?: Step
   isContract?: boolean
@@ -92,7 +92,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   const [isConsolidateUTXOsModalVisible, setIsConsolidateUTXOsModalVisible] = useState(false)
   const [consolidationRequired, setConsolidationRequired] = useState(false)
   const [isSweeping, setIsSweeping] = useState(false)
-  const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<SweepAddressTransaction[]>([])
+  const [sweepUnsignedTxs, setSweepUnsignedTxs] = useState<node.SweepAddressTransaction[]>([])
   const [fees, setFees] = useState<bigint>()
   const [unsignedTxId, setUnsignedTxId] = useState('')
   const [unsignedTransaction, setUnsignedTransaction] = useState<UnsignedTx>()
@@ -151,10 +151,12 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
+          posthog.capture('Error', { message: 'Could not build tx, consolidation required' })
         } else {
           const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
 
           dispatch(transactionBuildFailed(errorMessage))
+          posthog.capture('Error', { message: 'Could not build tx' })
 
           if (isRequestToApproveContractCall) {
             if (requestEvent)
@@ -177,6 +179,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       isRequestToApproveContractCall,
       onClose,
       onSessionRequestError,
+      posthog,
       requestEvent,
       t,
       txContext
@@ -213,6 +216,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       setStep('tx-sent')
     } catch (e) {
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
+      posthog.capture('Error', { message: 'Could not send tx' })
 
       if (requestEvent)
         onSessionRequestError(requestEvent, {

@@ -29,6 +29,7 @@ interface BadgeProps {
   truncate?: boolean
   rounded?: boolean
   short?: boolean
+  compact?: boolean
   className?: string
 }
 
@@ -39,18 +40,19 @@ const Badge: FC<HasTooltip<BadgeProps>> = ({ className, children, truncate, tool
 )
 
 export default styled(Badge)`
-  ${({ color, theme, rounded, border, short, truncate, transparent }) => {
+  ${({ color, theme, rounded, border, short, compact, truncate, transparent }) => {
     const usedColor = color || theme.font.primary
 
     return css`
       display: inline-flex;
       align-items: center;
-      padding: 0 12px;
-      height: ${short ? 25 : 35}px;
+      padding: 0 ${compact ? '5px' : short ? '8px' : '10px'};
+      height: ${short ? 25 : compact ? 20 : 30}px;
       color: ${usedColor};
-      border-radius: ${rounded ? '50px' : 'var(--radius-big)'};
-      background-color: ${!transparent && colord(usedColor).alpha(0.02).toRgbString()};
+      border-radius: ${rounded ? '100px' : compact ? 'var(--radius-tiny)' : 'var(--radius-small)'};
+      background-color: ${!transparent && colord(usedColor).alpha(0.08).toRgbString()};
       white-space: nowrap;
+      font-size: ${compact ? '11px' : 'inherit'};
 
       ${border &&
       css`
@@ -59,7 +61,6 @@ export default styled(Badge)`
       ${truncate &&
       css`
         max-width: 100%;
-        display: inline-block;
       `}
     `
   }}

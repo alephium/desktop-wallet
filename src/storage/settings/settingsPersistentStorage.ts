@@ -16,12 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { clone, merge } from 'lodash'
+import { clone, mapValues, merge } from 'lodash'
+import posthog from 'posthog-js'
 
 import { NetworkPreset } from '@/types/network'
 import { NetworkSettings, Settings } from '@/types/settings'
 
-export const networkPresets: Record<NetworkPreset, NetworkSettings> = {
+const networkBasePresets: Record<NetworkPreset, NetworkSettings> = {
   mainnet: {
     networkId: 0,
     nodeHost: 'https://wallet-v20.mainnet.alephium.org',
@@ -42,6 +43,8 @@ export const networkPresets: Record<NetworkPreset, NetworkSettings> = {
   }
 }
 
+export const networkPresets = mapValues(networkBasePresets, (v) => ({ ...v, proxy: { address: '', port: '' } }))
+
 export const defaultSettings: Settings = {
   general: {
     theme: 'system',
@@ -50,7 +53,8 @@ export const defaultSettings: Settings = {
     passwordRequirement: false,
     language: undefined,
     devTools: false,
-    analytics: true
+    analytics: true,
+    fiatCurrency: 'USD'
   },
   network: clone(networkPresets.mainnet) as NetworkSettings
 }
@@ -72,6 +76,7 @@ class SettingsStorage {
       return merge({}, defaultSettings, parsedSettings)
     } catch (e) {
       console.error(e)
+      posthog.capture('Error', { message: 'Parsing stored settings' })
       return defaultSettings // Fallback to default settings if something went wrong
     }
   }

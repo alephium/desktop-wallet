@@ -16,13 +16,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { formatAmountForDisplay, fromHumanReadableAmount } from '@alephium/sdk'
+import { formatAmountForDisplay, fromHumanReadableAmount, MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@alephium/sdk'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Input from '@/components/Inputs/Input'
 import AlphAmountInfoBox from '@/modals/SendModals/AlphAmountInfoBox'
-import { MINIMAL_GAS_AMOUNT, MINIMAL_GAS_PRICE } from '@/utils/constants'
 
 export interface GasSettingsProps {
   gasAmount?: string
@@ -42,6 +42,7 @@ const GasSettings = ({
   onGasPriceChange
 }: GasSettingsProps) => {
   const { t } = useTranslation()
+  const posthog = usePostHog()
 
   const [expectedFee, setExpectedFee] = useState<bigint>()
 
@@ -54,8 +55,9 @@ const GasSettings = ({
       setExpectedFee(BigInt(gasAmount) * fromHumanReadableAmount(gasPrice))
     } catch (e) {
       console.error(e)
+      posthog.capture('Error', { message: 'Could not set expected fee' })
     }
-  }, [gasAmount, gasPrice])
+  }, [gasAmount, gasPrice, posthog])
 
   return (
     <>

@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Transaction } from '@alephium/sdk/api/explorer'
+import { explorer } from '@alephium/web3'
 import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import {
@@ -29,7 +29,7 @@ import { confirmedTransactionsAdapter } from '@/storage/transactions/transaction
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
 import { AddressDataSyncResult } from '@/types/addresses'
 
-interface ConfirmedTransactionsState extends EntityState<Transaction> {
+interface ConfirmedTransactionsState extends EntityState<explorer.Transaction> {
   allLoaded: boolean
   pageLoaded: number
 }
@@ -71,7 +71,7 @@ export default confirmedTransactionsSlice
 
 const addTransactions = (
   state: ConfirmedTransactionsState,
-  action: PayloadAction<AddressDataSyncResult[] | { transactions: Transaction[] } | undefined>
+  action: PayloadAction<AddressDataSyncResult[] | { transactions: explorer.Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

@@ -43,6 +43,8 @@ interface HistoricWorthChartProps {
   addressHash?: AddressHash
 }
 
+export const historicWorthChartHeight = 100
+
 const now = dayjs()
 const startingDates: Record<ChartLength, Dayjs> = {
   '1d': now.subtract(1, 'day'),
@@ -250,7 +252,7 @@ const getChartOptions = (
 
 const ChartWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: ${historicWorthChartHeight}px;
   opacity: 0.3;
   transition: opacity 0.2s ease-out;
 

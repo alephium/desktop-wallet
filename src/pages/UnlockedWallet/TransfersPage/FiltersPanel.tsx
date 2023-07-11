@@ -15,6 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
+import { Asset } from '@alephium/sdk'
 import { colord } from 'colord'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,11 +27,10 @@ import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
 import SelectOptionAsset from '@/components/Inputs/SelectOptionAsset'
 import { useAppSelector } from '@/hooks/redux'
 import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout'
-import { makeSelectAddressesAssets, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
-import { selectIsLoadingAssetsInfo } from '@/storage/assets/assetsSelectors'
+import { makeSelectAddressesTokens, selectAllAddresses } from '@/storage/addresses/addressesSelectors'
+import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
 import { appHeaderHeightPx } from '@/style/globalStyles'
 import { Address } from '@/types/addresses'
-import { Asset } from '@/types/assets'
 import { directionOptions } from '@/utils/transactions'
 
 interface FiltersPanelProps {
@@ -54,10 +54,10 @@ const FiltersPanel = ({
 }: FiltersPanelProps) => {
   const { t } = useTranslation()
   const addresses = useAppSelector(selectAllAddresses)
-  const selectAddressesAssets = useMemo(makeSelectAddressesAssets, [])
-  const assets = useAppSelector(selectAddressesAssets)
+  const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
+  const assets = useAppSelector(selectAddressesTokens)
 
-  const isLoadingAssetsInfo = useAppSelector(selectIsLoadingAssetsInfo)
+  const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
   const stateUninitialized = useAppSelector((s) => s.addresses.status === 'uninitialized') // TODO: Use selector from next PR
 
   const renderAddressesSelectedValue = () =>
@@ -92,10 +92,10 @@ const FiltersPanel = ({
   }
 
   useEffect(() => {
-    if (!isLoadingAssetsInfo && !stateUninitialized && !selectedAssets) {
+    if (!isTokensMetadataUninitialized && !stateUninitialized && !selectedAssets) {
       setSelectedAssets(assets)
     }
-  }, [assets, isLoadingAssetsInfo, selectedAssets, setSelectedAssets, stateUninitialized])
+  }, [assets, isTokensMetadataUninitialized, selectedAssets, setSelectedAssets, stateUninitialized])
 
   return (
     <UnlockedWalletPanel className={className}>

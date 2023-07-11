@@ -30,7 +30,6 @@ import AddressMetadataStorage from '@/storage/addresses/addressMetadataPersisten
 import ContactsStorage from '@/storage/addresses/contactsPersistentStorage'
 import { passwordValidationFailed } from '@/storage/auth/authActions'
 import { osThemeChangeDetected, userDataMigrationFailed } from '@/storage/global/globalActions'
-import { restorePendingTransactions } from '@/storage/transactions/transactionsStorageUtils'
 import { walletLocked, walletSwitched, walletUnlocked } from '@/storage/wallets/walletActions'
 import WalletStorage from '@/storage/wallets/walletPersistentStorage'
 import { AlephiumWindow } from '@/types/window'
@@ -115,13 +114,15 @@ export const GlobalContextProvider: FC<{ overrideContextValue?: PartialDeep<Glob
         migrateUserData()
       } catch (e) {
         console.error(e)
+        posthog.capture('Error', { message: 'User data migration failed ' })
         dispatch(userDataMigrationFailed())
       }
 
       restoreAddressesFromMetadata()
-      restorePendingTransactions()
 
-      posthog?.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
+      WalletStorage.update(walletId, { lastUsed: Date.now() })
+
+      posthog.capture(event === 'unlock' ? 'Wallet unlocked' : 'Wallet switched', {
         wallet_name_length: wallet.name.length,
         number_of_addresses: (AddressMetadataStorage.load() as []).length,
         number_of_contacts: (ContactsStorage.load() as []).length

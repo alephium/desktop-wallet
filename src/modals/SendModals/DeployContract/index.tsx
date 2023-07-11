@@ -45,7 +45,7 @@ const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContr
   const buildTransaction = async (data: DeployContractTxData, context: TxContext) => {
     const initialAttoAlphAmount =
       data.initialAlphAmount !== undefined ? data.initialAlphAmount.amount?.toString() : undefined
-    const response = await client.web3.contracts.postContractsUnsignedTxDeployContract({
+    const response = await client.node.contracts.postContractsUnsignedTxDeployContract({
       fromPublicKey: data.fromAddress.publicKey,
       bytecode: data.bytecode,
       initialAttoAlphAmount,
@@ -93,7 +93,7 @@ const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContr
 
 export default SendModalDeployContract
 
-const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext, posthog?: PostHog) => {
+const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxContext, posthog: PostHog) => {
   if (!context.unsignedTransaction) throw Error('No unsignedTransaction available')
 
   const data = await signAndSendTransaction(fromAddress, context.unsignedTxId, context.unsignedTransaction.unsignedTx)
@@ -109,7 +109,7 @@ const handleSend = async ({ fromAddress }: DeployContractTxData, context: TxCont
     })
   )
 
-  posthog?.capture('Deployed smart contract')
+  posthog.capture('Deployed smart contract')
 
   return data.signature
 }

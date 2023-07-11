@@ -73,31 +73,31 @@ const ShortcutButtons = ({
   const lockWallet = () => {
     dispatch(walletLocked())
 
-    posthog?.capture('Locked wallet', { origin: analyticsOrigin })
+    posthog.capture('Locked wallet', { origin: analyticsOrigin })
   }
 
   const handleReceiveClick = () => {
     setIsReceiveModalOpen(true)
 
-    posthog?.capture('Receive button clicked', { origin: analyticsOrigin })
+    posthog.capture('Receive button clicked', { origin: analyticsOrigin })
   }
 
   const handleSendClick = () => {
     setIsSendModalOpen(true)
 
-    posthog?.capture('Send button clicked', { origin: analyticsOrigin })
+    posthog.capture('Send button clicked', { origin: analyticsOrigin })
   }
 
   const handleWalletSettingsClick = () => {
     setIsSettingsModalOpen(true)
 
-    posthog?.capture('Wallet settings button clicked', { origin: analyticsOrigin })
+    posthog.capture('Wallet settings button clicked', { origin: analyticsOrigin })
   }
 
   const handleAddressSettingsClick = () => {
     setIsAddressOptionsModalOpen(true)
 
-    posthog?.capture('Address settings button clicked', { origin: analyticsOrigin })
+    posthog.capture('Address settings button clicked', { origin: analyticsOrigin })
   }
 
   return (
