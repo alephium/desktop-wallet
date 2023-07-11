@@ -439,13 +439,13 @@
   "Your CSV file has been generated successfully.": "Votre fichier CSV a été généré correctement.",
   "Your CSV file is being compiled in the background.": "Votre fichier CSV est en cours de création.",
   "Your Wallet": "Votre portefeuille",
-  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
-  "Address unknown tokens": "Address unknown tokens",
-  "Experimental": "Experimental",
-  "Public key": "Public key",
-  "Private key": "Private key",
-  "Address keys export": "Address keys export",
-  "Public key copied.": "Public key copied.",
-  "Could not copy public key.": "Could not copy public key.",
-  "Copy the keys of an address.": "Copy the keys of an address."
+  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "{{ amount }} ALPH doivent être envoyés en plus. Cliquez ici pour plus d'informations.",
+  "Address unknown tokens": "Jetons inconnus de l'adresse",
+  "Experimental": "Expérimental",
+  "Public key": "Clé publique",
+  "Private key": "Clé privée",
+  "Address keys export": "Export de clés",
+  "Public key copied.": "Clé publique copiée.",
+  "Could not copy public key.": "Impossible de copier la clé privée.",
+  "Copy the keys of an address.": "Copier les clés d'une adresse."
 }
