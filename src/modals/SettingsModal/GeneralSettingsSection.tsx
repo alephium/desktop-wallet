@@ -207,14 +207,16 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
         }
       >
         {language !== 'en-US' && (
-          <Disclaimer
-            data-tooltip-html={t(
-              'The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.'
-            )}
-            data-tooltip-id="default"
-          >
-            <AlertTriangle size={12} /> <span>{t('Disclaimer')}</span>
-          </Disclaimer>
+          <div>
+            <Disclaimer
+              data-tooltip-html={t(
+                'The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.'
+              )}
+              data-tooltip-id="default"
+            >
+              <AlertTriangle size={12} /> <span>{t('Disclaimer')}</span>
+            </Disclaimer>
+          </div>
         )}
       </KeyValueInput>
       <HorizontalDivider />
@@ -265,7 +267,7 @@ const ActionLinkStyled = styled(ActionLink)`
 `
 
 const Disclaimer = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.3em;
   color: ${({ theme }) => theme.global.highlight};
