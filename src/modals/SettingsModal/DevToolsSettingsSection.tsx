@@ -69,7 +69,7 @@ const DevToolsSettingsSection = () => {
     setSelectedAddress(address)
   }
 
-  const onCorrectPasswordEntered = async () => {
+  const copyPrivateKey = async () => {
     if (!selectedAddress) return
 
     try {
@@ -82,6 +82,18 @@ const DevToolsSettingsSection = () => {
       posthog.capture('Error', { message: 'Could not copy private key' })
     } finally {
       closePasswordModal()
+    }
+  }
+
+  const copyPublicKey = async (address: Address) => {
+    try {
+      await navigator.clipboard.writeText(address.publicKey)
+      dispatch(copiedToClipboard(t('Public key copied!')))
+
+      posthog.capture('Copied address public key')
+    } catch (e) {
+      dispatch(copyToClipboardFailed(getHumanReadableError(e, t('Could not copy public key.'))))
+      posthog.capture('Error', { message: 'Could not copy public key' })
     }
   }
 
@@ -142,17 +154,25 @@ const DevToolsSettingsSection = () => {
           </Section>
           <PrivateKeySection align="flex-start" role="list">
             <h2 tabIndex={0} role="label">
-              {t('Private key export')}
+              {t('Address keys export')}
             </h2>
-            <Paragraph>{t('Click on an address to copy its private key.')}</Paragraph>
+            <Paragraph>{t('Copy the keys of an address.')}</Paragraph>
             <Table>
               {addresses.map((address) => (
-                <AddressRow
-                  address={address}
-                  onClick={confirmAddressPrivateKeyCopyWithPassword}
-                  disableAddressCopy
-                  key={address.hash}
-                />
+                <AddressRow address={address} disableAddressCopy key={address.hash}>
+                  <Buttons>
+                    <ButtonStyled role="secondary" short onClick={() => copyPublicKey(address)}>
+                      {t('Public key')}
+                    </ButtonStyled>
+                    <ButtonStyled
+                      role="secondary"
+                      short
+                      onClick={() => confirmAddressPrivateKeyCopyWithPassword(address)}
+                    >
+                      {t('Private key')}
+                    </ButtonStyled>
+                  </Buttons>
+                </AddressRow>
               ))}
             </Table>
           </PrivateKeySection>
@@ -176,7 +196,7 @@ const DevToolsSettingsSection = () => {
             <PasswordConfirmation
               text={t('Enter your password to copy the private key.')}
               buttonText={t('Copy private key')}
-              onCorrectPasswordEntered={onCorrectPasswordEntered}
+              onCorrectPasswordEntered={copyPrivateKey}
             >
               <InfoBox importance="alert" Icon={AlertTriangle}>
                 {`${t('This is a feature for developers only.')} ${t(
@@ -204,4 +224,14 @@ const ButtonsRow = styled.div`
 
 const PrivateKeySection = styled(Section)`
   margin-top: var(--spacing-3);
+`
+
+const ButtonStyled = styled(Button)`
+  margin: 0;
+`
+
+const Buttons = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
 `
