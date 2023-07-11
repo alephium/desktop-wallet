@@ -100,7 +100,7 @@ const buildTransaction = async (transactionData: TransferTxData, context: TxCont
   }
 }
 
-const handleSend = async (transactionData: TransferTxData, context: TxContext, posthog?: PostHog) => {
+const handleSend = async (transactionData: TransferTxData, context: TxContext, posthog: PostHog) => {
   const { fromAddress, toAddress, lockTime: lockDateTime, assetAmounts } = transactionData
   const { isSweeping, sweepUnsignedTxs, consolidationRequired, unsignedTxId, unsignedTransaction } = context
 
@@ -130,7 +130,7 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext, p
         )
       }
 
-      posthog?.capture('Swept address assets')
+      posthog.capture('Swept address assets')
     } else if (unsignedTransaction) {
       const data = await signAndSendTransaction(fromAddress, unsignedTxId, unsignedTransaction.unsignedTx)
 
@@ -148,7 +148,7 @@ const handleSend = async (transactionData: TransferTxData, context: TxContext, p
         })
       )
 
-      posthog?.capture('Sent transaction', { number_of_tokens: tokens.length, locked: !!lockTime })
+      posthog.capture('Sent transaction', { number_of_tokens: tokens.length, locked: !!lockTime })
 
       return data.txId
     }

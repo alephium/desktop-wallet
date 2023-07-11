@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { clone, mapValues, merge } from 'lodash'
+import posthog from 'posthog-js'
 
 import { NetworkPreset } from '@/types/network'
 import { NetworkSettings, Settings } from '@/types/settings'
@@ -75,6 +76,7 @@ class SettingsStorage {
       return merge({}, defaultSettings, parsedSettings)
     } catch (e) {
       console.error(e)
+      posthog.capture('Error', { message: 'Parsing stored settings' })
       return defaultSettings // Fallback to default settings if something went wrong
     }
   }

@@ -114,6 +114,7 @@
   "Developer tools": "Инструменты разработчика",
   "Direction": "Путь",
   "Directions": "Пути",
+  "Disclaimer": "Disclaimer",
   "Disconnect": "Отключение",
   "Discover active addresses": "Обнаружить активные адреса",
   "Discreet mode": "Скрытый режим",
@@ -354,6 +355,7 @@
   "The easiest way to get started with Alephium.": "Самый простой способ начать работу с Alephium.",
   "The group number will be automatically be appended to the addresses’ label.": "Номер группы будет автоматически добавлен к имени адреса.",
   "The group of the selected address ({{ addressGroup }}) does not match the group required by WalletConnect ({{ walletConnectGroup }})": "Группа ({{ addressGroup }}) выбранного адреса не совпадает с группой, требуемой ({{ walletConnectGroup }})",
+  "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.": "The wallet is developed in English.<br />Translations in other languages are provided by the Alephium community.<br />In case of doubt, always refer to the English version.",
   "The wallet is offline.": "Кошелек находится в режиме оффлайн.",
   "Theme": "Тема",
   "There are no addresses in the required group: {{ group }}": "В требуемой группе нет адресов: {{ group }}",
@@ -439,6 +441,7 @@
   "Your CSV file has been generated successfully.": "Ваш CSV-файл был успешно создан.",
   "Your CSV file is being compiled in the background.": "Ваш CSV-файл формируется в фоновом режиме.",
   "Your Wallet": "Ваш кошелек",
+  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
   "Address unknown tokens": "Address unknown tokens",
   "Experimental": "Experimental"
 }

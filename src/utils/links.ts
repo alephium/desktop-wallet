@@ -26,6 +26,8 @@ export const links = {
   discord: 'https://www.alephium.org/discord',
   faq: 'https://docs.alephium.org/frequently-asked-questions',
   analytics: 'https://docs.alephium.org/frequently-asked-questions#what-analytics-does-the-desktop-wallet-collect',
+  utxoDust:
+    'https://docs.alephium.org/frequently-asked-questions#why-is-there-an-additional-0001-alph-per-token-added-to-my-transaction-when-i-try-to-send-tokens',
   github: 'https://github.com/alephium',
   twitter: 'https://twitter.com/alephium'
 }

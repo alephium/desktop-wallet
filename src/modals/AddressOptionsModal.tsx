@@ -75,8 +75,8 @@ const AddressOptionsModal = ({ addressHash, onClose }: AddressOptionsModalProps)
 
     onClose()
 
-    posthog?.capture('Changed address settings', { label_length: settings.label.length })
-    isDefaultAddressToggleEnabled && posthog?.capture('Changed default address')
+    posthog.capture('Changed address settings', { label_length: settings.label.length })
+    isDefaultAddressToggleEnabled && posthog.capture('Changed default address')
   }
 
   let defaultAddressMessage = `${t('Default address for sending transactions.')} `

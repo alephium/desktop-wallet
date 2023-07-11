@@ -118,7 +118,7 @@ const NetworkSettingsSection = () => {
           dispatch(networkPresetSwitched(networkName))
           setTempNetworkSettings(newNetworkSettings)
 
-          posthog?.capture('Changed network', { network_name: networkName })
+          posthog.capture('Changed network', { network_name: networkName })
           return
         }
 
@@ -132,7 +132,7 @@ const NetworkSettingsSection = () => {
           dispatch(customNetworkSettingsSaved(settings))
           setTempNetworkSettings(settings)
 
-          posthog?.capture('Saved custom network settings')
+          posthog.capture('Saved custom network settings')
         }
       }
     },

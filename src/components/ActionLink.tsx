@@ -19,6 +19,8 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import styled, { css } from 'styled-components'
 
+import { HasTooltip } from '@/components/Tooltip'
+
 interface ActionLinkProps {
   onClick: () => void
   Icon?: LucideIconType
@@ -27,8 +29,8 @@ interface ActionLinkProps {
   className?: string
 }
 
-const ActionLink: FC<ActionLinkProps> = ({ className, Icon, children, onClick }) => (
-  <button className={className} onClick={onClick}>
+const ActionLink: FC<HasTooltip<ActionLinkProps>> = ({ className, Icon, children, onClick, tooltip }) => (
+  <button className={className} onClick={onClick} data-tooltip-id="default" data-tooltip-content={tooltip}>
     {children}
     {Icon && (
       <IconContainer>
