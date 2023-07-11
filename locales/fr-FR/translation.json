@@ -265,7 +265,7 @@
   "Please, backup your secret phrase instead.": "Copiez votre phrase secrete à la place s'il vous plaît.",
   "Please, generate a new address in group {{ group }} first.": "Merci de générer une nouvelle adresse dans le group {{ group }} d'abord.",
   "Previous year": "Année précédente",
-  "Private key copied!": "Clé privée copiée !",
+  "Private key copied.": "Clé privée copiée .",
   "Proxy address": "Proxy address",
   "Proxy port": "Proxy port",
   "Raw amount": "Montant brut",
@@ -445,7 +445,7 @@
   "Public key": "Public key",
   "Private key": "Private key",
   "Address keys export": "Address keys export",
-  "Public key copied!": "Public key copied!",
+  "Public key copied.": "Public key copied.",
   "Could not copy public key.": "Could not copy public key.",
   "Copy the keys of an address.": "Copy the keys of an address."
 }

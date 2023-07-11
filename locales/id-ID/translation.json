@@ -265,7 +265,7 @@
   "Please, backup your secret phrase instead.": "Tolong, cadangankan frasa rahasia Anda sebagai gantinya.",
   "Please, generate a new address in group {{ group }} first.": "Harap buat alamat baru di grup {{ group }} terlebih dahulu.",
   "Previous year": "Tahun sebelumnya",
-  "Private key copied!": "Kunci pribadi telah disalin!",
+  "Private key copied.": "Kunci pribadi telah disalin.",
   "Proxy address": "Proxy address",
   "Proxy port": "Proxy port",
   "Raw amount": "Jumlah Raw",
@@ -445,7 +445,7 @@
   "Public key": "Public key",
   "Private key": "Private key",
   "Address keys export": "Address keys export",
-  "Public key copied!": "Public key copied!",
+  "Public key copied.": "Public key copied.",
   "Could not copy public key.": "Could not copy public key.",
   "Copy the keys of an address.": "Copy the keys of an address."
 }

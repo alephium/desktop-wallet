@@ -265,7 +265,7 @@
   "Please, backup your secret phrase instead.": "Пожалуйста, создайте резервную копию своей секретной фразы.",
   "Please, generate a new address in group {{ group }} first.": "Пожалуйста, сначала создайте новый адрес в группе {{ group }}.",
   "Previous year": "Прошлый год",
-  "Private key copied!": "Закрытый ключ скопирован!",
+  "Private key copied.": "Закрытый ключ скопирован.",
   "Proxy address": "Proxy address",
   "Proxy port": "Proxy port",
   "Raw amount": "Необработанная сумма",
@@ -445,7 +445,7 @@
   "Public key": "Public key",
   "Private key": "Private key",
   "Address keys export": "Address keys export",
-  "Public key copied!": "Public key copied!",
+  "Public key copied.": "Public key copied.",
   "Could not copy public key.": "Could not copy public key.",
   "Copy the keys of an address.": "Copy the keys of an address."
 }

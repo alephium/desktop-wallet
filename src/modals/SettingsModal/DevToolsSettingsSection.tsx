@@ -74,7 +74,7 @@ const DevToolsSettingsSection = () => {
 
     try {
       await navigator.clipboard.writeText(selectedAddress.privateKey)
-      dispatch(copiedToClipboard(t('Private key copied!')))
+      dispatch(copiedToClipboard(t('Private key copied.')))
 
       posthog.capture('Copied address private key')
     } catch (e) {
@@ -88,7 +88,7 @@ const DevToolsSettingsSection = () => {
   const copyPublicKey = async (address: Address) => {
     try {
       await navigator.clipboard.writeText(address.publicKey)
-      dispatch(copiedToClipboard(t('Public key copied!')))
+      dispatch(copiedToClipboard(t('Public key copied.')))
 
       posthog.capture('Copied address public key')
     } catch (e) {
