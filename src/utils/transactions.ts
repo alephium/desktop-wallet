@@ -66,6 +66,7 @@ export const getTransactionAssetAmounts = (assetAmounts: AssetAmount[]) => {
 
   return {
     attoAlphAmount: totalAlphAmount.toString(),
+    extraAlphForDust: minDiff > 0 ? minDiff : undefined,
     tokens
   }
 }
