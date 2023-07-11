@@ -53,7 +53,7 @@ export type ThemeType = 'light' | 'dark'
 
 export type ThemeSettings = ThemeType | 'system'
 
-export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD'
+export type Currency = 'CHF' | 'IDR' | 'GBP' | 'EUR' | 'USD' | 'VND' | 'RUB' | 'TRY' | 'CNY' | 'CAD' | 'MYR' | 'SAR' | 'HKD'
 
 declare module 'styled-components' {
   export interface DefaultTheme {
