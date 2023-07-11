@@ -64,30 +64,5 @@ export const currencies: Record<Currency, CurrencyData> = {
     name: 'Russian Ruble',
     ticker: 'RUB',
     symbol: '₽'
-  },
-  CNY: {
-    name: 'Chinese Yuan',
-    ticker: 'CNY',
-    symbol: '¥'
-  },
-  CAD: {
-    name: 'Canadian Dollar',
-    ticker: 'CAD',
-    symbol: '$'
-  },
-  HKD: {
-    name: 'Hongkong Dollar',
-    ticker: 'HKD',
-    symbol: 'HK$'
-  },
-  MYR: {
-    name: 'Malaysian Ringgit',
-    ticker: 'MYR',
-    symbol: 'RM'
-  },
-  SAR: {
-    name: 'Saudi Riyal',
-    ticker: 'SAR',
-    symbol: 'SAR'
   }
 }
