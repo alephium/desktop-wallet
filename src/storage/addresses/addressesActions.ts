@@ -48,6 +48,8 @@ import { CHART_DATE_FORMAT } from '@/utils/constants'
 
 export const loadingStarted = createAction('addresses/loadingStarted')
 
+export const syncingAddressDataStarted = createAction('addresses/syncingAddressDataStarted')
+
 export const addressesRestoredFromMetadata = createAction<AddressBase[]>('addresses/addressesRestoredFromMetadata')
 
 export const addressRestorationStarted = createAction('addresses/addressRestorationStarted')
@@ -69,7 +71,7 @@ export const syncAddressesData = createAsyncThunk<
   AddressHash[] | undefined,
   { rejectValue: SnackbarMessage }
 >('addresses/syncAddressesData', async (payload, { getState, dispatch, rejectWithValue }) => {
-  dispatch(loadingStarted())
+  dispatch(syncingAddressDataStarted())
 
   const state = getState() as RootState
   const addresses = payload ?? (state.addresses.ids as AddressHash[])

@@ -34,7 +34,11 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
   const nftInfo = useAppSelector((s) => selectNFTById(s, assetId))
 
   return (
-    <div className={className} data-tooltip-id="default" data-tooltip-content={assetInfo?.name ?? assetId}>
+    <div
+      className={className}
+      data-tooltip-id="default"
+      data-tooltip-content={assetInfo?.name ?? nftInfo?.name ?? assetId}
+    >
       <AssetLogo
         assetId={assetId}
         assetImageUrl={assetInfo?.logoURI || nftInfo?.image}

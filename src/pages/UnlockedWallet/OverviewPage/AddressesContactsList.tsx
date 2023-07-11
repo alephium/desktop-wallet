@@ -42,7 +42,6 @@ import { currencies } from '@/utils/currencies'
 
 interface AddressesContactsListProps {
   className?: string
-  limit?: number
   maxHeightInPx?: number
 }
 
@@ -52,7 +51,7 @@ interface AddressListProps extends AddressesContactsListProps {
   onAddressClick: () => void
 }
 
-const AddressesContactsList = ({ className, limit, maxHeightInPx }: AddressesContactsListProps) => {
+const AddressesContactsList = ({ className, maxHeightInPx }: AddressesContactsListProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -70,21 +69,19 @@ const AddressesContactsList = ({ className, limit, maxHeightInPx }: AddressesCon
             {t('See more')}
           </ActionLink>
         </TableHeader>
-        <AddressesList limit={limit} isExpanded={isExpanded} onExpand={handleButtonClick} onAddressClick={collapse} />
+        <AddressesList isExpanded={isExpanded} onExpand={handleButtonClick} onAddressClick={collapse} />
       </ExpandableTable>
     </FocusableContent>
   )
 }
 
-const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
+const AddressesList = ({ className, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
   const { data: price } = useGetPriceQuery(currencies[fiatCurrency].ticker)
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedAddress, setSelectedAddress] = useState<Address>()
-
-  const displayedAddresses = limit ? addresses.slice(0, limit) : addresses
 
   const handleRowClick = (address: Address) => {
     onAddressClick()
@@ -94,7 +91,7 @@ const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick 
   return (
     <>
       <motion.div {...fadeIn} className={className}>
-        {displayedAddresses.map((address) => (
+        {addresses.map((address) => (
           <AddressRow address={address} onClick={handleRowClick} key={address.hash}>
             <TableCellAmount>
               {stateUninitialized ? (
@@ -112,7 +109,7 @@ const AddressesList = ({ className, limit, isExpanded, onExpand, onAddressClick 
         ))}
       </motion.div>
 
-      {!isExpanded && displayedAddresses.length > 5 && onExpand && <ExpandRow onClick={onExpand} />}
+      {!isExpanded && addresses.length > 5 && onExpand && <ExpandRow onClick={onExpand} />}
 
       <ModalPortal>
         {selectedAddress && (

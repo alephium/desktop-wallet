@@ -42,7 +42,8 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
   const { t } = useTranslation()
   const userSpecifiedAlphAmount = assetAmounts.find((asset) => asset.id === ALPH.id)?.amount
   const { attoAlphAmount, tokens, extraAlphForDust } = getTransactionAssetAmounts(assetAmounts)
-  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
+  const assetsInfo = useAppSelector((s) => s.assetsInfo.entities)
+  const nfts = useAppSelector((s) => s.nfts.entities)
 
   const alphAsset = { id: ALPH.id, amount: attoAlphAmount }
   const assets = userSpecifiedAlphAmount ? [alphAsset, ...tokens] : [...tokens, alphAsset]
@@ -51,19 +52,18 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
     <Box className={className}>
       {assets.map((asset, index) => {
         const assetInfo = assetsInfo[asset.id]
+        const nftInfo = nfts[asset.id]
 
         return (
           <Fragment key={asset.id}>
             {index > 0 && <HorizontalDivider />}
             <AssetAmountRow>
-              {assetInfo && (
-                <AssetLogo
-                  assetId={assetInfo.id}
-                  assetImageUrl={assetInfo.logoURI}
-                  size={30}
-                  assetName={assetInfo.name}
-                />
-              )}
+              <AssetLogo
+                assetId={asset.id}
+                assetImageUrl={assetInfo?.logoURI ?? nftInfo?.image}
+                size={30}
+                assetName={assetInfo?.name}
+              />
               <AssetAmountStyled
                 value={BigInt(asset.amount)}
                 suffix={assetInfo?.symbol}

@@ -76,6 +76,7 @@ export type AddressDataSyncResult = {
 
 export interface AddressesState extends EntityState<Address> {
   loading: boolean
+  syncingAddressData: boolean
   isRestoringAddressesFromMetadata: boolean
   status: 'uninitialized' | 'initialized'
 }

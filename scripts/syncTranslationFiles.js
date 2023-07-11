@@ -30,17 +30,13 @@ const sync = () => {
       const data = JSON.parse(fs.readFileSync(filepath, { encoding: 'utf-8' }))
       const newData = {}
 
-      Object.keys(data)
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .forEach((key) => {
-          if (source[key]) newData[key] = data[key]
-        })
+      Object.keys(data).forEach((key) => {
+        if (source[key]) newData[key] = data[key]
+      })
 
-      Object.keys(source)
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .forEach((key) => {
-          if (!newData[key]) newData[key] = source[key]
-        })
+      Object.keys(source).forEach((key) => {
+        if (!newData[key]) newData[key] = source[key]
+      })
 
       fs.writeFileSync(filepath, JSON.stringify(newData, null, 2)) // Null and 2 arguments to format the JSON in the file
     } catch (e) {
