@@ -46,7 +46,11 @@ export const fiatCurrencyOptions: SelectOption<Currency>[] = [
   { label: 'CHF', value: 'CHF' },
   { label: 'EUR', value: 'EUR' },
   { label: 'GBP', value: 'GBP' },
-  { label: 'USD', value: 'USD' }
+  { label: 'USD', value: 'USD' },
+  { label: 'IDR', value: 'IDR' },
+  { label: 'VND', value: 'VND' },
+  { label: 'RUB', value: 'RUB' },
+  { label: 'TRY', value: 'TRY' }
 ]
 
 export const locktimeInMinutes = [0, 2, 5, 10, 30]
