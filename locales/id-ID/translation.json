@@ -439,7 +439,7 @@
   "Your CSV file has been generated successfully.": "File CSV Anda telah berhasil dibuat.",
   "Your CSV file is being compiled in the background.": "File CSV Anda sedang dikompilasi di latar belakang.",
   "Your Wallet": "Dompet Anda",
-  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Selain itu, {{ jumlah }} ALPH perlu dikirim. Klik di sini untuk info lebih lanjut.",
+  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Selain itu, {{ amount }} ALPH diperlukan untuk dikirim. Klik di sini untuk info lebih lanjut.",
   "Address unknown tokens": "Alamat token yang tidak diketahui",
   "Experimental": "Eksperimental",
   "Public key": "Kunci publik",
