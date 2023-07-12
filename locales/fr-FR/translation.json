@@ -31,7 +31,7 @@
   "All selected": "Tous",
   "All transactions loaded!": "Toutes les transactions ont été chargées !",
   "ALPH amount": "Montant en ALPH",
-  "ALPH price: {{ price }}$": "ALPH price: {{ price }}$",
+  "ALPH price: {{ price }}": "ALPH price: {{ price }}",
   "Alright! Time to check if you got your words right!": "Ok ! Il est temps de vérifier que vos mots sont corrects !",
   "Amount": "Montant",
   "Amount exceeds available balance": "Le montant est supérieur au fonds disponible",

@@ -31,7 +31,7 @@
   "All selected": "Semua telah dipilih",
   "All transactions loaded!": "Semua transaksi telah dimuat!",
   "ALPH amount": "Jumlah ALPH",
-  "ALPH price: {{ price }}$": "Harga ALPH: {{ price }}$",
+  "ALPH price: {{ price }}": "Harga ALPH: {{ price }}",
   "Alright! Time to check if you got your words right!": "Baiklah! Saatnya memeriksa apakah kata-kata Anda benar!",
   "Amount": "Jumlah",
   "Amount exceeds available balance": "Jumlah melebihi saldo yang tersedia",
