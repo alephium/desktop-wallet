@@ -31,7 +31,7 @@
   "All selected": "All selected",
   "All transactions loaded!": "All transactions loaded!",
   "ALPH amount": "Количество ALPH",
-  "ALPH price: {{ price }}$": "ALPH price: {{ price }}$",
+  "ALPH price: {{ price }}": "ALPH price: {{ price }}",
   "Alright! Time to check if you got your words right!": "Добре! Време е да проверим дали сте написали правилно думите си!",
   "Amount": "Сума",
   "Amount exceeds available balance": "Сумата надвишава наличния баланс",

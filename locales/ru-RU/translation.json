@@ -31,7 +31,7 @@
   "All selected": "Все выбранные",
   "All transactions loaded!": "Все транзакции загружены!",
   "ALPH amount": "Сумма ALPH",
-  "ALPH price: {{ price }}$": "Стоимость ALPH: {{ price }}$",
+  "ALPH price: {{ price }}": "Стоимость ALPH: {{ price }}",
   "Alright! Time to check if you got your words right!": "Отлично! Пора проверить, правильно ли вы записали свои слова!",
   "Amount": "Сумма",
   "Amount exceeds available balance": "Сумма превышает доступный баланс",

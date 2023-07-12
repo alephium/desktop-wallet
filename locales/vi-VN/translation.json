@@ -31,7 +31,7 @@
   "All selected": "Tất cả đã được chọn",
   "All transactions loaded!": "Tất cả các giao dịch đã được cập nhật!",
   "ALPH amount": "Số lượng ALPH",
-  "ALPH price: {{ price }}$": "Giá ALPH: {{ price }}$",
+  "ALPH price: {{ price }}": "Giá ALPH: {{ price }}",
   "Alright! Time to check if you got your words right!": "Tuyệt vời! Bây giờ hãy kiểm tra nếu bạn ghi chính xác các cụm từ nhé!",
   "Amount": "Số lượng",
   "Amount exceeds available balance": "Số lượng vượt quá số dư khả dụng",
