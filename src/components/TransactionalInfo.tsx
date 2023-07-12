@@ -74,7 +74,7 @@ const TransactionalInfo = ({
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
-      <AddressBadge truncate addressHash={tx.toAddress} />
+      <AddressBadge truncate addressHash={direction === 'in' ? tx.fromAddress : tx.toAddress} />
     )
   ) : null
 
