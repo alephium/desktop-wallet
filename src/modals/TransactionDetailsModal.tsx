@@ -223,9 +223,11 @@ const TransactionDetailsModal = ({ transaction, onClose }: TransactionDetailsMod
         </DetailsRow>
         {nftsData.length > 0 && (
           <DetailsRow label={t('NFTs')}>
-            {nftsData.map((nft) => (
-              <NFTThumbnail nft={nft} key={nft.id} />
-            ))}
+            <NFTThumbnails>
+              {nftsData.map((nft) => (
+                <NFTThumbnail nft={nft} key={nft.id} />
+              ))}
+            </NFTThumbnails>
           </DetailsRow>
         )}
         {unknownTokens.length > 0 && (
@@ -388,4 +390,11 @@ const AddressBadgeStyled = styled(AddressBadge)`
 
 const SwapPartnerAddress = styled.div`
   max-width: 80px;
+`
+
+const NFTThumbnails = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 `
