@@ -230,9 +230,12 @@ const NFTsList = ({ className, addressHashes, isExpanded, onExpand }: AssetsList
     <>
       <motion.div {...fadeIn} className={className}>
         {isLoadingTokensMetadata || stateUninitialized ? (
-          <TableRow>
-            <SkeletonLoader height="37.5px" />
-          </TableRow>
+          <NFTList>
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+          </NFTList>
         ) : (
           <NFTList role="row" tabIndex={isExpanded ? 0 : -1}>
             {nfts.map((nft) => (
