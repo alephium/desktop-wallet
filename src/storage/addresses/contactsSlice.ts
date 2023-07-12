@@ -24,7 +24,7 @@ import {
   contactStoredInPersistentStorage
 } from '@/storage/addresses/addressesActions'
 import { contactsAdapter } from '@/storage/addresses/addressesAdapters'
-import { activeWalletDeleted, walletLocked } from '@/storage/wallets/walletActions'
+import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
 import { Contact } from '@/types/contacts'
 
 type ContactsState = EntityState<Contact>
@@ -38,6 +38,7 @@ export const contactsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(walletLocked, resetState)
+      .addCase(walletSwitched, resetState)
       .addCase(activeWalletDeleted, resetState)
       .addCase(contactStoredInPersistentStorage, contactsAdapter.upsertOne)
       .addCase(contactsLoadedFromPersistentStorage, contactsAdapter.setAll)
