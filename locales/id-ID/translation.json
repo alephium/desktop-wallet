@@ -440,7 +440,7 @@
   "Your CSV file is being compiled in the background.": "File CSV Anda sedang dikompilasi di latar belakang.",
   "Your Wallet": "Dompet Anda",
   "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Selain itu, {{ amount }} ALPH diperlukan untuk dikirim. Klik di sini untuk info lebih lanjut.",
-  "Address unknown tokens": "Alamat token yang tidak diketahui",
+  "Address unknown tokens": "Alamat token yang tidak dikenal",
   "Experimental": "Eksperimental",
   "Public key": "Kunci publik",
   "Private key": "Kunci pribadi",
