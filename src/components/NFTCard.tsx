@@ -139,6 +139,7 @@ const NFTDescription = styled.div`
   -webkit-line-clamp: 10;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  position: relative;
 `
 
 const BackFaceBackground = styled.div`
