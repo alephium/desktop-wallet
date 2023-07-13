@@ -33,9 +33,6 @@ interface NFTCardProps {
 const NFTCard = ({ nft }: NFTCardProps) => {
   const [isHovered, setIsHovered] = useState(false)
 
-  const desc = nft?.description
-  const cutDesc = desc && desc?.length > 200 ? nft?.description?.substring(0, 200) + '...' : desc
-
   const y = useMotionValue(0.5)
   const x = useMotionValue(0.5)
 
@@ -82,7 +79,7 @@ const NFTCard = ({ nft }: NFTCardProps) => {
       backFace={
         <BackFace>
           <BackFaceBackground style={{ backgroundImage: `url(${nft?.image})` }} />
-          <NFTDescription>{cutDesc}</NFTDescription>
+          <NFTDescription>{nft?.description}</NFTDescription>
         </BackFace>
       }
     />
@@ -104,6 +101,7 @@ const BackFace = styled.div`
   height: 100%;
   background-color: ${({ theme }) => theme.bg.background2};
   border-radius: 9px;
+  position: relative;
 `
 
 const NFTPictureContainer = styled(motion.div)`
@@ -137,12 +135,10 @@ const NFTName = styled(Truncate)`
 `
 
 const NFTDescription = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  padding: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 const BackFaceBackground = styled.div`
