@@ -123,14 +123,16 @@ const Card3D = ({ frontFace, backFace, onPointerMove, onCardFlip, onCardHover, c
               : undefined
           }}
         >
-          <FrontFaceContainer>{frontFace}</FrontFaceContainer>
+          <FrontFaceContainer>
+            {frontFace}
+            <ReflectionClipper style={{ transform: isFlipped ? 'rotateY(180deg) rotateX(180deg)' : undefined }}>
+              <MovingReflection
+                style={{ translateX: reflectionTranslationX, translateY: reflectionTranslationY, opacity: 0 }}
+                animate={{ opacity: isHovered ? (theme.name === 'dark' ? 0.3 : 1) : 0 }}
+              />
+            </ReflectionClipper>
+          </FrontFaceContainer>
           <BackFaceContainer>{backFace}</BackFaceContainer>
-          <ReflectionClipper style={{ transform: isFlipped ? 'rotateY(180deg) rotateX(180deg)' : undefined }}>
-            <MovingReflection
-              style={{ translateX: reflectionTranslationX, translateY: reflectionTranslationY, opacity: 0 }}
-              animate={{ opacity: isHovered ? (theme.name === 'dark' ? 0.3 : 1) : 0 }}
-            />
-          </ReflectionClipper>
         </CardContainer>
       </FlippingContainer>
     </Card3DStyled>
@@ -176,6 +178,8 @@ const ReflectionClipper = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
   overflow: hidden;
   border-radius: 9px;
 `
