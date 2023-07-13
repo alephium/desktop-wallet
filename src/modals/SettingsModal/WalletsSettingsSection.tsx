@@ -73,7 +73,7 @@ const WalletsSettingsSection = () => {
         <h2 tabIndex={0} role="label">
           {t('Wallet list')} ({wallets.length})
         </h2>
-        <BoxContainer role="rowgroup">
+        <BoxContainerStyled role="rowgroup">
           {wallets.map((wallet) => (
             <WalletItem
               key={wallet.id}
@@ -82,7 +82,7 @@ const WalletsSettingsSection = () => {
               onWalletDelete={setWalletToRemove}
             />
           ))}
-        </BoxContainer>
+        </BoxContainerStyled>
       </Section>
       {isAuthenticated && (
         <CurrentWalletSection align="flex-start">
@@ -213,4 +213,8 @@ const CurrentWalletBox = styled.div`
 
 const ButtonStyled = styled(Button)<{ isVisible: boolean }>`
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)} !important;
+`
+
+const BoxContainerStyled = styled(BoxContainer)`
+  margin-top: var(--spacing-2);
 `

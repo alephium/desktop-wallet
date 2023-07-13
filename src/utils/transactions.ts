@@ -147,7 +147,11 @@ export const getTransactionInfo = (tx: AddressTransaction, showInternalInflows?:
   let tokens: Required<AssetAmount>[] = []
 
   if (isPendingTx(tx)) {
-    direction = map(addresses, 'hash').includes(tx.toAddress) ? 'in' : 'out'
+    direction = map(addresses, 'hash').includes(tx.toAddress)
+      ? tx.address.hash === tx.fromAddress
+        ? 'out'
+        : 'in'
+      : 'out'
     infoType = 'pending'
     amount = tx.amount ? convertToNegative(BigInt(tx.amount)) : undefined
     tokens = tx.tokens ? tx.tokens.map((token) => ({ ...token, amount: convertToNegative(BigInt(token.amount)) })) : []
