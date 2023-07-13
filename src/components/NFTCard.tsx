@@ -151,5 +151,5 @@ const BackFaceBackground = styled.div`
   right: 0;
   left: 0;
   border-radius: 9px;
-  opacity: 0.3;
+  opacity: 0.1;
 `
