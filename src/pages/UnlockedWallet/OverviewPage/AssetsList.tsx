@@ -28,7 +28,7 @@ import AssetLogo from '@/components/AssetLogo'
 import Badge from '@/components/Badge'
 import FocusableContent from '@/components/FocusableContent'
 import HashEllipsed from '@/components/HashEllipsed'
-import NFTThumbnail from '@/components/NFTThumbnail'
+import NFTCard from '@/components/NFTCard'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import { TabItem } from '@/components/TabBar'
 import { ExpandableTable, ExpandRow, TableRow } from '@/components/Table'
@@ -42,6 +42,7 @@ import {
   makeSelectAddressesNFTs,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
+import { deviceBreakPoints } from '@/style/globalStyles'
 import { AddressHash } from '@/types/addresses'
 
 interface AssetsListProps {
@@ -229,20 +230,23 @@ const NFTsList = ({ className, addressHashes, isExpanded, onExpand }: AssetsList
     <>
       <motion.div {...fadeIn} className={className}>
         {isLoadingTokensMetadata || stateUninitialized ? (
-          <TableRow>
-            <SkeletonLoader height="37.5px" />
-          </TableRow>
+          <NFTList>
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+            <SkeletonLoader height="205px" />
+          </NFTList>
         ) : (
-          <TableRowStyled role="row" tabIndex={isExpanded ? 0 : -1}>
+          <NFTList role="row" tabIndex={isExpanded ? 0 : -1}>
             {nfts.map((nft) => (
-              <NFTThumbnail key={nft.id} nft={nft} />
+              <NFTCard key={nft.id} nft={nft} />
             ))}
             {nfts.length === 0 && <PlaceholderText>{t('No NFTs found.')}</PlaceholderText>}
-          </TableRowStyled>
+          </NFTList>
         )}
       </motion.div>
 
-      {!isExpanded && nfts.length > 10 && onExpand && <ExpandRow onClick={onExpand} />}
+      {!isExpanded && nfts.length > 4 && onExpand && <ExpandRow onClick={onExpand} />}
     </>
   )
 }
@@ -299,8 +303,15 @@ const PlaceholderText = styled.div`
   justify-content: center;
 `
 
-const TableRowStyled = styled(TableRow)`
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+const NFTList = styled(TableRow)`
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-flow: initial;
+  gap: 25px;
+  padding: 15px;
+  border-radius: 0 0 12px 12px;
+
+  @media ${deviceBreakPoints.desktop} {
+    grid-template-columns: repeat(4, 1fr);
+  }
 `

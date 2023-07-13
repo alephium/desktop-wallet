@@ -228,7 +228,7 @@ export const ExpandableTable = styled(Table)<{ isExpanded: boolean; maxHeightInP
   &:hover {
     ${ExpandRowStyled} {
       opacity: 1;
-      z-index: 1; // Make sure it is displayed above copy btns
+      z-index: 3; // Make sure it is displayed above copy btns
     }
 
     ${ExpandButton} {
