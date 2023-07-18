@@ -439,7 +439,7 @@
   "Your CSV file has been generated successfully.": "Tệp tin CSV của bạn đã được tạo thành công.",
   "Your CSV file is being compiled in the background.": "Tệp tin CSV của bạn đang được soạn trong nền.",
   "Your Wallet": "Ví của bạn",
-  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.",
+  "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.": "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.",
   "Address unknown tokens": "Address unknown tokens",
   "Experimental": "Experimental",
   "Public key": "Public key",

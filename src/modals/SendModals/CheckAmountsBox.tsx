@@ -74,7 +74,7 @@ const CheckAmountsBox = ({ assetAmounts, className }: CheckAmountsBoxProps) => {
               {asset.id === ALPH.id && !!extraAlphForDust && (
                 <ActionLink
                   onClick={() => openInWebBrowser(links.utxoDust)}
-                  tooltip={t('Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.', {
+                  tooltip={t('{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.', {
                     amount: toHumanReadableAmount(extraAlphForDust)
                   })}
                 >

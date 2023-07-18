@@ -439,7 +439,7 @@
   "Your CSV file has been generated successfully.": "Votre fichier CSV a été généré correctement.",
   "Your CSV file is being compiled in the background.": "Votre fichier CSV est en cours de création.",
   "Your Wallet": "Votre portefeuille",
-  "Additionally, {{ amount }} ALPH needs to be sent. Click here for more info.": "{{ amount }} ALPH doivent être envoyés en plus. Cliquez ici pour plus d'informations.",
+  "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.": "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.",
   "Address unknown tokens": "Jetons inconnus de l'adresse",
   "Experimental": "Expérimental",
   "Public key": "Clé publique",
