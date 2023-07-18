@@ -29,7 +29,6 @@ import AddressBadge from '@/components/AddressBadge'
 import Amount from '@/components/Amount'
 import AssetBadge from '@/components/AssetBadge'
 import Badge from '@/components/Badge'
-import HashEllipsed from '@/components/HashEllipsed'
 import HiddenLabel from '@/components/HiddenLabel'
 import IOList from '@/components/IOList'
 import Lock from '@/components/Lock'
@@ -74,7 +73,7 @@ const TransactionalInfo = ({
     tx.type === 'contract' ? (
       <Badge>{t('Smart contract')}</Badge>
     ) : (
-      <AddressBadge truncate addressHash={direction === 'in' ? tx.fromAddress : tx.toAddress} />
+      <AddressBadge truncate addressHash={direction === 'in' ? tx.fromAddress : tx.toAddress} withBorders />
     )
   ) : null
 
@@ -109,11 +108,10 @@ const TransactionalInfo = ({
       {!showInternalInflows && (
         <CellAddress alignRight>
           <HiddenLabel text={direction === 'swap' ? t('between') : t('from')} />
-          {(direction === 'out' || direction === 'swap') && (
-            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
-          )}
           {isPending ? (
-            <HashEllipsed hash={tx.fromAddress} />
+            <AddressBadgeStyled addressHash={tx.fromAddress} truncate disableA11y withBorders />
+          ) : direction === 'out' || direction === 'swap' ? (
+            <AddressBadgeStyled addressHash={addressHash} truncate disableA11y withBorders />
           ) : (
             direction === 'in' && (
               <IOList
