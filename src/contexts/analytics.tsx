@@ -23,7 +23,9 @@ import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { GeneralSettings } from '@/types/settings'
 
-const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST, VITE_VERSION } = import.meta.env
+const VITE_PUBLIC_POSTHOG_KEY = 'phc_FLKGQDmMQSdSb3qjaTwHWwm9plmz7couyVJFG9GOMr7'
+const VITE_PUBLIC_POSTHOG_HOST = 'https://eu.posthog.com'
+const VITE_VERSION = import.meta.env
 
 const options: Partial<PostHogConfig> = {
   api_host: VITE_PUBLIC_POSTHOG_HOST,

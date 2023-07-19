@@ -104,17 +104,29 @@ const App = () => {
   }, [dispatch, posthog])
 
   useEffect(() => {
-    posthog.people.set({
-      wallets: wallets.length,
-      theme: settings.theme,
-      devTools: settings.devTools,
-      lockTimeInMs: settings.walletLockTimeInMinutes,
-      language: settings.language,
-      passwordRequirement: settings.passwordRequirement,
-      fiatCurrency: settings.fiatCurrency,
-      network: network.name
-    })
-  }, [network.name, posthog.people, settings, wallets.length])
+    if (posthog.__loaded)
+      posthog.people.set({
+        wallets: wallets.length,
+        theme: settings.theme,
+        devTools: settings.devTools,
+        lockTimeInMs: settings.walletLockTimeInMinutes,
+        language: settings.language,
+        passwordRequirement: settings.passwordRequirement,
+        fiatCurrency: settings.fiatCurrency,
+        network: network.name
+      })
+  }, [
+    network.name,
+    posthog.__loaded,
+    posthog.people,
+    settings.devTools,
+    settings.fiatCurrency,
+    settings.language,
+    settings.passwordRequirement,
+    settings.theme,
+    settings.walletLockTimeInMinutes,
+    wallets.length
+  ])
 
   const setSystemLanguage = useCallback(async () => {
     const systemLanguage = await electron?.app.getSystemLanguage()
