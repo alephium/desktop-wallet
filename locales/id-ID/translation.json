@@ -439,7 +439,7 @@
   "Your CSV file has been generated successfully.": "File CSV Anda telah berhasil dibuat.",
   "Your CSV file is being compiled in the background.": "File CSV Anda sedang dikompilasi di latar belakang.",
   "Your Wallet": "Dompet Anda",
-  "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.": "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.",
+  "{{ amount }} ALPH are added for UTXO spam prevention. Click here to know more.": "{{ amount }} ALPH ditambahkan untuk mencegah spam UTXO. Klik di sini untuk mengetahui lebih lanjut.",
   "Address unknown tokens": "Address unknown tokens",
   "Experimental": "Eksperimental",
   "Public key": "Kunci publik",
