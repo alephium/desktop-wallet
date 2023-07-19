@@ -109,15 +109,16 @@ const GeneralSettingsSection = ({ className }: GeneralSettingsSectionProps) => {
   const handleAnalyticsToggle = (toggle: boolean) => {
     dispatch(analyticsToggled(toggle))
 
-    if (toggle && !import.meta.env.DEV) {
-      const id = AnalyticsStorage.load()
-      posthog.identify(id)
-      posthog.opt_in_capturing()
-      posthog.capture('Enabled analytics')
-    } else {
-      posthog.capture('Disabled analytics')
-      posthog.opt_out_capturing()
-    }
+    if (posthog.__loaded)
+      if (toggle && !import.meta.env.DEV) {
+        const id = AnalyticsStorage.load()
+        posthog.identify(id)
+        posthog.opt_in_capturing()
+        posthog.capture('Enabled analytics')
+      } else {
+        posthog.capture('Disabled analytics')
+        posthog.opt_out_capturing()
+      }
   }
 
   const discreetModeText = t('Discreet mode')

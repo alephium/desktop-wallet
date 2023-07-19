@@ -23,10 +23,11 @@ import AnalyticsStorage from '@/storage/analytics/analyticsPersistentStorage'
 import SettingsStorage from '@/storage/settings/settingsPersistentStorage'
 import { GeneralSettings } from '@/types/settings'
 
-const { VITE_PUBLIC_POSTHOG_KEY, VITE_PUBLIC_POSTHOG_HOST, VITE_VERSION } = import.meta.env
+const PUBLIC_POSTHOG_KEY = 'phc_FLKGQDmMQSdSb3qjaTwHWwm9plmz7couyVJFG9GOMr7'
+const PUBLIC_POSTHOG_HOST = 'https://eu.posthog.com'
 
 const options: Partial<PostHogConfig> = {
-  api_host: VITE_PUBLIC_POSTHOG_HOST,
+  api_host: PUBLIC_POSTHOG_HOST,
   autocapture: false,
   capture_pageview: false,
   capture_pageleave: false,
@@ -42,7 +43,7 @@ const options: Partial<PostHogConfig> = {
     props['$pathname'] = ''
     props['$device_type'] = ''
     props['$browser'] = ''
-    props['desktop_wallet_version'] = VITE_VERSION
+    props['desktop_wallet_version'] = import.meta.env.VITE_VERSION
 
     return props
   },
@@ -61,7 +62,7 @@ const options: Partial<PostHogConfig> = {
 }
 
 const AnalyticsProvider: FC = ({ children }) => (
-  <PostHogProvider apiKey={VITE_PUBLIC_POSTHOG_KEY} options={options}>
+  <PostHogProvider apiKey={PUBLIC_POSTHOG_KEY} options={options}>
     {children}
   </PostHogProvider>
 )
