@@ -25,6 +25,7 @@ import en from '../locales/en-US/translation.json'
 import es from '../locales/es-ES/translation.json'
 import fr from '../locales/fr-FR/translation.json'
 import id from '../locales/id-ID/translation.json'
+import it from '../locales/it-IT/translation.json'
 import pt from '../locales/pt-PT/translation.json'
 import ru from '../locales/ru-RU/translation.json'
 import tr from '../locales/tr-TR/translation.json'
@@ -37,6 +38,7 @@ i18next.use(initReactI18next).init({
     'es-ES': { translation: es },
     'de-DE': { translation: de },
     'id-ID': { translation: id },
+    'it-IT': { translation: it },
     'fr-FR': { translation: fr },
     'pt-PT': { translation: pt },
     'ru-RU': { translation: ru },
