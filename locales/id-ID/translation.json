@@ -447,5 +447,7 @@
   "Address keys export": "Ekspor kunci alamat",
   "Public key copied.": "Kunci publik disalin.",
   "Could not copy public key.": "Tidak dapat menyalin kunci publik.",
-  "Copy the keys of an address.": "Salin kunci alamat."
+  "Copy the keys of an address.": "Salin kunci alamat.",
+  "Transaction hash": "Transaction hash",
+  "Copy hash": "Copy hash"
 }

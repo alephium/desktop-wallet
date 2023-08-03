@@ -447,5 +447,7 @@
   "Address keys export": "Export de clés",
   "Public key copied.": "Clé publique copiée.",
   "Could not copy public key.": "Impossible de copier la clé privée.",
-  "Copy the keys of an address.": "Copier les clés d'une adresse."
+  "Copy the keys of an address.": "Copier les clés d'une adresse.",
+  "Transaction hash": "Hash de la transaction",
+  "Copy hash": "Copier le hash"
 }

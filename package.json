@@ -103,7 +103,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.3.0",
     "react-scrollbars-custom": "^4.1.1",
-    "react-tooltip": "^5.4.0",
+    "react-tooltip": "^5.19.0",
     "redux": "^4.2.0",
     "semver-compare": "^1.0.0",
     "styled-components": "^5.3.1",
