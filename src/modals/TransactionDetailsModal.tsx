@@ -142,6 +142,11 @@ const TransactionDetailsModal = ({ transaction, onClose }: TransactionDetailsMod
       <Details role="table">
         {direction !== 'swap' && (
           <>
+            <DetailsRow label={t('Transaction hash')}>
+              <TransactionHash onClick={handleShowTxInExplorer}>
+                <HashEllipsed hash={transaction.hash} tooltipText={t('Copy hash')} />
+              </TransactionHash>
+            </DetailsRow>
             <DetailsRow label={t('From')}>
               {direction === 'out' ? (
                 <AddressList>
@@ -397,4 +402,8 @@ const NFTThumbnails = styled.div`
   gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
+`
+
+const TransactionHash = styled(ActionLink)`
+  max-width: 125px;
 `

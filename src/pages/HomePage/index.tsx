@@ -39,7 +39,7 @@ const HomePage = () => {
       <FloatingPanel verticalAlign="center" horizontalAlign="center" transparentBg borderless>
         {showNewWalletActions ? (
           <>
-            <PanelTitle useLayoutId={false} size="big">
+            <PanelTitle useLayoutId={false} size="big" centerText>
               {t('New wallet')}
             </PanelTitle>
             <NewWalletActions onExistingWalletLinkClick={() => setShowNewWalletActions(false)} />
@@ -48,7 +48,7 @@ const HomePage = () => {
           <UnlockPanel onNewWalletLinkClick={() => setShowNewWalletActions(true)} />
         ) : (
           <>
-            <PanelTitle useLayoutId={false} size="big">
+            <PanelTitle useLayoutId={false} size="big" centerText>
               {t('Welcome.')}
             </PanelTitle>
             <NewWalletActions />

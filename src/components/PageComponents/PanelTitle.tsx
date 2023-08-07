@@ -26,6 +26,7 @@ interface PanelTitleProps {
   size?: 'small' | 'big'
   useLayoutId?: boolean
   isSticky?: boolean
+  centerText?: boolean
 }
 
 const PanelTitle: FC<PanelTitleProps> = ({
@@ -34,14 +35,15 @@ const PanelTitle: FC<PanelTitleProps> = ({
   onBackButtonClick,
   size,
   useLayoutId = true,
-  isSticky = false
+  isSticky = false,
+  centerText = false
 }) => {
   const { scrollY } = useScroll()
 
   const titleScale = useTransform(scrollY, [0, 50], [1, 0.6])
 
   return (
-    <TitleContainer layoutId={useLayoutId ? 'sectionTitle' : ''} isSticky={isSticky}>
+    <TitleContainer layoutId={useLayoutId ? 'sectionTitle' : ''} isSticky={isSticky} centerText={centerText}>
       {onBackButtonClick && (
         <BackArrow
           onClick={onBackButtonClick}
@@ -60,10 +62,12 @@ const PanelTitle: FC<PanelTitleProps> = ({
 
 export default PanelTitle
 
-export const TitleContainer = styled(motion.div)<{ isSticky: boolean }>`
+export const TitleContainer = styled(motion.div)<Pick<PanelTitleProps, 'isSticky' | 'centerText'>>`
   display: flex;
   align-items: center;
   top: 0;
+
+  ${({ centerText }) => centerText && 'text-align: center'};
 
   ${({ isSticky }) =>
     isSticky &&

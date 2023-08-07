@@ -37,9 +37,9 @@ const networkBasePresets: Record<NetworkPreset, NetworkSettings> = {
   },
   localhost: {
     networkId: 4,
-    nodeHost: 'http://localhost:12973',
+    nodeHost: 'http://localhost:22973',
     explorerApiHost: 'http://localhost:9090',
-    explorerUrl: 'http://localhost:3000'
+    explorerUrl: 'http://localhost:23000'
   }
 }
 
