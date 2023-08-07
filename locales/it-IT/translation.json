@@ -448,6 +448,6 @@
   "Public key copied.": "Chiave pubblica copiata.",
   "Could not copy public key.": "Impossibile copiare la chiave pubblica.",
   "Copy the keys of an address.": "Copiare le chiavi di un indirizzo.",
-  "Transaction hash": "Hash di transazione",
+  "Transaction hash": "Hash della transazione",
   "Copy hash": "Copia l'hash"
 }
