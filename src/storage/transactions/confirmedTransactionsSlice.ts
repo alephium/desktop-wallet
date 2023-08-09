@@ -21,13 +21,13 @@ import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit'
 
 import {
   newAddressesSaved,
-  syncAddressesData,
+  syncAddressesTransactions,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage
 } from '@/storage/addresses/addressesActions'
 import { confirmedTransactionsAdapter } from '@/storage/transactions/transactionsAdapters'
 import { activeWalletDeleted, walletLocked, walletSwitched } from '@/storage/wallets/walletActions'
-import { AddressDataSyncResult } from '@/types/addresses'
+import { AddressTransactionsSyncResult } from '@/types/addresses'
 
 interface ConfirmedTransactionsState extends EntityState<explorer.Transaction> {
   allLoaded: boolean
@@ -45,7 +45,7 @@ const confirmedTransactionsSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(syncAddressesData.fulfilled, addTransactions)
+      .addCase(syncAddressesTransactions.fulfilled, addTransactions)
       .addCase(syncAddressTransactionsNextPage.fulfilled, addTransactions)
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, (state, action) => {
         const { transactions, pageLoaded } = action.payload
@@ -71,7 +71,7 @@ export default confirmedTransactionsSlice
 
 const addTransactions = (
   state: ConfirmedTransactionsState,
-  action: PayloadAction<AddressDataSyncResult[] | { transactions: explorer.Transaction[] } | undefined>
+  action: PayloadAction<AddressTransactionsSyncResult[] | { transactions: explorer.Transaction[] } | undefined>
 ) => {
   const transactions = Array.isArray(action.payload)
     ? action.payload.flatMap((address) => address.transactions)

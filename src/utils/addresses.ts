@@ -62,7 +62,7 @@ export const filterAddresses = (addresses: Address[], text: string, assetsInfo: 
   text.length < 2
     ? addresses
     : addresses.filter((address) => {
-        const addressTokenIds = address.tokens.filter((token) => token.balance !== '0').map((token) => token.id)
+        const addressTokenIds = address.tokens.filter((token) => token.balance !== '0').map((token) => token.tokenId)
         const addressTokenNames = addressTokenIds
           .map((tokenId) => {
             const tokenInfo = assetsInfo[tokenId]
@@ -86,7 +86,7 @@ export const getAddressAssetsAvailableBalance = (address: Address) => [
     availableBalance: getAvailableBalance(address)
   },
   ...address.tokens.map((token) => ({
-    id: token.id,
+    id: token.tokenId,
     availableBalance: BigInt(token.balance) - BigInt(token.lockedBalance)
   }))
 ]

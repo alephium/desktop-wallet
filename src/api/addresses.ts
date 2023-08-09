@@ -16,43 +16,73 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { TokenBalances } from '@alephium/sdk'
 import { explorer } from '@alephium/web3'
 
 import client from '@/api/client'
-import { Address, AddressDataSyncResult, AddressHash } from '@/types/addresses'
+import {
+  Address,
+  AddressBalancesSyncResult,
+  AddressHash,
+  AddressTokensSyncResult,
+  AddressTransactionsSyncResult
+} from '@/types/addresses'
 
-export const fetchAddressesData = async (addressHashes: AddressHash[]): Promise<AddressDataSyncResult[]> => {
-  const results = [] as AddressDataSyncResult[]
+export const fetchAddressesTokens = async (addressHashes: AddressHash[]): Promise<AddressTokensSyncResult[]> => {
+  const results = []
+  let pageTotalResults
+  let page = 1
+
+  for (const hash of addressHashes) {
+    const tokenBalances = []
+
+    while (pageTotalResults === undefined || pageTotalResults === 100) {
+      const pageResults = await client.explorer.addresses.getAddressesAddressTokensBalance(hash, { limit: 100, page })
+
+      tokenBalances.push(...pageResults)
+
+      pageTotalResults = pageResults.length
+      page += 1
+    }
+
+    results.push({
+      hash,
+      tokenBalances
+    })
+  }
+
+  return results
+}
+
+export const fetchAddressesTransactions = async (
+  addressHashes: AddressHash[]
+): Promise<AddressTransactionsSyncResult[]> => {
+  const results = []
 
   for (const addressHash of addressHashes) {
-    const balances = await client.explorer.addresses.getAddressesAddressBalance(addressHash)
     const txNumber = await client.explorer.addresses.getAddressesAddressTotalTransactions(addressHash)
     const transactions = await client.explorer.addresses.getAddressesAddressTransactions(addressHash, { page: 1 })
     const mempoolTransactions = await client.explorer.addresses.getAddressesAddressMempoolTransactions(addressHash)
-    const tokenIds = await client.explorer.addresses.getAddressesAddressTokens(addressHash)
-
-    const tokenResults = await Promise.allSettled(
-      tokenIds.map((id) =>
-        client.explorer.addresses
-          .getAddressesAddressTokensTokenIdBalance(addressHash, id)
-          .then((data) => ({ id, ...data }))
-      )
-    )
-
-    const tokens = (
-      tokenResults.filter(({ status }) => status === 'fulfilled') as PromiseFulfilledResult<TokenBalances>[]
-    ).map(({ value }) => value)
 
     results.push({
       hash: addressHash,
-      details: {
-        ...balances,
-        txNumber
-      },
+      txNumber,
       transactions,
-      mempoolTransactions,
-      tokens
+      mempoolTransactions
+    })
+  }
+
+  return results
+}
+
+export const fetchAddressesBalances = async (addressHashes: AddressHash[]): Promise<AddressBalancesSyncResult[]> => {
+  const results = []
+
+  for (const addressHash of addressHashes) {
+    const balances = await client.explorer.addresses.getAddressesAddressBalance(addressHash)
+
+    results.push({
+      hash: addressHash,
+      ...balances
     })
   }
 

@@ -86,7 +86,7 @@ const TransactionList = ({
   const confirmedTxs = useAppSelector((s) => selectAddressesConfirmedTransactions(s, addressHashes))
   const pendingTxs = useAppSelector((s) => selectAddressesPendingTransactions(s, addressHashes))
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
-  const finishedLoadingData = useAppSelector((s) => !s.addresses.loading)
+  const finishedLoadingData = useAppSelector((s) => !s.addresses.loadingTransactions)
   const allAddressTxPagesLoaded = useAppSelector(selectHaveAllPagesLoaded)
 
   const [selectedTransaction, setSelectedTransaction] = useState<AddressConfirmedTransaction>()

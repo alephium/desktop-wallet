@@ -56,7 +56,7 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
   const dispatch = useAppDispatch()
   const networkStatus = useAppSelector((s) => s.network.status)
   const activeWalletName = useAppSelector((s) => s.activeWallet.name)
-  const isLoadingData = useAppSelector((s) => s.addresses.loading)
+  const isLoadingData = useAppSelector((s) => s.addresses.syncingAddressData)
   const posthog = usePostHog()
   const previousWalletName = useRef<string>()
 

@@ -24,7 +24,9 @@ import { chunk } from 'lodash'
 import { posthog } from 'posthog-js'
 
 import {
-  fetchAddressesData,
+  fetchAddressesBalances,
+  fetchAddressesTokens,
+  fetchAddressesTransactions,
   fetchAddressesTransactionsNextPage,
   fetchAddressTransactionsNextPage
 } from '@/api/addresses'
@@ -36,9 +38,9 @@ import { extractNewTransactionHashes, getTransactionsOfAddress } from '@/storage
 import {
   Address,
   AddressBase,
-  AddressDataSyncResult,
   AddressHash,
   AddressSettings,
+  AddressTransactionsSyncResult,
   BalanceHistory,
   LoadingEnabled
 } from '@/types/addresses'
@@ -46,9 +48,9 @@ import { Contact } from '@/types/contacts'
 import { Message, SnackbarMessage } from '@/types/snackbar'
 import { CHART_DATE_FORMAT } from '@/utils/constants'
 
-export const loadingStarted = createAction('addresses/loadingStarted')
-
 export const syncingAddressDataStarted = createAction('addresses/syncingAddressDataStarted')
+
+export const transactionsLoadingStarted = createAction('addresses/transactionsLoadingStarted')
 
 export const addressesRestoredFromMetadata = createAction<AddressBase[]>('addresses/addressesRestoredFromMetadata')
 
@@ -67,7 +69,7 @@ export const addressSettingsSaved = createAction<{ addressHash: AddressHash; set
 )
 
 export const syncAddressesData = createAsyncThunk<
-  AddressDataSyncResult[],
+  AddressTransactionsSyncResult[],
   AddressHash[] | undefined,
   { rejectValue: SnackbarMessage }
 >('addresses/syncAddressesData', async (payload, { getState, dispatch, rejectWithValue }) => {
@@ -77,7 +79,9 @@ export const syncAddressesData = createAsyncThunk<
   const addresses = payload ?? (state.addresses.ids as AddressHash[])
 
   try {
-    return await fetchAddressesData(addresses)
+    await dispatch(syncAddressesBalances(addresses))
+    await dispatch(syncAddressesTokens(addresses))
+    return await dispatch(syncAddressesTransactions(addresses)).unwrap()
   } catch (e) {
     posthog.capture('Error', { message: 'Synching address data' })
     return rejectWithValue({
@@ -87,10 +91,25 @@ export const syncAddressesData = createAsyncThunk<
   }
 })
 
+export const syncAddressesBalances = createAsyncThunk(
+  'addresses/syncAddressesBalances',
+  async (addresses: AddressHash[]) => await fetchAddressesBalances(addresses)
+)
+
+export const syncAddressesTransactions = createAsyncThunk(
+  'addresses/syncAddressesTransactions',
+  async (addresses: AddressHash[]) => await fetchAddressesTransactions(addresses)
+)
+
+export const syncAddressesTokens = createAsyncThunk(
+  'addresses/syncAddressesTokens',
+  async (addresses: AddressHash[]) => await fetchAddressesTokens(addresses)
+)
+
 export const syncAddressTransactionsNextPage = createAsyncThunk(
   'addresses/syncAddressTransactionsNextPage',
   async (payload: AddressHash, { getState, dispatch }) => {
-    dispatch(loadingStarted())
+    dispatch(transactionsLoadingStarted())
 
     const state = getState() as RootState
     const address = selectAddressByHash(state, payload)
@@ -104,7 +123,7 @@ export const syncAddressTransactionsNextPage = createAsyncThunk(
 export const syncAllAddressesTransactionsNextPage = createAsyncThunk(
   'addresses/syncAllAddressesTransactionsNextPage',
   async (_, { getState, dispatch }): Promise<{ pageLoaded: number; transactions: explorer.Transaction[] }> => {
-    dispatch(loadingStarted())
+    dispatch(transactionsLoadingStarted())
 
     const state = getState() as RootState
     const addresses = selectAllAddresses(state)
