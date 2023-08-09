@@ -76,6 +76,7 @@ export interface AddressesState extends EntityState<Address> {
   syncingAddressData: boolean
   isRestoringAddressesFromMetadata: boolean
   status: 'uninitialized' | 'initialized'
+  balancesStatus: 'uninitialized' | 'initialized'
 }
 
 export type AddressTransactionsSyncResult = {

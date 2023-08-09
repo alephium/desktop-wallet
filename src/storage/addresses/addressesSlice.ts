@@ -57,7 +57,8 @@ const initialState: AddressesState = addressesAdapter.getInitialState({
   loadingTokens: false,
   syncingAddressData: false,
   isRestoringAddressesFromMetadata: false,
-  status: 'uninitialized'
+  status: 'uninitialized',
+  balancesStatus: 'uninitialized'
 })
 
 const addressesSlice = createSlice({
@@ -170,6 +171,7 @@ const addressesSlice = createSlice({
         addressesAdapter.updateMany(state, updatedAddresses)
 
         state.loadingBalances = false
+        state.balancesStatus = 'initialized'
       })
       .addCase(syncAddressesData.rejected, (state) => {
         state.syncingAddressData = false
