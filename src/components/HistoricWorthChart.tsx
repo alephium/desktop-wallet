@@ -33,13 +33,14 @@ import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
+import { CHART_DATE_FORMAT } from '@/utils/constants'
 
 interface HistoricWorthChartProps {
   currency: Currency
   length: ChartLength
   onDataPointHover: (dataPoint?: DataPoint) => void
   onWorthInBeginningOfChartChange: (worthInBeginningOfChart?: DataPoint['worth']) => void
-  latestWorth: number
+  latestWorth?: number
   addressHash?: AddressHash
 }
 
@@ -76,8 +77,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
   const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && !!alphPriceHistory
-  const filteredChartData = getFilteredChartData(chartData, startingDate)
-  const firstItem = filteredChartData.at(0)
+  const firstItem = chartData.at(0)
 
   useEffect(() => {
     onWorthInBeginningOfChartChange(firstItem?.worth)
@@ -92,7 +92,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     const computeChartDataPoints = (): DataPoint[] => {
       const addressesLatestAmount: LatestAmountPerAddress = {}
 
-      return alphPriceHistory.map(({ date, price }) => {
+      const dataPoints = alphPriceHistory.map(({ date, price }) => {
         let totalAmountPerDate = BigInt(0)
 
         addresses.forEach(({ hash, balanceHistory }) => {
@@ -112,6 +112,10 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
           worth: price * parseFloat(toHumanReadableAmount(totalAmountPerDate))
         }
       })
+
+      if (latestWorth !== undefined) dataPoints.push({ date: dayjs().format(CHART_DATE_FORMAT), worth: latestWorth })
+
+      return dataPoints
     }
 
     const trimInitialZeroDataPoints = (data: DataPoint[]) => data.slice(data.findIndex((point) => point.worth !== 0))
@@ -119,20 +123,20 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     let dataPoints = computeChartDataPoints()
     dataPoints = trimInitialZeroDataPoints(dataPoints)
 
-    setChartData(dataPoints)
-  }, [addresses, alphPriceHistory, isDataAvailable])
+    setChartData(getFilteredChartData(dataPoints, startingDate))
+  }, [addresses, alphPriceHistory, isDataAvailable, latestWorth, startingDate])
 
-  if (!isDataAvailable || chartData.length <= 2 || !firstItem) return null
+  if (!isDataAvailable || chartData.length <= 2 || !firstItem || latestWorth === undefined) return null
 
-  const xAxisDatesData = filteredChartData.map(({ date }) => date)
-  const yAxisWorthData = filteredChartData.map(({ worth }) => worth)
+  const xAxisDatesData = chartData.map(({ date }) => date)
+  const yAxisWorthData = chartData.map(({ worth }) => worth)
 
   const worthHasGoneUp = firstItem.worth < latestWorth
   const chartColor = stateUninitialized ? theme.font.tertiary : worthHasGoneUp ? theme.global.valid : theme.global.alert
 
   const chartOptions = getChartOptions(chartColor, xAxisDatesData, {
     mouseMove(e, chart, options) {
-      onDataPointHover(options.dataPointIndex === -1 ? undefined : filteredChartData[options.dataPointIndex])
+      onDataPointHover(options.dataPointIndex === -1 ? undefined : chartData[options.dataPointIndex])
     },
     mouseLeave() {
       onDataPointHover(undefined)
