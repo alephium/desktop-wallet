@@ -171,7 +171,7 @@ const AssetAmountsInput = ({
   }
 
   useEffect(() => {
-    const addressTokenIds = address.tokens.map((token) => token.id)
+    const addressTokenIds = address.tokens.map((token) => token.tokenId)
     const filteredAssetAmounts = assetAmounts.filter(
       (asset) => addressTokenIds.includes(asset.id) || asset.id === ALPH.id
     )

@@ -22,7 +22,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { omit } from 'lodash'
 import posthog from 'posthog-js'
 
-import client, { exponentialBackoffFetchRetry } from '@/api/client'
+import client from '@/api/client'
+import { exponentialBackoffFetchRetry } from '@/api/fetchRetry'
 import { RootState } from '@/storage/store'
 import { SyncUnknownTokensInfoResult } from '@/types/assets'
 

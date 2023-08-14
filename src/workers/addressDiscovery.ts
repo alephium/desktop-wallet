@@ -17,7 +17,9 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { discoverActiveAddresses, Wallet, walletImport } from '@alephium/sdk'
-import { ExplorerProvider, throttledFetch } from '@alephium/web3'
+import { ExplorerProvider } from '@alephium/web3'
+
+import { exponentialBackoffFetchRetry } from '../api/fetchRetry'
 
 interface WorkerPayload {
   data: {
@@ -30,7 +32,7 @@ interface WorkerPayload {
 
 self.onmessage = ({ data: { mnemonic, passphrase, clientUrl, skipIndexes } }: WorkerPayload) => {
   const { masterKey } = walletImport(mnemonic, passphrase)
-  const client = new ExplorerProvider(clientUrl, undefined, throttledFetch(5))
+  const client = new ExplorerProvider(clientUrl, undefined, exponentialBackoffFetchRetry)
 
   discover(masterKey, client, skipIndexes)
 }

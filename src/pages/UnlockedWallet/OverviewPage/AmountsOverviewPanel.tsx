@@ -63,7 +63,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const selectAddresses = useMemo(makeSelectAddresses, [])
   const addresses = useAppSelector((s) => selectAddresses(s, addressHashes))
   const network = useAppSelector((s) => s.network)
-  const discreetMode = useAppSelector((state) => state.settings.discreetMode)
+  const discreetMode = useAppSelector((s) => s.settings.discreetMode)
+  const isLoadingBalances = useAppSelector((s) => s.addresses.loadingBalances)
+  const isBalancesInitialized = useAppSelector((s) => s.addresses.balancesStatus === 'initialized')
 
   const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
@@ -85,7 +87,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const balanceInFiat = worth ?? totalAmountWorth
 
   const isOnline = network.status === 'online'
-  const isShowingHistoricWorth = !!worth
+  const isHoveringChart = !!worth
+  const showBalancesSkeletonLoader = !isBalancesInitialized || (!isBalancesInitialized && isLoadingBalances)
 
   return (
     <UnlockedWalletPanelStyled className={className}>
@@ -94,12 +97,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
           <BalancesRow>
             <BalancesColumn>
               <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
-              {isPriceLoading || stateUninitialized ? (
+              {isPriceLoading || showBalancesSkeletonLoader ? (
                 <SkeletonLoader height="32px" style={{ marginBottom: 7, marginTop: 7 }} />
               ) : (
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies[fiatCurrency].symbol} />
               )}
-              <Opacity fadeOut={isShowingHistoricWorth}>
+              <Opacity fadeOut={isHoveringChart}>
                 <FiatDeltaPercentage>
                   {isPriceLoading ||
                   stateUninitialized ||
@@ -139,12 +142,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             {!singleAddress && (
               <>
                 <Divider />
-                <AvailableLockedBalancesColumn fadeOut={isShowingHistoricWorth}>
+                <AvailableLockedBalancesColumn fadeOut={isHoveringChart}>
                   <AvailableBalanceRow>
                     <BalanceLabel tabIndex={0} role="representation">
                       {t('Available')}
                     </BalanceLabel>
-                    {stateUninitialized ? (
+                    {showBalancesSkeletonLoader ? (
                       <SkeletonLoader height="30px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalAvailableBalance : undefined} />
@@ -154,7 +157,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                     <BalanceLabel tabIndex={0} role="representation">
                       {t('Locked')}
                     </BalanceLabel>
-                    {stateUninitialized ? (
+                    {showBalancesSkeletonLoader ? (
                       <SkeletonLoader height="30px" />
                     ) : (
                       <AlphAmount tabIndex={0} value={isOnline ? totalLockedBalance : undefined} />
@@ -165,7 +168,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
             )}
           </BalancesRow>
         </Balances>
-        {children && <RightColumnContent fadeOut={isShowingHistoricWorth}>{children}</RightColumnContent>}
+        {children && <RightColumnContent fadeOut={isHoveringChart}>{children}</RightColumnContent>}
       </Panel>
 
       <ChartOuterContainer

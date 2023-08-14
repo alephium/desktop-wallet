@@ -21,16 +21,16 @@ import { createSlice, isAnyOf, PayloadAction } from '@reduxjs/toolkit'
 import { uniq } from 'lodash'
 
 import {
-  addressDiscoveryFinished,
-  addressDiscoveryStarted,
   addressesRestoredFromMetadata,
   addressRestorationStarted,
   addressSettingsSaved,
   defaultAddressChanged,
-  loadingStarted,
   newAddressesSaved,
+  syncAddressesBalances,
   syncAddressesData,
   syncAddressesHistoricBalances,
+  syncAddressesTokens,
+  syncAddressesTransactions,
   syncAddressTransactionsNextPage,
   syncAllAddressesTransactionsNextPage,
   syncingAddressDataStarted
@@ -52,10 +52,13 @@ import { UnlockedWallet } from '@/types/wallet'
 import { getInitialAddressSettings } from '@/utils/addresses'
 
 const initialState: AddressesState = addressesAdapter.getInitialState({
-  loading: false,
+  loadingBalances: false,
+  loadingTransactions: false,
+  loadingTokens: false,
   syncingAddressData: false,
   isRestoringAddressesFromMetadata: false,
-  status: 'uninitialized'
+  status: 'uninitialized',
+  balancesStatus: 'uninitialized'
 })
 
 const addressesSlice = createSlice({
@@ -66,7 +69,9 @@ const addressesSlice = createSlice({
     builder
       .addCase(syncingAddressDataStarted, (state) => {
         state.syncingAddressData = true
-        state.loading = true
+        state.loadingBalances = true
+        state.loadingTransactions = true
+        state.loadingTokens = true
       })
       .addCase(addressSettingsSaved, (state, action) => {
         const { addressHash, settings } = action.payload
@@ -105,31 +110,33 @@ const addressesSlice = createSlice({
         state.isRestoringAddressesFromMetadata = false
         state.status = 'uninitialized'
       })
-      .addCase(addressDiscoveryStarted, (state, action) => {
-        const loadingEnabled = action.payload
-
-        if (loadingEnabled) state.loading = true
-      })
-      .addCase(addressDiscoveryFinished, (state, action) => {
-        const loadingEnabled = action.payload
-
-        if (loadingEnabled) state.loading = false
-      })
       .addCase(addressRestorationStarted, (state) => {
         state.isRestoringAddressesFromMetadata = true
       })
-      .addCase(loadingStarted, (state) => {
-        state.loading = true
-      })
-      .addCase(syncAddressesData.rejected, (state) => {
-        state.loading = false
-        state.syncingAddressData = false
-      })
       .addCase(syncAddressesData.fulfilled, (state, action) => {
+        state.status = 'initialized'
+        state.syncingAddressData = false
+        state.loadingBalances = false
+        state.loadingTransactions = false
+        state.loadingTokens = false
+      })
+      .addCase(syncAddressesTokens.fulfilled, (state, action) => {
         const addressData = action.payload
-        const updatedAddresses = addressData.map(({ hash, details, tokens, transactions, mempoolTransactions }) => {
+        const updatedAddresses = addressData.map(({ hash, tokenBalances }) => ({
+          id: hash,
+          changes: {
+            tokens: tokenBalances
+          }
+        }))
+
+        addressesAdapter.updateMany(state, updatedAddresses)
+
+        state.loadingTokens = false
+      })
+      .addCase(syncAddressesTransactions.fulfilled, (state, action) => {
+        const addressData = action.payload
+        const updatedAddresses = addressData.map(({ hash, transactions, mempoolTransactions }) => {
           const address = state.entities[hash] as Address
-          const transactionHashes = [...transactions, ...mempoolTransactions].map((tx) => tx.hash)
           const lastUsed =
             mempoolTransactions.length > 0
               ? mempoolTransactions[0].lastSeen
@@ -140,9 +147,7 @@ const addressesSlice = createSlice({
           return {
             id: hash,
             changes: {
-              ...details,
-              tokens,
-              transactions: uniq([...address.transactions, ...transactionHashes]),
+              transactions: uniq([...address.transactions, ...transactions.map((tx) => tx.hash)]),
               transactionsPageLoaded: address.transactionsPageLoaded === 0 ? 1 : address.transactionsPageLoaded,
               lastUsed
             }
@@ -151,9 +156,37 @@ const addressesSlice = createSlice({
 
         addressesAdapter.updateMany(state, updatedAddresses)
 
-        state.status = 'initialized'
-        state.loading = false
+        state.loadingTransactions = false
+      })
+      .addCase(syncAddressesBalances.fulfilled, (state, action) => {
+        const addressData = action.payload
+        const updatedAddresses = addressData.map(({ hash, balance, lockedBalance }) => ({
+          id: hash,
+          changes: {
+            balance,
+            lockedBalance
+          }
+        }))
+
+        addressesAdapter.updateMany(state, updatedAddresses)
+
+        state.loadingBalances = false
+        state.balancesStatus = 'initialized'
+      })
+      .addCase(syncAddressesData.rejected, (state) => {
         state.syncingAddressData = false
+        state.loadingBalances = false
+        state.loadingTransactions = false
+        state.loadingTokens = false
+      })
+      .addCase(syncAddressesBalances.rejected, (state) => {
+        state.loadingBalances = false
+      })
+      .addCase(syncAddressesTransactions.rejected, (state) => {
+        state.loadingTransactions = false
+      })
+      .addCase(syncAddressesTokens.rejected, (state) => {
+        state.loadingTokens = false
       })
       .addCase(syncAddressTransactionsNextPage.fulfilled, (state, action) => {
         const addressTransactionsData = action.payload
@@ -173,7 +206,7 @@ const addressesSlice = createSlice({
           }
         })
 
-        state.loading = false
+        state.loadingTransactions = false
       })
       .addCase(syncAllAddressesTransactionsNextPage.fulfilled, (state, { payload: { transactions } }) => {
         const addresses = getAddresses(state)
@@ -192,7 +225,7 @@ const addressesSlice = createSlice({
 
         addressesAdapter.updateMany(state, updatedAddresses)
 
-        state.loading = false
+        state.loadingTransactions = false
       })
       .addCase(walletSaved, (state, action) => addInitialAddress(state, action.payload.initialAddress))
       .addCase(walletUnlocked, addPassphraseInitialAddress)
