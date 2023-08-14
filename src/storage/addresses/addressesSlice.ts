@@ -147,7 +147,7 @@ const addressesSlice = createSlice({
           return {
             id: hash,
             changes: {
-              transactions: uniq(address.transactions.concat(transactions.map((tx) => tx.hash))),
+              transactions: uniq([...address.transactions, ...transactions.map((tx) => tx.hash)]),
               transactionsPageLoaded: address.transactionsPageLoaded === 0 ? 1 : address.transactionsPageLoaded,
               lastUsed
             }
