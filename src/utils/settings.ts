@@ -36,6 +36,7 @@ export const languageOptions: SelectOption<Language>[] = [
   { label: 'Español', value: 'es-ES' },
   { label: 'Français', value: 'fr-FR' },
   { label: 'Bahasa Indonesia', value: 'id-ID' },
+  { label: 'Italiano', value: 'it-IT' },
   { label: 'Português', value: 'pt-PT' },
   { label: 'Русский', value: 'ru-RU' },
   { label: 'Türkçe', value: 'tr-TR' },
