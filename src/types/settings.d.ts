@@ -47,7 +47,18 @@ export interface Settings {
   network: NetworkSettings
 }
 
-export type Language = 'en-US' | 'fr-FR' | 'de-DE' | 'vi-VN' | 'pt-PT' | 'ru-RU' | 'bg-BG' | 'es-ES' | 'id-ID' | 'tr-TR' | 'it-IT'
+export type Language =
+  | 'en-US'
+  | 'fr-FR'
+  | 'de-DE'
+  | 'vi-VN'
+  | 'pt-PT'
+  | 'ru-RU'
+  | 'bg-BG'
+  | 'es-ES'
+  | 'id-ID'
+  | 'tr-TR'
+  | 'it-IT'
 
 export type ThemeType = 'light' | 'dark'
 
