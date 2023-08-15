@@ -51,9 +51,18 @@ export const priceApi = createApi({
         const { prices } = response
         const today = dayjs().format(CHART_DATE_FORMAT)
 
-        return prices
-          .filter(([date]) => dayjs(date).format(CHART_DATE_FORMAT) !== today)
-          .map(([date, price]) => ({ date: dayjs(date).format(CHART_DATE_FORMAT), price }))
+        return prices.reduce((acc, [date, price]) => {
+          const itemDate = dayjs(date).format(CHART_DATE_FORMAT)
+          const isDuplicatedItem = !!acc.find(({ date }) => dayjs(date).format(CHART_DATE_FORMAT) === itemDate)
+
+          if (!isDuplicatedItem && itemDate !== today)
+            acc.push({
+              date: itemDate,
+              price
+            })
+
+          return acc
+        }, [] as HistoricalPriceResult[])
       }
     })
   })
