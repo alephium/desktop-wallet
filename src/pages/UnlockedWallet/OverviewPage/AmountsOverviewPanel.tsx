@@ -83,7 +83,8 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const totalAmountWorth = calculateAmountWorth(totalBalance, price ?? 0)
+  const totalAmountWorth =
+    price !== undefined && !stateUninitialized ? calculateAmountWorth(totalBalance, price) : undefined
   const balanceInFiat = worth ?? totalAmountWorth
 
   const isOnline = network.status === 'online'
@@ -108,7 +109,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
                   stateUninitialized ||
                   (hasHistoricBalances && worthInBeginningOfChart === undefined) ? (
                     <SkeletonLoader height="18px" width="70px" style={{ marginBottom: 6 }} />
-                  ) : hasHistoricBalances && worthInBeginningOfChart ? (
+                  ) : hasHistoricBalances && worthInBeginningOfChart && totalAmountWorth !== undefined ? (
                     <DeltaPercentage initialValue={worthInBeginningOfChart} latestValue={totalAmountWorth} />
                   ) : null}
                 </FiatDeltaPercentage>
@@ -173,7 +174,9 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
       <ChartOuterContainer
         variants={chartAnimationVariants}
-        animate={showChart && hasHistoricBalances && !discreetMode ? 'shown' : 'hidden'}
+        animate={
+          showChart && hasHistoricBalances && !discreetMode && totalAmountWorth !== undefined ? 'shown' : 'hidden'
+        }
       >
         <ChartInnerContainer animate={{ opacity: discreetMode ? 0 : 1 }} transition={{ duration: 0.5 }}>
           <HistoricWorthChart

@@ -47,8 +47,23 @@ export const priceApi = createApi({
     }),
     getHistoricalPrice: builder.query<HistoricalPriceResult[], HistoricalPriceQueryParams>({
       query: ({ currency, days }) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`,
-      transformResponse: (response: { prices: number[][] }) =>
-        response.prices.map((p) => ({ date: dayjs(p[0]).format(CHART_DATE_FORMAT), price: p[1] }))
+      transformResponse: (response: { prices: number[][] }) => {
+        const { prices } = response
+        const today = dayjs().format(CHART_DATE_FORMAT)
+
+        return prices.reduce((acc, [date, price]) => {
+          const itemDate = dayjs(date).format(CHART_DATE_FORMAT)
+          const isDuplicatedItem = !!acc.find(({ date }) => dayjs(date).format(CHART_DATE_FORMAT) === itemDate)
+
+          if (!isDuplicatedItem && itemDate !== today)
+            acc.push({
+              date: itemDate,
+              price
+            })
+
+          return acc
+        }, [] as HistoricalPriceResult[])
+      }
     })
   })
 })
