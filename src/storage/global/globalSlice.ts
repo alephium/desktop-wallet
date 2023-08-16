@@ -137,7 +137,7 @@ const toggleLoading = (state: AppState, toggle: boolean, enableLoading?: boolean
   if (enableLoading !== false) state.loading = toggle
 }
 
-const resetState = ({ theme, wallets }: AppState) => ({ ...initialState, wallets, theme })
+const resetState = ({ theme }: AppState) => ({ ...initialState, wallets: WalletStorage.list(), theme })
 
 const refreshWalletList = (state: AppState) => {
   state.wallets = WalletStorage.list()

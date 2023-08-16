@@ -83,8 +83,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const totalAmountWorth =
-    price !== undefined && !stateUninitialized ? calculateAmountWorth(totalBalance, price) : undefined
+  const totalAmountWorth = price !== undefined ? calculateAmountWorth(totalBalance, price) : undefined
   const balanceInFiat = worth ?? totalAmountWorth
 
   const isOnline = network.status === 'online'
