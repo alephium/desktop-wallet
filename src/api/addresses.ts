@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { explorer } from '@alephium/web3'
+import { AddressTokenBalance } from '@alephium/web3/dist/src/api/api-explorer'
 
 import client from '@/api/client'
 import {
@@ -27,26 +28,30 @@ import {
   AddressTransactionsSyncResult
 } from '@/types/addresses'
 
+const PAGE_LIMIT = 100
+
 export const fetchAddressesTokens = async (addressHashes: AddressHash[]): Promise<AddressTokensSyncResult[]> => {
   const results = []
-  let pageTotalResults
-  let page = 1
 
   for (const hash of addressHashes) {
-    const tokenBalances = []
+    const addressTotalTokenBalances = [] as AddressTokenBalance[]
+    let addressTokensPageResults = [] as AddressTokenBalance[]
+    let page = 1
 
-    while (pageTotalResults === undefined || pageTotalResults === 100) {
-      const pageResults = await client.explorer.addresses.getAddressesAddressTokensBalance(hash, { limit: 100, page })
+    while (page === 1 || addressTokensPageResults.length === PAGE_LIMIT) {
+      addressTokensPageResults = await client.explorer.addresses.getAddressesAddressTokensBalance(hash, {
+        limit: PAGE_LIMIT,
+        page
+      })
 
-      tokenBalances.push(...pageResults)
+      addressTotalTokenBalances.push(...addressTokensPageResults)
 
-      pageTotalResults = pageResults.length
       page += 1
     }
 
     results.push({
       hash,
-      tokenBalances
+      tokenBalances: addressTotalTokenBalances
     })
   }
 
