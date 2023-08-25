@@ -91,7 +91,7 @@ export interface TransferTxData {
 }
 
 export interface SignUnsignedTxData {
-  fromAddress: Address,
+  fromAddress: Address
   unsignedTx: string
 }
 
