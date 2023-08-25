@@ -16,20 +16,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { getHumanReadableError } from '@alephium/sdk'
 import { SignUnsignedTxResult, transactionSign } from '@alephium/web3'
+import { getSdkError } from '@walletconnect/utils'
 import { usePostHog } from 'posthog-js/react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SignUnsignedTxData } from '@/types/transactions'
 import client from '@/api/client'
-import { useCallback, useEffect, useState } from 'react'
-import { useWalletConnectContext } from '@/contexts/walletconnect'
-import { getSdkError } from '@walletconnect/utils'
-import CenteredModal, { ModalContent } from '@/modals/CenteredModal'
-import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import InfoBox from '@/components/InfoBox'
 import FooterButton from '@/components/Buttons/FooterButton'
-import { getHumanReadableError } from '@alephium/sdk'
+import InfoBox from '@/components/InfoBox'
+import { InputFieldsColumn } from '@/components/InputFieldsColumn'
+import { useWalletConnectContext } from '@/contexts/walletconnect'
+import { useAppDispatch } from '@/hooks/redux'
+import CenteredModal, { ModalContent } from '@/modals/CenteredModal'
+import { unsignedTransactionSignSucceeded } from '@/storage/transactions/transactionsActions'
+import { SignUnsignedTxData } from '@/types/transactions'
 import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 interface SignUnsignedTxModalProps {
@@ -41,11 +43,16 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
   const { t } = useTranslation()
   const { requestEvent, onSessionRequestError, onSessionRequestSuccess } = useWalletConnectContext()
   const posthog = usePostHog()
+  const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
-  const [decodedUnsignedTx, setDecodedUnsignedTx] = useState<Omit<SignUnsignedTxResult, 'signature'> | undefined>(undefined)
+  const [decodedUnsignedTx, setDecodedUnsignedTx] = useState<Omit<SignUnsignedTxResult, 'signature'> | undefined>(
+    undefined
+  )
 
   const decodeUnsignedTx = useCallback(async () => {
-    const decodedResult = await client.node.transactions.postTransactionsDecodeUnsignedTx({ unsignedTx: txData.unsignedTx })
+    const decodedResult = await client.node.transactions.postTransactionsDecodeUnsignedTx({
+      unsignedTx: txData.unsignedTx
+    })
 
     return {
       txId: decodedResult.unsignedTx.txId,
@@ -63,7 +70,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
       setDecodedUnsignedTx(result)
       setIsLoading(false)
     })
-  }, [txData.unsignedTx])
+  }, [txData.unsignedTx, decodeUnsignedTx])
 
   const handleSign = async () => {
     if (!decodedUnsignedTx || !requestEvent) return
@@ -72,6 +79,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
       const signature = transactionSign(decodedUnsignedTx.unsignedTx, txData.fromAddress.privateKey)
       const signResult: SignUnsignedTxResult = { signature, ...decodedUnsignedTx }
       await onSessionRequestSuccess(requestEvent, signResult)
+      dispatch(unsignedTransactionSignSucceeded)
     } catch (e) {
       posthog.capture('Error', { message: 'Could not sign unsigned tx' })
 
@@ -92,30 +100,24 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
 
   return (
     <CenteredModal
-      title={"Sign Unsigned Tx"}
+      title={'Sign Unsigned Transaction'}
       onClose={onCloseExtended}
       isLoading={isLoading}
       dynamicContent
       focusMode
       noPadding
     >
-      {
-        decodedUnsignedTx ? (
-          <ModalContent>
-            <InputFieldsColumn>
-              <InfoBox label={'Transaction Id'} text={decodedUnsignedTx.txId} wordBreak />
-              <InfoBox label={'Unsigned Transaction'} text={decodedUnsignedTx.unsignedTx} wordBreak />
-            </InputFieldsColumn>
-            <FooterButton
-              onClick={() => handleSign()}
-              disabled={isLoading || !decodedUnsignedTx}
-            >
-              {t('Sign')}
-            </FooterButton>
-
-          </ModalContent>
-        ) : null
-      }
+      {decodedUnsignedTx ? (
+        <ModalContent>
+          <InputFieldsColumn>
+            <InfoBox label={'Transaction Id'} text={decodedUnsignedTx.txId} wordBreak />
+            <InfoBox label={'Unsigned Transaction'} text={decodedUnsignedTx.unsignedTx} wordBreak />
+          </InputFieldsColumn>
+          <FooterButton onClick={() => handleSign()} disabled={isLoading || !decodedUnsignedTx}>
+            {t('Sign')}
+          </FooterButton>
+        </ModalContent>
+      ) : null}
     </CenteredModal>
   )
 }

@@ -40,6 +40,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContract from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
+import SignUnsignedTxModal from '@/modals/SignUnsignedTx'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
 import {
@@ -53,7 +54,6 @@ import {
 } from '@/types/transactions'
 import { AlephiumWindow } from '@/types/window'
 import { WALLETCONNECT_ERRORS } from '@/utils/constants'
-import SignUnsignedTxModal from '@/modals/SignUnsignedTx'
 
 type RequestEvent = SignClientTypes.EventArguments['session_request']
 type ProposalEvent = SignClientTypes.EventArguments['session_proposal']
