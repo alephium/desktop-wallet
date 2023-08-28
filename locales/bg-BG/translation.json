@@ -449,5 +449,7 @@
   "Could not copy public key.": "Could not copy public key.",
   "Copy the keys of an address.": "Copy the keys of an address.",
   "Transaction hash": "Transaction hash",
-  "Copy hash": "Copy hash"
+  "Copy hash": "Copy hash",
+  "Sign": "Sign",
+  "Unsigned transaction signed!": "Unsigned transaction signed!"
 }
