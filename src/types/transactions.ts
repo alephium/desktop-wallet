@@ -24,6 +24,7 @@ import { Address, AddressHash } from '@/types/addresses'
 export enum TxType {
   TRANSFER,
   DEPLOY_CONTRACT,
+  SIGN_UNSIGNED_TX,
   SCRIPT
 }
 
@@ -41,7 +42,7 @@ export type PendingTransaction = {
   status: 'pending'
 }
 
-export type DappTxData = TransferTxData | DeployContractTxData | CallContractTxData
+export type DappTxData = TransferTxData | DeployContractTxData | CallContractTxData | SignUnsignedTxData
 
 export type TxDataToModalType =
   | {
@@ -51,6 +52,10 @@ export type TxDataToModalType =
   | {
       modalType: TxType.DEPLOY_CONTRACT
       txData: DeployContractTxData
+    }
+  | {
+      modalType: TxType.SIGN_UNSIGNED_TX
+      txData: SignUnsignedTxData
     }
   | {
       modalType: TxType.SCRIPT
@@ -83,6 +88,11 @@ export interface TransferTxData {
   gasAmount?: number
   gasPrice?: string
   lockTime?: Date
+}
+
+export interface SignUnsignedTxData {
+  fromAddress: Address
+  unsignedTx: string
 }
 
 export interface TxPreparation {

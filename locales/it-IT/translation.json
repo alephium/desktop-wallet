@@ -284,7 +284,6 @@
   "Review": "Revisione",
   "Save": "Salva",
   "Scan the blockchain for addresses you used in the past.": "Scansiona la blockchain per gli indirizzi che hai usato in passato.",
-  "Scan this QR code with your mobile wallet.": "Scansiona questo codice QR con il tuo portafoglio mobile.",
   "Search": "Ricerca",
   "Search for label, a hash or an asset...": "Cerca un'etichetta, un hash o una risorsa...",
   "Search for name or a hash...": "Cerca per nome o un hash...",
@@ -449,5 +448,8 @@
   "Could not copy public key.": "Impossibile copiare la chiave pubblica.",
   "Copy the keys of an address.": "Copiare le chiavi di un indirizzo.",
   "Transaction hash": "Hash della transazione",
-  "Copy hash": "Copia l'hash"
+  "Copy hash": "Copia l'hash",
+  "Scan this animated QR code with your mobile wallet.": "Scan this animated QR code with your mobile wallet.",
+  "Sign": "Sign",
+  "Unsigned transaction signed!": "Unsigned transaction signed!"
 }

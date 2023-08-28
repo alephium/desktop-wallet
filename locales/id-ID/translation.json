@@ -449,5 +449,7 @@
   "Could not copy public key.": "Tidak dapat menyalin kunci publik.",
   "Copy the keys of an address.": "Salin kunci alamat.",
   "Transaction hash": "Transaction hash",
-  "Copy hash": "Copy hash"
+  "Copy hash": "Copy hash",
+  "Sign": "Sign",
+  "Unsigned transaction signed!": "Unsigned transaction signed!"
 }

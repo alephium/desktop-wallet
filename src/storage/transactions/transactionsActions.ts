@@ -31,6 +31,8 @@ export const transactionSendFailed = createAction<Message>('tx/transactionSendFa
 
 export const transactionsSendSucceeded = createAction<{ nbOfTransactionsSent: number }>('tx/transactionsSendSucceeded')
 
+export const unsignedTransactionSignSucceeded = createAction('tx/unsignedTransactionSignSucceeded')
+
 export const transactionSent = createAction<PendingTransaction>('tx/transactionSent')
 
 export const csvFileGenerationStarted = createAction('tx/csvFileGenerationStarted')

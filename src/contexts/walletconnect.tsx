@@ -23,7 +23,8 @@ import {
   ApiRequestArguments,
   SignDeployContractTxParams,
   SignExecuteScriptTxParams,
-  SignTransferTxParams
+  SignTransferTxParams,
+  SignUnsignedTxParams
 } from '@alephium/web3'
 import { node } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
@@ -39,12 +40,14 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContract from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
+import SignUnsignedTxModal from '@/modals/SignUnsignedTx'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed } from '@/storage/dApps/dAppActions'
 import {
   CallContractTxData,
   DappTxData,
   DeployContractTxData,
+  SignUnsignedTxData,
   TransferTxData,
   TxDataToModalType,
   TxType
@@ -101,6 +104,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
 
   const [isDeployContractSendModalOpen, setIsDeployContractSendModalOpen] = useState(false)
   const [isCallScriptSendModalOpen, setIsCallScriptSendModalOpen] = useState(false)
+  const [isSignUnsignedTxModalOpen, setIsSignUnsignedTxModalOpen] = useState(false)
 
   const [walletConnectClient, setWalletConnectClient] = useState(initialContext.walletConnectClient)
   const [dappTxData, setDappTxData] = useState(initialContext.dappTxData)
@@ -185,6 +189,8 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           setIsDeployContractSendModalOpen(true)
         } else if (modalType === TxType.SCRIPT) {
           setIsCallScriptSendModalOpen(true)
+        } else if (modalType === TxType.SIGN_UNSIGNED_TX) {
+          setIsSignUnsignedTxModalOpen(true)
         }
 
         electron?.app.show()
@@ -263,6 +269,15 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             }
 
             setTxDataAndOpenModal({ txData, modalType: TxType.SCRIPT })
+            break
+          }
+          case 'alph_signUnsignedTx': {
+            const { unsignedTx, signerAddress } = request.params as SignUnsignedTxParams
+            const txData: SignUnsignedTxData = {
+              fromAddress: getSignerAddressByHash(signerAddress),
+              unsignedTx
+            }
+            setTxDataAndOpenModal({ txData, modalType: TxType.SIGN_UNSIGNED_TX })
             break
           }
           case 'alph_requestNodeApi': {
@@ -403,6 +418,12 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             initialTxData={dappTxData}
             txData={dappTxData as CallContractTxData}
             onClose={() => setIsCallScriptSendModalOpen(false)}
+          />
+        )}
+        {isSignUnsignedTxModalOpen && dappTxData && (
+          <SignUnsignedTxModal
+            txData={dappTxData as SignUnsignedTxData}
+            onClose={() => setIsSignUnsignedTxModalOpen(false)}
           />
         )}
       </ModalPortal>
