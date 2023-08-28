@@ -75,7 +75,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
     if (!decodedUnsignedTx || !requestEvent) return
 
     try {
-      const signature = transactionSign(decodedUnsignedTx.unsignedTx, txData.fromAddress.privateKey)
+      const signature = transactionSign(decodedUnsignedTx.txId, txData.fromAddress.privateKey)
       const signResult: SignUnsignedTxResult = { signature, ...decodedUnsignedTx }
       await onSessionRequestSuccess(requestEvent, signResult)
       dispatch(unsignedTransactionSignSucceeded)
@@ -112,7 +112,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
             <InfoBox label={'Transaction Id'} text={decodedUnsignedTx.txId} wordBreak />
             <InfoBox label={'Unsigned Transaction'} text={decodedUnsignedTx.unsignedTx} wordBreak />
           </InputFieldsColumn>
-          <FooterButton onClick={() => handleSign()} disabled={isLoading || !decodedUnsignedTx}>
+          <FooterButton onClick={handleSign} disabled={isLoading || !decodedUnsignedTx}>
             {t('Sign')}
           </FooterButton>
         </ModalContent>
