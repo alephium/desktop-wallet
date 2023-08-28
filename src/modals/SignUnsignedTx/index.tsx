@@ -49,28 +49,27 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
     undefined
   )
 
-  const decodeUnsignedTx = useCallback(async () => {
-    const decodedResult = await client.node.transactions.postTransactionsDecodeUnsignedTx({
-      unsignedTx: txData.unsignedTx
-    })
-
-    return {
-      txId: decodedResult.unsignedTx.txId,
-      fromGroup: decodedResult.fromGroup,
-      toGroup: decodedResult.toGroup,
-      unsignedTx: txData.unsignedTx,
-      gasAmount: decodedResult.unsignedTx.gasAmount,
-      gasPrice: BigInt(decodedResult.unsignedTx.gasPrice)
-    }
-  }, [txData.unsignedTx])
-
   useEffect(() => {
-    setIsLoading(true)
-    decodeUnsignedTx().then((result) => {
-      setDecodedUnsignedTx(result)
+    const decodeUnsignedTx = async () => {
+      setIsLoading(true)
+      const decodedResult = await client.node.transactions.postTransactionsDecodeUnsignedTx({
+        unsignedTx: txData.unsignedTx
+      })
+
+      setDecodedUnsignedTx({
+        txId: decodedResult.unsignedTx.txId,
+        fromGroup: decodedResult.fromGroup,
+        toGroup: decodedResult.toGroup,
+        unsignedTx: txData.unsignedTx,
+        gasAmount: decodedResult.unsignedTx.gasAmount,
+        gasPrice: BigInt(decodedResult.unsignedTx.gasPrice)
+      })
+
       setIsLoading(false)
-    })
-  }, [txData.unsignedTx, decodeUnsignedTx])
+    }
+
+    decodeUnsignedTx()
+  }, [txData.unsignedTx])
 
   const handleSign = async () => {
     if (!decodedUnsignedTx || !requestEvent) return
@@ -107,7 +106,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
       focusMode
       noPadding
     >
-      {decodedUnsignedTx ? (
+      {decodedUnsignedTx && (
         <ModalContent>
           <InputFieldsColumn>
             <InfoBox label={'Transaction Id'} text={decodedUnsignedTx.txId} wordBreak />
@@ -117,7 +116,7 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
             {t('Sign')}
           </FooterButton>
         </ModalContent>
-      ) : null}
+      )}
     </CenteredModal>
   )
 }
