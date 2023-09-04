@@ -449,7 +449,7 @@
   "Copy the keys of an address.": "Copiare le chiavi di un indirizzo.",
   "Transaction hash": "Hash della transazione",
   "Copy hash": "Copia l'hash",
-  "Scan this animated QR code with your mobile wallet.": "Scan this animated QR code with your mobile wallet.",
-  "Sign": "Sign",
-  "Unsigned transaction signed!": "Unsigned transaction signed!"
+  "Scan this animated QR code with your mobile wallet.": "Scansiona questo codice QR animato con il tuo portafoglio mobile.",
+  "Sign": "Firma",
+  "Unsigned transaction signed!": "Togli la firma sulla transazione firmata!"
 }
