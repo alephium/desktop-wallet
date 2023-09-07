@@ -29,7 +29,7 @@ import {
 import { node } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
 import { EngineTypes, SignClientTypes } from '@walletconnect/types'
-import { getSdkError } from '@walletconnect/utils'
+import { getChainsFromNamespaces, getSdkError } from '@walletconnect/utils'
 import { partition } from 'lodash'
 import { usePostHog } from 'posthog-js/react'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
@@ -67,13 +67,13 @@ export interface WalletConnectContextProps {
   dappTxData?: DappTxData
   onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
   onSessionRequestSuccess: (event: RequestEvent, result: node.SignResult) => Promise<void>
-  onSessionDelete: () => void
   connectToWalletConnect: (uri: string) => void
   requiredChainInfo?: ChainInfo
   wcSessionState: WalletConnectSessionState
   sessionTopic?: string
   onProposalApprove: (topic: string) => void
   connectedDAppMetadata?: ProposalEvent['params']['proposer']['metadata']
+  tryRestoreLastSession: (client: SignClient) => Promise<void>
 }
 
 const initialContext: WalletConnectContextProps = {
@@ -86,9 +86,9 @@ const initialContext: WalletConnectContextProps = {
   requiredChainInfo: undefined,
   wcSessionState: 'uninitialized',
   sessionTopic: undefined,
-  onSessionDelete: () => null,
   onProposalApprove: () => null,
-  connectedDAppMetadata: undefined
+  connectedDAppMetadata: undefined,
+  tryRestoreLastSession: (client: SignClient) => Promise.resolve()
 }
 
 const WalletConnectContext = createContext<WalletConnectContextProps>(initialContext)
@@ -115,6 +115,32 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [sessionTopic, setSessionTopic] = useState(initialContext.sessionTopic)
   const [connectedDAppMetadata, setConnectedDappMetadata] = useState(initialContext.connectedDAppMetadata)
 
+  const resetSession = useCallback(() => {
+    setRequiredChainInfo(undefined)
+    setProposalEvent(undefined)
+    setWcSessionState('uninitialized')
+    setSessionTopic(undefined)
+  }, [])
+
+  const tryRestoreLastSession = useCallback(
+    async (client: SignClient) => {
+      if (!client.session.length) return resetSession()
+      const lastKeyIndex = client.session.keys.length - 1
+      const session = client.session.get(client.session.keys[lastKeyIndex])
+      const chains = getChainsFromNamespaces(session.namespaces, [PROVIDER_NAMESPACE])
+      if (!chains.length) {
+        await client.disconnect({ topic: session.topic, reason: getSdkError('USER_DISCONNECTED') })
+        return resetSession()
+      }
+      const chainInfo = parseChain(chains[0])
+      setRequiredChainInfo(chainInfo)
+      setConnectedDappMetadata(session.peer.metadata)
+      setSessionTopic(session.topic)
+      setWcSessionState('initialized')
+    },
+    [resetSession]
+  )
+
   const initializeWalletConnectClient = useCallback(async () => {
     try {
       const client = await SignClient.init({
@@ -128,12 +154,13 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         }
       })
 
+      await tryRestoreLastSession(client)
       setWalletConnectClient(client)
     } catch (e) {
       posthog.capture('Error', { message: 'Could not initialize WalletConnect client' })
       console.error('Could not initialize WalletConnect client', e)
     }
-  }, [posthog])
+  }, [posthog, tryRestoreLastSession])
 
   useEffect(() => {
     if (!walletConnectClient) initializeWalletConnectClient()
@@ -338,12 +365,14 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     [dispatch, t, walletConnectClient]
   )
 
-  const onSessionDelete = useCallback(() => {
-    setRequiredChainInfo(undefined)
-    setProposalEvent(undefined)
-    setWcSessionState('uninitialized')
-    setSessionTopic(undefined)
-  }, [])
+  const onSessionDelete = useCallback(
+    (params: { topic: string }) => {
+      if (params.topic === sessionTopic) {
+        resetSession()
+      }
+    },
+    [sessionTopic, resetSession]
+  )
 
   const onProposalApprove = (topic: string) => {
     setSessionTopic(topic)
@@ -385,6 +414,18 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     }
   }, [connectToWalletConnect, onSessionDelete, onSessionProposal, onSessionRequest, walletConnectClient])
 
+  useEffect(() => {
+    if (wcSessionState !== 'initialized' || !walletConnectClient || !sessionTopic) return
+
+    if (walletConnectClient.session.length > 0) {
+      walletConnectClient.session.getAll().forEach((session) => {
+        if (session.topic !== sessionTopic) {
+          walletConnectClient.disconnect({ topic: session.topic, reason: getSdkError('USER_DISCONNECTED') })
+        }
+      })
+    }
+  }, [wcSessionState, walletConnectClient, sessionTopic])
+
   return (
     <WalletConnectContext.Provider
       value={{
@@ -397,10 +438,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
         connectToWalletConnect,
         requiredChainInfo,
         wcSessionState,
-        onSessionDelete,
         sessionTopic,
         onProposalApprove,
-        connectedDAppMetadata
+        connectedDAppMetadata,
+        tryRestoreLastSession
       }}
     >
       {children}
