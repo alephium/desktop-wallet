@@ -288,7 +288,7 @@
   "Review": "Ulasan",
   "Save": "Simpan",
   "Scan the blockchain for addresses you used in the past.": "Pindai blockchain untuk alamat yang Anda gunakan sebelumnya.",
-  "Scan this animated QR code with your mobile wallet.": "Scan this animated QR code with your mobile wallet.",
+  "Scan this animated QR code with your mobile wallet.": "Pindai animasi kode QR ini dengan dompet seluler Anda.",
   "Search": "Cari",
   "Search for label, a hash or an asset...": "Telusuri untuk label, hash, atau aset...",
   "Search for name or a hash...": "Telusuri untuk nama atau hash...",
@@ -390,7 +390,7 @@
   "Type your password to show the phrase.": "Ketikkan kata sandi Anda untuk menampilkan frasa.",
   "Type your recovery phrase": "Ketikkan frasa pemulihan Anda",
   "Unable to convert the amount": "Tidak dapat mengonversi jumlah",
-  "Unknown": "Unknown",
+  "Unknown": "Tidak dikenal",
   "Unknown token": "Token tidak dikenal",
   "Unknown tokens": "Token tidak dikenal",
   "Unknown wallet name": "Nama dompet tidak dikenal",
@@ -448,8 +448,8 @@
   "Public key copied.": "Kunci publik disalin.",
   "Could not copy public key.": "Tidak dapat menyalin kunci publik.",
   "Copy the keys of an address.": "Salin kunci alamat.",
-  "Transaction hash": "Transaction hash",
-  "Copy hash": "Copy hash",
-  "Sign": "Sign",
-  "Unsigned transaction signed!": "Unsigned transaction signed!"
+  "Transaction hash": "Hash transaksi",
+  "Copy hash": "Salin hash",
+  "Sign": "Tanda tangan",
+  "Unsigned transaction signed!": "Transaksi yang belum ditandatangani telah ditandatangani!"
 }
