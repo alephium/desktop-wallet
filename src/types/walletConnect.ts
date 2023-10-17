@@ -16,4 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-type FC<P = unknown> = React.FC<React.PropsWithChildren<P>>
+import { SignClientTypes } from '@walletconnect/types'
+
+export type SessionRequestEvent = SignClientTypes.EventArguments['session_request']
+
+export type SessionProposalEvent = Pick<SignClientTypes.EventArguments['session_proposal'], 'id' | 'params'>

@@ -85,3 +85,5 @@ export function removeItemFromArray<T>(array: T[], index: number) {
   newArray.splice(index, 1)
   return newArray
 }
+
+export const cleanUrl = (url: string) => url.replace('https://', '')

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { colord } from 'colord'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { Eye, EyeOff, WifiOff } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -57,7 +57,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
   const discreetMode = useAppSelector((s) => s.settings.discreetMode)
   const networkStatus = useAppSelector((s) => s.network.status)
   const addresses = useAppSelector(selectAllAddresses)
-  const { proposalEvent, wcSessionState } = useWalletConnectContext()
+  const { activeSessions } = useWalletConnectContext()
 
   const [isWalletConnectModalOpen, setIsWalletConnectModalOpen] = useState(false)
 
@@ -65,10 +65,6 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
   const offlineText = t('The wallet is offline.')
 
   const toggleDiscreetMode = () => dispatch(discreetModeToggled())
-
-  useEffect(() => {
-    if (proposalEvent?.id && isAuthenticated) setIsWalletConnectModalOpen(true)
-  }, [isAuthenticated, proposalEvent?.id])
 
   const headerStyles = {
     backgroundColor: useTransform(
@@ -132,7 +128,7 @@ const AppHeader: FC<AppHeader> = ({ children, title, className, invisible }) => 
                 role="secondary"
                 onClick={() => setIsWalletConnectModalOpen(true)}
                 aria-label="WalletConnect"
-                isHighlighted={wcSessionState === 'initialized'}
+                isHighlighted={activeSessions.length > 0}
                 data-tooltip-id="default"
                 data-tooltip-content={t('Connect wallet to dApp')}
               >

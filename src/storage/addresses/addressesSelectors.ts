@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { Asset, TokenDisplayBalances } from '@alephium/sdk'
 import { ALPH } from '@alephium/token-list'
+import { AddressGroup } from '@alephium/walletconnect-provider'
 import { createSelector } from '@reduxjs/toolkit'
 import { sortBy } from 'lodash'
 
@@ -192,3 +193,8 @@ const getAddressesTokenBalances = (addresses: Address[]) =>
 
     return acc
   }, [] as TokenDisplayBalances[])
+
+export const selectAddressesInGroup = createSelector(
+  [selectAllAddresses, (_, group?: AddressGroup) => group],
+  (addresses, group) => (group !== undefined ? addresses.filter((address) => address.group === group) : addresses)
+)

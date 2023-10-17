@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
+import { LucideIcon } from 'lucide-react'
 import styled, { css, DefaultTheme, useTheme } from 'styled-components'
 
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
@@ -26,7 +27,7 @@ type InfoBoxImportance = 'default' | 'accent' | 'alert' | 'warning'
 
 export interface InfoBoxProps {
   text?: string
-  Icon?: LucideIconType
+  Icon?: LucideIcon
   label?: string
   importance?: InfoBoxImportance
   ellipsis?: boolean

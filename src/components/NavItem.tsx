@@ -16,13 +16,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { LucideIcon } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styled, { useTheme } from 'styled-components'
 
 import Button from '@/components/Button'
 
 interface NavItemProps {
-  Icon: LucideIconType
+  Icon: LucideIcon
   label: string
   to?: string
   onClick?: () => void
