@@ -18,30 +18,28 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { getHumanReadableError } from '@alephium/sdk'
 import { SignUnsignedTxResult, transactionSign } from '@alephium/web3'
-import { getSdkError } from '@walletconnect/utils'
 import { usePostHog } from 'posthog-js/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
 import FooterButton from '@/components/Buttons/FooterButton'
 import InfoBox from '@/components/InfoBox'
 import { InputFieldsColumn } from '@/components/InputFieldsColumn'
-import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch } from '@/hooks/redux'
 import CenteredModal, { ModalContent } from '@/modals/CenteredModal'
 import { unsignedTransactionSignSucceeded } from '@/storage/transactions/transactionsActions'
 import { SignUnsignedTxData } from '@/types/transactions'
-import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
 interface SignUnsignedTxModalProps {
   onClose: () => void
   txData: SignUnsignedTxData
+  onSignSuccess: (result: SignUnsignedTxResult) => Promise<void>
+  onSignFail: (errorMessage: string) => Promise<void>
 }
 
-const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
+const SignUnsignedTxModal = ({ onClose, txData, onSignSuccess, onSignFail }: SignUnsignedTxModalProps) => {
   const { t } = useTranslation()
-  const { requestEvent, onSessionRequestError, onSessionRequestSuccess } = useWalletConnectContext()
   const posthog = usePostHog()
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(false)
@@ -72,35 +70,25 @@ const SignUnsignedTxModal = ({ onClose, txData }: SignUnsignedTxModalProps) => {
   }, [txData.unsignedTx])
 
   const handleSign = async () => {
-    if (!decodedUnsignedTx || !requestEvent) return
+    if (!decodedUnsignedTx) return
 
     try {
       const signature = transactionSign(decodedUnsignedTx.txId, txData.fromAddress.privateKey)
       const signResult: SignUnsignedTxResult = { signature, ...decodedUnsignedTx }
-      await onSessionRequestSuccess(requestEvent, signResult)
+      await onSignSuccess(signResult)
+
       dispatch(unsignedTransactionSignSucceeded)
     } catch (e) {
       posthog.capture('Error', { message: 'Could not sign unsigned tx' })
 
-      if (requestEvent) {
-        onSessionRequestError(requestEvent, {
-          message: getHumanReadableError(e, 'Error while signing unsigned tx'),
-          code: WALLETCONNECT_ERRORS.TRANSACTION_SIGN_FAILED
-        })
-      }
+      onSignFail(getHumanReadableError(e, 'Error while signing unsigned tx'))
     }
   }
-
-  const onCloseExtended = useCallback(() => {
-    onClose()
-
-    if (requestEvent) onSessionRequestError(requestEvent, getSdkError('USER_REJECTED_EVENTS'))
-  }, [onClose, requestEvent, onSessionRequestError])
 
   return (
     <CenteredModal
       title={'Sign Unsigned Transaction'}
-      onClose={onCloseExtended}
+      onClose={onClose}
       isLoading={isLoading}
       dynamicContent
       focusMode

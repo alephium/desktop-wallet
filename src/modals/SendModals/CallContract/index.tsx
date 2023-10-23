@@ -26,36 +26,30 @@ import { signAndSendTransaction } from '@/api/transactions'
 import CallContractAddressesTxModalContent from '@/modals/SendModals/CallContract/AddressesTxModalContent'
 import CallContractBuildTxModalContent from '@/modals/SendModals/CallContract/BuildTxModalContent'
 import CallContractCheckTxModalContent from '@/modals/SendModals/CallContract/CheckTxModalContent'
-import SendModal from '@/modals/SendModals/SendModal'
-import { Step } from '@/modals/SendModals/StepsProgress'
+import SendModal, { ConfigurableSendModalProps } from '@/modals/SendModals/SendModal'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { CallContractTxData, PartialTxData, TxContext } from '@/types/transactions'
 import { getOptionalTransactionAssetAmounts } from '@/utils/transactions'
 
-interface CallContractModalModalProps {
-  onClose: () => void
-  initialTxData: PartialTxData<CallContractTxData, 'fromAddress'>
-  initialStep?: Step
-  txData?: CallContractTxData
-}
+type CallContractModalModalProps = ConfigurableSendModalProps<
+  PartialTxData<CallContractTxData, 'fromAddress'>,
+  CallContractTxData
+>
 
-const SendModalCallContract = ({ onClose, initialTxData, initialStep, txData }: CallContractModalModalProps) => {
+const SendModalCallContract = (props: CallContractModalModalProps) => {
   const { t } = useTranslation()
 
   return (
     <SendModal
+      {...props}
       title={t('Call contract')}
-      initialTxData={initialTxData}
-      onClose={onClose}
       AddressesTxModalContent={CallContractAddressesTxModalContent}
       BuildTxModalContent={CallContractBuildTxModalContent}
       CheckTxModalContent={CallContractCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}
-      initialStep={initialStep}
-      txData={txData}
       isContract
     />
   )

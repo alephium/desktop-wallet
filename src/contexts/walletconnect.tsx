@@ -24,7 +24,8 @@ import {
   SignDeployContractTxParams,
   SignExecuteScriptTxParams,
   SignTransferTxParams,
-  SignUnsignedTxParams
+  SignUnsignedTxParams,
+  SignUnsignedTxResult
 } from '@alephium/web3'
 import { node } from '@alephium/web3'
 import SignClient from '@walletconnect/sign-client'
@@ -40,7 +41,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import ModalPortal from '@/modals/ModalPortal'
 import SendModalCallContract from '@/modals/SendModals/CallContract'
 import SendModalDeployContract from '@/modals/SendModals/DeployContract'
-import SignUnsignedTxModal from '@/modals/SignUnsignedTx'
+import SignUnsignedTxModal from '@/modals/SendModals/SignUnsignedTxModal'
 import WalletConnectSessionProposalModal from '@/modals/WalletConnect/WalletConnectSessionProposalModal'
 import { selectAllAddresses } from '@/storage/addresses/addressesSelectors'
 import { walletConnectPairingFailed, walletConnectProposalApprovalFailed } from '@/storage/dApps/dAppActions'
@@ -54,33 +55,25 @@ import {
   TxDataToModalType,
   TxType
 } from '@/types/transactions'
-import { SessionProposalEvent } from '@/types/walletConnect'
+import { SessionProposalEvent, SessionRequestEvent } from '@/types/walletConnect'
 import { AlephiumWindow } from '@/types/window'
 import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 import { getActiveWalletConnectSessions, isNetworkValid, parseSessionProposalEvent } from '@/utils/walletConnect'
 
-type RequestEvent = SignClientTypes.EventArguments['session_request']
-
 export interface WalletConnectContextProps {
   walletConnectClient?: SignClient
-  unpairFromDapp: (pairingTopic: string) => Promise<void>
-  requestEvent?: RequestEvent
-  dappTxData?: DappTxData
-  onSessionRequestError: (event: RequestEvent, error: ReturnType<typeof getSdkError>) => Promise<void>
-  onSessionRequestSuccess: (event: RequestEvent, result: node.SignResult) => Promise<void>
   pairWithDapp: (uri: string) => void
+  unpairFromDapp: (pairingTopic: string) => Promise<void>
+  dappTxData?: DappTxData
   activeSessions: SessionTypes.Struct[]
   dAppUrlToConnectTo?: string
 }
 
 const initialContext: WalletConnectContextProps = {
   walletConnectClient: undefined,
+  pairWithDapp: () => null,
   unpairFromDapp: () => Promise.resolve(),
   dappTxData: undefined,
-  requestEvent: undefined,
-  onSessionRequestError: () => Promise.resolve(),
-  onSessionRequestSuccess: () => Promise.resolve(),
-  pairWithDapp: () => null,
   activeSessions: [],
   dAppUrlToConnectTo: undefined
 }
@@ -106,7 +99,7 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   const [walletConnectClient, setWalletConnectClient] = useState(initialContext.walletConnectClient)
   const [activeSessions, setActiveSessions] = useState(initialContext.activeSessions)
   const [dappTxData, setDappTxData] = useState(initialContext.dappTxData)
-  const [requestEvent, setRequestEvent] = useState(initialContext.requestEvent)
+  const [sessionRequestEvent, setSessionRequestEvent] = useState<SessionRequestEvent>()
   const [sessionProposalEvent, setSessionProposalEvent] = useState<SessionProposalEvent>()
 
   const isAuthenticated = !!mnemonic
@@ -134,24 +127,27 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     }
   }, [posthog])
 
-  const onSessionRequestResponse = useCallback(
-    async (event: RequestEvent, response: EngineTypes.RespondParams['response']) => {
+  const respondToWalletConnect = useCallback(
+    async (event: SessionRequestEvent, response: EngineTypes.RespondParams['response']) => {
       if (!walletConnectClient) return
 
+      console.log('⏳ RESPONDING TO WC WITH:', { topic: event.topic, response })
       await walletConnectClient.respond({ topic: event.topic, response })
-      setRequestEvent(undefined)
+      console.log('✅ RESPONDING: DONE!')
+
+      setSessionRequestEvent(undefined)
       setDappTxData(undefined)
     },
     [walletConnectClient]
   )
 
-  const onSessionRequestSuccess = async (event: RequestEvent, result: node.SignResult) =>
-    await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', result })
+  const respondToWalletConnectWithSuccess = async (event: SessionRequestEvent, result: node.SignResult) =>
+    await respondToWalletConnect(event, { id: event.id, jsonrpc: '2.0', result })
 
-  const onSessionRequestError = useCallback(
-    async (event: RequestEvent, error: ReturnType<typeof getSdkError>) =>
-      await onSessionRequestResponse(event, { id: event.id, jsonrpc: '2.0', error }),
-    [onSessionRequestResponse]
+  const respondToWalletConnectWithError = useCallback(
+    async (event: SessionRequestEvent, error: ReturnType<typeof getSdkError>) =>
+      await respondToWalletConnect(event, { id: event.id, jsonrpc: '2.0', error }),
+    [respondToWalletConnect]
   )
 
   const onSessionProposal = useCallback(async (sessionProposalEvent: SessionProposalEvent) => {
@@ -164,10 +160,10 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
   }, [])
 
   const onSessionRequest = useCallback(
-    async (event: RequestEvent) => {
+    async (event: SessionRequestEvent) => {
       if (!walletConnectClient) return
 
-      setRequestEvent(event)
+      setSessionRequestEvent(event)
 
       const getSignerAddressByHash = (hash: string) => {
         const address = addresses.find((a) => a.hash === hash)
@@ -299,19 +295,19 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
           }
           default:
             // TODO: support all of the other SignerProvider methods
-            onSessionRequestError(event, getSdkError('WC_METHOD_UNSUPPORTED'))
+            respondToWalletConnectWithError(event, getSdkError('WC_METHOD_UNSUPPORTED'))
             throw new Error(`Method not supported: ${request.method}`)
         }
       } catch (e) {
         console.error('Error while parsing WalletConnect session request', e)
         posthog.capture('Error', { message: 'Could not parse WalletConnect session request' })
-        onSessionRequestError(event, {
+        respondToWalletConnectWithError(event, {
           message: getHumanReadableError(e, 'Error while parsing WalletConnect session request'),
           code: WALLETCONNECT_ERRORS.PARSING_SESSION_REQUEST_FAILED
         })
       }
     },
-    [addresses, onSessionRequestError, posthog, walletConnectClient]
+    [addresses, respondToWalletConnectWithError, posthog, walletConnectClient]
   )
 
   const pairWithDapp = useCallback(
@@ -611,15 +607,49 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     }
   }
 
+  const handleTransactionBuildFail = async (errorMessage: string) => {
+    if (sessionRequestEvent)
+      await respondToWalletConnectWithError(sessionRequestEvent, {
+        message: errorMessage,
+        code: WALLETCONNECT_ERRORS.TRANSACTION_BUILD_FAILED
+      })
+  }
+
+  const handleSessionRequestModalClose = async () => {
+    if (sessionRequestEvent)
+      await respondToWalletConnectWithError(sessionRequestEvent, getSdkError('USER_REJECTED_EVENTS'))
+  }
+
+  const handleSendSuccess = async (result: node.SignResult) => {
+    if (sessionRequestEvent) await respondToWalletConnectWithSuccess(sessionRequestEvent, result)
+  }
+
+  const handleSendFail = async (errorMessage: string) => {
+    if (sessionRequestEvent)
+      await respondToWalletConnectWithError(sessionRequestEvent, {
+        message: errorMessage,
+        code: WALLETCONNECT_ERRORS.TRANSACTION_SEND_FAILED
+      })
+  }
+
+  const handleSignSuccess = async (result: SignUnsignedTxResult) => {
+    if (sessionRequestEvent) await respondToWalletConnectWithSuccess(sessionRequestEvent, result)
+  }
+
+  const handleSignFail = async (errorMessage: string) => {
+    if (sessionRequestEvent)
+      await respondToWalletConnectWithError(sessionRequestEvent, {
+        message: errorMessage,
+        code: WALLETCONNECT_ERRORS.TRANSACTION_SIGN_FAILED
+      })
+  }
+
   return (
     <WalletConnectContext.Provider
       value={{
         unpairFromDapp,
-        requestEvent,
         walletConnectClient,
         dappTxData,
-        onSessionRequestError,
-        onSessionRequestSuccess,
         pairWithDapp,
         activeSessions,
         dAppUrlToConnectTo: sessionProposalEvent?.params.proposer.metadata.url
@@ -641,7 +671,16 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
             <SendModalDeployContract
               initialTxData={dappTxData}
               txData={dappTxData as DeployContractTxData}
-              onClose={() => setIsDeployContractSendModalOpen(false)}
+              onClose={() => {
+                handleSessionRequestModalClose()
+                setIsDeployContractSendModalOpen(false)
+              }}
+              onTransactionBuildFail={(errorMessage) => {
+                handleTransactionBuildFail(errorMessage)
+                setIsDeployContractSendModalOpen(false)
+              }}
+              onSendSuccess={handleSendSuccess}
+              onSendFail={handleSendFail}
             />
           )}
           {isCallScriptSendModalOpen && dappTxData && (
@@ -649,13 +688,27 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
               initialStep="info-check"
               initialTxData={dappTxData}
               txData={dappTxData as CallContractTxData}
-              onClose={() => setIsCallScriptSendModalOpen(false)}
+              onClose={() => {
+                handleSessionRequestModalClose()
+                setIsCallScriptSendModalOpen(false)
+              }}
+              onTransactionBuildFail={(errorMessage) => {
+                handleTransactionBuildFail(errorMessage)
+                setIsCallScriptSendModalOpen(false)
+              }}
+              onSendSuccess={handleSendSuccess}
+              onSendFail={handleSendFail}
             />
           )}
           {isSignUnsignedTxModalOpen && dappTxData && (
             <SignUnsignedTxModal
               txData={dappTxData as SignUnsignedTxData}
-              onClose={() => setIsSignUnsignedTxModalOpen(false)}
+              onClose={() => {
+                handleSessionRequestModalClose()
+                setIsSignUnsignedTxModalOpen(false)
+              }}
+              onSignSuccess={handleSignSuccess}
+              onSignFail={handleSignFail}
             />
           )}
         </ModalPortal>

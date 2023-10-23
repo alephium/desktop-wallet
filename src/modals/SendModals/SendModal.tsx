@@ -16,9 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { APIError, getHumanReadableError } from '@alephium/sdk'
+import { getHumanReadableError } from '@alephium/sdk'
 import { node } from '@alephium/web3'
-import { getSdkError } from '@walletconnect/utils'
 import { colord } from 'colord'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
@@ -30,7 +29,6 @@ import styled from 'styled-components'
 import { fadeIn } from '@/animations'
 import { buildSweepTransactions } from '@/api/transactions'
 import PasswordConfirmation from '@/components/PasswordConfirmation'
-import { useWalletConnectContext } from '@/contexts/walletconnect'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import CenteredModal, { ScrollableModalContent } from '@/modals/CenteredModal'
 import ConsolidateUTXOsModal from '@/modals/ConsolidateUTXOsModal'
@@ -43,12 +41,20 @@ import {
 } from '@/storage/transactions/transactionsActions'
 import { Address } from '@/types/addresses'
 import { CheckTxProps, TxContext, UnsignedTx } from '@/types/transactions'
-import { WALLETCONNECT_ERRORS } from '@/utils/constants'
 
-type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
-  title: string
+export type ConfigurableSendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
+  txData?: T
   initialTxData: PT
+  initialStep?: Step
   onClose: () => void
+  onTransactionBuildFail?: (errorMessage: string) => void
+  onSendSuccess?: (result: node.SignResult) => Promise<void>
+  onSendFail?: (errorMessage: string) => Promise<void>
+}
+
+export interface SendModalProps<PT extends { fromAddress: Address }, T extends PT>
+  extends ConfigurableSendModalProps<PT, T> {
+  title: string
   AddressesTxModalContent: (props: {
     data: PT
     onSubmit: (data: PT) => void
@@ -59,8 +65,6 @@ type SendModalProps<PT extends { fromAddress: Address }, T extends PT> = {
   buildTransaction: (data: T, context: TxContext) => Promise<void>
   handleSend: (data: T, context: TxContext, posthog: PostHog) => Promise<string | undefined>
   getWalletConnectResult: (context: TxContext, signature: string) => node.SignResult
-  txData?: T
-  initialStep?: Step
   isContract?: boolean
 }
 
@@ -76,12 +80,13 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   getWalletConnectResult,
   txData,
   initialStep,
-  isContract
+  isContract,
+  onTransactionBuildFail,
+  onSendSuccess,
+  onSendFail
 }: SendModalProps<PT, T>) {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
-  const { requestEvent, walletConnectClient, onSessionRequestError, onSessionRequestSuccess } =
-    useWalletConnectContext()
   const settings = useAppSelector((s) => s.settings)
   const posthog = usePostHog()
 
@@ -147,24 +152,25 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
         }
       } catch (e) {
         // TODO: When API error codes are available, replace this substring check with a proper error code check
-        const { error } = e as APIError
-        if (error?.detail && (error.detail.includes('consolidating') || error.detail.includes('consolidate'))) {
+        const error = (e as unknown as string).toString()
+
+        if (error.includes('consolidating') || error.includes('consolidate')) {
           setIsConsolidateUTXOsModalVisible(true)
           setConsolidationRequired(true)
           posthog.capture('Error', { message: 'Could not build tx, consolidation required' })
         } else {
           const errorMessage = getHumanReadableError(e, t('Error while building transaction'))
 
-          dispatch(transactionBuildFailed(errorMessage))
-          posthog.capture('Error', { message: 'Could not build tx' })
+          if (error.includes('NotEnoughApprovedBalance')) {
+            dispatch(transactionBuildFailed('Your address does not have enough balance for this transaction'))
+          } else {
+            dispatch(transactionBuildFailed(errorMessage))
+            posthog.capture('Error', { message: 'Could not build tx' })
+          }
 
-          if (isRequestToApproveContractCall) {
-            if (requestEvent)
-              onSessionRequestError(requestEvent, {
-                message: errorMessage,
-                code: WALLETCONNECT_ERRORS.TRANSACTION_BUILD_FAILED
-              })
-
+          if (isRequestToApproveContractCall && onTransactionBuildFail) {
+            onTransactionBuildFail(errorMessage)
+          } else {
             onClose()
           }
         }
@@ -178,9 +184,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       isConsolidateUTXOsModalVisible,
       isRequestToApproveContractCall,
       onClose,
-      onSessionRequestError,
+      onTransactionBuildFail,
       posthog,
-      requestEvent,
       t,
       txContext
     ]
@@ -193,12 +198,6 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     }
   }, [buildTransactionExtended, isRequestToApproveContractCall, isTransactionBuildTriggered, transactionData])
 
-  const onCloseExtended = useCallback(() => {
-    onClose()
-
-    if (requestEvent) onSessionRequestError(requestEvent, getSdkError('USER_REJECTED_EVENTS'))
-  }, [onClose, requestEvent, onSessionRequestError])
-
   const handleSendExtended = async () => {
     if (!transactionData) return
 
@@ -207,9 +206,9 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     try {
       const signature = await handleSend(transactionData, txContext, posthog)
 
-      if (walletConnectClient && requestEvent && signature) {
+      if (signature && onSendSuccess) {
         const result = getWalletConnectResult(txContext, signature)
-        await onSessionRequestSuccess(requestEvent, result)
+        await onSendSuccess(result)
       }
 
       dispatch(transactionsSendSucceeded({ nbOfTransactionsSent: isSweeping ? sweepUnsignedTxs.length : 1 }))
@@ -218,11 +217,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
       dispatch(transactionSendFailed(getHumanReadableError(e, t('Error while sending the transaction'))))
       posthog.capture('Error', { message: 'Could not send tx' })
 
-      if (requestEvent)
-        onSessionRequestError(requestEvent, {
-          message: getHumanReadableError(e, 'Error while sending the transaction'),
-          code: WALLETCONNECT_ERRORS.TRANSACTION_SEND_FAILED
-        })
+      onSendFail && onSendFail(getHumanReadableError(e, 'Error while sending the transaction'))
     } finally {
       setIsLoading(false)
     }
@@ -234,8 +229,8 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   }
 
   useEffect(() => {
-    if (step === 'tx-sent') setTimeout(onCloseExtended, 2000)
-  }, [onCloseExtended, step])
+    if (step === 'tx-sent') setTimeout(onClose, 2000)
+  }, [onClose, step])
 
   const confirmPassword = () => {
     if (consolidationRequired) setIsConsolidateUTXOsModalVisible(false)
@@ -253,7 +248,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
   return (
     <CenteredModal
       title={title}
-      onClose={onCloseExtended}
+      onClose={onClose}
       isLoading={isLoading}
       dynamicContent
       onBack={onBackCallback}
@@ -263,7 +258,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
     >
       <StepsProgress currentStep={step} isContract={isContract} />
       {step === 'addresses' && (
-        <AddressesTxModalContent data={addressesData} onSubmit={moveToSecondStep} onCancel={onCloseExtended} />
+        <AddressesTxModalContent data={addressesData} onSubmit={moveToSecondStep} onCancel={onClose} />
       )}
       {step === 'build-tx' && (
         <ScrollableModalContent>
@@ -273,7 +268,7 @@ function SendModal<PT extends { fromAddress: Address }, T extends PT>({
               ...addressesData
             }}
             onSubmit={buildTransactionExtended}
-            onCancel={onCloseExtended}
+            onCancel={onClose}
           />
         </ScrollableModalContent>
       )}
