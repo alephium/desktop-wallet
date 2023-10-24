@@ -657,62 +657,64 @@ export const WalletConnectContextProvider: FC = ({ children }) => {
     >
       {children}
 
-      {isAuthenticated && (
-        <ModalPortal>
-          {sessionProposalEvent && isSessionProposalModalOpen && (
-            <WalletConnectSessionProposalModal
-              approveProposal={approveProposal}
-              rejectProposal={rejectProposal}
-              proposalEvent={sessionProposalEvent}
-              onClose={() => setIsSessionProposalModalOpen(false)}
-            />
-          )}
-          {isDeployContractSendModalOpen && dappTxData && (
-            <SendModalDeployContract
-              initialTxData={dappTxData}
-              txData={dappTxData as DeployContractTxData}
-              onClose={() => {
-                handleSessionRequestModalClose()
-                setIsDeployContractSendModalOpen(false)
-              }}
-              onTransactionBuildFail={(errorMessage) => {
-                handleTransactionBuildFail(errorMessage)
-                setIsDeployContractSendModalOpen(false)
-              }}
-              onSendSuccess={handleSendSuccess}
-              onSendFail={handleSendFail}
-            />
-          )}
-          {isCallScriptSendModalOpen && dappTxData && (
-            <SendModalCallContract
-              initialStep="info-check"
-              initialTxData={dappTxData}
-              txData={dappTxData as CallContractTxData}
-              onClose={() => {
-                handleSessionRequestModalClose()
-                setIsCallScriptSendModalOpen(false)
-              }}
-              onTransactionBuildFail={(errorMessage) => {
-                handleTransactionBuildFail(errorMessage)
-                setIsCallScriptSendModalOpen(false)
-              }}
-              onSendSuccess={handleSendSuccess}
-              onSendFail={handleSendFail}
-            />
-          )}
-          {isSignUnsignedTxModalOpen && dappTxData && (
-            <SignUnsignedTxModal
-              txData={dappTxData as SignUnsignedTxData}
-              onClose={() => {
-                handleSessionRequestModalClose()
-                setIsSignUnsignedTxModalOpen(false)
-              }}
-              onSignSuccess={handleSignSuccess}
-              onSignFail={handleSignFail}
-            />
-          )}
-        </ModalPortal>
-      )}
+      <ModalPortal>
+        {isAuthenticated && (
+          <>
+            {!!sessionProposalEvent && isSessionProposalModalOpen && (
+              <WalletConnectSessionProposalModal
+                approveProposal={approveProposal}
+                rejectProposal={rejectProposal}
+                proposalEvent={sessionProposalEvent}
+                onClose={() => setIsSessionProposalModalOpen(false)}
+              />
+            )}
+            {isDeployContractSendModalOpen && dappTxData && (
+              <SendModalDeployContract
+                initialTxData={dappTxData}
+                txData={dappTxData as DeployContractTxData}
+                onClose={() => {
+                  handleSessionRequestModalClose()
+                  setIsDeployContractSendModalOpen(false)
+                }}
+                onTransactionBuildFail={(errorMessage) => {
+                  handleTransactionBuildFail(errorMessage)
+                  setIsDeployContractSendModalOpen(false)
+                }}
+                onSendSuccess={handleSendSuccess}
+                onSendFail={handleSendFail}
+              />
+            )}
+            {isCallScriptSendModalOpen && dappTxData && (
+              <SendModalCallContract
+                initialStep="info-check"
+                initialTxData={dappTxData}
+                txData={dappTxData as CallContractTxData}
+                onClose={() => {
+                  handleSessionRequestModalClose()
+                  setIsCallScriptSendModalOpen(false)
+                }}
+                onTransactionBuildFail={(errorMessage) => {
+                  handleTransactionBuildFail(errorMessage)
+                  setIsCallScriptSendModalOpen(false)
+                }}
+                onSendSuccess={handleSendSuccess}
+                onSendFail={handleSendFail}
+              />
+            )}
+            {isSignUnsignedTxModalOpen && dappTxData && (
+              <SignUnsignedTxModal
+                txData={dappTxData as SignUnsignedTxData}
+                onClose={() => {
+                  handleSessionRequestModalClose()
+                  setIsSignUnsignedTxModalOpen(false)
+                }}
+                onSignSuccess={handleSignSuccess}
+                onSignFail={handleSignFail}
+              />
+            )}
+          </>
+        )}
+      </ModalPortal>
     </WalletConnectContext.Provider>
   )
 }
