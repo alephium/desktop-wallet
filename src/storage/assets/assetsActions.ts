@@ -82,12 +82,12 @@ export const syncUnknownTokensInfo = createAsyncThunk(
             ...omit(tokenMetadata, ['totalSupply'])
           })
         } else if (type === 'non-fungible') {
-          const { tokenUri, collectionAddress } = await client.node.fetchNFTMetaData(id)
+          const { tokenUri, collectionId } = await client.node.fetchNFTMetaData(id)
           const nftData = await exponentialBackoffFetchRetry(tokenUri).then((res) => res.json())
 
           results.nfts.push({
             id,
-            collectionAddress,
+            collectionId,
             name: nftData?.name,
             description: nftData?.description,
             image: nftData?.image
