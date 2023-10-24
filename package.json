@@ -90,7 +90,7 @@
     "lucide-react": "^0.287.0",
     "nanoid": "^4.0.0",
     "posthog-js": "^1.52.0",
-    "prettier": "^2.7.1",
+    "prettier": "^3.0.3",
     "qrloop": "^1.4.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",

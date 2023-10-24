@@ -80,9 +80,12 @@ const UnlockedWalletLayout = ({ children, title, className }: UnlockedWalletLayo
       previousWalletName.current = activeWalletName
     }
 
-    const timeoutHandle = setTimeout(() => {
-      if (fullWalletNameVisible) setFullWalletNameVisible(false)
-    }, (walletNameHideAfterSeconds - walletNameAppearAfterSeconds) * 1000)
+    const timeoutHandle = setTimeout(
+      () => {
+        if (fullWalletNameVisible) setFullWalletNameVisible(false)
+      },
+      (walletNameHideAfterSeconds - walletNameAppearAfterSeconds) * 1000
+    )
 
     return () => clearTimeout(timeoutHandle)
   }, [activeWalletName, fullWalletNameVisible])
@@ -186,10 +189,9 @@ export const UnlockedWalletPanel = styled.div<{
   padding-left: 60px;
   padding-right: 60px;
 
-  ${({ top, doubleTop }) =>
-    css`
-      padding-top: ${top ? 20 : doubleTop ? 40 : 0}px;
-    `}
+  ${({ top, doubleTop }) => css`
+    padding-top: ${top ? 20 : doubleTop ? 40 : 0}px;
+  `}
 
   ${({ bottom }) =>
     bottom &&

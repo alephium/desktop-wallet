@@ -229,10 +229,9 @@ const SocialMedias = styled.div`
 `
 
 const SocialMedia = styled.div<{ src: string }>`
-  ${({ src }) =>
-    css`
-      mask: url(${src}) no-repeat center;
-    `}
+  ${({ src }) => css`
+    mask: url(${src}) no-repeat center;
+  `}
 
   height: 20px;
   width: 20px;
