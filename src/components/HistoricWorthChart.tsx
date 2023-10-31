@@ -242,11 +242,13 @@ const getChartOptions = (
         [
           {
             offset: 0,
-            color: colord(chartColor).alpha(0.3).toHex()
+            color: colord(chartColor).alpha(0.3).toHex(),
+            opacity: 1
           },
           {
             offset: 100,
-            color: colord(chartColor).alpha(0).toHex()
+            color: colord(chartColor).alpha(0).toHex(),
+            opacity: 1
           }
         ]
       ]

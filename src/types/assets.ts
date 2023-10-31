@@ -25,7 +25,7 @@ export type FungibleTokenBasicMetadata = Omit<FungibleTokenMetaData, 'totalSuppl
 
 export type NFT = {
   id: Asset['id']
-  collectionAddress: NFTMetaData['collectionAddress']
+  collectionId: NFTMetaData['collectionId']
   name?: string
   description?: string
   image?: string

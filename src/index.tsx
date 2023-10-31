@@ -37,6 +37,7 @@ import { store } from '@/storage/store'
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 // const root = createRoot(document.getElementById('root')!)
 
+// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
