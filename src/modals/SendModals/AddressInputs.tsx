@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ContactIcon } from 'lucide-react'
+import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -72,6 +72,7 @@ const AddressInputs = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const theme = useTheme()
 
+  const [isContactSelectModalOpen, setIsContactSelectModalOpen] = useState(false)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
   const [contact, setContact] = useState<Contact>()
   const [filteredContacts, setFilteredContacts] = useState(contacts)
@@ -101,7 +102,7 @@ const AddressInputs = ({
     setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
 
   const handleContactSelectModalClose = () => {
-    setIsAddressSelectModalOpen(false)
+    setIsContactSelectModalOpen(false)
     setFilteredContacts(contacts)
     moveFocusOnPreviousModal()
   }
@@ -125,6 +126,7 @@ const AddressInputs = ({
               id="from-address"
               hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
               simpleMode
+              shouldDisplayAddressSelectModal={isAddressSelectModalOpen}
             />
           )}
         </BoxStyled>
@@ -135,42 +137,56 @@ const AddressInputs = ({
           subtitle={t('The address which will receive the transaction.')}
           className={className}
         >
-          <BoxStyled>
-            <AddressToInput
-              inputFieldRef={inputRef}
-              value={toAddress.value}
-              error={toAddress.error}
-              onFocus={handleFocus}
-              onBlur={() => setInputFieldMode('view')}
-              onChange={(e) => onToAddressChange(e.target.value.trim())}
-              inputFieldStyle={{
-                color: isContactVisible ? 'transparent' : undefined,
-                transition: 'all 0.2s ease-out'
-              }}
-            >
-              {isContactVisible && (
-                <ContactRow onClick={handleFocus}>
-                  <Truncate>{contact.name}</Truncate>
-                  <HashEllipsedStyled hash={contact.address} disableA11y />
-                </ContactRow>
-              )}
-            </AddressToInput>
-          </BoxStyled>
-          <Button
-            Icon={ContactIcon}
-            iconColor={theme.global.accent}
-            variant="faded"
-            short
-            borderless
-            onClick={() => setIsAddressSelectModalOpen(true)}
+          <AddressToInput
+            inputFieldRef={inputRef}
+            value={toAddress.value}
+            error={toAddress.error}
+            onFocus={handleFocus}
+            onBlur={() => setInputFieldMode('view')}
+            onChange={(e) => onToAddressChange(e.target.value.trim())}
+            inputFieldStyle={{
+              color: isContactVisible ? 'transparent' : undefined,
+              transition: 'all 0.2s ease-out'
+            }}
           >
-            Contacts
-          </Button>
+            {isContactVisible && (
+              <ContactRow onClick={handleFocus}>
+                <Truncate>{contact.name}</Truncate>
+                <HashEllipsedStyled hash={contact.address} disableA11y />
+              </ContactRow>
+            )}
+          </AddressToInput>
+
+          <DestinationActions>
+            <Button
+              Icon={ContactIcon}
+              iconColor={theme.global.accent}
+              variant="faded"
+              short
+              borderless
+              onClick={() => setIsContactSelectModalOpen(true)}
+            >
+              Contacts
+            </Button>
+            <Button
+              Icon={AlbumIcon}
+              iconColor={theme.global.accent}
+              variant="faded"
+              short
+              borderless
+              onClick={() => setIsAddressSelectModalOpen(true)}
+            >
+              Your addresses
+            </Button>
+            <Button Icon={ScanLineIcon} iconColor={theme.global.accent} variant="faded" short borderless>
+              Scan
+            </Button>
+          </DestinationActions>
         </InputsSection>
       )}
 
       <ModalPortal>
-        {isAddressSelectModalOpen && (
+        {isContactSelectModalOpen && (
           <SelectOptionsModal
             title={t('Choose a contact')}
             options={contactSelectOptions}
@@ -216,26 +232,26 @@ const ContactRow = styled(motion.div)`
   display: flex;
   gap: var(--spacing-2);
   position: absolute;
-  width: 85%;
   height: 100%;
   align-items: center;
   top: 0;
   left: ${inputStyling.paddingLeftRight};
+  right: ${inputStyling.paddingLeftRight};
   transition: opacity 0.2s ease-out;
 `
 
 const BoxStyled = styled(Box)`
   display: flex;
   align-items: center;
-  padding: 5px;
   gap: 10px;
+  height: var(--inputHeight);
 `
 
 const AddressToInput = styled(Input)`
   margin: 0;
-  border: 1px solid transparent;
+`
 
-  &:not(:hover) {
-    background-color: transparent;
-  }
+const DestinationActions = styled.div`
+  display: flex;
+  gap: 5px;
 `

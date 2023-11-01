@@ -47,6 +47,7 @@ interface AddressSelectProps {
   noMargin?: boolean
   className?: string
   emptyListPlaceholder?: string
+  shouldDisplayAddressSelectModal?: boolean
 }
 
 function AddressSelect({
@@ -61,14 +62,15 @@ function AddressSelect({
   hideAddressesWithoutAssets,
   noMargin,
   simpleMode = false,
-  emptyListPlaceholder
+  emptyListPlaceholder,
+  shouldDisplayAddressSelectModal
 }: AddressSelectProps) {
   const { t } = useTranslation()
   const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [canBeAnimated, setCanBeAnimated] = useState(false)
-  const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
+  const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(shouldDisplayAddressSelectModal)
   const addresses = hideAddressesWithoutAssets ? filterAddressesWithoutAssets(options) : options
   const [filteredAddresses, setFilteredAddresses] = useState(addresses)
   const defaultAddressHasAssets = defaultAddress && addressHasAssets(defaultAddress)
@@ -116,6 +118,10 @@ function AddressSelect({
       onAddressChange(address)
     }
   }, [address, defaultAddress, onAddressChange])
+
+  useEffect(() => {
+    setIsAddressSelectModalOpen(shouldDisplayAddressSelectModal)
+  }, [shouldDisplayAddressSelectModal])
 
   if (!address) return null
 
