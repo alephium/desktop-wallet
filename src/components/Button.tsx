@@ -264,6 +264,12 @@ export default styled(Button)`
       &:hover {
         color: ${hoverColor};
         background-color: ${hoverBgColor};
+
+        ${ButtonIcon} {
+          svg {
+            stroke: ${hoverColor};
+          }
+        }
       }
 
       &:active {

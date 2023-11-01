@@ -17,19 +17,19 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ArrowDown, ContactIcon } from 'lucide-react'
+import { ContactIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 
 import Box from '@/components/Box'
+import Button from '@/components/Button'
 import HashEllipsed from '@/components/HashEllipsed'
 import { inputStyling } from '@/components/Inputs'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
-import VerticalDivider from '@/components/PageComponents/VerticalDivider'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
@@ -70,6 +70,7 @@ const AddressInputs = ({
   const contacts = useAppSelector(selectAllContacts)
   const isAddressesStateUninitialized = useAppSelector(selectIsStateUninitialized)
   const inputRef = useRef<HTMLInputElement>(null)
+  const theme = useTheme()
 
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
   const [contact, setContact] = useState<Contact>()
@@ -106,34 +107,35 @@ const AddressInputs = ({
   }
 
   return (
-    <InputsSection title={t('Addresses')} className={className}>
-      <BoxStyled>
-        <InputFixedLabel>{t('From')}</InputFixedLabel>
-        <VerticalDivider />
-        {isAddressesStateUninitialized ? (
-          <SkeletonLoader height="55px" />
-        ) : (
-          <AddressSelect
-            title={t('Select the address to send funds from.')}
-            options={fromAddresses}
-            defaultAddress={updatedInitialAddress}
-            onAddressChange={onFromAddressChange}
-            id="from-address"
-            hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
-            simpleMode
-          />
-        )}
-      </BoxStyled>
-
+    <InputsContainer>
+      <InputsSection
+        title={t('Origin')}
+        subtitle={t('One of your addresses to send the transaction from.')}
+        className={className}
+      >
+        <BoxStyled>
+          {isAddressesStateUninitialized ? (
+            <SkeletonLoader height="55px" />
+          ) : (
+            <AddressSelect
+              title={t('Select the address to send funds from.')}
+              options={fromAddresses}
+              defaultAddress={updatedInitialAddress}
+              onAddressChange={onFromAddressChange}
+              id="from-address"
+              hideAddressesWithoutAssets={hideFromAddressesWithoutAssets}
+              simpleMode
+            />
+          )}
+        </BoxStyled>
+      </InputsSection>
       {toAddress && onToAddressChange && (
-        <>
-          <DividerArrowRow>
-            <DividerArrow size={20} />
-          </DividerArrowRow>
-
+        <InputsSection
+          title={t('Destination')}
+          subtitle={t('The address which will receive the transaction.')}
+          className={className}
+        >
           <BoxStyled>
-            <InputFixedLabel>{t('To')}</InputFixedLabel>
-            <VerticalDivider />
             <AddressToInput
               inputFieldRef={inputRef}
               value={toAddress.value}
@@ -145,8 +147,6 @@ const AddressInputs = ({
                 color: isContactVisible ? 'transparent' : undefined,
                 transition: 'all 0.2s ease-out'
               }}
-              Icon={ContactIcon}
-              onIconPress={() => setIsAddressSelectModalOpen(true)}
             >
               {isContactVisible && (
                 <ContactRow onClick={handleFocus}>
@@ -156,7 +156,17 @@ const AddressInputs = ({
               )}
             </AddressToInput>
           </BoxStyled>
-        </>
+          <Button
+            Icon={ContactIcon}
+            iconColor={theme.global.accent}
+            variant="faded"
+            short
+            borderless
+            onClick={() => setIsAddressSelectModalOpen(true)}
+          >
+            Contacts
+          </Button>
+        </InputsSection>
       )}
 
       <ModalPortal>
@@ -179,11 +189,17 @@ const AddressInputs = ({
           />
         )}
       </ModalPortal>
-    </InputsSection>
+    </InputsContainer>
   )
 }
 
 export default AddressInputs
+
+const InputsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+`
 
 const Name = styled(Truncate)`
   font-weight: var(--fontWeight-semiBold);
@@ -222,28 +238,4 @@ const AddressToInput = styled(Input)`
   &:not(:hover) {
     background-color: transparent;
   }
-`
-
-const InputFixedLabel = styled.div`
-  min-width: 12%;
-  padding-left: 20px;
-  color: ${({ theme }) => theme.font.secondary};
-`
-
-const DividerArrowRow = styled.div`
-  height: 20px;
-  margin: -5px 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const DividerArrow = styled(ArrowDown)`
-  padding: 2px;
-  color: ${({ theme }) => theme.font.tertiary};
-  border-radius: var(--radius-full);
-  border: 1px solid ${({ theme }) => theme.border.primary};
-  background-color: ${({ theme }) => theme.bg.primary};
-  box-shadow: ${({ theme }) => theme.shadow.primary};
 `
