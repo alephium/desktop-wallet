@@ -53,6 +53,7 @@ const Input = ({
   inputFieldRef,
   liftLabel = false,
   heightSize = 'normal',
+  largeText,
   ...props
 }: InputProps) => {
   const theme = useTheme()
@@ -97,6 +98,7 @@ const Input = ({
           ref={inputFieldRef}
           heightSize={heightSize}
           contrast={contrast}
+          largeText={largeText}
         />
         {!!Icon && !onIconPress && !isValid && (
           <InputIconContainer>
@@ -132,8 +134,8 @@ export const InputContainer = styled(motion.div)<Pick<InputProps, 'noMargin' | '
 `
 
 export const InputBase = styled.input<InputProps>`
-  ${({ isValid, value, label, Icon, heightSize, contrast }) =>
-    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize, contrast)};
+  ${({ isValid, value, label, Icon, heightSize, contrast, largeText }) =>
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, heightSize, contrast, largeText)};
   color-scheme: ${({ theme }) => (colord(theme.bg.primary).isDark() ? 'dark' : 'light')};
 `
 

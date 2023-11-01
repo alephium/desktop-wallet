@@ -18,20 +18,18 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { MoreVertical } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
 import HashEllipsed from '@/components/HashEllipsed'
 import { inputDefaultStyle, InputLabel, InputProps } from '@/components/Inputs'
-import { MoreIcon, SelectContainer, SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
-import SelectOptionAddress from '@/components/Inputs/SelectOptionAddress'
+import { MoreIcon, SelectContainer } from '@/components/Inputs/Select'
 import { sectionChildrenVariants } from '@/components/PageComponents/PageContainers'
-import { useAppSelector } from '@/hooks/redux'
+import AddressSelectModal from '@/modals/AddressSelectModal'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
-import { Address, AddressHash } from '@/types/addresses'
-import { addressHasAssets, filterAddresses, filterAddressesWithoutAssets } from '@/utils/addresses'
+import { Address } from '@/types/addresses'
+import { addressHasAssets, filterAddressesWithoutAssets } from '@/utils/addresses'
 import { onEnterOrSpace } from '@/utils/misc'
 
 interface AddressSelectProps {
@@ -62,17 +60,13 @@ function AddressSelect({
   hideAddressesWithoutAssets,
   noMargin,
   simpleMode = false,
-  emptyListPlaceholder,
-  shouldDisplayAddressSelectModal
+  emptyListPlaceholder
 }: AddressSelectProps) {
-  const { t } = useTranslation()
-  const assetsInfo = useAppSelector((state) => state.assetsInfo.entities)
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
 
   const [canBeAnimated, setCanBeAnimated] = useState(false)
-  const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(shouldDisplayAddressSelectModal)
+  const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
   const addresses = hideAddressesWithoutAssets ? filterAddressesWithoutAssets(options) : options
-  const [filteredAddresses, setFilteredAddresses] = useState(addresses)
   const defaultAddressHasAssets = defaultAddress && addressHasAssets(defaultAddress)
 
   let initialAddress = defaultAddress
@@ -86,22 +80,8 @@ function AddressSelect({
 
   const [address, setAddress] = useState(initialAddress)
 
-  const addressSelectOptions: SelectOption<AddressHash>[] = addresses.map((address) => ({
-    value: address.hash,
-    label: address.label ?? address.hash
-  }))
-
-  const selectAddress = (option: SelectOption<AddressHash>) => {
-    const selectedAddress = addresses.find((address) => address.hash === option.value)
-    selectedAddress && setAddress(selectedAddress)
-  }
-
-  const handleSearch = (searchInput: string) =>
-    setFilteredAddresses(filterAddresses(addresses, searchInput.toLowerCase(), assetsInfo))
-
   const handleAddressSelectModalClose = () => {
     setIsAddressSelectModalOpen(false)
-    setFilteredAddresses(addresses)
     moveFocusOnPreviousModal()
   }
 
@@ -118,10 +98,6 @@ function AddressSelect({
       onAddressChange(address)
     }
   }, [address, defaultAddress, onAddressChange])
-
-  useEffect(() => {
-    setIsAddressSelectModalOpen(shouldDisplayAddressSelectModal)
-  }, [shouldDisplayAddressSelectModal])
 
   if (!address) return null
 
@@ -169,27 +145,12 @@ function AddressSelect({
       </AddressSelectContainer>
       <ModalPortal>
         {isAddressSelectModalOpen && (
-          <SelectOptionsModal
+          <AddressSelectModal
             title={title}
-            options={addressSelectOptions}
-            selectedOption={addressSelectOptions.find((a) => a.value === address.hash)}
-            showOnly={filteredAddresses.map((address) => address.hash)}
-            setValue={selectAddress}
+            options={options}
+            onAddressSelect={setAddress}
             onClose={handleAddressSelectModalClose}
-            onSearchInput={handleSearch}
-            searchPlaceholder={t('Search for name or a hash...')}
-            optionRender={(option, isSelected) => {
-              const address = addresses.find((address) => address.hash === option.value)
-              if (address) return <SelectOptionAddress address={address} isSelected={isSelected} />
-            }}
-            emptyListPlaceholder={
-              emptyListPlaceholder ||
-              (hideAddressesWithoutAssets
-                ? t(
-                    'There are no addresses with available balance. Please, send some funds to one of your addresses, and try again.'
-                  )
-                : t('There are no available addresses.'))
-            }
+            selectedAddress={address}
           />
         )}
       </ModalPortal>
@@ -217,7 +178,7 @@ const AddressSelectContainer = styled(SelectContainer)<Pick<AddressSelectProps, 
 
 const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleMode'>>`
   ${({ isValid, Icon, simpleMode, value, label }) =>
-    inputDefaultStyle(isValid || !!Icon, !!value, !!label, simpleMode ? 'normal' : 'big')};
+    inputDefaultStyle(isValid || !!Icon, !!value, !!label, simpleMode ? 'normal' : 'big', false, true)};
   display: flex;
   align-items: center;
   padding-right: 50px;

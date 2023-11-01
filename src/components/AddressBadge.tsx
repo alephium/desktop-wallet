@@ -101,7 +101,7 @@ export default AddressBadge
 const AddressBadgeStyled = styled.div<Pick<AddressBadgeProps, 'withBorders' | 'truncate' | 'showFull'>>`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   max-width: ${({ showFull }) => !showFull && 125}px;
 
   ${({ withBorders }) =>

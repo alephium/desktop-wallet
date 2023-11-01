@@ -33,6 +33,7 @@ import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent
 import SkeletonLoader from '@/components/SkeletonLoader'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
+import AddressSelectModal from '@/modals/AddressSelectModal'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
@@ -101,6 +102,11 @@ const AddressInputs = ({
   const handleContactsSearch = (searchInput: string) =>
     setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
 
+  const handleToOwnAddressModalClose = () => {
+    setIsAddressSelectModalOpen(false)
+    moveFocusOnPreviousModal()
+  }
+
   const handleContactSelectModalClose = () => {
     setIsContactSelectModalOpen(false)
     setFilteredContacts(contacts)
@@ -148,6 +154,7 @@ const AddressInputs = ({
               color: isContactVisible ? 'transparent' : undefined,
               transition: 'all 0.2s ease-out'
             }}
+            largeText
           >
             {isContactVisible && (
               <ContactRow onClick={handleFocus}>
@@ -202,6 +209,15 @@ const AddressInputs = ({
                 SecondaryContent={<HashEllipsedStyled hash={contact.value} disableA11y />}
               />
             )}
+          />
+        )}
+        {isAddressSelectModalOpen && onToAddressChange && (
+          <AddressSelectModal
+            title={t('Select the address to send funds to.')}
+            options={fromAddresses}
+            onAddressSelect={(address) => onToAddressChange(address.hash)}
+            onClose={handleToOwnAddressModalClose}
+            selectedAddress={fromAddresses.find((a) => a.hash === toAddress?.value)}
           />
         )}
       </ModalPortal>

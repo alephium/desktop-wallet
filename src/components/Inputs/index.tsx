@@ -39,6 +39,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string
   heightSize?: InputHeight
   simpleMode?: boolean
+  largeText?: boolean
   showPointer?: boolean
 }
 
@@ -63,7 +64,8 @@ export const inputDefaultStyle = (
   hasValue?: boolean,
   hasLabel?: boolean,
   heightSize?: InputHeight,
-  isContrasted?: boolean
+  isContrasted?: boolean,
+  largeText?: boolean
 ) => css`
   background-image: none;
   height: ${heightSize === 'small' ? '50px' : heightSize === 'big' ? '60px' : 'var(--inputHeight)'};
@@ -74,7 +76,7 @@ export const inputDefaultStyle = (
   color: ${({ theme }) => theme.font.primary};
   padding: ${hasIcon ? `0 45px 0 ${inputStyling.paddingLeftRight}` : `0 ${inputStyling.paddingLeftRight}`};
   font-weight: var(--fontWeight-medium);
-  font-size: 1em;
+  font-size: ${largeText ? '1.12em' : '1em'};
   text-align: left;
   font-family: inherit;
 
