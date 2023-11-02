@@ -26,8 +26,8 @@ import Box from '@/components/Box'
 import Button from '@/components/Button'
 import HashEllipsed from '@/components/HashEllipsed'
 import { inputStyling } from '@/components/Inputs'
+import AddressInput from '@/components/Inputs/AddressInput'
 import AddressSelect from '@/components/Inputs/AddressSelect'
-import Input from '@/components/Inputs/Input'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import SkeletonLoader from '@/components/SkeletonLoader'
@@ -144,26 +144,10 @@ const AddressInputs = ({
           className={className}
         >
           <AddressToInput
-            inputFieldRef={inputRef}
             value={toAddress.value}
             error={toAddress.error}
-            onFocus={handleFocus}
-            onBlur={() => setInputFieldMode('view')}
             onChange={(e) => onToAddressChange(e.target.value.trim())}
-            inputFieldStyle={{
-              color: isContactVisible ? 'transparent' : undefined,
-              transition: 'all 0.2s ease-out'
-            }}
-            largeText
-          >
-            {isContactVisible && (
-              <ContactRow onClick={handleFocus}>
-                <Truncate>{contact.name}</Truncate>
-                <HashEllipsedStyled hash={contact.address} disableA11y />
-              </ContactRow>
-            )}
-          </AddressToInput>
-
+          />
           <DestinationActions>
             <Button
               Icon={ContactIcon}
@@ -263,7 +247,7 @@ const BoxStyled = styled(Box)`
   height: var(--inputHeight);
 `
 
-const AddressToInput = styled(Input)`
+const AddressToInput = styled(AddressInput)`
   margin: 0;
 `
 
