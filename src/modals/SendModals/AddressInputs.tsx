@@ -35,6 +35,7 @@ import SkeletonLoader from '@/components/SkeletonLoader'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
 import AddressSelectModal from '@/modals/AddressSelectModal'
+import CenteredModal from '@/modals/CenteredModal'
 import { useMoveFocusOnPreviousModal } from '@/modals/ModalContainer'
 import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
@@ -75,6 +76,7 @@ const AddressInputs = ({
 
   const [isContactSelectModalOpen, setIsContactSelectModalOpen] = useState(false)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
+  const [isScanningModalOpen, setIsScanningModalOpen] = useState(false)
   const [filteredContacts, setFilteredContacts] = useState(contacts)
 
   const contactSelectOptions: SelectOption<AddressHash>[] = contacts.map((contact) => ({
@@ -97,6 +99,14 @@ const AddressInputs = ({
     setIsContactSelectModalOpen(false)
     setFilteredContacts(contacts)
     moveFocusOnPreviousModal()
+  }
+
+  const handleQRCodeScan = (addressHash: string) => {
+    console.log('SUCCESSSS')
+    if (onToAddressChange) {
+      onToAddressChange(addressHash)
+      setIsScanningModalOpen(false)
+    }
   }
 
   return (
@@ -123,7 +133,6 @@ const AddressInputs = ({
           )}
         </BoxStyled>
       </InputsSection>
-      <QRScanner onScanSuccess={() => console.log('SCAN SUCCESS')} onScanFailure={() => console.log('SCAN FAIL')} />
       {toAddress && onToAddressChange && (
         <InputsSection
           title={t('Destination')}
@@ -156,7 +165,14 @@ const AddressInputs = ({
             >
               Your addresses
             </Button>
-            <Button Icon={ScanLineIcon} iconColor={theme.global.accent} variant="faded" short borderless>
+            <Button
+              Icon={ScanLineIcon}
+              iconColor={theme.global.accent}
+              variant="faded"
+              short
+              borderless
+              onClick={() => setIsScanningModalOpen(true)}
+            >
               Scan
             </Button>
           </DestinationActions>
@@ -190,6 +206,11 @@ const AddressInputs = ({
             onClose={handleToOwnAddressModalClose}
             selectedAddress={fromAddresses.find((a) => a.hash === toAddress?.value)}
           />
+        )}
+        {isScanningModalOpen && onToAddressChange && (
+          <CenteredModal onClose={() => setIsScanningModalOpen(false)} title={t('QR code scanner')}>
+            <QRScanner onScanSuccess={handleQRCodeScan} onScanFailure={() => console.log('FAILL')} />
+          </CenteredModal>
         )}
       </ModalPortal>
     </InputsContainer>

@@ -15,31 +15,23 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode'
-import React, { useEffect, useState } from 'react'
+import { Html5Qrcode } from 'html5-qrcode'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-import Select from '@/components/Inputs/Select'
-
-type DeviceOption = { label: string; value: string }
+import Select, { SelectOption } from '@/components/Inputs/Select'
 
 interface QRScannerProps {
   onScanSuccess: (decodedText: string, decodedResult: any) => void
   onScanFailure: (error: any) => void
-  videoWidth?: number
-  videoHeight?: number
 }
 
-const QRScanner: React.FC<QRScannerProps> = ({
-  onScanSuccess,
-  onScanFailure = () => null,
-  videoWidth = 300,
-  videoHeight = 300
-}) => {
+const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, onScanFailure = () => null }) => {
   const scannerId = 'qrScannerElement'
-  const [isScannerRunning, setIsScannerRunning] = useState(false)
-  const [deviceOptions, setDeviceOptions] = useState<DeviceOption[]>([])
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>(undefined)
+  const [deviceOptions, setDeviceOptions] = useState<SelectOption<string>[]>([])
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('')
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null)
+  const previousSelectedDeviceId = useRef<string | null>(null)
 
   useEffect(() => {
     navigator.mediaDevices
@@ -54,57 +46,53 @@ const QRScanner: React.FC<QRScannerProps> = ({
   }, [])
 
   useEffect(() => {
-    const html5QrCode = new Html5Qrcode(scannerId)
-
     if (!selectedDeviceId) return
 
-    // Function to start the scanner
+    html5QrCodeRef.current = new Html5Qrcode(scannerId)
+
+    const html5QrCode = html5QrCodeRef.current
+
+    previousSelectedDeviceId.current = selectedDeviceId
+
     const startScanner = () => {
       html5QrCode
         .start(
           selectedDeviceId,
           {
             fps: 10,
-            qrbox: { width: videoWidth, height: videoHeight }
+            qrbox: { width: 300, height: 300 }
           },
           onScanSuccess,
           onScanFailure
         )
-        .then(() => {
-          setIsScannerRunning(true)
-        })
         .catch((error) => {
           onScanFailure(error)
         })
     }
 
-    // Check if the scanner is not already running before starting it
-    if (selectedDeviceId && !isScannerRunning) {
+    if (!html5QrCode.isScanning) {
       startScanner()
     }
 
-    // Cleanup function to stop the scanner
     return () => {
-      if (isScannerRunning && html5QrCode.getState() !== Html5QrcodeScannerState.NOT_STARTED) {
-        html5QrCode.stop().finally(() => {
-          setIsScannerRunning(false)
+      if (html5QrCode.isScanning) {
+        html5QrCode.stop().catch((error) => {
+          console.error('Error stopping the QR scanner', error)
         })
       }
     }
-  }, [selectedDeviceId, onScanSuccess, onScanFailure, videoWidth, videoHeight, isScannerRunning])
+  }, [selectedDeviceId, onScanSuccess, onScanFailure])
 
   return (
     <ScannerContainer>
-      <div id={scannerId} style={{ width: videoWidth, height: videoHeight }} />
-      <DeviceSelect
+      <Scanner id={scannerId} />
+      <Select
+        id="cameraSelect"
         label="Camera"
+        title="Camera"
         options={deviceOptions}
-        onSelect={(v) => {
-          if (v !== selectedDeviceId) {
-            setSelectedDeviceId(v)
-          }
-        }}
-        controlledValue={deviceOptions.find((d) => d.value === selectedDeviceId) || deviceOptions[0] || ''}
+        onSelect={setSelectedDeviceId}
+        controlledValue={deviceOptions.find((d) => d.value === selectedDeviceId) || deviceOptions[0]}
       />
     </ScannerContainer>
   )
@@ -113,10 +101,12 @@ const QRScanner: React.FC<QRScannerProps> = ({
 export default QRScanner
 
 const ScannerContainer = styled.div`
-  position: relative;
+  display: flex;
+  flex-direction: column;
 `
 
-const DeviceSelect = styled(Select)`
-  position: absolute;
-  bottom: 5px;
+const Scanner = styled.div`
+  flex: 1;
+  min-height: 400px;
+  background-color: ${({ theme }) => theme.bg.secondary};
 `
