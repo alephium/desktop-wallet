@@ -15,22 +15,21 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
-import { Html5Qrcode } from 'html5-qrcode'
+import Scanner from 'qr-scanner'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import Select, { SelectOption } from '@/components/Inputs/Select'
 
 interface QRScannerProps {
-  onScanSuccess: (decodedText: string, decodedResult: any) => void
-  onScanFailure: (error: any) => void
+  onScanSuccess: (result: Scanner.ScanResult) => void
 }
 
-const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, onScanFailure = () => null }) => {
-  const scannerId = 'qrScannerElement'
+const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess }) => {
+  const videoRef = useRef(null)
+  const qrCodeScannerRef = useRef<Scanner | null>(null)
   const [deviceOptions, setDeviceOptions] = useState<SelectOption<string>[]>([])
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('')
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null)
   const previousSelectedDeviceId = useRef<string | null>(null)
 
   useEffect(() => {
@@ -46,46 +45,26 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, onScanFailure = ()
   }, [])
 
   useEffect(() => {
-    if (!selectedDeviceId) return
+    if (!selectedDeviceId || !videoRef.current) return
 
-    html5QrCodeRef.current = new Html5Qrcode(scannerId)
+    qrCodeScannerRef.current = new Scanner(videoRef.current, onScanSuccess, { highlightScanRegion: true })
 
-    const html5QrCode = html5QrCodeRef.current
+    const qrCodeScanner = qrCodeScannerRef.current
 
     previousSelectedDeviceId.current = selectedDeviceId
 
-    const startScanner = () => {
-      html5QrCode
-        .start(
-          selectedDeviceId,
-          {
-            fps: 10,
-            qrbox: { width: 300, height: 300 }
-          },
-          onScanSuccess,
-          onScanFailure
-        )
-        .catch((error) => {
-          onScanFailure(error)
-        })
-    }
-
-    if (!html5QrCode.isScanning) {
-      startScanner()
-    }
+    qrCodeScanner.setCamera(selectedDeviceId)
+    qrCodeScanner.setInversionMode('both')
+    qrCodeScanner.start()
 
     return () => {
-      if (html5QrCode.isScanning) {
-        html5QrCode.stop().catch((error) => {
-          console.error('Error stopping the QR scanner', error)
-        })
-      }
+      qrCodeScanner.stop()
     }
-  }, [selectedDeviceId, onScanSuccess, onScanFailure])
+  }, [selectedDeviceId, onScanSuccess])
 
   return (
     <ScannerContainer>
-      <Scanner id={scannerId} />
+      <ScannerVideo ref={videoRef} />
       <Select
         id="cameraSelect"
         label="Camera"
@@ -105,7 +84,7 @@ const ScannerContainer = styled.div`
   flex-direction: column;
 `
 
-const Scanner = styled.div`
+const ScannerVideo = styled.video`
   flex: 1;
   min-height: 400px;
   background-color: ${({ theme }) => theme.bg.secondary};

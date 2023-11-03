@@ -16,8 +16,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { isAddressValid } from '@alephium/sdk'
 import { motion } from 'framer-motion'
 import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
+import Scanner from 'qr-scanner'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
@@ -101,10 +103,11 @@ const AddressInputs = ({
     moveFocusOnPreviousModal()
   }
 
-  const handleQRCodeScan = (addressHash: string) => {
-    console.log('SUCCESSSS')
+  const handleQRCodeScan = (scanResult: Scanner.ScanResult) => {
+    if (!isAddressValid(scanResult.data)) return // TODO: SHOW SNACKBAR
+
     if (onToAddressChange) {
-      onToAddressChange(addressHash)
+      onToAddressChange(scanResult.data)
       setIsScanningModalOpen(false)
     }
   }
@@ -209,7 +212,7 @@ const AddressInputs = ({
         )}
         {isScanningModalOpen && onToAddressChange && (
           <CenteredModal onClose={() => setIsScanningModalOpen(false)} title={t('QR code scanner')}>
-            <QRScanner onScanSuccess={handleQRCodeScan} onScanFailure={() => console.log('FAILL')} />
+            <QRScanner onScanSuccess={handleQRCodeScan} />
           </CenteredModal>
         )}
       </ModalPortal>
