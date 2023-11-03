@@ -18,7 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { motion } from 'framer-motion'
 import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -30,6 +30,7 @@ import AddressInput from '@/components/Inputs/AddressInput'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
+import QRScanner from '@/components/QRScanner'
 import SkeletonLoader from '@/components/SkeletonLoader'
 import Truncate from '@/components/Truncate'
 import { useAppSelector } from '@/hooks/redux'
@@ -39,7 +40,6 @@ import ModalPortal from '@/modals/ModalPortal'
 import InputsSection from '@/modals/SendModals/InputsSection'
 import { selectAllContacts, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
 import { Address, AddressHash } from '@/types/addresses'
-import { Contact } from '@/types/contacts'
 import { filterContacts } from '@/utils/contacts'
 
 interface AddressInputsProps {
@@ -75,29 +75,15 @@ const AddressInputs = ({
 
   const [isContactSelectModalOpen, setIsContactSelectModalOpen] = useState(false)
   const [isAddressSelectModalOpen, setIsAddressSelectModalOpen] = useState(false)
-  const [contact, setContact] = useState<Contact>()
   const [filteredContacts, setFilteredContacts] = useState(contacts)
-  const [inputFieldMode, setInputFieldMode] = useState<InputFieldMode>('view')
 
-  const isContactVisible = contact && inputFieldMode === 'view'
   const contactSelectOptions: SelectOption<AddressHash>[] = contacts.map((contact) => ({
     value: contact.address,
     label: contact.name
   }))
 
-  useEffect(() => {
-    const existingContact = contacts.find((c) => c.address === toAddress?.value)
-
-    setContact(existingContact)
-  }, [contacts, toAddress?.value])
-
   const handleContactSelect = (contactAddress: SelectOption<AddressHash>) =>
     onContactSelect && onContactSelect(contactAddress.value)
-
-  const handleFocus = () => {
-    inputRef.current?.focus()
-    setInputFieldMode('edit')
-  }
 
   const handleContactsSearch = (searchInput: string) =>
     setFilteredContacts(filterContacts(contacts, searchInput.toLowerCase()))
@@ -137,6 +123,7 @@ const AddressInputs = ({
           )}
         </BoxStyled>
       </InputsSection>
+      <QRScanner onScanSuccess={() => console.log('SCAN SUCCESS')} onScanFailure={() => console.log('SCAN FAIL')} />
       {toAddress && onToAddressChange && (
         <InputsSection
           title={t('Destination')}
