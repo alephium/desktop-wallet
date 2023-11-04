@@ -17,7 +17,6 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { isAddressValid } from '@alephium/sdk'
-import { motion } from 'framer-motion'
 import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
 import Scanner from 'qr-scanner'
 import { useRef, useState } from 'react'
@@ -27,7 +26,6 @@ import styled, { useTheme } from 'styled-components'
 import Box from '@/components/Box'
 import Button from '@/components/Button'
 import HashEllipsed from '@/components/HashEllipsed'
-import { inputStyling } from '@/components/Inputs'
 import AddressInput from '@/components/Inputs/AddressInput'
 import AddressSelect from '@/components/Inputs/AddressSelect'
 import { SelectOption, SelectOptionsModal } from '@/components/Inputs/Select'
@@ -237,18 +235,6 @@ const HashEllipsedStyled = styled(HashEllipsed)`
   margin-left: auto;
   color: ${({ theme }) => theme.font.secondary};
   max-width: 150px;
-`
-
-const ContactRow = styled(motion.div)`
-  display: flex;
-  gap: var(--spacing-2);
-  position: absolute;
-  height: 100%;
-  align-items: center;
-  top: 0;
-  left: ${inputStyling.paddingLeftRight};
-  right: ${inputStyling.paddingLeftRight};
-  transition: opacity 0.2s ease-out;
 `
 
 const BoxStyled = styled(Box)`
