@@ -17,19 +17,23 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { Asset } from '@alephium/sdk'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
+import Amount from '@/components/Amount'
 import AssetLogo from '@/components/AssetLogo'
 import { useAppSelector } from '@/hooks/redux'
 import { selectAssetInfoById, selectNFTById } from '@/storage/assets/assetsSelectors'
 
 interface AssetBadgeProps {
   assetId: Asset['id']
+  amount?: bigint
   simple?: boolean
+  withBorder?: boolean
+  withBackground?: boolean
   className?: string
 }
 
-const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
+const AssetBadge = ({ assetId, amount, simple, className }: AssetBadgeProps) => {
   const assetInfo = useAppSelector((s) => selectAssetInfoById(s, assetId))
   const nftInfo = useAppSelector((s) => selectNFTById(s, assetId))
 
@@ -46,7 +50,11 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
         assetName={assetInfo?.name}
         isNft={!!nftInfo}
       />
-      {!simple && assetInfo?.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>}
+      {amount !== undefined ? (
+        <Amount value={amount} suffix={assetInfo?.symbol} />
+      ) : (
+        !simple && assetInfo?.symbol && <AssetSymbol>{assetInfo.symbol}</AssetSymbol>
+      )}
     </div>
   )
 }
@@ -54,7 +62,16 @@ const AssetBadge = ({ assetId, simple, className }: AssetBadgeProps) => {
 export default styled(AssetBadge)`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+
+  ${({ withBorder }) =>
+    withBorder &&
+    css`
+      border: 1px solid ${({ theme }) => theme.border.primary};
+      background-color: ${({ theme }) => theme.bg.tertiary};
+      border-radius: var(--radius-huge);
+      padding: 4px 10px 4px 4px;
+    `}
 `
 
 const AssetSymbol = styled.div`

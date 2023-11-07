@@ -17,10 +17,10 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
-import Amount from '@/components/Amount'
 import AssetBadge from '@/components/AssetBadge'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import { useAppSelector } from '@/hooks/redux'
@@ -34,31 +34,28 @@ interface SelectOptionAddressProps {
 }
 
 const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAddressProps) => {
+  const { t } = useTranslation()
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, address.hash))
-
-  console.log(assets)
 
   return (
     <SelectOptionItemContent
       className={className}
       displaysCheckMarkWhenSelected
       MainContent={
-        <AddressBadgeAndAssets>
-          <AddressBadgeStyled addressHash={address.hash} disableA11y truncate />
+        <Content>
+          <Header>
+            <AddressBadgeStyled addressHash={address.hash} disableA11y truncate />
+            <Group>
+              {t('Group')} {address.group}
+            </Group>
+          </Header>
           <AssetList>
             {assets.map((a) => (
-              <AssetBadge assetId={a.id} />
+              <AssetBadge key={a.id} assetId={a.id} amount={a.balance} withBorder />
             ))}
           </AssetList>
-        </AddressBadgeAndAssets>
-      }
-      SecondaryContent={
-        <AmountStyled
-          value={BigInt(address.balance)}
-          color={isSelected ? 'var(--color-white)' : undefined}
-          overrideSuffixColor
-        />
+        </Content>
       }
     />
   )
@@ -66,22 +63,30 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
 
 export default SelectOptionAddress
 
-const AddressBadgeAndAssets = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
 `
 
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const Group = styled.div`
+  color: ${({ theme }) => theme.font.tertiary};
+  font-weight: 400;
+`
+
 const AddressBadgeStyled = styled(AddressBadge)`
   max-width: 200px;
-  font-size: 16px;
+  font-size: 17px;
 `
 
 const AssetList = styled.div`
   display: flex;
   gap: var(--spacing-2);
-`
-
-const AmountStyled = styled(Amount)`
-  flex: 1;
-  font-weight: var(--fontWeight-semiBold);
+  margin-top: var(--spacing-3);
+  flex-wrap: wrap;
 `
