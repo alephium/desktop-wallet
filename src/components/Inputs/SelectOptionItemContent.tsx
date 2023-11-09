@@ -19,38 +19,63 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { ReactNode } from 'react'
 import styled from 'styled-components'
 
+import CheckMark from '@/components/CheckMark'
+
 interface SelectOptionItemContentProps {
   MainContent: ReactNode
+  isSelected: boolean
   SecondaryContent?: ReactNode
   className?: string
   displaysCheckMarkWhenSelected?: boolean
 }
 
 const SelectOptionItemContent = ({
-  MainContent: ContentLeft,
-  SecondaryContent: ContentRight,
+  MainContent: ContentTop,
+  SecondaryContent: ContentBottom,
+  isSelected,
   className
 }: SelectOptionItemContentProps) => (
   <div className={className}>
-    <OptionMainContent>{ContentLeft}</OptionMainContent>
-    <OptionSecondaryContent>{ContentRight}</OptionSecondaryContent>
+    <OptionMainContent>
+      {ContentTop}
+      {isSelected && (
+        <CheckMarkContainer>
+          <CheckMark />
+        </CheckMarkContainer>
+      )}
+    </OptionMainContent>
+    <OptionSecondaryContent>{ContentBottom}</OptionSecondaryContent>
   </div>
 )
 
 export default styled(SelectOptionItemContent)`
+  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 20px;
-  width: ${({ displaysCheckMarkWhenSelected }) => (displaysCheckMarkWhenSelected ? 90 : 100)}%;
+
+  &:hover {
+    > div {
+      background-color: ${({ theme }) => theme.bg.hover};
+    }
+  }
 `
 
 const OptionMainContent = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
   font-weight: var(--fontWeight-semiBold);
+  border-bottom: 1px solid ${({ theme }) => theme.border.secondary};
+  background-color: ${({ theme }) => theme.bg.primary};
+  padding: var(--spacing-3);
 `
 
 const OptionSecondaryContent = styled.div`
-  * {
-    color: ${({ theme }) => theme.font.secondary} !important;
-  }
+  background-color: ${({ theme }) => theme.bg.secondary};
+  padding: var(--spacing-3);
+`
+
+const CheckMarkContainer = styled.div`
+  margin-left: var(--spacing-3);
 `

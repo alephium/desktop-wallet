@@ -98,6 +98,7 @@ const AddressSelectModal = ({
             )
           : t('There are no available addresses.'))
       }
+      floatingOptions
     />
   )
 }

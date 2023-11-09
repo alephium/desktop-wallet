@@ -30,9 +30,8 @@ import {
   useState
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled, { css } from 'styled-components'
+import styled, { css, useTheme } from 'styled-components'
 
-import CheckMark from '@/components/CheckMark'
 import { inputDefaultStyle, InputHeight, InputLabel, InputProps, inputStyling } from '@/components/Inputs'
 import Input from '@/components/Inputs/Input'
 import InputArea from '@/components/Inputs/InputArea'
@@ -248,13 +247,14 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   onClose: () => void
   hookCoordinates?: Coordinates
   title?: string
-  optionRender?: (option: SelectOption<T>, isSelected?: boolean) => ReactNode
+  optionRender?: (option: SelectOption<T>, isSelected: boolean) => ReactNode
   onSearchInput?: (input: string) => void
   searchPlaceholder?: string
   showOnly?: T[]
   emptyListPlaceholder?: string
   parentSelectRef?: RefObject<HTMLDivElement | HTMLButtonElement>
   ListBottomComponent?: ReactNode
+  floatingOptions?: boolean
 }
 
 export function SelectOptionsModal<T extends OptionValue>({
@@ -270,10 +270,12 @@ export function SelectOptionsModal<T extends OptionValue>({
   showOnly,
   emptyListPlaceholder,
   parentSelectRef,
-  ListBottomComponent
+  ListBottomComponent,
+  floatingOptions
 }: SelectOptionsModalProps<T>) {
   const { t } = useTranslation()
   const optionSelectRef = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
 
   // We hide instead of simply not rendering filtered options to avoid changing the height/width of the modal when
   // filtering. When the size of the modal depends on its contents, its size might change when filtering some options
@@ -319,7 +321,12 @@ export function SelectOptionsModal<T extends OptionValue>({
         )
       }
     >
-      <OptionSelect title={title} aria-label={title} ref={optionSelectRef}>
+      <OptionSelect
+        title={title}
+        aria-label={title}
+        ref={optionSelectRef}
+        style={floatingOptions ? { backgroundColor: theme.bg.background2, paddingTop: 10 } : undefined}
+      >
         {isEmpty ? (
           <OptionItem selected={false}>{emptyListPlaceholder}</OptionItem>
         ) : emptySearchResults ? (
@@ -336,18 +343,22 @@ export function SelectOptionsModal<T extends OptionValue>({
               selected={isSelected}
               focusable
               aria-label={option.label}
+              isFloating={floatingOptions}
+              hasCustomOptionRender={!!optionRender}
             >
               {optionRender ? optionRender(option, isSelected) : option.label}
-              {isSelected && <CheckMark />}
             </OptionItem>
           )
         })}
         {ListBottomComponent && <div onClick={onClose}>{ListBottomComponent}</div>}
-        {invisibleOptions.map((option) => (
-          <OptionItem key={option.value} selected={false} invisible>
-            {optionRender ? optionRender(option) : option.label}
-          </OptionItem>
-        ))}
+        {invisibleOptions.map((option) => {
+          const isSelected = option.value === selectedOption?.value
+          return (
+            <OptionItem key={option.value} selected={isSelected} invisible>
+              {optionRender ? optionRender(option, isSelected) : option.label}
+            </OptionItem>
+          )
+        })}
       </OptionSelect>
     </Popup>
   )
@@ -421,22 +432,44 @@ export const OptionSelect = styled.div`
   flex-direction: column;
 `
 
-export const OptionItem = styled.button<{ selected: boolean; focusable?: boolean; invisible?: boolean }>`
+export const OptionItem = styled.button<{
+  selected: boolean
+  focusable?: boolean
+  invisible?: boolean
+  isFloating?: boolean
+  hasCustomOptionRender?: boolean
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-4);
   cursor: pointer;
   color: ${({ theme }) => theme.font.primary};
   user-select: none;
   text-align: left;
   background-color: ${({ theme }) => colord(theme.bg.primary).alpha(0.4).toHex()};
   visibility: ${({ invisible }) => invisible && 'hidden'};
-  font-weight: ${({ theme, selected }) => selected && 'var(--fontWeight-semiBold)'};
+  font-weight: ${({ selected }) => selected && 'var(--fontWeight-semiBold)'};
 
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.border.primary};
-  }
+  ${({ hasCustomOptionRender }) =>
+    css`
+      padding: ${hasCustomOptionRender ? '0px' : 'var(--spacing-4)'};
+    `};
+
+  ${({ isFloating, selected, theme }) =>
+    isFloating
+      ? css`
+          margin: var(--spacing-2) var(--spacing-4);
+          border-radius: var(--radius-medium);
+          border: ${selected ? `2px solid ${theme.global.accent}` : `1px solid ${theme.border.primary}`};
+          box-shadow: ${theme.shadow.secondary};
+          background-color: ${theme.bg.primary};
+          overflow: hidden;
+        `
+      : css`
+          &:not(:last-child) {
+            border-bottom: 1px solid ${({ theme }) => theme.border.primary};
+          }
+        `}
 
   ${({ focusable }) =>
     focusable &&

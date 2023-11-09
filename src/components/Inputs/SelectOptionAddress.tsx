@@ -29,7 +29,7 @@ import { Address } from '@/types/addresses'
 
 interface SelectOptionAddressProps {
   address: Address
-  isSelected?: boolean
+  isSelected: boolean
   className?: string
 }
 
@@ -42,20 +42,21 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
     <SelectOptionItemContent
       className={className}
       displaysCheckMarkWhenSelected
+      isSelected={isSelected}
       MainContent={
-        <Content>
-          <Header>
-            <AddressBadgeStyled addressHash={address.hash} disableA11y truncate />
-            <Group>
-              {t('Group')} {address.group}
-            </Group>
-          </Header>
-          <AssetList>
-            {assets.map((a) => (
-              <AssetBadge key={a.id} assetId={a.id} amount={a.balance} withBorder />
-            ))}
-          </AssetList>
-        </Content>
+        <Header>
+          <AddressBadgeStyled addressHash={address.hash} disableA11y truncate />
+          <Group>
+            {t('Group')} {address.group}
+          </Group>
+        </Header>
+      }
+      SecondaryContent={
+        <AssetList>
+          {assets.map((a) => (
+            <AssetBadge key={a.id} assetId={a.id} amount={a.balance} withBackground />
+          ))}
+        </AssetList>
       }
     />
   )
@@ -63,12 +64,8 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
 
 export default SelectOptionAddress
 
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
 const Header = styled.div`
+  flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,6 +84,5 @@ const AddressBadgeStyled = styled(AddressBadge)`
 const AssetList = styled.div`
   display: flex;
   gap: var(--spacing-2);
-  margin-top: var(--spacing-3);
   flex-wrap: wrap;
 `

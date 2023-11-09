@@ -68,7 +68,14 @@ export default styled(AssetBadge)`
     withBorder &&
     css`
       border: 1px solid ${({ theme }) => theme.border.primary};
-      background-color: ${({ theme }) => theme.bg.tertiary};
+      border-radius: var(--radius-huge);
+      padding: 4px 10px 4px 4px;
+    `}
+
+  ${({ withBackground }) =>
+    withBackground &&
+    css`
+      background-color: ${({ theme }) => theme.bg.highlight};
       border-radius: var(--radius-huge);
       padding: 4px 10px 4px 4px;
     `}
