@@ -39,9 +39,12 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const activeWallet = useAppSelector((s) => s.activeWallet)
 
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker, {
-    pollingInterval: 60000
-  })
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(
+    { asset: 'alephium', currency: currencies[fiatCurrency].ticker },
+    {
+      pollingInterval: 60000
+    }
+  )
 
   const [currentComponentIndex, setCurrentComponentIndex] = useState(0)
   const [lastClickTime, setLastChangeTime] = useState(Date.now())

@@ -32,15 +32,18 @@ interface HistoricalPriceResult {
   price: number
 }
 
+// TODO: EXPORT TO SHARED LIB
+type CoinGeckoID = 'alephium' | 'tether' | 'usdc' | 'dai' | 'ethereum' | 'wrapped-bitcoin'
+
 export const priceApi = createApi({
   reducerPath: 'priceApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://api.coingecko.com/api/v3/' }),
   endpoints: (builder) => ({
-    getPrice: builder.query<number, Currency>({
-      query: (currency) => `/simple/price?ids=alephium&vs_currencies=${currency.toLowerCase()}`,
-      transformResponse: (response: { alephium: { [key: string]: string } }, meta, arg) => {
-        const currency = arg.toLowerCase()
-        const price = response.alephium[currency]
+    getPrice: builder.query<number, { asset: CoinGeckoID; currency: Currency }>({
+      query: ({ asset, currency }) => `/simple/price?ids=${asset}&vs_currencies=${currency.toLowerCase()}`,
+      transformResponse: (response: { [key in CoinGeckoID]: { [key: string]: string } }, meta, arg) => {
+        const currency = arg.currency.toLowerCase()
+        const price = response[arg.asset][currency]
 
         return parseFloat(price)
       }

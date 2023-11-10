@@ -70,9 +70,12 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(currencies[fiatCurrency].ticker, {
-    pollingInterval: 60000
-  })
+  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(
+    { asset: 'alephium', currency: currencies[fiatCurrency].ticker },
+    {
+      pollingInterval: 60000
+    }
+  )
 
   const [hoveredDataPoint, setHoveredDataPoint] = useState<DataPoint>()
   const [chartLength, setChartLength] = useState<ChartLength>('1m')

@@ -78,7 +78,7 @@ const AddressesContactsList = ({ className, maxHeightInPx }: AddressesContactsLi
 const AddressesList = ({ className, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price } = useGetPriceQuery(currencies[fiatCurrency].ticker)
+  const { data: price } = useGetPriceQuery({ asset: 'alephium', currency: currencies[fiatCurrency].ticker })
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedAddress, setSelectedAddress] = useState<Address>()
