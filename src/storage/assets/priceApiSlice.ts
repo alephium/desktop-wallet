@@ -59,6 +59,23 @@ export const priceApi = createApi({
         return parseFloat(price)
       }
     }),
+    getPrices: builder.query<
+      { [id in CoinGeckoID]: number } | undefined,
+      { assets?: CoinGeckoID[]; currency: Currency }
+    >({
+      query: ({ assets, currency }) =>
+        `/simple/price?ids=${assets?.reduce((a, acc) => `${a},${acc}`, '')}&vs_currencies=${currency.toLowerCase()}`,
+      transformResponse: (response: { [key in CoinGeckoID]: { [key: string]: string } }, meta, arg) => {
+        if (!arg.assets) return undefined
+
+        const currency = arg.currency.toLowerCase()
+
+        return Object.entries(response).reduce(
+          (acc, [id, price]) => ({ ...acc, [id]: parseFloat(price[currency]) }),
+          {} as { [id in CoinGeckoID]: number }
+        )
+      }
+    }),
     getHistoricalPrice: builder.query<HistoricalPriceResult[], HistoricalPriceQueryParams>({
       query: ({ currency, days }) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`,
       transformResponse: (response: { prices: number[][] }) => {
@@ -82,4 +99,4 @@ export const priceApi = createApi({
   })
 })
 
-export const { useGetPriceQuery, useGetHistoricalPriceQuery } = priceApi
+export const { useGetPriceQuery, useGetPricesQuery, useGetHistoricalPriceQuery } = priceApi

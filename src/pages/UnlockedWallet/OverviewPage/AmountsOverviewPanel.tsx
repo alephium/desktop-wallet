@@ -33,10 +33,11 @@ import { UnlockedWalletPanel } from '@/pages/UnlockedWallet/UnlockedWalletLayout
 import {
   makeSelectAddresses,
   makeSelectAddressesHaveHistoricBalances,
+  makeSelectAddressesKnownFungibleTokens,
   selectAddressIds,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
-import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { symbolCoinGeckoMapping, useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, chartLengths, DataPoint } from '@/types/chart'
 import { getAvailableBalance } from '@/utils/addresses'
@@ -67,15 +68,24 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const isLoadingBalances = useAppSelector((s) => s.addresses.loadingBalances)
   const isBalancesInitialized = useAppSelector((s) => s.addresses.balancesStatus === 'initialized')
 
+  const selectAddressesKnownFungibleTokens = useMemo(makeSelectAddressesKnownFungibleTokens, [])
+  const knownFungibleTokens = useAppSelector((s) => selectAddressesKnownFungibleTokens(s, addressHashes))
+  const knownFungibleTokenIds = knownFungibleTokens.flatMap((t) => (t.symbol ? symbolCoinGeckoMapping[t.symbol] : []))
+
   const selectAddressesHaveHistoricBalances = useMemo(makeSelectAddressesHaveHistoricBalances, [])
   const hasHistoricBalances = useAppSelector((s) => selectAddressesHaveHistoricBalances(s, addressHashes))
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(
-    { asset: 'alephium', currency: currencies[fiatCurrency].ticker },
+  const { data: assetPrices, isLoading: arePricesLoading } = useGetPricesQuery(
+    {
+      assets: ['alephium', ...knownFungibleTokenIds],
+      currency: currencies[fiatCurrency].ticker
+    },
     {
       pollingInterval: 60000
     }
   )
+
+  const alphPrice = assetPrices?.alephium
 
   const [hoveredDataPoint, setHoveredDataPoint] = useState<DataPoint>()
   const [chartLength, setChartLength] = useState<ChartLength>('1m')
@@ -86,7 +96,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
   const totalBalance = addresses.reduce((acc, address) => acc + BigInt(address.balance), BigInt(0))
   const totalAvailableBalance = addresses.reduce((acc, address) => acc + getAvailableBalance(address), BigInt(0))
   const totalLockedBalance = addresses.reduce((acc, address) => acc + BigInt(address.lockedBalance), BigInt(0))
-  const totalAmountWorth = price !== undefined ? calculateAmountWorth(totalBalance, price) : undefined
+  const totalAmountWorth = alphPrice !== undefined ? calculateAmountWorth(totalBalance, alphPrice) : undefined
   const balanceInFiat = worth ?? totalAmountWorth
 
   const isOnline = network.status === 'online'
@@ -100,14 +110,14 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
           <BalancesRow>
             <BalancesColumn>
               <Today>{date ? dayjs(date).format('DD/MM/YYYY') : t('Value today')}</Today>
-              {isPriceLoading || showBalancesSkeletonLoader ? (
+              {arePricesLoading || showBalancesSkeletonLoader ? (
                 <SkeletonLoader height="32px" style={{ marginBottom: 7, marginTop: 7 }} />
               ) : (
                 <FiatTotalAmount tabIndex={0} value={balanceInFiat} isFiat suffix={currencies[fiatCurrency].symbol} />
               )}
               <Opacity fadeOut={isHoveringChart}>
                 <FiatDeltaPercentage>
-                  {isPriceLoading ||
+                  {arePricesLoading ||
                   stateUninitialized ||
                   (hasHistoricBalances && worthInBeginningOfChart === undefined) ? (
                     <SkeletonLoader height="18px" width="70px" style={{ marginBottom: 6 }} />
@@ -119,7 +129,7 @@ const AmountsOverviewPanel: FC<AmountsOverviewPanelProps> = ({ className, addres
 
               <ChartLengthBadges>
                 {chartLengths.map((length) =>
-                  isPriceLoading || stateUninitialized ? (
+                  arePricesLoading || stateUninitialized ? (
                     <SkeletonLoader
                       key={length}
                       height="25px"
