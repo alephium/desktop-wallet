@@ -37,7 +37,7 @@ import {
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
 import { selectIsTokensMetadataUninitialized } from '@/storage/assets/assetsSelectors'
-import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
 import { onEnterOrSpace } from '@/utils/misc'
@@ -57,10 +57,12 @@ const AddressGridRow = ({ addressHash, className }: AddressGridRowProps) => {
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const isTokensMetadataUninitialized = useAppSelector(selectIsTokensMetadataUninitialized)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery({
-    asset: 'alephium',
+  const { data: priceRes, isLoading: isPriceLoading } = useGetPricesQuery({
+    assets: ['alephium'],
     currency: currencies[fiatCurrency].ticker
   })
+
+  const price = priceRes?.alephium
 
   const [isAddressDetailsModalOpen, setIsAddressDetailsModalOpen] = useState(false)
 

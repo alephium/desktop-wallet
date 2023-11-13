@@ -25,7 +25,7 @@ import styled from 'styled-components'
 import { fadeInOut } from '@/animations'
 import { useAppSelector } from '@/hooks/redux'
 import TimeOfDayMessage from '@/pages/UnlockedWallet/OverviewPage/TimeOfDayMessage'
-import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { currencies } from '@/utils/currencies'
 
 interface GreetingMessagesProps {
@@ -39,12 +39,17 @@ const GreetingMessages = ({ className }: GreetingMessagesProps) => {
   const activeWallet = useAppSelector((s) => s.activeWallet)
 
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price, isLoading: isPriceLoading } = useGetPriceQuery(
-    { asset: 'alephium', currency: currencies[fiatCurrency].ticker },
+  const { data: priceRes, isLoading: isPriceLoading } = useGetPricesQuery(
+    {
+      assets: ['alephium'],
+      currency: currencies[fiatCurrency].ticker
+    },
     {
       pollingInterval: 60000
     }
   )
+
+  const price = priceRes?.alephium
 
   const [currentComponentIndex, setCurrentComponentIndex] = useState(0)
   const [lastClickTime, setLastChangeTime] = useState(Date.now())

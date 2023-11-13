@@ -42,7 +42,7 @@ import {
   makeSelectAddressesNFTs,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
-import { symbolCoinGeckoMapping, useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { symbolCoinGeckoMapping, useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { deviceBreakPoints } from '@/style/globalStyles'
 import { AddressHash } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
@@ -172,13 +172,18 @@ const TokenListRow = ({ asset, isExpanded }: TokenListRowProps) => {
   const theme = useTheme()
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price } = useGetPriceQuery(
-    { asset: symbolCoinGeckoMapping[asset.symbol || ''], currency: currencies[fiatCurrency].ticker },
+
+  const assetApiId = asset.symbol ? symbolCoinGeckoMapping[asset.symbol] : undefined
+
+  const { data: priceRes } = useGetPricesQuery(
+    { assets: assetApiId ? [assetApiId] : [], currency: currencies[fiatCurrency].ticker },
     {
       skip: !asset.symbol,
       pollingInterval: 60000
     }
   )
+
+  const price = priceRes && assetApiId ? priceRes[assetApiId] : NaN
 
   return (
     <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
