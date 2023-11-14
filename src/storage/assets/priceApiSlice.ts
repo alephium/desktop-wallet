@@ -16,20 +16,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { Asset } from '@alephium/sdk'
+import { createApi, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react'
 import dayjs from 'dayjs'
+import { uniq } from 'lodash'
 
 import { Currency } from '@/types/settings'
 import { CHART_DATE_FORMAT } from '@/utils/constants'
 
-type HistoricalPriceQueryParams = {
-  currency: Currency
-  days: number
-}
-
-interface HistoricalPriceResult {
+export interface HistoricalPrice {
   date: string // CHART_DATE_FORMAT
   price: number
+}
+
+interface MarketChartEnpointResult {
+  market_caps: [number, number][] // date, value
+  prices: [number, number][]
+  total_volumes: [number, number][]
 }
 
 // TODO: EXPORT TO SHARED LIB
@@ -42,6 +45,15 @@ export const symbolCoinGeckoMapping: { [key: string]: CoinGeckoID } = {
   DAI: 'dai',
   WETH: 'ethereum',
   WBTC: 'wrapped-bitcoin'
+}
+
+export const getTokensApiIds = (tokens: Asset[]) =>
+  uniq(tokens.flatMap((t) => (t.symbol && symbolCoinGeckoMapping[t.symbol] ? symbolCoinGeckoMapping[t.symbol] : [])))
+
+type HistoricalPriceQueryParams = {
+  assetIds: CoinGeckoID[]
+  currency: Currency
+  days: number
 }
 
 export const priceApi = createApi({
@@ -64,24 +76,40 @@ export const priceApi = createApi({
         )
       }
     }),
-    getHistoricalPrice: builder.query<HistoricalPriceResult[], HistoricalPriceQueryParams>({
-      query: ({ currency, days }) => `/coins/alephium/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`,
-      transformResponse: (response: { prices: number[][] }) => {
-        const { prices } = response
+    getHistoricalPrice: builder.query<{ [id in CoinGeckoID]: HistoricalPrice[] }, HistoricalPriceQueryParams>({
+      queryFn: async ({ assetIds, currency, days }, _queryApi, _extraOptions, fetchWithBQ) => {
+        const results = (await Promise.all(
+          assetIds.map((id) =>
+            fetchWithBQ(`/coins/${id}/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}`)
+          )
+        )) as { data: MarketChartEnpointResult; error?: string }[]
+
         const today = dayjs().format(CHART_DATE_FORMAT)
 
-        return prices.reduce((acc, [date, price]) => {
-          const itemDate = dayjs(date).format(CHART_DATE_FORMAT)
-          const isDuplicatedItem = !!acc.find(({ date }) => dayjs(date).format(CHART_DATE_FORMAT) === itemDate)
+        const errors = results.filter((r) => !!r.error)
 
-          if (!isDuplicatedItem && itemDate !== today)
-            acc.push({
-              date: itemDate,
-              price
-            })
+        if (errors.length > 0) return { error: { error: errors.join(', ') } as FetchBaseQueryError }
 
-          return acc
-        }, [] as HistoricalPriceResult[])
+        return {
+          data: results.reduce(
+            (acc, { data: { prices } }, i) => ({
+              ...acc,
+              [assetIds[i]]: prices.reduce((acc, [date, price]) => {
+                const itemDate = dayjs(date).format(CHART_DATE_FORMAT)
+                const isDuplicatedItem = !!acc.find(({ date }) => dayjs(date).format(CHART_DATE_FORMAT) === itemDate)
+
+                if (!isDuplicatedItem && itemDate !== today)
+                  acc.push({
+                    date: itemDate,
+                    price
+                  })
+
+                return acc
+              }, [] as HistoricalPrice[])
+            }),
+            {} as { [id in CoinGeckoID]: HistoricalPrice[] }
+          )
+        }
       }
     })
   })

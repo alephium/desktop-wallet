@@ -26,10 +26,11 @@ import styled, { useTheme } from 'styled-components'
 import { useAppSelector } from '@/hooks/redux'
 import {
   makeSelectAddresses,
+  makeSelectAddressesKnownFungibleTokens,
   selectHaveHistoricBalancesLoaded,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
-import { useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
+import { getTokensApiIds, useGetHistoricalPriceQuery } from '@/storage/assets/priceApiSlice'
 import { AddressHash } from '@/types/addresses'
 import { ChartLength, DataPoint, LatestAmountPerAddress } from '@/types/chart'
 import { Currency } from '@/types/settings'
@@ -69,14 +70,26 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
   const haveHistoricBalancesLoaded = useAppSelector(selectHaveHistoricBalancesLoaded)
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
-  const { data: alphPriceHistory } = useGetHistoricalPriceQuery({ currency, days: 365 })
+  const selectAddressesKnownFungibleTokens = useMemo(makeSelectAddressesKnownFungibleTokens, [])
+  const knownFungibleTokens = useAppSelector((s) =>
+    selectAddressesKnownFungibleTokens(
+      s,
+      addresses.map((a) => a.hash)
+    )
+  )
+
+  const { data: priceHistory } = useGetHistoricalPriceQuery({
+    assetIds: ['alephium', ...getTokensApiIds(knownFungibleTokens)],
+    currency,
+    days: 365
+  })
 
   const theme = useTheme()
 
   const [chartData, setChartData] = useState<DataPoint[]>([])
 
   const startingDate = startingDates[length].format('YYYY-MM-DD')
-  const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && !!alphPriceHistory
+  const isDataAvailable = addresses.length !== 0 && haveHistoricBalancesLoaded && !!priceHistory
   const firstItem = chartData.at(0)
 
   useEffect(() => {
@@ -92,7 +105,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     const computeChartDataPoints = (): DataPoint[] => {
       const addressesLatestAmount: LatestAmountPerAddress = {}
 
-      const dataPoints = alphPriceHistory.map(({ date, price }) => {
+      const dataPoints = priceHistory.alephium.map(({ date, price }) => {
         let totalAmountPerDate = BigInt(0)
 
         addresses.forEach(({ hash, balanceHistory }) => {
@@ -124,7 +137,7 @@ const HistoricWorthChart = memo(function HistoricWorthChart({
     dataPoints = trimInitialZeroDataPoints(dataPoints)
 
     setChartData(getFilteredChartData(dataPoints, startingDate))
-  }, [addresses, alphPriceHistory, isDataAvailable, latestWorth, startingDate])
+  }, [addresses, priceHistory, isDataAvailable, latestWorth, startingDate])
 
   if (!isDataAvailable || chartData.length < 2 || !firstItem || latestWorth === undefined) return null
 
