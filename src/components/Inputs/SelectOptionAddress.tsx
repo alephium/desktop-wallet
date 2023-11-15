@@ -47,6 +47,7 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
       className={className}
       displaysCheckMarkWhenSelected
       isSelected={isSelected}
+      contentDirection="column"
       MainContent={
         <Header>
           <AddressBadgeStyled addressHash={address.hash} disableA11y truncate />

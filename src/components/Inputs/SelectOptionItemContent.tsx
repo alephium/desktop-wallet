@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { ReactNode } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import CheckMark from '@/components/CheckMark'
 
@@ -25,6 +25,7 @@ interface SelectOptionItemContentProps {
   MainContent: ReactNode
   isSelected: boolean
   SecondaryContent?: ReactNode
+  contentDirection?: 'row' | 'column'
   className?: string
   displaysCheckMarkWhenSelected?: boolean
 }
@@ -33,9 +34,10 @@ const SelectOptionItemContent = ({
   MainContent: ContentTop,
   SecondaryContent: ContentBottom,
   isSelected,
+  contentDirection = 'row',
   className
 }: SelectOptionItemContentProps) => (
-  <div className={className}>
+  <OptionContentWrapper className={className} contentDirection={contentDirection}>
     <OptionMainContent>
       {ContentTop}
       {isSelected && (
@@ -45,21 +47,10 @@ const SelectOptionItemContent = ({
       )}
     </OptionMainContent>
     <OptionSecondaryContent>{ContentBottom}</OptionSecondaryContent>
-  </div>
+  </OptionContentWrapper>
 )
 
-export default styled(SelectOptionItemContent)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  &:hover {
-    > div {
-      background-color: ${({ theme }) => theme.bg.hover};
-    }
-  }
-`
+export default SelectOptionItemContent
 
 const OptionMainContent = styled.div`
   flex: 1;
@@ -78,4 +69,25 @@ const OptionSecondaryContent = styled.div`
 
 const CheckMarkContainer = styled.div`
   margin-left: var(--spacing-3);
+`
+
+const OptionContentWrapper = styled.div<{ contentDirection: SelectOptionItemContentProps['contentDirection'] }>`
+  flex: 1;
+  display: flex;
+  flex-direction: ${({ contentDirection }) => contentDirection};
+  justify-content: space-between;
+
+  &:hover {
+    > div {
+      background-color: ${({ theme }) => theme.bg.hover};
+    }
+  }
+
+  ${OptionSecondaryContent} {
+    ${({ contentDirection }) =>
+      contentDirection === 'row' &&
+      css`
+        background-color: ${({ theme }) => theme.bg.primary};
+      `}
+  }
 `
