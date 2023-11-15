@@ -54,8 +54,6 @@ interface AddressInputsProps {
   className?: string
 }
 
-type InputFieldMode = 'view' | 'edit'
-
 const AddressInputs = ({
   defaultFromAddress,
   fromAddresses,

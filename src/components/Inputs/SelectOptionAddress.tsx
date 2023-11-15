@@ -22,6 +22,7 @@ import styled from 'styled-components'
 
 import AddressBadge from '@/components/AddressBadge'
 import AssetBadge from '@/components/AssetBadge'
+import Badge from '@/components/Badge'
 import SelectOptionItemContent from '@/components/Inputs/SelectOptionItemContent'
 import { useAppSelector } from '@/hooks/redux'
 import { makeSelectAddressesTokens } from '@/storage/addresses/addressesSelectors'
@@ -38,6 +39,9 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
   const selectAddressesTokens = useMemo(makeSelectAddressesTokens, [])
   const assets = useAppSelector((s) => selectAddressesTokens(s, address.hash))
 
+  const knownAssetsWithBalance = assets.filter((a) => a.balance > 0 && a.name)
+  const unknownAssetsNb = assets.filter((a) => a.balance > 0 && !a.name).length
+
   return (
     <SelectOptionItemContent
       className={className}
@@ -53,9 +57,10 @@ const SelectOptionAddress = ({ address, isSelected, className }: SelectOptionAdd
       }
       SecondaryContent={
         <AssetList>
-          {assets.map((a) => (
+          {knownAssetsWithBalance.map((a) => (
             <AssetBadge key={a.id} assetId={a.id} amount={a.balance} withBackground />
           ))}
+          {unknownAssetsNb > 0 && <Badge compact>+ {unknownAssetsNb}</Badge>}
         </AssetList>
       }
     />
@@ -85,4 +90,5 @@ const AssetList = styled.div`
   display: flex;
   gap: var(--spacing-2);
   flex-wrap: wrap;
+  align-items: center;
 `
