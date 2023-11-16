@@ -189,6 +189,7 @@ const ClickableInput = styled.div<InputProps & Pick<AddressSelectProps, 'simpleM
     simpleMode &&
     css`
       border: 0;
+      height: calc(100% - 2px);
       background-color: transparent;
 
       &:hover {
