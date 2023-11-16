@@ -451,5 +451,11 @@
   "Could not copy public key.": "Could not copy public key.",
   "Copy the keys of an address.": "Copy the keys of an address.",
   "Transaction hash": "Transaction hash",
-  "Copy hash": "Copy hash"
+  "Copy hash": "Copy hash",
+  "Origin": "Origin",
+  "Destination": "Destination",
+  "One of your addresses to send the transaction from.": "One of your addresses to send the transaction from.",
+  "The address which will receive the transaction.": "The address which will receive the transaction.",
+  "Select the address to send funds to.": "Select the address to send funds to.",
+  "QR code scanner": "QR code scanner"
 }

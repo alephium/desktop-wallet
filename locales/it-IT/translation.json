@@ -451,5 +451,11 @@
   "Copy hash": "Copia l'hash",
   "Scan this animated QR code with your mobile wallet.": "Scansiona questo codice QR animato con il tuo portafoglio mobile.",
   "Sign": "Firma",
-  "Unsigned transaction signed!": "Togli la firma sulla transazione firmata!"
+  "Unsigned transaction signed!": "Togli la firma sulla transazione firmata!",
+  "Origin": "Origin",
+  "Destination": "Destination",
+  "One of your addresses to send the transaction from.": "One of your addresses to send the transaction from.",
+  "The address which will receive the transaction.": "The address which will receive the transaction.",
+  "Select the address to send funds to.": "Select the address to send funds to.",
+  "QR code scanner": "QR code scanner"
 }

@@ -451,5 +451,11 @@
   "Transaction hash": "Transaction hash",
   "Copy hash": "Copy hash",
   "Sign": "Sign",
-  "Unsigned transaction signed!": "Unsigned transaction signed!"
+  "Unsigned transaction signed!": "Unsigned transaction signed!",
+  "Origin": "Origin",
+  "Destination": "Destination",
+  "One of your addresses to send the transaction from.": "One of your addresses to send the transaction from.",
+  "The address which will receive the transaction.": "The address which will receive the transaction.",
+  "Select the address to send funds to.": "Select the address to send funds to.",
+  "QR code scanner": "QR code scanner"
 }
