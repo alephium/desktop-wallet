@@ -59,6 +59,7 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess }) => {
 
     return () => {
       qrCodeScanner.stop()
+      qrCodeScanner.destroy()
     }
   }, [selectedDeviceId, onScanSuccess])
 

@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { isAddressValid } from '@alephium/sdk'
 import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
 import Scanner from 'qr-scanner'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -98,14 +98,17 @@ const AddressInputs = ({
     moveFocusOnPreviousModal()
   }
 
-  const handleQRCodeScan = (scanResult: Scanner.ScanResult) => {
-    if (!isAddressValid(scanResult.data)) return // TODO: SHOW SNACKBAR
+  const handleQRCodeScan = useCallback(
+    (scanResult: Scanner.ScanResult) => {
+      if (!isAddressValid(scanResult.data)) return // TODO: SHOW SNACKBAR
 
-    if (onToAddressChange) {
-      onToAddressChange(scanResult.data)
-      setIsScanningModalOpen(false)
-    }
-  }
+      if (onToAddressChange) {
+        onToAddressChange(scanResult.data)
+        setIsScanningModalOpen(false)
+      }
+    },
+    [onToAddressChange]
+  )
 
   return (
     <InputsContainer>
