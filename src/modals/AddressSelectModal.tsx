@@ -86,6 +86,7 @@ const AddressSelectModal = ({
       onClose={onClose}
       onSearchInput={handleSearch}
       searchPlaceholder={t('Search for name or a hash...')}
+      minWidth={620}
       optionRender={(option, isSelected) => {
         const address = addresses.find((address) => address.hash === option.value)
         if (address) return <SelectOptionAddress address={address} isSelected={isSelected} />

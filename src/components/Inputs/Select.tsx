@@ -253,6 +253,7 @@ interface SelectOptionsModalProps<T extends OptionValue> {
   showOnly?: T[]
   emptyListPlaceholder?: string
   parentSelectRef?: RefObject<HTMLDivElement | HTMLButtonElement>
+  minWidth?: number
   ListBottomComponent?: ReactNode
   floatingOptions?: boolean
 }
@@ -270,6 +271,7 @@ export function SelectOptionsModal<T extends OptionValue>({
   showOnly,
   emptyListPlaceholder,
   parentSelectRef,
+  minWidth,
   ListBottomComponent,
   floatingOptions
 }: SelectOptionsModalProps<T>) {
@@ -300,14 +302,18 @@ export function SelectOptionsModal<T extends OptionValue>({
   )
 
   const parentSelectWidth = parentSelectRef?.current?.clientWidth
-  const minWidth = parentSelectWidth && parentSelectWidth > 200 ? parentSelectWidth + 10 : undefined
+  const width = minWidth
+    ? minWidth
+    : parentSelectWidth !== undefined && parentSelectWidth > 200
+    ? parentSelectWidth + 10
+    : undefined
 
   return (
     <Popup
       title={title}
       onClose={onClose}
       hookCoordinates={hookCoordinates}
-      minWidth={minWidth}
+      minWidth={width}
       extraHeaderContent={
         onSearchInput &&
         !isEmpty && (

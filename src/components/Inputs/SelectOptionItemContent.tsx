@@ -63,7 +63,7 @@ const OptionMainContent = styled.div`
 `
 
 const OptionSecondaryContent = styled.div`
-  background-color: ${({ theme }) => theme.bg.secondary};
+  background-color: ${({ theme }) => theme.bg.background1};
   padding: var(--spacing-3);
 `
 

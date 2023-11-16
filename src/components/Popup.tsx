@@ -131,7 +131,7 @@ const Content = styled(motion.div)<Pick<PopupProps, 'minWidth'>>`
   flex-direction: column;
 
   min-width: ${({ minWidth }) => minWidth}px;
-  max-height: 510px;
+  max-height: 680px;
   margin: auto;
 
   box-shadow: ${({ theme }) => theme.shadow.tertiary};

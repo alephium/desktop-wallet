@@ -19,7 +19,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 import { isAddressValid } from '@alephium/sdk'
 import { AlbumIcon, ContactIcon, ScanLineIcon } from 'lucide-react'
 import Scanner from 'qr-scanner'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { useTheme } from 'styled-components'
 
@@ -69,7 +69,6 @@ const AddressInputs = ({
   const moveFocusOnPreviousModal = useMoveFocusOnPreviousModal()
   const contacts = useAppSelector(selectAllContacts)
   const isAddressesStateUninitialized = useAppSelector(selectIsStateUninitialized)
-  const inputRef = useRef<HTMLInputElement>(null)
   const theme = useTheme()
 
   const [isContactSelectModalOpen, setIsContactSelectModalOpen] = useState(false)
@@ -188,11 +187,11 @@ const AddressInputs = ({
             onClose={handleContactSelectModalClose}
             onSearchInput={handleContactsSearch}
             searchPlaceholder={t('Search for name or a hash...')}
-            parentSelectRef={inputRef}
             optionRender={(contact) => (
               <SelectOptionItemContent
                 MainContent={<Name>{contact.label}</Name>}
                 SecondaryContent={<HashEllipsedStyled hash={contact.value} disableA11y />}
+                isSelected={contact.value === toAddress?.value}
               />
             )}
           />
