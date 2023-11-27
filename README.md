@@ -1,3 +1,5 @@
+## ⚠️ Deprecation warning: This repository has been integrated into the [Alephium frontend monorepo](https://github.com/alephium/alephium-frontend/) and is no longer maintained.
+
 # Alephium desktop wallet
 
 The official Alephium desktop wallet.
