@@ -23,6 +23,9 @@ const isDev = require('electron-is-dev')
 const contextMenu = require('electron-context-menu')
 const { autoUpdater } = require('electron-updater')
 
+const CURRENT_VERSION = app.getVersion()
+const IS_RC = CURRENT_VERSION.includes('-rc.')
+
 // Handle deep linking for alephium://
 
 const ALEPHIUM = 'alephium'
@@ -41,6 +44,7 @@ if (process.defaultApp) {
 contextMenu()
 
 autoUpdater.autoDownload = false
+autoUpdater.allowPrerelease = IS_RC
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -177,7 +181,7 @@ function createWindow() {
 
   mainWindow.loadURL(appURL)
 
-  if (isDev) {
+  if (isDev || IS_RC) {
     // Open the DevTools.
     mainWindow?.webContents.openDevTools()
   }

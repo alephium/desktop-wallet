@@ -28,8 +28,9 @@ import { links } from '@/utils/links'
 const _window = window as unknown as AlephiumWindow
 const electron = _window.electron
 
-const currentVersion = import.meta.env.VITE_VERSION
-const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)?$/
+const currentVersion: string = import.meta.env.VITE_VERSION
+const isRc = currentVersion.includes('-rc.')
+const semverRegex = isRc ? /^(\d+\.\d+\.\d+)(?:-rc(\.\d+)?)?$/ : /^(\d+\.\d+\.\d+)?$/
 
 const ONE_HOUR = 1000 * 60 * 60
 
@@ -53,9 +54,7 @@ const useLatestGitHubRelease = () => {
 
   useTimeout(async () => {
     const appData: AppMetaData = JSON.parse(localStorage.getItem(KEY_APPMETADATA) ?? '{}', toAppMetaData) ?? {}
-    const { lastVersionCheckedAt } = appData
-    // Uncomment to test updater every time the app launches
-    // const lastVersionCheckedAt = new Date(0)
+    const { lastVersionCheckedAt } = isRc ? { lastVersionCheckedAt: new Date(0) } : appData
     const timeSinceLastCheck = (lastVersionCheckedAt !== undefined && Date.now() - lastVersionCheckedAt.getTime()) || 0
     const nextTimeUntilNextFetch = Math.max(0, ONE_HOUR - timeSinceLastCheck)
 
@@ -87,4 +86,4 @@ const useLatestGitHubRelease = () => {
 export default useLatestGitHubRelease
 
 const isVersionNewer = (version: string): boolean =>
-  semverRegex.test(version) && currentVersion && compareVersions(version, currentVersion) > 0
+  semverRegex.test(version) && !!currentVersion && compareVersions(version, currentVersion) > 0
