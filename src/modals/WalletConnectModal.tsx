@@ -63,7 +63,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
     proposalEvent,
     sessionTopic,
     onProposalApprove,
-    onSessionDelete,
+    tryRestoreLastSession,
     connectedDAppMetadata
   } = useWalletConnectContext()
   const addresses = useAppSelector(selectAllAddresses)
@@ -90,7 +90,7 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
   const handleApprove = async () => {
     if (!walletConnectClient || !signerAddress) return
-    if (proposalEvent === undefined) return onSessionDelete()
+    if (proposalEvent === undefined) return await tryRestoreLastSession(walletConnectClient)
 
     const { id, requiredNamespaces, relays } = proposalEvent.params
     const requiredNamespace = requiredNamespaces[PROVIDER_NAMESPACE]
@@ -158,10 +158,10 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
   const handleReject = async () => {
     if (!walletConnectClient) return
-    if (proposalEvent === undefined) return onSessionDelete()
+    if (proposalEvent === undefined) return await tryRestoreLastSession(walletConnectClient)
 
     await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
-    onSessionDelete()
+    await tryRestoreLastSession(walletConnectClient)
     onClose()
 
     posthog.capture('Rejected WalletConnect connection by clicking "Reject"')
@@ -174,14 +174,14 @@ const WalletConnectModal = ({ onClose }: WalletConnectModalProps) => {
 
     await walletConnectClient.disconnect({ topic: sessionTopic, reason: getSdkError('USER_DISCONNECTED') })
     onClose()
-    onSessionDelete()
+    await tryRestoreLastSession(walletConnectClient)
 
     posthog.capture('Clicked WalletConnect disconnect button')
   }
 
   const rejectConnectionAndCloseModal = async () => {
     if (walletConnectClient && proposalEvent) {
-      onSessionDelete()
+      await tryRestoreLastSession(walletConnectClient)
       await walletConnectClient.reject({ id: proposalEvent.id, reason: getSdkError('USER_REJECTED') })
     }
 
