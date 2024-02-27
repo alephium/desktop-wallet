@@ -214,7 +214,7 @@ const MainContent = styled.main`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.bg.background1};
+  background-color: ${({ theme }) => theme.bg.background2};
   position: relative;
 `
 

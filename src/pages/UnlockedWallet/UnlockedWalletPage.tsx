@@ -67,7 +67,9 @@ const UnlockedWalletPage: FC<UnlockedWalletPageProps> = ({
 )
 
 export default styled(UnlockedWalletPage)`
-  background-color: ${({ theme }) => theme.bg.background2};
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding-top: ${appHeaderHeightPx}px;
 `
 
