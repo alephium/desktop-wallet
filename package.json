@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@alephium/sdk": "0.7.5",
-    "@alephium/token-list": "^0.0.11",
+    "@alephium/token-list": "^0.0.12",
     "@alephium/walletconnect-provider": "^0.13.0",
     "@alephium/web3": "^0.16.1",
     "@electron/notarize": "^1.2.3",
