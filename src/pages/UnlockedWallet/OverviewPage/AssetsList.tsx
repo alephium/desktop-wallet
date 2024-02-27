@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { Asset } from '@alephium/sdk'
+import { Asset, calculateAmountWorth } from '@alephium/sdk'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,8 +42,10 @@ import {
   makeSelectAddressesNFTs,
   selectIsStateUninitialized
 } from '@/storage/addresses/addressesSelectors'
+import { symbolCoinGeckoMapping, useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { deviceBreakPoints } from '@/style/globalStyles'
 import { AddressHash } from '@/types/addresses'
+import { currencies } from '@/utils/currencies'
 
 interface AssetsListProps {
   className?: string
@@ -169,6 +171,19 @@ const TokenListRow = ({ asset, isExpanded }: TokenListRowProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
+  const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
+
+  const assetApiId = asset.symbol ? symbolCoinGeckoMapping[asset.symbol] : undefined
+
+  const { data: priceRes } = useGetPricesQuery(
+    { assets: assetApiId ? [assetApiId] : [], currency: currencies[fiatCurrency].ticker },
+    {
+      skip: !asset.symbol,
+      pollingInterval: 60000
+    }
+  )
+
+  const price = priceRes && assetApiId ? priceRes[assetApiId] : NaN
 
   return (
     <TableRow key={asset.id} role="row" tabIndex={isExpanded ? 0 : -1}>
@@ -211,6 +226,11 @@ const TokenListRow = ({ asset, isExpanded }: TokenListRowProps) => {
                 </AmountSubtitle>
               )}
               {!asset.symbol && <AmountSubtitle>{t('Raw amount')}</AmountSubtitle>}
+              {price && !isNaN(price) ? (
+                <Price>
+                  <Amount value={calculateAmountWorth(asset.balance, price)} isFiat suffix={fiatCurrency} />
+                </Price>
+              ) : null}
             </>
           )}
         </TableCellAmount>
@@ -290,6 +310,11 @@ const TokenAmount = styled(Amount)`
 const AmountSubtitle = styled.div`
   color: ${({ theme }) => theme.font.tertiary};
   font-size: 10px;
+`
+
+const Price = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.font.secondary};
 `
 
 const NameColumn = styled(Column)`

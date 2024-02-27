@@ -36,7 +36,7 @@ import { useAppSelector } from '@/hooks/redux'
 import AddressDetailsModal from '@/modals/AddressDetailsModal'
 import ModalPortal from '@/modals/ModalPortal'
 import { selectAllAddresses, selectIsStateUninitialized } from '@/storage/addresses/addressesSelectors'
-import { useGetPriceQuery } from '@/storage/assets/priceApiSlice'
+import { useGetPricesQuery } from '@/storage/assets/priceApiSlice'
 import { Address } from '@/types/addresses'
 import { currencies } from '@/utils/currencies'
 
@@ -78,10 +78,12 @@ const AddressesContactsList = ({ className, maxHeightInPx }: AddressesContactsLi
 const AddressesList = ({ className, isExpanded, onExpand, onAddressClick }: AddressListProps) => {
   const addresses = useAppSelector(selectAllAddresses)
   const fiatCurrency = useAppSelector((s) => s.settings.fiatCurrency)
-  const { data: price } = useGetPriceQuery(currencies[fiatCurrency].ticker)
+  const { data: priceRes } = useGetPricesQuery({ assets: ['alephium'], currency: currencies[fiatCurrency].ticker })
   const stateUninitialized = useAppSelector(selectIsStateUninitialized)
 
   const [selectedAddress, setSelectedAddress] = useState<Address>()
+
+  const price = priceRes?.alephium
 
   const handleRowClick = (address: Address) => {
     onAddressClick()
