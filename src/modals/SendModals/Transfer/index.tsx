@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 import client from '@/api/client'
 import { buildSweepTransactions, signAndSendTransaction } from '@/api/transactions'
-import SendModal from '@/modals/SendModals/SendModal'
+import SendModal, { ConfigurableSendModalProps } from '@/modals/SendModals/SendModal'
 import TransferAddressesTxModalContent from '@/modals/SendModals/Transfer/AddressesTxModalContent'
 import TransferBuildTxModalContent from '@/modals/SendModals/Transfer/BuildTxModalContent'
 import TransferCheckTxModalContent from '@/modals/SendModals/Transfer/CheckTxModalContent'
@@ -33,27 +33,21 @@ import { PartialTxData, TransferTxData, TxContext } from '@/types/transactions'
 import { getAddressAssetsAvailableBalance } from '@/utils/addresses'
 import { getTransactionAssetAmounts } from '@/utils/transactions'
 
-interface TransferTxModalProps {
-  onClose: () => void
-  initialTxData: PartialTxData<TransferTxData, 'fromAddress'>
-  txData?: TransferTxData
-}
+type TransferTxModalProps = ConfigurableSendModalProps<PartialTxData<TransferTxData, 'fromAddress'>, TransferTxData>
 
-const SendModalTransfer = ({ onClose, initialTxData, txData }: TransferTxModalProps) => {
+const SendModalTransfer = (props: TransferTxModalProps) => {
   const { t } = useTranslation()
 
   return (
     <SendModal
+      {...props}
       title={t('Send')}
-      initialTxData={initialTxData}
-      onClose={onClose}
       AddressesTxModalContent={TransferAddressesTxModalContent}
       BuildTxModalContent={TransferBuildTxModalContent}
       CheckTxModalContent={TransferCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}
-      txData={txData}
     />
   )
 }

@@ -17,6 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion, Transition } from 'framer-motion'
+import { LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -26,7 +27,7 @@ interface ToggleProps {
   toggled: boolean
   onToggle: (value: boolean) => void
   disabled?: boolean
-  ToggleIcons?: [LucideIconType, LucideIconType]
+  ToggleIcons?: [LucideIcon, LucideIcon]
   handleColors?: [string, string]
   label?: string
   className?: string

@@ -18,6 +18,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 
 import { colord } from 'colord'
 import { HTMLMotionProps, motion } from 'framer-motion'
+import { LucideIcon } from 'lucide-react'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import styled, { css, useTheme } from 'styled-components'
 
@@ -34,7 +35,7 @@ export interface ButtonProps extends HTMLMotionProps<'button'> {
   short?: boolean
   tall?: boolean
   wide?: boolean
-  Icon?: LucideIconType
+  Icon?: LucideIcon
   iconColor?: string
   iconBackground?: boolean
   borderless?: boolean

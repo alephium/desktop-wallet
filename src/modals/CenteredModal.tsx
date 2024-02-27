@@ -17,7 +17,7 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { motion } from 'framer-motion'
-import { ChevronLeft, X } from 'lucide-react'
+import { ChevronLeft, LucideIcon, X } from 'lucide-react'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -43,6 +43,7 @@ export interface CenteredModalProps extends ModalContainerProps {
   onBack?: () => void
   noPadding?: boolean
   disableBack?: boolean
+  Icon?: (() => ReactNode) | LucideIcon
 }
 
 const CenteredModal: FC<CenteredModalProps> = ({
@@ -60,6 +61,7 @@ const CenteredModal: FC<CenteredModalProps> = ({
   skipFocusOnMount,
   noPadding,
   disableBack,
+  Icon,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -74,6 +76,11 @@ const CenteredModal: FC<CenteredModalProps> = ({
               <BackButton aria-label={t('Back')} squared role="secondary" transparent onClick={onBack} borderless>
                 <ChevronLeft />
               </BackButton>
+            )}
+            {Icon && (
+              <IconContainer>
+                <Icon />
+              </IconContainer>
             )}
             <PanelTitle size="small" useLayoutId={false}>
               <span ref={elRef} tabIndex={0} role="heading">
@@ -227,4 +234,8 @@ const ModalLoadingSpinner = styled.div`
   height: 100%;
   justify-content: center;
   align-items: center;
+`
+
+const IconContainer = styled.div`
+  margin: var(--spacing-3) 0 var(--spacing-3) var(--spacing-4);
 `

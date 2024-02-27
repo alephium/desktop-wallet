@@ -17,13 +17,14 @@ along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { colord } from 'colord'
+import { LucideIcon } from 'lucide-react'
 import styled, { css } from 'styled-components'
 
 import { HasTooltip } from '@/components/Tooltip'
 
 interface ActionLinkProps {
   onClick: () => void
-  Icon?: LucideIconType
+  Icon?: LucideIcon
   iconPosition?: 'right' | 'left'
   withBackground?: boolean
   className?: string

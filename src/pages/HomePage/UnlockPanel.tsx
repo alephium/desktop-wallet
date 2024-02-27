@@ -42,7 +42,7 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
   const { t } = useTranslation()
   const wallets = useAppSelector((state) => state.global.wallets)
   const { unlockWallet } = useGlobalContext()
-  const { proposalEvent } = useWalletConnectContext()
+  const { dAppUrlToConnectTo } = useWalletConnectContext()
   const navigate = useNavigate()
 
   const walletOptions = wallets.map(({ id, name }) => ({ label: name, value: id }))
@@ -73,19 +73,14 @@ const UnlockPanel = ({ onNewWalletLinkClick }: UnlockPanelProps) => {
     if (passphrase) setPassphrase('')
   }
 
-  const dAppName = proposalEvent?.params.proposer.metadata.name
-
   return (
     <>
       <PanelTitle useLayoutId={false} size="big" centerText>
-        {dAppName ? t('Connect to dApp') : t('Welcome back.')}
+        {dAppUrlToConnectTo ? t('Connect to dApp') : t('Welcome back.')}
       </PanelTitle>
       <ParagraphStyled centered secondary>
-        {dAppName
-          ? wallets.length === 1
-            ? t('Unlock your wallet to connect to dApp: {{ dAppName }}', { dAppName })
-            : t('Unlock a wallet to connect to dApp: {{ dAppName }}', { dAppName })
-          : t(wallets.length === 1 ? 'Unlock your wallet to continue.' : 'Unlock a wallet to continue.')}
+        {dAppUrlToConnectTo ||
+          t(wallets.length === 1 ? 'Unlock your wallet to continue.' : 'Unlock a wallet to continue.')}
       </ParagraphStyled>
       <SectionStyled inList>
         <Select

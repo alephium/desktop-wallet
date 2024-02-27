@@ -16,13 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with the library. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import { LucideIcon } from 'lucide-react'
+
 import Button, { ButtonProps } from '@/components/Button'
 
 interface CompactToggleProps extends ButtonProps {
   toggled: boolean
   onToggle: (value: boolean) => void
-  IconOn: LucideIconType
-  IconOff: LucideIconType
+  IconOn: LucideIcon
+  IconOff: LucideIcon
 }
 
 const CompactToggle = ({ toggled, onToggle, IconOn, IconOff, ...props }: CompactToggleProps) => (

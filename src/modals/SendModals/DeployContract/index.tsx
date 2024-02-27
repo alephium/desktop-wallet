@@ -26,18 +26,17 @@ import { signAndSendTransaction } from '@/api/transactions'
 import DeployContractAddressesTxModalContent from '@/modals/SendModals/DeployContract/AddressesTxModalContent'
 import DeployContractBuildTxModalContent from '@/modals/SendModals/DeployContract/BuildTxModalContent'
 import DeployContractCheckTxModalContent from '@/modals/SendModals/DeployContract/CheckTxModalContent'
-import SendModal from '@/modals/SendModals/SendModal'
+import SendModal, { ConfigurableSendModalProps } from '@/modals/SendModals/SendModal'
 import { store } from '@/storage/store'
 import { transactionSent } from '@/storage/transactions/transactionsActions'
 import { DeployContractTxData, PartialTxData, TxContext } from '@/types/transactions'
 
-interface DeployContractTxModalProps {
-  onClose: () => void
-  initialTxData: PartialTxData<DeployContractTxData, 'fromAddress'>
-  txData?: DeployContractTxData
-}
+type DeployContractTxModalProps = ConfigurableSendModalProps<
+  PartialTxData<DeployContractTxData, 'fromAddress'>,
+  DeployContractTxData
+>
 
-const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContractTxModalProps) => {
+const SendModalDeployContract = (props: DeployContractTxModalProps) => {
   const { t } = useTranslation()
 
   const [contractAddress, setContractAddress] = useState('')
@@ -76,16 +75,14 @@ const SendModalDeployContract = ({ onClose, initialTxData, txData }: DeployContr
 
   return (
     <SendModal
+      {...props}
       title={t('Deploy contract')}
-      initialTxData={initialTxData}
-      onClose={onClose}
       AddressesTxModalContent={DeployContractAddressesTxModalContent}
       BuildTxModalContent={DeployContractBuildTxModalContent}
       CheckTxModalContent={DeployContractCheckTxModalContent}
       buildTransaction={buildTransaction}
       handleSend={handleSend}
       getWalletConnectResult={getWalletConnectResult}
-      txData={txData}
       isContract
     />
   )
